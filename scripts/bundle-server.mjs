@@ -25,19 +25,19 @@ const yamlEsmPlugin = {
 // only through a require of its own (esbuild otherwise throws "Dynamic require
 // of "events" is not supported" when it loads).
 const NODE_REQUIRE = {
-  js: 'import { createRequire as __duskCreateRequire } from "node:module";\nconst require = __duskCreateRequire(import.meta.url);',
+  js: 'import { createRequire as __madaniCreateRequire } from "node:module";\nconst require = __madaniCreateRequire(import.meta.url);',
 };
 
 // Every file run as its own process.
 const ENTRY_POINTS = [
   "index.ts",
   "message-search.worker.ts",
-  // the `duskbot` command
-  "duskbot.ts",
+  // the `madanibot` command
+  "madanibot.ts",
   "pair-cli.ts",
   "workspace-backup.worker.ts",
   "pdf-text.worker.ts",
-  // the dusk cloud Pro home image's entry point
+  // the madani cloud Pro home image's entry point
   "cloud-home-start.ts",
   // the container image's entry point
   "server-launcher.ts",
@@ -47,7 +47,7 @@ const ENTRY_POINTS = [
   "local-computer.ts",
   "local-computer-proxy.ts",
   // the hook helper Claude Code runs at PostToolUse/PreCompact/SessionStart/Stop
-  "hooks/dusk-hook.ts",
+  "hooks/madani-hook.ts",
   "container-mcp.ts",
   "vps-container-mcp.ts",
   "permission-proxy.ts",
@@ -92,8 +92,8 @@ await build({
   banner: NODE_REQUIRE,
   // every entry reads the old env names first, whichever process starts it
   inject: [join(root, "electron", "legacy-names.mjs")],
-  // dusk bot's own OAuth clients (shared/native-connectors.json), from the release environment
-  define: { DUSK_BUILD_DEVICE_CLIENTS: JSON.stringify(JSON.stringify(nativeClients())) },
+  // madani bot's own OAuth clients (shared/native-connectors.json), from the release environment
+  define: { MADANI_BUILD_DEVICE_CLIENTS: JSON.stringify(JSON.stringify(nativeClients())) },
 });
 
 // External MCP clients launch this as an independent stdio process, so release
@@ -110,7 +110,7 @@ await build({
   plugins: [serverLocalePlugin],
 });
 
-// `duskbot serve --tunnel` spawns the connector guardian as its own
+// `madanibot serve --tunnel` spawns the connector guardian as its own
 // process, so it must exist as a file beside the server.
 await build({
   entryPoints: [join(root, "electron", "managed-companion-guardian-main.mjs")],

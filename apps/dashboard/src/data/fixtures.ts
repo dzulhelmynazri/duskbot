@@ -16,7 +16,7 @@ export const fixtureCatalog: PlanCatalog = {
   ],
   bundles: [
     { id: "free", name: "free", monthly: 0, license: "personal", members: 1, desktop: "none", blurb: "Your bots, on your computer", features: ["Your bots, on your computer", "Personal use", "No subscription"] },
-    { id: "starter", name: "plus", monthly: 20, license: "personal", members: 1, desktop: "shared-s", blurb: "dusk cloud, always available", features: ["Your bots work in dusk cloud", "2 vCPU, 4 GB RAM, 20 GB disk", "Always available, wakes in seconds"] },
+    { id: "starter", name: "plus", monthly: 20, license: "personal", members: 1, desktop: "shared-s", blurb: "madani cloud, always available", features: ["Your bots work in madani cloud", "2 vCPU, 4 GB RAM, 20 GB disk", "Always available, wakes in seconds"] },
     { id: "pro", name: "pro", monthly: 50, license: "starter", members: 1, desktop: "shared-m", recommended: true, blurb: "A bigger machine, priority wake and a work license", features: ["4 vCPU, 8 GB RAM, 60 GB disk", "Always available, priority wake", "Work license for one person"] },
     { id: "team", name: "team", monthly: 119, license: "team", members: 2, desktop: "dedicated", blurb: "A dedicated machine and a team license", features: ["Dedicated 8 vCPU, 16 GB RAM, 160 GB disk", "Always available, priority wake", "Team license, 2 seats"] },
   ],
@@ -45,8 +45,8 @@ function seeded(seed: number) {
 
 export function fixtureAccount(scenario: Scenario, now = Date.now()): AccountData {
   return {
-    profile: { id: "fx-sid", email: "sid@duskbot.test", name: "Sid", avatarUrl: null, createdAt: now - 215 * DAY, onboarded: scenario !== "new" && scenario !== "signedout" },
-    identities: (scenario === "cloud" ? ["google", "email"] as const : ["email"] as const).map((provider) => ({ provider, label: "sid@duskbot.test", linkedAt: now - 200 * DAY })),
+    profile: { id: "fx-sid", email: "sid@madanibot.test", name: "Sid", avatarUrl: null, createdAt: now - 215 * DAY, onboarded: scenario !== "new" && scenario !== "signedout" },
+    identities: (scenario === "cloud" ? ["google", "email"] as const : ["email"] as const).map((provider) => ({ provider, label: "sid@madanibot.test", linkedAt: now - 200 * DAY })),
     devices: [
       { id: "fx-browser", kind: "browser", label: "Chrome on macOS", platform: "macOS 26.1", location: "Mumbai, IN", createdAt: now - 8 * DAY, lastSeenAt: now, current: true },
       { id: "fx-desktop", kind: "desktop", label: "MacBook-Pro", platform: "macOS 26.1", location: "Mumbai, IN", createdAt: now - 200 * DAY, lastSeenAt: now - 40_000, current: false },
@@ -63,7 +63,7 @@ export function fixtureBilling(scenario: Scenario, now = Date.now()): BillingOve
     subscription: paid ? { id: "fx-sub", bundle: "pro", selection: { license: "starter", members: 1, desktop: "shared-m", size: null, region: "eu-central", interval: "month" }, status: ended ? "canceled" : "active", amountUsd: 50, currentPeriodEnd: now + (ended ? -3 : 18) * DAY, cancelAt: ended ? now - 3 * DAY : null } : null,
     paymentMethod: paid ? { brand: "Visa", last4: "4242", expMonth: 9, expYear: new Date(now).getFullYear() + 3 } : null,
     retention: paid && !ended ? { offer: { percent: 30, cycles: 3 }, applied: null } : null,
-    invoices: paid ? Array.from({ length: 5 }, (_, i) => ({ id: `fx-invoice-${i}`, number: `DUSK-${new Date(now).getFullYear()}-${String(105 - i).padStart(4, "0")}`, date: now - (12 + 30 * i) * DAY, description: "Pro, monthly", amountUsd: 50, status: "paid" as const, url: null })) : [],
+    invoices: paid ? Array.from({ length: 5 }, (_, i) => ({ id: `fx-invoice-${i}`, number: `MADANI-${new Date(now).getFullYear()}-${String(105 - i).padStart(4, "0")}`, date: now - (12 + 30 * i) * DAY, description: "Pro, monthly", amountUsd: 50, status: "paid" as const, url: null })) : [],
   };
 }
 
@@ -114,7 +114,7 @@ export function fixtureWorkspace(id: string, name: string, kind: WorkspaceKind, 
     workspace,
     report: {
       at: lastReportAt, workspace: { name, kind, version: workspace.version, platform: mac ? "darwin" : "linux" },
-      machine: { host: { hostname: mac ? name : name.toLowerCase().replace(/[^a-z0-9]+/g, "-"), platform: mac ? "darwin" : "linux", arch: mac || vps ? "arm64" : "x64", cpus: machine.vcpu, cpuModel: mac ? "Apple M2 Pro" : vps ? "Ampere Altra" : "AMD EPYC" }, cpu: { percent: history[39]!.cpu, load: [1.4, 1.2, 0.9] }, memory: { usedBytes: history[39]!.mem / 100 * machine.ramGb * GB, totalBytes: machine.ramGb * GB }, disk: { usedBytes: machine.diskGb * GB * 0.42, totalBytes: machine.diskGb * GB, path: "/" }, network: { rxBytesPerSec: history[39]!.rx, txBytesPerSec: history[39]!.tx }, uptimeSec: (mac ? 3 : 12) * DAY / 1000, processUptimeSec: 32 * 3600, app: { version: workspace.version, node: "24.11.0" }, update: { available: false, latest: null, how: null }, services: [{ id: "server", name: "dusk bot", state: "running", detail: "All systems ready" }, { id: "computers", name: "Bot computers", state: "running", detail: null }] },
+      machine: { host: { hostname: mac ? name : name.toLowerCase().replace(/[^a-z0-9]+/g, "-"), platform: mac ? "darwin" : "linux", arch: mac || vps ? "arm64" : "x64", cpus: machine.vcpu, cpuModel: mac ? "Apple M2 Pro" : vps ? "Ampere Altra" : "AMD EPYC" }, cpu: { percent: history[39]!.cpu, load: [1.4, 1.2, 0.9] }, memory: { usedBytes: history[39]!.mem / 100 * machine.ramGb * GB, totalBytes: machine.ramGb * GB }, disk: { usedBytes: machine.diskGb * GB * 0.42, totalBytes: machine.diskGb * GB, path: "/" }, network: { rxBytesPerSec: history[39]!.rx, txBytesPerSec: history[39]!.tx }, uptimeSec: (mac ? 3 : 12) * DAY / 1000, processUptimeSec: 32 * 3600, app: { version: workspace.version, node: "24.11.0" }, update: { available: false, latest: null, how: null }, services: [{ id: "server", name: "madani bot", state: "running", detail: "All systems ready" }, { id: "computers", name: "Bot computers", state: "running", detail: null }] },
       computers: { provider: mac ? "local" : "vps", computers: bots.map((bot, i) => ({ id: `computer-${bot.id}`, botId: bot.id, botName: bot.name, kind: mac ? "local-vm" : "vps", name: `${bot.name}'s computer`, state: i === 1 || i === 5 ? "asleep" : "running", memoryBytes: i !== 1 && i !== 5 ? 840 * 1024 ** 2 : null, memoryLimitBytes: 2 * GB, cpuPercent: i === 0 ? 12 : 0, lastUsedAt: now - i * 2 * 3600_000, alias: null })) },
       bots, activity: fixtureActivity(bots, mac ? 17 : vps ? 29 : 41, now),
       devices: { thisDevice: { label: name, kind: mac ? "mac" : vps ? "server" : "linux" }, link: { mode: mac ? "direct" : "relay", connected: true, url: null, since: now - 3 * DAY, detail: null }, phones: [{ id: "fx-phone", label: "iPhone 17 Pro", platform: "iOS 26.1", pairedAt: now - 34 * DAY, lastSeenAt: now - 600_000 }], sessions: [{ id: `session-${id}`, label: "Chrome on macOS", createdAt: now - 8 * DAY, lastSeenAt: now - 1000, scopes: ["chat", "computers"] }] },

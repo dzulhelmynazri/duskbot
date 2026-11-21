@@ -34,30 +34,30 @@ function profiles(): Record<string, Profile> {
           .filter(Boolean).join("+") || "default";
         all[name] = {
           env: {
-            DUSK_SKILL_AUTHORING_ENABLED: flag(skills),
-            DUSK_VOICE_NOTES: flag(voice),
-            DUSK_CHIEF_OF_STAFF: flag(chief),
-            DUSK_COMPUTER_SELECTION: "1",
+            MADANI_SKILL_AUTHORING_ENABLED: flag(skills),
+            MADANI_VOICE_NOTES: flag(voice),
+            MADANI_CHIEF_OF_STAFF: flag(chief),
+            MADANI_COMPUTER_SELECTION: "1",
           },
         };
       }
     }
   }
   for (const name of ["skills+voice", "skills+voice+non-chief"]) {
-    all[`${name}+cloud-home`] = { env: { ...all[name]!.env, DUSK_CLOUD_HOME: "1" } };
+    all[`${name}+cloud-home`] = { env: { ...all[name]!.env, MADANI_CLOUD_HOME: "1" } };
   }
   // Research is on only with a treg key or a Cloud plan and the bot's switch; the fullest profile carries it.
-  all["skills+voice+x"] = { env: { ...all["skills+voice"]!.env, DUSK_X_RESEARCH: "1", DUSK_RESEARCH: "1" } };
+  all["skills+voice+x"] = { env: { ...all["skills+voice"]!.env, MADANI_X_RESEARCH: "1", MADANI_RESEARCH: "1" } };
   // A Team Cloud mounts message_person; the fullest profile carries it.
-  all["skills+voice+x+team"] = { env: { ...all["skills+voice+x"]!.env, DUSK_TEAM_PEOPLE: "1" } };
+  all["skills+voice+x+team"] = { env: { ...all["skills+voice+x"]!.env, MADANI_TEAM_PEOPLE: "1" } };
   all["default+legacy-switches"] = {
-    env: { ...all.default!.env, DUSK_ROOM_TURN: "1", DUSK_OWN_THREAD_CREATION: "1", DUSK_EXTERNAL_RUNTIME: "1", DUSK_ACTIVE_WAITS: "0" },
+    env: { ...all.default!.env, MADANI_ROOM_TURN: "1", MADANI_OWN_THREAD_CREATION: "1", MADANI_EXTERNAL_RUNTIME: "1", MADANI_ACTIVE_WAITS: "0" },
   };
-  // The person's Dusk holds a Chief's powers and adds its notification pair; DUSK_ADDS bounds what that costs.
-  for (const name of ["default", "skills+voice"]) all[`${name}+dusk`] = { env: { ...all[name]!.env, DUSK_DEFAULT_BOT: "1" } };
+  // The person's Madani holds a Chief's powers and adds its notification pair; MADANI_ADDS bounds what that costs.
+  for (const name of ["default", "skills+voice"]) all[`${name}+madani`] = { env: { ...all[name]!.env, MADANI_DEFAULT_BOT: "1" } };
   // A chat that can never pick its computer: its Works on is Off, or it works on its team's computer. A room is one too.
-  all["default+no-computer-pick"] = { env: { ...all.default!.env, DUSK_COMPUTER_SELECTION: "0" } };
-  for (const name of ["default", "non-chief"]) all[`${name}+room`] = { env: { ...all[name]!.env, DUSK_COMPUTER_SELECTION: "0", DUSK_ROOM: "1" } };
+  all["default+no-computer-pick"] = { env: { ...all.default!.env, MADANI_COMPUTER_SELECTION: "0" } };
+  for (const name of ["default", "non-chief"]) all[`${name}+room`] = { env: { ...all[name]!.env, MADANI_COMPUTER_SELECTION: "0", MADANI_ROOM: "1" } };
   return all;
 }
 
@@ -66,9 +66,9 @@ const CHIEF_ONLY_TOOLS = ["list_team_setup", "propose_team_setup", "propose_bot_
 const CHIEF_TARGET_TOOLS = ["propose_profile", "propose_model"];
 const CHIEF_PROFILE_TARGET = " A Chief of Staff may pass for_bot_id (from list_bots) for a requested change to another bot.";
 const TEAMWORK_TOOLS = ["list_room_targets", "coordinate_bots", "assignment_status", "list_bots", "list_rooms", "list_threads", "close_thread", "start_thread", "post_to_room"];
-const DUSK_TOOLS = ["list_unread_notifications", "mark_notifications_read"];
-/** Dusk's tools may make its list at most this much longer than the same Chief's without them. */
-const DUSK_ADDS = 0.02;
+const MADANI_TOOLS = ["list_unread_notifications", "mark_notifications_read"];
+/** Madani's tools may make its list at most this much longer than the same Chief's without them. */
+const MADANI_ADDS = 0.02;
 const RESEARCH_TOOLS = ["web_search_many", "x_search", "research_search", "research_endpoint", "research_call"];
 /** The fullest profile, checked in whole; every other one is pinned by tool names, bytes and sha256. */
 const FULL = "skills+voice+x+team";
@@ -86,8 +86,8 @@ const BUDGET_BASELINE: Record<string, number> = {
   "skills+voice+cloud-home": 70297,
   "skills+voice+non-chief+cloud-home": 62279,
   "default+legacy-switches": 67679,
-  "default+dusk": 68330,
-  "skills+voice+dusk": 71927,
+  "default+madani": 68330,
+  "skills+voice+madani": 71927,
   "skills+voice+x": 76287,
   "skills+voice+x+team": 76287,
   "default+no-computer-pick": 66472,
@@ -99,10 +99,10 @@ const RPC_PREFIX = '{"jsonrpc":"2.0","id":1,"result":';
 
 /** One tools/list `result` from a fresh proxy, sliced out of the raw stdout line, never re-serialized. */
 async function toolsListWire(entry: string, env: Record<string, string>): Promise<string> {
-  // A developer shell or a dusk bot turn can carry DUSK_* switches; the profile must be the only source.
-  const inherited = Object.fromEntries(Object.entries(process.env).filter(([key]) => !key.startsWith("DUSK_")));
+  // A developer shell or a madani bot turn can carry MADANI_* switches; the profile must be the only source.
+  const inherited = Object.fromEntries(Object.entries(process.env).filter(([key]) => !key.startsWith("MADANI_")));
   const child = spawn(process.execPath, [entry], {
-    env: { ...inherited, DUSK_HARNESS_URL: "http://127.0.0.1:9", DUSK_BOT_ID: "bot-golden", DUSK_THREAD_ID: "thread-golden", DUSK_COMMS_TOKEN: "unused", DUSK_TURN_DEPTH: "0", ...env },
+    env: { ...inherited, MADANI_HARNESS_URL: "http://127.0.0.1:9", MADANI_BOT_ID: "bot-golden", MADANI_THREAD_ID: "thread-golden", MADANI_COMMS_TOKEN: "unused", MADANI_TURN_DEPTH: "0", ...env },
     stdio: ["pipe", "pipe", "inherit"],
   });
   try {
@@ -179,7 +179,7 @@ describe("agents proxy tools/list golden", () => {
       const names = toolsOf(wire).map((tool) => tool.name);
       const at = names.indexOf("delete_trigger");
       expect(at, name).toBeGreaterThan(-1);
-      const waits = PROFILES[name]!.env.DUSK_ROOM === "1" ? [] : ["wait_until", "list_waits", "cancel_wait"];
+      const waits = PROFILES[name]!.env.MADANI_ROOM === "1" ? [] : ["wait_until", "list_waits", "cancel_wait"];
       expect(names.slice(at + 1, at + 1 + waits.length), name).toEqual(waits);
       expect(names.filter((tool) => /wait/.test(tool) && tool !== "assignment_status"), name).toEqual(waits);
     }
@@ -193,9 +193,9 @@ describe("agents proxy tools/list golden", () => {
     const full = new Map(toolsOf(wires[FULL]!).map((tool) => [tool.name, JSON.stringify(tool)]));
     for (const [name, profile] of Object.entries(PROFILES)) {
       for (const tool of toolsOf(wires[name]!)) {
-        if (profile.env.DUSK_CLOUD_HOME === "1" && tool.name === "select_computer") continue;
-        if (profile.env.DUSK_CHIEF_OF_STAFF === "0" && CHIEF_TARGET_TOOLS.includes(tool.name)) continue;
-        if (profile.env.DUSK_DEFAULT_BOT === "1" && DUSK_TOOLS.includes(tool.name)) continue;
+        if (profile.env.MADANI_CLOUD_HOME === "1" && tool.name === "select_computer") continue;
+        if (profile.env.MADANI_CHIEF_OF_STAFF === "0" && CHIEF_TARGET_TOOLS.includes(tool.name)) continue;
+        if (profile.env.MADANI_DEFAULT_BOT === "1" && MADANI_TOOLS.includes(tool.name)) continue;
         expect(JSON.stringify(tool), `${name}: ${tool.name}`).toBe(full.get(tool.name));
       }
     }
@@ -235,7 +235,7 @@ describe("agents proxy tools/list golden", () => {
 
   it("ignores the switches that once picked a catalog profile", () => {
     expect(wires["default+legacy-switches"]).toBe(wires.default);
-    const profile = catalogProfileFromEnv({ DUSK_BOT_ID: "bot-golden", DUSK_CHIEF_OF_STAFF: "1", DUSK_COMPUTER_SELECTION: "1", DUSK_ROOM_TURN: "1", DUSK_OWN_THREAD_CREATION: "1", DUSK_EXTERNAL_RUNTIME: "1", DUSK_ACTIVE_WAITS: "0" });
+    const profile = catalogProfileFromEnv({ MADANI_BOT_ID: "bot-golden", MADANI_CHIEF_OF_STAFF: "1", MADANI_COMPUTER_SELECTION: "1", MADANI_ROOM_TURN: "1", MADANI_OWN_THREAD_CREATION: "1", MADANI_EXTERNAL_RUNTIME: "1", MADANI_ACTIVE_WAITS: "0" });
     expect(JSON.stringify({ tools: availableTools(profile) })).toBe(wires.default);
     expect(profile).not.toHaveProperty("activeWaits");
     expect(profile).not.toHaveProperty("coordinating");
@@ -262,7 +262,7 @@ describe("agents proxy tools/list golden", () => {
 
   it("shows only a Chief of Staff the Chief-only tools, and for_bot_id on another bot's profile or model", () => {
     type SchemaTool = Tool & { description: string; inputSchema: { properties: Record<string, unknown> } };
-    const nonChief = Object.keys(PROFILES).filter((name) => PROFILES[name]!.env.DUSK_CHIEF_OF_STAFF === "0");
+    const nonChief = Object.keys(PROFILES).filter((name) => PROFILES[name]!.env.MADANI_CHIEF_OF_STAFF === "0");
     expect(nonChief).toHaveLength(6);
     for (const name of nonChief) {
       const chiefTools = toolsOf(wires[name.startsWith("non-chief") ? name.replace("non-chief", "default") : name.replace("+non-chief", "")]!) as SchemaTool[];
@@ -293,16 +293,16 @@ describe("agents proxy tools/list golden", () => {
       expect(names(`${name}+room`), name).toEqual(names(name).filter((tool) => !["select_computer", "show_widget", "show_html", "show_products", "react", "wait_until", "list_waits", "cancel_wait"].includes(tool)));
     }
     for (const [name, profile] of Object.entries(PROFILES)) {
-      expect(names(name).includes("select_computer"), name).toBe(profile.env.DUSK_COMPUTER_SELECTION === "1");
-      expect(names(name).includes("show_widget"), name).toBe(profile.env.DUSK_ROOM !== "1");
-      expect(names(name).includes("wait_until"), name).toBe(profile.env.DUSK_ROOM !== "1");
+      expect(names(name).includes("select_computer"), name).toBe(profile.env.MADANI_COMPUTER_SELECTION === "1");
+      expect(names(name).includes("show_widget"), name).toBe(profile.env.MADANI_ROOM !== "1");
+      expect(names(name).includes("wait_until"), name).toBe(profile.env.MADANI_ROOM !== "1");
     }
   });
 
   it("shows the X and research tools only where research is on, and adds nothing else", () => {
     for (const [name, profile] of Object.entries(PROFILES)) {
       const names = toolsOf(wires[name]!).map((tool) => tool.name);
-      for (const tool of RESEARCH_TOOLS) expect(names.includes(tool), `${name}: ${tool}`).toBe(profile.env.DUSK_X_RESEARCH === "1" && profile.env.DUSK_RESEARCH === "1");
+      for (const tool of RESEARCH_TOOLS) expect(names.includes(tool), `${name}: ${tool}`).toBe(profile.env.MADANI_X_RESEARCH === "1" && profile.env.MADANI_RESEARCH === "1");
     }
     const switchedOn = Object.keys(PROFILES).filter((name) => name.endsWith("+x"));
     expect(switchedOn).toHaveLength(1);
@@ -310,14 +310,14 @@ describe("agents proxy tools/list golden", () => {
       const without = toolsOf(wires[name.slice(0, -"+x".length)]!).map((tool) => tool.name);
       expect(toolsOf(wires[name]!).map((tool) => tool.name).filter((tool) => !RESEARCH_TOOLS.includes(tool))).toEqual(without);
       // A plan's relay can have X without research: x_search alone, and nothing else changes.
-      const xOnly = availableTools(catalogProfileFromEnv({ DUSK_BOT_ID: "bot-golden", ...PROFILES[name]!.env, DUSK_RESEARCH: "0" })).map((tool) => tool.name);
+      const xOnly = availableTools(catalogProfileFromEnv({ MADANI_BOT_ID: "bot-golden", ...PROFILES[name]!.env, MADANI_RESEARCH: "0" })).map((tool) => tool.name);
       expect(xOnly).toEqual(toolsOf(wires[name]!).map((tool) => tool.name).filter((tool) => tool === "x_search" || !RESEARCH_TOOLS.includes(tool)));
     }
   });
 
   it("is what the catalog module computes in-process, so another front end mounts the same tools", () => {
     for (const [name, profile] of Object.entries(PROFILES)) {
-      const tools = availableTools(catalogProfileFromEnv({ DUSK_BOT_ID: "bot-golden", ...profile.env }));
+      const tools = availableTools(catalogProfileFromEnv({ MADANI_BOT_ID: "bot-golden", ...profile.env }));
       expect(JSON.stringify({ tools }), name).toBe(wires[name]);
     }
   });
@@ -345,7 +345,7 @@ describe("agents proxy tools/list from the packaged bundle", () => {
 
   it("serves the same bytes with no source tree beside it", async () => {
       // Same esbuild options as scripts/bundle-server.mjs: the proxy runs as its own process from one inlined file.
-    directory = realpathSync(mkdtempSync(join(tmpdir(), "dusk-agents-proxy-bundle-")));
+    directory = realpathSync(mkdtempSync(join(tmpdir(), "madani-agents-proxy-bundle-")));
     await build({
       entryPoints: [PROXY_SOURCE],
       bundle: true,
@@ -387,12 +387,12 @@ describe("agents proxy tools/list wire size", () => {
     expect(rows.length).toBeGreaterThan(0);
   });
 
-  it.each(Object.keys(PROFILES).filter((name) => name.endsWith("+dusk")))("%s adds at most 2% to the same Chief's list", (name) => {
-    const without = name.slice(0, -"+dusk".length);
+  it.each(Object.keys(PROFILES).filter((name) => name.endsWith("+madani")))("%s adds at most 2% to the same Chief's list", (name) => {
+    const without = name.slice(0, -"+madani".length);
     const tools = toolsOf(wires[name]!).map((tool) => tool.name);
-    expect(tools.slice(-DUSK_TOOLS.length)).toEqual(DUSK_TOOLS);
-    expect(tools.slice(0, -DUSK_TOOLS.length)).toEqual(toolsOf(wires[without]!).map((tool) => tool.name));
-    expect(bytes(wires[name]!)).toBeLessThanOrEqual(Math.floor(bytes(wires[without]!) * (1 + DUSK_ADDS)));
+    expect(tools.slice(-MADANI_TOOLS.length)).toEqual(MADANI_TOOLS);
+    expect(tools.slice(0, -MADANI_TOOLS.length)).toEqual(toolsOf(wires[without]!).map((tool) => tool.name));
+    expect(bytes(wires[name]!)).toBeLessThanOrEqual(Math.floor(bytes(wires[without]!) * (1 + MADANI_ADDS)));
   });
 
   it.each(Object.keys(PROFILES))("%s stays within 2% of its budget baseline", (name) => {

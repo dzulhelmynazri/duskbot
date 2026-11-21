@@ -78,7 +78,7 @@ function probe(options: ProbeOptions): void {
   };
   (window as unknown as { __bench: typeof bench }).__bench = bench;
   for (const [key, value] of Object.entries(options.storage)) { try { localStorage.setItem(key, value); } catch { /* storage is optional */ } }
-  if (options.railBridge) (window as unknown as { duskDesktop: unknown }).duskDesktop = { rail: { expand() {}, onSkin() { return () => {}; } } };
+  if (options.railBridge) (window as unknown as { madaniDesktop: unknown }).madaniDesktop = { rail: { expand() {}, onSkin() { return () => {}; } } };
   try {
     new PerformanceObserver((list) => { for (const entry of list.getEntries()) bench.longTasks.push([Math.round(entry.startTime), Math.round(entry.duration)]); })
       .observe({ type: "longtask", buffered: true });
@@ -284,7 +284,7 @@ const CHROME_FLAGS = [
 ];
 
 export async function launchChrome(executable: string): Promise<Chrome> {
-  const profile = mkdtempSync(join(tmpdir(), "duskbot-bench-chrome-"));
+  const profile = mkdtempSync(join(tmpdir(), "madanibot-bench-chrome-"));
   const child: ChildProcess = spawn(executable, [...CHROME_FLAGS, `--user-data-dir=${profile}`, "--remote-debugging-port=0", "about:blank"], { stdio: "ignore" });
   const portFile = join(profile, "DevToolsActivePort");
   const deadline = Date.now() + 30_000;

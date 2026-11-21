@@ -38,7 +38,7 @@ test("catalog maps ids, prices, bundles, custom pricing and the default region",
   assert.deepEqual(result.custom.diskGb, catalog.dedicated.diskGb);
   assert.deepEqual(result.bundles.map((bundle) => [bundle.license, bundle.members, bundle.desktop, bundle.monthly, bundle.recommended]), [["personal", 1, "none", 0, false], ["starter", 1, "shared-s", 20, false], ["starter", 1, "shared-m", 50, true], ["team", 3, "dedicated", 100, false]]);
   assert.equal(result.bundles[0]!.blurb, "for personal use on your computer or your own vps");
-  assert.equal(result.bundles[1]!.blurb, "dusk cloud, always available");
+  assert.equal(result.bundles[1]!.blurb, "madani cloud, always available");
   assert.equal(result.bundles[2]!.blurb, "a bigger machine, priority wake and a work license");
   assert.equal(result.bundles[3]!.blurb, "a dedicated machine and a team license");
   assert.deepEqual(result.bundles[2]!.features, ["Priority"]);
@@ -73,7 +73,7 @@ test("yearly team quote merges extra members and uses service totals without bun
     lines: [
       { kind: "license", label: "Team license, 3 members", amountCents: 48000 },
       { kind: "members", label: "2 extra members", amountCents: 36000 },
-      { kind: "desktop", label: "dusk cloud pro", amountCents: 48000 },
+      { kind: "desktop", label: "madani cloud pro", amountCents: 48000 },
       { kind: "discount", label: "Yearly discount (20%)", amountCents: -26400 },
     ],
     totalCents: 105600, monthlyEquivalentCents: 8800, machine: { vcpu: 4, ramGb: 8, diskGb: 80 }, botComputers: 5, members: 5,
@@ -81,7 +81,7 @@ test("yearly team quote merges extra members and uses service totals without bun
   assert.deepEqual(cartFromQuote(quote, plans), {
     lines: [
       { key: "license", label: "team license", detail: "5 members, 2 extra", monthly: 70 },
-      { key: "desktop", label: "dusk cloud, pro", detail: "4 vcpu · 8 gb ram · 80 gb disk", monthly: 40 },
+      { key: "desktop", label: "madani cloud, pro", detail: "4 vcpu · 8 gb ram · 80 gb disk", monthly: 40 },
     ],
     subtotal: 110, bundle: null, bundleSaving: 0, discount: 22, perMonth: 88, dueNow: 1056, free: false,
   });
@@ -100,11 +100,11 @@ test("small dedicated quote keeps its service price below the default desktop pr
   const plans = catalogFromWire(catalog);
   const quote: Quote = {
     cart: { interval: "month", license: { kind: "none" }, desktop: { kind: "dedicated", region: "eu", spec: { vcpu: 2, ramGb: 4, diskGb: 40 } } },
-    bundle: null, lines: [{ kind: "desktop", label: "dusk cloud dedicated, 2 vCPU, 4 GB, 40 GB", amountCents: 2400 }],
+    bundle: null, lines: [{ kind: "desktop", label: "madani cloud dedicated, 2 vCPU, 4 GB, 40 GB", amountCents: 2400 }],
     totalCents: 2400, monthlyEquivalentCents: 2400, machine: { vcpu: 2, ramGb: 4, diskGb: 40 }, botComputers: null, members: 0,
   };
   assert.deepEqual(cartFromQuote(quote, plans), {
-    lines: [{ key: "desktop", label: "dusk cloud, dedicated", detail: "2 vcpu · 4 gb ram · 40 gb disk", monthly: 24 }],
+    lines: [{ key: "desktop", label: "madani cloud, dedicated", detail: "2 vcpu · 4 gb ram · 40 gb disk", monthly: 24 }],
     subtotal: 24, bundle: null, bundleSaving: 0, discount: 0, perMonth: 24, dueNow: 24, free: false,
   });
   const free = cartFromQuote({ ...quote, cart: { interval: "year", license: { kind: "none" }, desktop: { kind: "none" } }, bundle: "free", lines: [{ kind: "discount", label: "Yearly discount", amountCents: 0 }], totalCents: 0, monthlyEquivalentCents: 0, machine: null }, plans);
@@ -124,11 +124,11 @@ test("cloud statuses, progress, errors and destroyed or unpaid desktops map to t
     assert.equal(result?.status ?? null, expected[index]);
     if (result && result.status !== "provisioning") assert.equal(result.progress, null);
   });
-  const labels = ["reserving your machine", "preparing its disk", "installing dusk bot", "waking your bots"];
+  const labels = ["reserving your machine", "preparing its disk", "installing madani bot", "waking your bots"];
   SETUP_STEPS.forEach((setupStep, index) => assert.deepEqual(cloudFromWire({ ...cloud, setupStep })!.progress, { step: labels[index], value: (index + 0.5) / 4 }));
   assert.equal(cloudFromWire({ ...cloud, setupStep: null })!.progress, null);
   assert.equal(cloudFromWire({ ...cloud, status: "payment_problem" })!.error, "the last payment did not go through. update your card to wake it.");
-  assert.equal(cloudFromWire({ ...cloud, status: "suspended" })!.error, "it is paused. write to us at hello@dusk.bot to sort it out.");
+  assert.equal(cloudFromWire({ ...cloud, status: "suspended" })!.error, "it is paused. write to us at hello@madani.bot to sort it out.");
   assert.equal(cloudFromWire({ ...cloud, status: "error", error: "Setup failed" })!.error, "Setup failed");
   assert.deepEqual(cloudFromWire({ ...cloud, status: "running" }), { id: "cloud", name: "My Cloud", status: "running", tier: "shared-m", placement: "shared", region: "eu", vcpu: 4, ramGb: 8, diskGb: 80, workspaceId: "workspace", createdAt: 123, progress: null, error: null, botComputers: { used: 0, limit: 5 }, uptimeSec: null });
   assert.equal(cloudFromWire({ ...cloud, kind: "dedicated", placement: "dedicated", botComputers: null })!.tier, "dedicated");
@@ -173,7 +173,7 @@ test("account prepends email, preserves OAuth identities, and maps devices, pref
   assert.equal(result.profile.onboarded, false);
   assert.equal(result.profile.avatarUrl, null);
   assert.deepEqual(result.notifications, { cloudStatus: true, product: false });
-  const saved = new Map([["dusk-dash-onboarded:account", "1"], ["dusk-dash-notify", JSON.stringify({ cloudStatus: false, product: true })]]);
+  const saved = new Map([["madani-dash-onboarded:account", "1"], ["madani-dash-notify", JSON.stringify({ cloudStatus: false, product: true })]]);
   const local = accountFromWire(account, 5000, { getItem: (key) => saved.get(key) ?? null });
   assert.equal(local.profile.onboarded, true, "the local mark is a cache");
   assert.deepEqual(local.notifications, result.notifications, "notifications come from the account, never the browser");

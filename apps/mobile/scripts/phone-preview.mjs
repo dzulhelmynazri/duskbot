@@ -99,10 +99,10 @@ async function seedFixture(url) {
 let fixtureUrl = null;
 
 async function fixturePort() {
-  const child = start(process.execPath, ["--experimental-strip-types", "scripts/control-dusk.ts", "launch"], {
+  const child = start(process.execPath, ["--experimental-strip-types", "scripts/control-madani.ts", "launch"], {
     ...process.env,
     FAKE_CLAUDE_REPLIES: JSON.stringify(REPLIES),
-    FAKE_CLAUDE_REPLY_STATE: join(mkdtempSync(join(tmpdir(), "dusk-phone-preview-")), "replies"),
+    FAKE_CLAUDE_REPLY_STATE: join(mkdtempSync(join(tmpdir(), "madani-phone-preview-")), "replies"),
   });
   return new Promise((resolve, reject) => {
     let output = "";
@@ -145,10 +145,10 @@ try {
     else throw new Error(`unknown or incomplete argument: ${args[index]}`);
   }
   if (fixture && workspaceUrl) throw new Error("choose either --fixture or --url");
-  const port = fixture ? await fixturePort() : workspaceUrl ? portFromUrl(workspaceUrl) : process.env.DUSK_PORT || "8799";
+  const port = fixture ? await fixturePort() : workspaceUrl ? portFromUrl(workspaceUrl) : process.env.MADANI_PORT || "8799";
   if (fixture && fixtureUrl) await seedFixture(fixtureUrl).catch((error) => console.error(`seeding the fixture failed: ${error.message}`));
   if (!stopping) {
-    const vite = start(vitePath, ["--config", "apps/mobile/vite.config.ts"], { ...process.env, DUSK_PORT: port });
+    const vite = start(vitePath, ["--config", "apps/mobile/vite.config.ts"], { ...process.env, MADANI_PORT: port });
     let output = "";
     let ready = false;
     vite.stdout.on("data", (chunk) => {
@@ -156,7 +156,7 @@ try {
       output += chunk.toString();
       if (!ready && output.includes("ready in")) {
         ready = true;
-        console.log(`phone preview: http://127.0.0.1:${Number(process.env.DUSK_MOBILE_PORT) || 5320}/phone.html`);
+        console.log(`phone preview: http://127.0.0.1:${Number(process.env.MADANI_MOBILE_PORT) || 5320}/phone.html`);
       }
     });
   }

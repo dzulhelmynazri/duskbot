@@ -12,13 +12,13 @@ const bob = personKey({ id: "", email: BOB });
 const name = (n: number) => `0000000${n}-0000-4000-8000-000000000000.txt`;
 
 function fixture() {
-  const dataDir = mkdtempSync(join(tmpdir(), "dusk-member-left-"));
+  const dataDir = mkdtempSync(join(tmpdir(), "madani-member-left-"));
   const attachments = join(dataDir, "attachments");
   mkdirSync(attachments, { recursive: true });
   const messages = new Map<string, unknown[]>();
   const bots = [
     { id: "scout", tasks: [{ threadId: "scout-main" }, { threadId: "bob-private" }] },
-    { id: "bobs-dusk", defaultBot: { person: BOB }, tasks: [{ threadId: "dusk-main" }, { threadId: "dusk-second" }] },
+    { id: "bobs-madani", defaultBot: { person: BOB }, tasks: [{ threadId: "madani-main" }, { threadId: "madani-second" }] },
   ];
   const deleted: string[] = [];
   const deletedBots: string[] = [];
@@ -54,24 +54,24 @@ function fixture() {
 }
 
 describe("createTeamMemberLeft", () => {
-  it("deletes the departing member's own Dusk with its chats, and counts them", async () => {
+  it("deletes the departing member's own Madani with its chats, and counts them", async () => {
     const fx = fixture();
-    fx.messages.set("dusk-main", [{ role: "user", text: "LC-L2-MAIN-9081" }]);
+    fx.messages.set("madani-main", [{ role: "user", text: "LC-L2-MAIN-9081" }]);
     const result = await createTeamMemberLeft(fx.deps)(BOB);
-    expect(fx.deletedBots).toEqual(["bobs-dusk"]);
+    expect(fx.deletedBots).toEqual(["bobs-madani"]);
     expect(fx.bots.map((bot) => bot.id)).toEqual(["scout"]);
     expect(result).toMatchObject({ chats: 3, bots: 1 });
   });
 
-  it("stops the departing member's Dusk at work (a routine, a room turn) before deleting it", async () => {
+  it("stops the departing member's Madani at work (a routine, a room turn) before deleting it", async () => {
     const fx = fixture();
-    fx.working.add("bobs-dusk");
+    fx.working.add("bobs-madani");
     const result = await createTeamMemberLeft(fx.deps)(BOB);
-    expect(fx.deletedBots).toEqual(["bobs-dusk"]);
+    expect(fx.deletedBots).toEqual(["bobs-madani"]);
     expect(result).toMatchObject({ bots: 1, botsKept: 0 });
   });
 
-  it("reports a Dusk it could not delete", async () => {
+  it("reports a Madani it could not delete", async () => {
     const fx = fixture();
     const result = await createTeamMemberLeft({ ...fx.deps, deleteBot: async () => false })(BOB);
     expect(result).toMatchObject({ bots: 0, botsKept: 1 });

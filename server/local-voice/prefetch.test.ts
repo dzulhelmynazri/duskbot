@@ -96,7 +96,7 @@ describe("a background download", () => {
 
   it("pauses on request, keeps what it had, and a call's request finishes it", async () => {
     vi.useRealTimers();
-    const dir = mkdtempSync(path.join(tmpdir(), "dusk-voice-pause-"));
+    const dir = mkdtempSync(path.join(tmpdir(), "madani-voice-pause-"));
     dirs.push(dir);
     const body = Buffer.alloc(64 * 1024, 7);
     const file: ModelFile = { path: "moonshine/a.bin", url: "https://models.example/a.bin", bytes: body.length, sha256: createHash("sha256").update(body).digest("hex") };

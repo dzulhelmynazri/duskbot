@@ -2,8 +2,8 @@ import { createHmac } from "node:crypto";
 
 // Short-lived TURN credentials for the direct screen path (shared/screen-direct.ts): a signed-in app asks, this service
 // asks Cloudflare Realtime TURN (generate-ice-servers) with its long-lived key, and only the minted credentials leave.
-// DUSK_CF_TURN_KEY_ID and DUSK_CF_TURN_KEY_TOKEN come from Cloudflare's dashboard (Realtime, TURN Server, Create key).
-// DUSK_TURN_SECRET and DUSK_TURN_HOSTS name the coturn beside each link node (static-auth-secret, the TURN REST API
+// MADANI_CF_TURN_KEY_ID and MADANI_CF_TURN_KEY_TOKEN come from Cloudflare's dashboard (Realtime, TURN Server, Create key).
+// MADANI_TURN_SECRET and MADANI_TURN_HOSTS name the coturn beside each link node (static-auth-secret, the TURN REST API
 // shape: username "<unix expiry>:<label>", credential base64 hmac-sha1(secret, username)); its servers follow Cloudflare's.
 // With neither the app is told there is no TURN and the screen tries direct, then the link relay.
 export const SCREEN_ICE_TTL_S = 4 * 60 * 60;
@@ -44,15 +44,15 @@ export function ownTurnServers(secret: string, hosts: readonly string[], now: nu
 }
 
 function ownTurnFromEnv(env: NodeJS.ProcessEnv): ((now: number) => IceServer[]) | null {
-  const secret = env.DUSK_TURN_SECRET?.trim();
-  const hosts = (env.DUSK_TURN_HOSTS ?? "").split(",").map((host) => host.trim()).filter((host) => TURN_HOST.test(host)).slice(0, 4);
+  const secret = env.MADANI_TURN_SECRET?.trim();
+  const hosts = (env.MADANI_TURN_HOSTS ?? "").split(",").map((host) => host.trim()).filter((host) => TURN_HOST.test(host)).slice(0, 4);
   if (!secret || secret.length < 32 || !hosts.length) return null;
   return (now) => ownTurnServers(secret, hosts, now);
 }
 
 function cloudflareFromEnv(env: NodeJS.ProcessEnv, fetchImpl: typeof fetch): ((now: number) => Promise<IceServer[]>) | null {
-  const keyId = env.DUSK_CF_TURN_KEY_ID?.trim();
-  const token = env.DUSK_CF_TURN_KEY_TOKEN?.trim();
+  const keyId = env.MADANI_CF_TURN_KEY_ID?.trim();
+  const token = env.MADANI_CF_TURN_KEY_TOKEN?.trim();
   if (!keyId || !token || !/^[A-Za-z0-9_-]{8,128}$/.test(keyId)) return null;
   return async () => {
     const response = await fetchImpl(`https://rtc.live.cloudflare.com/v1/turn/keys/${keyId}/credentials/generate-ice-servers`, {

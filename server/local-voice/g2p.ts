@@ -20,7 +20,7 @@ const TAUS = new Set("AIOWYiuæɑəɛɪɹʊʌ");
 const PUNCTUATION = new Set([".", ",", "!", "?", ";", ":", "—", "…", "(", ")", "\""]);
 
 const OWN_WORDS: Record<string, string> = {
-  dusk: "dˈʌsk",
+  madani: "dˈʌsk",
   github: "ɡˈɪthˌʌb",
   gmail: "ʤˈimˌAl",
   iphone: "ˈIfˌOn",

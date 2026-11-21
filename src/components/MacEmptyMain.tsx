@@ -12,7 +12,7 @@ import { askConfirm } from "./ConfirmDialog";
 import { deviceWord, message } from "./vps-link/parts";
 import { bringAsk, moveBackAsk, moveBackLine } from "./vps-link/TransferSettings";
 
-const SEEN = "dusk-mac-empty-seen";
+const SEEN = "madani-mac-empty-seen";
 const watchers = new Set<() => void>();
 function seenPlaces(): string {
   try { return localStorage.getItem(SEEN) ?? "[]"; } catch { return "[]"; }
@@ -60,8 +60,8 @@ export function MacEmptyMain({ from, onClose }: { from: ElsewherePlace; onClose:
   const rail = usePlaces();
   const switchThere = () => {
     if (busy) return;
-    const workspaces = window.duskDesktop?.workspaces;
-    const go = rail.places.some((place) => place.id === from.id) && workspaces?.open ? workspaces.open(from.id) : window.duskDesktop?.elsewhere?.open(from.id);
+    const workspaces = window.madaniDesktop?.workspaces;
+    const go = rail.places.some((place) => place.id === from.id) && workspaces?.open ? workspaces.open(from.id) : window.madaniDesktop?.elsewhere?.open(from.id);
     if (!go) return;
     setBusy(true); setError("");
     void Promise.resolve(go).then((opened) => { if (opened === false) setError(t("macEmpty.failed", { name })); }, () => setError(t("macEmpty.failed", { name }))).finally(() => setBusy(false));

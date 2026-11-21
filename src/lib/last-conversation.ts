@@ -1,4 +1,4 @@
-export const LAST_CONVERSATION_KEY = "duskbot.lastConversation.v1";
+export const LAST_CONVERSATION_KEY = "madanibot.lastConversation.v1";
 
 export function readLastConversation(): string | null {
   try {

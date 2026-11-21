@@ -14,7 +14,7 @@ test("Intel, AMD and other drivers use the GPU", () => {
   assert.equal(linuxDisablesGpu({ env: {}, exists: only() }), false);
 });
 
-test("DUSK_LINUX_GPU overrides detection either way", () => {
-  assert.equal(linuxDisablesGpu({ env: { DUSK_LINUX_GPU: "off" }, exists: only() }), true);
-  assert.equal(linuxDisablesGpu({ env: { DUSK_LINUX_GPU: "on" }, exists: only("/sys/module/nvidia") }), false);
+test("MADANI_LINUX_GPU overrides detection either way", () => {
+  assert.equal(linuxDisablesGpu({ env: { MADANI_LINUX_GPU: "off" }, exists: only() }), true);
+  assert.equal(linuxDisablesGpu({ env: { MADANI_LINUX_GPU: "on" }, exists: only("/sys/module/nvidia") }), false);
 });

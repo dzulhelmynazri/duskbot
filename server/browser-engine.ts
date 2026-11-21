@@ -211,7 +211,7 @@ function portInFile(path: string): number[] {
 }
 
 /** The stream servers of this machine's agent-browser daemons: agent-browser 0.37 upgrades a WebSocket from any origin. */
-export function agentBrowserStreamPorts(env: NodeJS.ProcessEnv = browserRuntimeEnv({ AGENT_BROWSER_SESSION: "dusk" })): number[] {
+export function agentBrowserStreamPorts(env: NodeJS.ProcessEnv = browserRuntimeEnv({ AGENT_BROWSER_SESSION: "madani" })): number[] {
   const directory = dirname(browserDaemonFile(env, ".stream"));
   try { return readdirSync(directory).filter((name) => name.endsWith(".stream")).flatMap((name) => portInFile(join(directory, name))); }
   catch { return []; }
@@ -283,7 +283,7 @@ export async function prepareBrowserSessionState(
 }
 
 export type BrowserEngineStatus =
-  /** `managed`: the engine dusk bot installed (bundled or pinned), not one named by DUSK_AGENT_BROWSER_PATH or found on PATH. */
+  /** `managed`: the engine madani bot installed (bundled or pinned), not one named by MADANI_AGENT_BROWSER_PATH or found on PATH. */
   | { kind: "ready"; binaryPath: string; version: string; managed: boolean; warning?: string }
   | { kind: "unavailable"; reason: string; installable: boolean };
 
@@ -377,7 +377,7 @@ interface BrowserLookupOptions {
  * downloads on its first open (server/app-parts.ts). */
 function packagedBrowser(options: BrowserLookupOptions) {
   const env = options.env ?? process.env;
-  const resources = env.DUSK_RESOURCES_PATH;
+  const resources = env.MADANI_RESOURCES_PATH;
   if (!resources) return null;
   const target = `${options.platform ?? process.platform}-${options.arch ?? process.arch}`;
   try {
@@ -392,8 +392,8 @@ function packagedBrowser(options: BrowserLookupOptions) {
 
 /** The packaged app's browser is still on its way: a turn waits for it, nothing falls back to another engine. */
 export function browserPartPending(env: NodeJS.ProcessEnv = process.env): boolean {
-  if (!env.DUSK_RESOURCES_PATH || env.DUSK_AGENT_BROWSER_PATH?.trim()) return false;
-  if (existsSync(join(resolve(env.DUSK_RESOURCES_PATH), "browser-engine"))) return false;
+  if (!env.MADANI_RESOURCES_PATH || env.MADANI_AGENT_BROWSER_PATH?.trim()) return false;
+  if (existsSync(join(resolve(env.MADANI_RESOURCES_PATH), "browser-engine"))) return false;
   const part = declaredPart("browser", env);
   return Boolean(part && !part.installed);
 }
@@ -406,7 +406,7 @@ export function resolveAgentBrowserBinary(options: BrowserLookupOptions = {}): s
   const env = options.env ?? process.env;
   const platform = options.platform ?? process.platform;
   const exists = options.exists ?? existsSync;
-  const override = env.DUSK_AGENT_BROWSER_PATH?.trim();
+  const override = env.MADANI_AGENT_BROWSER_PATH?.trim();
   if (override) return resolve(override) && exists(resolve(override)) ? resolve(override) : null;
   const bundle = packagedBrowser(options);
   if (bundle && exists(bundle.directory)) return completePackage(bundle, exists) ? bundle.engine : null;
@@ -556,7 +556,7 @@ export function browserEngineStatus(options: BrowserLookupOptions = {}): Browser
     return { kind: "ready", binaryPath, version, managed, ...(warning ? { warning } : {}) };
   }
   if (bundle && (options.exists ?? existsSync)(bundle.directory)) {
-    return { kind: "unavailable", reason: "The desktop browser bundle is incomplete. Reinstall or update dusk bot to repair it.", installable: false };
+    return { kind: "unavailable", reason: "The desktop browser bundle is incomplete. Reinstall or update madani bot to repair it.", installable: false };
   }
   if (browserPartPending(options.env ?? process.env)) {
     return { kind: "unavailable", reason: "The built-in browser is still downloading. It will be ready in a moment.", installable: true };
@@ -598,7 +598,7 @@ export function agentBrowserIntegration(input: {
   /** The person's own Chrome: agent-browser auto-connects (DevToolsActivePort, then ports 9222/9229) or uses `cdpUrl`, which
    * comes only from workspace config, never the ambient environment. */
   attach?: { cdpUrl?: string };
-  /** The Chrome dusk bot prepared for the engine to start (server/browser/chrome/launcher.ts); unused when attaching. */
+  /** The Chrome madani bot prepared for the engine to start (server/browser/chrome/launcher.ts); unused when attaching. */
   launcher?: Record<string, string>;
   dataDir?: string;
 }): { command: string; args: string[]; env: Record<string, string> } {
@@ -617,7 +617,7 @@ export function agentBrowserIntegration(input: {
   // Headless on a displayless Linux host; an explicit AGENT_BROWSER_HEADED=0 also brings back headless a daemon that kept a headed launch config.
   const displayless = (input.platform ?? process.platform) === "linux" && !sourceEnv.DISPLAY && !sourceEnv.WAYLAND_DISPLAY;
   if (input.attach) {
-    // The person's Chrome keeps its own sign-ins: restoring or saving would copy cookies between it and dusk bot's store.
+    // The person's Chrome keeps its own sign-ins: restoring or saving would copy cookies between it and madani bot's store.
     if (input.attach.cdpUrl) env.AGENT_BROWSER_CDP = input.attach.cdpUrl;
     else env.AGENT_BROWSER_AUTO_CONNECT = "1";
     env.AGENT_BROWSER_RESTORE_SAVE = "never";

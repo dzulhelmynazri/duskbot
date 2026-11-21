@@ -26,7 +26,7 @@ const STEPS = ["name", "plan", "app"] as const;
 type Step = (typeof STEPS)[number];
 type Home = "cloud" | "free";
 
-const SAVED = "dusk-onboarding-step";
+const SAVED = "madani-onboarding-step";
 /** the end of the first steps for someone the desktop app sent: the way back to it */
 const APP_DONE = `${APP_LANDING_PATH}?set=1`;
 const isStep = (v: string | null): v is Step => (STEPS as readonly string[]).includes(v ?? "");
@@ -61,7 +61,7 @@ function Dot({ on }: { on: boolean }) {
   );
 }
 
-/** dusk cloud first and chosen, its plans on a white track with one grey thumb that stretches between them; this
+/** madani cloud first and chosen, its plans on a white track with one grey thumb that stretches between them; this
  * computer below it as the free way */
 function PlanStep({ catalog, home, setHome, plan, setPlan }: { catalog: PlanCatalog; home: Home; setHome(h: Home): void; plan: PaidPlan; setPlan(p: PaidPlan): void }) {
   const cloud = home === "cloud";
@@ -79,7 +79,7 @@ function PlanStep({ catalog, home, setHome, plan, setPlan }: { catalog: PlanCata
             <span className="absolute bottom-1 right-4" aria-hidden><Mascot body="kit" color="blue" size={44} state="working" still /></span>
           </span>
           <span className="flex items-center justify-between gap-3 px-3 pt-4">
-            <span className="text-17 font-medium tracking-[-0.02em] text-ink">dusk cloud</span>
+            <span className="text-17 font-medium tracking-[-0.02em] text-ink">madani cloud</span>
             <Dot on={cloud} />
           </span>
           <ul key={plan} className="plan-points-in flex flex-col gap-2 px-3 pb-2 pt-3">
@@ -193,7 +193,7 @@ export function Onboarding() {
     const ok = await checkout({ source: "dash_onboarding", kind: "plan", selection: planSelection(catalog, plan, { interval, work: false }), bundle: null });
     if (!ok) { setError("checkout didn't open. try again."); setBusy(null); return; }
     // the live page is on its way to the payment page; fixtures pay at once
-    if (FIXTURE) { toast("paid. your dusk cloud is being set up."); leaving.current = true; navigate("/billing", { replace: true }); }
+    if (FIXTURE) { toast("paid. your madani cloud is being set up."); leaving.current = true; navigate("/billing", { replace: true }); }
   };
   const signOut = () => {
     sessionStorage.removeItem(SAVED);
@@ -233,13 +233,13 @@ export function Onboarding() {
       {step === "name" ? (
         <form key="name" className="step-in" onSubmit={(e) => { e.preventDefault(); void saveName(); }} noValidate>
           <h1 className="t-title">what's your name?</h1>
-          <p className="mt-3 text-16 text-ink-2">{direct ? "then checkout, and your dusk cloud starts setting up." : "two quick things and you're in."}</p>
+          <p className="mt-3 text-16 text-ink-2">{direct ? "then checkout, and your madani cloud starts setting up." : "two quick things and you're in."}</p>
           <input id="onb-name" aria-label="your name" placeholder="your name" autoComplete="given-name" maxLength={60} value={shownName} onChange={(e) => { setName(e.target.value); setError(null); }} onFocus={() => setFocused(true)} onBlur={() => setFocused(false)} className="field mt-7 !h-12" aria-invalid={Boolean(error)} aria-describedby={error ? "onb-error" : undefined} />
           {direct && (
             <div className="mt-4 flex items-center gap-3 rounded-[16px] bg-card p-2 pe-4">
               <img src={meadow} alt="" width={800} height={354} className="h-12 w-16 shrink-0 rounded-[10px] object-cover object-bottom" draggable={false} />
               <span className="min-w-0 flex-1">
-                <span className="block text-14 font-medium text-ink">dusk cloud, {chosen?.name.toLowerCase() ?? "plus"}</span>
+                <span className="block text-14 font-medium text-ink">madani cloud, {chosen?.name.toLowerCase() ?? "plus"}</span>
                 <span className="num block text-13 text-ink-3">{price ? `${price.amount}${price.unit}, cancel any time` : <Skeleton className="h-4 w-28" />}</span>
               </span>
               <button type="button" onClick={() => go("plan")} className="text-link h-11 shrink-0 rounded-full px-1 text-14">change</button>
@@ -251,7 +251,7 @@ export function Onboarding() {
       ) : step === "plan" ? (
         <div key="plan" className="step-in">
           <h1 className="t-title">where should your bots live?</h1>
-          <p className="mb-6 mt-3 text-16 text-ink-2">on dusk cloud they keep working, even when your computer is off.</p>
+          <p className="mb-6 mt-3 text-16 text-ink-2">on madani cloud they keep working, even when your computer is off.</p>
           {catalog ? <PlanStep catalog={catalog} home={home} setHome={(h) => { setHome(h); setError(null); }} plan={plan} setPlan={(p) => { setPlan(p); setError(null); }} /> : <div className="flex flex-col gap-2" aria-busy="true"><Skeleton className="h-[300px] !rounded-[22px]" /><Skeleton className="h-[72px] !rounded-[18px]" /></div>}
           {error && <p role="alert" className="mt-3 text-14 text-bad">{error}</p>}
           <Button variant="primary" className={cx("mt-5", big)} onClick={() => void choose(home)} disabled={busy !== null || !catalog}>{busy === "cloud" ? <Busy>opening checkout</Busy> : busy === "done" ? <Busy>opening</Busy> : home === "free" ? "continue with free" : trialAction(catalog) ?? (price ? `continue to checkout, ${price.amount}${price.unit}` : "continue to checkout")}</Button>
@@ -261,7 +261,7 @@ export function Onboarding() {
         <div key="app" className="min-h-[200px]" aria-busy="true" />
       ) : (
         <div key="app" className="step-in">
-          {bought && <p className="tag mb-4 !bg-lime !text-ink" role="status"><span className="live-dot text-good" data-live />your dusk cloud is being set up</p>}
+          {bought && <p className="tag mb-4 !bg-lime !text-ink" role="status"><span className="live-dot text-good" data-live />your madani cloud is being set up</p>}
           <h1 className="t-title">get the app.</h1>
           <p className="mt-3 text-16 text-ink-2">sign in with this account and make your first bot.</p>
           <div className="mt-6"><Downloads /></div>

@@ -7,7 +7,7 @@ const memory = () => { const map = new Map<string, string>(); return { getItem: 
 beforeEach(() => { vi.stubGlobal("localStorage", memory()); });
 afterEach(() => { vi.unstubAllGlobals(); vi.unstubAllEnvs(); });
 
-it("a store build signs in to dusk.bot unless someone testing chose the preview stack, and can go back", () => {
+it("a store build signs in to madani.bot unless someone testing chose the preview stack, and can go back", () => {
   const store = memory();
   expect(chosenAccountOrigin(store)).toBe(PRODUCTION_ORIGIN);
   chooseAccountOrigin(PREVIEW_ORIGIN, store);
@@ -20,11 +20,11 @@ it("the native app follows that choice, and a build's configured origin still wi
   expect(mobileAccountOrigin(true, new URLSearchParams())).toBe(PRODUCTION_ORIGIN);
   chooseAccountOrigin(PREVIEW_ORIGIN);
   expect(mobileAccountOrigin(true, new URLSearchParams())).toBe(PREVIEW_ORIGIN);
-  vi.stubEnv("VITE_DUSK_ACCOUNT_ORIGIN", "https://configured.example");
+  vi.stubEnv("VITE_MADANI_ACCOUNT_ORIGIN", "https://configured.example");
   expect(mobileAccountOrigin(true, new URLSearchParams())).toBe("https://configured.example");
 });
 
-it("names every stack but dusk.bot's own", () => {
+it("names every stack but madani.bot's own", () => {
   expect(environmentName(PRODUCTION_ORIGIN)).toBeNull();
   expect(environmentName(PREVIEW_ORIGIN)).toBe("Preview");
   expect(environmentName("http://127.0.0.1:9000")).toBe("127.0.0.1:9000");
@@ -33,7 +33,7 @@ it("names every stack but dusk.bot's own", () => {
 it("a desktop's sign-in qr made on the other service moves the phone there and reopens the link once, after it reloads", async () => {
   const signOut = vi.fn(async () => {});
   const reload = vi.fn();
-  const link = "https://dusk.bot/m/signin#c=ABCDEFGH&email=a%40b.test&s=preview";
+  const link = "https://madani.bot/m/signin#c=ABCDEFGH&email=a%40b.test&s=preview";
   expect(followSignInService(link, "production", { origin: PRODUCTION_ORIGIN, signOut }, reload)).toBe(false);
   expect(followSignInService(link, undefined, { origin: PRODUCTION_ORIGIN, signOut }, reload)).toBe(false);
   expect(followSignInService(link, "preview", { origin: PRODUCTION_ORIGIN, signOut }, reload)).toBe(true);

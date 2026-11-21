@@ -8,7 +8,7 @@ import { createBackupStore, homeBackupKey, homeVolumeProblem, homeVolumeScan, ma
 const ID = `c${"a".repeat(24)}`, KEY = homeBackupKey(Buffer.alloc(32, 7), ID);
 const dirs: string[] = [];
 afterEach(() => { for (const dir of dirs.splice(0)) rmSync(dir, { recursive: true, force: true }); });
-const store = () => { const dir = mkdtempSync(join(tmpdir(), "dusk-backups-")); dirs.push(dir); return { dir, backups: createBackupStore({ dir }) }; };
+const store = () => { const dir = mkdtempSync(join(tmpdir(), "madani-backups-")); dirs.push(dir); return { dir, backups: createBackupStore({ dir }) }; };
 const marker = (machine = ID) => ({ name: `home/${MARKER_FILE}`, data: JSON.stringify({ machine }) });
 const home = (extra: Array<{ name: string; data: string }> = []) => makeTar([marker(), { name: `home/${CLOUD_HOME.dataName}/state.json`, data: "{}" }, ...extra]);
 async function* pieces(buf: Buffer, size: number) { for (let at = 0; at < buf.length; at += size) yield buf.subarray(at, at + size); }

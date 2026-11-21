@@ -4,13 +4,13 @@ import { fileURLToPath } from "node:url";
 import { expect, it } from "vitest";
 import { resolveAgentBrowserBinary } from "../../server/browser-engine.ts";
 import { waitForExit } from "../../server/testing/cleanup.ts";
-import { runControlDusk } from "../control-dusk.ts";
-import { UI_TOOLS_DIR } from "./control-dusk-ui.ts";
+import { runControlMadani } from "../control-madani.ts";
+import { UI_TOOLS_DIR } from "./control-madani-ui.ts";
 import { openBotSheet } from "./grok-nav.ts";
 
 const ROOT = fileURLToPath(new URL("../..", import.meta.url));
-const enabled = Boolean(resolveAgentBrowserBinary({ dataDir: UI_TOOLS_DIR, env: process.env })) || process.env.DUSK_UI_E2E === "1";
-if (!enabled) console.log("skipping tool selection UI: set DUSK_UI_E2E=1 to install the pinned browser");
+const enabled = Boolean(resolveAgentBrowserBinary({ dataDir: UI_TOOLS_DIR, env: process.env })) || process.env.MADANI_UI_E2E === "1";
+if (!enabled) console.log("skipping tool selection UI: set MADANI_UI_E2E=1 to install the pinned browser");
 interface SavedBot { id: string; name: string; toolScope?: { allow?: string[]; deny?: string[] }; busy?: boolean }
 
 (enabled ? it : it.skip)("saves, clears, rejects and duplicates owner tool selections without crossing bots", async () => {
@@ -18,7 +18,7 @@ interface SavedBot { id: string; name: string; toolScope?: { allow?: string[]; d
   try {
     let stdout = "", stderr = "";
     let info: { ui: string; url: string };
-    const launcher = new URL("./control-dusk-ui.ts", import.meta.url).href;
+    const launcher = new URL("./control-madani-ui.ts", import.meta.url).href;
     child = spawn(process.execPath, ["--experimental-strip-types", "--input-type=module", "-e", `
       import { launchUi } from ${JSON.stringify(launcher)};
       process.on('message', message => { if (message === 'stop') process.emit('SIGINT'); });
@@ -30,7 +30,7 @@ interface SavedBot { id: string; name: string; toolScope?: { allow?: string[]; d
       if (child!.exitCode !== null || child!.signalCode !== null) throw new Error(stderr);
       try { info = JSON.parse(stdout); return Boolean(info.ui); } catch { return false; }
     }, { timeout: 600_000, interval: 250 }).toBe(true);
-    const ui = (verb: string, ...args: string[]) => runControlDusk(["ui", verb, "--ui", info.ui, ...args]) as Promise<Record<string, any>>;
+    const ui = (verb: string, ...args: string[]) => runControlMadani(["ui", verb, "--ui", info.ui, ...args]) as Promise<Record<string, any>>;
     const evaluate = async (js: string) => (await ui("eval", "--js", js)).result;
     const click = (name: string) => ui("click", "--name", name);
     const snapshot = async () => (await ui("snapshot")).snapshot as string;
@@ -157,12 +157,12 @@ interface SavedBot { id: string; name: string; toolScope?: { allow?: string[]; d
     await expect.poll(async () => (await bots()).find(bot => bot.name === `${first.name} copy`)?.toolScope).toEqual({ allow: ["native:*"], deny: [] });
 
     await selectBot(first.name); await click("Open settings"); await openBotSheet(ui, first.name, "tools");
-    await runControlDusk(["send", "--bot", first.id, "--text", "Stay active for the settings test.", "--url", info.url]);
+    await runControlMadani(["send", "--bot", first.id, "--text", "Stay active for the settings test.", "--url", info.url]);
     await expect.poll(async () => (await bots()).find(bot => bot.id === first.id)?.busy).toBe(true);
     await expect.poll(() => evaluate("document.querySelector('button[aria-label=\"Tool selection\"]')?.disabled")).toBe(true);
     expect(await snapshot()).toContain("Wait until this bot finishes all active tasks");
-    await runControlDusk(["interrupt", "--bot", first.id, "--url", info.url]);
-    await runControlDusk(["wait", "--bot", first.id, "--timeout", "30", "--url", info.url]);
+    await runControlMadani(["interrupt", "--bot", first.id, "--url", info.url]);
+    await runControlMadani(["wait", "--bot", first.id, "--timeout", "30", "--url", info.url]);
     await expect.poll(() => evaluate("document.querySelector('button[aria-label=\"Tool selection\"]')?.disabled")).toBe(false);
   } finally {
     if (child?.connected) child.send("stop");

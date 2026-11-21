@@ -137,11 +137,11 @@ describe("chiefOfStaffSystemPrompt", () => {
     );
   });
 
-  it("tells a place's Dusk that is not the Chief that the person's day and brief are its own, and a member's that they are not", () => {
-    const place = chiefOfStaffSystemPrompt("maus", [{ id: "maus", name: "Dusk", defaultBot: {} }], true);
+  it("tells a place's Madani that is not the Chief that the person's day and brief are its own, and a member's that they are not", () => {
+    const place = chiefOfStaffSystemPrompt("maus", [{ id: "maus", name: "Madani", defaultBot: {} }], true);
     expect(place).toContain("but you are not the Chief. Keeping an eye");
     expect(place).toContain("Keeping an eye on the person's day and their daily brief are yours.");
-    const member = chiefOfStaffSystemPrompt("maus", [{ id: "maus", name: "Dusk", defaultBot: { person: "ada@example.test" } }], true);
+    const member = chiefOfStaffSystemPrompt("maus", [{ id: "maus", name: "Madani", defaultBot: { person: "ada@example.test" } }], true);
     expect(member).toContain("but you are not the Chief: the daily brief stays with the Chief.");
     expect(member).not.toContain("daily brief are yours");
   });
@@ -167,9 +167,9 @@ describe("an @everyone line from the Team map", () => {
     expect(EVERYONE_ON_THE_MAP).toContain("never to all of them by default");
   });
 
-  it("says nothing of it to a Chief that cannot hand work on, or to a Dusk that only holds the tools", () => {
+  it("says nothing of it to a Chief that cannot hand work on, or to a Madani that only holds the tools", () => {
     expect(chiefOfStaffSystemPrompt("chief", team, false)).not.toContain(EVERYONE_ON_THE_MAP);
-    const maus = [{ id: "maus", name: "Dusk", defaultBot: { person: "ada@example.test" } }, ...team.slice(1)];
+    const maus = [{ id: "maus", name: "Madani", defaultBot: { person: "ada@example.test" } }, ...team.slice(1)];
     expect(chiefOfStaffSystemPrompt("maus", maus, true)).not.toContain(EVERYONE_ON_THE_MAP);
   });
 });

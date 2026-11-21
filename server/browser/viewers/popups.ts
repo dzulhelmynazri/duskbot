@@ -36,7 +36,7 @@ const SELECT_AT = `((x, y, token) => {
   const element = (${ELEMENT_AT})(x, y);
   const select = element && element.closest ? element.closest("select") : null;
   if (!select || select.multiple || select.size > 1 || select.disabled) return null;
-  globalThis.__duskSelect = { token, select };
+  globalThis.__madaniSelect = { token, select };
   const rect = select.getBoundingClientRect();
   const options = [...select.options].slice(0, ${OPTIONS_LIMIT}).map((option) => {
     const group = option.parentElement && option.parentElement.tagName === "OPTGROUP" ? option.parentElement : null;
@@ -46,7 +46,7 @@ const SELECT_AT = `((x, y, token) => {
 })`;
 
 const HELD_SELECT = `((token) => {
-  const held = globalThis.__duskSelect;
+  const held = globalThis.__madaniSelect;
   return held && held.token === token && held.select.isConnected ? held.select : null;
 })`;
 

@@ -8,7 +8,7 @@ import { launchSandbox } from "../memory-eval/sandbox.ts";
 import { startProxy } from "../memory-eval/proxy.ts";
 
 const { values } = parseArgs({ options: { repo: { type: "string" }, dump: { type: "string" } } });
-process.env.DUSK_NO_TEST_BOTS = "1";
+process.env.MADANI_NO_TEST_BOTS = "1";
 const proxy = await startProxy({ mode: "echo", port: 7300 + Math.floor(Math.random() * 90), models: ["eval-model"] });
 const box = await launchSandbox(values.repo!, { url: proxy.url, key: "echo", model: "eval-model" }, { captureQuietMs: 3_600_000 });
 try {

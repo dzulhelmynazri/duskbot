@@ -4,7 +4,7 @@ import { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { expect, it } from "vitest";
-import { launchVerificationServer, runControlDusk } from "../scripts/control-dusk.ts";
+import { launchVerificationServer, runControlMadani } from "../scripts/control-madani.ts";
 import { VOICE_RULES } from "./group-voice.ts";
 
 const EM = String.fromCharCode(0x2014);
@@ -12,7 +12,7 @@ const POLL = { timeout: 30_000, interval: 50 };
 const casualGuide = readFileSync(new URL("./prompts/talking-style/casual.md", import.meta.url), "utf8").trim();
 
 it("puts the person's talking style and the voice rules in every turn type, and cleans what bots write", async () => {
-  const dir = mkdtempSync(join(tmpdir(), "dusk-group-voice-"));
+  const dir = mkdtempSync(join(tmpdir(), "madani-group-voice-"));
   const markers = join(dir, "markers.json");
   writeFileSync(markers, JSON.stringify({
     // the room transcript carries earlier lines too: the later marker is listed first
@@ -21,7 +21,7 @@ it("puts the person's talking style and the voice rules in every turn type, and 
   }));
   const fixture = await launchVerificationServer({ ...process.env, FAKE_CLAUDE_MARKER_REPLIES: markers });
   const { url } = fixture.info;
-  const control = (...args: string[]) => runControlDusk([...args, "--url", url]) as Promise<any>;
+  const control = (...args: string[]) => runControlMadani([...args, "--url", url]) as Promise<any>;
   const api = async (method: string, path: string, body?: unknown) => {
     const response = await fetch(url + path, {
       method,

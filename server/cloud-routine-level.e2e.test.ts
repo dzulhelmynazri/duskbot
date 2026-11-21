@@ -19,7 +19,7 @@ import { hostTimeout } from "./testing/host-timeout.ts";
 import { freePortBlock } from "./testing/ports.ts";
 
 const SERVER_DIR = dirname(fileURLToPath(import.meta.url));
-const HOST = "dusk-t-0123456789ab.fly.dev";
+const HOST = "madani-t-0123456789ab.fly.dev";
 const MACHINE_ID = "3f9c2a4e-8b1d-4c6e-9a7f-2d5e8c1b0a93";
 const OWNER_KEY = `p_${createHash("sha256").update(`cloud-owner:${MACHINE_ID}`).digest("base64url").slice(0, 22)}`;
 const secret = randomBytes(32).toString("base64url");
@@ -48,19 +48,19 @@ async function api(method: string, path: string, options: { body?: unknown; toke
 }
 
 async function adminPairing(): Promise<string> {
-  const body = JSON.stringify({ label: "dusk bot app (Cloud)", ttlSeconds: 300 });
+  const body = JSON.stringify({ label: "madani bot app (Cloud)", ttlSeconds: 300 });
   const timestamp = String(Math.floor(Date.now() / 1000)), nonce = randomBytes(16).toString("base64url");
   const response = await fetch(`${base}/api/cloud/pairing`, { method: "POST", headers: {
     host: HOST, "x-forwarded-for": "203.0.113.9", "x-forwarded-proto": "https", "content-type": "application/json",
-    "x-dusk-cloud-timestamp": timestamp, "x-dusk-cloud-nonce": nonce, "x-dusk-cloud-signature": `v1=${cloudPairingSignature(secret, timestamp, nonce, body)}`,
+    "x-madani-cloud-timestamp": timestamp, "x-madani-cloud-nonce": nonce, "x-madani-cloud-signature": `v1=${cloudPairingSignature(secret, timestamp, nonce, body)}`,
   }, body });
   const granted = await response.json() as { code: string };
   return (await api("POST", "/api/auth/pair", { body: { code: granted.code } })).body.token;
 }
 
 beforeAll(async () => {
-  home = mkdtempSync(join(tmpdir(), "dusk-cloud-routine-level-"));
-  dataDir = join(home, ".duskbot");
+  home = mkdtempSync(join(tmpdir(), "madani-cloud-routine-level-"));
+  dataDir = join(home, ".madanibot");
   mkdirSync(dataDir, { recursive: true });
   // Claude's turns hold until the test writes the release file; each engine dumps its latest start.
   const claude = join(home, "claude-cli.mjs");
@@ -89,15 +89,15 @@ await import(${JSON.stringify(pathToFileURL(join(SERVER_DIR, "testing", "fake-co
   const offline = `data:text/javascript,${encodeURIComponent('const real = globalThis.fetch; globalThis.fetch = async (url, init) => String(url).startsWith("http://127.0.0.1:") ? real(url, init) : new Response("offline fixture", { status: 503 });')}`;
   boot = async () => {
     // The stall clock runs only where HOME is the data dir, and a bot box would then hide the engines kept beside it.
-    const stall = stallClock ? { HOME: dataDir, USERPROFILE: dataDir, DUSK_TEST_STALL_CLOCK: "1", DUSK_BOT_BOX: "0" } : {};
+    const stall = stallClock ? { HOME: dataDir, USERPROFILE: dataDir, MADANI_TEST_STALL_CLOCK: "1", MADANI_BOT_BOX: "0" } : {};
     const hooks = stallClock ? ["--import", pathToFileURL(join(SERVER_DIR, "testing", "stall-clock-hooks.mjs")).href] : [];
     child = spawnWithSecrets(process.execPath, ["--import", offline, ...hooks, join(SERVER_DIR, "index.ts")], {
       PATH: process.env.PATH, ...(process.env.SystemRoot ? { SystemRoot: process.env.SystemRoot } : {}),
-      HOME: home, USERPROFILE: home, DUSK_DATA_DIR: dataDir, DUSK_PORT: String(port), DUSK_WEBHOOK_PORT: String(port + 1),
-      DUSK_CLOUD_ROLE: "home", DUSK_CLOUD_MACHINE_ID: MACHINE_ID, DUSK_CLOUD_ADMIN_URL: "https://cloud.example.test",
-      DUSK_PUBLIC_URL: `https://${HOST}`, DUSK_CLOUD_VOICE_URL: "https://cloud.example.test/api/cloud/services/voice/v1",
-      DUSK_CLOUD_SECRETS_FD: "3", ...stall,
-    }, { DUSK_CLOUD_BOOTSTRAP_SECRET: secret, DUSK_CLOUD_VOICE_TOKEN: `box_omb_${randomBytes(32).toString("base64url")}` }, undefined, true);
+      HOME: home, USERPROFILE: home, MADANI_DATA_DIR: dataDir, MADANI_PORT: String(port), MADANI_WEBHOOK_PORT: String(port + 1),
+      MADANI_CLOUD_ROLE: "home", MADANI_CLOUD_MACHINE_ID: MACHINE_ID, MADANI_CLOUD_ADMIN_URL: "https://cloud.example.test",
+      MADANI_PUBLIC_URL: `https://${HOST}`, MADANI_CLOUD_VOICE_URL: "https://cloud.example.test/api/cloud/services/voice/v1",
+      MADANI_CLOUD_SECRETS_FD: "3", ...stall,
+    }, { MADANI_CLOUD_BOOTSTRAP_SECRET: secret, MADANI_CLOUD_VOICE_TOKEN: `box_omb_${randomBytes(32).toString("base64url")}` }, undefined, true);
     for (const stream of [child.stdout, child.stderr]) stream?.on("data", (chunk) => { log += chunk; });
     const deadline = Date.now() + 20_000;
     for (;;) {
@@ -178,7 +178,7 @@ async function restart(change: () => void) {
   await boot();
 }
 async function cardOf(threadId: string, dump: { mcpConfig: { mcpServers: Record<string, { args: string[] }> } }, tool: string) {
-  const socket = connect(dump.mcpConfig.mcpServers.dusk.args.at(-1)!);
+  const socket = connect(dump.mcpConfig.mcpServers.madani.args.at(-1)!);
   await new Promise<void>((resolve, reject) => { socket.once("connect", resolve); socket.once("error", reject); });
   const requestId = randomUUID();
   socket.write(`${JSON.stringify({ t: "ask", id: requestId, tool, input: {} })}\n`);
@@ -309,7 +309,7 @@ it("gives the owner back a routine their bot made in their chat that an earlier 
 
   const confined = await claudeRun(guests.body.routine.id);
   expect(confined.argv).toContain("--restricted");
-  const socket = connect(confined.mcpConfig.mcpServers.dusk.args.at(-1)!);
+  const socket = connect(confined.mcpConfig.mcpServers.madani.args.at(-1)!);
   await new Promise<void>((resolve, reject) => { socket.once("connect", resolve); socket.once("error", reject); });
   const requestId = randomUUID();
   socket.write(`${JSON.stringify({ t: "ask", id: requestId, tool: "mcp__composio__COMPOSIO_SEARCH_TOOLS", input: { queries: [] } })}\n`);

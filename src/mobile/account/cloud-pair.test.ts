@@ -2,8 +2,8 @@ import { describe, expect, it, vi } from "vitest";
 import type { CloudPairResult, MobileCloud } from "./account-client";
 import { cloudPairing, cloudPairingPayload } from "./cloud-pair";
 
-const cloud: MobileCloud = { id: "c1", name: "Studio", status: "ready", origin: "https://d1.dusk.bot", primary: true, asleep: true };
-const grant = { origin: "https://d1.dusk.bot", code: "ABCD-EFGH-JKLM", expiresAt: Date.now() + 300_000 };
+const cloud: MobileCloud = { id: "c1", name: "Studio", status: "ready", origin: "https://d1.madani.bot", primary: true, asleep: true };
+const grant = { origin: "https://d1.madani.bot", code: "ABCD-EFGH-JKLM", expiresAt: Date.now() + 300_000 };
 const answers = (...results: CloudPairResult[]) => { const pairCloud = vi.fn<(c: MobileCloud) => Promise<CloudPairResult>>(); for (const r of results) pairCloud.mockResolvedValueOnce(r); return pairCloud; };
 
 describe("cloudPairing", () => {

@@ -1,14 +1,14 @@
 #!/bin/sh
-# duskbot vps installer: the app shows one line to paste on a fresh server,
-#   (curl -fsSL https://link.dusk.bot/i/<token> || echo 'echo "..." >&2; exit 1') | sh
+# madanibot vps installer: the app shows one line to paste on a fresh server,
+#   (curl -fsSL https://link.madani.bot/i/<token> || echo 'echo "..." >&2; exit 1') | sh
 # (the fallback makes a download that fails exit 1 with a plain message: a bare `curl | sh` runs nothing and exits 0)
 # and this script installs everything, reports each step to the app through the link service, and links the server.
 # safe to run again: every step checks what is already there, and a server that is already linked is only repaired.
 # the link service bakes __LINK_BASE__ and __LINK_TOKEN__ in when it serves /i/<token>; run from a file it takes
 # the token as $1 and LINK_BASE from the environment.
-# knobs (env): LINK_BASE; DUSK_PACKAGE (an npm spec or tarball url: installs that instead of the build the link service
-# serves, only when set); BOT_DESKTOP_IMAGE; NO_COLOR, DUSK_ASCII=1, DUSK_PLAIN=1, DUSK_NO_ANIM=1, DUSK_VERBOSE=1 (terminal);
-# DUSK_INSTALL_DEMO=1 (or =fail) plays the whole screen with pretend steps and changes nothing, no root needed.
+# knobs (env): LINK_BASE; MADANI_PACKAGE (an npm spec or tarball url: installs that instead of the build the link service
+# serves, only when set); BOT_DESKTOP_IMAGE; NO_COLOR, MADANI_ASCII=1, MADANI_PLAIN=1, MADANI_NO_ANIM=1, MADANI_VERBOSE=1 (terminal);
+# MADANI_INSTALL_DEMO=1 (or =fail) plays the whole screen with pretend steps and changes nothing, no root needed.
 set -eu
 
 PLACEHOLDER_BASE="__LINK""_BASE__"
@@ -17,7 +17,7 @@ BAKED_BASE="__LINK_BASE__"
 BAKED_TOKEN="__LINK_TOKEN__"
 
 if [ -z "${LINK_BASE:-}" ]; then
-  if [ "$BAKED_BASE" = "$PLACEHOLDER_BASE" ]; then LINK_BASE="https://link.dusk.bot"; else LINK_BASE="$BAKED_BASE"; fi
+  if [ "$BAKED_BASE" = "$PLACEHOLDER_BASE" ]; then LINK_BASE="https://link.madani.bot"; else LINK_BASE="$BAKED_BASE"; fi
 fi
 LINK_BASE=${LINK_BASE%/}
 # the token, root-run code and the server build come from here: https only (plain http just for a loopback test service)
@@ -28,62 +28,62 @@ case "$LINK_BASE" in
 esac
 if [ "$BAKED_TOKEN" = "$PLACEHOLDER_TOKEN" ]; then TOKEN="${1:-}"; else TOKEN="$BAKED_TOKEN"; fi
 
-WANT="" ARGS_WANT="" CF_TOKEN="" CF_HOST="" TS_KEY="${DUSK_TAILSCALE_KEY:-}"
+WANT="" ARGS_WANT="" CF_TOKEN="" CF_HOST="" TS_KEY="${MADANI_TAILSCALE_KEY:-}"
 # this run's scratch folder (main makes it); never one from the environment
 TMP="" IPV4_ONLY=""
 
-DUSK_PACKAGE="${DUSK_PACKAGE:-}"
+MADANI_PACKAGE="${MADANI_PACKAGE:-}"
 # the bot computer: the link service names the image (BOT_DESKTOP_IMAGE in shared/bot-desktop.ts) and hands out
 # deploy/bot-desktop/ as a kit; the image is pulled when a registry copy exists, else built here. the env wins.
 BOT_DESKTOP_IMAGE="${BOT_DESKTOP_IMAGE:-}"
-KIT_DIR=/opt/duskbot-link/bot-desktop
-DEMO="${DUSK_INSTALL_DEMO:-}"
+KIT_DIR=/opt/madanibot-link/bot-desktop
+DEMO="${MADANI_INSTALL_DEMO:-}"
 [ "$DEMO" = 0 ] && DEMO=""
 
-SVC_USER=dusk
-SVC_HOME=/home/dusk
+SVC_USER=madani
+SVC_HOME=/home/madani
 # names from before the rename (the app's own copy is electron/legacy-names.mjs). a server set up then keeps its
 # server account; its folders, units and profiles move to the new names (migrate_legacy) the next time this runs.
 OLD=openmausbot
 OLD_SVC_USER=maus
 if ! id "$SVC_USER" >/dev/null 2>&1 && id "$OLD_SVC_USER" >/dev/null 2>&1; then SVC_USER=$OLD_SVC_USER SVC_HOME=/home/$OLD_SVC_USER; fi
 OLD_UNITS="$OLD-link.service $OLD.service $OLD-engines.path $OLD-handoff.service $OLD-restart.service"
-DATA=$SVC_HOME/.duskbot
+DATA=$SVC_HOME/.madanibot
 # accounts: the server runs as $SVC_USER and never holds docker, the link agent as omb-link (tunnel.json and the app's ssh key
-# are its own), docker only through the gate as omb-docker; every bot's turn runs in the bot box (DUSK_BOT_BOX=required)
+# are its own), docker only through the gate as omb-docker; every bot's turn runs in the bot box (MADANI_BOT_BOX=required)
 LINK_USER=omb-link
 LINK_HOME=/var/lib/omb-link
 HANDOFF=$LINK_HOME/handoff
 GATE_USER=omb-docker
 GATE_GROUP=omb-dockergate
-GATE_SOCK=/run/duskbot-docker/docker.sock
-LIB=/usr/local/lib/duskbot
+GATE_SOCK=/run/madanibot-docker/docker.sock
+LIB=/usr/local/lib/madanibot
 GATE=$LIB/docker-gate.mjs
-ETC=/etc/duskbot
+ETC=/etc/madanibot
 CLAUDE_TOKEN_LINE='^CLAUDE_CODE_OAUTH_TOKEN=[A-Za-z0-9._~+/=-]{20,}$'
-STATE=/var/lib/duskbot-link
-LOGS=/var/log/duskbot-link
+STATE=/var/lib/madanibot-link
+LOGS=/var/log/madanibot-link
 LOGS_SHOWN=$LOGS
 # what this script added that was not here before (packages, apt sources, config it replaced), one line each, so
 # uninstall.sh puts back exactly that. kept apart from $STATE: a plain uninstall leaves it for a later --all.
-MANIFEST=/var/lib/duskbot/install-manifest
-INSTALL_LOCK=/run/duskbot-install.lock
-AGENT=/opt/duskbot-link/agent.mjs
-# root's copy of this script, run by duskbot-server-update.timer as `--update-server`; the build it installs is the one
+MANIFEST=/var/lib/madanibot/install-manifest
+INSTALL_LOCK=/run/madanibot-install.lock
+AGENT=/opt/madanibot-link/agent.mjs
+# root's copy of this script, run by madanibot-server-update.timer as `--update-server`; the build it installs is the one
 # the link agent staged in its own folder, which this script checks again from scratch
-UPDATER=/usr/local/lib/duskbot/install.sh
+UPDATER=/usr/local/lib/madanibot/install.sh
 # the server builds root checked (the one running and the one before, for a rollback), in root's own folder: root never
 # writes, reads or changes a path inside the server account's home, which that account could point anywhere
-PKGS=/var/lib/duskbot-link/packages
-SERVER_RELEASE=/var/lib/omb-link/.config/duskbot-link/server-release
+PKGS=/var/lib/madanibot-link/packages
+SERVER_RELEASE=/var/lib/omb-link/.config/madanibot-link/server-release
 PORT=8799
-# `duskbot` for whoever is logged in: the server's own build lives in the server account's home, off root's PATH
-CLI=/usr/local/bin/duskbot
+# `madanibot` for whoever is logged in: the server's own build lives in the server account's home, off root's PATH
+CLI=/usr/local/bin/madanibot
 UNITS=/etc/systemd/system
-CADDY_SITE=/etc/caddy/duskbot.caddy
+CADDY_SITE=/etc/caddy/madanibot.caddy
 CADDY_MAIN=/etc/caddy/Caddyfile
 # what the link agent reads to tell the app where this server is (no secret in it)
-ADDRESS=/etc/duskbot-address.json
+ADDRESS=/etc/madanibot-address.json
 CF_METRICS=20241
 OLD_STATE=/var/lib/$OLD-link OLD_LOGS=/var/log/$OLD-link OLD_MANIFEST=/var/lib/$OLD/install-manifest OLD_AGENT_DIR=/opt/$OLD-link
 OLD_LIB=/usr/local/lib/$OLD OLD_ETC=/etc/$OLD OLD_BWRAP_PROFILE=/etc/apparmor.d/$OLD-bwrap OLD_CADDY_SITE=/etc/caddy/$OLD.caddy
@@ -98,7 +98,7 @@ ESC=$(printf '\033')
 UI=plain DEPTH=0 ASCII=1 COLS=80 ROWS=24 LIST=0 MS=1 TICK=0.12 MASCOT=0 MASCOT_COL=61 TICKS=0
 R="" BOLD="" DIM="" OK="" ACC="" WARN="" ERR="" SHADOW="" FAINT="" EL=""
 ui_init() {
-  if [ -t 1 ] && [ "${TERM:-dumb}" != dumb ] && [ "${DUSK_PLAIN:-}" != 1 ]; then UI="tty"; fi
+  if [ -t 1 ] && [ "${TERM:-dumb}" != dumb ] && [ "${MADANI_PLAIN:-}" != 1 ]; then UI="tty"; fi
   size=$( { stty size </dev/tty; } 2>/dev/null || true)
   case "$size" in
     [0-9]*' '[0-9]*) ROWS=${size% *}; COLS=${size#* } ;;
@@ -108,7 +108,7 @@ ui_init() {
   case "$(date +%s%N 2>/dev/null)" in *N*|'') MS=0 ;; esac
   [ "$UI" = tty ] || return 0
   ASCII=0
-  [ "${DUSK_ASCII:-}" = 1 ] && ASCII=1
+  [ "${MADANI_ASCII:-}" = 1 ] && ASCII=1
   EL="${ESC}[K"
   if [ -z "${NO_COLOR:-}" ]; then
     case "${COLORTERM:-}" in
@@ -170,12 +170,12 @@ EOF
 banner() {
   say ""
   if [ "$UI" != tty ] || [ "$ASCII" = 1 ] || [ "$COLS" -lt 80 ]; then
-    say "  ${ACC}${BOLD}dusk bot${R}  ${DIM}server setup${R}"
+    say "  ${ACC}${BOLD}madani bot${R}  ${DIM}server setup${R}"
     say ""
     MASCOT=0
     return 0
   fi
-  anim=0; [ "$DEPTH" -ge 8 ] && [ "${DUSK_NO_ANIM:-}" != 1 ] && anim=1
+  anim=0; [ "$DEPTH" -ge 8 ] && [ "${MADANI_NO_ANIM:-}" != 1 ] && anim=1
   banner_art | awk -v depth="$DEPTH" -v esc="$ESC" -v shade="$SHADOW" -v reset="$R" -v anim="$anim" -v seed="$$" '
     function lerp(a, b, t) { return int(a + (b - a) * t + 0.5) }
     function code(r, g, b) {
@@ -328,8 +328,8 @@ become_root() {
   say "Asking for administrator rights..."
   if [ -r "$0" ] && [ "${0##*/}" != "sh" ] && [ "${0##*/}" != "dash" ]; then
     # shellcheck disable=SC2046
-    exec sudo env LINK_BASE="$LINK_BASE" DUSK_PACKAGE="$DUSK_PACKAGE" BOT_DESKTOP_IMAGE="$BOT_DESKTOP_IMAGE" DUSK_TAILSCALE_KEY="$TS_KEY" \
-      COLORTERM="${COLORTERM:-}" NO_COLOR="${NO_COLOR:-}" DUSK_ASCII="${DUSK_ASCII:-}" DUSK_PLAIN="${DUSK_PLAIN:-}" DUSK_NO_ANIM="${DUSK_NO_ANIM:-}" DUSK_VERBOSE="${DUSK_VERBOSE:-}" sh "$0" "$TOKEN" $(way_args)
+    exec sudo env LINK_BASE="$LINK_BASE" MADANI_PACKAGE="$MADANI_PACKAGE" BOT_DESKTOP_IMAGE="$BOT_DESKTOP_IMAGE" MADANI_TAILSCALE_KEY="$TS_KEY" \
+      COLORTERM="${COLORTERM:-}" NO_COLOR="${NO_COLOR:-}" MADANI_ASCII="${MADANI_ASCII:-}" MADANI_PLAIN="${MADANI_PLAIN:-}" MADANI_NO_ANIM="${MADANI_NO_ANIM:-}" MADANI_VERBOSE="${MADANI_VERBOSE:-}" sh "$0" "$TOKEN" $(way_args)
   fi
   # piped: the script is gone from stdin, so fetch it again for root, into a file first so a failed download stops here
   _self=$(mktemp) || exit 1
@@ -340,8 +340,8 @@ become_root() {
   fi
   chmod 0644 "$_self"
   # shellcheck disable=SC2046
-  sudo env LINK_BASE="$LINK_BASE" DUSK_PACKAGE="$DUSK_PACKAGE" BOT_DESKTOP_IMAGE="$BOT_DESKTOP_IMAGE" DUSK_TAILSCALE_KEY="$TS_KEY" \
-    COLORTERM="${COLORTERM:-}" NO_COLOR="${NO_COLOR:-}" DUSK_ASCII="${DUSK_ASCII:-}" DUSK_PLAIN="${DUSK_PLAIN:-}" DUSK_NO_ANIM="${DUSK_NO_ANIM:-}" DUSK_VERBOSE="${DUSK_VERBOSE:-}" sh "$_self" "$TOKEN" $(way_args) </dev/null
+  sudo env LINK_BASE="$LINK_BASE" MADANI_PACKAGE="$MADANI_PACKAGE" BOT_DESKTOP_IMAGE="$BOT_DESKTOP_IMAGE" MADANI_TAILSCALE_KEY="$TS_KEY" \
+    COLORTERM="${COLORTERM:-}" NO_COLOR="${NO_COLOR:-}" MADANI_ASCII="${MADANI_ASCII:-}" MADANI_PLAIN="${MADANI_PLAIN:-}" MADANI_NO_ANIM="${MADANI_NO_ANIM:-}" MADANI_VERBOSE="${MADANI_VERBOSE:-}" sh "$_self" "$TOKEN" $(way_args) </dev/null
   _code=$?
   rm -f "$_self"
   exit "$_code"
@@ -569,13 +569,13 @@ show_asks() {
 # plain words for a failed step, printed once in the terminal
 failure_words() {
   case "$1" in
-    check) say "This server can't run dusk bot as it is: the lines above say why. It needs Ubuntu 20.04+ or Debian 11+ on a 64-bit processor with systemd, 1 GB of memory, 3 GB of free disk and a correct clock." ;;
+    check) say "This server can't run madani bot as it is: the lines above say why. It needs Ubuntu 20.04+ or Debian 11+ on a 64-bit processor with systemd, 1 GB of memory, 3 GB of free disk and a correct clock." ;;
     basics) say "Couldn't install the basic tools. Check this server's internet connection and paste the line again." ;;
     user) say "Couldn't create the account your bots run under." ;;
     node) say "Couldn't install Node. Check this server's internet connection and paste the line again." ;;
-    app) say "Couldn't install dusk bot. Paste the line again; it picks up where it stopped." ;;
+    app) say "Couldn't install madani bot. Paste the line again; it picks up where it stopped." ;;
     engines) say "Couldn't install the Claude and ChatGPT tools. Paste the line again; it picks up where it stopped." ;;
-    service) if grep -q "^port $PORT here is taken" "$LOG" 2>/dev/null; then say "Another program has the port dusk bot needs ($PORT). Stop it, then paste the line again."; else say "The dusk bot server didn't start. The app shows the last lines of its log."; fi ;;
+    service) if grep -q "^port $PORT here is taken" "$LOG" 2>/dev/null; then say "Another program has the port madani bot needs ($PORT). Stop it, then paste the line again."; else say "The madani bot server didn't start. The app shows the last lines of its log."; fi ;;
     address) say "Couldn't set up this server's address. Paste the line again." ;;
     desktop|sandbox|fence) say "Couldn't get the bot computer ready." ;;
     link) say "Couldn't link this server to your app. Make a new line in the app and paste it here." ;;
@@ -590,9 +590,9 @@ step_title() {
     docker) say "Installing Docker" ;;
     user) say "Making a home for your bots" ;;
     node) say "Installing Node" ;;
-    app) say "Installing dusk bot" ;;
+    app) say "Installing madani bot" ;;
     engines) say "Installing Claude and ChatGPT" ;;
-    service) say "Starting dusk bot" ;;
+    service) say "Starting madani bot" ;;
     address) say "Setting up the connection" ;;
     sandbox) say "Sandboxing bot computers" ;;
     fence) say "Fencing their network" ;;
@@ -608,7 +608,7 @@ phase_title() {
   case "$1" in
     prepare) say "Preparing your server" ;;
     runtime) say "Installing the runtime" ;;
-    omb) say "Installing dusk bot" ;;
+    omb) say "Installing madani bot" ;;
     computer) say "Setting up the bot computer" ;;
     link) say "Linking to your app" ;;
   esac
@@ -729,14 +729,14 @@ do_check() {
   case "${ID:-}" in ubuntu|debian) ;; *) echo "unsupported system: ${ID:-unknown}"; return 1 ;; esac
   major=${VERSION_ID%%.*}
   case "$ID" in
-    ubuntu) [ "${major:-0}" -ge 20 ] 2>/dev/null || { echo "Ubuntu ${VERSION_ID:-unknown} is too old: dusk bot needs Ubuntu 20.04 or newer"; return 1; } ;;
-    debian) [ "${major:-0}" -ge 11 ] 2>/dev/null || { echo "Debian ${VERSION_ID:-unknown} is too old: dusk bot needs Debian 11 or newer"; return 1; } ;;
+    ubuntu) [ "${major:-0}" -ge 20 ] 2>/dev/null || { echo "Ubuntu ${VERSION_ID:-unknown} is too old: madani bot needs Ubuntu 20.04 or newer"; return 1; } ;;
+    debian) [ "${major:-0}" -ge 11 ] 2>/dev/null || { echo "Debian ${VERSION_ID:-unknown} is too old: madani bot needs Debian 11 or newer"; return 1; } ;;
   esac
   [ -d /run/systemd/system ] || { echo "systemd is not running"; return 1; }
   echo "memory: $(awk '/MemTotal/ { printf "%d MB", $2 / 1024 }' /proc/meminfo)"
   # npm installing the server and the engines is what needs the most; below this the kernel ends it part way
   mem_mb=$(awk '/^(MemTotal|SwapTotal):/ { kb += $2 } END { printf "%d", kb / 1024 }' /proc/meminfo)
-  if [ "${mem_mb:-0}" -lt "${DUSK_MIN_MEMORY_MB:-900}" ]; then echo "needs at least 1 GB of memory (memory and swap together: ${mem_mb} MB)"; return 1; fi
+  if [ "${mem_mb:-0}" -lt "${MADANI_MIN_MEMORY_MB:-900}" ]; then echo "needs at least 1 GB of memory (memory and swap together: ${mem_mb} MB)"; return 1; fi
   clock_check
   free_kb=$(df -Pk / | awk 'NR == 2 { print $4 }')
   echo "free disk: $((free_kb / 1024)) MB"
@@ -783,20 +783,20 @@ bwrap_userns() {
   [ -x /usr/bin/bwrap ] && [ -d /sys/kernel/security/apparmor ] && command -v apparmor_parser >/dev/null 2>&1 || return 0
   [ "$(cat /proc/sys/kernel/apparmor_restrict_unprivileged_userns 2>/dev/null || echo 0)" = 1 ] || return 0
   cat > "$TMP/new" <<'EOF'
-# managed by duskbot-link: bubblewrap may make the user namespaces each bot's turn runs in
+# managed by madanibot-link: bubblewrap may make the user namespaces each bot's turn runs in
 abi <abi/4.0>,
 include <tunables/global>
 
-profile duskbot-bwrap /usr/bin/bwrap flags=(unconfined) {
+profile madanibot-bwrap /usr/bin/bwrap flags=(unconfined) {
   userns,
 
-  include if exists <local/duskbot-bwrap>
+  include if exists <local/madanibot-bwrap>
 }
 EOF
-  new_file /etc/apparmor.d/duskbot-bwrap
+  new_file /etc/apparmor.d/madanibot-bwrap
   install -d -m 0755 /etc/apparmor.d
-  put_file /etc/apparmor.d/duskbot-bwrap 0644 || true
-  x apparmor_parser -r /etc/apparmor.d/duskbot-bwrap
+  put_file /etc/apparmor.d/madanibot-bwrap 0644 || true
+  x apparmor_parser -r /etc/apparmor.d/madanibot-bwrap
 }
 
 # what the server's box check does: a user namespace with its own pid, network and mounts, as maus
@@ -840,7 +840,7 @@ do_user() {
   # useradd leaves the password "!" (locked), and sshd without PAM refuses every key for a locked account; "*" still
   # allows no password but lets the app's restricted direct key in (OpenSSH auth.c allowed_user)
   if [ "$(getent shadow "$LINK_USER" | cut -d: -f2)" = "!" ]; then usermod -p '*' "$LINK_USER"; fi
-  for dir in "$LINK_HOME" "$LINK_HOME/.config" "$LINK_HOME/.config/duskbot-link" "$LINK_HOME/.ssh" "$HANDOFF"; do
+  for dir in "$LINK_HOME" "$LINK_HOME/.config" "$LINK_HOME/.config/madanibot-link" "$LINK_HOME/.ssh" "$HANDOFF"; do
     install -d -o "$LINK_USER" -g "$LINK_USER" -m 0700 "$dir"
   done
   install -d -o root -g root -m 0700 "$ETC"
@@ -859,7 +859,7 @@ do_user() {
 # account so no link in its home can point root at another file
 move_link_files() {
   old="$SVC_HOME/.config/$OLD-link"
-  new="$LINK_HOME/.config/duskbot-link/tunnel.json"
+  new="$LINK_HOME/.config/madanibot-link/tunnel.json"
   if [ -f "$old/tunnel.json" ] && [ ! -f "$new" ]; then
     show mv "$old/tunnel.json" "$new"
     as_user cat "$old/tunnel.json" | runuser -u "$LINK_USER" -- sh -c 'umask 077; cat > "$1.tmp" && mv -f "$1.tmp" "$1"' sh "$new"
@@ -919,7 +919,7 @@ migrate_legacy() {
   move_old "$OLD_AGENT_DIR" "${AGENT%/*}" link
   move_old "$OLD_LIB" "$LIB"
   move_old "$OLD_ETC" "$ETC"
-  move_old "$LINK_HOME/.config/$OLD-link" "$LINK_HOME/.config/duskbot-link"
+  move_old "$LINK_HOME/.config/$OLD-link" "$LINK_HOME/.config/madanibot-link"
   move_old "$SVC_HOME/.$OLD" "$DATA" link
   [ ! -L "$SVC_HOME/.$OLD" ] || chown -h "$SVC_USER:$SVC_USER" "$SVC_HOME/.$OLD" 2>/dev/null || true
   keys="$LINK_HOME/.ssh/authorized_keys"
@@ -931,9 +931,9 @@ migrate_legacy() {
   if [ -f "$OLD_CADDY_SITE" ]; then
     [ -e "$CADDY_SITE" ] || mv "$OLD_CADDY_SITE" "$CADDY_SITE"
     rm -f "$OLD_CADDY_SITE"
-    [ ! -f "$CADDY_MAIN" ] || sed -i "s#managed by $OLD-link#managed by duskbot-link#; s#$OLD_CADDY_SITE#$CADDY_SITE#" "$CADDY_MAIN"
+    [ ! -f "$CADDY_MAIN" ] || sed -i "s#managed by $OLD-link#managed by madanibot-link#; s#$OLD_CADDY_SITE#$CADDY_SITE#" "$CADDY_MAIN"
   fi
-  [ ! -f "$MANIFEST" ] || sed -i "s#$OLD#duskbot#g" "$MANIFEST"
+  [ ! -f "$MANIFEST" ] || sed -i "s#$OLD#madanibot#g" "$MANIFEST"
   return 0
 }
 
@@ -1020,11 +1020,11 @@ verified_download() { # url file sha256 size timeout label
 # key (required once this server has taken one signed build), newer than the one here, at or above the signed floor and
 # not on the signed block list; the build it replaces stays cached, and if the new one does not answer or fails its own
 # self-test (server/update-state.ts) the one before is put back. the keys match apps/cloud-service/src/release-signing.ts.
-RELEASE_KEYS="rel-2026-11:wtwZypDwVPBXZ25XsZOVpd0PZPBbVMhugheUj5_NLIM${DUSK_RELEASE_PUBLIC_KEYS:+,$DUSK_RELEASE_PUBLIC_KEYS}"
+RELEASE_KEYS="rel-2026-11:wtwZypDwVPBXZ25XsZOVpd0PZPBbVMhugheUj5_NLIM${MADANI_RELEASE_PUBLIC_KEYS:+,$MADANI_RELEASE_PUBLIC_KEYS}"
 NODE_BIN=${NODE_BIN:-/usr/bin/node}
 PKG_SIG="" POLICY_BODY="" POLICY_SIG=""
 update_check() { # file sha256 -> "ok <version> signed|unsigned" or "refuse <reason> [version]"
-  cat > "$TMP/update-check.js" <<'DUSK_CHECK'
+  cat > "$TMP/update-check.js" <<'MADANI_CHECK'
 const c = require("node:crypto"), fs = require("node:fs"), e = process.env, SEM = /^\d+\.\d+\.\d+$/;
 const keys = (e.KEYS || "").split(",").map((s) => s.trim().split(":")).filter(([kid, x]) => kid && x).map(([kid, x]) => ({ kid, x }));
 const cmp = (a, b) => { const p = (v) => (SEM.test(v || "") ? v.split(".").map(Number) : null), l = p(a), r = p(b); if (!l || !r) return l ? 1 : r ? -1 : 0; for (let i = 0; i < 3; i++) if (l[i] !== r[i]) return l[i] < r[i] ? -1 : 1; return 0; };
@@ -1065,13 +1065,13 @@ if (version) {
   if (e.INSTALLED && cmp(version, e.INSTALLED) < 0 && !(e.FAILED || "").split(",").includes(e.INSTALLED)) out("refuse older " + version);
 }
 out("ok " + (version || "unknown") + " " + (e.SIG ? "signed" : "unsigned"));
-DUSK_CHECK
+MADANI_CHECK
   KEYS="$RELEASE_KEYS" SHA="$2" SIG="$PKG_SIG" OFFER_VERSION="${PKG_VERSION:-}" POLICY_BODY="$POLICY_BODY" POLICY_SIG="$POLICY_SIG" \
     HELD_POLICY="$STATE/update-policy.json" INSTALLED="$(installed_version)" FAILED="$(state_get update-failed)" SIGNED_BEFORE="$([ "${REQUIRE_SIGNED:-}" = 1 ] && echo 1 || state_get signed)" \
     "$NODE_BIN" "$TMP/update-check.js" || echo "refuse check"
 }
 # files in the server account's home are read as that account, never by root through a path it could point anywhere
-installed_version() { as_user head -c 65536 "$SVC_HOME/.local/lib/node_modules/duskbot/package.json" 2>/dev/null | sed -n 's/^ *"version": *"\([0-9][0-9]*\.[0-9][0-9]*\.[0-9][0-9]*\)".*/\1/p' | head -n 1; }
+installed_version() { as_user head -c 65536 "$SVC_HOME/.local/lib/node_modules/madanibot/package.json" 2>/dev/null | sed -n 's/^ *"version": *"\([0-9][0-9]*\.[0-9][0-9]*\.[0-9][0-9]*\)".*/\1/p' | head -n 1; }
 # the server's own self-test on <version> (server/update-state.ts): passed, failed, or nothing yet
 selftest_result() {
   as_user head -c 1048576 "$DATA/update-state.json" 2>/dev/null | "$NODE_BIN" -e 'try { const s = JSON.parse(require("node:fs").readFileSync(0, "utf8")).selfTest; if (s && s.version === process.argv[1]) console.log(s.ok ? "passed" : "failed"); } catch {}' "$1" 2>/dev/null || true
@@ -1092,7 +1092,7 @@ update_settle() {
   fi
   if [ "$ok" = 1 ]; then state_set update-pending ""; echo "Updated to $pending"; return 0; fi
   prev=$(state_get package-prev)
-  file="$PKGS/duskbot-${prev#sha256:}.tgz"
+  file="$PKGS/madanibot-${prev#sha256:}.tgz"
   case "$prev" in sha256:*) root_copy "${prev#sha256:}" || prev="" ;; *) prev="" ;; esac
   note_failed "$pending"
   if [ -z "$prev" ]; then state_set update-pending ""; echo "the update to $pending did not pass its self-test and there is no build here to go back to"; return 1; fi
@@ -1100,7 +1100,7 @@ update_settle() {
   # update-pending stays until the build before is back, so a stop here rolls back again on the next run
   install_build "$prev" "$file" || return 1
   state_set package-prev ""; state_set update-pending ""
-  x systemctl restart duskbot.service
+  x systemctl restart madanibot.service
   if wait_health "http://127.0.0.1:$PORT/api/health" 120; then echo "Update rolled back, nothing lost"; return 0; fi
   return 1
 }
@@ -1112,33 +1112,33 @@ note_failed() { # version
 }
 
 get_package() { # file
-  verified_download "$LINK_BASE/pkg/$LINK_ID/$PKG_SHA.tgz" "$1" "$PKG_SHA" "$PKG_SIZE" 1800 "dusk bot"
+  verified_download "$LINK_BASE/pkg/$LINK_ID/$PKG_SHA.tgz" "$1" "$PKG_SHA" "$PKG_SIZE" 1800 "madani bot"
 }
 # the wrapper switches to the server account before it runs anything from that account's home, so root never executes
 # a file the server account can write
 put_command() {
-  if [ -e "$CLI" ] && ! grep -qs "managed by duskbot-link" "$CLI"; then echo "left $CLI as it is: it is not ours"; return 0; fi
-  _run="env HOME=$SVC_HOME PATH=$SVC_HOME/.local/bin:/usr/local/bin:/usr/bin:/bin $SVC_HOME/.local/bin/duskbot"
+  if [ -e "$CLI" ] && ! grep -qs "managed by madanibot-link" "$CLI"; then echo "left $CLI as it is: it is not ours"; return 0; fi
+  _run="env HOME=$SVC_HOME PATH=$SVC_HOME/.local/bin:/usr/local/bin:/usr/bin:/bin $SVC_HOME/.local/bin/madanibot"
   cat > "$TMP/cli" <<EOF
 #!/bin/sh
-# managed by duskbot-link: this server's dusk bot, run as $SVC_USER
+# managed by madanibot-link: this server's madani bot, run as $SVC_USER
 if [ "\$(id -un)" = $SVC_USER ]; then exec $_run "\$@"; fi
 if [ "\$(id -u)" -eq 0 ]; then exec runuser -u $SVC_USER -- $_run "\$@"; fi
 exec sudo -u $SVC_USER -- $_run "\$@"
 EOF
   if [ -f "$CLI" ] && cmp -s "$TMP/cli" "$CLI"; then return 0; fi
   install -o root -g root -m 0755 "$TMP/cli" "$CLI"
-  echo "duskbot now runs from any login on this server"
+  echo "madanibot now runs from any login on this server"
 }
 
 do_app() {
-  bin="$SVC_HOME/.local/bin/duskbot"
-  if [ -n "$DUSK_PACKAGE" ]; then
+  bin="$SVC_HOME/.local/bin/madanibot"
+  if [ -n "$MADANI_PACKAGE" ]; then
     # explicit only: an npm spec or tarball url instead of our build
-    if [ -x "$bin" ] && [ "$(state_get package)" = "npm:$DUSK_PACKAGE" ]; then echo "already installed: $DUSK_PACKAGE"; return 0; fi
-    retry as_user npm install --global --no-fund --no-audit --prefix "$SVC_HOME/.local" "$DUSK_PACKAGE"
-    [ -x "$bin" ] || { echo "duskbot is missing after install"; return 1; }
-    state_set package "npm:$DUSK_PACKAGE"
+    if [ -x "$bin" ] && [ "$(state_get package)" = "npm:$MADANI_PACKAGE" ]; then echo "already installed: $MADANI_PACKAGE"; return 0; fi
+    retry as_user npm install --global --no-fund --no-audit --prefix "$SVC_HOME/.local" "$MADANI_PACKAGE"
+    [ -x "$bin" ] || { echo "madanibot is missing after install"; return 1; }
+    state_set package "npm:$MADANI_PACKAGE"
     return 0
   fi
   half=$(state_get app-installing)
@@ -1147,12 +1147,12 @@ do_app() {
   fi
   if [ -z "$PKG_SHA" ]; then
     if [ -x "$bin" ] && [ "$OFFLINE" = 1 ]; then echo "keeping the installed build ($(state_get package))"; return 0; fi
-    echo "the link service has no dusk bot build to hand out yet"
+    echo "the link service has no madani bot build to hand out yet"
     return 1
   fi
   if [ -x "$bin" ] && [ "$(state_get package)" = "sha256:$PKG_SHA" ] && [ -z "$(state_get app-installing)" ]; then echo "already installed: build ${PKG_SHA%"${PKG_SHA#????????????}"}"; return 0; fi
   [ -d "$PKGS" ] && [ ! -L "$PKGS" ] || install -d -o root -g root -m 0700 "$PKGS"
-  file="$PKGS/duskbot-$PKG_SHA.tgz"
+  file="$PKGS/madanibot-$PKG_SHA.tgz"
   get_package "$file"
   verdict=$(update_check "$file" "$PKG_SHA")
   case "$verdict" in
@@ -1165,7 +1165,7 @@ do_app() {
   prev=$(state_get package)
   # the build before stays in root's folder: it is what a failed update goes back to
   case "$prev" in sha256:*) root_copy "${prev#sha256:}" || true ;; esac
-  find "$PKGS" -maxdepth 1 -type f -name 'duskbot-*.tgz*' ! -name "duskbot-$PKG_SHA.tgz" ! -name "duskbot-$PKG_SHA.tgz.part" ! -name "duskbot-${prev#sha256:}.tgz" -exec rm -f {} + 2>/dev/null || true
+  find "$PKGS" -maxdepth 1 -type f -name 'madanibot-*.tgz*' ! -name "madanibot-$PKG_SHA.tgz" ! -name "madanibot-$PKG_SHA.tgz.part" ! -name "madanibot-${prev#sha256:}.tgz" -exec rm -f {} + 2>/dev/null || true
   # noted before npm touches anything: a run stopped part way still settles or rolls back this update next time
   if [ -n "$prev" ] && [ "$prev" != "sha256:$PKG_SHA" ]; then
     state_set package-prev "$prev"; state_set update-pending "$(printf '%s' "$verdict" | cut -d' ' -f2)"
@@ -1180,31 +1180,31 @@ install_build() { # sha256:<hex> root's verified file
   state_set app-installing "$1"
   _theirs=$(hand_over "$2") || { echo "could not hand the build to $SVC_USER"; return 1; }
   retry as_user npm install --global --no-fund --no-audit --prefix "$SVC_HOME/.local" "$_theirs" || return 1
-  [ -x "$SVC_HOME/.local/bin/duskbot" ] || { echo "duskbot is missing after install"; return 1; }
+  [ -x "$SVC_HOME/.local/bin/madanibot" ] || { echo "madanibot is missing after install"; return 1; }
   state_set package "$1"
   state_set app-installing ""
 }
 # root's verified copy of a build hands npm a copy the server account writes itself, into its own cache: root only reads
 # its own file and the account's write lands wherever the account may write anyway. prints that copy's path
 hand_over() { # root's file
-  _dest="$SVC_HOME/.cache/duskbot-link/${1##*/}"
-  as_user sh -c 'cd / && umask 077; mkdir -p "$1" && find "$1" -maxdepth 1 -name "duskbot-*.tgz*" ! -name "${2##*/}" -exec rm -f {} + && cat > "$2.tmp" && mv -f "$2.tmp" "$2"' sh "${_dest%/*}" "$_dest" < "$1" || return 1
+  _dest="$SVC_HOME/.cache/madanibot-link/${1##*/}"
+  as_user sh -c 'cd / && umask 077; mkdir -p "$1" && find "$1" -maxdepth 1 -name "madanibot-*.tgz*" ! -name "${2##*/}" -exec rm -f {} + && cat > "$2.tmp" && mv -f "$2.tmp" "$2"' sh "${_dest%/*}" "$_dest" < "$1" || return 1
   echo "$_dest"
 }
 # root's own verified copy of build <sha256> in $PKGS; one only in the server account's cache (an install from before
 # $PKGS) is read as that account and kept only when it matches
 root_copy() { # sha256
-  _f="$PKGS/duskbot-$1.tgz"
+  _f="$PKGS/madanibot-$1.tgz"
   [ -f "$_f" ] && [ ! -L "$_f" ] && [ "$(sha256sum "$_f" | cut -d' ' -f1)" = "$1" ] && return 0
   [ -d "$PKGS" ] && [ ! -L "$PKGS" ] || install -d -o root -g root -m 0700 "$PKGS"
-  as_user cat "$SVC_HOME/.cache/duskbot-link/duskbot-$1.tgz" > "$_f.tmp" 2>/dev/null || { rm -f "$_f.tmp"; return 1; }
+  as_user cat "$SVC_HOME/.cache/madanibot-link/madanibot-$1.tgz" > "$_f.tmp" 2>/dev/null || { rm -f "$_f.tmp"; return 1; }
   [ "$(sha256sum "$_f.tmp" | cut -d' ' -f1)" = "$1" ] || { rm -f "$_f.tmp"; return 1; }
   mv -f "$_f.tmp" "$_f"
 }
 finish_interrupted() {
   half=$(state_get app-installing)
   [ -n "$half" ] || return 1
-  file="$PKGS/duskbot-${half#sha256:}.tgz"
+  file="$PKGS/madanibot-${half#sha256:}.tgz"
   if root_copy "${half#sha256:}"; then
     echo "finishing the install of build ${half#sha256:} that stopped part way"
     install_build "$half" "$file"
@@ -1227,14 +1227,14 @@ do_engines() {
   do_free_backup
 }
 # opencode's pinned build, the free backup ai, so the first message never waits on its download. not fatal: the server
-# tries again at every start (DUSK_PREINSTALL_FREE_BACKUP in its unit). one bounded try with no terminal: published builds
+# tries again at every start (MADANI_PREINSTALL_FREE_BACKUP in its unit). one bounded try with no terminal: published builds
 # probe an interactive login shell for PATH, which finds the installer's terminal, stops its own process group
 # (SIGTTIN) and the command with it, forever
 FREE_BACKUP_SECS=300
 do_free_backup() {
   sub_label "Installing the free backup AI"
   echo "installing the free backup ai (OpenCode), up to $((FREE_BACKUP_SECS / 60)) minutes"
-  set -- "$SVC_HOME/.local/bin/duskbot" free-backup install
+  set -- "$SVC_HOME/.local/bin/madanibot" free-backup install
   if command -v timeout >/dev/null 2>&1; then set -- timeout -k 15 "$FREE_BACKUP_SECS" "$@"; fi
   if command -v setsid >/dev/null 2>&1; then set -- setsid -w "$@"; fi
   show "$@"
@@ -1278,9 +1278,9 @@ server_unit() {
   [ "$(state_get mode)" = "direct" ] && [ -n "$(state_get host)" ] && { [ "$(state_get via)" != cloudflare ] || [ -n "$(state_get cf-named)" ]; } \
     && public=" --public-url https://$(state_get host)"
   cat > "$TMP/new" <<EOF
-# managed by duskbot-link
+# managed by madanibot-link
 [Unit]
-Description=Server for dusk bot
+Description=Server for madani bot
 After=network-online.target omb-docker-gate.service
 Wants=network-online.target
 
@@ -1292,17 +1292,17 @@ WorkingDirectory=$SVC_HOME
 Environment=HOME=$SVC_HOME
 Environment=PATH=$SVC_HOME/.local/bin:/usr/local/bin:/usr/bin:/bin
 # every bot's turn in the bot box, in its own engine home, never unboxed; docker only through the gate
-Environment=DUSK_BOT_BOX=required
-Environment=DUSK_BOX_CODE_ROOTS=$SVC_HOME/.local/bin:$SVC_HOME/.local/lib
-Environment=DUSK_VPS_DOCKER=local
+Environment=MADANI_BOT_BOX=required
+Environment=MADANI_BOX_CODE_ROOTS=$SVC_HOME/.local/bin:$SVC_HOME/.local/lib
+Environment=MADANI_VPS_DOCKER=local
 Environment=DOCKER_HOST=unix://$GATE_SOCK
-Environment=DUSK_PREINSTALL_FREE_BACKUP=1
+Environment=MADANI_PREINSTALL_FREE_BACKUP=1
 EnvironmentFile=-$ETC/engines.env
-ExecStart=$SVC_HOME/.local/bin/duskbot serve --port $PORT --no-pair --label $NAME$public
+ExecStart=$SVC_HOME/.local/bin/madanibot serve --port $PORT --no-pair --label $NAME$public
 # the link stops when the server is stopped, but stays up through a restart (an update, an engine sign-in) and a crash,
 # so the app's tunnel and the phones' links never drop: systemd propagates restarts along PartOf= and PropagatesStopTo=
 # alike, and only a running stop job shows as "stop" in list-jobs
-ExecStopPost=+/bin/sh -c 'systemctl list-jobs --no-legend duskbot.service 2>/dev/null | grep -qw stop && systemctl stop --no-block duskbot-link.service || true'
+ExecStopPost=+/bin/sh -c 'systemctl list-jobs --no-legend madanibot.service 2>/dev/null | grep -qw stop && systemctl stop --no-block madanibot-link.service || true'
 Restart=always
 RestartSec=5
 # when memory runs out the kernel takes a bot computer (docker --oom-score-adj 500) long before the server
@@ -1317,13 +1317,13 @@ RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6 AF_NETLINK
 [Install]
 WantedBy=multi-user.target
 EOF
-  put_file "$UNITS/duskbot.service" 0644
+  put_file "$UNITS/madanibot.service" 0644
 }
 
 handoff_script() {
   cat > "$TMP/new" <<EOF
 #!/bin/sh
-# managed by duskbot-link: takes what the link agent was handed for the server's engines to the server. the files
+# managed by madanibot-link: takes what the link agent was handed for the server's engines to the server. the files
 # are read as $LINK_USER and the codex sign-in written as $SVC_USER, so neither account can point root at another file.
 set -eu
 umask 077
@@ -1337,7 +1337,7 @@ if [ -e $HANDOFF/codex-auth.json ]; then
   runuser -u $LINK_USER -- head -c 65536 $HANDOFF/codex-auth.json | runuser -u $SVC_USER -- sh -c 'umask 077; mkdir -p $SVC_HOME/.codex; cat > $SVC_HOME/.codex/.auth.json.handoff && mv -f $SVC_HOME/.codex/.auth.json.handoff $SVC_HOME/.codex/auth.json'
   runuser -u $LINK_USER -- rm -f $HANDOFF/codex-auth.json
 fi
-[ "\$restart" = 0 ] || systemctl restart duskbot.service
+[ "\$restart" = 0 ] || systemctl restart madanibot.service
 EOF
   install -d -m 0755 "$LIB"
   put_file "$LIB/engine-handoff.sh" 0755
@@ -1346,23 +1346,23 @@ EOF
 helper_units() {
   changed=1
   cat > "$TMP/new" <<EOF
-# managed by duskbot-link: the app sent an engine sign-in; the hand-off takes it to the server
+# managed by madanibot-link: the app sent an engine sign-in; the hand-off takes it to the server
 [Unit]
-Description=Engine sign-in handed off to dusk bot
+Description=Engine sign-in handed off to madani bot
 
 [Path]
 PathExists=$HANDOFF/engines.env
 PathExists=$HANDOFF/codex-auth.json
-Unit=duskbot-handoff.service
+Unit=madanibot-handoff.service
 
 [Install]
 WantedBy=multi-user.target
 EOF
-  put_file "$UNITS/duskbot-engines.path" 0644 && changed=0
+  put_file "$UNITS/madanibot-engines.path" 0644 && changed=0
   cat > "$TMP/new" <<EOF
-# managed by duskbot-link
+# managed by madanibot-link
 [Unit]
-Description=Hand an engine sign-in to dusk bot
+Description=Hand an engine sign-in to madani bot
 
 [Service]
 Type=oneshot
@@ -1374,21 +1374,21 @@ ProtectKernelTunables=yes
 ProtectKernelModules=yes
 ProtectControlGroups=yes
 EOF
-  put_file "$UNITS/duskbot-handoff.service" 0644 && changed=0
-  if [ -f "$UNITS/duskbot-restart.service" ]; then rm -f "$UNITS/duskbot-restart.service"; changed=0; fi
+  put_file "$UNITS/madanibot-handoff.service" 0644 && changed=0
+  if [ -f "$UNITS/madanibot-restart.service" ]; then rm -f "$UNITS/madanibot-restart.service"; changed=0; fi
   cat > "$TMP/new" <<EOF
-# managed by duskbot-link: the outbound tunnel and control channel to the app
+# managed by madanibot-link: the outbound tunnel and control channel to the app
 [Unit]
-Description=Link for dusk bot
-After=network-online.target duskbot.service
+Description=Link for madani bot
+After=network-online.target madanibot.service
 Wants=network-online.target
 
 [Service]
 User=$LINK_USER
 Group=$LINK_USER
 Environment=HOME=$LINK_HOME
-Environment=DUSK_LINK_ENGINES_FILE=$HANDOFF/engines.env
-Environment=DUSK_LINK_CODEX_AUTH_FILE=$HANDOFF/codex-auth.json
+Environment=MADANI_LINK_ENGINES_FILE=$HANDOFF/engines.env
+Environment=MADANI_LINK_CODEX_AUTH_FILE=$HANDOFF/codex-auth.json
 ExecStart=/usr/bin/node $AGENT tunnel
 Restart=always
 RestartSec=5
@@ -1406,13 +1406,13 @@ ReadWritePaths=$LINK_HOME
 RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6 AF_NETLINK
 
 [Install]
-WantedBy=multi-user.target duskbot.service
+WantedBy=multi-user.target madanibot.service
 EOF
-  put_file "$UNITS/duskbot-link.service" 0644 && changed=0
+  put_file "$UNITS/madanibot-link.service" 0644 && changed=0
   cat > "$TMP/new" <<EOF
-# managed by duskbot-link: the only way to docker on this server, for the server's own labelled bot computers
+# managed by madanibot-link: the only way to docker on this server, for the server's own labelled bot computers
 [Unit]
-Description=Docker gate for dusk bot
+Description=Docker gate for madani bot
 After=docker.service
 Requires=docker.service
 StartLimitIntervalSec=0
@@ -1421,7 +1421,7 @@ StartLimitIntervalSec=0
 User=$GATE_USER
 Group=$GATE_GROUP
 SupplementaryGroups=docker
-RuntimeDirectory=duskbot-docker
+RuntimeDirectory=madanibot-docker
 RuntimeDirectoryMode=0750
 ExecStart=/usr/bin/node $GATE --listen $GATE_SOCK --upstream /var/run/docker.sock
 Restart=always
@@ -1443,11 +1443,11 @@ WantedBy=multi-user.target docker.service
 EOF
   put_file "$UNITS/omb-docker-gate.service" 0644 && changed=0
   cat > "$TMP/new" <<EOF
-# managed by duskbot-link: installs a server build the link agent staged, only while no bot is working, and puts the
+# managed by madanibot-link: installs a server build the link agent staged, only while no bot is working, and puts the
 # build before back when the new one does not answer or fails its self-test
 [Unit]
-Description=Server update for dusk bot
-After=duskbot.service
+Description=Server update for madani bot
+After=madanibot.service
 
 [Service]
 Type=oneshot
@@ -1455,11 +1455,11 @@ ExecStart=/bin/sh $UPDATER --update-server
 StandardOutput=append:$LOGS/server-update.log
 StandardError=inherit
 EOF
-  put_file "$UNITS/duskbot-server-update.service" 0644 && changed=0
+  put_file "$UNITS/madanibot-server-update.service" 0644 && changed=0
   cat > "$TMP/new" <<EOF
-# managed by duskbot-link
+# managed by madanibot-link
 [Unit]
-Description=Look for a staged dusk bot server build
+Description=Look for a staged madani bot server build
 
 [Timer]
 OnBootSec=15min
@@ -1469,7 +1469,7 @@ RandomizedDelaySec=3min
 [Install]
 WantedBy=timers.target
 EOF
-  put_file "$UNITS/duskbot-server-update.timer" 0644 && changed=0
+  put_file "$UNITS/madanibot-server-update.timer" 0644 && changed=0
   return "$changed"
 }
 
@@ -1518,7 +1518,7 @@ wait_health() { # url seconds
 }
 
 # sshd is the way back in: never the kernel's choice, and its memory is not reclaimed away under pressure
-SSH_GUARD="# managed by duskbot-link
+SSH_GUARD="# managed by madanibot-link
 [Service]
 OOMScoreAdjust=-1000
 MemoryMin=64M"
@@ -1528,7 +1528,7 @@ ssh_guard() {
     systemctl cat "$unit.service" >/dev/null 2>&1 || continue
     install -d -m 0755 "$UNITS/$unit.service.d"
     printf '%s\n' "$SSH_GUARD" > "$TMP/new"
-    put_file "$UNITS/$unit.service.d/10-duskbot-oom.conf" 0644 && changed=0
+    put_file "$UNITS/$unit.service.d/10-madanibot-oom.conf" 0644 && changed=0
     # the running daemon takes it now; a restart would only pick up the same value
     pid=$(systemctl show -p MainPID --value "$unit.service" 2>/dev/null)
     [ -n "$pid" ] && [ "$pid" != 0 ] && echo -1000 > "/proc/$pid/oom_score_adj" 2>/dev/null || true
@@ -1541,7 +1541,7 @@ port_owner() {
   owner=$(ss -Hltnp "sport = :$PORT" 2>/dev/null | sed -n 's/.*users:(("\([^"]*\)",pid=\([0-9]*\).*/\1 \2/p' | head -n 1)
   [ -n "$owner" ] || return 0
   [ "$(ps -o user= -p "${owner#* }" 2>/dev/null | tr -d ' ')" = "$SVC_USER" ] && return 0
-  echo "port $PORT here is taken by ${owner% *} (pid ${owner#* }), not dusk bot: stop it, then paste the line again"
+  echo "port $PORT here is taken by ${owner% *} (pid ${owner#* }), not madani bot: stop it, then paste the line again"
   return 1
 }
 do_service() {
@@ -1552,13 +1552,13 @@ do_service() {
   helper_units && reload=0
   ssh_guard && reload=0
   [ "$reload" = 0 ] && x systemctl daemon-reload
-  systemctl enable duskbot.service duskbot-engines.path >/dev/null 2>&1
-  x systemctl restart duskbot-engines.path
-  if get_updater; then systemctl enable --now duskbot-server-update.timer >/dev/null 2>&1 || true; fi
+  systemctl enable madanibot.service madanibot-engines.path >/dev/null 2>&1
+  x systemctl restart madanibot-engines.path
+  if get_updater; then systemctl enable --now madanibot-server-update.timer >/dev/null 2>&1 || true; fi
   gate_up
   if box_works >/dev/null 2>&1; then echo "bot box: bubblewrap works for $SVC_USER"; else echo "bot box: bubblewrap cannot make a user namespace here; bots' turns are refused until it can"; fi
   # `start` leaves a running server on the build it started with: a new build needs a restart even when no unit changed
-  if [ "$reload" = 0 ] || [ "$(state_get running-package)" != "$(state_get package)" ]; then x systemctl restart duskbot.service; else x systemctl start duskbot.service; fi
+  if [ "$reload" = 0 ] || [ "$(state_get running-package)" != "$(state_get package)" ]; then x systemctl restart madanibot.service; else x systemctl start madanibot.service; fi
   show curl "http://127.0.0.1:$PORT/api/health"
   if wait_health "http://127.0.0.1:$PORT/api/health" 120; then
     echo "server answers on 127.0.0.1:$PORT"
@@ -1567,7 +1567,7 @@ do_service() {
     return 0
   fi
   echo "the server did not answer on 127.0.0.1:$PORT within two minutes"
-  journalctl -u duskbot.service -n 30 --no-pager 2>/dev/null || true
+  journalctl -u madanibot.service -n 30 --no-pager 2>/dev/null || true
   taken=0; port_owner || taken=1
   update_settle 0 && return 0
   # a first build that never answered here (and not for want of its port): the next line may bring an older one
@@ -1576,7 +1576,7 @@ do_service() {
 }
 
 get_agent() {
-  install -d -o root -g root -m 0755 /opt/duskbot-link
+  install -d -o root -g root -m 0755 /opt/madanibot-link
   if fetch "$LINK_BASE/agent.mjs" "$TMP/agent.mjs" && /usr/bin/node --check "$TMP/agent.mjs"; then
     install -o root -g root -m 0644 "$TMP/agent.mjs" "$AGENT"
   elif [ ! -f "$AGENT" ]; then
@@ -1589,17 +1589,17 @@ get_agent() {
 # keep the version in step with package.json's node-datachannel (a test checks)
 AGENT_RTC_VERSION=0.33.6
 agent_rtc() {
-  [ "$(cat /opt/duskbot-link/node_modules/node-datachannel/package.json 2>/dev/null | sed -n 's/.*"version": *"\([^"]*\)".*/\1/p' | head -n 1)" = "$AGENT_RTC_VERSION" ] && return 0
+  [ "$(cat /opt/madanibot-link/node_modules/node-datachannel/package.json 2>/dev/null | sed -n 's/.*"version": *"\([^"]*\)".*/\1/p' | head -n 1)" = "$AGENT_RTC_VERSION" ] && return 0
   command -v npm >/dev/null 2>&1 || return 1
-  retry npm install --no-save --no-fund --no-audit --no-package-lock --omit=dev --prefix /opt/duskbot-link "node-datachannel@$AGENT_RTC_VERSION" >/dev/null 2>&1 || return 1
-  chmod -R go-w /opt/duskbot-link/node_modules
+  retry npm install --no-save --no-fund --no-audit --no-package-lock --omit=dev --prefix /opt/madanibot-link "node-datachannel@$AGENT_RTC_VERSION" >/dev/null 2>&1 || return 1
+  chmod -R go-w /opt/madanibot-link/node_modules
 }
 
 # the address the app uses, kept in state (mode, host, via, pin) and in $ADDRESS for the link agent, which tells the app
 # over the sealed tunnel when it changes (a quick tunnel's name after a restart, another way chosen on a repair)
 use_address() { # mode via [host] [pin]
   state_set mode "$1"; state_set via "$2"; state_set host "${3:-}"; state_set pin "${4:-0}"
-  if [ "$2" != cloudflare ] && [ -f "$UNITS/duskbot-cloudflared.service" ]; then systemctl disable --now duskbot-cloudflared.service >/dev/null 2>&1 || true; fi
+  if [ "$2" != cloudflare ] && [ -f "$UNITS/madanibot-cloudflared.service" ]; then systemctl disable --now madanibot-cloudflared.service >/dev/null 2>&1 || true; fi
   _quick=""; [ "$2" = cloudflare ] && [ -z "$(state_get cf-named)" ] && _quick=",\"quick\":\"http://127.0.0.1:$CF_METRICS/quicktunnel\""
   printf '{"v":1,"mode":"%s","via":"%s","host":"%s","pin":%s%s}\n' "$1" "$2" "${3:-}" "$([ "${4:-0}" = 1 ] && echo true || echo false)" "$_quick" > "$ADDRESS.tmp"
   chmod 0644 "$ADDRESS.tmp" && mv -f "$ADDRESS.tmp" "$ADDRESS"
@@ -1610,7 +1610,7 @@ relay_address() { # [why]
 }
 # the server names its public address only where it stays put (a quick tunnel's changes on every restart)
 restart_for_address() {
-  server_unit && systemctl daemon-reload && systemctl restart duskbot.service
+  server_unit && systemctl daemon-reload && systemctl restart madanibot.service
   wait_health "http://127.0.0.1:$PORT/api/health" 120 || true
 }
 public_ip() { curl -fsS --proto "$PROTO" --proto-redir "$PROTO" -m 10 "$LINK_BASE/v1/ip" 2>/dev/null | sed -n 's/.*"ip":"\([0-9.]*\)".*/\1/p' | head -n 1; }
@@ -1647,7 +1647,7 @@ tailscale_daemon() {
   if [ ! -c /dev/net/tun ] && ! grep -q 'userspace-networking' /etc/default/tailscaled 2>/dev/null; then
     echo "no /dev/net/tun here; Tailscale runs in userspace networking"
     [ -f /etc/default/tailscaled.omb-before ] || cp -p /etc/default/tailscaled /etc/default/tailscaled.omb-before 2>/dev/null || true
-    printf '# managed by duskbot-link: no tun device on this server\nPORT="41641"\nFLAGS="--tun=userspace-networking"\n' > /etc/default/tailscaled
+    printf '# managed by madanibot-link: no tun device on this server\nPORT="41641"\nFLAGS="--tun=userspace-networking"\n' > /etc/default/tailscaled
     x systemctl restart tailscaled
     sleep 2
   fi
@@ -1713,7 +1713,7 @@ address_tailscale() {
   fi
   use_address direct tailscale "$dns" 0
   restart_for_address
-  echo "https://$dns serves dusk bot on your tailnet"
+  echo "https://$dns serves madani bot on your tailnet"
 }
 
 cloudflared_install() {
@@ -1728,10 +1728,10 @@ cloudflared_install() {
 }
 cloudflared_unit() { # exec args, [credentials file the unit's own user reads through systemd]
   cat > "$TMP/new" <<EOF
-# managed by duskbot-link: the app's address through Cloudflare
+# managed by madanibot-link: the app's address through Cloudflare
 [Unit]
-Description=Cloudflare tunnel for dusk bot
-After=network-online.target duskbot.service
+Description=Cloudflare tunnel for madani bot
+After=network-online.target madanibot.service
 Wants=network-online.target
 
 [Service]
@@ -1748,10 +1748,10 @@ ProtectHome=yes
 [Install]
 WantedBy=multi-user.target
 EOF
-  put_file "$UNITS/duskbot-cloudflared.service" 0644 || true
+  put_file "$UNITS/madanibot-cloudflared.service" 0644 || true
   systemctl daemon-reload
-  systemctl enable duskbot-cloudflared.service >/dev/null 2>&1
-  x systemctl restart duskbot-cloudflared.service
+  systemctl enable madanibot-cloudflared.service >/dev/null 2>&1
+  x systemctl restart madanibot-cloudflared.service
 }
 address_cloudflare() {
   cloudflared_install || { relay_address "cloudflared did not install; using the private relay"; return 11; }
@@ -1781,7 +1781,7 @@ address_cloudflare() {
   done
   use_address direct cloudflare "$host" 0
   restart_for_address
-  echo "https://$host serves dusk bot through Cloudflare"
+  echo "https://$host serves madani bot through Cloudflare"
 }
 
 do_address() {
@@ -1799,7 +1799,7 @@ do_address() {
     relay) relay_address "the private relay, as asked" ;;
     ssh) relay_address "linked through the relay; the app reaches it over ssh on port 22"
       _user=${SUDO_USER:-root}; _ip=$(public_ip)
-      [ -z "$_ip" ] || printf 'To open dusk bot in a browser on your computer, keep this running there:\n  ssh -N -L 8790:127.0.0.1:%s %s@%s\nthen go to http://127.0.0.1:8790\n' "$PORT" "$_user" "$_ip" \
+      [ -z "$_ip" ] || printf 'To open madani bot in a browser on your computer, keep this running there:\n  ssh -N -L 8790:127.0.0.1:%s %s@%s\nthen go to http://127.0.0.1:8790\n' "$PORT" "$_user" "$_ip" \
         | ask "{\"kind\":\"ssh\",\"user\":\"$_user\",\"host\":\"$_ip\",\"state\":\"done\"}" ;;
     tailscale) address_tailscale ;;
     cloudflare) address_cloudflare ;;
@@ -1808,7 +1808,7 @@ do_address() {
   esac
   # every server keeps a cloudflare quick tunnel as a backup path, run by the link agent (no account, no login): the
   # package comes from cloudflare's signed apt repository here, best effort (the agent fetches a pinned one otherwise)
-  [ "$WANT" = cloudflare ] || [ "${DUSK_LINK_BACKUP:-}" = off ] || ( cloudflared_install ) >/dev/null 2>&1 || true
+  [ "$WANT" = cloudflare ] || [ "${MADANI_LINK_BACKUP:-}" = off ] || ( cloudflared_install ) >/dev/null 2>&1 || true
 }
 
 install_output() {
@@ -2013,12 +2013,12 @@ do_link() {
 
 start_link_service() {
   helper_units && systemctl daemon-reload
-  systemctl enable duskbot-link.service >/dev/null 2>&1
-  x systemctl restart duskbot-link.service
+  systemctl enable madanibot-link.service >/dev/null 2>&1
+  x systemctl restart madanibot-link.service
 }
 
 # ---------- demo ----------
-# DUSK_INSTALL_DEMO=1 sh install.sh: the real screen with pretend steps. writes only to its own temp dir.
+# MADANI_INSTALL_DEMO=1 sh install.sh: the real screen with pretend steps. writes only to its own temp dir.
 demo_lines() { _d=$1; shift; for _l in "$@"; do sleep "$_d"; printf '%s\n' "$_l"; done; }
 demo_bytes() { # total unit seconds*10
   _t=0
@@ -2038,26 +2038,26 @@ demo_work() {
     docker) demo_lines 0.4 "Get:1 http://ports.ubuntu.com/ubuntu-ports noble-updates/universe arm64 docker.io 27.5.1 [28.6 MB]" \
       "Unpacking docker.io (27.5.1-0ubuntu3~24.04.2) ..." "Setting up containerd (1.7.27-0ubuntu1~24.04.1) ..." \
       "Created symlink /etc/systemd/system/sockets.target.wants/docker.socket" "Docker version 27.5.1, build 27.5.1" ;;
-    user) demo_lines 0.3 "uid=1001(dusk) gid=1001(dusk) groups=1001(dusk),988(docker)" ;;
+    user) demo_lines 0.3 "uid=1001(madani) gid=1001(madani) groups=1001(madani),988(docker)" ;;
     node) demo_lines 0.35 "$ curl -fsSL --connect-timeout 15 -m 300 https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key -o /tmp/nodesource.key" "$ apt-get -y -q install nodejs" "Get:1 https://deb.nodesource.com/node_24.x nodistro InRelease [12.1 kB]" \
       "Get:4 https://deb.nodesource.com/node_24.x nodistro/main arm64 nodejs 24.11.0-1nodesource1 [31.2 MB]" \
       "Unpacking nodejs (24.11.0-1nodesource1) ..." "node v24.11.0, npm 11.6.1" ;;
-    app) echo "$ curl -fsSL -H 'authorization: Bearer [redacted]' https://link.dusk.bot/pkg/demodemoab/7c2f0a9e41d6.tgz"; echo "downloading dusk bot 0.1.141 (41.6 MB)"; demo_bytes 43620000 MB 32
+    app) echo "$ curl -fsSL -H 'authorization: Bearer [redacted]' https://link.madani.bot/pkg/demodemoab/7c2f0a9e41d6.tgz"; echo "downloading madani bot 0.1.141 (41.6 MB)"; demo_bytes 43620000 MB 32
       demo_lines 0.4 "sha256 ok: 7c2f0a9e41d6b3c88f1e2a07d95b6e4f3a10c2d8e7f6b5a4c3d2e1f0a9b8c7d6" \
         "added 3 packages in 2s" "changed 61 packages in 4s" ;;
     engines)
-      demo_lines 0.5 "$ npm install --global --no-fund --no-audit --prefix /home/dusk/.local @anthropic-ai/claude-code @openai/codex" "npm http fetch GET 200 https://registry.npmjs.org/@anthropic-ai%2fclaude-code 412ms" \
+      demo_lines 0.5 "$ npm install --global --no-fund --no-audit --prefix /home/madani/.local @anthropic-ai/claude-code @openai/codex" "npm http fetch GET 200 https://registry.npmjs.org/@anthropic-ai%2fclaude-code 412ms" \
         "npm http fetch GET 200 https://registry.npmjs.org/@openai%2fcodex 388ms" \
         "npm http fetch GET 200 https://registry.npmjs.org/@openai/codex/-/codex-0.58.0-linux-arm64.tgz 2104ms"
       if [ "$DEMO" = fail ]; then
         demo_lines 0.4 "npm error code ETIMEDOUT" "npm error syscall connect" \
           "npm error errno ETIMEDOUT" "npm error network request to https://registry.npmjs.org/@openai%2fcodex failed, reason: connect ETIMEDOUT 104.16.2.35:443" \
           "npm error network This is a problem related to network connectivity." \
-          "npm error A complete log of this run can be found in: /home/dusk/.npm/_logs/2026-11-07T09_41_12_018Z-debug-0.log"
+          "npm error A complete log of this run can be found in: /home/madani/.npm/_logs/2026-11-07T09_41_12_018Z-debug-0.log"
         return 1
       fi
       demo_lines 0.4 "added 4 packages in 6s" ;;
-    service) demo_lines 0.5 "Created symlink /etc/systemd/system/multi-user.target.wants/duskbot.service" \
+    service) demo_lines 0.5 "Created symlink /etc/systemd/system/multi-user.target.wants/madanibot.service" \
       "waiting for 127.0.0.1:8799/api/health" "server answers on 127.0.0.1:8799" ;;
     address) demo_lines 0.4 "linked through the private relay (nothing inbound is opened)" ;;
     sandbox) demo_lines 0.35 "Get:1 https://storage.googleapis.com/gvisor/releases release/main arm64 runsc 20251103.0 [24.1 MB]" \
@@ -2089,7 +2089,7 @@ finale() {
     docker="29.1.3, gVisor sandbox, network fenced" link="private relay"
     computer="ghcr.io/sidddevz/omb-bot-desktop:v1, built here"
   else
-    app=$(sed -n 's/^ *"version": *"\([^"]*\)".*/\1/p' "$SVC_HOME/.local/lib/node_modules/duskbot/package.json" 2>/dev/null | head -n 1)
+    app=$(sed -n 's/^ *"version": *"\([^"]*\)".*/\1/p' "$SVC_HOME/.local/lib/node_modules/madanibot/package.json" 2>/dev/null | head -n 1)
     pkg=$(state_get package)
     case "$pkg" in sha256:*) app="${app:-?}, build $(printf '%s' "${pkg#sha256:}" | cut -c1-12)" ;; npm:*) app="${app:-?}, from npm (${pkg#npm:})" ;; esac
     u="runuser -u $SVC_USER -- env HOME=$SVC_HOME PATH=$SVC_HOME/.local/bin:/usr/bin:/bin"
@@ -2119,14 +2119,14 @@ finale() {
   mascot 0
   glyph ok; _ok=$G; glyph sep
   where="$NAME $G $SYS $ARCH $G $link"
-  printf '\n  %s%s %sYour dusk bot is ready%s  %s%s %s%s\n' "$OK" "$_ok" "$BOLD" "$R" "$DIM" "$G" "$total" "$R"
+  printf '\n  %s%s %sYour madani bot is ready%s  %s%s %s%s\n' "$OK" "$_ok" "$BOLD" "$R" "$DIM" "$G" "$total" "$R"
   printf '    %s%s%s\n\n' "$DIM" "$where" "$R"
-  if [ "${DUSK_VERBOSE:-}" = 1 ]; then printf '%s\n' "$table" | sed 's/^/    /'; printf '\n'; fi
+  if [ "${MADANI_VERBOSE:-}" = 1 ]; then printf '%s\n' "$table" | sed 's/^/    /'; printf '\n'; fi
   if [ -z "$DEMO" ] && ! box_works >/dev/null 2>&1; then
     printf '  %sBots can'"'"'t answer here yet: this server does not let bubblewrap make the bot box'"'"'s user namespace.%s\n' "$WARN" "$R"
   fi
   printf '  %s%sNow go back to the app to move your bots here.%s\n' "$ACC" "$BOLD" "$R"
-  printf '  %sTo take it off later: dusk.bot/docs/your-own-server#removing-it%s\n\n' "$DIM" "$R"
+  printf '  %sTo take it off later: madani.bot/docs/your-own-server#removing-it%s\n\n' "$DIM" "$R"
 }
 
 
@@ -2185,7 +2185,7 @@ server_holds() {
 # whether the server may be restarted now: "go" when it is running and idle, or failed or stuck starting (nothing runs
 # there, and the update may well fix it); else why not. a server someone stopped stays stopped
 restart_allowed() {
-  _state=$(systemctl is-active duskbot.service 2>/dev/null) || true
+  _state=$(systemctl is-active madanibot.service 2>/dev/null) || true
   case "$_state" in
     active) _holds=$(server_holds); [ -n "$_holds" ] && echo "$_holds" || echo go ;;
     failed|activating) echo go ;;
@@ -2203,7 +2203,7 @@ restart_wait() {
   done
 }
 
-# `sh install.sh --update-server` (root, from duskbot-server-update.timer): the staged build, read as the link account
+# `sh install.sh --update-server` (root, from madanibot-server-update.timer): the staged build, read as the link account
 # and checked again in root's own folder (hash, a pinned signature: this path takes signed builds only, policy, never
 # older, never one that failed here), installed only while no bot is working, then the server restarts (only while it
 # is still idle) and must answer and pass its self-test, or the build before goes back (update_settle)
@@ -2222,8 +2222,8 @@ update_server() {
   fi
   # the gate the running build carries, once per build and while idle: an updater from before refresh_gate installed it
   _running=$(state_get running-package | sed 's/^sha256://')
-  if [ -n "$_running" ] && [ "$(state_get gate-from)" != "$_running" ] && [ -f "$PKGS/duskbot-$_running.tgz" ] && [ "$(restart_allowed)" = go ]; then
-    refresh_gate "$PKGS/duskbot-$_running.tgz"; state_set gate-from "$_running"
+  if [ -n "$_running" ] && [ "$(state_get gate-from)" != "$_running" ] && [ -f "$PKGS/madanibot-$_running.tgz" ] && [ "$(restart_allowed)" = go ]; then
+    refresh_gate "$PKGS/madanibot-$_running.tgz"; state_set gate-from "$_running"
   fi
   offer=$(staged_offer) || return 0
   set -f; set -- $offer; set +f
@@ -2237,7 +2237,7 @@ update_server() {
   echo "$(date -u '+%F %T') installing build ${PKG_VERSION:-$PKG_SHA}"
   # root's own copy, read as the link account (its folder is that account's), capped at the size it said
   [ -d "$PKGS" ] && [ ! -L "$PKGS" ] || install -d -o root -g root -m 0700 "$PKGS"
-  _f="$PKGS/duskbot-$PKG_SHA.tgz"
+  _f="$PKGS/madanibot-$PKG_SHA.tgz"
   as_link head -c "$PKG_SIZE" "$SERVER_RELEASE/$PKG_SHA.tgz" > "$_f.tmp" 2>/dev/null || { rm -f "$_f.tmp"; echo "the staged build is gone"; return 0; }
   if [ "$(sha256sum "$_f.tmp" | cut -d' ' -f1)" != "$PKG_SHA" ]; then echo "the staged build does not match its hash"; rm -f "$_f.tmp"; return 0; fi
   mv -f "$_f.tmp" "$_f"
@@ -2259,7 +2259,7 @@ restart_settle() {
     set +e; ( set -e; finish_interrupted ); _rc=$?; set -e
     [ "$_rc" = 0 ] || [ -z "$(state_get update-pending)" ] || { update_settle 0 || true; return 1; }
   fi
-  x systemctl restart duskbot.service
+  x systemctl restart madanibot.service
   if wait_health "http://127.0.0.1:$PORT/api/health" 120; then
     if update_settle 1; then state_set running-package "$(state_get package)"; return 0; fi
     return 1
@@ -2330,7 +2330,7 @@ claim() {
   esac
 }
 
-tunnel_id() { sed -n 's/^{"v":1,"base":"[^"]*","id":"\([a-z2-7]\{10\}\)".*/\1/p' "$LINK_HOME/.config/duskbot-link/tunnel.json" 2>/dev/null | head -n 1; }
+tunnel_id() { sed -n 's/^{"v":1,"base":"[^"]*","id":"\([a-z2-7]\{10\}\)".*/\1/p' "$LINK_HOME/.config/madanibot-link/tunnel.json" 2>/dev/null | head -n 1; }
 
 on_exit() {
   [ "$UI" = tty ] && printf '%s[?25h' "$ESC"
@@ -2350,7 +2350,7 @@ take_lock() {
   command -v flock >/dev/null 2>&1 && ( : >>"$INSTALL_LOCK" ) 2>/dev/null || return 0
   exec 9>>"$INSTALL_LOCK"
   flock -n 9 && LOCKED=1 && return 0
-  fail_line "Someone is already installing or removing dusk bot on this server (another terminal, or one whose connection dropped). Wait for it to finish, then paste the line again. Its logs: $LOGS/"
+  fail_line "Someone is already installing or removing madani bot on this server (another terminal, or one whose connection dropped). Wait for it to finish, then paste the line again. Its logs: $LOGS/"
   exit 1
 }
 on_stop() {
@@ -2452,7 +2452,7 @@ main() {
   umask 022
   TMP=$(mktemp -d)
   PROGRESS="$TMP/progress"
-  if [ -n "$DEMO" ]; then STATE="$TMP/state" LOGS="$TMP/logs" LINK_BASE="https://link.dusk.bot"; fi
+  if [ -n "$DEMO" ]; then STATE="$TMP/state" LOGS="$TMP/logs" LINK_BASE="https://link.madani.bot"; fi
   install -d -m 0700 "$STATE"
   install -d -m 0700 "$LOGS"
   [ -z "${MIGRATED:-}" ] || printf '%s\n' "$MIGRATED" >> "$LOGS/migrate.log"

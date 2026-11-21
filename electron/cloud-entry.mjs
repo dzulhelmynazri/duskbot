@@ -1,5 +1,5 @@
 // An action, not a router: it never carries an address, code or credential.
-export const CLOUD_DEEP_LINK = "duskbot://cloud";
+export const CLOUD_DEEP_LINK = "madanibot://cloud";
 
 export const isCloudDeepLink = value => value === CLOUD_DEEP_LINK;
 export function takeCloudDeepLink(argv) {

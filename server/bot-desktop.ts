@@ -26,9 +26,9 @@ export { BOT_DESKTOP_IMAGE, BOT_DESKTOP_LABEL, BOT_DESKTOP_NETWORK, BOT_DESKTOP_
 export type VpsDesktopKind = "bot-desktop" | "cua";
 export type BotDesktopMode = "free" | "strict";
 
-/** New VPS computers get the bot desktop; DUSK_VPS_DESKTOP=cua keeps making Cua XFCE containers. */
+/** New VPS computers get the bot desktop; MADANI_VPS_DESKTOP=cua keeps making Cua XFCE containers. */
 export function preferredVpsDesktop(env: NodeJS.ProcessEnv = process.env): VpsDesktopKind {
-  return env.DUSK_VPS_DESKTOP === "cua" ? "cua" : "bot-desktop";
+  return env.MADANI_VPS_DESKTOP === "cua" ? "cua" : "bot-desktop";
 }
 
 /** A container's own labels say what it was made from, whichever kind new ones get today. */
@@ -93,10 +93,10 @@ export function botDesktopRunArgs(input: {
     "--shm-size", "512m",
     // a reboot leaves desktops asleep: they wake one by one when a bot needs one, never all at once
     "--restart", "no",
-    "-e", `DUSK_MODE=${input.mode}`,
-    "-e", "DUSK_BROWSER_AT_START=off",
+    "-e", `MADANI_MODE=${input.mode}`,
+    "-e", "MADANI_BROWSER_AT_START=off",
     "-e", `VNC_PW=${input.viewerSecret}`,
-    ...(!free && blocked.length ? ["-e", `DUSK_BLOCK_EXTRA=${blocked.join(",")}`] : []),
+    ...(!free && blocked.length ? ["-e", `MADANI_BLOCK_EXTRA=${blocked.join(",")}`] : []),
     input.imageRef,
   ];
 }
@@ -148,14 +148,14 @@ export interface HostIsolation {
 }
 
 /** From `docker info --format '{{json .}}'`: gVisor under Runtimes, remapping under SecurityOptions.
- * DUSK_VPS_GVISOR=off skips gVisor even when installed. */
+ * MADANI_VPS_GVISOR=off skips gVisor even when installed. */
 export function hostIsolation(infoJson: string, env: NodeJS.ProcessEnv = process.env): HostIsolation {
   try {
     const info = JSON.parse(infoJson) as { Runtimes?: Record<string, unknown> | null; SecurityOptions?: unknown } | null;
     const runsc = Boolean(info?.Runtimes && typeof info.Runtimes === "object" && "runsc" in info.Runtimes);
     const options = Array.isArray(info?.SecurityOptions) ? info.SecurityOptions : [];
     return {
-      runtime: runsc && env.DUSK_VPS_GVISOR !== "off" ? "runsc" : null,
+      runtime: runsc && env.MADANI_VPS_GVISOR !== "off" ? "runsc" : null,
       userns: options.some((option) => typeof option === "string" && /(^|,)name=userns(,|$)/.test(option)),
     };
   } catch {
@@ -165,7 +165,7 @@ export function hostIsolation(infoJson: string, env: NodeJS.ProcessEnv = process
 
 /** free only when the host fences the network and something stronger than plain runc guards the kernel. */
 export function botDesktopMode(fenced: boolean, isolation: HostIsolation, env: NodeJS.ProcessEnv = process.env): BotDesktopMode {
-  if (env.DUSK_VPS_BOX === "strict") return "strict";
+  if (env.MADANI_VPS_BOX === "strict") return "strict";
   return fenced && (isolation.runtime === "runsc" || isolation.userns) ? "free" : "strict";
 }
 
@@ -222,7 +222,7 @@ function envValue(env: string[] | undefined, name: string): string | undefined {
 export function containerBotDesktopMode(labels: Record<string, string> | undefined, env: string[] | undefined): BotDesktopMode | undefined {
   const mode = labels?.[BOT_DESKTOP_MODE_LABEL];
   if (mode !== "free" && mode !== "strict") return undefined;
-  const envMode = envValue(env, "DUSK_MODE") ?? envValue(env, LEGACY_MODE_ENV) ?? "strict";
+  const envMode = envValue(env, "MADANI_MODE") ?? envValue(env, LEGACY_MODE_ENV) ?? "strict";
   return envMode === mode ? mode : undefined;
 }
 
@@ -246,10 +246,10 @@ export type BotDesktopProgress = "pulling" | "building";
 
 /**
  * The build folder for BOT_DESKTOP_IMAGE that ships with this server (deploy/bot-desktop beside dist-server or server),
- * or DUSK_BOT_DESKTOP_KIT. Null unless its Dockerfile builds exactly BOT_DESKTOP_VERSION and docker can read it (not in an asar).
+ * or MADANI_BOT_DESKTOP_KIT. Null unless its Dockerfile builds exactly BOT_DESKTOP_VERSION and docker can read it (not in an asar).
  */
 export function botDesktopKit(env: NodeJS.ProcessEnv = process.env): string | null {
-  const dir = env.DUSK_BOT_DESKTOP_KIT?.trim() ? resolve(env.DUSK_BOT_DESKTOP_KIT.trim()) : fileURLToPath(new URL("../deploy/bot-desktop", import.meta.url));
+  const dir = env.MADANI_BOT_DESKTOP_KIT?.trim() ? resolve(env.MADANI_BOT_DESKTOP_KIT.trim()) : fileURLToPath(new URL("../deploy/bot-desktop", import.meta.url));
   if (dir.split(sep).some((part) => part.endsWith(".asar"))) return null;
   const dockerfile = `${dir}${sep}Dockerfile`;
   if (!existsSync(dockerfile)) return null;
@@ -277,7 +277,7 @@ export const hostBuildTiming = { pollMs: 5_000, limitMs: 45 * 60_000 };
 
 /**
  * A managed cloud home's machine builds the image itself, as root beside the docker gate (which never builds), and
- * says how it goes in the file DUSK_BOT_DESKTOP_HOST_BUILD names: building, ready or failed. Waits for it.
+ * says how it goes in the file MADANI_BOT_DESKTOP_HOST_BUILD names: building, ready or failed. Waits for it.
  */
 async function waitForHostBuild(run: DockerRun, statusFile: string): Promise<void> {
   const until = Date.now() + hostBuildTiming.limitMs;
@@ -306,7 +306,7 @@ async function obtainBotDesktopImage(run: DockerRun, onProgress?: (step: BotDesk
   const pullError = await run(["pull", BOT_DESKTOP_IMAGE], 15 * 60_000).then(() => null, (error: unknown) => error);
   if (!pullError) return;
   console.warn(`bot computer image: could not pull ${BOT_DESKTOP_IMAGE}: ${lastLine(pullError)}`);
-  const hostBuild = process.env.DUSK_BOT_DESKTOP_HOST_BUILD?.trim();
+  const hostBuild = process.env.MADANI_BOT_DESKTOP_HOST_BUILD?.trim();
   if (hostBuild) {
     onProgress?.("building");
     return waitForHostBuild(run, hostBuild);
@@ -356,7 +356,7 @@ async function prepareBotDesktop(run: DockerRun, imageId: string | null, onProgr
         Options?: Record<string, string> | null;
       };
       if (network.Labels?.[BOT_DESKTOP_NETWORK_LABEL] !== "1" || network.Options?.["com.docker.network.bridge.name"] !== BOT_DESKTOP_BRIDGE) {
-        throw Object.assign(new Error(`The VPS has a Docker network named ${BOT_DESKTOP_NETWORK} that dusk bot did not create`), { status: 409 });
+        throw Object.assign(new Error(`The VPS has a Docker network named ${BOT_DESKTOP_NETWORK} that madani bot did not create`), { status: 409 });
       }
     } catch (error) {
       if (!missing(error)) throw error;
@@ -392,7 +392,7 @@ export async function provisionBotDesktop(run: DockerRun, input: {
   /** runs once the image is ready, just before the new desktop is created (an update sets the old one aside here) */
   beforeCreate?: () => Promise<void>;
 }): Promise<BotDesktopMode> {
-  const key = input.hostKey ? JSON.stringify([input.hostKey, input.imageId, process.env.DUSK_VPS_GVISOR, process.env.DUSK_VPS_BOX]) : null;
+  const key = input.hostKey ? JSON.stringify([input.hostKey, input.imageId, process.env.MADANI_VPS_GVISOR, process.env.MADANI_VPS_BOX]) : null;
   let preparation = key ? pendingPreparations.get(key) : undefined;
   if (!preparation) {
     preparation = prepareBotDesktop(run, input.imageId, input.onProgress);

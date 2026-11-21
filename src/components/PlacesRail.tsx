@@ -230,7 +230,7 @@ function PlaceMenu({ place, top, onClose }: { place: RailPlace; top: number; onC
   </div>;
 }
 
-/** Move to dusk cloud in a server's menu: one tap opens that server with its move sheet, which says the price and runs the
+/** Move to madani cloud in a server's menu: one tap opens that server with its move sheet, which says the price and runs the
  * rest; the menu closes once main opened it. Main's own words when it can't. */
 function CloudMoveRow({ place, onOpened }: { place: RailPlace; onOpened: () => void }) {
   const [busy, setBusy] = useState(false);
@@ -305,9 +305,9 @@ export function PlacesRail({ chrome = false }: { chrome?: boolean }) {
     return () => window.removeEventListener("mousedown", away);
   }, [more, menu]);
   const covering = more || adding || connecting !== null || menu !== null || accounts !== null;
-  useEffect(() => { if (chrome) void window.duskDesktop?.rail?.expand?.(covering)?.catch(() => {}); }, [chrome, covering]);
+  useEffect(() => { if (chrome) void window.madaniDesktop?.rail?.expand?.(covering)?.catch(() => {}); }, [chrome, covering]);
   if (!state.places.length) return null;
-  const bridge = window.duskDesktop?.workspaces;
+  const bridge = window.madaniDesktop?.workspaces;
   const open = (place: RailPlace) => {
     if (!place.opens) { if (place.pairs) setConnecting(place.name); return; }
     track("rail_place_opened", { kind: place.kind });
@@ -361,8 +361,8 @@ export function PlacesRail({ chrome = false }: { chrome?: boolean }) {
       <PlaceMenu key={menu.place.id} place={state.places.find((entry) => entry.id === menu.place.id) ?? menu.place} top={menu.top} onClose={() => setMenu(null)} />
     </div>}
     {adding && <PlaceSetup choices={state.add} onClose={() => setAdding(false)} onAccount={() => { setAdding(false); setAccounts({ adding: "", note: null }); }}
-      onBuy={() => void window.duskDesktop?.workspaces?.add?.("cloud").catch(() => {})}
-      onServer={state.add.address ? () => void window.duskDesktop?.workspaces?.add?.("address").catch(() => {}) : undefined} />}
+      onBuy={() => void window.madaniDesktop?.workspaces?.add?.("cloud").catch(() => {})}
+      onServer={state.add.address ? () => void window.madaniDesktop?.workspaces?.add?.("address").catch(() => {}) : undefined} />}
     {accounts && <AccountsSheet adding={accounts.adding} note={accounts.note} onClose={() => setAccounts(null)} />}
     {connecting !== null && <PlaceSetup choices={state.add} connect={connecting} onClose={() => setConnecting(null)} />}
   </nav>;

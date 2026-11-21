@@ -1,4 +1,4 @@
-# Built-in Windows speech-to-text for dusk bot, the Windows twin of speech-helper.swift.
+# Built-in Windows speech-to-text for madani bot, the Windows twin of speech-helper.swift.
 # Windows PowerShell 5.1 and System.Speech ship with Windows: nothing to install.
 # Streams NDJSON lines (UTF-8, LF) to stdout:
 #   {"partial":true,"text":"..."}                       while recognizing (whole session so far)
@@ -104,11 +104,11 @@ try {
   Fail "mic-failed"
 }
 
-Register-ObjectEvent -InputObject $engine -EventName SpeechHypothesized -SourceIdentifier dusk.hypothesis | Out-Null
-Register-ObjectEvent -InputObject $engine -EventName SpeechRecognized -SourceIdentifier dusk.recognized | Out-Null
-Register-ObjectEvent -InputObject $engine -EventName SpeechRecognitionRejected -SourceIdentifier dusk.rejected | Out-Null
-Register-ObjectEvent -InputObject $engine -EventName AudioLevelUpdated -SourceIdentifier dusk.level | Out-Null
-Register-ObjectEvent -InputObject $engine -EventName RecognizeCompleted -SourceIdentifier dusk.completed | Out-Null
+Register-ObjectEvent -InputObject $engine -EventName SpeechHypothesized -SourceIdentifier madani.hypothesis | Out-Null
+Register-ObjectEvent -InputObject $engine -EventName SpeechRecognized -SourceIdentifier madani.recognized | Out-Null
+Register-ObjectEvent -InputObject $engine -EventName SpeechRecognitionRejected -SourceIdentifier madani.rejected | Out-Null
+Register-ObjectEvent -InputObject $engine -EventName AudioLevelUpdated -SourceIdentifier madani.level | Out-Null
+Register-ObjectEvent -InputObject $engine -EventName RecognizeCompleted -SourceIdentifier madani.completed | Out-Null
 
 try {
   $engine.RecognizeAsync([System.Speech.Recognition.RecognizeMode]::Multiple)
@@ -155,13 +155,13 @@ while (-not $done) {
     $e = $queued.SourceEventArgs
     Remove-Event -EventIdentifier $queued.EventIdentifier
     switch ($id) {
-      "dusk.hypothesis" {
+      "madani.hypothesis" {
         $pending = $e.Result.Text.Trim()
         $text = Join-Text $committed $pending
         Saw $text
         Send-Text $true $text $false
       }
-      "dusk.recognized" {
+      "madani.recognized" {
         $phrase = $e.Result.Text.Trim()
         $pending = ""
         if ($phrase -ne "") {
@@ -170,13 +170,13 @@ while (-not $done) {
           Send-Text $true $committed $true
         }
       }
-      "dusk.rejected" {
+      "madani.rejected" {
         $pending = ""
       }
-      "dusk.level" {
+      "madani.level" {
         if ($e.AudioLevel -gt $loudest) { $loudest = $e.AudioLevel }
       }
-      "dusk.completed" {
+      "madani.completed" {
         if ($null -ne $e.Error) { Fail "recognition-error" }
         $done = $true
       }

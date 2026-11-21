@@ -12,9 +12,9 @@ const TARGET =
     ? {
         pid: 31337,
         socketPath:
-          "\\\\.\\pipe\\duskbot-companion-origin-31337-12345678-1234-1234-1234-123456789abc",
+          "\\\\.\\pipe\\madanibot-companion-origin-31337-12345678-1234-1234-1234-123456789abc",
       }
-    : { pid: 31337, socketPath: "/tmp/dusk-companion-origin-guardian/origin.sock" };
+    : { pid: 31337, socketPath: "/tmp/madani-companion-origin-guardian/origin.sock" };
 
 function owner() {
   const input = new EventEmitter();

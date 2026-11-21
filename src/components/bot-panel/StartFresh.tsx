@@ -15,10 +15,10 @@ import { confirmCancelCls, formBodyCls, formFooterCls, formHeaderCls, formSheetC
 export const START_FRESH_PHRASE = "start fresh";
 export const startFreshTyped = (typed: string) => typed.trim().toLowerCase() === START_FRESH_PHRASE;
 
-type Bridge = NonNullable<NonNullable<Window["duskDesktop"]>["startFresh"]>;
-const bridge = (): Bridge | null => (typeof window === "undefined" ? null : window.duskDesktop?.startFresh ?? null);
+type Bridge = NonNullable<NonNullable<Window["madaniDesktop"]>["startFresh"]>;
+const bridge = (): Bridge | null => (typeof window === "undefined" ? null : window.madaniDesktop?.startFresh ?? null);
 
-const OPEN_EVENT = "dusk:start-fresh";
+const OPEN_EVENT = "madani:start-fresh";
 /** Support's dev row opens the reset; the host lives in the sidebar so it opens from any page */
 export const openStartFresh = () => window.dispatchEvent(new Event(OPEN_EVENT));
 
@@ -48,7 +48,7 @@ function stepHint(step: StartFreshStep) {
 
 /** Deleting the account is its own action on the website's account page, which says it cancels the plan first. */
 export function openAccountDeletion(): void {
-  const account = typeof window === "undefined" ? undefined : window.duskDesktop?.cloudAccount;
+  const account = typeof window === "undefined" ? undefined : window.madaniDesktop?.cloudAccount;
   if (account?.openPage) { void account.openPage("account").catch(() => {}); return; }
   void openExternalLink(`${DEFAULT_ADMIN_ORIGIN}/account`).catch(() => {});
 }

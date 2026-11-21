@@ -1,5 +1,5 @@
 // the store screenshot set, in the order the stores show it. `screen` names a capture from capture.ts; `bg` is "white",
-// "meadow" or "dusk"; `art` stands on the phone's top edge: bots as [body, colour, across, scale], a prop as [file in art/, across].
+// "meadow" or "madani"; `art` stands on the phone's top edge: bots as [body, colour, across, scale], a prop as [file in art/, across].
 
 export const SHOTS = [
   {
@@ -27,7 +27,7 @@ export const SHOTS = [
     art: { prop: ["s-button", 0.3], bots: [["mochi", "pinkBot", 0.68]] },
   },
   {
-    id: "05-sleep", screen: "routines-dark", bg: "dusk", dark: true,
+    id: "05-sleep", screen: "routines-dark", bg: "madani", dark: true,
     headline: "they work\nwhile you sleep.",
     line: "set a routine once. wake up to a clear inbox and your brief ready.",
     art: { prop: ["p-laptop", 0.7], bots: [["cheep", "sun", 0.26], ["bruin", "mint", 0.42]] },
@@ -46,14 +46,14 @@ export const SHOTS = [
   },
   {
     id: "08-cloud", screen: "home-dark", bg: "white", dark: true,
-    headline: "on 24/7 with\ndusk cloud.",
+    headline: "on 24/7 with\nmadani cloud.",
     line: "close your laptop. your bots keep going on a computer of their own.",
     art: { prop: ["s-clock", 0.68], bots: [["boo", "cyan", 0.3]] },
   },
   {
     id: "09-private", screen: "pair", bg: "white", dark: true,
     headline: "private,\nand yours.",
-    line: "your bots live on your own computer or your dusk cloud. no ads, no tracking.",
+    line: "your bots live on your own computer or your madani cloud. no ads, no tracking.",
     art: { prop: ["p-shield", 0.3], bots: [["bruin", "tangerine", 0.7]] },
   },
   {
@@ -64,8 +64,8 @@ export const SHOTS = [
   },
 ];
 
-/** the App Store set leaves out what iOS v1 does not offer or must not advertise: dusk cloud (sold on the web, 3.1.1),
- * other companies' apps and AI models (5.2.1, 2.3.7), and the pairing screen, which names dusk cloud */
+/** the App Store set leaves out what iOS v1 does not offer or must not advertise: madani cloud (sold on the web, 3.1.1),
+ * other companies' apps and AI models (5.2.1, 2.3.7), and the pairing screen, which names madani cloud */
 export const IOS_SHOTS = ["01-team", "02-text", "03-work", "04-approve", "05-sleep", "06-rooms"];
 
 /** Google Play takes eight phone screenshots at most */

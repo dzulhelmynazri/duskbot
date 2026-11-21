@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import type { CloudOffer } from "../../electron/cloud-home.mjs";
 
 export function useCloudOffer(enabled: boolean, session?: CloudOffer): CloudOffer | null {
-  const bridge = enabled && !window.duskDesktop?.remoteClient?.active ? window.duskDesktop?.cloudAccount : undefined;
+  const bridge = enabled && !window.madaniDesktop?.remoteClient?.active ? window.madaniDesktop?.cloudAccount : undefined;
   const [offer, setOffer] = useState<CloudOffer | null>(null);
   const key = bridge?.offer ? JSON.stringify(session ?? null) : null;
   useEffect(() => {

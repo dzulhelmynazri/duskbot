@@ -12,9 +12,9 @@ const TOKEN = "t".repeat(40), origin = "http://dashboard.test";
 describe("test mail sink", () => {
   let server: Server, app: ReturnType<typeof createDashboardApp>, dataDir: string, url: string, mailer: ReturnType<typeof memoryMailer>;
   async function boot(readable: boolean) {
-    dataDir = mkdtempSync(join(tmpdir(), "dusk-test-mail-"));
+    dataDir = mkdtempSync(join(tmpdir(), "madani-test-mail-"));
     mailer = memoryMailer();
-    app = createDashboardApp({ dataDir, publicUrl: origin, mailer, staticDir: null, testMail: createTestMailbox({ readable }), admin: { emails: [], env: { DUSK_OPS_TOKEN: TOKEN } } });
+    app = createDashboardApp({ dataDir, publicUrl: origin, mailer, staticDir: null, testMail: createTestMailbox({ readable }), admin: { emails: [], env: { MADANI_OPS_TOKEN: TOKEN } } });
     server = createServer(app.handle);
     await new Promise<void>(resolve => server.listen(0, "127.0.0.1", resolve));
     url = `http://127.0.0.1:${(server.address() as { port: number }).port}`;
@@ -30,7 +30,7 @@ describe("test mail sink", () => {
   describe("on preview", () => {
     beforeEach(() => boot(true));
     it("signs a test address in without sending any mail, the code read with the ops token", async () => {
-      const email = "flow-1@qa.dusk.test";
+      const email = "flow-1@qa.madani.test";
       const { attempt } = await (await post("/v1/auth/start", { email })).json() as { attempt: string };
       expect((await read(email, "x".repeat(40))).status).toBe(404);
       const answer = await read(email);
@@ -49,7 +49,7 @@ describe("test mail sink", () => {
   describe("on production", () => {
     beforeEach(() => boot(false));
     it("drops test mail and has no read route", async () => {
-      const email = "flow-2@qa.dusk.test";
+      const email = "flow-2@qa.madani.test";
       expect((await post("/v1/auth/start", { email })).status).toBe(200);
       expect((await read(email)).status).toBe(404);
       expect(mailer.outbox).toEqual([]);

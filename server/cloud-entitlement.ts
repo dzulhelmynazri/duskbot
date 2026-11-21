@@ -1,8 +1,8 @@
 // A hosted Cloud home works only while it holds a fresh entitlement signed by the account service for its own machine id
 // (shared/entitlement.ts). The account service pushes one through the signed POST /api/cloud/entitlement and refreshes it
 // well before it expires. Without a valid one the home answers its signed admin routes and its liveness probe, and
-// refuses everything else, pairing included, once its boot env says DUSK_CLOUD_ENTITLEMENT=required. A release build trusts
-// only the pinned keys; a run from source (tests, development) also trusts DUSK_ENTITLEMENT_DEV_KEYS.
+// refuses everything else, pairing included, once its boot env says MADANI_CLOUD_ENTITLEMENT=required. A release build trusts
+// only the pinned keys; a run from source (tests, development) also trusts MADANI_ENTITLEMENT_DEV_KEYS.
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { parseEntitlementKeys, PINNED_ENTITLEMENT_KEYS, verifyEntitlement, type EntitlementPublicKey, type EntitlementVerdict } from "../shared/entitlement.ts";
@@ -29,8 +29,8 @@ export function createCloudEntitlement(options: CloudEntitlementOptions) {
   const fromSource = options.fromSource ?? FROM_SOURCE;
   // every home this account service provisions is told so in its boot env; homes another Admin runs from the same
   // release (Fly, Team) keep working until that Admin pushes entitlements too
-  const required = env.DUSK_CLOUD_ENTITLEMENT === "required";
-  const keys: EntitlementPublicKey[] = [...PINNED_ENTITLEMENT_KEYS, ...(fromSource ? parseEntitlementKeys(env.DUSK_ENTITLEMENT_DEV_KEYS) : [])];
+  const required = env.MADANI_CLOUD_ENTITLEMENT === "required";
+  const keys: EntitlementPublicKey[] = [...PINNED_ENTITLEMENT_KEYS, ...(fromSource ? parseEntitlementKeys(env.MADANI_ENTITLEMENT_DEV_KEYS) : [])];
   let token: string | null = null;
   try { token = readFileSync(file, "utf8").trim() || null; } catch { token = null; }
   const check = (value: string | null): EntitlementVerdict => verifyEntitlement(value, { keys, audience: "home", cloudId: options.machineId, now: now() });

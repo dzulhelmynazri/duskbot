@@ -135,7 +135,7 @@ describe("testing an AI with one tiny message before a new bot's default trusts 
     clock = 1_000_000;
     timers = [];
     company = () => false;
-    data = mkdtempSync(join(tmpdir(), "dusk-tested-ai-"));
+    data = mkdtempSync(join(tmpdir(), "madani-tested-ai-"));
     store = new FakeStore(() => pick);
     tested = make();
   });
@@ -509,13 +509,13 @@ describe("testing an AI with one tiny message before a new bot's default trusts 
 });
 
 describe("test messages in the background", () => {
-  it("are on unless DUSK_AI_CHECKS=0, and under vitest only when a test asks for them, so fake engines log only the turns a test sends", () => {
+  it("are on unless MADANI_AI_CHECKS=0, and under vitest only when a test asks for them, so fake engines log only the turns a test sends", () => {
     expect(backgroundAiChecks({})).toBe(true);
-    expect(backgroundAiChecks({ DUSK_AI_CHECKS: "0" })).toBe(false);
-    expect(backgroundAiChecks({ DUSK_AI_CHECKS: " 0 " })).toBe(false);
+    expect(backgroundAiChecks({ MADANI_AI_CHECKS: "0" })).toBe(false);
+    expect(backgroundAiChecks({ MADANI_AI_CHECKS: " 0 " })).toBe(false);
     expect(backgroundAiChecks({ VITEST: "true" })).toBe(false);
-    expect(backgroundAiChecks({ VITEST: "true", DUSK_AI_CHECKS: "1" })).toBe(true);
-    expect(backgroundAiChecks({ DUSK_TEST_SEALED_PATH: "1" })).toBe(false);
-    expect(backgroundAiChecks({ DUSK_TEST_SEALED_PATH: "1", DUSK_AI_CHECKS: "1" })).toBe(true);
+    expect(backgroundAiChecks({ VITEST: "true", MADANI_AI_CHECKS: "1" })).toBe(true);
+    expect(backgroundAiChecks({ MADANI_TEST_SEALED_PATH: "1" })).toBe(false);
+    expect(backgroundAiChecks({ MADANI_TEST_SEALED_PATH: "1", MADANI_AI_CHECKS: "1" })).toBe(true);
   });
 });

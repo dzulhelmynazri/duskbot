@@ -2,14 +2,14 @@
 // for a move outside this service, open and check one. Prints counts, sizes and paths, never a file's contents.
 //
 //   node --experimental-strip-types apps/cloud-service/scripts/home-bundle.ts inspect <volume.tar> --cloud <id>
-//   DUSK_BUNDLE_PASSPHRASE=... node --experimental-strip-types apps/cloud-service/scripts/home-bundle.ts seal <volume.tar> --cloud <id> --source mac|vps|managed --out <file.dhb>
-//   DUSK_BUNDLE_PASSPHRASE=... node --experimental-strip-types apps/cloud-service/scripts/home-bundle.ts open <file.dhb> --out <volume.tar>
+//   MADANI_BUNDLE_PASSPHRASE=... node --experimental-strip-types apps/cloud-service/scripts/home-bundle.ts seal <volume.tar> --cloud <id> --source mac|vps|managed --out <file.dhb>
+//   MADANI_BUNDLE_PASSPHRASE=... node --experimental-strip-types apps/cloud-service/scripts/home-bundle.ts open <file.dhb> --out <volume.tar>
 import { readFileSync, writeFileSync } from "node:fs";
 import { bundleMismatches, openBundle, sealBundle, volumeManifest, type BundleManifest } from "../src/bundle.ts";
 
 const [command, input] = process.argv.slice(2), args = process.argv.slice(4);
 const option = (name: string) => { const at = args.indexOf(name); return at === -1 ? null : args[at + 1] ?? null; };
-const passphrase = () => { const value = process.env.DUSK_BUNDLE_PASSPHRASE; if (!value) { console.error("DUSK_BUNDLE_PASSPHRASE is required."); process.exit(2); } return value; };
+const passphrase = () => { const value = process.env.MADANI_BUNDLE_PASSPHRASE; if (!value) { console.error("MADANI_BUNDLE_PASSPHRASE is required."); process.exit(2); } return value; };
 function summary(m: BundleManifest) {
   console.log(`${m.format} v${m.v} cloud ${m.cloudId} from ${m.source.kind}${m.source.host ? ` (${m.source.host})` : ""}: ${m.files.length} files`);
   for (const [layer, n] of Object.entries(m.layers)) console.log(`  ${layer.padEnd(12)} ${String(n!.files).padStart(7)} files ${(n!.bytes / 1024 / 1024).toFixed(1).padStart(9)} MiB`);

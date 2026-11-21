@@ -75,7 +75,7 @@ beforeEach(() => {
     disconnect: vi.fn().mockResolvedValue({ status: "signed-out" }),
     onState: vi.fn(callback => { push = callback; return unsubscribe; }),
   };
-  vi.stubGlobal("window", { duskDesktop: { organization: bridge } });
+  vi.stubGlobal("window", { madaniDesktop: { organization: bridge } });
   vi.stubGlobal("fetch", vi.fn());
   setLocale("en");
 });
@@ -96,7 +96,7 @@ describe("optional desktop Organisation settings", () => {
   });
 
   it("does not acknowledge local Settings from a companion renderer", async () => {
-    vi.stubGlobal("window", { duskDesktop: { organization: bridge, remoteClient: { active: true } } });
+    vi.stubGlobal("window", { madaniDesktop: { organization: bridge, remoteClient: { active: true } } });
     render(); fixture.effects[0](); await flush();
     expect(bridge.settingsOpened).not.toHaveBeenCalled();
     expect(bridge.state).not.toHaveBeenCalled();
@@ -112,7 +112,7 @@ describe("optional desktop Organisation settings", () => {
   it("uses the default portal from one sign-in action and keeps custom setup advanced", async () => {
     await ready();
     let view = render();
-    expect(view.html).toContain("https://dusk.bot");
+    expect(view.html).toContain("https://madani.bot");
     expect(view.html).toContain("Sign in with your organization");
     // a custom portal is its own row, its address only in that row's dialog
     expect(view.html).toContain('data-settings-open="organization-custom"');
@@ -123,7 +123,7 @@ describe("optional desktop Organisation settings", () => {
     expect(bridge.begin).not.toHaveBeenCalled();
     const signIn = () => view.nodes.find(node => node.type === "button" && node.props.children === "Sign in with your organization")!.props.onClick!();
     signIn(); signIn(); await flush();
-    expect(bridge.begin).toHaveBeenCalledExactlyOnceWith({ portalOrigin: "https://dusk.bot" });
+    expect(bridge.begin).toHaveBeenCalledExactlyOnceWith({ portalOrigin: "https://madani.bot" });
     expect(fetch).not.toHaveBeenCalled();
     const progress = render().html;
     expect(progress).toContain("Finish signing in through your browser");
@@ -209,7 +209,7 @@ describe("optional desktop Organisation settings", () => {
   it("explains a lapsed Admin licence without a sign-in loop and shows Company models unavailable", async () => {
     await ready({ ...connected, status: "license-expired" });
     const html = render().html;
-    expect(html).toContain("Your organization&#x27;s dusk bot admin license has expired. Contact your admin.");
+    expect(html).toContain("Your organization&#x27;s madani bot admin license has expired. Contact your admin.");
     expect(html).not.toContain("Disconnect below, then sign in again");
     expect(html).not.toContain("Sign in with your organization");
     expect(html).toContain("Unavailable until the licence is renewed");
@@ -290,7 +290,7 @@ describe("optional desktop Organisation settings", () => {
     expect(render().html).toContain("Sign in with your organization");
   });
 
-  it.each([{}, { duskDesktop: { remoteClient: { active: true } } }])("has no sign-in controls without the local desktop bridge", (windowState) => {
+  it.each([{}, { madaniDesktop: { remoteClient: { active: true } } }])("has no sign-in controls without the local desktop bridge", (windowState) => {
     vi.stubGlobal("window", windowState);
     expect(render().html).toContain("desktop app on this computer");
     expect(render().html).not.toContain("Sign in with your organization");

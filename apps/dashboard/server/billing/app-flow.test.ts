@@ -25,8 +25,8 @@ vi.mock("./index.ts", async importOriginal => {
 const cleanup: Array<() => void | Promise<void>> = [];
 afterEach(async () => { for (const fn of cleanup.splice(0).reverse()) await fn(); vi.restoreAllMocks(); vi.unstubAllEnvs(); });
 async function fixture() {
-  for (const key of ["DUSK_BILLING_PROVIDER", "DUSK_CLOUD_PROVIDER", "DUSK_POOL_DRIVER", "DUSK_CLOUD_SEAL_KEY", "DUSK_DODO_PRODUCTS"]) vi.stubEnv(key, undefined);
-  const dir = mkdtempSync(join(tmpdir(), "dusk-billing-app-")); cleanup.push(() => rmSync(dir, { recursive: true, force: true }));
+  for (const key of ["MADANI_BILLING_PROVIDER", "MADANI_CLOUD_PROVIDER", "MADANI_POOL_DRIVER", "MADANI_CLOUD_SEAL_KEY", "MADANI_DODO_PRODUCTS"]) vi.stubEnv(key, undefined);
+  const dir = mkdtempSync(join(tmpdir(), "madani-billing-app-")); cleanup.push(() => rmSync(dir, { recursive: true, force: true }));
   let time = Date.now();
   const now = () => time, mailer = memoryMailer();
   const server = createServer();
@@ -148,7 +148,7 @@ it("runs the real desktop client through checkout, setup, pairing, upgrade, anot
   expect(link.workspaceId).toBe(cloud.workspaceId); expect(bootstrap.files[0].mode).toBe(0o600);
   const raw = JSON.stringify({ v: 1, seq: 1, at: f.now(), workspace: { name: "Paid fixture", kind: "vps", version: "1.0.0", platform: "linux" } });
   const signature = sign(null, Buffer.from(signedPayload("POST", "/v1/report", f.now(), createHash("sha256").update(raw).digest("hex"))), createPrivateKey({ key: Buffer.from(link.privateKey, "base64"), format: "der", type: "pkcs8" })).toString("base64");
-  const report = await fetch(`${f.origin}/v1/report`, { method: "POST", headers: { "content-type": "application/json", "x-dusk-workspace": link.workspaceId, "x-dusk-time": String(f.now()), "x-dusk-signature": signature }, body: raw });
+  const report = await fetch(`${f.origin}/v1/report`, { method: "POST", headers: { "content-type": "application/json", "x-madani-workspace": link.workspaceId, "x-madani-time": String(f.now()), "x-madani-signature": signature }, body: raw });
   expect(report.status).toBe(200); expect(await report.json()).toMatchObject({ v: 1, commands: [] });
   expect(f.dashboard.state.workspaces[0].lastReportAt).toBe(f.now());
   expect(f.billing.clouds.view(cloud).lastReportAt).toBe(f.now());
@@ -173,8 +173,8 @@ it("runs the real desktop client through checkout, setup, pairing, upgrade, anot
   expect(await f.client.keepPlan()).toMatchObject({ outcome: "kept" });
   expect(f.snapshot().subscriptions[0].cancelAtPeriodEnd).toBe(false);
   const subjects = f.mailer.outbox.filter(mail => mail.to === "owner@example.test" && !/code/.test(mail.subject)).map(mail => mail.subject);
-  expect(subjects.slice(0, 3)).toEqual(["welcome to dusk bot", expect.stringMatching(/^receipt for \$\d+\.\d\d: /), "your dusk cloud is ready"]);
-  expect(subjects.filter(subject => subject === "your dusk cloud is ready")).toHaveLength(1);
+  expect(subjects.slice(0, 3)).toEqual(["welcome to madani bot", expect.stringMatching(/^receipt for \$\d+\.\d\d: /), "your madani cloud is ready"]);
+  expect(subjects.filter(subject => subject === "your madani cloud is ready")).toHaveLength(1);
   expect(subjects.filter(subject => subject.endsWith("plan is cancelled"))).toHaveLength(1);
   for (const mail of f.mailer.outbox) expect(mail.html).toContain("class=\"kit\"");
   const token = f.token();
@@ -315,7 +315,7 @@ it("refuses an older desktop's Start fresh account delete, so a local reset neve
   expect(f.billing.clouds.get(cloudId)).not.toMatchObject({ ended: true });
 });
 
-it("offers no trial without DUSK_TRIAL_DAYS", async () => {
+it("offers no trial without MADANI_TRIAL_DAYS", async () => {
   const f = await fixture(); await f.signIn();
   const publicConfig = await f.request("/api/public/config");
   expect((publicConfig.data.plans as Array<Record<string, unknown>>).some(plan => "trialDays" in plan)).toBe(false);
@@ -325,8 +325,8 @@ it("offers no trial without DUSK_TRIAL_DAYS", async () => {
   expect(f.snapshot().checkouts[0].trialDays).toBeUndefined();
 });
 
-it("with DUSK_TRIAL_DAYS a first plan starts free, runs its cloud through the trial, and the trial is used once", async () => {
-  vi.stubEnv("DUSK_TRIAL_DAYS", "3");
+it("with MADANI_TRIAL_DAYS a first plan starts free, runs its cloud through the trial, and the trial is used once", async () => {
+  vi.stubEnv("MADANI_TRIAL_DAYS", "3");
   const f = await fixture(); await f.client.start(); await f.signIn();
   const publicConfig = await f.request("/api/public/config");
   expect(parsePublicOffer(publicConfig.data)?.plans.map(plan => plan.trialDays)).toEqual([3, 3, 3]);

@@ -3,9 +3,9 @@
 // most its share; the engine's own tools are never trimmed, and a server still answers a call to a tool it left out.
 
 /** The most tools one MCP server lists for this turn, in the environment of each server the turn hands an engine. */
-export const TOOL_LIMIT_ENV = "DUSK_TOOL_LIMIT";
-/** The same on dusk bot's own MCP endpoints, reached over HTTP. */
-export const TOOL_LIMIT_HEADER = "x-dusk-tool-limit";
+export const TOOL_LIMIT_ENV = "MADANI_TOOL_LIMIT";
+/** The same on madani bot's own MCP endpoints, reached over HTTP. */
+export const TOOL_LIMIT_HEADER = "x-madani-tool-limit";
 
 export function parseToolLimit(value: unknown): number | undefined {
   return typeof value === "string" && /^\d{1,5}$/.test(value) ? Number(value) : undefined;
@@ -30,7 +30,7 @@ export function capToolListResult(result: unknown, limit: number | undefined, lo
   return { ...rest, tools: capToolList(tools, limit) };
 }
 
-/** The most tools a core server (dusk bot's browser, memory and data, email, phone, computer) asks for before connected
+/** The most tools a core server (madani bot's browser, memory and data, email, phone, computer) asks for before connected
  * apps and the person's own servers share what is left. */
 export const CORE_SERVER_SHARE = 32;
 

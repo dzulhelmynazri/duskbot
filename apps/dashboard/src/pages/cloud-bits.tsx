@@ -36,7 +36,7 @@ export function regionName(catalog: PlanCatalog | null, id: string) {
 }
 
 export function tierName(catalog: PlanCatalog | null, cloud: CloudDesktop) {
-  return (catalog && desktopOf(catalog, cloud.tier)?.name) ?? (cloud.placement === "shared" ? "dusk cloud" : "dedicated");
+  return (catalog && desktopOf(catalog, cloud.tier)?.name) ?? (cloud.placement === "shared" ? "madani cloud" : "dedicated");
 }
 
 export function workspaceIcon(w: Pick<WorkspaceSummary, "kind">, cloud: CloudDesktop | null, size = 18) {
@@ -92,7 +92,7 @@ export function Provisioning({ cloud }: { cloud: CloudDesktop }) {
         <span className="text-ink-2" aria-live="polite">{cloud.awaitingPayment ? "finish checkout and it starts setting up" : cloud.progress?.step ?? "getting ready"}</span>
         <span className="num text-ink-3">{v}%</span>
       </div>
-      <div className="relative mt-3 h-1.5 overflow-hidden rounded-full bg-track" role="progressbar" aria-valuemin={0} aria-valuemax={100} aria-valuenow={v} aria-label="setting up your dusk cloud">
+      <div className="relative mt-3 h-1.5 overflow-hidden rounded-full bg-track" role="progressbar" aria-valuemin={0} aria-valuemax={100} aria-valuenow={v} aria-label="setting up your madani cloud">
         <div className="bar-fill h-full w-full rounded-full bg-accent" style={{ transform: `scaleX(${Math.max(0.03, v / 100)})` }} />
         <div className="sweep absolute inset-y-0 left-0 w-1/3 bg-[linear-gradient(90deg,transparent,color-mix(in_oklab,var(--bg)_45%,transparent),transparent)]" aria-hidden />
       </div>
@@ -140,7 +140,7 @@ export function QuickPick({ catalog, source, className, onDone, secondary }: { s
 }
 
 /** the one cloud pitch: a line, a sentence, one button straight to checkout and the three mascots; home and the empty cloud page share it */
-export function CloudPitch({ source = "dash_cloud", title = "keep your bots on while your mac sleeps", body = "dusk cloud runs them all day and all night. set up in one click.", action, link = { to: "/billing", label: "see plans" }, className, id = "pitch-title", style }: { source?: CheckoutSource; title?: string; body?: ReactNode; action?: ReactNode | false; link?: { to: string; label: string } | null; className?: string; id?: string; style?: CSSProperties }) {
+export function CloudPitch({ source = "dash_cloud", title = "keep your bots on while your mac sleeps", body = "madani cloud runs them all day and all night. set up in one click.", action, link = { to: "/billing", label: "see plans" }, className, id = "pitch-title", style }: { source?: CheckoutSource; title?: string; body?: ReactNode; action?: ReactNode | false; link?: { to: string; label: string } | null; className?: string; id?: string; style?: CSSProperties }) {
   const { catalog } = useCloud();
   const { busy, error, buy } = useQuickCheckout(source);
   return (
@@ -150,7 +150,7 @@ export function CloudPitch({ source = "dash_cloud", title = "keep your bots on w
         <p className="mt-1.5 max-w-[52ch] text-14 leading-[1.55] text-ink-3">{body}</p>
         {(action !== false || link) && (
           <div className="mt-5 flex flex-wrap items-center gap-x-5 gap-y-2">
-            {action === false ? null : action ?? <Button variant="primary" onClick={() => void buy("starter")} disabled={busy || !catalog} aria-busy={busy}>{busy ? <><LoaderCircle size={17} strokeWidth={2} className="spin" aria-hidden />opening checkout</> : "get dusk cloud"}</Button>}
+            {action === false ? null : action ?? <Button variant="primary" onClick={() => void buy("starter")} disabled={busy || !catalog} aria-busy={busy}>{busy ? <><LoaderCircle size={17} strokeWidth={2} className="spin" aria-hidden />opening checkout</> : "get madani cloud"}</Button>}
             {link && <Link to={link.to} className="text-link inline-flex h-9 items-center text-14 max-sm:h-11">{link.label}</Link>}
           </div>
         )}

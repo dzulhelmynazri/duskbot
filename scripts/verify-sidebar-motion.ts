@@ -1,19 +1,19 @@
 // The sidebar opening and closing in the real app, against a disposable fake-engine server: stills of it open and as
 // avatars in each skin, a frame strip of each move sampled every 1/60 s, and the frame times of each move with the CPU
 // slowed 4x, with what layout, style and script cost each toggle. Run: node --experimental-strip-types scripts/verify-sidebar-motion.ts <dir> [--label before]
-// Headless Chrome (DUSK_CDP_CHROME, else the installed Google Chrome) in a throwaway profile; files go to <dir>.
+// Headless Chrome (MADANI_CDP_CHROME, else the installed Google Chrome) in a throwaway profile; files go to <dir>.
 import { spawn, spawnSync } from "node:child_process";
 import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import { setTimeout as delay } from "node:timers/promises";
-import { launchVerificationServer, runControlDusk } from "./control-dusk.ts";
+import { launchVerificationServer, runControlMadani } from "./control-madani.ts";
 import { fixtureApi, mountPreview, type MountedPreview } from "./testing/preview-fixture.ts";
 
 const out = resolve(process.argv[2] ?? "");
 const labelAt = process.argv.indexOf("--label");
 const label = labelAt === -1 ? "after" : process.argv[labelAt + 1]!;
-const CHROME = process.env.DUSK_CDP_CHROME ?? "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome";
+const CHROME = process.env.MADANI_CDP_CHROME ?? "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome";
 const [WIDTH, HEIGHT] = [1280, 800];
 const FRAME_MS = 1000 / 60;
 const BOTS: Record<string, string> = { Research: "pink", Inbox: "teal", Writer: "yellow", Travel: "blue", Recipes: "coral", Notes: "green", Ledger: "purple", Garden: "green", Taxes: "blue" };
@@ -118,7 +118,7 @@ const fixture = await launchVerificationServer();
 let ui: MountedPreview | undefined;
 try {
   const api = fixtureApi(fixture.info.url, { headers: { origin: fixture.info.url } });
-  for (const name of NAMES) await runControlDusk(["new-bot", "--name", name, "--url", fixture.info.url]);
+  for (const name of NAMES) await runControlMadani(["new-bot", "--name", name, "--url", fixture.info.url]);
   await api("PATCH", "/api/config", { language: "en" });
   const { bots } = await api("GET", "/api/bots?messages=0") as { bots: Array<{ id: string; name: string }> };
   const ids = Object.fromEntries(NAMES.map((name) => [name, bots.find((bot) => bot.name === name)!.id]));
@@ -127,11 +127,11 @@ try {
   await api("POST", "/api/sidebar-sections", { name: "Work", botIds: [ids.Research, ids.Notes] });
   for (const name of ARCHIVED) await api("PATCH", `/api/bots/${ids[name]}`, { hidden: true });
   for (const text of ["Plan the week from my inbox", "Draft a reply to the landlord about the heater", "What is left on the tax return", "Book the dentist for Tuesday", "Find the cheapest train to Leeds on Friday", "Which bills are due this month", "Sort the receipts folder by month", "Summarise the three newsletters"]) {
-    await runControlDusk(["run", "Inbox", text, "--url", fixture.info.url, "--timeout", "60s"]).catch(() => undefined);
+    await runControlMadani(["run", "Inbox", text, "--url", fixture.info.url, "--timeout", "60s"]).catch(() => undefined);
   }
   ui = await mountPreview(fixture, { entry: "/scripts/testing/sidebar-motion-preview.tsx", route: "/__sidebar-motion.html", title: "Isolated sidebar motion", logLevel: "warn" });
   mkdirSync(out, { recursive: true });
-  const profile = mkdtempSync(join(tmpdir(), "dusk-sidebar-motion-chrome-"));
+  const profile = mkdtempSync(join(tmpdir(), "madani-sidebar-motion-chrome-"));
   const chrome = await openChrome(profile);
   const timings: Record<string, ReturnType<typeof summary>> = {};
   try {

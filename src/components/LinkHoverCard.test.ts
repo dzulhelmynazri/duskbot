@@ -52,7 +52,7 @@ const answer = (body: unknown, status = 200) => vi.fn(async () => new Response(J
 
 describe("LinkHoverCard", () => {
   let view: ReturnType<typeof mount>;
-  const href = "https://github.com/goatedgrokbotalternative/duskbot/pull/2547";
+  const href = "https://github.com/goatedgrokbotalternative/madanibot/pull/2547";
   const link = () => view.link();
 
   beforeEach(() => {
@@ -76,7 +76,7 @@ describe("LinkHoverCard", () => {
     await advance(50);
     expect(card()?.getAttribute("role")).toBe("tooltip");
     expect(card()?.textContent).toContain("Pull request #2547");
-    expect(card()?.textContent).toContain("goatedgrokbotalternative/duskbot");
+    expect(card()?.textContent).toContain("goatedgrokbotalternative/madanibot");
     expect(card()?.textContent).toContain("github.com");
     expect(link().getAttribute("aria-describedby")).toBe(card()?.id);
   });

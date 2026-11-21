@@ -29,9 +29,9 @@ const input = (now = 1_000_000) => ({
 });
 
 beforeEach(() => {
-  root = mkdtempSync(join(tmpdir(), "dusk-migrate-"));
+  root = mkdtempSync(join(tmpdir(), "madani-migrate-"));
   home = join(root, "home");
-  dataDir = join(home, ".duskbot");
+  dataDir = join(home, ".madanibot");
   mkdirSync(dataDir, { recursive: true });
 });
 afterEach(() => rmSync(root, { recursive: true, force: true }));

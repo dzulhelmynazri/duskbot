@@ -42,9 +42,9 @@ describe("the host context", () => {
     const context = appHostContext({ width: 612.4, maxHeight: 700 });
     expect(context).toMatchObject({
       displayMode: "inline", availableDisplayModes: ["inline"], containerDimensions: { width: 612, maxHeight: 700 },
-      platform: "web", userAgent: expect.stringMatching(/^Dusk\//),
+      platform: "web", userAgent: expect.stringMatching(/^Madani\//),
     });
-    vi.stubGlobal("window", { innerHeight: 2_000, duskDesktop: {} });
+    vi.stubGlobal("window", { innerHeight: 2_000, madaniDesktop: {} });
     expect(appMaxHeight()).toBe(720);
     expect(appHostContext({ width: 600, maxHeight: 720 }).platform).toBe("desktop");
   });

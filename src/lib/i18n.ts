@@ -89,7 +89,7 @@ export function deviceWord(platform: string | undefined = desktopPlatform()): st
 }
 
 function desktopPlatform(): string | undefined {
-  if (typeof window !== "undefined" && window.duskDesktop?.platform) return window.duskDesktop.platform;
+  if (typeof window !== "undefined" && window.madaniDesktop?.platform) return window.madaniDesktop.platform;
   const agent = typeof navigator === "undefined" ? "" : navigator.userAgent;
   return /Mac OS X|Macintosh/.test(agent) && !/iPhone|iPad/.test(agent) ? "darwin" : /Windows/.test(agent) ? "win32" : undefined;
 }

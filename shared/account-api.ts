@@ -15,9 +15,9 @@ export const EMAIL_RESEND_SECONDS = 30;
 
 /** cookies the website session uses. the session cookie is HttpOnly; the csrf cookie is readable so the page can echo
  * it in CSRF_HEADER on every cookie-authenticated POST, PATCH and DELETE. */
-export const SESSION_COOKIE = "dusk_dash";
-export const CSRF_COOKIE = "dusk_csrf";
-export const CSRF_HEADER = "x-dusk-csrf";
+export const SESSION_COOKIE = "madani_dash";
+export const CSRF_COOKIE = "madani_csrf";
+export const CSRF_HEADER = "x-madani-csrf";
 /** a browser signed in before the rename holds the cookie under its old name until it signs in again */
 export const CSRF_COOKIE_BEFORE = "omb_csrf";
 export function readCsrfCookie(cookies: string): string | undefined {
@@ -28,8 +28,8 @@ export function readCsrfCookie(cookies: string): string | undefined {
   return undefined;
 }
 
-/** the deep link a phone sign-in returns to: duskbot://auth?code=...&state=... or ?error=...&state=... */
-export const APP_AUTH_REDIRECT = "duskbot://auth";
+/** the deep link a phone sign-in returns to: madanibot://auth?code=...&state=... or ?error=...&state=... */
+export const APP_AUTH_REDIRECT = "madanibot://auth";
 /** the desktop app's provider sign-in (app start with landing=page) ends on this website page instead: it hands the deep
  * link (in the fragment, #code=...&state=...) to the app and says to head back, rather than leaving the provider's page up */
 export const APP_LANDING_PATH = "/app-signed-in";
@@ -109,14 +109,14 @@ export const ACCOUNT_ROUTES = {
   /** bearer app session: a one-time token the app hands its own workspace so it enrolls into this account's dashboard. */
   enrollGrant: "/v1/app/enroll-grant", //       POST {} -> EnrollGrantAnswer
   /** bearer app session: takes a workspace this account owns off its dashboard, as when the app forgets a server it
-   * linked there. never a dusk cloud's own workspace. */
+   * linked there. never a madani cloud's own workspace. */
   workspaceUnlink: "/v1/app/workspace-unlink", // POST { workspaceId } -> { ok: true, removed: boolean }
   /** bearer app session: a five-minute signed grant the app hands the link service to open a VPS setup session. */
   linkGrant: "/v1/app/link-grant", //           POST {} -> { v: 1, grant, expiresAt }
   /** bearer desktop app session: a short letters-only code (and its QR) that logs a phone in to this account, single use,
    * PHONE_SIGN_IN_TTL_MS long. the phone redeems it at appPhoneSignIn. */
   phoneSignIn: "/v1/app/phone-sign-in", //      POST {} -> PhoneSignInGrant
-  /** bearer app session: every computer and server this account holds (its dusk clouds' own workspaces left out), with
+  /** bearer app session: every computer and server this account holds (its madani clouds' own workspaces left out), with
    * presence. never another account's. */
   appComputers: "/v1/app/computers", //         GET -> AppComputersAnswer
   /** bearer app session: asks one of the account's computers, while it is online, for a one-time phone pairing link, so the
@@ -127,7 +127,7 @@ export const ACCOUNT_ROUTES = {
   /** bearer app session: short-lived Cloudflare TURN credentials for the direct screen path; 503 when TURN is off. */
   screenIce: "/v1/app/screen-ice", //           POST {} -> { v: 1, iceServers, expiresAt }
   /** bearer app session: deletes the account from the app, as deleteAccount does on the website, cancelling any plan
-   * (it does not renew; a dusk cloud is deleted after its paid time and the usual grace). `email` must be the account's. */
+   * (it does not renew; a madani cloud is deleted after its paid time and the usual grace). `email` must be the account's. */
   appDeleteAccount: "/v1/app/delete-account", // POST { email } -> { ok: true }
   /** bearer app session: a one-time link that opens the website signed in to the same account (WebHandoffRequest). */
   webHandoff: "/v1/app/web-handoff", //         POST WebHandoffRequest -> WebHandoffAnswer
@@ -261,7 +261,7 @@ export interface AppSessionIdentity {
    * put the bots. absent: done before, elsewhere, or a service older than this field */
   websiteSetup?: WebsiteSetup;
 }
-/** where the website's first steps put the bots: this computer (free) or dusk cloud (a plan picked, its checkout opened) */
+/** where the website's first steps put the bots: this computer (free) or madani cloud (a plan picked, its checkout opened) */
 export type WebsiteHome = "free" | "cloud";
 export type WebsiteSetup = "open" | WebsiteHome;
 export const WEBSITE_HOMES: readonly WebsiteHome[] = ["free", "cloud"];

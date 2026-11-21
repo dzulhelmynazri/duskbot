@@ -31,15 +31,15 @@
       "**keep the next step yours.** you want an explanation, second opinion or draft.",
       "**act after reading.** you prefer to carry out each change yourself."
     ],
-    "dusk_title": "an ai agent",
-    "dusk": [
+    "madani_title": "an ai agent",
+    "madani": [
       "**hand over a small job.** it needs to read allowed material and use tools.",
       "**repeat work with clear limits.** you can define access, stopping rules and review."
     ]
   },
   "compare": {
     "h": "a working distinction, not two fixed product categories",
-    "intro": "**the next step is the useful dividing line.** a product can offer both conversation and action. dusk illustrates the agent column; other agents have different tools and controls.",
+    "intro": "**the next step is the useful dividing line.** a product can offer both conversation and action. madani illustrates the agent column; other agents have different tools and controls.",
     "cols": [
       "a chatbot",
       "an ai agent"
@@ -89,7 +89,7 @@
         "label": "checking progress",
         "cells": [
           "you inspect the reply before using it",
-          "in dusk bot, tool activity is shown while the bot works; you can stop it"
+          "in madani bot, tool activity is shown while the bot works; you can stop it"
         ],
         "src": [
           2
@@ -99,7 +99,7 @@
         "label": "memory and identity",
         "cells": [
           "a conversation interface alone says nothing about lasting memory",
-          "dusk bots have separate jobs and memory; memory can be turned off"
+          "madani bots have separate jobs and memory; memory can be turned off"
         ],
         "src": [
           2,
@@ -108,7 +108,7 @@
       }
     ]
   },
-  "method": "**the labels describe responsibility, not a ranking.** we make dusk bot and use its docs for the agent examples.\n\nwe didn't run matching tests across products. a chat interface can include tools, memory and background work. inspect the controls before deciding how much authority a product gets.",
+  "method": "**the labels describe responsibility, not a ranking.** we make madani bot and use its docs for the agent examples.\n\nwe didn't run matching tests across products. a chat interface can include tools, memory and background work. inspect the controls before deciding how much authority a product gets.",
   "sections": [
     {
       "h": "when a chatbot is enough",
@@ -116,11 +116,11 @@
     },
     {
       "h": "when you need an agent",
-      "md": "**an agent helps when the result needs more than a reply.** a friday folder review needs file access and a schedule. dusk routines start through chat and show their next runs on a card.[^4]\n\ntry: \"every friday at 3, read this project folder's notes. list unanswered questions here. change nothing. stay quiet if there are none.\" [scheduled tasks](/scheduled-ai-tasks) turns a repeated request into work to supervise.\n\nthe machine still matters. dusk desktop routines stop during sleep or when the app closes. dusk cloud runs them on time.[^4]"
+      "md": "**an agent helps when the result needs more than a reply.** a friday folder review needs file access and a schedule. madani routines start through chat and show their next runs on a card.[^4]\n\ntry: \"every friday at 3, read this project folder's notes. list unanswered questions here. change nothing. stay quiet if there are none.\" [scheduled tasks](/scheduled-ai-tasks) turns a repeated request into work to supervise.\n\nthe machine still matters. madani desktop routines stop during sleep or when the app closes. madani cloud runs them on time.[^4]"
     },
     {
       "h": "agent or plain automation?",
-      "md": "**use a fixed rule when a fixed rule will do.** if the same input always needs the same action, spell out the process. messy notes may need judgement; tell the agent which evidence to use.\n\nin dusk, read-only app access blocks changes. other app edits can happen without asking, so require confirmation before allowing writes.[^3] file and command approvals are separate.[^6]\n\nwatch the first runs and stop if the job grows. the [computer-control safety guide](/guides/is-it-safe-to-let-ai-control-your-computer) helps you choose its limits."
+      "md": "**use a fixed rule when a fixed rule will do.** if the same input always needs the same action, spell out the process. messy notes may need judgement; tell the agent which evidence to use.\n\nin madani, read-only app access blocks changes. other app edits can happen without asking, so require confirmation before allowing writes.[^3] file and command approvals are separate.[^6]\n\nwatch the first runs and stop if the job grows. the [computer-control safety guide](/guides/is-it-safe-to-let-ai-control-your-computer) helps you choose its limits."
     }
   ],
   "faq": [
@@ -130,40 +130,40 @@
     },
     {
       "q": "does a chatbot become an agent just because it remembers me?",
-      "a": "**memory is separate from action.** dusk has a memory setting and app permissions for tools.[^5][^3] ask what it can do on your behalf, not just what it recalls."
+      "a": "**memory is separate from action.** madani has a memory setting and app permissions for tools.[^5][^3] ask what it can do on your behalf, not just what it recalls."
     },
     {
       "q": "do i need a group chat of agents for a simple job?",
-      "a": "**start with one bot.** dusk supports small, focused groups.[^7] add another job when it brings a distinct contribution."
+      "a": "**start with one bot.** madani supports small, focused groups.[^7] add another job when it brings a distinct contribution."
     }
   ],
   "sources": [
     {
-      "label": "dusk bot: what a bot is",
+      "label": "madani bot: what a bot is",
       "url": "/docs/getting-started"
     },
     {
-      "label": "dusk bot: jobs, tools and stopping work",
+      "label": "madani bot: jobs, tools and stopping work",
       "url": "/docs/bots"
     },
     {
-      "label": "dusk bot: connected-app limits",
+      "label": "madani bot: connected-app limits",
       "url": "/docs/files-and-apps"
     },
     {
-      "label": "dusk bot: schedules and app events",
+      "label": "madani bot: schedules and app events",
       "url": "/docs/routines"
     },
     {
-      "label": "dusk bot: memory controls",
+      "label": "madani bot: memory controls",
       "url": "/docs/memory"
     },
     {
-      "label": "dusk bot: command and file approvals",
+      "label": "madani bot: command and file approvals",
       "url": "/docs/computer"
     },
     {
-      "label": "dusk bot: focused group chats",
+      "label": "madani bot: focused group chats",
       "url": "/docs/group-chats"
     }
   ],

@@ -12,7 +12,7 @@ import { Choice, Modal } from "../ui/controls";
 import { Button } from "../ui/kit";
 import { cartText, planSelection } from "./plan-sheet";
 
-export const CONTACT = "mailto:hello@dusk.bot";
+export const CONTACT = "mailto:hello@madani.bot";
 
 /** the reasons in the order they are offered */
 export const REASONS: Array<{ id: CancelAnswer; label: string }> = [
@@ -31,12 +31,12 @@ export type FlowStep = "reason" | "help" | "confirm";
 export const nextStep = (step: FlowStep, reason: CancelAnswer | null, canSave = false): FlowStep =>
   step === "reason" && ((reason && HELPED.has(reason)) || canSave) ? "help" : "confirm";
 
-/** what ends with the plan, as plain lines, in the person's own numbers when known; `keepsLicense` is a work license that outlives the dusk cloud */
+/** what ends with the plan, as plain lines, in the person's own numbers when known; `keepsLicense` is a work license that outlives the madani cloud */
 export function losses(opts: { desk: boolean; work: boolean; keepsLicense: boolean; bots?: number; routines?: number }): string[] {
   const bots = opts.bots && opts.bots > 1 ? `your ${opts.bots} bots stop` : opts.bots === 1 ? "your bot stops" : "your bots stop";
   const routines = opts.routines && opts.routines > 1 ? `your ${opts.routines} routines only run` : opts.routines === 1 ? "your routine only runs" : "routines only run";
   return [
-    ...(opts.desk ? [`${bots} working when your mac sleeps`, `${routines} while your mac is awake`, "your dusk cloud files are kept for 30 days, then deleted"] : []),
+    ...(opts.desk ? [`${bots} working when your mac sleeps`, `${routines} while your mac is awake`, "your madani cloud files are kept for 30 days, then deleted"] : []),
     ...(opts.work && !opts.keepsLicense ? ["work use is no longer covered. personal use stays free."] : []),
   ];
 }
@@ -56,7 +56,7 @@ function Confirm({ desk, work, keepsLicense, trial, until }: { desk: boolean; wo
   const lost = useLosses({ desk, work, keepsLicense });
   return (
     <>
-      <p>{keepsLicense ? `your dusk cloud keeps working until ${until} and isn't charged again. your work license stays and keeps renewing.` : `everything keeps working until ${until}, and you won't be charged${trial ? "" : " again"}.`}{lost.length ? " after that:" : ""}</p>
+      <p>{keepsLicense ? `your madani cloud keeps working until ${until} and isn't charged again. your work license stays and keeps renewing.` : `everything keeps working until ${until}, and you won't be charged${trial ? "" : " again"}.`}{lost.length ? " after that:" : ""}</p>
       {lost.length > 0 && (
         <ul className="mt-3 flex flex-col gap-2">
           {lost.map((l) => <li key={l} className="flex gap-2.5 text-14 text-ink-2"><Minus size={16} strokeWidth={1.75} className="mt-0.5 shrink-0 text-ink-4" aria-hidden />{l}</li>)}
@@ -106,7 +106,7 @@ function Saves({ offer, plus, smaller, work, busy, onDiscount, onDowngrade, cata
         <div className="flex flex-wrap items-center justify-between gap-3 rounded-[16px] bg-card px-4 py-3">
           <div className="min-w-0 flex-1 basis-[200px]">
             <p className="text-14 text-ink">switch to {plus.name}</p>
-            <p className="num text-13 text-ink-3">{cartText(priceCart(smaller, catalog), interval)}, a smaller dusk cloud{work ? ", work license included" : ""}</p>
+            <p className="num text-13 text-ink-3">{cartText(priceCart(smaller, catalog), interval)}, a smaller madani cloud{work ? ", work license included" : ""}</p>
           </div>
           <Button variant={offer ? "outline" : "primary"} size="sm" onClick={onDowngrade} disabled={busy !== null}>{busy === "downgrade" ? "switching" : `switch to ${plus.name}`}</Button>
         </div>
@@ -161,14 +161,14 @@ export function CancelFlow({ open, onClose, catalog }: { open: boolean; onClose(
   const stop = () => run("cancel", async () => {
     if (keepsLicense) { await changePlan({ ...sel, desktop: "none", size: null }); log("confirm", "cancelled"); }
     else await cancel(reason ?? "");
-    toast(keepsLicense ? `cancelled. your dusk cloud works until ${until}.` : `cancelled. everything keeps working until ${until}.`);
+    toast(keepsLicense ? `cancelled. your madani cloud works until ${until}.` : `cancelled. everything keeps working until ${until}.`);
   });
 
-  const title = step === "reason" ? "what's going on?" : step === "help" ? (reason === "broken" ? "let's fix it first" : reason === "price" ? "a lighter way to keep it" : reason === "unused" ? "here's what it can do" : reason === "feature" ? "tell us what's missing" : "before you go") : keepsLicense ? "cancel your dusk cloud?" : "cancel your plan?";
+  const title = step === "reason" ? "what's going on?" : step === "help" ? (reason === "broken" ? "let's fix it first" : reason === "price" ? "a lighter way to keep it" : reason === "unused" ? "here's what it can do" : reason === "feature" ? "tell us what's missing" : "before you go") : keepsLicense ? "cancel your madani cloud?" : "cancel your plan?";
   const saves = <Saves offer={offer} plus={cheaper} smaller={cheaper ? smaller : null} work={work} busy={busy} onDiscount={() => void discount()} onDowngrade={() => void downgrade()} catalog={catalog} interval={sel.interval} />;
   // past the reason, keeping the plan is the button that stands out; cancelling stays one clear click away
   const footer = step === "confirm"
-    ? <><Button variant="primary" onClick={keep}>keep my plan</Button><Button variant="danger" onClick={() => void stop()} disabled={busy !== null}>{busy === "cancel" ? "cancelling" : keepsLicense ? "cancel dusk cloud" : "cancel my plan"}</Button></>
+    ? <><Button variant="primary" onClick={keep}>keep my plan</Button><Button variant="danger" onClick={() => void stop()} disabled={busy !== null}>{busy === "cancel" ? "cancelling" : keepsLicense ? "cancel madani cloud" : "cancel my plan"}</Button></>
     : step === "help"
       ? <><Button variant="primary" onClick={keep}>keep my plan</Button><Button onClick={next} disabled={busy !== null}>continue to cancel</Button></>
       : <><Button onClick={keep}>keep my plan</Button><Button variant="primary" onClick={next} disabled={busy !== null}>continue</Button></>;
@@ -205,9 +205,9 @@ export function CancelFlow({ open, onClose, catalog }: { open: boolean; onClose(
         <>
           <p>most problems clear up with a restart, and we answer every message.</p>
           <div className="mt-4 flex flex-col gap-1.5">
-            {desk && <HelpLink to="/cloud" onClick={() => log("help", "helped")}>restart your dusk cloud</HelpLink>}
+            {desk && <HelpLink to="/cloud" onClick={() => log("help", "helped")}>restart your madani cloud</HelpLink>}
             <HelpLink to="/workspaces" onClick={() => log("help", "helped")}>check that your computers are connected</HelpLink>
-            <HelpLink to={`${CONTACT}?subject=${encodeURIComponent("something broke")}`} external onClick={() => log("help", "helped")}>write to us at hello@dusk.bot</HelpLink>
+            <HelpLink to={`${CONTACT}?subject=${encodeURIComponent("something broke")}`} external onClick={() => log("help", "helped")}>write to us at hello@madani.bot</HelpLink>
           </div>
         </>
       )}
@@ -215,7 +215,7 @@ export function CancelFlow({ open, onClose, catalog }: { open: boolean; onClose(
         <>
           <p>tell us what you need. we read every note, and it shapes what we build next.</p>
           <div className="mt-4 flex flex-col gap-1.5">
-            <HelpLink to={`${CONTACT}?subject=${encodeURIComponent("a feature i need")}`} external onClick={() => log("help", "helped")}>write to us at hello@dusk.bot</HelpLink>
+            <HelpLink to={`${CONTACT}?subject=${encodeURIComponent("a feature i need")}`} external onClick={() => log("help", "helped")}>write to us at hello@madani.bot</HelpLink>
           </div>
         </>
       )}

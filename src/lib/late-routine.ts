@@ -15,7 +15,7 @@ export interface LateRoutineRun {
 }
 
 /** The newest scheduled run on this computer, from the last few days, that ran late or never ran because the computer
- * was off: the moment dusk cloud is plainly worth it. Manual, test, event and limit-reset runs never count, nor
+ * was off: the moment madani cloud is plainly worth it. Manual, test, event and limit-reset runs never count, nor
  * a routine that is off or held. */
 export function lateRoutineRun(
   routines: readonly Pick<Routine, "id" | "name" | "enabled" | "heldFor" | "runOn" | "schedule">[],

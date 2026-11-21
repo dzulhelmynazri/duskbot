@@ -1,13 +1,13 @@
 // The "agents" MCP server inside a bot's agent process: stdio JSON-RPC 2.0 (no MCP SDK), every tool
 // routed through the harness. Env, set by the harness:
-//   DUSK_HARNESS_URL  base URL of the harness (http://127.0.0.1:8799)
-//   DUSK_BOT_ID  the calling bot's id
-//   DUSK_COMMS_TOKEN  shared secret for the localhost-only internal endpoints
-//   DUSK_TURN_DEPTH  this turn's comms depth (the harness refuses recursion)
-//   DUSK_EXTERNAL_RUNTIME  "1" for a standing process: oversized results are cut instead of cached
-//   DUSK_CHIEF_OF_STAFF  "1" for a Chief of Staff, the only bot shown the Chief-only tools
-//   DUSK_DEFAULT_BOT  "1" for the person's Dusk, the only bot shown its notification tools
-//   DUSK_AGENTS_TOOL_BRIDGE  "1" lists a few tools and puts the rest behind find_tool and use_tool
+//   MADANI_HARNESS_URL  base URL of the harness (http://127.0.0.1:8799)
+//   MADANI_BOT_ID  the calling bot's id
+//   MADANI_COMMS_TOKEN  shared secret for the localhost-only internal endpoints
+//   MADANI_TURN_DEPTH  this turn's comms depth (the harness refuses recursion)
+//   MADANI_EXTERNAL_RUNTIME  "1" for a standing process: oversized results are cut instead of cached
+//   MADANI_CHIEF_OF_STAFF  "1" for a Chief of Staff, the only bot shown the Chief-only tools
+//   MADANI_DEFAULT_BOT  "1" for the person's Madani, the only bot shown its notification tools
+//   MADANI_AGENTS_TOOL_BRIDGE  "1" lists a few tools and puts the rest behind find_tool and use_tool
 // scripts/bundle-server.mjs inlines agents-mcp and agents-catalog/-call/-client/-bridge into this file, which the harness spawns.
 import readline from "node:readline";
 

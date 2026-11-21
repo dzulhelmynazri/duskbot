@@ -74,7 +74,7 @@ beforeEach(() => {
   fixture.liveConfigured = true;
   fixture.liveCall = null;
   fixture.cloudHome = false;
-  vi.stubGlobal("window", { duskDesktop: { speechStart: vi.fn(), speechStop: vi.fn(async () => {}) } });
+  vi.stubGlobal("window", { madaniDesktop: { speechStart: vi.fn(), speechStop: vi.fn(async () => {}) } });
   configureLiveMedia({ getUserMedia: () => new Promise<MediaStream>(() => {}) });
 });
 afterEach(() => {
@@ -205,14 +205,14 @@ describe("the call mode menu", () => {
   it("shows Take turns disabled with its reason where this page can't take turns", () => {
     const turnsUnavailable = {
       label: "calls where you take turns need the desktop app",
-      reason: "they listen from this computer, so they need dusk bot on a Mac, Windows or Linux computer.",
+      reason: "they listen from this computer, so they need madani bot on a Mac, Windows or Linux computer.",
     };
     const markup = renderToStaticMarkup(createElement(CallModeMenu, { id: "m", mode: "live", turnsUnavailable, onChoose: vi.fn(), onClose: vi.fn() }));
     const [turns, live] = markup.split('role="menuitemradio"').slice(1);
     expect(turns).toMatch(/^ aria-checked="false" aria-disabled="true"/);
     expect(turns).not.toContain('disabled=""');
     expect(turns).toContain(">Take turns<");
-    expect(turns).toContain("calls where you take turns need the desktop app. they listen from this computer, so they need dusk bot on a Mac, Windows or Linux computer.");
+    expect(turns).toContain("calls where you take turns need the desktop app. they listen from this computer, so they need madani bot on a Mac, Windows or Linux computer.");
     expect(turns).not.toContain("Listening stays on this computer");
     expect(live).toMatch(/^ aria-checked="true"/);
     expect(live).not.toMatch(/aria-disabled="true"|disabled=""/);

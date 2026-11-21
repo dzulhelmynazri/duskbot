@@ -1,34 +1,34 @@
 import type { HelperFollowupField } from "./helper-followup.ts";
 import type { MausColor } from "./wire.ts";
 
-/** Dusk: every person's built-in helper. A new install's first bot (its Chief of Staff too); an existing place or
+/** Madani: every person's built-in helper. A new install's first bot (its Chief of Staff too); an existing place or
  * person without one is given one once. It can be renamed and recoloured, hidden from the sidebar, never deleted. */
-export const DEFAULT_BOT_NAME = "dusk bot";
+export const DEFAULT_BOT_NAME = "madani bot";
 export const DEFAULT_BOT_COLOR: MausColor = "chrome";
 
 export interface DefaultBotMark {
-  /** Team Cloud only: the lowercased email of the member this Dusk belongs to. Absent: the place's own. */
+  /** Team Cloud only: the lowercased email of the member this Madani belongs to. Absent: the place's own. */
   person?: string;
 }
 
 export interface DefaultBotFields {
-  /** This bot is its place's (or, on a Team Cloud, its member's) Dusk. Never deleted or archived. */
+  /** This bot is its place's (or, on a Team Cloud, its member's) Madani. Never deleted or archived. */
   defaultBot?: DefaultBotMark;
-  /** Settings → General "Show Dusk in the sidebar" is off: the bot keeps working, only its sidebar row is gone. */
+  /** Settings → General "Show Madani in the sidebar" is off: the bot keeps working, only its sidebar row is gone. */
   sidebarHidden?: boolean;
-  /** Its person has seen Dusk's first-launch welcome here and chose Add or Not now. */
+  /** Its person has seen Madani's first-launch welcome here and chose Add or Not now. */
   welcomed?: boolean;
 }
 
 export interface HelperIntroField extends HelperFollowupField {
-  /** Dusk's introduction. Clients that know it say it in the viewer's language with example asks; `text` is the
+  /** Madani's introduction. Clients that know it say it in the viewer's language with example asks; `text` is the
    * English fallback the model and older clients read. */
   helperIntro?: true;
 }
 
 export const defaultBotPerson = (bot: DefaultBotFields): string => bot.defaultBot?.person?.trim().toLowerCase() ?? "";
 
-/** The Dusk a viewer sees as theirs: their own on a Team Cloud (by email), else the place's. */
+/** The Madani a viewer sees as theirs: their own on a Team Cloud (by email), else the place's. */
 export function viewersDefaultBot<T extends DefaultBotFields>(bots: readonly T[], email?: string | null): T | undefined {
   const person = email?.trim().toLowerCase() ?? "";
   return (person ? bots.find((bot) => bot.defaultBot && defaultBotPerson(bot) === person) : undefined)

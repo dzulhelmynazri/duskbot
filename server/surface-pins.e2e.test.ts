@@ -56,8 +56,8 @@ describe("surface pin provenance against the real server", () => {
   }, Boolean);
   const mountedComputer = (sent: any) => sent.mcpConfig.mcpServers.computer;
   // The first screen tools/call, exactly as the mounted proxy issues it: a claim and its pin land on use, not on mount.
-  const gate = (c: any) => fetch(c.env.DUSK_CONTROL_URL, {
-    headers: { authorization: `Bearer ${c.env.DUSK_CONTROL_TOKEN}` },
+  const gate = (c: any) => fetch(c.env.MADANI_CONTROL_URL, {
+    headers: { authorization: `Bearer ${c.env.MADANI_CONTROL_TOKEN}` },
   }).then(response => response.json() as Promise<any>);
   const threadState = (botId: string, threadId: string) =>
     api("GET", "/api/bots?messages=0").then(({ body }) =>
@@ -81,12 +81,12 @@ describe("surface pin provenance against the real server", () => {
       "--import", pathToFileURL(join(ROOT, "server/testing/desktop-parent.mjs")).href, join(ROOT, "server/index.ts")], {
       cwd: ROOT, env: {
         PATH: dirname(process.execPath), ...(process.env.SystemRoot ? { SystemRoot: process.env.SystemRoot } : {}),
-        HOME: home, USERPROFILE: home, DUSK_DATA_DIR: data,
+        HOME: home, USERPROFILE: home, MADANI_DATA_DIR: data,
         APPDATA: join(home, "appdata"), LOCALAPPDATA: join(home, "localappdata"),
         TEMP: home, TMP: home, TMPDIR: home,
-        DUSK_PORT: String(port), DUSK_WEBHOOK_PORT: String(port + 1), DUSK_STATIC_DIR: ui, DUSK_TEST_VM_STATE: stateFile, DUSK_TEST_VPS_STATE: vpsStateFile,
-        DUSK_USER_DATA: join(home, "user-data"), DUSK_TEST_DESKTOP_CUA_CONNECTION: cuaDescriptor,
-        ...(withBrowser ? { DUSK_AGENT_BROWSER_PATH: inertBrowser, AGENT_BROWSER_EXECUTABLE_PATH: inertBrowser } : {}),
+        MADANI_PORT: String(port), MADANI_WEBHOOK_PORT: String(port + 1), MADANI_STATIC_DIR: ui, MADANI_TEST_VM_STATE: stateFile, MADANI_TEST_VPS_STATE: vpsStateFile,
+        MADANI_USER_DATA: join(home, "user-data"), MADANI_TEST_DESKTOP_CUA_CONNECTION: cuaDescriptor,
+        ...(withBrowser ? { MADANI_AGENT_BROWSER_PATH: inertBrowser, AGENT_BROWSER_EXECUTABLE_PATH: inertBrowser } : {}),
       }, stdio: ["ignore", "pipe", "pipe"],
     });
     child = proc;
@@ -111,7 +111,7 @@ describe("surface pin provenance against the real server", () => {
   }
 
   beforeAll(async () => {
-    home = mkdtempSync(join(tmpdir(), "dusk-surface-pins-"));
+    home = mkdtempSync(join(tmpdir(), "madani-surface-pins-"));
     data = join(home, "data");
     ui = join(home, "static");
     stateFile = join(home, "vm.json");
@@ -368,7 +368,7 @@ describe("surface pin provenance against the real server", () => {
         await apiOk("POST", `/api/bots/${bot.id}/messages`, { text: "Stay where I pinned you.", threadId: task.threadId });
         const sent = await dump();
         expect(sent.systemPrompt).toContain("You can act on the user's computer");
-        expect(mountedComputer(sent).env.DUSK_CUA_COMMAND).toBe("/fixture/cua-driver");
+        expect(mountedComputer(sent).env.MADANI_CUA_COMMAND).toBe("/fixture/cua-driver");
         expect(mountedComputer(sent).args.some((arg: string) => arg.includes("container-mcp"))).toBe(false);
         writeFileSync(finishFile, "finish");
         await idle(bot.id, task.threadId);
@@ -392,7 +392,7 @@ describe("surface pin provenance against the real server", () => {
     resetTurn();
     await apiOk("POST", `/api/bots/${bot.id}/messages`, { text: "Open Chrome on the cloud computer.", threadId: task.threadId });
     const sent = await dump();
-    const token = sent.mcpConfig.mcpServers.agents.env.DUSK_COMMS_TOKEN;
+    const token = sent.mcpConfig.mcpServers.agents.env.MADANI_COMMS_TOKEN;
     const selected = await fetch(base + "/api/internal/computer/select", { method: "POST",
       headers: { authorization: `Bearer ${token}`, "content-type": "application/json" }, body: JSON.stringify({ surface: "cloud" }) });
     expect(await selected.json()).toMatchObject({ status: "pending", surface: "cloud" });
@@ -457,7 +457,7 @@ describe("surface pin provenance against the real server", () => {
     resetTurn();
     await apiOk("POST", `/api/bots/${bot.id}/messages`, { text: "Open Chrome on the cloud computer.", threadId: task.threadId });
     const sent = await dump();
-    const token = sent.mcpConfig.mcpServers.agents.env.DUSK_COMMS_TOKEN;
+    const token = sent.mcpConfig.mcpServers.agents.env.MADANI_COMMS_TOKEN;
     const selected = await fetch(base + "/api/internal/computer/select", { method: "POST",
       headers: { authorization: `Bearer ${token}`, "content-type": "application/json" }, body: JSON.stringify({ surface: "cloud" }) });
     expect(await selected.json()).toMatchObject({ status: "pending", surface: "cloud" });
@@ -490,7 +490,7 @@ describe("surface pin provenance against the real server", () => {
       threadId: task.threadId, sendId: randomUUID(), text: "Check the dashboard on the cloud computer.", expectedActiveLeafId: null,
     });
     const sent = await dump();
-    const token = sent.mcpConfig.mcpServers.agents.env.DUSK_COMMS_TOKEN;
+    const token = sent.mcpConfig.mcpServers.agents.env.MADANI_COMMS_TOKEN;
     const selected = await fetch(base + "/api/internal/computer/select", { method: "POST",
       headers: { authorization: `Bearer ${token}`, "content-type": "application/json" }, body: JSON.stringify({ surface: "cloud" }) });
     expect(await selected.json()).toMatchObject({ status: "pending", surface: "cloud" });

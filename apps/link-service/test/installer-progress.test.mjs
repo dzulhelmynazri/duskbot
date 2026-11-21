@@ -320,7 +320,7 @@ do_engines
     expect(npm).toHaveLength(1);
     expect(npm[0]).toContain("@openai/codex");
     expect(npm[0]).not.toContain("@anthropic-ai/claude-code");
-    expect(calls.filter((line) => line.endsWith("/.local/bin/duskbot free-backup install"))).toHaveLength(2);
+    expect(calls.filter((line) => line.endsWith("/.local/bin/madanibot free-backup install"))).toHaveLength(2);
   });
 
   it("keeps going when the free backup ai cannot be downloaded", async () => {
@@ -342,8 +342,8 @@ do_engines && echo engines-ok
 SVC_HOME=$TMP/home
 mkdir -p "$SVC_HOME/.local/bin"
 for cli in claude codex; do touch "$SVC_HOME/.local/bin/$cli"; chmod +x "$SVC_HOME/.local/bin/$cli"; done
-printf '#!/bin/sh\necho run >> "$TMP/calls"\nexec sleep 60\n' > "$SVC_HOME/.local/bin/duskbot"
-chmod +x "$SVC_HOME/.local/bin/duskbot"
+printf '#!/bin/sh\necho run >> "$TMP/calls"\nexec sleep 60\n' > "$SVC_HOME/.local/bin/madanibot"
+chmod +x "$SVC_HOME/.local/bin/madanibot"
 export TMP
 FREE_BACKUP_SECS=1
 as_user() { "$@"; }

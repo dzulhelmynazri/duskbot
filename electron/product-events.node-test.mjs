@@ -14,7 +14,7 @@ function harness({ token = () => null, statuses = [], enabled } = {}) {
     if (next === "offline") throw new TypeError("fetch failed");
     return new Response(null, { status: next });
   };
-  const events = createProductEvents({ origin: "https://preview.dusk.bot", token, platform: "darwin", version: "1.2.3", fetch, now: () => NOW,
+  const events = createProductEvents({ origin: "https://preview.madani.bot", token, platform: "darwin", version: "1.2.3", fetch, now: () => NOW,
     setTimer: (fn, ms) => { const timer = { fn, ms }; timers.push(timer); return timer; }, clearTimer: timer => { const at = timers.indexOf(timer); if (at >= 0) timers.splice(at, 1); }, random: () => 1,
     ...(enabled === undefined ? {} : { enabled }) });
   return { events, calls, timers };
@@ -30,7 +30,7 @@ test("posts to the configured account origin with the account token when signed 
   signedIn = TOKEN;
   events.send({ install: INSTALL, session: SESSION, events: [event("app_screen", { screen: "/settings" })] });
   await events.flush();
-  assert.equal(calls[0].url, "https://preview.dusk.bot/v1/app/events");
+  assert.equal(calls[0].url, "https://preview.madani.bot/v1/app/events");
   assert.equal(calls[0].init.headers.authorization, undefined);
   assert.equal(calls[1].init.headers.authorization, `Bearer ${TOKEN}`);
   assert.deepEqual(calls[0].body, { install: INSTALL, session: SESSION, platform: "darwin", version: "1.2.3", events: [{ name: "app_feature", at: NOW - 1000, props: { feature: "bot_created" } }] });
@@ -161,15 +161,15 @@ test("only a packaged app outside CI reports: dev, worktree, CI and flagged smok
   assert.equal(analyticsAllowed({ packaged: true, env: {} }), true, "the owner's installed app");
   assert.equal(analyticsAllowed({ packaged: true, env: { CI: "false" } }), true);
   assert.equal(analyticsAllowed({ packaged: false, env: {} }), false, "dev and worktree builds");
-  assert.equal(analyticsAllowed({ packaged: true, env: { DUSK_ANALYTICS: "0" } }), false, "smoke and e2e launches");
+  assert.equal(analyticsAllowed({ packaged: true, env: { MADANI_ANALYTICS: "0" } }), false, "smoke and e2e launches");
   assert.equal(analyticsAllowed({ packaged: true, env: { CI: "true" } }), false, "CI runners");
   assert.equal(analyticsAllowed({ packaged: true, env: { CI: "1" } }), false);
-  assert.equal(analyticsAllowed({ packaged: false, env: { DUSK_ANALYTICS: "1" }, custom: true }), true, "a verification run against preview");
-  assert.equal(analyticsAllowed({ packaged: false, env: { DUSK_ANALYTICS: "1" } }), false, "never a dev build toward dusk.bot");
+  assert.equal(analyticsAllowed({ packaged: false, env: { MADANI_ANALYTICS: "1" }, custom: true }), true, "a verification run against preview");
+  assert.equal(analyticsAllowed({ packaged: false, env: { MADANI_ANALYTICS: "1" } }), false, "never a dev build toward madani.bot");
 });
 
 test("an app with analytics off posts nothing: no page batch, no main action, no last batch, no install for notes", async () => {
-  for (const env of [{ packaged: false, env: {} }, { packaged: true, env: { DUSK_ANALYTICS: "0" } }]) {
+  for (const env of [{ packaged: false, env: {} }, { packaged: true, env: { MADANI_ANALYTICS: "0" } }]) {
     const { events, calls, timers } = harness({ enabled: analyticsAllowed(env) });
     assert.equal(events.send({ install: INSTALL, session: SESSION, events: [event()] }), false);
     assert.equal(events.action("account_sign_in", { step: "shown" }), false);
@@ -185,5 +185,5 @@ test("an app with analytics off posts nothing: no page batch, no main action, no
   assert.equal(on.events.send({ install: INSTALL, session: SESSION, events: [event()] }), true);
   await on.events.flush();
   assert.equal(on.calls.length, 1, "the packaged app's batch is posted");
-  assert.equal(on.calls[0].url, "https://preview.dusk.bot/v1/app/events");
+  assert.equal(on.calls[0].url, "https://preview.madani.bot/v1/app/events");
 });

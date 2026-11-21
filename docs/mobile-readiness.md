@@ -17,15 +17,15 @@ is built into the app; the app never loads its interface from a server.
 
 ```text
  phone app (WKWebView, bundled UI)
-   AccountGate ........ the hosted account (dusk.bot), optional by build flag
+   AccountGate ........ the hosted account (madani.bot), optional by build flag
    ConnectionGate ..... picks the saved workspace, installs its transport, or shows pairing / unreachable
    MobileApp .......... the shared store (same reducer as the desktop) under the phone's own screens
         |
         |  one of four transports, all behind the page's own fetch and EventSource
         v
-   https .............. the workspace's public address (your server, a hosted address, a dusk cloud computer)
+   https .............. the workspace's public address (your server, a hosted address, a madani cloud computer)
    companion .......... the Mac's sidecar on the same Wi-Fi or tailnet (http, port 8810, allowlisted routes)
-   relay .............. link.dusk.bot, frames sealed on the phone (AES-GCM, key from X25519) and opened on your server
+   relay .............. link.madani.bot, frames sealed on the phone (AES-GCM, key from X25519) and opened on your server
 ```
 
 ### What each side keeps
@@ -75,7 +75,7 @@ Two runs drive real clients:
 | Permission asks answered once | **unverified here** | the phone renders the shared approval card and the workspace refuses a second answer (server tests). Not driven with two clients: the fake engine's approval recipe was not wired into the run |
 | Group chats, attachments and file cards across two clients | **unverified here** | rooms render and send on the phone (fixture); file upload and download are in the existing run. Not driven with two clients |
 | Routines switched on or off | **unverified here** | the routines sheet reads the same store; not driven |
-| A dusk cloud computer that is asleep | **fixed** (wording), **unverified** | the store stops reconnecting to a sleeping Cloud by design, and the phone's home said "Reconnecting" though it was not trying. It now says "Asleep · wakes when you type", then "Waking up", from the same power state the desktop reads (`src/lib/cloud-power.ts`). Not checked against a real Cloud computer |
+| A madani cloud computer that is asleep | **fixed** (wording), **unverified** | the store stops reconnecting to a sleeping Cloud by design, and the phone's home said "Reconnecting" though it was not trying. It now says "Asleep · wakes when you type", then "Waking up", from the same power state the desktop reads (`src/lib/cloud-power.ts`). Not checked against a real Cloud computer |
 
 ### Bugs found and fixed
 
@@ -134,9 +134,9 @@ Two runs drive real clients:
   composer by its placeholder. Not a phone matter.
 - Message action buttons in a chat row (reply, copy, more, react) measure 36 x 36 css px in the phone layout
   (`src/components/`, shared with the desktop). WCAG 2.5.5 asks for 44. Fix: give them `min-width: 44px;
-  min-height: 44px` inside `.dusk-mobile [data-mobile-chat]`, as `mobile.css` already does for the composer's buttons.
+  min-height: 44px` inside `.madani-mobile [data-mobile-chat]`, as `mobile.css` already does for the composer's buttons.
   Left alone because it changes the shared transcript's row layout.
-- `docs/ios-companion.md` and `docs/ios-privacy.md` describe an earlier Swift companion ("DuskMobile": a Share
+- `docs/ios-companion.md` and `docs/ios-privacy.md` describe an earlier Swift companion ("MadaniMobile": a Share
   extension, Bonjour discovery, Password AutoFill credential entry). The Capacitor app has none of those. Read them as
   history until someone rewrites them.
 
@@ -156,7 +156,7 @@ Two runs drive real clients:
 | Reduced motion | pass | `MotionConfig reducedMotion="user"`, CSS branches, the nav stack cross-fades instead of sliding |
 | Orientation, iPad | **fixed** | portrait only; iPhone only (`TARGETED_DEVICE_FAMILY = 1`) |
 | Empty and error states | pass | empty home, skeleton, unreachable screen with retry and countdown, pairing errors by cause |
-| First run | pass (browser) | intro, pairing by camera or 12 character code or pasted link, sign in to dusk cloud |
+| First run | pass (browser) | intro, pairing by camera or 12 character code or pasted link, sign in to madani cloud |
 | Dead ends, placeholder text, debug UI | **fixed** | bugs 9, 10 and 16 |
 
 ## 4. App Store checklist
@@ -168,8 +168,8 @@ Two runs drive real clients:
 | Builds | **fixed** | bug 1. `xcodebuild -sdk iphonesimulator -configuration Debug` succeeds |
 | Crashes | **unverified** | nothing was launched on iOS |
 | Placeholder art and text | **fixed** | bug 6 |
-| Links work | **needs owner** | https://dusk.bot/privacy, /terms and /docs must be live and final (the legal pages are marked "Draft for legal review" in docs/LAUNCH.md) |
-| Reviewer can use it without a Mac | **needs owner** | the built-in demo workspace was removed. App Review needs a live review workspace (a long-lived typed code in the notes) or a review account with a dusk cloud. Steps are in docs/store/ios-listing.md |
+| Links work | **needs owner** | https://madani.bot/privacy, /terms and /docs must be live and final (the legal pages are marked "Draft for legal review" in docs/LAUNCH.md) |
+| Reviewer can use it without a Mac | **needs owner** | the built-in demo workspace was removed. App Review needs a live review workspace (a long-lived typed code in the notes) or a review account with a madani cloud. Steps are in docs/store/ios-listing.md |
 | Demo account | **needs owner** | give a review account and a way to get its code, or a review workspace kept running for the whole review |
 
 ### 4.2 Minimum functionality
@@ -187,10 +187,10 @@ Two runs drive real clients:
 
 | Item | Status | Notes |
 |---|---|---|
-| Prices, upgrade buttons | pass | every plan, price and upgrade card in the shared code renders only with the desktop bridge (`window.duskDesktop.cloudAccount`), which the phone does not have. Checked by walking the phone's import graph for the components that carry plan or price strings |
+| Prices, upgrade buttons | pass | every plan, price and upgrade card in the shared code renders only with the desktop bridge (`window.madaniDesktop.cloudAccount`), which the phone does not have. Checked by walking the phone's import graph for the components that carry plan or price strings |
 | External purchase links | **fixed** | the dashboard link is off in the store apps (`accountRows` in `SettingsSheet.tsx`, tested) |
 | Wording | pass | the phone says "Bot API comes with a higher plan" and similar status lines with no link or price. Acceptable as status text; reword if a reviewer objects |
-| Account deletion page | **needs owner** | "Delete account" opens `dusk.bot/account#delete` in the in-app Safari view. That page's sidebar links to "Plans & billing". Ask the dashboard branch for a page with the delete section alone, or a delete call the app's own token may make (today `POST /v1/account/delete` needs a website session) |
+| Account deletion page | **needs owner** | "Delete account" opens `madani.bot/account#delete` in the in-app Safari view. That page's sidebar links to "Plans & billing". Ask the dashboard branch for a page with the delete section alone, or a delete call the app's own token may make (today `POST /v1/account/delete` needs a website session) |
 
 ### 4.8 Sign in with Apple, 5.1.1 accounts
 
@@ -223,7 +223,7 @@ Two runs drive real clients:
 
 | Item | Value | Status |
 |---|---|---|
-| Bundle ID | `bot.dusk.mobile` | pass |
+| Bundle ID | `bot.madani.mobile` | pass |
 | Version, build | 1.0, 1 | pass; raise the build per upload |
 | Minimum iOS | 17.0 | **fixed** (was 15): the relay needs X25519 in WebCrypto, which arrived in iOS 17. On 15 and 16 a server reached through the relay could not pair |
 | Devices | iPhone | **fixed** |
@@ -231,23 +231,23 @@ Two runs drive real clients:
 | `ITSAppUsesNonExemptEncryption` | `false` | **fixed**; reasoning in docs/store/ios-listing.md, owner confirms |
 | Background modes | none | pass: alert pushes need none, and the app does no background work |
 | Push entitlement | `aps-environment` | **fixed**; Xcode switches it to production when it exports for the store |
-| Associated domains | `applinks:dusk.bot`, `applinks:dusk.bot` | **fixed** in the app, **needs owner** on the site |
+| Associated domains | `applinks:madani.bot`, `applinks:madani.bot` | **fixed** in the app, **needs owner** on the site |
 | App icon | 1024, no alpha, our own art | **fixed** |
 | Launch screen | light and dark, our own art | **fixed** |
 | Private APIs | none | pass: the app's own Swift is `QrScannerPlugin.swift` (AVFoundation) and the two delegates |
 | Web bundle logging | off | pass: `loggingBehavior: "none"` keeps tokens out of device logs |
 
-**Universal links.** The app reads `https://dusk.bot/m/open?bot=...&thread=...` and `https://dusk.bot/m/pair#...` (also
-on `dusk.bot`) as the `duskbot://` link each stands for (`appLinkFromUniversal`, tested). A pairing secret is only
+**Universal links.** The app reads `https://madani.bot/m/open?bot=...&thread=...` and `https://madani.bot/m/pair#...` (also
+on `madani.bot`) as the `madanibot://` link each stands for (`appLinkFromUniversal`, tested). A pairing secret is only
 taken from after the `#`, which a browser never sends to the site. The site needs:
 
-1. `docs/store/apple-app-site-association.json` served as `https://dusk.bot/.well-known/apple-app-site-association` and
-   the same on `dusk.bot`: content type `application/json`, no redirect, no file extension, with `TEAMID` replaced
+1. `docs/store/apple-app-site-association.json` served as `https://madani.bot/.well-known/apple-app-site-association` and
+   the same on `madani.bot`: content type `application/json`, no redirect, no file extension, with `TEAMID` replaced
    by your Apple team id.
-2. Pages at `/m/open` and `/m/pair` for someone without the app ("Get dusk bot for iPhone"). The `/m/pair` page must
+2. Pages at `/m/open` and `/m/pair` for someone without the app ("Get madani bot for iPhone"). The `/m/pair` page must
    never read, log or send the part after the `#`.
 
-Nothing on the desktop makes these links yet; pairing codes and notifications still use `duskbot://`.
+Nothing on the desktop makes these links yet; pairing codes and notifications still use `madanibot://`.
 
 ### Legal: copied material
 
@@ -320,7 +320,7 @@ Grok's, and the Grok Bot logo in the import dialog. The skin ids are visible in 
 | Phone bundle builds | `pnpm mobile:build` | pass |
 | iOS app compiles for the simulator | `xcodebuild -project App.xcodeproj -scheme App -configuration Debug -sdk iphonesimulator -destination 'generic/platform=iOS Simulator' CODE_SIGNING_ALLOWED=NO build` | BUILD SUCCEEDED |
 | Release build stops at the gate | same with `-configuration Release` | BUILD FAILED at "Release gate", 53 findings (intended) |
-| Typecheck | `pnpm typecheck`, `pnpm --filter @duskbot/mobile typecheck` | pass |
+| Typecheck | `pnpm typecheck`, `pnpm --filter @madanibot/mobile typecheck` | pass |
 | Lint | `pnpm lint` | 0 warnings in files this branch touched; the command still exits 1 on 6 warnings that are on `main` in files this branch did not touch (`src/components/chat-bubble.ts`, `server/first-message-job.ts`, `apps/dashboard/server/pages/*`, `apps/cloud-service/scripts/lifecycle-sim.ts`) |
 | Tests for everything this branch changed | `pnpm exec vitest run src/mobile shared/mobile-link.test.ts src/lib/chat-in-front.test.ts src/lib/random-uuid.test.ts scripts/testing/mobile-release-gate.test.ts scripts/ci-workflow.test.ts src/components/account-gate` | 22 files, 295 tests, all pass |
 | Renderer, shared, Electron, companion and link service tests | `pnpm exec vitest run src shared electron apps/companion apps/link-service` | 937 of 952 files pass (9676 tests pass, 24 fail). The same 24 tests in the same 15 files fail on the base commit `b40320d40` (run there from an export of it), so none is new; the `random-uuid` guard that was red on the base is green here |
@@ -343,28 +343,28 @@ To do the simulator pass once a runtime is in:
 xcodebuild -downloadPlatform iOS                       # once; check with: xcrun simctl list runtimes
 cd apps/mobile && pnpm build && npx cap sync ios
 xcodebuild -project ios/App/App.xcodeproj -scheme App -configuration Debug -sdk iphonesimulator \
-  -destination 'generic/platform=iOS Simulator' -derivedDataPath /tmp/dusk-dd CODE_SIGNING_ALLOWED=NO build
-UDID=$(xcrun simctl create "Dusk 6.9" "iPhone 17 Pro Max")   # headless: never open Simulator.app
+  -destination 'generic/platform=iOS Simulator' -derivedDataPath /tmp/madani-dd CODE_SIGNING_ALLOWED=NO build
+UDID=$(xcrun simctl create "Madani 6.9" "iPhone 17 Pro Max")   # headless: never open Simulator.app
 xcrun simctl boot "$UDID"
 xcrun simctl status_bar "$UDID" override --time 9:41 --batteryState charged --batteryLevel 100 --cellularBars 4 --wifiBars 3
-xcrun simctl install "$UDID" /tmp/dusk-dd/Build/Products/Debug-iphonesimulator/App.app
-xcrun simctl launch "$UDID" bot.dusk.mobile
+xcrun simctl install "$UDID" /tmp/madani-dd/Build/Products/Debug-iphonesimulator/App.app
+xcrun simctl launch "$UDID" bot.madani.mobile
 xcrun simctl io "$UDID" screenshot docs/store/ios/6.9/01-your-team.png
-xcrun simctl openurl "$UDID" "duskbot://open?view=settings"          # a deep link
-xcrun simctl push "$UDID" bot.dusk.mobile payload.apns               # a push, with a payload file
+xcrun simctl openurl "$UDID" "madanibot://open?view=settings"          # a deep link
+xcrun simctl push "$UDID" bot.madani.mobile payload.apns               # a push, with a payload file
 ```
 
 Taps cannot be sent with `simctl`; walk the flows by deep link and by building with
-`DUSK_MOBILE_DEV_URL=http://localhost:5320` so a headless driver can reach the page, or do the tap-through on a device.
+`MADANI_MOBILE_DEV_URL=http://localhost:5320` so a headless driver can reach the page, or do the tap-through on a device.
 
 ## 7. What blocks submission today, in order
 
 1. **Copied material.** The release gate fails until `chore/own-assets` and the mascot engine replacement merge.
-2. **The account service is not deployed** (dusk.bot is a placeholder), so the sign-in screen cannot sign anyone in.
+2. **The account service is not deployed** (madani.bot is a placeholder), so the sign-in screen cannot sign anyone in.
    Deploy it, or ship the phone app without the sign-in screen (decision 1 below).
 3. **Nothing ran on iOS.** Install a simulator runtime and do the pass above, then a real iPhone pass: camera scan, the
    local network prompt, the keyboard in chat, Larger Text, haptics, a push opening its chat, a universal link.
-4. **Apple developer setup** (owner only): the app id `bot.dusk.mobile` with Push Notifications and Associated Domains,
+4. **Apple developer setup** (owner only): the app id `bot.madani.mobile` with Push Notifications and Associated Domains,
    an APNs key on the link service, the App Store Connect record, signing.
 5. **Legal pages final**: the privacy policy and terms are drafts with placeholders.
 6. **The delete-account page** should not show plan links (dashboard branch), and Sign in with Apple must be configured
@@ -376,8 +376,8 @@ Taps cannot be sent with `simctl`; walk the flows by deep link and by building w
 ## 8. Owner decisions
 
 1. **Should the phone need an account?** Today the native app shows sign-in before pairing unless it is built with
-   `VITE_DUSK_ALLOW_SIGNED_OUT=1`. Pairing with your own computer needs no account. Shipping 1.0 signed-out removes
-   blockers 2 and 6, the demo-account question, and two rows of the privacy label; the account can come back when Dusk
+   `VITE_MADANI_ALLOW_SIGNED_OUT=1`. Pairing with your own computer needs no account. Shipping 1.0 signed-out removes
+   blockers 2 and 6, the demo-account question, and two rows of the privacy label; the account can come back when Madani
    Cloud needs it on the phone. My recommendation is to ship 1.0 signed-out.
 2. **Minimum iOS 17.** Needed for the relay. Lower it only if relay pairing is given another key agreement.
 3. **Links in the in-app Safari view** raise the age rating answer for web access. Opening them in Safari itself avoids
@@ -388,8 +388,8 @@ Taps cannot be sent with `simctl`; walk the flows by deep link and by building w
 ## 9. Steps left for the owner
 
 1. Merge `chore/own-assets` and the mascot work; run `pnpm mobile:release` until the gate prints "is clean".
-2. Decide 1 to 5 above. For a signed-out build: `VITE_DUSK_ALLOW_SIGNED_OUT=1 pnpm mobile:release`.
-3. In the Apple developer account: register `bot.dusk.mobile`, turn on Push Notifications and Associated Domains, make
+2. Decide 1 to 5 above. For a signed-out build: `VITE_MADANI_ALLOW_SIGNED_OUT=1 pnpm mobile:release`.
+3. In the Apple developer account: register `bot.madani.mobile`, turn on Push Notifications and Associated Domains, make
    an APNs key (docs/phone-push.md), and let Xcode manage signing for the App target.
 4. Open `apps/mobile/ios/App/App.xcodeproj` in Xcode, select your team, Product, Archive. The Release gate runs first.
    Validate, then upload from the Organizer. (This pass uploaded nothing.)

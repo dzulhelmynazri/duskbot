@@ -16,8 +16,8 @@ import { accountLinkFrom, webAccountStep } from "./web-account.mjs";
 const { root, out, profile, email, stamp, flag } = flowArgs("srv");
 const signedOut = flag("--signed-out");
 // the app works signed out now; without --signed-out this flow starts from a signed-in account, at the sign-in an install can still require
-const flow = createFlow({ name: "add-server", title: `add your own server${signedOut ? ", signed out" : ""}`, root, out, profile, email, env: signedOut ? {} : { DUSK_REQUIRE_ACCOUNT: "1" } });
-const view = () => flow.evaluate(`window.duskDesktop?.vpsLink?.state()`);
+const flow = createFlow({ name: "add-server", title: `add your own server${signedOut ? ", signed out" : ""}`, root, out, profile, email, env: signedOut ? {} : { MADANI_REQUIRE_ACCOUNT: "1" } });
+const view = () => flow.evaluate(`window.madaniDesktop?.vpsLink?.state()`);
 const screen = () => flow.evaluate(`document.querySelector("[data-vps-screen]")?.getAttribute("data-vps-screen") ?? null`);
 let vm = null;
 
@@ -25,14 +25,14 @@ await runFlow(flow, async () => {
   try {
     await flow.step("launch", signedOut ? "a fresh app, no account" : "a fresh app starts at the account gate", async () => {
       await flow.launch();
-      await flow.waitText(signedOut ? /meet dusk bot|where should your bots live/i : /sign in to dusk bot/i, signedOut ? "the welcome" : "the account gate", { timeout: 120_000 });
+      await flow.waitText(signedOut ? /meet madani bot|where should your bots live/i : /sign in to madani bot/i, signedOut ? "the welcome" : "the account gate", { timeout: 120_000 });
     }, { critical: true });
 
     if (!signedOut) await flow.step("sign-in", "signs in with an emailed code", () => flow.signInAtGate(), { critical: true });
 
     let line = null;
     await flow.step("install-line", "\"use your own server\" shows the one install line", async () => {
-      await flow.waitText(/meet dusk bot|where should your bots live/i, "the welcome", { timeout: 60_000 });
+      await flow.waitText(/meet madani bot|where should your bots live/i, "the welcome", { timeout: 60_000 });
       await flow.click("get started", { timeout: 10_000 }).catch(() => {});
       await flow.waitText(/where should your bots live/i, "where should your bots live");
       const started = Date.now();
@@ -63,7 +63,7 @@ await runFlow(flow, async () => {
     await flow.step("server", "a throwaway Linux server (InstaBox)", async () => {
       // a run killed hard can leave its machine behind (the app's own exit beats the cleanup): those go first
       for (const old of await leftoverVms()) if (Date.parse(old.createdAt ?? 0) < Date.now() - 60 * 60_000) { await removeVm(old.id).catch(() => {}); flow.log(`deleted a leftover ${old.id}`); }
-      vm = await createVm(`dusk-smoke-srv-${stamp.slice(5).replace(/[^0-9]/g, "")}`);
+      vm = await createVm(`madani-smoke-srv-${stamp.slice(5).replace(/[^0-9]/g, "")}`);
       if (!flag("--keep-vm")) { const made = vm; flow.atClose(async () => { await made.remove(); flow.log(`deleted ${made.id}`); }); }
       flow.facts.vm = vm.id;
       return vm.id;
@@ -73,7 +73,7 @@ await runFlow(flow, async () => {
       const started = Date.now();
       // pasted as is, as the person would in their server's terminal
       walkthrough.did("pastes the install line into the server's terminal");
-      await vm.exec(`cd ~ && setsid nohup bash -c ${shellQuote(`${line}; echo "exit $?" >> ~/dusk-install.log`)} > ~/dusk-install.log 2>&1 < /dev/null & echo started`, 30);
+      await vm.exec(`cd ~ && setsid nohup bash -c ${shellQuote(`${line}; echo "exit $?" >> ~/madani-install.log`)} > ~/madani-install.log 2>&1 < /dev/null & echo started`, 30);
       let lastLog = "";
       for (;;) {
         const v = await view().catch(() => null);
@@ -82,14 +82,14 @@ await runFlow(flow, async () => {
         const failed = v?.steps?.find((step) => step.status === "failed");
         if (v?.stage === "error" || failed) throw new Error(`the install stopped${failed ? ` at ${failed.id}` : ""}: ${String(failed?.log ?? v?.error ?? "").replace(/\s+/g, " ").slice(-300)}`);
         if (Date.now() - started > 25 * 60_000) throw new Error(`the app never saw the server (stage ${v?.stage}); install log ends: ${lastLog}`);
-        const tail = await vm.exec("tail -c 600 ~/dusk-install.log 2>/dev/null", 20).catch(() => ({ stdout: "" }));
+        const tail = await vm.exec("tail -c 600 ~/madani-install.log 2>/dev/null", 20).catch(() => ({ stdout: "" }));
         lastLog = tail.stdout.replace(/\s+/g, " ").trim().slice(-300);
         // a failed download exits 1 with its own message (electron/vps-link.mjs installLine)
         if (/exit [1-9]/.test(tail.stdout)) throw new Error(`the install line failed: ${lastLog}`);
         await sleep(10_000);
       }
       flow.facts.installSeconds = Math.round((Date.now() - started) / 1000);
-      const log = (await vm.exec("cat ~/dusk-install.log", 30)).stdout;
+      const log = (await vm.exec("cat ~/madani-install.log", 30)).stdout;
       flow.facts.installLastLines = log.trim().split("\n").slice(-4).join(" / ").slice(0, 400);
       if (/warn|refus|could not/i.test(log)) flow.friction("confusing", "install line", `the installer warned: ${log.split("\n").filter((row) => /warn|refus|could not/i.test(row)).slice(0, 2).join(" / ").slice(0, 200)}`);
       if (flow.facts.installSeconds > 300) flow.friction("slow", "install", `the install took ${Math.round(flow.facts.installSeconds / 60)} minutes before the app saw the server`);
@@ -120,7 +120,7 @@ await runFlow(flow, async () => {
       const started = Date.now();
       await flow.click("move everything here", { contains: true });
       // once moved, the window opens the server's own page, where the link bridge is not offered
-      const done = await flow.waitFor(`(() => { const link = window.duskDesktop?.vpsLink; if (!link) return "on-server";
+      const done = await flow.waitFor(`(() => { const link = window.madaniDesktop?.vpsLink; if (!link) return "on-server";
         return link.state().then((v) => v.stage === "moved" || (v.move?.status === "failed" ? "failed: " + (v.move?.error ?? v.move?.step) : false)); })()`, "the move to finish", 15 * 60_000);
       if (typeof done === "string" && done.startsWith("failed")) throw new Error(`the move ${done}`);
       flow.facts.moveSeconds = Math.round((Date.now() - started) / 1000);
@@ -132,14 +132,14 @@ await runFlow(flow, async () => {
       await sleep(5000);
       flow.facts.windowAt = await flow.evaluate(`location.host`);
       flow.facts.serverScreen = (await flow.text()).replace(/\s+/g, " ").slice(0, 160);
-      if (/meet dusk bot|where should your bots live/i.test(flow.facts.serverScreen)) flow.friction("confusing", "after the move", "the server opens on the welcome from the start (\"meet dusk bot\", then \"where should your bots live?\" again), though the person already chose this server");
-      const running = await vm.exec("systemctl is-active duskbot.service", 30);
+      if (/meet madani bot|where should your bots live/i.test(flow.facts.serverScreen)) flow.friction("confusing", "after the move", "the server opens on the welcome from the start (\"meet madani bot\", then \"where should your bots live?\" again), though the person already chose this server");
+      const running = await vm.exec("systemctl is-active madanibot.service", 30);
       flow.facts.serverService = running.stdout.trim();
-      if (!running.stdout.startsWith("active")) throw new Error(`duskbot.service is ${running.stdout.split("\n")[0]}`);
+      if (!running.stdout.startsWith("active")) throw new Error(`madanibot.service is ${running.stdout.split("\n")[0]}`);
       const bots = await flow.evaluate(`fetch("/api/bots").then((r) => r.json()).then((j) => (j.bots ?? j).map((b) => b.name)).catch((e) => "error " + e.message)`);
       flow.facts.botsOnServer = bots;
       if (!Array.isArray(bots) || !bots.length) throw new Error(`the server lists no bots (${JSON.stringify(bots)})`);
-      return `window on ${flow.facts.windowAt}; duskbot.service ${flow.facts.serverService}; bots: ${bots.join(", ")}`;
+      return `window on ${flow.facts.windowAt}; madanibot.service ${flow.facts.serverService}; bots: ${bots.join(", ")}`;
     });
 
     if (signedOut || walkthrough.enabled) await flow.step("server-chat", "the server's bots in the sidebar, and a chat on the server", async () => {
@@ -156,7 +156,7 @@ await runFlow(flow, async () => {
     if (signedOut || walkthrough.enabled) await flow.step("mac-online", "the server's chat never says this Mac is offline", async () => {
       await sleep(130_000);
       flow.facts.egress = await flow.evaluate(`fetch("/api/computer/egress", { cache: "no-store" }).then((r) => r.ok ? r.json() : "status " + r.status).catch((e) => "error " + e.message)`);
-      const agent = await vm.exec("journalctl -u 'dusk*' --since '-15 min' --no-pager 2>/dev/null | grep -i egress | tail -5", 30).catch(() => ({ stdout: "" }));
+      const agent = await vm.exec("journalctl -u 'madani*' --since '-15 min' --no-pager 2>/dev/null | grep -i egress | tail -5", 30).catch(() => ({ stdout: "" }));
       flow.facts.egressAgent = agent.stdout.trim().slice(0, 600);
       await walkthrough.capture("app", "the server's chat after a few minutes");
       if (/your computer is offline/i.test(await flow.text())) throw new Error(`the server's chat says "Your computer is offline" (egress ${JSON.stringify(flow.facts.egress)})`);

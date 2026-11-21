@@ -4,7 +4,7 @@ import { pathToFileURL } from "node:url";
 
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
-import { launchVerificationServer, runControlDusk, type VerificationServer } from "../scripts/control-dusk.ts";
+import { launchVerificationServer, runControlMadani, type VerificationServer } from "../scripts/control-madani.ts";
 import { hashMemoryText } from "./memory-store.ts";
 
 interface Reply {
@@ -195,7 +195,7 @@ describe("memory routes through an isolated HTTP fixture", () => {
     writeFileSync(target, join(fixture.info.dataDir, "scratch.txt"));
 
     expect((await api("POST", `/api/bots/${botId}/messages`, { threadId, text: "Memory is off in this fixture." })).status).toBe(202);
-    await runControlDusk(["wait", "--bot", botId, "--timeout", "30"], { env: { DUSK_URL: fixture.info.url } });
+    await runControlMadani(["wait", "--bot", botId, "--timeout", "30"], { env: { MADANI_URL: fixture.info.url } });
     const dump = JSON.parse(readFileSync(fixture.fixtureDumpPath, "utf8")) as { systemPrompt?: string };
     expect(dump.systemPrompt).not.toContain("Your memory (MEMORY.md)");
     expect(dump.systemPrompt).not.toContain("Use memory_update");

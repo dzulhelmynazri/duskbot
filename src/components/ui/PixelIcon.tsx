@@ -1,6 +1,6 @@
 import { cn } from "@/lib/cn";
 
-/* dusk's small pixel objects in the brand's soft palette (lilac, pink, lemon, lime, sky): 11 by 11 cells drawn at 2px, each
+/* madani's small pixel objects in the brand's soft palette (lilac, pink, lemon, lime, sky): 11 by 11 cells drawn at 2px, each
    outlined in a deeper shade of its own colour, so they read on the light and the dark page alike. A row is a string;
    a cell is "." (empty), "o" (its outline) or a fill letter from FILLS. */
 const FILLS: Record<string, string> = { w: "#fdfbf7", b: "#7cc6f2", B: "#c4e9fb", g: "#a6dd6c", y: "#f6dc62", p: "#f4a0c4", v: "#b99af2", V: "#e2d6fb", G: "#dfe3ea", K: "#a9b3c2", r: "#f6b183", R: "#ef8282", n: "#f3cf98", N: "#e3ad6c" };

@@ -27,7 +27,7 @@ const SWATCHES: Record<string, readonly [ground: string, accent: string]> = {
   lagoon: ["#dfeceb", "#11736d"],
   graphite: ["#111214", "#4f75a2"],
   linen: ["#eceff3", "#355f8a"],
-  dusk: ["#121014", "#765683"],
+  madani: ["#121014", "#765683"],
   daylight: ["#fcfcfc", "#126fd4"],
   meadow: ["#ffffff", "#1a7a48"],
   pop: ["#fdf5ea", "#7f52f0"],

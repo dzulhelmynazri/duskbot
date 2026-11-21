@@ -2,7 +2,7 @@
 // Runs a fixed set of everyday bot requests against a live server's test bots, one after another, and records how
 // each turn went from the engine's native log: time to first activity and first text, tool calls, how many ran at
 // once, wall time, and the reply. Run it on the server, as the user it runs as:
-//   node scripts/live-scenarios.mjs --label before --out /tmp/dusk-scenarios [--only s1,s2] [--bot Cinder]
+//   node scripts/live-scenarios.mjs --label before --out /tmp/madani-scenarios [--only s1,s2] [--bot Cinder]
 // Read-only on the person's Mac except for writes into ~/Downloads/<bot>/.
 // Two probes time one thing each over the server's loopback api and its event stream, `--runs` times:
 //   --probe msg --bot Nova     a one-word reply in the bot's main chat: send accepted, the message on the stream, the
@@ -16,19 +16,19 @@ import { join } from "node:path";
 const args = process.argv.slice(2);
 const opt = (name, fallback) => { const at = args.indexOf(`--${name}`); return at >= 0 ? args[at + 1] : fallback; };
 const label = opt("label", "run");
-const outDir = opt("out", "/tmp/dusk-scenarios");
+const outDir = opt("out", "/tmp/madani-scenarios");
 const only = opt("only", "")?.split(",").filter(Boolean) ?? [];
 const botOverride = opt("bot", "");
-const dataDir = opt("data", join(homedir(), ".duskbot"));
-const cli = opt("cli", "duskbot");
+const dataDir = opt("data", join(homedir(), ".madanibot"));
+const cli = opt("cli", "madanibot");
 const base = opt("url", "http://127.0.0.1:8799");
 const probe = opt("probe", "");
 const runs = Number(opt("runs", "3"));
-const LOOPBACK = { "x-dusk-cli": "1" };
+const LOOPBACK = { "x-madani-cli": "1" };
 
 export const SCENARIOS = [
   { id: "s1-research", bot: "Atlas", text: "Quick research: what are the current stable versions of Node.js, Bun and Deno, and when was each released? Search the web for all three, then answer in three short lines with a source link each." },
-  { id: "s2-title", bot: "Cinder", text: "Open dusk.bot in your computer and give me the page title." },
+  { id: "s2-title", bot: "Cinder", text: "Open madani.bot in your computer and give me the page title." },
   { id: "s3-tabs", bot: "Bolt", text: "Open 3 tabs in your computer's browser: news.ycombinator.com, github.com/trending and x.com. Summarise each in one line." },
   { id: "s4-app", bot: "Moss", text: "Launch an app on your computer (a text editor is fine) and tell me once it is open." },
   { id: "s5-download", bot: "Basil", text: "Download https://example.com/ to my Mac's Downloads folder and tell me the saved path." },
@@ -230,7 +230,7 @@ async function botNamed(name) {
   const { json } = await api("GET", "/api/bots?messages=0");
   const bot = json?.bots?.find((one) => one.name === name);
   if (!bot) throw new Error(`no bot named ${name}`);
-  if (/^(Dusk|Pixel)$/.test(bot.name)) throw new Error("probes run on test bots only");
+  if (/^(Madani|Pixel)$/.test(bot.name)) throw new Error("probes run on test bots only");
   return bot;
 }
 

@@ -22,7 +22,7 @@ const bridge: Partial<AmbientAppBridge> = {
     return { ...prefs };
   },
 };
-(window as unknown as { duskDesktop: unknown }).duskDesktop = { ambient: bridge };
+(window as unknown as { madaniDesktop: unknown }).madaniDesktop = { ambient: bridge };
 
 function Preview() {
   const [run, setRun] = useState(0);

@@ -84,18 +84,18 @@ afterEach(() => {
 });
 
 // these cover live calls, which ship behind a switch that is off
-vi.stubEnv("VITE_DUSK_LIVE_CALL", "1");
+vi.stubEnv("VITE_MADANI_LIVE_CALL", "1");
 
 describe("the phone composer", () => {
   it("while the bot works there is no Stop: the mic keeps its place and every control has its native glass twin", () => {
-    vi.stubEnv("VITE_DUSK_LIVE_CALL", "");
+    vi.stubEnv("VITE_MADANI_LIVE_CALL", "");
     try {
       render({ bot: { ...bot, busy: true } });
       expect(container.querySelector("[data-composer-stop]")).toBeNull();
       expect(container.querySelector('[data-voice-mic="start"]')).not.toBeNull();
       expect(composerButtons(container.querySelector("[data-composer-actions]"))?.buttons.map((b) => b.kind)).not.toContain("stop");
     } finally {
-      vi.stubEnv("VITE_DUSK_LIVE_CALL", "1");
+      vi.stubEnv("VITE_MADANI_LIVE_CALL", "1");
     }
   });
 
@@ -150,8 +150,8 @@ describe("the phone composer", () => {
   });
 
   it("with calls off, ends the pill on an inverse mic and offers no call", () => {
-    vi.stubEnv("VITE_DUSK_LIVE_CALL", "");
-    vi.stubEnv("VITE_DUSK_VOICE_CALL", "0");
+    vi.stubEnv("VITE_MADANI_LIVE_CALL", "");
+    vi.stubEnv("VITE_MADANI_VOICE_CALL", "0");
     try {
       render({ bot });
       expect(fixture.call).toBeNull();
@@ -159,8 +159,8 @@ describe("the phone composer", () => {
       expect(mic.getAttribute("aria-label")).toBe("Start dictation");
       expect(mic.className.split(" ")).toEqual(expect.arrayContaining(["bg-ink", "text-app", "size-8"]));
     } finally {
-      vi.stubEnv("VITE_DUSK_LIVE_CALL", "1");
-      vi.stubEnv("VITE_DUSK_VOICE_CALL", "");
+      vi.stubEnv("VITE_MADANI_LIVE_CALL", "1");
+      vi.stubEnv("VITE_MADANI_VOICE_CALL", "");
     }
   });
 

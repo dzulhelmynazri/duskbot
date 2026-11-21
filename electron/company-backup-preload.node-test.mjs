@@ -12,7 +12,7 @@ function fixture({ remote = false, company = true, remoteClient = false, storage
   const location = { origin: remote ? "https://remote.invalid" : origin };
   let bridge;
   const context = vm.createContext({
-    process: { platform: "fixture", argv: [`--dusk-local-origin=${origin}`, ...(company ? ["--dusk-company-desktop=1"] : []), ...(remoteClient ? ["--duskbot-remote-client"] : [])] },
+    process: { platform: "fixture", argv: [`--madani-local-origin=${origin}`, ...(company ? ["--madani-company-desktop=1"] : []), ...(remoteClient ? ["--madanibot-remote-client"] : [])] },
     location, TextEncoder,
     localStorage: storage ?? { getItem: key => values.get(key) ?? null },
     require: name => {
@@ -42,21 +42,21 @@ test("tools layout persists in the backup client keys", () => {
   const f = fixture();
   const preloadKeys = JSON.parse(vm.runInContext("JSON.stringify(COMPANY_BACKUP_CLIENT_KEYS)", f.context));
   for (const keys of [preloadKeys, WORKSPACE_BACKUP_CLIENT_KEYS]) {
-    const density = keys.indexOf("duskbot.sidebarDensity");
+    const density = keys.indexOf("madanibot.sidebarDensity");
     assert.ok(density >= 0, "density key is allowlisted");
-    assert.equal(keys[density + 1], "duskbot.sidebarToolsLayout");
+    assert.equal(keys[density + 1], "madanibot.sidebarToolsLayout");
   }
 });
 
 test("each native request collects fresh allowed state and never credentials or unknown keys", () => {
   const f = fixture();
-  f.values.set("dusk-drafts", "first draft"); f.values.set("dusk-skin", "dark");
+  f.values.set("madani-drafts", "first draft"); f.values.set("madani-skin", "dark");
   f.values.set("auth-token", "synthetic secret");
   f.collect({ requestId });
-  assert.deepEqual(f.sent[0], ["company-backups:client-state", { requestId, clientState: { "dusk-drafts": "first draft", "dusk-skin": "dark" } }]);
-  f.values.set("dusk-drafts", "newer draft"); f.values.delete("dusk-skin");
+  assert.deepEqual(f.sent[0], ["company-backups:client-state", { requestId, clientState: { "madani-drafts": "first draft", "madani-skin": "dark" } }]);
+  f.values.set("madani-drafts", "newer draft"); f.values.delete("madani-skin");
   f.collect({ requestId });
-  assert.deepEqual(f.sent[1][1].clientState, { "dusk-drafts": "newer draft" });
+  assert.deepEqual(f.sent[1][1].clientState, { "madani-drafts": "newer draft" });
   assert.equal(JSON.stringify(f.sent).includes("synthetic secret"), false);
 });
 
@@ -70,7 +70,7 @@ for (const options of [{ remote: true }, { company: false }, { remoteClient: tru
 test("navigation, inaccessible storage and oversized UTF-8 snapshots return only a safe failure", () => {
   const navigated = fixture(); navigated.location.origin = "https://remote.invalid";
   const unreadable = fixture({ storage: { getItem: () => { throw new Error("private path"); } } });
-  const oversized = fixture(); oversized.values.set("dusk-drafts", "🐭".repeat(600_000));
+  const oversized = fixture(); oversized.values.set("madani-drafts", "🐭".repeat(600_000));
   for (const f of [navigated, unreadable, oversized]) {
     f.collect({ requestId });
     assert.deepEqual(f.sent, [["company-backups:client-state", { requestId, unavailable: true }]]);

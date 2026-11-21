@@ -540,7 +540,7 @@
       "tools": [],
       "state": "idle",
       "ms": 5159,
-      "output": "I couldn’t rename the folder because I don’t have access to your computer yet. Choose a computer under **Works on** in my settings, and I can rename `dusk-bto` to `dusk-bot` in Documents."
+      "output": "I couldn’t rename the folder because I don’t have access to your computer yet. Choose a computer under **Works on** in my settings, and I can rename `madani-bto` to `madani-bot` in Documents."
     },
     {
       "model": "gpt-6.1-terra",
@@ -1211,7 +1211,7 @@
       "tools": [],
       "state": "idle",
       "ms": 6665,
-      "output": "I can’t rename the folder right now because this bot doesn’t have a computer or file‑system access in this turn. If you enable “Works on” in the bot’s settings, I’ll be able to rename Documents/dusk‑bto to dusk‑bot for you."
+      "output": "I can’t rename the folder right now because this bot doesn’t have a computer or file‑system access in this turn. If you enable “Works on” in the bot’s settings, I’ll be able to rename Documents/madani‑bto to madani‑bot for you."
     },
     {
       "model": "gpt-oss-120b-medium",
@@ -1514,7 +1514,7 @@
       "tools": [],
       "state": "idle",
       "ms": 3838,
-      "output": "Done. I can’t rename the folder right now because this bot has no computer or file‑system access in its current settings. Please turn on the Works on option for me, and I’ll rename “dusk‑bto” to “dusk‑bot” in your Documents folder."
+      "output": "Done. I can’t rename the folder right now because this bot has no computer or file‑system access in its current settings. Please turn on the Works on option for me, and I’ll rename “madani‑bto” to “madani‑bot” in your Documents folder."
     },
     {
       "model": "gpt-oss-120b-medium",
@@ -1815,7 +1815,7 @@
       "tools": [],
       "state": "idle",
       "ms": 3682,
-      "output": "This bot can’t rename files right now because the “Works on” setting is off, so no computer or file‑system access is available. Please turn “Works on” on in the bot’s settings (choose a computer or browser), and then I can rename the `dusk-bto` folder to `dusk-bot` in your Documents."
+      "output": "This bot can’t rename files right now because the “Works on” setting is off, so no computer or file‑system access is available. Please turn “Works on” on in the bot’s settings (choose a computer or browser), and then I can rename the `madani-bto` folder to `madani-bot` in your Documents."
     },
     {
       "model": "gpt-oss-120b-medium",
@@ -2162,7 +2162,7 @@
       ],
       "state": "idle",
       "ms": 2758,
-      "output": "This bot's \"Works on\" setting is Off, so I don't have a computer or terminal mounted to rename files on your Mac directly. \n\nYou can rename the `dusk-bto` folder to `dusk-bot` right in Finder: open your Documents folder, right-click (or two-finger tap) on `dusk-bto`, select **Rename**, and change it to `dusk-bot`."
+      "output": "This bot's \"Works on\" setting is Off, so I don't have a computer or terminal mounted to rename files on your Mac directly. \n\nYou can rename the `madani-bto` folder to `madani-bot` right in Finder: open your Documents folder, right-click (or two-finger tap) on `madani-bto`, select **Rename**, and change it to `madani-bot`."
     },
     {
       "model": "gemini-3.1-flash-lite",
@@ -2550,7 +2550,7 @@
       ],
       "state": "idle",
       "ms": 6384,
-      "output": "On it, renaming your dusk-bto project folder in Documents to dusk-bot.\n---\nThis bot has no computer or browser yet, so you can choose one under Works on in its settings."
+      "output": "On it, renaming your madani-bto project folder in Documents to madani-bot.\n---\nThis bot has no computer or browser yet, so you can choose one under Works on in its settings."
     },
     {
       "model": "gemini-3.1-flash-lite",
@@ -2961,7 +2961,7 @@
       ],
       "state": "idle",
       "ms": 4386,
-      "output": "This bot's \"Works on\" setting is currently off, so I don't have a computer mounted to run shell commands or rename folders directly right now. You can turn on a computer under \"Works on\" in my settings, or you can rename `dusk-bto` to `dusk-bot` in your Documents folder yourself."
+      "output": "This bot's \"Works on\" setting is currently off, so I don't have a computer mounted to run shell commands or rename folders directly right now. You can turn on a computer under \"Works on\" in my settings, or you can rename `madani-bto` to `madani-bot` in your Documents folder yourself."
     },
     {
       "model": "gemini-3.1-flash-lite",

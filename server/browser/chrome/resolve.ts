@@ -34,7 +34,7 @@ export interface ChromeHost {
 }
 
 export interface ChromeEngine {
-  /** The agent-browser dusk bot installed and manages; an engine someone named picks its own browser unless a Chrome is named too. */
+  /** The agent-browser madani bot installed and manages; an engine someone named picks its own browser unless a Chrome is named too. */
   managed: boolean;
 }
 
@@ -78,7 +78,7 @@ export function installedGoogleChrome(host: ChromeHost): string | null {
   return candidates.find((candidate) => host.exists(candidate)) ?? null;
 }
 
-/** Machine policies only: a managed machine runs Chrome for Testing in profiles of dusk bot's own instead. */
+/** Machine policies only: a managed machine runs Chrome for Testing in profiles of madani bot's own instead. */
 export function chromePolicyManaged(host: ChromeHost): boolean {
   const { basename, join } = paths(host.platform);
   if (host.platform === "darwin") {
@@ -115,8 +115,8 @@ export function legacyBrowserFound(host: ChromeHost): boolean {
 
 export function resolveChromePlan(host: ChromeHost, engine: ChromeEngine | null): ChromePlan {
   const { env, platform } = host;
-  if (env.DUSK_BROWSER_LEGACY_SHELL?.trim() === "1") return { kind: "legacy", reason: "DUSK_BROWSER_LEGACY_SHELL=1" };
-  const named = env.DUSK_CHROME_PATH?.trim() || env.AGENT_BROWSER_EXECUTABLE_PATH?.trim();
+  if (env.MADANI_BROWSER_LEGACY_SHELL?.trim() === "1") return { kind: "legacy", reason: "MADANI_BROWSER_LEGACY_SHELL=1" };
+  const named = env.MADANI_CHROME_PATH?.trim() || env.AGENT_BROWSER_EXECUTABLE_PATH?.trim();
   if (named) {
     if (isHeadlessShell(named)) return { kind: "legacy", reason: "the named browser is a headless shell" };
     if (!host.exists(named)) return { kind: "legacy", reason: `${named} does not exist` };
@@ -126,7 +126,7 @@ export function resolveChromePlan(host: ChromeHost, engine: ChromeEngine | null)
   const pin = platform === "darwin" || platform === "win32" ? chromeForTestingPin(platform, host.arch) : null;
   const installed = installedGoogleChrome(host);
   if (installed && !chromePolicyManaged(host)) return { kind: "chrome", chrome: { path: installed, source: "installed" }, fallback: pin };
-  if (platform === "linux" && env.DUSK_RESOURCES_PATH) return { kind: "legacy", reason: installed ? "Google Chrome here is managed by an organization" : "Google Chrome is not installed" };
+  if (platform === "linux" && env.MADANI_RESOURCES_PATH) return { kind: "legacy", reason: installed ? "Google Chrome here is managed by an organization" : "Google Chrome is not installed" };
   const own = agentBrowserChrome(host);
   if (own) return { kind: "chrome", chrome: { path: own, source: "agent-browser" }, fallback: null };
   if (pin) {

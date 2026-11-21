@@ -8,7 +8,7 @@ import test from "node:test";
 import { bundleSource, createLocalUi, devSource, servedOrigins, uiPatterns, uiRoute } from "./local-ui.mjs";
 
 const VPS = "http://vps-abc.localhost:51234";
-const CLOUD = "https://me.dusk.cloud";
+const CLOUD = "https://me.madani.cloud";
 const html = [{ name: "Content-Type", value: "text/html; charset=utf-8" }];
 
 test("only a saved place's origin is served, never this computer's own page", () => {
@@ -41,7 +41,7 @@ test("routing: pages, files, and what stays with the server", () => {
   assert.equal(uiRoute({ url: `${CLOUD}/`, resourceType: "Document", responseErrorReason: "ConnectionRefused" }, origins), "network");
   assert.equal(page(`${CLOUD}/download`, 200, [{ name: "content-type", value: "application/pdf" }]), "network");
   assert.equal(page(`${CLOUD}/api/files/x`), "network");
-  assert.equal(page(`${CLOUD}/.well-known/duskbot/environment`), "network");
+  assert.equal(page(`${CLOUD}/.well-known/madanibot/environment`), "network");
   assert.equal(page("https://elsewhere.example/"), "network");
 
   assert.equal(uiRoute({ url: `${CLOUD}/assets/index-abc.js`, resourceType: "Script" }, origins), "file");

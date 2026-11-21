@@ -123,7 +123,7 @@ const spinning = () => document.querySelector(".animate-spin") !== null;
 
 beforeAll(() => {
   vi.stubGlobal("fetch", vi.fn(async () => new Response("{}")));
-  vi.stubGlobal("duskDesktop", undefined);
+  vi.stubGlobal("madaniDesktop", undefined);
 });
 afterEach(() => {
   root?.unmount();

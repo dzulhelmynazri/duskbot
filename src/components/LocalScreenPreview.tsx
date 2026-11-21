@@ -58,7 +58,7 @@ export function LocalScreenPreview() {
   const start = async () => {
     if (
       !preview.available ||
-      !window.duskDesktop?.beginScreenPreviewIntent ||
+      !window.madaniDesktop?.beginScreenPreviewIntent ||
       !navigator.mediaDevices?.getDisplayMedia
     ) {
       setPhase("unavailable");
@@ -69,7 +69,7 @@ export function LocalScreenPreview() {
     releaseStream("requesting", "computer.screen.waiting");
     const currentRequest = requestId.current;
     const result = await requestScreenPreview({
-      beginIntent: () => window.duskDesktop!.beginScreenPreviewIntent(),
+      beginIntent: () => window.madaniDesktop!.beginScreenPreviewIntent(),
       getDisplayMedia: (constraints) => navigator.mediaDevices.getDisplayMedia(constraints),
     });
 

@@ -76,7 +76,7 @@ describe("computer inventory request wiring", () => {
   it("builds the exact confirmed Local VM and VPS lifecycle requests", () => {
     const confirm = vi.fn(() => true);
     const local = confirmComputerAction(perBotLocalVmDeletePlan(cloudVm), confirm);
-    const vpsName = "duskbot-vps-current-123456abcdef";
+    const vpsName = "madanibot-vps-current-123456abcdef";
     const vps = confirmComputerAction(vpsComputerRemovePlan({
       name: vpsName,
       state: "running",
@@ -198,7 +198,7 @@ describe("Local VM inventory UI", () => {
     }));
 
     expect(markup).toContain("Not managed");
-    expect(markup).toContain("This desktop wasn&#x27;t made by dusk bot.");
+    expect(markup).toContain("This desktop wasn&#x27;t made by madani bot.");
     expect(markup).toContain("Remove it in Docker or Podman.");
     expect(markup).not.toContain(">Delete</button>");
     expect(markup).not.toContain("Container labels do not match");
@@ -207,7 +207,7 @@ describe("Local VM inventory UI", () => {
 
 describe("VPS computer inventory UI", () => {
   const ownedVps: VpsComputerInventoryInstance = {
-    name: "duskbot-vps-current-123456abcdef",
+    name: "madanibot-vps-current-123456abcdef",
     state: "running",
     vpsAlias: "production-vps",
     ownerBotId: "current-owner",
@@ -230,7 +230,7 @@ describe("VPS computer inventory UI", () => {
     }));
 
   it("shows the configured host, owners, orphans, and status without raw container details", () => {
-    const orphanName = "duskbot-vps-deleted-abcdef123456";
+    const orphanName = "madanibot-vps-deleted-abcdef123456";
     const markup = renderCard({
       instances: [
         ownedVps,
@@ -255,7 +255,7 @@ describe("VPS computer inventory UI", () => {
   });
 
   it("derives a stable identifier without exposing the bot-derived container name", () => {
-    expect(vpsComputerShortId("duskbot-vps-deleted-abcdef123456")).toBe("ef123456");
+    expect(vpsComputerShortId("madanibot-vps-deleted-abcdef123456")).toBe("ef123456");
     expect(vpsComputerShortId("unexpected-provider-name")).toBe("unknown");
   });
 
@@ -268,7 +268,7 @@ describe("VPS computer inventory UI", () => {
   });
 
   it("offers restart on a running desktop even while bots are stuck on it, and posts only to its own name", () => {
-    const markup = renderCard({ instances: [{ ...ownedVps, inUse: true }, { ...ownedVps, name: "duskbot-vps-asleep-123456abcdef", state: "exited" }], onRestart: vi.fn() });
+    const markup = renderCard({ instances: [{ ...ownedVps, inUse: true }, { ...ownedVps, name: "madanibot-vps-asleep-123456abcdef", state: "exited" }], onRestart: vi.fn() });
     expect(markup.match(/>Restart<\/button>/g)).toHaveLength(1);
     expect(markup).toMatch(/<button type="button" title="Stop this desktop[^"]*" class="ui-button">Restart<\/button>/);
     const confirm = vi.fn(() => true);
@@ -294,7 +294,7 @@ describe("VPS computer inventory UI", () => {
   it("tags computers on more than one server and keeps reachable rows beside the warning", () => {
     const second = {
       ...ownedVps,
-      name: "duskbot-vps-second-123456abcdef",
+      name: "madanibot-vps-second-123456abcdef",
       vpsAlias: "alpha-vps",
       ownerName: "Ops",
     };
@@ -334,7 +334,7 @@ describe("VPS computer inventory UI", () => {
   });
 });
 
-describe("Settings → Computers on a dusk bot Cloud home", () => {
+describe("Settings → Computers on a madani bot Cloud home", () => {
   afterEach(() => { storeFixture.config = null; });
   // the labels and row names the page draws
   const cards = () => [...renderToStaticMarkup(createElement(LocalComputerSection)).matchAll(/<(?:div|h3)[^>]*data-(?:row-title|settings-heading)=""[^>]*>([^<]+)<\/(?:div|h3)>/g)].map((match) => match[1]);

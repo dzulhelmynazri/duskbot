@@ -391,7 +391,7 @@ export function funnelFacts(events: readonly StoredEvent[]): FunnelFacts {
 }
 
 /**
- * The Dusk funnel per person: a step counts someone who reached it and every step above it, whenever they did (someone
+ * The Madani funnel per person: a step counts someone who reached it and every step above it, whenever they did (someone
  * may pair the app before paying); a step done before the one above it is left out of that step's median time.
  * The steps, in order: site visit, waitlist or signup, the onboarding steps, a cloud chosen, paid,
  * an app paired, the first bot reply, then coming back on D1, D7 and D30. Each step counts the people who reached it
@@ -442,7 +442,7 @@ export function funnel(input: FunnelInput) {
   }
   const labels: Array<[string, string]> = [["visit", "visited the site"], ["signup", input.mode === "visitors" ? "joined the waitlist or signed up" : "signed up"],
     ["onboarding_name", "onboarding: name"], ["onboarding_plan", "onboarding: plan"], ["onboarding_app", "onboarding: app"], ["onboarded", "finished onboarding"],
-    ["cloud", "chose dusk cloud"], ["paid", "paid"], ["paired", "paired an app"], ["replied", "first bot reply"], ["d1", "came back day 1"], ["d7", "came back week 2"], ["d30", "came back month 2"]];
+    ["cloud", "chose madani cloud"], ["paid", "paid"], ["paired", "paired an app"], ["replied", "first bot reply"], ["d1", "came back day 1"], ["d7", "came back week 2"], ["d30", "came back month 2"]];
   const startAt = input.mode === "visitors" ? 0 : 1;
   const steps: FunnelStepResult[] = [];
   const reachedAt: number[] = [];

@@ -34,7 +34,7 @@ export interface ConnectionListing {
   for?: string[];
   /** A sign-in that refreshes itself (an MCP server's own account): it moves, and this computer then forgets it. */
   signIn?: true;
-  /** Connected apps: dusk bot's service or the person's own Composio project, the account in a digest equal on two
+  /** Connected apps: madani bot's service or the person's own Composio project, the account in a digest equal on two
    * servers exactly when they reach the same apps, and the service's installation a code is minted for. */
   mode?: ComposioIdentity["mode"];
   account?: string;
@@ -86,7 +86,7 @@ function privateAddress(host: string): boolean {
 
 /** Fixtures only: loopback stand-ins for public services ("127.0.0.1:4321,…"), which every fixture place reaches. */
 function testReachable(url: string): boolean {
-  const hosts = process.env.DUSK_TEST_CONNECTOR_HOSTS;
+  const hosts = process.env.MADANI_TEST_CONNECTOR_HOSTS;
   if (!hosts) return false;
   try { return hosts.split(",").map((host) => host.trim()).includes(new URL(url).host); } catch { return false; }
 }
@@ -228,7 +228,7 @@ export function answerConnection(id: string, sources: HandoffSources):
   }
   if (id === "composio") {
     const apiKey = cfg.composio?.apiKey?.trim(), userId = cfg.composio?.userId;
-    return apiKey && userId ? { ok: true, connection: { composio: { apiKey, userId } } } : { ok: false, error: "Connected apps here use dusk bot's service." };
+    return apiKey && userId ? { ok: true, connection: { composio: { apiKey, userId } } } : { ok: false, error: "Connected apps here use madani bot's service." };
   }
   if (id === "email") {
     const accounts = sources.email?.() ?? [];

@@ -14,7 +14,7 @@ export function localVoiceRoutes({ busy, prefetch, models = new ModelStore(), en
   installed?: boolean;
 }): RouteHandler {
   const halves = () => ({ hear: models.ready("hear"), speak: models.ready("speak") });
-  if (installed && engine.usable() && prefetch && process.env.DUSK_VOICE_PREFETCH !== "0" && !process.env.VITEST) {
+  if (installed && engine.usable() && prefetch && process.env.MADANI_VOICE_PREFETCH !== "0" && !process.env.VITEST) {
     startPrefetch({ models, busy, onBattery: () => onBattery(), warm: () => engine.warm(halves()) });
   }
   return createLocalVoiceRoutes({

@@ -59,14 +59,14 @@ async function stepDownSeededChief() {
 }
 const idle = (botId: string) => until(() => api("GET", "/api/bots?messages=0"), s => !s.bots.find((b: any) => b.id === botId)?.busy);
 const computer = (d: any) => d.mcpConfig.mcpServers.computer;
-const gate = (c: any) => fetch(c.env.DUSK_CONTROL_URL, { headers: { authorization: `Bearer ${c.env.DUSK_CONTROL_TOKEN}` } });
-const check = (c: any) => createControlClient({ url: c.env.DUSK_CONTROL_URL, token: c.env.DUSK_CONTROL_TOKEN }).state(true);
+const gate = (c: any) => fetch(c.env.MADANI_CONTROL_URL, { headers: { authorization: `Bearer ${c.env.MADANI_CONTROL_TOKEN}` } });
+const check = (c: any) => createControlClient({ url: c.env.MADANI_CONTROL_URL, token: c.env.MADANI_CONTROL_TOKEN }).state(true);
 // The runtime outcome of the room's latest coordinated turn, once it has one.
 const roomOutcome = (groupId: string) => until(() => readHandoffs(join(fixtureHome, "data")).findLast(node => node.groupId === groupId)?.outcome,
   Boolean);
 
 beforeAll(async () => {
-  fixtureHome = mkdtempSync(join(tmpdir(), "dusk-group-vm-"));
+  fixtureHome = mkdtempSync(join(tmpdir(), "madani-group-vm-"));
   stateFile = join(fixtureHome, "vm.json");
   dumpFile = join(fixtureHome, "dump.json");
   finishFile = join(fixtureHome, "finish");
@@ -95,14 +95,14 @@ beforeAll(async () => {
       "--import", pathToFileURL(join(ROOT, "server/testing/desktop-parent.mjs")).href, join(ROOT, "server/index.ts")], {
       cwd: ROOT, env: {
         PATH: dirname(process.execPath), ...(process.env.SystemRoot ? { SystemRoot: process.env.SystemRoot } : {}),
-        HOME: fixtureHome, USERPROFILE: fixtureHome, DUSK_DATA_DIR: data,
+        HOME: fixtureHome, USERPROFILE: fixtureHome, MADANI_DATA_DIR: data,
         APPDATA: join(fixtureHome, "appdata"), LOCALAPPDATA: join(fixtureHome, "localappdata"),
         TEMP: fixtureHome, TMP: fixtureHome, TMPDIR: fixtureHome,
-        DUSK_PORT: String(port), DUSK_WEBHOOK_PORT: String(port + 1), DUSK_STATIC_DIR: ui, DUSK_TEST_VM_STATE: stateFile,
-        DUSK_TEST_VPS_STATE: vpsStateFile,
-        ...(computerWaitMaxMs ? { DUSK_COMPUTER_WAIT_MAX_MS: String(computerWaitMaxMs) } : {}),
-        DUSK_COMPUTER_CALL_WAIT_MS: String(CALL_WAIT_MS),
-        DUSK_USER_DATA: join(fixtureHome, "user-data"), DUSK_TEST_DESKTOP_CUA_CONNECTION: cuaDescriptor,
+        MADANI_PORT: String(port), MADANI_WEBHOOK_PORT: String(port + 1), MADANI_STATIC_DIR: ui, MADANI_TEST_VM_STATE: stateFile,
+        MADANI_TEST_VPS_STATE: vpsStateFile,
+        ...(computerWaitMaxMs ? { MADANI_COMPUTER_WAIT_MAX_MS: String(computerWaitMaxMs) } : {}),
+        MADANI_COMPUTER_CALL_WAIT_MS: String(CALL_WAIT_MS),
+        MADANI_USER_DATA: join(fixtureHome, "user-data"), MADANI_TEST_DESKTOP_CUA_CONNECTION: cuaDescriptor,
       }, stdio: ["ignore", "pipe", "pipe"],
     });
     child.stdout!.on("data", () => {});
@@ -233,7 +233,7 @@ describe("Group Local VM ownership on the real isolated server", () => {
     const next = await room();
     await send(next.group.id);
     const current = computer(await dump());
-    expect(current.env.DUSK_CONTROL_URL).toContain(next.bots[0].id);
+    expect(current.env.MADANI_CONTROL_URL).toContain(next.bots[0].id);
     expect((await gate(current)).status).toBe(200);
     expect((await gate(previous)).status).toBe(401);
   });
@@ -370,7 +370,7 @@ describe("Group Local VM ownership on the real isolated server", () => {
     const { bots, group } = await room();
     await send(group.id);
     const mounted: any = await dump();
-    const token = mounted.mcpConfig.mcpServers.agents.env.DUSK_COMMS_TOKEN;
+    const token = mounted.mcpConfig.mcpServers.agents.env.MADANI_COMMS_TOKEN;
     const call = (path: string, body: unknown) => fetch(base + path, {
       method: "POST", headers: { authorization: `Bearer ${token}`, "content-type": "application/json" },
       body: JSON.stringify(body),
@@ -416,7 +416,7 @@ describe("Group Local VM ownership on the real isolated server", () => {
       await api("POST", `/api/bots/${bot.id}/messages`, { text: "Run a command on the VM" });
       const mounted: any = await dump();
       expect(computer(mounted)).toBeTruthy();
-      const token = mounted.mcpConfig.mcpServers.agents.env.DUSK_COMMS_TOKEN;
+      const token = mounted.mcpConfig.mcpServers.agents.env.MADANI_COMMS_TOKEN;
       const response = await fetch(base + "/api/internal/vm-exec", {
         method: "POST", headers: { authorization: `Bearer ${token}`, "content-type": "application/json" },
         body: JSON.stringify({ command: "printf auto" }),
@@ -485,7 +485,7 @@ describe("Group Local VM ownership on the real isolated server", () => {
       await api("POST", `/api/bots/${bot.id}/messages`, { text: "Open Chromium on the VPS computer" });
       const before: any = await dump();
       if (computer(before)) expect((await gate(computer(before))).status).toBe(200);
-      const token = before.mcpConfig.mcpServers.agents.env.DUSK_COMMS_TOKEN;
+      const token = before.mcpConfig.mcpServers.agents.env.MADANI_COMMS_TOKEN;
       const options = await (await fetch(base + "/api/internal/computer/select", { headers: { authorization: `Bearer ${token}` } })).json() as any;
       expect(options.options.find((option: any) => option.surface === "cloud")).toMatchObject({ available: true, ready: false,
         canStart: state !== "missing-auto", canCreate: state === "missing-auto" });
@@ -532,15 +532,15 @@ describe("Group Local VM ownership on the real isolated server", () => {
       await api("POST", `/api/bots/${bot.id}/messages`, { text: "Open Chrome on an available VM and inspect its page title" });
       const before: any = await dump();
       expect(computer(before)).toBeUndefined();
-      const token = before.mcpConfig.mcpServers.agents.env.DUSK_COMMS_TOKEN;
+      const token = before.mcpConfig.mcpServers.agents.env.MADANI_COMMS_TOKEN;
       const call = (method: string, body?: unknown) => fetch(base + "/api/internal/computer/select", { method,
         headers: { authorization: `Bearer ${token}`, "content-type": "application/json" }, ...(body ? { body: JSON.stringify(body) } : {}) });
       const available = await (await call("GET")).json() as any;
       expect(available.canSelect).toBe(true);
       expect(available.options.map((option: any) => option.surface)).toEqual(["cloud", "vm", "local", "browser"]);
-      expect(before.mcpConfig.mcpServers.agents.env.DUSK_CLOUD_HOME).toBe("0");
+      expect(before.mcpConfig.mcpServers.agents.env.MADANI_CLOUD_HOME).toBe("0");
       expect(before.systemPrompt).not.toContain(cloudHomePrompt());
-      expect(before.systemPrompt).not.toContain("You run on the user's dusk cloud");
+      expect(before.systemPrompt).not.toContain("You run on the user's madani cloud");
       expect(available.options).toContainEqual(expect.objectContaining({ surface: "vm", available: true }));
       expect(available.options).toContainEqual(expect.objectContaining({ surface: "cloud", ready: false, canCreate: true }));
       expect(await (await call("POST", { surface: "auto" })).json()).toMatchObject({ status: "pending", surface: "vm" });
@@ -579,7 +579,7 @@ describe("Group Local VM ownership on the real isolated server", () => {
       await api("PATCH", `/api/bots/${bot.id}`, { computer: failure === "off" ? "off" : "browser", browser: false });
       await api("POST", `/api/bots/${bot.id}/messages`, { text: "Open Chrome on the VM" });
       const sent: any = await dump();
-      const token = sent.mcpConfig.mcpServers.agents.env.DUSK_COMMS_TOKEN;
+      const token = sent.mcpConfig.mcpServers.agents.env.MADANI_COMMS_TOKEN;
       const selected = await fetch(base + "/api/internal/computer/select", { method: "POST",
         headers: { authorization: `Bearer ${token}`, "content-type": "application/json" }, body: JSON.stringify({ surface: "vm" }) });
       expect(selected.status).toBe(failure === "off" ? 403 : 200);
@@ -598,7 +598,7 @@ describe("Group Local VM ownership on the real isolated server", () => {
         writeFileSync(finishFile, "finish");
         const next: any = await dump();
         expect(computer(next)).toBeUndefined();
-        expect(next.mcpConfig.mcpServers.agents.env.DUSK_THREAD_ID).toBe(bot.threadId);
+        expect(next.mcpConfig.mcpServers.agents.env.MADANI_THREAD_ID).toBe(bot.threadId);
         expect(next.prompt.message.content).toContain(text);
         expect(next.prompt.message.content).not.toContain("The computer selection is now");
       } else await api("POST", `/api/bots/${bot.id}/interrupt`, {});
@@ -728,7 +728,7 @@ describe("Group Local VM ownership on the real isolated server", () => {
       const sent = await dump() as { systemPrompt: string };
       const c = computer(sent);
       expect(c).toBeTruthy();
-      expect(c.env.DUSK_CUA_COMMAND).toBe("/fixture/cua-driver");
+      expect(c.env.MADANI_CUA_COMMAND).toBe("/fixture/cua-driver");
       expect(c.args.some((arg: string) => arg.includes("container-mcp"))).toBe(false);
       expect(sent.systemPrompt).toContain("You can act on the user's computer");
       expect(sent.systemPrompt).toContain("tell them it is on this computer");
@@ -770,9 +770,9 @@ describe("Group Local VM ownership on the real isolated server", () => {
   });
 
   it.skipIf(process.platform === "linux")("tells a channel speaker which macOS grant is still off, instead of failing the turn", async () => {
-    const sent = await speaksWithoutThisComputer("embedded host failed: Screen Recording required; grant access in System Settings and restart dusk bot");
+    const sent = await speaksWithoutThisComputer("embedded host failed: Screen Recording required; grant access in System Settings and restart madani bot");
     expect(sent).toContain("Control of this computer's desktop apps is not available");
-    if (process.platform === "darwin") expect(sent).toContain("macOS has not given dusk bot Screen Recording on this Mac yet");
+    if (process.platform === "darwin") expect(sent).toContain("macOS has not given madani bot Screen Recording on this Mac yet");
   });
 
   it("runs a channel speaker's own VPS destination on its engine, waking and reusing its computer", async () => {
@@ -900,8 +900,8 @@ describe("Group Local VM ownership on the real isolated server", () => {
     expect(second.args).toEqual(first.args);
     expect((await gate(second)).status).toBe(200);
     expect((await gate(first)).status).toBe(401);
-    const impersonation = await fetch(second.env.DUSK_CONTROL_URL.replace(bots[1].id, bots[0].id), {
-      headers: { authorization: `Bearer ${second.env.DUSK_CONTROL_TOKEN}` },
+    const impersonation = await fetch(second.env.MADANI_CONTROL_URL.replace(bots[1].id, bots[0].id), {
+      headers: { authorization: `Bearer ${second.env.MADANI_CONTROL_TOKEN}` },
     });
     expect(impersonation.status).toBe(403);
     await stop(group.id); await idle(bots[1].id);

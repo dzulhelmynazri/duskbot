@@ -786,7 +786,7 @@
       "mcp_server"
     ]
   },
-  "default+dusk": {
+  "default+madani": {
     "bytes": 68330,
     "sha256": "60e34cd2f0d3f0dd2d84bd84fdd25569eb7fe702fc704f2fa3dc9f032338008a",
     "tools": [
@@ -848,7 +848,7 @@
       "mark_notifications_read"
     ]
   },
-  "skills+voice+dusk": {
+  "skills+voice+madani": {
     "bytes": 71927,
     "sha256": "acb21d16778233c077b0bb9d05050dde021ce27a007c373f4f2fdb2b9549ced3",
     "tools": [

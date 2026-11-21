@@ -29,13 +29,13 @@ describe("the container's server command", () => {
   const small = { bytes: GB, cgroupLimit: GB };
 
   it("runs the server through the compile-cache bootstrap, its cache on the data volume, its heap sized to the limit", () => {
-    const command = serverCommand(here, { DUSK_DATA_DIR: join("/srv", "dusk"), DUSK_PORT: "8799" }, { exists: () => true, box: small });
+    const command = serverCommand(here, { MADANI_DATA_DIR: join("/srv", "madani"), MADANI_PORT: "8799" }, { exists: () => true, box: small });
     expect(command).toEqual({
       args: ["--max-old-space-size=614", join(here, "desktop-entry.mjs")],
-      env: { DUSK_DATA_DIR: join("/srv", "dusk"), DUSK_PORT: "8799", DUSK_SERVER_COMPILE_CACHE: join("/srv", "dusk", "cache", "node-compile") },
+      env: { MADANI_DATA_DIR: join("/srv", "madani"), MADANI_PORT: "8799", MADANI_SERVER_COMPILE_CACHE: join("/srv", "madani", "cache", "node-compile") },
     });
-    expect(serverCommand(here, {}, { exists: () => true, box: small }).env.DUSK_SERVER_COMPILE_CACHE)
-      .toBe(join(homedir(), ".duskbot", "cache", "node-compile"));
+    expect(serverCommand(here, {}, { exists: () => true, box: small }).env.MADANI_SERVER_COMPILE_CACHE)
+      .toBe(join(homedir(), ".madanibot", "cache", "node-compile"));
   });
 
   it("runs index.js itself without the bootstrap, and leaves the heap alone without a limit or when NODE_OPTIONS sizes it", () => {

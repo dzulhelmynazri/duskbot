@@ -39,7 +39,7 @@ function doneList(counts: VpsMoveCounts | undefined): string[] {
   return arrivedList({ bots: n(counts.bots), skills: n(counts.skills), logins: n(counts.logins), onePassword: counts.onePassword === true, chats: n(counts.chats), routines: n(counts.routines) });
 }
 
-/** The move sheet on a VPS's own page: its bots go straight to dusk cloud, one state at a time as main tells it. */
+/** The move sheet on a VPS's own page: its bots go straight to madani cloud, one state at a time as main tells it. */
 export function VpsCloudMoveSheet({ onClose }: { onClose: () => void }) {
   const { state, dispatch } = useStore();
   const { bridge, view, set } = useVpsCloudMove(true);
@@ -53,7 +53,7 @@ export function VpsCloudMoveSheet({ onClose }: { onClose: () => void }) {
   if (!bridge || !view || !step) return null;
   const place = "place" in view ? view.place : (serverName ?? "");
   const bots = state.bots.filter((bot) => !bot.hidden && !bot.movedTo).length;
-  // Get dusk cloud buys the cheapest plan, named with its price before the browser opens
+  // Get madani cloud buys the cheapest plan, named with its price before the browser opens
   const plan = cheapestPlan(offer);
   const planName = plan ? plan.label ?? cloudPlanLabel(plan.tier) : null;
   const price = plan ? usd(plan.amount / 100) : null;
@@ -73,8 +73,8 @@ export function VpsCloudMoveSheet({ onClose }: { onClose: () => void }) {
   // of its own still never sends the person elsewhere first: the account sheet, or this computer's buying sheet
   const buy = () => run(() => bridge.buy(plan?.tier === "pro" ? "pro" : "plus"), (message) => {
     if (message !== SIGN_IN_FIRST) return false;
-    if (window.duskDesktop?.cloudAccount) { onClose(); dispatch({ type: "openCloudAdd", source: "app_computer_move", signIn: true }); return true; }
-    if (window.duskDesktop?.accountSheet) { void window.duskDesktop.accountSheet.open().catch(() => {}); return true; }
+    if (window.madaniDesktop?.cloudAccount) { onClose(); dispatch({ type: "openCloudAdd", source: "app_computer_move", signIn: true }); return true; }
+    if (window.madaniDesktop?.accountSheet) { void window.madaniDesktop.accountSheet.open().catch(() => {}); return true; }
     return false;
   });
   const signingIn = view.stage === "buying" && view.signingIn === true;

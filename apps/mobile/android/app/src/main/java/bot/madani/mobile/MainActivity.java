@@ -1,4 +1,4 @@
-package bot.dusk.mobile;
+package bot.madani.mobile;
 
 import android.content.pm.PackageManager;
 import android.os.Bundle;

@@ -1,4 +1,4 @@
-import { DUSK_BODY_IDS } from "../../shared/body-migration";
+import { MADANI_BODY_IDS } from "../../shared/body-migration";
 import { Children, createElement, isValidElement, type ReactElement, type ReactNode } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { afterAll, beforeEach, describe, expect, it, vi } from "vitest";
@@ -134,7 +134,7 @@ const { DetailsTab } = await import("./bot-panel/DetailsTab");
 const { AdvancedTab } = await import("./bot-panel/AdvancedTab");
 const { SettingsPage } = await import("./bot-panel/SettingsPage");
 const { LibraryPage, LibrarySection } = await import("./bot-panel/LibraryTab");
-const { CloudCtaCard, ComputerTab, WherePage, cloudCtaStep, hasDuskCloud } = await import("./bot-panel/ComputerTab");
+const { CloudCtaCard, ComputerTab, WherePage, cloudCtaStep, hasMadaniCloud } = await import("./bot-panel/ComputerTab");
 const { PageBody, AppsPage, RoutinesPage, MemoryPage, SkillsPage, FolderPage, BrowserPage } = await import("./bot-panel/pages");
 const { BrowserLogins } = await import("./bot-panel/browser-logins");
 const { PAGES, sectionTarget } = await import("./bot-panel/page-registry");
@@ -281,7 +281,7 @@ beforeEach(() => {
   fixture.places = {
     cloud: [true, true, "cloud desktop"], vm: [true, true, "private desktop"], local: [true, true, "your screen"], browser: [true, true, "web pages only"],
   };
-  (window as unknown as { duskDesktop?: unknown }).duskDesktop = undefined;
+  (window as unknown as { madaniDesktop?: unknown }).madaniDesktop = undefined;
 });
 
 describe("the bot panel in Simple mode", () => {
@@ -518,7 +518,7 @@ describe("the avatar editor", () => {
     const bot = makeBot();
     const rendered = editor(bot);
     expect([...rendered.html.matchAll(/aria-label="(\w+) character shape"/g)].map((match) => match[1]))
-      .toEqual(DUSK_BODY_IDS.map((id) => id[0]!.toUpperCase() + id.slice(1)));
+      .toEqual(MADANI_BODY_IDS.map((id) => id[0]!.toUpperCase() + id.slice(1)));
     expect([...rendered.html.matchAll(/aria-label="(\w+) character color"/g)].map((match) => match[1]))
       .toEqual(["Blue", "Cyan", "Teal", "Green", "Yellow", "Orange", "Coral", "Red", "Pink", "Purple"]);
     expect(rendered.html.toLowerCase()).not.toContain("more looks");
@@ -710,14 +710,14 @@ describe("the Computer tab", () => {
     expect(fixture.dispatch).not.toHaveBeenCalledWith({ type: "toggleSettings", open: false });
   });
 
-  it("on a server leads with the screen, then the move to dusk cloud, with no screen picker, Advanced fold or move back", () => {
+  it("on a server leads with the screen, then the move to madani cloud, with no screen picker, Advanced fold or move back", () => {
     const rendered = computer(cloudBot());
     const screen = rendered.html.indexOf('data-asleep-mascot=""'), card = rendered.html.indexOf('data-panel-card="cloud-desktop"');
     expect(screen).toBeGreaterThan(-1);
     expect(card).toBeGreaterThan(screen);
     expect(rendered.html).toContain(">Scout&#x27;s screen<");
     expect(rendered.html, "no server name under the screen").not.toContain("Studio VPS");
-    expect(rendered.html).toContain(">Move to dusk cloud<");
+    expect(rendered.html).toContain(">Move to madani cloud<");
     expect(rendered.html).toContain(">Keep Scout working<");
     expect(rendered.html, "a server is always on: no sleep pitch").not.toMatch(/never sleeps|asleep or off/);
     for (const gone of ['data-panel-card="runs-on"', 'data-panel-select="place"', 'data-panel-advanced="computer"', 'data-panel-action="move-home"', 'data-panel-action="move-vps"']) {
@@ -725,7 +725,7 @@ describe("the Computer tab", () => {
     }
   });
 
-  it("on this computer drops the screen choice and preview, and offers dusk cloud through checkout", () => {
+  it("on this computer drops the screen choice and preview, and offers madani cloud through checkout", () => {
     fixture.otherServer = null;
     const rendered = computer(cloudBot());
     expect(rendered.html).not.toContain('data-asleep-mascot=""');
@@ -736,16 +736,16 @@ describe("the Computer tab", () => {
     expect(after?.type).toBe(CloudCtaCard);
     expect(rendered.html).not.toContain('data-panel-card="runs-on"');
     const card = cta(cloudBot(), null);
-    expect(card.html).toContain('data-panel-card="dusk-cloud"');
+    expect(card.html).toContain('data-panel-card="madani-cloud"');
     expect(card.html).toContain('data-cloud-cta="get"');
     expect(card.html).toContain('data-cloud-hop="laptop"');
     expect(card.html).toContain(">Keep Scout working<");
-    expect(card.html).toContain(">Get dusk cloud<");
+    expect(card.html).toContain(">Get madani cloud<");
     click(find(card, "data-panel-action", "move-cloud"));
     expect(fixture.dispatch).toHaveBeenCalledWith({ type: "openCloudAdd", source: "app_bot_panel" });
   });
 
-  it("in the store phone app shows this computer's bot its browser, never a blank tab or the dusk cloud offer", () => {
+  it("in the store phone app shows this computer's bot its browser, never a blank tab or the madani cloud offer", () => {
     fixture.otherServer = null;
     const before = globalThis.document;
     vi.stubGlobal("document", { documentElement: { dataset: { mobileApp: "android" } } });
@@ -754,19 +754,19 @@ describe("the Computer tab", () => {
       const section = rendered.nodes.find((node) => "askFirst" in node.props);
       expect(section?.props.bot).toMatchObject({ id: "scout" });
       expect(section?.props.after).toBe(false);
-      expect(rendered.html).not.toContain('data-panel-card="dusk-cloud"');
+      expect(rendered.html).not.toContain('data-panel-card="madani-cloud"');
     } finally {
       vi.stubGlobal("document", before);
     }
   });
 
-  it("on this computer still shows a Private desktop bot's own screen, with the dusk cloud offer under it", () => {
+  it("on this computer still shows a Private desktop bot's own screen, with the madani cloud offer under it", () => {
     fixture.otherServer = null;
     const rendered = computer(makeBot({ computer: "vm" }));
     expect(rendered.nodes.find((node) => node.props.inline === true)?.props.bot).toMatchObject({ id: "scout" });
     expect(rendered.html).toContain('data-asleep-mascot=""');
     expect(rendered.html).toContain(">Scout&#x27;s screen<");
-    const screen = rendered.html.indexOf('data-asleep-mascot=""'), card = rendered.html.indexOf('data-panel-card="dusk-cloud"');
+    const screen = rendered.html.indexOf('data-asleep-mascot=""'), card = rendered.html.indexOf('data-panel-card="madani-cloud"');
     expect(card).toBeGreaterThan(screen);
     expect(has(rendered, "data-local-browser-first")).toBe(false);
   });
@@ -781,18 +781,18 @@ describe("the Computer tab", () => {
     expect(card.html.match(/data-bot-at=/g)).toHaveLength(2);
   });
 
-  it("on this computer with a dusk cloud offers the move, then the switch once the bots live there, never the checkout", () => {
+  it("on this computer with a madani cloud offers the move, then the switch once the bots live there, never the checkout", () => {
     fixture.otherServer = null;
     const openHome = vi.fn(() => Promise.resolve());
     const desktop = { openHome } as unknown as Parameters<typeof CloudCtaCard>[0]["cloudDesktop"];
     const ready = cta(cloudBot(), "ready", desktop);
-    expect(ready.html).toContain(">Move to dusk cloud<");
+    expect(ready.html).toContain(">Move to madani cloud<");
     expect(ready.html).toContain('data-cloud-hop="laptop"');
     const moved = cta(cloudBot(), "moved", desktop);
-    expect(moved.html).toContain(">Switch to dusk cloud<");
+    expect(moved.html).toContain(">Switch to madani cloud<");
     expect(moved.html).toContain(">Keep Scout working<");
-    expect(moved.html).toContain("On dusk cloud, Scout keeps replying even when this");
-    expect(moved.html).not.toContain("is on dusk cloud");
+    expect(moved.html).toContain("On madani cloud, Scout keeps replying even when this");
+    expect(moved.html).not.toContain("is on madani cloud");
     expect(moved.html).not.toContain("keeps working while");
     click(find(moved, "data-panel-action", "move-cloud"));
     expect(openHome).toHaveBeenCalledTimes(1);
@@ -802,10 +802,10 @@ describe("the Computer tab", () => {
   });
 });
 
-describe("the Computer tab with a dusk cloud already", () => {
-  it("never offers to buy dusk cloud again: only an account with no cloud, or one still at checkout, sees the offer", () => {
-    for (const stage of ["ready", "preparing", "moving", "moved", "open", "manage", "coming-back"] as const) expect(hasDuskCloud(stage), stage).toBe(true);
-    for (const stage of [null, "buy", "resume", "elsewhere"] as const) expect(hasDuskCloud(stage), String(stage)).toBe(false);
+describe("the Computer tab with a madani cloud already", () => {
+  it("never offers to buy madani cloud again: only an account with no cloud, or one still at checkout, sees the offer", () => {
+    for (const stage of ["ready", "preparing", "moving", "moved", "open", "manage", "coming-back"] as const) expect(hasMadaniCloud(stage), stage).toBe(true);
+    for (const stage of [null, "buy", "resume", "elsewhere"] as const) expect(hasMadaniCloud(stage), String(stage)).toBe(false);
   });
 
   const SCREEN_OFF = { host: { platform: "darwin", label: "This Mac", session: "unknown", packaged: true }, windowChrome: "mac-inset",
@@ -816,8 +816,8 @@ describe("the Computer tab with a dusk cloud already", () => {
     fixture.otherServer = null;
     fixture.cloudDesktop = { view: { step: "open" }, keep: { shown: false, moved: false }, openHome: () => Promise.resolve(), dialog: null };
     fixture.capabilities = SCREEN_OFF;
-    const shell = window as unknown as { duskDesktop?: unknown };
-    shell.duskDesktop = { platform: "darwin", macPermissions };
+    const shell = window as unknown as { madaniDesktop?: unknown };
+    shell.madaniDesktop = { platform: "darwin", macPermissions };
     try {
       const rendered = computer(bot);
       const section = rendered.nodes.find((node) => isValidElement(node.props.after));
@@ -825,14 +825,14 @@ describe("the Computer tab with a dusk cloud already", () => {
     } finally {
       fixture.cloudDesktop = undefined;
       fixture.capabilities = undefined;
-      delete shell.duskDesktop;
+      delete shell.madaniDesktop;
     }
   };
 
-  it("leads with the browser on This Mac without screen permission, with no screen or permission words, then the dusk cloud card", () => {
+  it("leads with the browser on This Mac without screen permission, with no screen or permission words, then the madani cloud card", () => {
     const { rendered, section, after } = tab(makeBot({ computer: "local" }));
     expect(rendered.nodes.some((node) => node.props.inline === true), "never this Mac's screen").toBe(false);
-    for (const gone of ['data-asleep-mascot=""', "Bots can&#x27;t use this Mac yet", "Your dusk cloud has its own computer", "Screen control", 'data-panel-screen-off']) {
+    for (const gone of ['data-asleep-mascot=""', "Bots can&#x27;t use this Mac yet", "Your madani cloud has its own computer", "Screen control", 'data-panel-screen-off']) {
       expect(rendered.html, gone).not.toContain(gone);
     }
     expect(after?.type).toBe(CloudCtaCard);
@@ -846,8 +846,8 @@ describe("the Computer tab with a dusk cloud already", () => {
     const desktop = { openHome } as unknown as Parameters<typeof CloudCtaCard>[0]["cloudDesktop"];
     const card = capture(() => CloudCtaCard({ bot: makeBot(), stage: "open", cloudDesktop: desktop }));
     expect(card.html).toContain(">Keep Scout working<");
-    expect(card.html).toContain(">Switch to dusk cloud<");
-    expect(card.html).not.toContain("is on dusk cloud");
+    expect(card.html).toContain(">Switch to madani cloud<");
+    expect(card.html).not.toContain("is on madani cloud");
     click(find(card, "data-panel-action", "move-cloud"));
     expect(openHome).toHaveBeenCalledTimes(1);
   });
@@ -1072,7 +1072,7 @@ describe("the drill-in pages", () => {
 
   it("keeps the bot's own private folder, or a folder chosen with the native picker, saved through the bot route", async () => {
     const pickFolder = vi.fn(() => Promise.resolve("/Users/omkar/Projects/site"));
-    (window as unknown as { duskDesktop: unknown }).duskDesktop = { pickFolder };
+    (window as unknown as { madaniDesktop: unknown }).madaniDesktop = { pickFolder };
     const rendered = body("folder");
     expect(find(rendered, "data-panel-choice", "private").props.checked).toBe(true);
     expect(find(rendered, "data-panel-choice", "pick").props.checked).toBe(false);

@@ -71,9 +71,9 @@ describe("the bot panel's edge", () => {
     at("pointerdown", 1000);
     at("pointermove", 900);
     expect(cssWidth()).toBe("420px");
-    expect(stored.get("dusk-bot-panel-width") ?? null).toBeNull();
+    expect(stored.get("madani-bot-panel-width") ?? null).toBeNull();
     at("pointerup", 900);
-    expect(stored.get("dusk-bot-panel-width") ?? null).toBe("420");
+    expect(stored.get("madani-bot-panel-width") ?? null).toBe("420");
   });
 
   it("stops at its narrowest, and never squeezes the chat beside it", async () => {

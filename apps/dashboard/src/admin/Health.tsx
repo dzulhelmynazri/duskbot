@@ -32,7 +32,7 @@ export function HealthPage() {
               {data.analytics.detail}{data.analytics.latencyMs !== null ? ` · ping ${data.analytics.latencyMs} ms` : ""} · {n(data.analytics.written)} written, {n(data.analytics.failed)} failed, {n(data.analytics.dropped)} dropped for opt-outs since start
             </Row>
             <Row label="database backup" state={!data.backup.configured ? "not_configured" : data.backup.ok ? "ok" : data.backup.at ? "behind" : "error"}>
-              {!data.backup.configured ? "no backup folder set (DUSK_BACKUP_DIR)" : data.backup.at ? `newest ${data.backup.ageHours} h old, ${stamp(data.backup.at)}` : "no backup found in the folder, or it can't be read"}
+              {!data.backup.configured ? "no backup folder set (MADANI_BACKUP_DIR)" : data.backup.at ? `newest ${data.backup.ageHours} h old, ${stamp(data.backup.at)}` : "no backup found in the folder, or it can't be read"}
             </Row>
             <Row label="errors" state={data.errors.service.hour > 0 ? "error" : "ok"}>
               service {n(data.errors.service.hour)} this hour, {n(data.errors.service.day)} today · pages {n(data.errors.page.hour)} this hour, {n(data.errors.page.day)} today · {n(data.errors.spooled)} waiting in the error spool
@@ -43,7 +43,7 @@ export function HealthPage() {
               </Row>
             ))}
           </ul>
-          {!data.checks.length && <p className="mt-4 text-13 text-ink-3">add other services to watch with DUSK_ADMIN_HEALTH_URLS, like link=https://link.dusk.bot/health.</p>}
+          {!data.checks.length && <p className="mt-4 text-13 text-ink-3">add other services to watch with MADANI_ADMIN_HEALTH_URLS, like link=https://link.madani.bot/health.</p>}
         </>
       )}
     </>

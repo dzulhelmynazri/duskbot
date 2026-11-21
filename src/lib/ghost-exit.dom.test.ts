@@ -22,7 +22,7 @@ it("plays the way out on an inert copy with no ids, then removes it", async () =
   const host = document.body.appendChild(document.createElement("div"));
   const el = document.createElement("div");
   el.id = "palette";
-  el.innerHTML = '<button id="row-1">dusk bot</button>';
+  el.innerHTML = '<button id="row-1">madani bot</button>';
   playGhostExit(el, host, (ghost) => [ghost.animate([{ opacity: 1 }, { opacity: 0 }], 100)]);
   const ghost = host.lastElementChild as HTMLElement;
   expect(ghost.getAttribute("aria-hidden")).toBe("true");

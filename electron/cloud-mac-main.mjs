@@ -1,7 +1,7 @@
 // Main-process side of "Let my cloud bots use this Mac" (cloud-mac.mjs): the bridge's IPC for this app's own page and
 // its own My Cloud page, the native confirm before it turns on, the folder picker, and the indicator's updates.
 // Security invariant: turning it on always passes a native dialog on this Mac, so a page alone can never turn it on.
-// DUSK_MAC_CONTROL=off leaves it out.
+// MADANI_MAC_CONTROL=off leaves it out.
 import path from "node:path";
 
 import { createCloudMac } from "./cloud-mac.mjs";
@@ -23,7 +23,7 @@ const FOLLOW_MS = 5_000;
  * }} deps
  */
 export function installCloudMac(deps) {
-  if (process.env.DUSK_MAC_CONTROL === "off") return null;
+  if (process.env.MADANI_MAC_CONTROL === "off") return null;
   const send = (view) => {
     const win = deps.window();
     if (win && !win.isDestroyed()) win.webContents.send("cloud-mac:changed", view);
@@ -40,7 +40,7 @@ export function installCloudMac(deps) {
     const options = {
       type: "warning", buttons: ["Let them use this Mac", "Cancel"], defaultId: 1, cancelId: 1, noLink: true,
       message: "Let your cloud bots use this Mac?",
-      detail: "Bots on your dusk cloud will be able to run any command, download files, open apps and links, and read and change your files on this Mac, as you. By default they ask you first only for risky things. You can change that, or keep them to some folders, in Settings, and turn this off any time.",
+      detail: "Bots on your madani cloud will be able to run any command, download files, open apps and links, and read and change your files on this Mac, as you. By default they ask you first only for risky things. You can change that, or keep them to some folders, in Settings, and turn this off any time.",
     };
     const win = parent();
     const { response } = win ? await deps.dialog.showMessageBox(win, options) : await deps.dialog.showMessageBox(options);

@@ -4,13 +4,13 @@
   "title": "Google Sheets AI assistant for rows, ranges and reports",
   "nav": "google sheets",
   "h1": "a google sheets bot with a clear range to work in",
-  "description": "Connect Google Sheets to dusk bot for row checks, table updates and charts. Copy focused routines that name their input range and write boundary.",
+  "description": "Connect Google Sheets to madani bot for row checks, table updates and charts. Copy focused routines that name their input range and write boundary.",
   "keyword": "claude google sheets",
   "keywords": [
     "google sheets mcp",
     "chatgpt google sheets"
   ],
-  "answer": "**find the stock that needs ordering before someone sells the last unit.** connect google sheets to a dusk bot, choose your ai and name the file, tab and cells. it can read rows, update values and make charts. get the first report in chat. when you want edits, add an ask-first instruction; cell changes do not automatically wait for approval.",
+  "answer": "**find the stock that needs ordering before someone sells the last unit.** connect google sheets to a madani bot, choose your ai and name the file, tab and cells. it can read rows, update values and make charts. get the first report in chat. when you want edits, add an ask-first instruction; cell changes do not automatically wait for approval.",
   "updated": "2026-11-12",
   "review": {
     "status": "approved",
@@ -102,9 +102,9 @@
       "output": "a date coverage check and a chart to approve"
     }
   ],
-  "asks": "**keep cell changes tied to the range you chose.** updates, sorting and charts do not automatically wait for an approval card. put \"ask me before you change anything\" in the editing job.\n\nleave find and replace off a reading bot's exact action list. dusk counts it as a read even though it changes cells. some lookup-like actions count as writes. choose actions by what they do, rather than how their names sound.",
+  "asks": "**keep cell changes tied to the range you chose.** updates, sorting and charts do not automatically wait for an approval card. put \"ask me before you change anything\" in the editing job.\n\nleave find and replace off a reading bot's exact action list. madani counts it as a read even though it changes cells. some lookup-like actions count as writes. choose actions by what they do, rather than how their names sound.",
   "cannot": [
-    "**a reading bot needs an exact action list here.** updates, appends and formatting need writes. find and replace is the exception: dusk counts it as a read, so leave it off.",
+    "**a reading bot needs an exact action list here.** updates, appends and formatting need writes. find and replace is the exception: madani counts it as a read, so leave it off.",
     "**\"clean this up\" doesn't name a safe range.** identify the tab, headers and cells to leave alone. read the proposed edits first.",
     "**a closed local app misses the monday check.** a run less than 12 hours late runs once on return. older runs skip."
   ],
@@ -134,15 +134,15 @@
   ],
   "sources": [
     {
-      "label": "dusk bot docs: files and apps",
+      "label": "madani bot docs: files and apps",
       "url": "/docs/files-and-apps"
     },
     {
-      "label": "dusk bot docs: routines and missed runs",
+      "label": "madani bot docs: routines and missed runs",
       "url": "/docs/routines"
     },
     {
-      "label": "dusk bot docs: a bot's computer",
+      "label": "madani bot docs: a bot's computer",
       "url": "/docs/computer"
     }
   ],
@@ -165,7 +165,7 @@
     },
     {
       "mistake": "allowing find and replace on a reading bot",
-      "fix": "remove it from the exact action list; dusk counts it as a read."
+      "fix": "remove it from the exact action list; madani counts it as a read."
     }
   ],
   "tip": {

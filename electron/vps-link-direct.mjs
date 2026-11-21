@@ -846,10 +846,10 @@ export function orderedConnect(list, { network = networkFingerprint, now = Date.
   return go;
 }
 
-/** the cloud relay (apps/cloudflare/link-relay): DUSK_RELAY_URL moves it, `off` turns it off */
-export const CLOUD_RELAY_URL = "https://relay.dusk.bot";
+/** the cloud relay (apps/cloudflare/link-relay): MADANI_RELAY_URL moves it, `off` turns it off */
+export const CLOUD_RELAY_URL = "https://relay.madani.bot";
 export function cloudRelayUrl(env = process.env) {
-  const value = (env.DUSK_RELAY_URL ?? "").trim();
+  const value = (env.MADANI_RELAY_URL ?? "").trim();
   if (value === "off") return null;
   try {
     const url = new URL(value || CLOUD_RELAY_URL);
@@ -857,12 +857,12 @@ export function cloudRelayUrl(env = process.env) {
   } catch { return null; }
 }
 /** the relay's bearer for a tunnel, from the tunnel key both ends hold (agent.mjs relayTokenOf): the relay keeps only its sha256 */
-export const relayTokenOf = (key, id) => createHmac("sha256", Buffer.from(key, "base64url")).update(`dusk-relay-v1|${id}`).digest("base64url");
+export const relayTokenOf = (key, id) => createHmac("sha256", Buffer.from(key, "base64url")).update(`madani-relay-v1|${id}`).digest("base64url");
 export const RELAY_HEARTBEAT_MS = 25_000;
 
-/** binds the tunnel at the relay to the dusk account of a fresh link grant; throws with `status` when refused */
+/** binds the tunnel at the relay to the madani account of a fresh link grant; throws with `status` when refused */
 export async function cloudRegister({ url, id, key, grant, fetch: fetchImpl = fetch, timeoutMs = 15_000 }) {
-  if (typeof grant !== "string" || !grant) throw Object.assign(new Error("the cloud relay needs a signed-in dusk account"), { code: "NO_GRANT" });
+  if (typeof grant !== "string" || !grant) throw Object.assign(new Error("the cloud relay needs a signed-in madani account"), { code: "NO_GRANT" });
   const verifier = createHash("sha256").update(relayTokenOf(key, id)).digest("hex");
   const response = await fetchImpl(`${url}/v1/t/${id}/register`, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ grant, verifier }), signal: AbortSignal.timeout(timeoutMs) });
   const body = await response.json().catch(() => ({}));

@@ -1,29 +1,29 @@
 // Dragging bots in the real sidebar, against a disposable fake-engine server, with real pointer input from a headless
 // Chrome: a click still opens the chat, a few pixels of movement lift the row, the others slide to make room, a drop
-// saves the order, Escape puts everything back, and a row can go into a department. DUSK_SIDEBAR_DRAG_STRIP=<png> also
+// saves the order, Escape puts everything back, and a row can go into a department. MADANI_SIDEBAR_DRAG_STRIP=<png> also
 // writes a strip of frames from the drag.
 import { existsSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { setTimeout as delay } from "node:timers/promises";
 import { expect, it } from "vitest";
-import { launchVerificationServer, runControlDusk } from "../control-dusk.ts";
+import { launchVerificationServer, runControlMadani } from "../control-madani.ts";
 import { CHROME_PATH, openHeadlessChrome } from "./headless-chrome.ts";
 import { fixtureApi, mountPreview, type MountedPreview } from "./preview-fixture.ts";
 
-const enabled = process.env.DUSK_UI_E2E === "1" || existsSync(CHROME_PATH);
-if (!enabled) console.info("skipping sidebar drag UI e2e: no Chrome at DUSK_CDP_CHROME");
+const enabled = process.env.MADANI_UI_E2E === "1" || existsSync(CHROME_PATH);
+if (!enabled) console.info("skipping sidebar drag UI e2e: no Chrome at MADANI_CDP_CHROME");
 const NAMES = ["Atlas", "Bea", "Cleo", "Dodo", "Echo"];
-const strip = process.env.DUSK_SIDEBAR_DRAG_STRIP;
+const strip = process.env.MADANI_SIDEBAR_DRAG_STRIP;
 
 (enabled ? it : it.skip)("reorders bots by dragging, Discord's way", async () => {
-  const fixture = await launchVerificationServer({ ...process.env, DUSK_TEST_PORTS: process.env.DUSK_TEST_PORTS ?? "19700-19790" });
+  const fixture = await launchVerificationServer({ ...process.env, MADANI_TEST_PORTS: process.env.MADANI_TEST_PORTS ?? "19700-19790" });
   let ui: MountedPreview | undefined;
-  const profile = mkdtempSync(join(tmpdir(), "dusk-drag-chrome-"));
+  const profile = mkdtempSync(join(tmpdir(), "madani-drag-chrome-"));
   let page: Awaited<ReturnType<typeof openHeadlessChrome>> | undefined;
   try {
     const api = fixtureApi(fixture.info.url, { headers: { origin: fixture.info.url } });
-    for (const name of NAMES) await runControlDusk(["new-bot", "--name", name, "--url", fixture.info.url]);
+    for (const name of NAMES) await runControlMadani(["new-bot", "--name", name, "--url", fixture.info.url]);
     await api("PATCH", "/api/config", { language: "en" });
     const wire = async () => (await api("GET", "/api/bots?messages=0") as { bots: Array<{ id: string; name: string; section?: string }> }).bots;
     const all = await wire();
@@ -44,7 +44,7 @@ const strip = process.env.DUSK_SIDEBAR_DRAG_STRIP;
     // dragging is the person's own order; by recent activity the lists order themselves
     await send("Page.navigate", { url: `${ui.previewUrl}?skin=daylight` });
     await until(`document.querySelector('[data-sidebar-bot-row="${ids.Echo}"]')`);
-    await evaluate(`localStorage.setItem("duskbot.sidebarBotOrder", "custom"); window.dispatchEvent(new Event("dusk-sidebar-bot-order"))`);
+    await evaluate(`localStorage.setItem("madanibot.sidebarBotOrder", "custom"); window.dispatchEvent(new Event("madani-sidebar-bot-order"))`);
     await until(`document.querySelector('[data-bot-reorder-row="${ids.Echo}"]')`);
     await delay(800);
 

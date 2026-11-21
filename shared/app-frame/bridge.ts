@@ -300,7 +300,7 @@ export function createAppBridge(options: AppBridgeOptions): AppBridge {
       answeredInitialize = true;
       return respond(id, {
         protocolVersion: APP_PROTOCOL_VERSION,
-        hostInfo: { name: "dusk", version: options.hostVersion },
+        hostInfo: { name: "madani", version: options.hostVersion },
         hostCapabilities: hostCapabilitiesFor(doc),
         hostContext: context,
       });

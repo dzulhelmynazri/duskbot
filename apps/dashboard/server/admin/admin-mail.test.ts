@@ -28,7 +28,7 @@ const SENDERS: Record<string, "customer" | "admin"> = {
 /** the only places an admin or alert address list reaches a sender */
 const ADMIN_WIRING: Record<string, RegExp[]> = {
   "apps/dashboard/server/app.ts": [/createAlerts\(\{[^\n]*emails: \(\) => adminEmails/],
-  "apps/dashboard/server/main.ts": [/createIncidents\(\{[^\n]*to: \(\) => alertEmails/, /bugReports: \{[^\n]*mail: \{ on: alertsOn && process\.env\.DUSK_BUG_REPORT_MAIL === "1", to: \(\) => alertEmails/],
+  "apps/dashboard/server/main.ts": [/createIncidents\(\{[^\n]*to: \(\) => alertEmails/, /bugReports: \{[^\n]*mail: \{ on: alertsOn && process\.env\.MADANI_BUG_REPORT_MAIL === "1", to: \(\) => alertEmails/],
 };
 
 function files(dir: string): string[] {
@@ -56,7 +56,7 @@ describe("admin and ops email triggers", () => {
 
   it("admin addresses reach a sender only through alerts and incidents", () => {
     for (const file of sources) {
-      expect(file.text, `${file.path} names the retired ops inbox`).not.toMatch(/DUSK_OPS_ALERT_EMAIL/);
+      expect(file.text, `${file.path} names the retired ops inbox`).not.toMatch(/MADANI_OPS_ALERT_EMAIL/);
       const uses = file.text.split("\n").filter(line => /\b(adminEmails|alertEmails)\b/.test(line) && /\b(to|emails):\s*\(\)\s*=>/.test(line));
       const allowed = ADMIN_WIRING[file.path] ?? [];
       for (const line of uses) expect(allowed.some(pattern => pattern.test(line)), `${file.path}: ${line.trim().slice(0, 120)}`).toBe(true);
@@ -66,7 +66,7 @@ describe("admin and ops email triggers", () => {
 
   it("with every kind on, a quiet day, signups and waitlist joins send nothing", async () => {
     const time = { now: Date.parse("2026-11-14T09:00:00Z") }, mailer = memoryMailer(), sink = memorySink(() => time.now);
-    const alerts = createAlerts({ kinds: parseAlerts("all"), emails: () => ["owner@example.test"], mailer, sink, now: () => time.now, panelUrl: "https://dusk.bot/admin",
+    const alerts = createAlerts({ kinds: parseAlerts("all"), emails: () => ["owner@example.test"], mailer, sink, now: () => time.now, panelUrl: "https://madani.bot/admin",
       totals: () => ({ signups: 0, paid: 0, waitlist: null, accounts: 3, clouds: { ready: 0, deleted: 0 } }) });
     await alerts.tick(); await alerts.tick();
     expect(mailer.outbox).toEqual([]);
@@ -84,9 +84,9 @@ describe("admin and ops email triggers", () => {
     expect(hook).toHaveBeenCalledTimes(5);
   });
 
-  it("harness accounts never get courtesy mail, and dusk.bot's own qa addresses never leave the service", () => {
-    for (const address of ["a@qa.dusk.test", "qa@dusk.bot", "qa-smoke@dusk.bot", "qa-smoke+buy-11140117@dusk.bot", "QA-JP1@dusk.bot"]) expect(isTestAddress(address), address).toBe(true);
-    for (const address of ["dusk-e2e-mwcp8u9n@fldubai.com", "dusk-appconn-mwf6kpmf@fldubai.com"]) expect([isTestAddress(address), isTestAccount(address)], address).toEqual([false, true]);
-    for (const address of ["hello@dusk.bot", "quinn@dusk.bot", "someone@gmail.com", "qa@example.com"]) expect(isTestAccount(address), address).toBe(false);
+  it("harness accounts never get courtesy mail, and madani.bot's own qa addresses never leave the service", () => {
+    for (const address of ["a@qa.madani.test", "qa@madani.bot", "qa-smoke@madani.bot", "qa-smoke+buy-11140117@madani.bot", "QA-JP1@madani.bot"]) expect(isTestAddress(address), address).toBe(true);
+    for (const address of ["madani-e2e-mwcp8u9n@fldubai.com", "madani-appconn-mwf6kpmf@fldubai.com"]) expect([isTestAddress(address), isTestAccount(address)], address).toEqual([false, true]);
+    for (const address of ["hello@madani.bot", "quinn@madani.bot", "someone@gmail.com", "qa@example.com"]) expect(isTestAccount(address), address).toBe(false);
   });
 });

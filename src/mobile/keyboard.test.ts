@@ -25,7 +25,7 @@ function Shell({ platform: p }: { platform: MobilePlatform }) {
   const ref = useRef<HTMLDivElement>(null);
   useKeyboardSync(p, ref);
   useKeyboardDismiss(p, ref);
-  return createElement("div", { ref, className: "dusk-mobile" },
+  return createElement("div", { ref, className: "madani-mobile" },
     createElement("div", { "data-mobile-chat": "" },
       createElement("div", { className: "glass-scroller" }, createElement("p", { id: "bubble" }, "hello")),
       createElement("textarea", { id: "field" })));
@@ -71,7 +71,7 @@ describe("the phone keyboard", () => {
     // a real scroller: its height follows the keyboard's inset and scrollTop is clamped to the range on every read
     const el = list();
     let top = 0;
-    const client = () => 800 - (parseFloat(host.querySelector<HTMLElement>(".dusk-mobile")!.style.getPropertyValue("--m-kb")) || 0);
+    const client = () => 800 - (parseFloat(host.querySelector<HTMLElement>(".madani-mobile")!.style.getPropertyValue("--m-kb")) || 0);
     const clamp = (value: number) => Math.max(0, Math.min(value, 1200 - client()));
     Object.defineProperty(el, "scrollHeight", { configurable: true, get: () => 1200 });
     Object.defineProperty(el, "clientHeight", { configurable: true, get: client });
@@ -125,7 +125,7 @@ describe("riding the keyboard with the native composer", () => {
   it("starts the transcript's ride with a negative delay for a late event, on both the way up and down", () => {
     const now = vi.spyOn(Date, "now").mockReturnValue(10_040);
     flushSync(() => root.render(createElement(Shell, { platform: platform(true) })));
-    const shell = host.querySelector<HTMLElement>(".dusk-mobile")!;
+    const shell = host.querySelector<HTMLElement>(".madani-mobile")!;
     keyboard!({ height: 336, phase: "will", duration: 0.383, at: 10_000 });
     expect(shell.style.getPropertyValue("--m-kb-dur")).toBe("0.383s");
     expect(shell.style.getPropertyValue("--m-kb-delay")).toBe("-40ms");
@@ -141,7 +141,7 @@ describe("riding the keyboard with the native composer", () => {
 describe("a keyboard the native side lifts the page for", () => {
   it("never scrolls the transcript or moves its layout for a full lift, up or down", () => {
     flushSync(() => root.render(createElement(Shell, { platform: platform(true) })));
-    const shell = host.querySelector<HTMLElement>(".dusk-mobile")!;
+    const shell = host.querySelector<HTMLElement>(".madani-mobile")!;
     scrollable(2000, 1600);
     keyboard!({ height: 336, phase: "will", duration: 0.38, at: Date.now(), lift: 302 });
     keyboard!({ height: 336, phase: "did" });
@@ -162,7 +162,7 @@ describe("a keyboard the native side lifts the page for", () => {
 
   it("covers only what a short chat's partial lift leaves under the keyboard, and gives it back as the keyboard starts down", () => {
     flushSync(() => root.render(createElement(Shell, { platform: platform(true) })));
-    const shell = host.querySelector<HTMLElement>(".dusk-mobile")!;
+    const shell = host.querySelector<HTMLElement>(".madani-mobile")!;
     scrollable(300, 0);
     keyboard!({ height: 336, phase: "will", duration: 0.38, at: Date.now(), lift: 102 });
     keyboard!({ height: 336, phase: "did", lift: 102 });
@@ -174,7 +174,7 @@ describe("a keyboard the native side lifts the page for", () => {
 
   it("leaves a field on the page to the page's own ride", () => {
     flushSync(() => root.render(createElement(Shell, { platform: platform(true) })));
-    const shell = host.querySelector<HTMLElement>(".dusk-mobile")!;
+    const shell = host.querySelector<HTMLElement>(".madani-mobile")!;
     keyboard!({ height: 336, phase: "will", lift: 302 });
     keyboard!({ height: 0, phase: "did", lift: 0 });
     keyboard!({ height: 336, phase: "will", duration: 0.38, at: Date.now() });
@@ -195,10 +195,10 @@ describe("the Android keyboard", () => {
     composer.append(own);
     chat.append(composer);
     const search = document.createElement("input");
-    host.querySelector(".dusk-mobile")!.append(search);
+    host.querySelector(".madani-mobile")!.append(search);
     const box = document.createElement("input");
     box.type = "checkbox";
-    host.querySelector(".dusk-mobile")!.append(box);
+    host.querySelector(".madani-mobile")!.append(box);
     own.focus();
     search.focus();
     box.focus();
@@ -207,7 +207,7 @@ describe("the Android keyboard", () => {
 
   it("rides up on the system's clock, takes the space once it stops, and gives it back at once when a sheet's field takes the keyboard", () => {
     flushSync(() => root.render(createElement(Shell, { platform: android(() => {}) })));
-    const shell = host.querySelector<HTMLElement>(".dusk-mobile")!;
+    const shell = host.querySelector<HTMLElement>(".madani-mobile")!;
     scrollable(2000, 1600);
     keyboard!({ height: 300, phase: "will", duration: 0.285, at: Date.now() });
     expect(shell.dataset.kbMoving).toBe("");
@@ -226,7 +226,7 @@ describe("leaving a chat", () => {
     const blur = vi.fn();
     const p = { ...platform(true), glass: { blur } } as unknown as MobilePlatform;
     flushSync(() => root.render(createElement(Shell, { platform: p })));
-    const shell = host.querySelector<HTMLElement>(".dusk-mobile")!;
+    const shell = host.querySelector<HTMLElement>(".madani-mobile")!;
     shell.dataset.glassFocused = "";
     dismissKeyboard(p, shell);
     expect(blur).toHaveBeenCalledTimes(1);

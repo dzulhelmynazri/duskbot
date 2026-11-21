@@ -5,7 +5,7 @@ type Preferences = {
   voices?: Record<string, string>;
 };
 
-const STORAGE_KEY = "duskbot.remote-voice.v1";
+const STORAGE_KEY = "madanibot.remote-voice.v1";
 
 function storage(): Storage | null {
   try {
@@ -36,8 +36,8 @@ function write(next: Preferences): void {
 export function localSystemVoicesAvailable(): boolean {
   return (
     typeof window !== "undefined" &&
-    window.duskDesktop?.remoteClient?.active === true &&
-    window.duskDesktop?.platform === "darwin" &&
+    window.madaniDesktop?.remoteClient?.active === true &&
+    window.madaniDesktop?.platform === "darwin" &&
     typeof window.speechSynthesis !== "undefined" &&
     typeof window.SpeechSynthesisUtterance !== "undefined"
   );

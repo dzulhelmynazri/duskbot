@@ -24,8 +24,8 @@ describe("appendNative", () => {
             {
               name: "computer",
               env: [
-                { name: "DUSK_CONTROL_URL", value: "http://127.0.0.1:8799" },
-                { name: "DUSK_CONTROL_TOKEN", value: "fixture_control_dontlogme" },
+                { name: "MADANI_CONTROL_URL", value: "http://127.0.0.1:8799" },
+                { name: "MADANI_CONTROL_TOKEN", value: "fixture_control_dontlogme" },
               ],
             },
           ],
@@ -36,7 +36,7 @@ describe("appendNative", () => {
     const log = readFileSync(join(NATIVE_DIR, "t-native.ndjson"), "utf8");
     expect(log).not.toContain("fixture_control_dontlogme");
     expect(log).toContain("session/new");
-    expect(log).toContain("DUSK_CONTROL_TOKEN");
+    expect(log).toContain("MADANI_CONTROL_TOKEN");
     expect(log).toContain("http://127.0.0.1:8799");
   });
 
@@ -161,7 +161,7 @@ describe("the native tee", () => {
       for (let n = 0; n < 5; n++) appendNative("t-exit", { dir: "in", source: "claude.sdk.message", msg: { type: "assistant", n } });
       process.exit(0);`;
     const child = spawnSync(process.execPath, ["--experimental-strip-types", "--input-type=module", "-e", script], {
-      env: { ...process.env, DUSK_DATA_DIR: dirname(NATIVE_DIR) }, encoding: "utf8",
+      env: { ...process.env, MADANI_DATA_DIR: dirname(NATIVE_DIR) }, encoding: "utf8",
     });
     expect(child.status, child.stderr).toBe(0);
     expect(rows("t-exit").map((row) => row.msg.n)).toEqual([0, 1, 2, 3, 4]);

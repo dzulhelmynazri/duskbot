@@ -2,11 +2,11 @@
   "applinks": {
     "details": [
       {
-        "appIDs": ["TEAMID.bot.dusk.mobile"],
+        "appIDs": ["TEAMID.bot.madani.mobile"],
         "components": [
           { "/": "/m/open", "comment": "opens a chat or a view in the app" },
           { "/": "/m/pair", "comment": "pairs this phone; the pairing secret rides after the #, which no server sees" },
-          { "/": "/m/signin", "comment": "opens the app at its dusk cloud log in; the email rides after the #" }
+          { "/": "/m/signin", "comment": "opens the app at its madani cloud log in; the email rides after the #" }
         ]
       }
     ]

@@ -55,8 +55,8 @@ describe("spawn ENOENT", () => {
   const enoent = () => Object.assign(new Error("spawn codex ENOENT"), { code: "ENOENT" });
 
   it("names a missing working folder instead of blaming the install (MOCA-309)", () => {
-    const missing = join(mkdtempSync(join(tmpdir(), "dusk-procs-")), "deleted-project");
-    expect(describeSpawnFailure(enoent(), "/home/u/.duskbot/tools/npm/bin/codex", missing)).toEqual({
+    const missing = join(mkdtempSync(join(tmpdir(), "madani-procs-")), "deleted-project");
+    expect(describeSpawnFailure(enoent(), "/home/u/.madanibot/tools/npm/bin/codex", missing)).toEqual({
       message: "This bot's folder deleted-project was moved or deleted. Pick a folder in the bot's settings.",
       setup: false,
     });
@@ -69,7 +69,7 @@ describe("spawn ENOENT", () => {
   });
 
   it("really is what node reports for a missing cwd", async () => {
-    const missing = join(mkdtempSync(join(tmpdir(), "dusk-procs-")), "gone");
+    const missing = join(mkdtempSync(join(tmpdir(), "madani-procs-")), "gone");
     const error = await new Promise<NodeJS.ErrnoException>((resolve) => {
       spawn(process.execPath, ["--version"], { cwd: missing }).once("error", resolve);
     });

@@ -173,7 +173,7 @@
       "tools": [],
       "state": "idle",
       "ms": 3170,
-      "output": "I can’t rename the folder because Works on is Off in my settings. Nothing was changed. Turn it on, and I can rename `dusk-bto` to `dusk-bot` in Documents."
+      "output": "I can’t rename the folder because Works on is Off in my settings. Nothing was changed. Turn it on, and I can rename `madani-bto` to `madani-bot` in Documents."
     },
     {
       "model": "gpt-6.1-terra",

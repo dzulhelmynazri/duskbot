@@ -35,7 +35,7 @@ const type = (value: string) => act(async () => {
   setter.call(composer(), value);
   composer().dispatchEvent(new Event("input", { bubbles: true }));
 });
-beforeEach(() => { setLocale("en"); host = document.createElement("div"); document.body.append(host); Object.assign(window, { duskDesktop: {} }); });
+beforeEach(() => { setLocale("en"); host = document.createElement("div"); document.body.append(host); Object.assign(window, { madaniDesktop: {} }); });
 afterEach(async () => { await act(async () => root?.unmount()); root = null; host.remove(); });
 
 it("never shows a sleeping Cloud: opening the screen wakes it once and only says it is connecting", async () => {
@@ -81,7 +81,7 @@ it("with nothing seen yet it shows the loading mascot while it connects, never a
 
 it("the connecting line sits clear of the macOS traffic lights, in a bar that drags the window", async () => {
   // the preload's platform is read when the page's modules load, as in the app
-  Object.assign(window, { duskDesktop: { platform: "darwin" } });
+  Object.assign(window, { madaniDesktop: { platform: "darwin" } });
   vi.resetModules();
   const fresh = await import("./HomeScreen");
   const { bridge } = bridgeOf({ screen: "asleep" });

@@ -1,7 +1,7 @@
 # Team Clouds: the `team` role and the audience rule
 
 A **Team Cloud** is one Cloud machine several people use: the shared home of a team's bots. The Admin
-(dusk-cloud, `docs/team-cloud.md` there) makes it, invites people and signs each person's pairing. This page is the
+(madani-cloud, `docs/team-cloud.md` there) makes it, invites people and signs each person's pairing. This page is the
 machine's side: what the `team` role changes against a My Cloud ([cloud-pro.md](cloud-pro.md)), and the one rule that
 keeps people apart on it. The bot box ([bot-box.md](bot-box.md)) is what makes that rule hold against a bot with a shell.
 
@@ -25,9 +25,9 @@ keeps people apart on it. The bot box ([bot-box.md](bot-box.md)) is what makes t
   device also says it as a sentence: *"Your chats in Acme are private. Only you can see them: not other members, not
   Acme's admins."* The server marks such a conversation `private: true` on the wire (`WireTask.private`). When you leave
   the team (or are removed), your private chats and everything only yours there are deleted, never handed to an admin
-  (below). The Owner's export of the team's machine (the workspace backup, `DUSK_CLOUD_EXPORT_ONLY`) leaves them out too
+  (below). The Owner's export of the team's machine (the workspace backup, `MADANI_CLOUD_EXPORT_ONLY`) leaves them out too
   (`server/workspace-backup-team-private.ts`): no private conversation, none of its work folders or files only it used, no
-  member's memory layer, no member's own Dusk, their inbox or anything under `people/`. Restoring such an export gives a
+  member's memory layer, no member's own Madani, their inbox or anything under `people/`. Restoring such an export gives a
   team back everything but those.
 - **Who is speaking.** A bot knows who wrote each line it reads. Your own typed line in your own chat with it is the
   only line that carries no note; every other line opens with one, written by the Cloud and never by the sender:
@@ -100,7 +100,7 @@ with who asked, and its news stays out of the owner's list. See [Verifying the I
 
 ## Rules
 
-The team's rules live on the Admin (dusk-cloud `docs/team-cloud.md` "Rules"): one document, `{ schema: 1, limits }`, that
+The team's rules live on the Admin (madani-cloud `docs/team-cloud.md` "Rules"): one document, `{ schema: 1, limits }`, that
 only restricts. `server/cloud-team-policy.ts` fetches it at boot, every 5 minutes and when the Admin's signed `POST
 /api/cloud/team/policy-changed` nudges it, signed with the bootstrap secret (`POST /api/cloud/machines/team-policy`), and each
 request reports the fingerprint in force here. A change applies without a restart. A turn already running keeps its engine
@@ -132,17 +132,17 @@ process restarts without what is now blocked.
 
 ## The role
 
-`DUSK_CLOUD_ROLE=team` with `DUSK_CLOUD_TEAM_ID` (the Admin's id) and `DUSK_CLOUD_TEAM_NAME` (1 to 80 characters), beside
-the usual Cloud home contract (`DUSK_CLOUD_MACHINE_ID`, `DUSK_CLOUD_ADMIN_URL`, `DUSK_CLOUD_BOOTSTRAP_SECRET`,
-`DUSK_PUBLIC_URL`). Everything else is a Cloud home: the signed routes (`/api/cloud/pairing`, `/api/cloud/health`,
-`/api/cloud/power`, `/api/cloud/box`), the launcher, the box, the broker, `DUSK_CLOUD_EXPORT_ONLY=1`.
+`MADANI_CLOUD_ROLE=team` with `MADANI_CLOUD_TEAM_ID` (the Admin's id) and `MADANI_CLOUD_TEAM_NAME` (1 to 80 characters), beside
+the usual Cloud home contract (`MADANI_CLOUD_MACHINE_ID`, `MADANI_CLOUD_ADMIN_URL`, `MADANI_CLOUD_BOOTSTRAP_SECRET`,
+`MADANI_PUBLIC_URL`). Everything else is a Cloud home: the signed routes (`/api/cloud/pairing`, `/api/cloud/health`,
+`/api/cloud/power`, `/api/cloud/box`), the launcher, the box, the broker, `MADANI_CLOUD_EXPORT_ONLY=1`.
 
 What the role turns off: the personal settlement (`cloud-owner.ts`: no session is revoked at boot, no owner key, no
 earlier-owner adoption), the guest confinement of a My Cloud (a member's turn
 runs at the bot's own level inside the box; only what came in from outside, a webhook, runs confined), and the "only the
 owner" card rule (whoever started a conversation, or an Admin, answers its cards, as on a hosted workspace).
 
-`DUSK_CLOUD_TEAM_LANGUAGE` (optional, one of the app's locales: `de`, `pt-br`…) is the team's default language, set on
+`MADANI_CLOUD_TEAM_LANGUAGE` (optional, one of the app's locales: `de`, `pt-br`…) is the team's default language, set on
 the Admin's Team admin → Settings. It is this server's language while its own settings set none (the app's words and the
 language new bots start in); a value that isn't a locale is ignored, never refused.
 
@@ -158,7 +158,7 @@ What came in from outside (a webhook, an app's event) is confined, and the conve
 
 ## Team admin: the Admin's signed read
 
-The Admin's Team admin pages (dusk-cloud docs/team-cloud.md "Team admin") show a team's Super admin and Admins what
+The Admin's Team admin pages (madani-cloud docs/team-cloud.md "Team admin") show a team's Super admin and Admins what
 this server shares with every bot. It exists only on a Team Cloud.
 
 - `GET /api/cloud/team/admin`, signed like `/api/cloud/health` → `{ v: 1, apps: { available, services: [{ slug, status,
@@ -185,7 +185,7 @@ this server shares with every bot. It exists only on a Team Cloud.
 
 Every app (a Composio toolkit) and MCP server has a scope. `team`, the default and what every connection made before this
 is, is one connection an Admin makes and every turn uses. `person` is one connection per member, made by that member on
-their team page in dusk cloud (the Admin's Cloud page calls the routes below as them).
+their team page in madani cloud (the Admin's Cloud page calls the routes below as them).
 
 - **Who gets a member's own connection.** Only a turn that acts for them (server/host/acting-person.ts), read from the
   harness's records, and only in a chat that is theirs alone, where nobody else reads what their connection brings back.
@@ -237,7 +237,7 @@ mcp: { <name>: [address] } }`: who has connected each, never with what.
 The Admin signs the usual pairing body with two more fields:
 
 ```json
-{ "label": "dusk bot app (Team Cloud)", "ttlSeconds": 300,
+{ "label": "madani bot app (Team Cloud)", "ttlSeconds": 300,
   "team": { "id": "<team id>", "name": "Acme" },
   "member": { "email": "mira@example.com", "role": "owner" | "admin" | "member" } }
 ```
@@ -264,7 +264,7 @@ the Admin (404). A session is also kept only across a clean restart.
 /api/cloud/team/member-left` with `{ "email": "<address>" }`, signed with its body like the sleep request (400
 `invalid_member` for a bad address; only on a Team Cloud). The machine then deletes what was that person's alone and
 answers `{ ok, chats, layers, sessions, files, browsers, bots }`: every session and phone of theirs and any open code of
-theirs end at once; their own Dusk is deleted as the app deletes a bot, with its chats and notes (`bots`, its chats
+theirs end at once; their own Madani is deleted as the app deletes a bot, with its chats and notes (`bots`, its chats
 counted in `chats`), and should they join again they get a new one; their private chats with every bot are deleted as
 the app deletes a conversation (messages, notifications, follow-ups, a running turn stopped first), with the uploaded
 files only those chats used and every file they uploaded that nothing uses (a file they took off a message before
@@ -370,7 +370,7 @@ routes.
 **Each Chrome in a box.** On a Team Cloud with the bot box on, the Chrome launcher agent-browser runs starts every
 Chrome inside bubblewrap (`net: "shared"`, as the browser's own gate filters its traffic): the system read-only, private
 `/tmp` (its HOME), the seccomp filter, and of the disk only the profile it was started on (`--user-data-dir`). A file a
-turn uploads is linked into that profile's `dusk-uploads/` first. The agent-browser daemon itself stays outside: it
+turn uploads is linked into that profile's `madani-uploads/` first. The agent-browser daemon itself stays outside: it
 holds the session's saved-state key and talks to the server's runtime by its own socket and pid files.
 
 On a My Cloud and on a desktop there is one person: every audience is the team's, every layer is the bot's own folder,
@@ -380,7 +380,7 @@ changes what those do.
 ## The shared chat's name
 
 A team bot's main chat is called *"Shared chat"* on every person's copy (`WireTask.sharedChat`), whatever its stored title,
-so nobody takes it for one of their own, and it can't be renamed. A member's own Dusk has none. Clicking a bot still
+so nobody takes it for one of their own, and it can't be renamed. A member's own Madani has none. Clicking a bot still
 opens the person's own private chat.
 
 ## Who looks after a bot
@@ -416,7 +416,7 @@ and changes their setup. The person's private
 chat with it is their inbox (below). A crowned bot nobody owns is the workspace's one Chief, as on any other server.
 The app offers no crown on a team, so this is reached only through the API (`PATCH /api/bots/<id>` with `chiefOfStaff`).
 
-**A member's Dusk is not crowned.** It is theirs alone, and the audience rule below keeps a bot only one person sees
+**A member's Madani is not crowned.** It is theirs alone, and the audience rule below keeps a bot only one person sees
 from reaching a bot everyone sees (`sameAudience`), so today it cannot hand work to the team's shared bots.
 
 **Every bot reaches every bot.** Departments are folders, not walls. Any bot can ask, hand work to or @mention any
@@ -437,7 +437,7 @@ Every bot still reaches every bot there.
 Someone with a My Cloud moves a bot into a team from two places: **Move to Acme** in the bot's menu on My Cloud, and on the
 team's own page in the desktop app, **Bring your stuff**, which lists My Cloud's bots with one **Move** each. Both say the
 same before anything moves: who can use it there, what goes (instructions, skills, files, routines, their chats), what
-stays on My Cloud (what the bot remembers, their connections, Dusk), and that there is no way back.
+stays on My Cloud (what the bot remembers, their connections, Madani), and that there is no way back.
 
 A team's server isn't the person's own, so its page gets less than My Cloud's does (`electron/team-move-main.mjs`). It reads
 only the names of My Cloud's bots and which can go, and only while it is the window's active page and the Admin's verified
@@ -467,7 +467,7 @@ allow, folders), where it runs, its department, whom it answers to or directs, c
   current member of the team (an older list's address or `@domain` may stay), and the owner is never stored. The bot's
   `visibility` follows in the same write (everyone when everyone may at least view it, else the owner and the people
   added), so every rule of the audience rule above that reads who sees a bot holds unchanged. A new team bot is
-  Everyone · Can chat. A member's own Dusk stays theirs alone, as before.
+  Everyone · Can chat. A member's own Madani stays theirs alone, as before.
 - **Before levels.** A bot whose sharing was never set is read from its visibility, exactly as it was: everyone →
   Everyone · Can chat; admins only → Only people added (admins still edit); a list of addresses → those people · Can
   chat. Nothing is rewritten on disk; the first change in the Share dialog stores the sharing. An older app's
@@ -491,7 +491,7 @@ allow, folders), where it runs, its department, whom it answers to or directs, c
   until they are removed, so the levels keep working underneath for a finer switch later. Someone who can only view a
   bot sees "You can view Payroll, not chat with it." where the composer would be (and in a room with that bot), opens
   its main chat rather than a new one of their own, and is offered no New conversation. Off a team none of this shows.
-- **Bot access** (its own Settings page, for a team's admins): one row per team bot (each person's own Dusk stays
+- **Bot access** (its own Settings page, for a team's admins): one row per team bot (each person's own Madani stays
   out) with who looks after it, what everyone gets and the faces of those added; a row opens that bot's Share dialog.
   Everyone's access reads as one column, "Everyone can use it" or "Only people added". By person lists each User, and
   opening one shows their bots, each with Remove where they were added. The same sharing as the Share dialog, applied at
@@ -518,7 +518,7 @@ started by hand reads *"No AI is connected yet, so nothing can run."*
 ## One inbox per person
 
 Everything addressed to a person reaches one place, their **inbox** (`server/host/person-inbox.ts`): their own private
-chat with their own Dusk (every member gets one; a Chief of Staff of their own, crowned through the API or before the
+chat with their own Madani (every member gets one; a Chief of Staff of their own, crowned through the API or before the
 app stopped offering it, holds it instead). It is the chat that bot opens to for them (`WireTask.inbox`, sent to its
 person alone): the one their brief was in, else their newest own chat with that bot, else a new one, "Inbox". Nothing is
 turned on: every member of a team has one, and off a team none exists. The app shows the inbox as one list, newest first, with a dot on
@@ -644,6 +644,6 @@ person as before, and `message_person` and the inbox do not exist.
   (the team's), whichever chat wrote them; so are a routine's definition and schedule (its runs and results are the
   conversation's). The Owner's whole-machine export leaves every member's private chats out (above), the Owner's own too: an
   export is the team's, never anyone's alone.
-- **Own apps with the team's own Composio project.** A member's own apps always use dusk bot's connected-apps
+- **Own apps with the team's own Composio project.** A member's own apps always use madani bot's connected-apps
   service, even when the team connected a Composio project key of its own; an app that needs the project's own auth
   config can't be connected by each person.

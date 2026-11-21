@@ -1,4 +1,4 @@
-// dusk cloud's purchase as one step of the first run: the account, the plan and the checkout happen in the browser (the
+// madani cloud's purchase as one step of the first run: the account, the plan and the checkout happen in the browser (the
 // account context redirect, src/lib/account-intent.ts), and this screen waits calmly beside it. It moves on by itself
 // once the payment shows on the account; the page opens again in one press, and this Mac is always one press away.
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -23,7 +23,7 @@ export function checkoutLine(account: CloudAccountState | null, signingIn: boole
   return signingIn || account?.status === "connecting" ? "signIn" : "checkout";
 }
 
-/** dusk cloud's tile on the place step: the trial as its tag and the price after it, or nothing while unknown. */
+/** madani cloud's tile on the place step: the trial as its tag and the price after it, or nothing while unknown. */
 export function useCloudTile(enabled: boolean): { tag: string | null; note: string | null } {
   const offer = useCloudOffer(enabled);
   if (!offer?.plans.length) return { tag: null, note: null };
@@ -35,12 +35,12 @@ export function useCloudTile(enabled: boolean): { tag: string | null; note: stri
 }
 
 export function CheckoutStep({ start, onPaid, onMac }: {
-  /** open the browser on arrival (the person just picked dusk cloud); a resumed run waits for a press instead */
+  /** open the browser on arrival (the person just picked madani cloud); a resumed run waits for a press instead */
   start: boolean;
   onPaid: () => void;
   onMac: () => void;
 }) {
-  const bridge = window.duskDesktop?.cloudAccount;
+  const bridge = window.madaniDesktop?.cloudAccount;
   const [account, setAccount] = useState<CloudAccountState | null>(null);
   const [phase, setPhase] = useState<Phase>(start ? "opening" : "idle");
   const paid = useRef(false);
@@ -55,7 +55,7 @@ export function CheckoutStep({ start, onPaid, onMac }: {
     if (paid.current || !cloudBought(next)) return;
     paid.current = true;
     track("onboarding_checkout", { action: "paid" });
-    void window.duskDesktop?.focusWindow?.().catch(() => {});
+    void window.madaniDesktop?.focusWindow?.().catch(() => {});
     onPaid();
   }, [onPaid]);
 

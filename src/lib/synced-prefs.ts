@@ -10,7 +10,7 @@ import { SYNCED_UI_PREFS } from "../../shared/synced-prefs";
 // server within seconds; a newer one from the server is worn here at once.
 const ROUTE = "/api/settings-sync/ui";
 /** What this page and its server last agreed on, per preference: its value and when it changed. */
-const AGREED = "dusk-prefs-synced";
+const AGREED = "madani-prefs-synced";
 const LOOK_MS = 3_000;
 
 type Agreed = Record<string, { value: string | null; at: number }>;
@@ -31,18 +31,18 @@ function agree(name: string, value: string | null, at: number): void {
 }
 
 function read(name: string): string | null {
-  if (name === "dusk-language") return languageChoice();
+  if (name === "madani-language") return languageChoice();
   try { return store()?.getItem(name) ?? null; } catch { return null; }
 }
 
 function wear(name: string, value: string | null): void {
-  if (name === "dusk-language") { if (value !== null) setLanguageChoice(value); return; }
+  if (name === "madani-language") { if (value !== null) setLanguageChoice(value); return; }
   try {
     if (value === null) store()?.removeItem(name); else store()?.setItem(name, value);
   } catch { return; }
-  if (name === "dusk-skin") applySkinChoice(readSkinChoice());
-  else if (name === "dusk-font") applyFont(readFont());
-  else if (name === "dusk-chat-width") applyChatWidth(readChatWidth());
+  if (name === "madani-skin") applySkinChoice(readSkinChoice());
+  else if (name === "madani-font") applyFont(readFont());
+  else if (name === "madani-chat-width") applyChatWidth(readChatWidth());
   // the rest read their storage when it says it changed
   try { window.dispatchEvent(new StorageEvent("storage", { key: name, newValue: value, storageArea: store() ?? null })); } catch {}
 }

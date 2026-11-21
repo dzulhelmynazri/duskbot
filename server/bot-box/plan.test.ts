@@ -5,7 +5,7 @@ import { engineInstallRoots } from "../engine-roots.ts";
 import { BOX_MUTATIONS, CPU_LIST_FILES, argvPaths, bwrapArgs, planBox, taskWorkspaceIds, visibleInBox, type BoxMutation, type BoxSetup } from "./plan.ts";
 
 const home = "/data";
-const dataDir = "/data/.duskbot";
+const dataDir = "/data/.madanibot";
 const setup = (mutate?: BoxMutation[]): BoxSetup => ({
   dataDir, home, codeRoots: ["/app"], engineRoots: engineInstallRoots(dataDir), seccompFd: 3,
   bridges: [{ name: "egress", port: 3128, socket: `${dataDir}/box/egress.sock` }, { name: "harness", port: 8799, socket: `${dataDir}/box/harness.sock` }],
@@ -13,7 +13,7 @@ const setup = (mutate?: BoxMutation[]): BoxSetup => ({
 });
 const cwd = join(dataDir, "task-workspaces", "bot-a", "thread-1");
 const turn = (mutate?: BoxMutation[]) => planBox(setup(mutate), {
-  command: "/usr/local/bin/claude", args: ["-p", "--additional-mcp-config", "@/tmp/dusk-copilot-mcp-x/config.json", "--append-system-prompt-file=/tmp/dusk-system-y/prompt.txt"],
+  command: "/usr/local/bin/claude", args: ["-p", "--additional-mcp-config", "@/tmp/madani-copilot-mcp-x/config.json", "--append-system-prompt-file=/tmp/madani-system-y/prompt.txt"],
   cwd, env: { PATH: "/usr/bin", HOME: home, CLAUDE_CONFIG_DIR: "/data/.claude" }, rw: [join(dataDir, "perm-abc.sock")],
 });
 
@@ -30,8 +30,8 @@ linuxBox("the box plan", () => {
     expect(visibleInBox(plan, join(dataDir, "workspaces", "bot-a", "MEMORY.md"))).toBe("rw");
     expect(visibleInBox(plan, join(dataDir, "perm-abc.sock"))).toBe("rw");
     expect(visibleInBox(plan, "/data/.claude/settings.json")).toBe("rw");
-    expect(visibleInBox(plan, "/tmp/dusk-copilot-mcp-x/config.json")).toBe("ro");
-    expect(visibleInBox(plan, "/tmp/dusk-system-y/prompt.txt")).toBe("ro");
+    expect(visibleInBox(plan, "/tmp/madani-copilot-mcp-x/config.json")).toBe("ro");
+    expect(visibleInBox(plan, "/tmp/madani-system-y/prompt.txt")).toBe("ro");
     expect(visibleInBox(plan, "/app/dist-server/index.js")).toBe("ro");
     expect(visibleInBox(plan, "/usr/local/bin/claude")).toBe("ro");
     for (const hidden of ["messages.db", "config.json", "logins.json", "providers/x", "tools/y", "box/egress.sock",
@@ -47,7 +47,7 @@ linuxBox("the box plan", () => {
   it("writes the bubblewrap argv in mount order, with its own namespaces and the bridged sockets", () => {
     const args = bwrapArgs(turn());
     const text = args.join(" ");
-    for (const flag of ["--unshare-user", "--unshare-pid", "--unshare-net", "--unshare-ipc", "--unshare-uts", "--die-with-parent", "--hostname dusk-box", "--seccomp 3", `--chdir ${cwd}`]) expect(text).toContain(flag);
+    for (const flag of ["--unshare-user", "--unshare-pid", "--unshare-net", "--unshare-ipc", "--unshare-uts", "--die-with-parent", "--hostname madani-box", "--seccomp 3", `--chdir ${cwd}`]) expect(text).toContain(flag);
     expect(bwrapArgs(planBox({ ...setup(), seccompFd: undefined }, { command: "/usr/bin/x", args: [], env: {} })).join(" ")).not.toContain("--seccomp");
     expect(text).toContain("--ro-bind /usr /usr");
     expect(text).toContain("--symlink usr/bin /bin");
@@ -62,7 +62,7 @@ linuxBox("the box plan", () => {
     expect(text).not.toContain("--new-session");
   });
 
-  it("puts the engines dusk bot installed back whole and read-only, whatever else the turn may write", () => {
+  it("puts the engines madani bot installed back whole and read-only, whatever else the turn may write", () => {
     // npm's bin entries are relative links into the prefix: `bin/opencode -> ../lib/node_modules/opencode-ai/bin/opencode.exe`.
     const prefix = join(dataDir, "tools", "npm");
     const engineFiles = [`${prefix}/bin/opencode`, `${prefix}/lib/node_modules/opencode-ai/bin/opencode.exe`, `${prefix}/bin/codex`,
@@ -104,12 +104,12 @@ linuxBox("the box plan", () => {
   });
 
   it("a shared-network box (a browser) has no bridges and no network namespace", () => {
-    const plan = planBox(setup(), { command: "/opt/chrome", args: [], env: {}, net: "shared", rw: ["/data/.duskbot/browser/profiles/p1"] });
+    const plan = planBox(setup(), { command: "/opt/chrome", args: [], env: {}, net: "shared", rw: ["/data/.madanibot/browser/profiles/p1"] });
     expect(plan.net).toBe("shared");
     expect(bwrapArgs(plan).join(" ")).not.toContain("--unshare-net");
     expect(bwrapArgs(plan).join(" ")).not.toContain("/run/omb");
-    expect(visibleInBox(plan, "/data/.duskbot/browser/profiles/p1/Default")).toBe("rw");
-    expect(visibleInBox(plan, "/data/.duskbot/messages.db")).toBe("none");
+    expect(visibleInBox(plan, "/data/.madanibot/browser/profiles/p1/Default")).toBe("rw");
+    expect(visibleInBox(plan, "/data/.madanibot/messages.db")).toBe("none");
   });
 
   it("has the machine's CPU list read-only and nothing else of /sys, so a TCMalloc runtime (Antigravity) can start", () => {
@@ -159,7 +159,7 @@ linuxBox("the box plan", () => {
   it("on a Team Cloud the turn's HOME is its audience's engine home: the server's HOME and every other audience's home are not there", () => {
     const own = join(dataDir, "engine-homes", "member-aaaaaaaaaaaaaaaa"), other = join(dataDir, "engine-homes", "member-bbbbbbbbbbbbbbbb");
     const plan = planBox(setup(), {
-      command: "/usr/local/bin/claude", args: [], cwd, env: { HOME: own, CLAUDE_CONFIG_DIR: `${own}/.claude-work`, CODEX_HOME: `${own}/.dusk-folders/CODEX_HOME-abc` },
+      command: "/usr/local/bin/claude", args: [], cwd, env: { HOME: own, CLAUDE_CONFIG_DIR: `${own}/.claude-work`, CODEX_HOME: `${own}/.madani-folders/CODEX_HOME-abc` },
       home: own, shared: [{ source: "/data/.claude/.credentials.json", target: `${own}/.claude/.credentials.json` }, { source: "/data/x", target: "/elsewhere/x" }],
     });
     expect(visibleInBox(plan, `${own}/.claude/projects/p/s.jsonl`)).toBe("rw");
@@ -178,7 +178,7 @@ linuxBox("the box plan", () => {
     expect(at("--tmpfs", dataDir)).toBeLessThan(at("--bind", own));
     expect(at("--bind", own)).toBeLessThan(at("--bind-try", `${own}/.claude/.credentials.json`));
     expect(args.join(" ")).toContain(`--bind-try /data/.claude/.credentials.json ${own}/.claude/.credentials.json`);
-    expect(args.filter((arg) => arg.startsWith(`${own}/.dusk-folders`) || arg === `${own}/.claude-work`)).toEqual([]);
+    expect(args.filter((arg) => arg.startsWith(`${own}/.madani-folders`) || arg === `${own}/.claude-work`)).toEqual([]);
     // Without an engine home (a My Cloud, a desktop) the box has the server's HOME as before.
     expect(visibleInBox(turn(), "/data/.claude/projects/p/s.jsonl")).toBe("rw");
   });

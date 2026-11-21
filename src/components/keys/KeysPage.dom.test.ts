@@ -31,7 +31,7 @@ vi.mock("@/lib/analytics", () => ({ track: vi.fn() }));
 vi.mock("@/lib/live-call-media", () => ({ dismissLiveNotice: vi.fn() }));
 
 // these cover live calls, which ship behind a switch that is off
-vi.stubEnv("VITE_DUSK_LIVE_CALL", "1");
+vi.stubEnv("VITE_MADANI_LIVE_CALL", "1");
 const { KeysPage } = await import("./KeysPage");
 const { LiveKeyNeeded } = await import("../LiveKeyNeeded");
 const { openKeySettings } = await import("./key-focus");
@@ -110,14 +110,14 @@ describe("the keys page", () => {
   });
 
   it("shows no live call rows while live calls are off", () => {
-    vi.stubEnv("VITE_DUSK_LIVE_CALL", "");
+    vi.stubEnv("VITE_MADANI_LIVE_CALL", "");
     try {
       page();
       expect(row("liveKey")).toBeNull();
       expect(row("liveCalls")).toBeNull();
       expect(row("elevenlabs")).not.toBeNull();
     } finally {
-      vi.stubEnv("VITE_DUSK_LIVE_CALL", "1");
+      vi.stubEnv("VITE_MADANI_LIVE_CALL", "1");
     }
   });
 

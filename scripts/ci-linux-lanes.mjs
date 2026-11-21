@@ -7,7 +7,7 @@ import { fileURLToPath } from "node:url";
 export function vitestLane(entry, retryLog) {
   return {
     name: `vitest (ubuntu-latest, ${entry.part})`,
-    env: { DUSK_VITEST_RETRY_LOG: retryLog, DUSK_VITEST_E2E: entry.e2e, DUSK_VITEST_SUBSET: entry.files, DUSK_VITEST_WORKERS: entry.workers },
+    env: { MADANI_VITEST_RETRY_LOG: retryLog, MADANI_VITEST_E2E: entry.e2e, MADANI_VITEST_SUBSET: entry.files, MADANI_VITEST_WORKERS: entry.workers },
     commands: [
       `pnpm exec vitest run ${entry.files} --shard=${entry.shard}/${entry.shards} --reporter=default --reporter=github-actions`,
       ...(entry.node_tests ? ["pnpm broker:test && pnpm test:electron"] : []),
@@ -87,11 +87,11 @@ export async function runLanes(lanes, { dir, timeoutMs, heartbeatMs = 60_000, lo
 }
 
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
-  const plan = JSON.parse(process.env.DUSK_CI_LINUX_LANES ?? "");
+  const plan = JSON.parse(process.env.MADANI_CI_LINUX_LANES ?? "");
   const temp = process.env.RUNNER_TEMP ?? "/tmp";
   const failed = await runLanes(lanesFor(plan, join(temp, "vitest-retries.jsonl")), {
     dir: join(temp, "linux-lanes"),
-    timeoutMs: Number(process.env.DUSK_CI_LANE_TIMEOUT_MINUTES ?? 30) * 60_000,
+    timeoutMs: Number(process.env.MADANI_CI_LANE_TIMEOUT_MINUTES ?? 30) * 60_000,
     summary: (markdown) => process.env.GITHUB_STEP_SUMMARY && appendFileSync(process.env.GITHUB_STEP_SUMMARY, markdown),
   });
   if (failed.length) {

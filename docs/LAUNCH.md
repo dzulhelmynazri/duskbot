@@ -1,4 +1,4 @@
-# Launch checklist: dusk bot on dusk.bot
+# Launch checklist: madani bot on madani.bot
 
 What the launch branch (`w15/launch`) did, and what needs the owner's accounts, keys or decisions. Each owner step is
 written to be done in order. **Done** means committed and checked; **Owner** means it needs you.
@@ -10,7 +10,7 @@ written to be done in order. **Done** means committed and checked; **Owner** mea
 | Release pipeline | CI and release workflows, signed update manifest, update notice, download publishing script | Apple and GitHub secrets, public downloads repo, first release |
 | Hosted services | Health check, data export, CSP, proxy-safe rate limits, config template, backup, log rotation, uptime checks | Deploy with real keys, install backup and monitor, staging |
 | Observability | Scrubbing error reporter in the account service, its page, desktop, server and phone app (all off without a DSN) | Pick and create the error tracker, set the DSN, desktop Settings toggle |
-| Legal and trust | Terms, privacy, cookies, refunds, acceptable use, subprocessors, license and security policies (Markdown in `docs/legal`, live on dusk.bot), security.txt, account export | Processor DPAs, privacy@ and security@ mailboxes |
+| Legal and trust | Terms, privacy, cookies, refunds, acceptable use, subprocessors, license and security policies (Markdown in `docs/legal`, live on madani.bot), security.txt, account export | Processor DPAs, privacy@ and security@ mailboxes |
 | Product polish | No-AI screen copy, dashboard offline and error states, landing site, installer docs | The items under "Polish not done" |
 | Security | Rate-limit bypass, workspace claim takeover, installer https pinning, link service bind, dependency advisories, history secret scan | Redeploy the link service, the CI reds listed below |
 
@@ -28,26 +28,26 @@ written to be done in order. **Done** means committed and checked; **Owner** mea
   secrets. `scripts/ci-workflow.test.ts`, `ci-scope.test.ts` and `release-ci.test.ts` pass against them.
 - Versioning: `package.json` version, bumped by **Actions > Prepare next release**. Changelog: GitHub's generated
   release notes from PR titles (docs/releasing.md).
-- Update strategy: the desktop server reads `https://dusk.bot/releases/latest.json` (at most hourly; the app asks
+- Update strategy: the desktop server reads `https://madani.bot/releases/latest.json` (at most hourly; the app asks
   daily), accepts it only when a pinned Ed25519 release key signed a `desktop` manifest, and offers a newer version
-  with a link to dusk.bot/download: once per version as a notification, and in the profile menu. Nothing is
+  with a link to madani.bot/download: once per version as a notification, and in the profile menu. Nothing is
   downloaded or installed for the person. The release job writes `SHA256SUMS` and the signed `latest.json` (artifact
-  `dusk-site`); `scripts/publish-downloads.sh v<version>` verifies and publishes them.
-- Download page: https://dusk.bot/download (links to the public downloads repo's `/releases/latest/download/`).
+  `madani-site`); `scripts/publish-downloads.sh v<version>` verifies and publishes them.
+- Download page: https://madani.bot/download (links to the public downloads repo's `/releases/latest/download/`).
 
 ### Owner
 
 1. **Apple Developer Program** (if not already): a Developer ID Application certificate for bundle id
-   `bot.dusk.app`. Export it from Keychain as .p12 with a strong password.
+   `bot.madani.app`. Export it from Keychain as .p12 with a strong password.
 2. **App Store Connect API key** for notarization: Users and Access > Integrations > App Store Connect API >
    Team Key, role Developer. Download the .p8 once; note Key ID and Issuer ID.
-3. In **github.com/DuskBotAI/duskbot > Settings > Secrets and variables > Actions** add (as of 12 November 2026 the
-   repo's only Actions secret is `DUSK_RELEASE_SIGNING_KEY`, set 13 November 2026, so `release.yml` signs `latest.json`
+3. In **github.com/dzulhelmynazri/madani-bot > Settings > Secrets and variables > Actions** add (as of 12 November 2026 the
+   repo's only Actions secret is `MADANI_RELEASE_SIGNING_KEY`, set 13 November 2026, so `release.yml` signs `latest.json`
    but cannot sign or notarize the Mac build yet):
    `MAC_CERT_P12_BASE64` (`base64 -i DeveloperID.p12 | pbcopy`), `MAC_CERT_PASSWORD`,
    `APPLE_API_KEY_P8_BASE64` (`base64 -i AuthKey_XXXX.p8 | pbcopy`), `APPLE_API_KEY_ID`, `APPLE_API_ISSUER_ID`,
-   `DUSK_RELEASE_SIGNING_KEY` (done: the private half of the pinned key `rel-2026-11`, also in dusk.env `[local]`; if it is ever lost, make a new
-   one with `node apps/cloud-service/scripts/keygen.mjs rel-2026-12 ~/.config/duskbot/keys`, pin the printed public
+   `MADANI_RELEASE_SIGNING_KEY` (done: the private half of the pinned key `rel-2026-11`, also in madani.env `[local]`; if it is ever lost, make a new
+   one with `node apps/cloud-service/scripts/keygen.mjs rel-2026-12 ~/.config/madanibot/keys`, pin the printed public
    key in `apps/cloud-service/src/release-signing.ts` and `server/update-check.ts`, then set the secret).
    Optional: `CLOUDFLARE_API_TOKEN` (Workers Scripts:Edit) to let main pushes deploy the Composio broker.
 4. **Settings > Actions > General**: allow GitHub Actions to create pull requests (for Prepare next release).
@@ -58,7 +58,7 @@ written to be done in order. **Done** means committed and checked; **Owner** mea
 6. **Windows signing** (decision): builds are unsigned, so SmartScreen warns "unknown publisher". Options: Azure
    Trusted Signing (about USD 10 a month, needs a verified organization) or an OV/EV certificate. Wire it into
    `release.yml`'s Windows job when chosen.
-7. **Public downloads repo**: `gh repo create DuskBotAI/duskbot-releases --public --description "dusk bot downloads"`.
+7. **Public downloads repo**: `gh repo create dzulhelmynazri/madani-bot-releases --public --description "madani bot downloads"`.
 8. **First release**: Actions > Prepare next release > patch; merge the PR; when the draft is ready, review and
    publish it; then on the Mac `DRY_RUN=1 scripts/publish-downloads.sh v<version>` and without `DRY_RUN`. Then
    remove the "Downloads open with the first public release" line from
@@ -66,9 +66,9 @@ written to be done in order. **Done** means committed and checked; **Owner** mea
 9. **Store listings** (only if wanted): Mac App Store and Microsoft Store are not set up (the app is distributed
    directly); the phone app (Capacitor, `apps/mobile`) needs an App Store Connect app record for its bundle id, a
    Google Play developer account (one-time USD 25), screenshots, the privacy nutrition label (use
-   https://dusk.bot/privacy and `docs/ios-privacy.md`), and push credentials (APNs key, FCM service account).
+   https://madani.bot/privacy and `docs/ios-privacy.md`), and push credentials (APNs key, FCM service account).
 
-## 2. Hosted services (dusk.bot, preview.dusk.bot)
+## 2. Hosted services (madani.bot, preview.madani.bot)
 
 ### Done
 
@@ -79,57 +79,57 @@ written to be done in order. **Done** means committed and checked; **Owner** mea
   `frame-ancestors 'none'`), Permissions-Policy and COOP.
 - `deploy/account/production.env.example`: every setting the service reads, what it does, no values (a test keeps it
   complete).
-- `deploy/account/backup.sh` + `dusk-backup@.{service,timer}`: one daily set per instance (`dusk`, `make`): a fresh
+- `deploy/account/backup.sh` + `madani-backup@.{service,timer}`: one daily set per instance (`madani`, `make`): a fresh
   read-only `mongodump`, the listed data folders, encrypted to an age public key, uploaded to every rclone destination
   (Oracle box over SFTP and Cloudflare R2), 7 dailies + 4 weeklies kept. `backup-alert.mjs` sends one email when a set
   starts failing and one when it works again. Env names in `backup.env.example`; `backup-install.sh` installs.
-- `deploy/account/logrotate.conf` for the dusk apps' logs.
+- `deploy/account/logrotate.conf` for the madani apps' logs.
 
 ### Owner: deploy the account service
 
-One public origin, `https://dusk.bot`: the site at `/` (the waitlist page before launch), the dashboard at
-`/dashboard`, the owner's admin at `/admin`, the API at `/v1` and `/api`. `preview.dusk.bot` is the staging copy with
-the same paths and the full marketing site. `app.dusk.bot`, `dev.dusk.bot` and `www.dusk.bot` point at the same service
+One public origin, `https://madani.bot`: the site at `/` (the waitlist page before launch), the dashboard at
+`/dashboard`, the owner's admin at `/admin`, the API at `/v1` and `/api`. `preview.madani.bot` is the staging copy with
+the same paths and the full marketing site. `app.madani.bot`, `dev.madani.bot` and `www.madani.bot` point at the same service
 and redirect (app to `/dashboard`, dev home, www to the apex); old `/app/...` and `/app/admin/...` links redirect too.
 
 1. On the VPS the service runs on `/opt/node24` (it runs TypeScript directly).
-2. Fill the `[production]` part of `~/.config/duskbot/dusk.env` (0600; names from `deploy/account/production.env.example`
+2. Fill the `[production]` part of `~/.config/madanibot/madani.env` (0600; names from `deploy/account/production.env.example`
    with a `_PRODUCTION` suffix, shared values in `[account]`, see `deploy/env.mjs`): production uses
-   `MONGODB_DB=dusk_prod` (its own writer lease) with the `dusk_prod` user, `DUSK_WAITLIST_DB=dusk` for the admin's
-   waitlist view, `DUSK_DASHBOARD_PAGE_BASE=/dashboard`, `DUSK_SITE_UPSTREAM=http://127.0.0.1:3103` (dusk-landing).
-3. `deploy/account/deploy.sh production` (or `preview`), then `curl -fsS https://dusk.bot/v1/health`.
+   `MONGODB_DB=madani_prod` (its own writer lease) with the `madani_prod` user, `MADANI_WAITLIST_DB=madani` for the admin's
+   waitlist view, `MADANI_DASHBOARD_PAGE_BASE=/dashboard`, `MADANI_SITE_UPSTREAM=http://127.0.0.1:3103` (madani-landing).
+3. `deploy/account/deploy.sh production` (or `preview`), then `curl -fsS https://madani.bot/v1/health`.
    The deploy key must be able to read the private repo (a read-only deploy key on the repo).
-4. **Brevo**: add and authenticate the domain dusk.bot (its Brevo code, DKIM and a DMARC record
-   `v=DMARC1; p=quarantine; rua=mailto:hello@dusk.bot`) in DNS, create an API key.
+4. **Brevo**: add and authenticate the domain madani.bot (its Brevo code, DKIM and a DMARC record
+   `v=DMARC1; p=quarantine; rua=mailto:hello@madani.bot`) in DNS, create an API key.
 5. **Dodo Payments**: live mode products for each plan id in `shared/billing-api.ts`; webhook
-   `https://dusk.bot/v1/billing/webhooks/dodo` with its secret; business verification and payout details
+   `https://madani.bot/v1/billing/webhooks/dodo` with its secret; business verification and payout details
    (payment details are yours to enter).
 6. **Sign in with Google / Apple** (optional): register the callbacks
-   `https://dusk.bot/v1/auth/oauth/{google,apple}/callback` (and the preview.dusk.bot ones) and set the client names in the env file.
-7. **Mailboxes**: done 2026-11-10: Cloudflare Email Routing forwards every @dusk.bot address (MX on Cloudflare).
-8. **Backups**: done 2026-11-13. `dusk-backup@dusk.timer` and `dusk-backup@make.timer` run daily (04:17 UTC + up to
-   20 min) on the VPS; config in `/etc/dusk-backup/` (root-only: `<set>.env`, `rclone.conf`, `alert.env`,
-   `make-mongo.yaml`). Destinations: the Oracle box (`/srv/dusk-backups/data/<set>/`, SFTP-only chrooted user
-   `duskbackup`) and R2 bucket `dusk-backups` (token scoped to that bucket, Object Read & Write). The age private key is
-   only on the Mac at `~/.config/duskbot/backup-age.key`; keep a copy in your password manager, without it no backup
+   `https://madani.bot/v1/auth/oauth/{google,apple}/callback` (and the preview.madani.bot ones) and set the client names in the env file.
+7. **Mailboxes**: done 2026-11-10: Cloudflare Email Routing forwards every @madani.bot address (MX on Cloudflare).
+8. **Backups**: done 2026-11-13. `madani-backup@madani.timer` and `madani-backup@make.timer` run daily (04:17 UTC + up to
+   20 min) on the VPS; config in `/etc/madani-backup/` (root-only: `<set>.env`, `rclone.conf`, `alert.env`,
+   `make-mongo.yaml`). Destinations: the Oracle box (`/srv/madani-backups/data/<set>/`, SFTP-only chrooted user
+   `madanibackup`) and R2 bucket `madani-backups` (token scoped to that bucket, Object Read & Write). The age private key is
+   only on the Mac at `~/.config/madanibot/backup-age.key`; keep a copy in your password manager, without it no backup
    can be opened. Re-install after changing the scripts: `deploy/account/backup-install.sh`. Restore:
    ```sh
-   ssh contabo 'RCLONE_CONFIG=/etc/dusk-backup/rclone.conf rclone cat r2-backup:dusk-backups/dusk/daily/<file>' > <file>
-   age -d -i ~/.config/duskbot/backup-age.key <file> | tar -xz -C <empty folder>   # files/ and mongo/<set>.archive.gz
+   ssh contabo 'RCLONE_CONFIG=/etc/madani-backup/rclone.conf rclone cat r2-backup:madani-backups/madani/daily/<file>' > <file>
+   age -d -i ~/.config/madanibot/backup-age.key <file> | tar -xz -C <empty folder>   # files/ and mongo/<set>.archive.gz
    mongorestore --gzip --archive=<folder>/mongo/<set>.archive.gz --uri <a throwaway or stopped service's mongod>
    ```
-9. **Log rotation**: `cp deploy/account/logrotate.conf /etc/logrotate.d/dusk && logrotate -d /etc/logrotate.d/dusk`.
+9. **Log rotation**: `cp deploy/account/logrotate.conf /etc/logrotate.d/madani && logrotate -d /etc/logrotate.d/madani`.
 10. **Rate limits at the edge** (optional, defence in depth): a `limit_req` zone on `/v1/auth/` in deployd's nginx
     template; the service already limits, an hour, sign-in starts (60 per IP, 15 per email, one per address every
     30 s), code checks (150 per IP; each code dies after 5 wrong tries), OAuth starts (150 per IP), desktop sign-in
-    requests (90 per IP), sign-in mail overall (600, `DUSK_AUTH_MAIL_PER_HOUR`), enrolls (30) and page error reports
+    requests (90 per IP), sign-in mail overall (600, `MADANI_AUTH_MAIL_PER_HOUR`), enrolls (30) and page error reports
     (60). The numbers live in `AUTH_LIMITS` (apps/dashboard/server/auth/index.ts) and are set so a real person never
     meets them; the per-code tries and the resend wait are the abuse guard.
-11. **Staging on dev.dusk.bot**: the same deploy as `dusk-account-dev` with `--domain dev.dusk.bot`,
-    `DUSK_DASHBOARD_PUBLIC_URL=https://dev.dusk.bot`, `DUSK_DASHBOARD_DATA=/var/lib/dusk-account-dev`,
-    `DUSK_ENVIRONMENT=staging`, `DUSK_DODO_MODE=test` with test keys, `DUSK_AUTH_SIGNUP_OPEN=0` and your own account,
-    its own Resend sender and no `DUSK_MANAGED`. The desktop app's staging Cloud already points at dev.dusk.bot.
-12. **Link service**: redeploy `link.dusk.bot` from this branch so it serves the https-pinned installer and listens on
+11. **Staging on dev.madani.bot**: the same deploy as `madani-account-dev` with `--domain dev.madani.bot`,
+    `MADANI_DASHBOARD_PUBLIC_URL=https://dev.madani.bot`, `MADANI_DASHBOARD_DATA=/var/lib/madani-account-dev`,
+    `MADANI_ENVIRONMENT=staging`, `MADANI_DODO_MODE=test` with test keys, `MADANI_AUTH_SIGNUP_OPEN=0` and your own account,
+    its own Resend sender and no `MADANI_MANAGED`. The desktop app's staging Cloud already points at dev.madani.bot.
+12. **Link service**: redeploy `link.madani.bot` from this branch so it serves the https-pinned installer and listens on
     127.0.0.1 (`HOST` env to override). The live link service still serves the older installer at `/i/<code>`.
 
 ## 3. Observability
@@ -143,20 +143,20 @@ and redirect (app to `/dashboard`, dev home, www to the apex); old `/app/...` an
 - Wired: account service (process crashes and every 500, `component: dashboard`), its page (`POST /v1/client-error`,
   same origin, rate limited, forwarded through the same scrubber), the desktop app (main process, page and child
   process crashes), the bundled server (inherits the DSN only while the person keeps reports on), the phone app
-  (`DUSK_ERROR_DSN` at build time). Without a DSN every one of them sends nothing.
+  (`MADANI_ERROR_DSN` at build time). Without a DSN every one of them sends nothing.
 - Owner alert emails ("something's wrong"), see **Alerts** below: downtime from the Oracle box, and every server
   error, crash, failed email, database write failure, cloud `ALERT` line and client error, grouped and throttled.
 
 ### Alerts
 
-What sends an email, to `DUSK_ALERT_EMAILS` (empty: `DUSK_ADMIN_EMAILS`), all lowercase, in the shared email layout:
+What sends an email, to `MADANI_ALERT_EMAILS` (empty: `MADANI_ADMIN_EMAILS`), all lowercase, in the shared email layout:
 
 | Trigger | Where it comes from |
 | --- | --- |
 | a site, dashboard, API, waitlist-count, installer or link check fails twice in a row, from outside | `deploy/monitor/uptime-check.mjs` on the Oracle box, every minute |
-| a TLS certificate of dusk.bot, preview.dusk.bot or link.dusk.bot has under 14 days left | same, checked hourly |
+| a TLS certificate of madani.bot, preview.madani.bot or link.madani.bot has under 14 days left | same, checked hourly |
 | any 5xx answer (thrown errors with their stack, and the billing routes' own 500s, webhooks included) | `apps/dashboard/server/app.ts` |
-| the site behind dusk.bot stops answering the proxy (502) | same, as `SiteUpstreamDown` |
+| the site behind madani.bot stops answering the proxy (502) | same, as `SiteUpstreamDown` |
 | an uncaught exception or unhandled rejection that kills the service | spooled to `<data>/incident-spool`, mailed by the next start |
 | MongoDB state writes failing (checked every 30 s) | `incidents/process.ts` |
 | any `console.error` line, and `console.warn` lines with `ALERT` or a failure in them: failed emails, lease renewal failures, cloud setup, restore, backup, cost-ceiling and machine `ALERT` lines, the billing duplicate-subscription `ALERT` | console tap in `incidents/process.ts` |
@@ -175,7 +175,7 @@ Throttle rules (`RULES` in `apps/dashboard/server/incidents/index.ts`):
   than the daily email limit, see the health page"; it is skipped when there are none.
 - A restart loads the open incidents, so a crash loop re-mails nothing. `/v1/errors` takes 60 reports an hour per
   address and 16 KB each; more than 100 new client fingerprints in an hour fold into one `TooManyClientErrors`.
-- A failed alert email is retried every minute for an hour (`DUSK_RESEND_API_KEY` adds a second sender). The
+- A failed alert email is retried every minute for an hour (`MADANI_RESEND_API_KEY` adds a second sender). The
   Oracle checker keeps a failed email in its state file and retries it each run for a day.
 - Uptime: per outage one "down" email after 2 misses in a row and one "back up" email with the downtime, nothing in
   between; one TLS warning per certificate until it is renewed; at most 10 emails a day. When the Oracle box cannot
@@ -191,36 +191,36 @@ Incidents live in MongoDB `incidents` (one document per fingerprint, TTL 30 days
 
 Silence or test:
 
-- Mute one problem: the mute route above. Stop all service emails: `DUSK_ALERTS=off` and restart.
-- Stop uptime emails: `sudo systemctl disable --now dusk-uptime.timer` on the Oracle box.
+- Mute one problem: the mute route above. Stop all service emails: `MADANI_ALERTS=off` and restart.
+- Stop uptime emails: `sudo systemctl disable --now madani-uptime.timer` on the Oracle box.
 - Test a server alert: `POST /v1/admin/incidents/test` as an admin, or on the VPS
-  `systemctl kill -s USR2 dusk-account-prod` (`dusk-account` for preview).
-- Test a client alert: `curl -X POST https://dusk.bot/v1/errors -H 'content-type: application/json'
+  `systemctl kill -s USR2 madani-account-prod` (`madani-account` for preview).
+- Test a client alert: `curl -X POST https://madani.bot/v1/errors -H 'content-type: application/json'
   -d '{"source":"web","type":"TestClientError","message":"a test","path":"/dashboard"}'`.
-- Test downtime: on the Oracle box, run `sudo systemd-run --wait --pipe -p EnvironmentFile=/etc/dusk-uptime.env
-  -E DUSK_UPTIME_STATE=/tmp/uptime-test -E DUSK_UPTIME_TLS= -E DUSK_UPTIME_TARGETS=test=https://dead.invalid/
-  /usr/bin/node /opt/dusk-uptime/uptime-check.mjs` twice (down email), then once more with
-  `DUSK_UPTIME_TARGETS=test=https://dusk.bot/` (back up email).
+- Test downtime: on the Oracle box, run `sudo systemd-run --wait --pipe -p EnvironmentFile=/etc/madani-uptime.env
+  -E MADANI_UPTIME_STATE=/tmp/uptime-test -E MADANI_UPTIME_TLS= -E MADANI_UPTIME_TARGETS=test=https://dead.invalid/
+  /usr/bin/node /opt/madani-uptime/uptime-check.mjs` twice (down email), then once more with
+  `MADANI_UPTIME_TARGETS=test=https://madani.bot/` (back up email).
 
 ### Owner
 
 1. **Error tracker** (pick one): self-hosted GlitchTip on the Oracle box (free; Docker Compose with Postgres and
-   Redis, about 1 GB of memory; put it behind a subdomain such as errors.dusk.bot) or sentry.io's free Developer plan
+   Redis, about 1 GB of memory; put it behind a subdomain such as errors.madani.bot) or sentry.io's free Developer plan
    (5,000 errors a month, one user). Create one project per component or one shared project; copy its DSN.
    sentry.io is a third party: add it to docs/legal/subprocessors.md and privacy.md and drop the "no third-party error
    tracking" lines there before setting the DSN in production (self-hosted GlitchTip on the Oracle box needs Oracle listed).
-2. Set `DUSK_ERROR_DSN` in the account service env (and staging's, with `DUSK_ENVIRONMENT=staging`). Turn on the
+2. Set `MADANI_ERROR_DSN` in the account service env (and staging's, with `MADANI_ENVIRONMENT=staging`). Turn on the
    tracker's email alerts to your operator address for new issues.
 3. Desktop builds: before baking a DSN into release builds, add a Settings switch for the existing `errorReports`
    preference (electron/desktop-prefs.mjs; it defaults to on and is read at launch), then add a release step that
-   writes `"duskbot": { "errorDsn": "<dsn>" }` into package.json before packaging. Until then desktop builds send
+   writes `"madanibot": { "errorDsn": "<dsn>" }` into package.json before packaging. Until then desktop builds send
    nothing.
-4. Phone builds: build with `DUSK_ERROR_DSN=<dsn> pnpm mobile:build` once the privacy label says so.
+4. Phone builds: build with `MADANI_ERROR_DSN=<dsn> pnpm mobile:build` once the privacy label says so.
 5. **Uptime** (installed on the Oracle VPS 2026-11-12; it watches the Contabo box from outside). To reinstall:
-   `install -D -m 0755 deploy/monitor/uptime-check.mjs /opt/dusk-uptime/uptime-check.mjs`,
-   `install -m 0644 apps/dashboard/server/email/layout.ts /opt/dusk-uptime/layout.ts`, write `/etc/dusk-uptime.env`
-   (root, 0600: `DUSK_BREVO_API_KEY`, `DUSK_ALERT_TO`, `DUSK_ALERT_FROM`, optional `DUSK_RESEND_API_KEY`), copy the
-   two units to `/etc/systemd/system/`, `systemctl enable --now dusk-uptime.timer`. Needs Node 23.6 or newer.
+   `install -D -m 0755 deploy/monitor/uptime-check.mjs /opt/madani-uptime/uptime-check.mjs`,
+   `install -m 0644 apps/dashboard/server/email/layout.ts /opt/madani-uptime/layout.ts`, write `/etc/madani-uptime.env`
+   (root, 0600: `MADANI_BREVO_API_KEY`, `MADANI_ALERT_TO`, `MADANI_ALERT_FROM`, optional `MADANI_RESEND_API_KEY`), copy the
+   two units to `/etc/systemd/system/`, `systemctl enable --now madani-uptime.timer`. Needs Node 23.6 or newer.
 6. **Desktop error reports** now reach `POST /v1/errors` from packaged builds while the `errorReports` preference is
    on (it defaults to on and has no Settings switch yet): add the switch and a privacy-policy line before launch.
 
@@ -229,17 +229,17 @@ Silence or test:
 ### Done
 
 - Final policies in `docs/legal/{terms,privacy,cookies,refunds,acceptable-use,subprocessors,license,security}.md`, each
-  with an effective date (12 November 2026), live at https://dusk.bot/terms, /privacy, /cookies, /refunds,
+  with an effective date (12 November 2026), live at https://madani.bot/terms, /privacy, /cookies, /refunds,
   /acceptable-use, /subprocessors, /license and /security (built from the Markdown by
   `apps/site/build-pages.mjs`). The privacy policy lists the sub-processors: Contabo, Cloudflare, InstaBox (cloud desktops, on AWS us-west-2), Dodo
   Payments, Brevo, Composio, Apple APNs, Google FCM, Spaceship (registrar), Let's Encrypt and the error tracker; AI model
   providers are the user's own relationship.
-- https://dusk.bot/.well-known/security.txt (expires 2027-11-10).
+- https://madani.bot/.well-known/security.txt (expires 2027-11-10).
 - Data export: **Download your data** on the dashboard's Account page (`GET /v1/account/export`: account, sign-ins,
   sessions, workspaces with their latest report, plans, payments, cloud desktops; no tokens, hashes or keys). Deletion
   already existed (Account > Delete account; cloud desktop data on its own page with a 7-day hold).
 - Cookie notice: the account pages set only strictly necessary cookies (session, CSRF, OAuth state) and a theme value
-  in local storage. The site's analytics script sets `dusk_vid` and `dusk_sid` only outside the EU, EEA, UK and
+  in local storage. The site's analytics script sets `madani_vid` and `madani_sid` only outside the EU, EEA, UK and
   Switzerland and nothing inside them (privacy.md, Product analytics); have the lawyer confirm no banner is needed.
 
 ### Owner
@@ -262,7 +262,7 @@ Silence or test:
 - Account dashboard: only a 401 signs the page out (offline no longer drops you to sign-in); failed account,
   workspace, cloud, billing and usage loads show a message with Retry instead of endless skeletons; plain fallback
   error text.
-- dusk.bot: home, download, docs (getting started, VPS install with `curl -fsSL https://dusk.bot/install.sh | sh -s <code>`
+- madani.bot: home, download, docs (getting started, VPS install with `curl -fsSL https://madani.bot/install.sh | sh -s <code>`
   and a read-first variant with `install.sh.sha256`), pricing (no invented prices; links to the account's Plans
   page), footer with legal links; strict CSP and HSTS.
 
@@ -275,7 +275,7 @@ Silence or test:
   sentence plus "Show details" would read better.
 - Before the AI list loads, a fresh window can show "No bots yet / New bot" (`App.tsx`), and a connection that fails
   before first load shows "Connecting to your bots..." with no retry (`BootCover.tsx`).
-- `www.dusk.bot` resolves and 301s to the apex (checked 2026-11-12).
+- `www.madani.bot` resolves and 301s to the apex (checked 2026-11-12).
 
 ## 6. Security review
 
@@ -289,7 +289,7 @@ Silence or test:
 - **Installer transport**: a non-https `LINK_BASE` now stops the installer before it sends the server token or fetches
   root-run code; every request to the link service pins `--proto =https --proto-redir =https`. Packages and kits were
   already sha256-verified; the script is functions-only with `main "$@"` last, so a partial download runs nothing.
-  dusk.bot serves `install.sh.sha256` beside it.
+  madani.bot serves `install.sh.sha256` beside it.
 - **Link service** listened on 0.0.0.0; it now binds 127.0.0.1 by default (it is only reached through nginx, which
   sets `X-Real-IP` itself).
 - **Dependencies**: `pnpm audit --prod` had 9 findings (4 high: undici TLS validation bypass and DoS, the Electron
@@ -308,7 +308,7 @@ and identifiers); `.env*`, `.dev.vars.*` are ignored.
 ### Owner or follow-up
 
 - Sign the link agent and docker gate (`agent.mjs.sig` is already served at `/v1/release`) and have the installer
-  verify them with the pinned release key; today they rely on TLS to link.dusk.bot.
+  verify them with the pinned release key; today they rely on TLS to link.madani.bot.
 - App sessions renew for 90 days on each use with no absolute cap; consider a one-year cap.
 - Account deletion needs a session, CSRF and the typed email, not a fresh sign-in (cloud data deletion does).
 - katex 0.18 upgrade (low).
@@ -325,7 +325,7 @@ branch alike, so the first CI run will fail until they are fixed:
 - Source guards: `src/lib/random-uuid.test.ts` (`apps/mobile`'s `src/mobile/connection/pair.ts` calls
   `crypto.randomUUID()` without the fallback), `src/locales/vocabulary.test.ts` and `scripts/testing/analytics-docs.test.ts`
   (read the removed `apps/docs`).
-- Linux shards: UI e2e tests whose clicks land on a fixed full-screen layer (`control-dusk-ui`, `presets-ui`,
+- Linux shards: UI e2e tests whose clicks land on a fixed full-screen layer (`control-madani-ui`, `presets-ui`,
   `sidebar-scroll-ui` and others), `ConnectAppsWindow.dom.test.ts`, `local-computer`, `setup-import`, `github-refs`,
   `scripts/packaged-native-modules.test.mjs` (docs/LICENSING.md and the removed `deploy/podman`), the file-size
   ratchet (main.mjs, codex.ts and three more files over their listed sizes), and slow `server/*.e2e.test.ts` timeouts.

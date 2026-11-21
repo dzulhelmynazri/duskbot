@@ -33,8 +33,8 @@ export function planSleeps(plan: CloudPlanSnapshot | null): boolean | null {
 /** On My Cloud's page in the app, whether its plan sleeps when idle (planSleeps; null while unknown, and always in a
  * browser); on this computer's page, whether opening My Cloud waits for it to wake. */
 export function useCloudPower(cloudHome: boolean): { sleeps: boolean | null; waking: boolean } {
-  const plan = cloudHome && !window.duskDesktop?.remoteClient?.active ? window.duskDesktop?.cloudPlan : undefined;
-  const account = cloudHome || window.duskDesktop?.remoteClient?.active ? undefined : window.duskDesktop?.cloudAccount;
+  const plan = cloudHome && !window.madaniDesktop?.remoteClient?.active ? window.madaniDesktop?.cloudPlan : undefined;
+  const account = cloudHome || window.madaniDesktop?.remoteClient?.active ? undefined : window.madaniDesktop?.cloudAccount;
   const [sleeps, setSleeps] = useState<boolean | null>(null);
   const [waking, setWaking] = useState(false);
   useEffect(() => {
@@ -54,7 +54,7 @@ export type WorkspacePlace = ReturnType<typeof useWorkspacePlace>;
  * here.
  */
 export function useWorkspacePlace({ cloudHome = false, howTo = false, onMenuClosed }: { cloudHome?: boolean; howTo?: boolean; onMenuClosed?: () => void }) {
-  const bridge = window.duskDesktop?.workspaces;
+  const bridge = window.madaniDesktop?.workspaces;
   const [current, setCurrent] = useState<{ local: boolean; name: string; origin?: string; color?: string; home?: boolean } | null>(null);
   const [open, setOpen] = useState(false);
   const [error, setError] = useState("");

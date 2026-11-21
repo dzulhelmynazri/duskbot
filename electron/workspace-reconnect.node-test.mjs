@@ -18,7 +18,7 @@ async function fakeServer() {
   const served = [];
   const handler = (req, res) => {
     served.push(req.url);
-    if (req.url === "/.well-known/duskbot/environment") return void res.writeHead(200, { "content-type": "application/json" }).end("{}");
+    if (req.url === "/.well-known/madanibot/environment") return void res.writeHead(200, { "content-type": "application/json" }).end("{}");
     if (req.url === "/api/bots?messages=0") return void res.writeHead(200, { "content-type": "application/json" }).end(JSON.stringify(BOTS));
     res.writeHead(404).end();
   };
@@ -173,11 +173,11 @@ test("a proxy's own page for a gone server, Cloudflare's tunnel errors included,
   for (const code of [200, 204, 301, 401, 403, 404, 500, 501, 505]) assert.equal(proxyAnswersForDownServer(code), false, String(code));
 });
 
-test("a dusk cloud the edge says was deleted is said once, with Remove and the other places, and never looked at again", async (t) => {
+test("a madani cloud the edge says was deleted is said once, with Remove and the other places, and never looked at again", async (t) => {
   const served = [];
   const server = createServer((req, res) => {
     served.push(req.url);
-    res.writeHead(410, { "content-type": "text/plain", "x-dusk-cloud-power": "gone" }).end("This dusk bot was deleted.");
+    res.writeHead(410, { "content-type": "text/plain", "x-madani-cloud-power": "gone" }).end("This madani bot was deleted.");
   });
   await new Promise((done) => server.listen(0, "127.0.0.1", done));
   t.after(() => new Promise((done) => { server.closeAllConnections?.(); server.close(() => done()); }));

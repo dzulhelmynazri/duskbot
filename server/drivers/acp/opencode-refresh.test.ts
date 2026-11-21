@@ -33,7 +33,7 @@ afterEach(async () => {
 });
 
 function home(cached: string, offered: string) {
-  const scratch = mkdtempSync(join(tmpdir(), "dusk-opencode-refresh-"));
+  const scratch = mkdtempSync(join(tmpdir(), "madani-opencode-refresh-"));
   scratches.push(scratch);
   const cache = join(scratch, "models-cache");
   const upstream = join(scratch, "models-upstream");

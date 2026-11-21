@@ -9,7 +9,7 @@ import { DesktopCapabilitiesProvider } from "./DesktopCapabilities";
 export function ChromeRail() {
   usePageLanguage(effectiveLanguage(useLanguageChoice(), undefined));
   // The page beside the rail chose its skin: the rail wears the same one.
-  useEffect(() => window.duskDesktop?.rail?.onSkin?.(wearSkin), []);
+  useEffect(() => window.madaniDesktop?.rail?.onSkin?.(wearSkin), []);
   const accounts = useAccountsSheet();
   return <DesktopCapabilitiesProvider><div data-chrome-rail className="h-full">{accounts.open && <AccountsSheet onClose={accounts.close} />}</div></DesktopCapabilitiesProvider>;
 }

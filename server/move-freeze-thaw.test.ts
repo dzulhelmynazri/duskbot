@@ -17,7 +17,7 @@ const HOUR = 3_600_000;
  * that runs at every start, one due now, a webhook and an app event, all on.
  */
 function frozenCopy({ exportOnly = false } = {}) {
-  const dir = mkdtempSync(join(tmpdir(), "dusk-thaw-"));
+  const dir = mkdtempSync(join(tmpdir(), "madani-thaw-"));
   dirs.push(dir);
   let clock = Date.UTC(2026, 9, 20, 8, 0);
   const now = () => clock;
@@ -32,7 +32,7 @@ function frozenCopy({ exportOnly = false } = {}) {
   const webhook = webhooks.create({ name: "Orders", prompt: "File it.", botId: "b1" }).webhook;
   const appEvents = { switched: [] as Array<[string, unknown]>, list: () => [{ id: "e1", enabled: true }], update: async (id: string, patch: unknown) => { appEvents.switched.push([id, patch]); return null; } };
   const freeze = createMoveFreeze({ dataDir: dir, exportOnly });
-  freeze.freeze("https://dusk-t-1.fly.dev");
+  freeze.freeze("https://madani-t-1.fly.dev");
   freeze.hold(() => routines.start(), () => routines.stop());
   // Frozen past its time: the morning routine is due the moment the scheduler starts.
   clock += 75 * 60_000;

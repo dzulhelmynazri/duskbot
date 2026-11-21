@@ -23,9 +23,9 @@ it("stays at the bottom for someone who already has plenty of bots", () => {
 });
 
 it("remembers the previous open once per run and moves it to now", () => {
-  const map = new Map<string, string>([["dusk.lastOpenedAt", String(now - 20 * DAY)]]);
+  const map = new Map<string, string>([["madani.lastOpenedAt", String(now - 20 * DAY)]]);
   const storage = { getItem: (k: string) => map.get(k) ?? null, setItem: (k: string, v: string) => void map.set(k, v) };
   expect(previousOpenAt(storage, now)).toBe(now - 20 * DAY);
-  expect(map.get("dusk.lastOpenedAt")).toBe(String(now));
+  expect(map.get("madani.lastOpenedAt")).toBe(String(now));
   expect(previousOpenAt(storage, now + DAY), "same run reads the first value").toBe(now - 20 * DAY);
 });

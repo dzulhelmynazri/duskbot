@@ -33,7 +33,7 @@ export const COMPOSIO_LIMITS = { installation: 10_000, account: 50_000 } as cons
 export const THRESHOLDS = {
   r2Bytes: 8 * GB_BYTES, diskPct: 85, memPct: 90, memForMs: 10 * MINUTE, downForMs: 4 * MINUTE, backupHours: 26, reportStaleMs: 30 * MINUTE,
   certWatchDays: 21, certBadDays: 10, outlierRatio: 3, outlierFloorCents: 1_000, outlierFloorEgressGb: 50,
-  /** contabo upload: sustained past this share of DUSK_OPS_UPLINK_MBIT for this long is an incident */
+  /** contabo upload: sustained past this share of MADANI_OPS_UPLINK_MBIT for this long is an incident */
   uploadPct: 70, uploadForMs: 15 * MINUTE,
   /** the account database past this size (all its data, indexes not counted); brevo's day past this share of its limit */
   mongoBytes: 5 * GB_BYTES, brevoDayPct: 80,
@@ -92,22 +92,22 @@ const meter = (used: number, limit: number | null, projected: number | null): Op
 
 /** the env names each collector needs; a collector without them is shown as not configured and never runs */
 export function opsConfig(env: NodeJS.ProcessEnv) {
-  const cfToken = env.DUSK_CF_ANALYTICS_TOKEN || "", cfAccount = env.DUSK_CF_ACCOUNT_ID || "";
+  const cfToken = env.MADANI_CF_ANALYTICS_TOKEN || "", cfAccount = env.MADANI_CF_ACCOUNT_ID || "";
   return {
     cloudflare: cfToken && cfAccount ? { token: cfToken, accountId: cfAccount } : null,
-    brevo: env.DUSK_BREVO_API_KEY ? { apiKey: env.DUSK_BREVO_API_KEY } : null,
-    composio: env.DUSK_COMPOSIO_BROKER_STATS_TOKEN ? { url: env.DUSK_COMPOSIO_BROKER_URL || "https://composio.dusk.bot", token: env.DUSK_COMPOSIO_BROKER_STATS_TOKEN } : null,
-    relay: env.DUSK_LINK_STATS_TOKEN ? { url: env.DUSK_LINK_URL || "https://link.dusk.bot", token: env.DUSK_LINK_STATS_TOKEN } : null,
-    reportToken: env.DUSK_OPS_REPORT_TOKEN && env.DUSK_OPS_REPORT_TOKEN.length >= 24 ? env.DUSK_OPS_REPORT_TOKEN : null,
-    backupSets: (env.DUSK_OPS_BACKUP_SETS ?? "dusk make").split(/[\s,]+/).filter(set => /^[a-z0-9-]{1,40}$/.test(set)),
-    certHosts: (env.DUSK_OPS_CERT_HOSTS ?? "dusk.bot preview.dusk.bot link.dusk.bot composio.dusk.bot").split(/[\s,]+/).filter(host => /^[a-z0-9.-]{3,253}$/.test(host)),
-    brevoDaily: Number(env.DUSK_BREVO_DAILY_LIMIT) > 0 ? Number(env.DUSK_BREVO_DAILY_LIMIT) : 300,
-    brevoMonthly: Number(env.DUSK_BREVO_MONTHLY_LIMIT) > 0 ? Number(env.DUSK_BREVO_MONTHLY_LIMIT) : null,
-    /** DUSK_OPS_FIXED_CENTS: "contabo vps=1500,oracle=0": flat monthly bills shown as spend lines */
-    /** DUSK_OPS_UPLINK_MBIT: contabo's dependable upload (the lowest measured, 120); DUSK_OPS_EGRESS_ALLOWANCE_TB: its monthly outgoing allowance */
-    uplinkMbit: Number(env.DUSK_OPS_UPLINK_MBIT) > 0 ? Number(env.DUSK_OPS_UPLINK_MBIT) : 120,
-    egressAllowanceBytes: (Number(env.DUSK_OPS_EGRESS_ALLOWANCE_TB) > 0 ? Number(env.DUSK_OPS_EGRESS_ALLOWANCE_TB) : 32) * 1e12,
-    fixed: (env.DUSK_OPS_FIXED_CENTS ?? "").split(",").flatMap(part => { const [label, cents] = part.split("="); const n = Number(cents); return label?.trim() && Number.isSafeInteger(n) && n >= 0 ? [{ label: label.trim().toLowerCase().slice(0, 40), cents: n }] : []; }),
+    brevo: env.MADANI_BREVO_API_KEY ? { apiKey: env.MADANI_BREVO_API_KEY } : null,
+    composio: env.MADANI_COMPOSIO_BROKER_STATS_TOKEN ? { url: env.MADANI_COMPOSIO_BROKER_URL || "https://composio.madani.bot", token: env.MADANI_COMPOSIO_BROKER_STATS_TOKEN } : null,
+    relay: env.MADANI_LINK_STATS_TOKEN ? { url: env.MADANI_LINK_URL || "https://link.madani.bot", token: env.MADANI_LINK_STATS_TOKEN } : null,
+    reportToken: env.MADANI_OPS_REPORT_TOKEN && env.MADANI_OPS_REPORT_TOKEN.length >= 24 ? env.MADANI_OPS_REPORT_TOKEN : null,
+    backupSets: (env.MADANI_OPS_BACKUP_SETS ?? "madani make").split(/[\s,]+/).filter(set => /^[a-z0-9-]{1,40}$/.test(set)),
+    certHosts: (env.MADANI_OPS_CERT_HOSTS ?? "madani.bot preview.madani.bot link.madani.bot composio.madani.bot").split(/[\s,]+/).filter(host => /^[a-z0-9.-]{3,253}$/.test(host)),
+    brevoDaily: Number(env.MADANI_BREVO_DAILY_LIMIT) > 0 ? Number(env.MADANI_BREVO_DAILY_LIMIT) : 300,
+    brevoMonthly: Number(env.MADANI_BREVO_MONTHLY_LIMIT) > 0 ? Number(env.MADANI_BREVO_MONTHLY_LIMIT) : null,
+    /** MADANI_OPS_FIXED_CENTS: "contabo vps=1500,oracle=0": flat monthly bills shown as spend lines */
+    /** MADANI_OPS_UPLINK_MBIT: contabo's dependable upload (the lowest measured, 120); MADANI_OPS_EGRESS_ALLOWANCE_TB: its monthly outgoing allowance */
+    uplinkMbit: Number(env.MADANI_OPS_UPLINK_MBIT) > 0 ? Number(env.MADANI_OPS_UPLINK_MBIT) : 120,
+    egressAllowanceBytes: (Number(env.MADANI_OPS_EGRESS_ALLOWANCE_TB) > 0 ? Number(env.MADANI_OPS_EGRESS_ALLOWANCE_TB) : 32) * 1e12,
+    fixed: (env.MADANI_OPS_FIXED_CENTS ?? "").split(",").flatMap(part => { const [label, cents] = part.split("="); const n = Number(cents); return label?.trim() && Number.isSafeInteger(n) && n >= 0 ? [{ label: label.trim().toLowerCase().slice(0, 40), cents: n }] : []; }),
   };
 }
 
@@ -115,9 +115,9 @@ export function createOps(options: OpsOptions) {
   const { store, now } = options;
   const fetcher = options.fetch ?? fetch;
   const config = opsConfig(options.env);
-  // production only unless DUSK_OPS_ALERTS says otherwise, so preview on the same box never doubles an email
-  const alertsOn = options.env.DUSK_OPS_ALERTS === "on" || (options.env.DUSK_OPS_ALERTS !== "off" && options.environment === "production");
-  const targets = probeTargets(options.env.DUSK_OPS_PROBES, options.selfUrl);
+  // production only unless MADANI_OPS_ALERTS says otherwise, so preview on the same box never doubles an email
+  const alertsOn = options.env.MADANI_OPS_ALERTS === "on" || (options.env.MADANI_OPS_ALERTS !== "off" && options.environment === "production");
+  const targets = probeTargets(options.env.MADANI_OPS_PROBES, options.selfUrl);
   const counters = { limited: new Map<string, number>(), signups: new Map<string, { count: number; accounts: Set<string> }>(), mail: new Map<string, { sent: number; codes: number }>() };
   let hostPrev: { data: HostData; at: number } | null = null;
   let running: Promise<string[]> | null = null, closed = false;
@@ -190,7 +190,7 @@ export function createOps(options: OpsOptions) {
     return (machine: string | null) => machine ? clouds.find(c => c.id === machine || c.serverId === machine)?.accountId ?? null : null;
   }
 
-  /** each account's plan and the people to look at, kept in ops_latest so another service's admin can read them (preview reading dusk.bot) */
+  /** each account's plan and the people to look at, kept in ops_latest so another service's admin can read them (preview reading madani.bot) */
   async function saveAccountNotes() {
     const snap = await snapshot(), emails = options.emails();
     const data: AccountNotes = { plans: Object.fromEntries(options.customers().map(c => [c.accountId, c.plan])), suspects: abuseOf(snap, spendOf(snap, emails), emails) };
@@ -503,7 +503,7 @@ export function createOps(options: OpsOptions) {
   }
 
   // the link relay nodes, every minute: a node down for 2 minutes has to be heard about in minutes, not at the next 5
-  const relayCards = options.env.DUSK_LINK_STATS_TOKEN ? createRelays({ env: options.env, fetch: fetcher, now, accounts: () => [] }) : null;
+  const relayCards = options.env.MADANI_LINK_STATS_TOKEN ? createRelays({ env: options.env, fetch: fetcher, now, accounts: () => [] }) : null;
   let relayRunning: Promise<void> | null = null;
   function relayTick(): Promise<void> {
     if (!relayCards) return Promise.resolve();

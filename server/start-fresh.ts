@@ -31,7 +31,7 @@ export interface StartFreshRouteDeps {
   dataDir: string;
   /** a server of one person's own, and this request is theirs (own-home.ts) */
   owner(auth: RequestAuth): boolean;
-  /** a Cloud, a team's Cloud or a hosted workspace: Dusk or an organization runs it, so no one person wipes it here */
+  /** a Cloud, a team's Cloud or a hosted workspace: Madani or an organization runs it, so no one person wipes it here */
   managed(): boolean;
   restart(): void;
 }

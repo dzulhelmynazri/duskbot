@@ -50,7 +50,7 @@ describe("the Live Activity setting", () => {
     await vi.waitFor(() => expect(activities.ended).toEqual(["a1"]));
     expect(calls).toContainEqual({ url: "/api/mobile/activity-start", method: "DELETE" });
     expect(calls).toContainEqual({ url: "/api/mobile/activity", method: "DELETE" });
-    expect(app.prefs.get("dusk.mobile.liveActivity")).toBe("off");
+    expect(app.prefs.get("madani.mobile.liveActivity")).toBe("off");
     app.start({ ...bot, id: "b2", threadId: "t2" } as Bot);
     await Promise.resolve();
     expect(activities.start).toHaveBeenCalledTimes(1);

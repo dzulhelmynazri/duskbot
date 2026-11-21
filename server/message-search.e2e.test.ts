@@ -4,13 +4,13 @@ import { DatabaseSync } from "node:sqlite";
 import { performance } from "node:perf_hooks";
 import { setImmediate } from "node:timers/promises";
 import { expect, it } from "vitest";
-import { launchVerificationServer, runControlDusk } from "../scripts/control-dusk.ts";
+import { launchVerificationServer, runControlMadani } from "../scripts/control-madani.ts";
 
 it("keeps independent fixture chats and health requests usable during queued history scans", async () => {
   const fixture = await launchVerificationServer();
   const evidence: unknown[] = [{ fixture: fixture.info }];
   const control = async (args: string[]) => {
-    const result = await runControlDusk([...args, "--url", fixture.info.url]);
+    const result = await runControlMadani([...args, "--url", fixture.info.url]);
     evidence.push({ command: args, result });
     return result;
   };

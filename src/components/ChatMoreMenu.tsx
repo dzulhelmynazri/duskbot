@@ -28,7 +28,7 @@ export function useChatMoreItems(profile: Bot, phoneHeader = false): { items: Si
   const { state, dispatch } = useStore();
   const findOpen = useChatFindOpen(bot.threadId);
   const [copyStatus, setCopyStatus] = useState<"copied" | "failed" | null>(null);
-  const remoteClient = window.duskDesktop?.remoteClient?.active === true;
+  const remoteClient = window.madaniDesktop?.remoteClient?.active === true;
   const usage = usageSummary(bot, state.instances);
   const hasMessages = messages.length > 0;
   const transcript = () => formatTranscriptMarkdown({ title: bot.name, messages, botName: bot.name, isGroup: false });

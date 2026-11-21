@@ -1,6 +1,6 @@
 // the whole link over webrtc: the real link service as the relay, the real tunnel agent and the app's real proxy, with
 // node-datachannel on both ends. signaling rides the sealed tunnel; requests ride the data channel; a dropped channel
-// sends the next requests over the relay at once and comes back direct. DUSK_LINK_CHAOS=<seconds> runs a longer chaos
+// sends the next requests over the relay at once and comes back direct. MADANI_LINK_CHAOS=<seconds> runs a longer chaos
 // run and prints the split, latency and relay bytes.
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
@@ -82,7 +82,7 @@ async function fixture() {
   };
   const vpsFetch = spied("to-app"), appFetch = spied("to-vps");
   const base = `http://127.0.0.1:${await listen(relay)}`;
-  // the dusk bot server behind the agent
+  // the madani bot server behind the agent
   const big = Buffer.alloc(1024 * 1024, 7);
   const app = createServer((req, res) => {
     if (req.url === "/big") { res.writeHead(200, { "content-type": "application/octet-stream" }); res.end(big); return; }
@@ -142,12 +142,12 @@ test("the link goes direct over webrtc: requests and a 1 MB download ride the da
 });
 
 test("chaos: a dropped channel moves requests to the relay at once and the link comes back direct", { timeout: 120_000 }, async () => {
-  const seconds = Number(process.env.DUSK_LINK_CHAOS) || 8;
+  const seconds = Number(process.env.MADANI_LINK_CHAOS) || 8;
   const f = await fixture();
   try {
     await until(() => f.proxy.transport() === "direct");
     const tally = { direct: { n: 0, ms: [] }, relay: { n: 0, ms: [] }, failed: 0, failedSmall: 0, bytes: 0 };
-    const every = Number(process.env.DUSK_LINK_CHAOS_CUT_MS) || 2000;
+    const every = Number(process.env.MADANI_LINK_CHAOS_CUT_MS) || 2000;
     const relayBefore = f.seen.bytes;
     const end = Date.now() + seconds * 1000;
     // every 2 s the live channel is cut, as a network change or a dropped path would

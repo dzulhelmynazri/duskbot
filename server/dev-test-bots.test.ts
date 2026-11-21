@@ -38,7 +38,7 @@ describe("the dev app's test-bot seeding", () => {
     useOwnerToken(TOKEN);
     await call(base, "GET", "/api/bots");
     await call(base, "POST", "/api/routines", { name: "x" });
-    expect(seen.map((headers) => headers["x-dusk-desktop-owner"])).toEqual([TOKEN, TOKEN]);
+    expect(seen.map((headers) => headers["x-madani-desktop-owner"])).toEqual([TOKEN, TOKEN]);
     expect(seen[1]!["content-type"]).toBe("application/json");
   });
 });

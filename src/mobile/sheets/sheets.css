@@ -1,18 +1,18 @@
 /* the phone's sheets over the shared bot and room panel; every rule is scoped to the phone shell */
 
 /* behind an open sheet the page steps back onto a dark ground, so its rounded top edge reads as a page, not a header */
-.dusk-mobile:has(.mobile-sheet-layer[data-sheet-open]) { background-color: #0d0d0f; }
-.dusk-mobile .mobile-nav { will-change: auto; }
+.madani-mobile:has(.mobile-sheet-layer[data-sheet-open]) { background-color: #0d0d0f; }
+.madani-mobile .mobile-nav { will-change: auto; }
 /* the bottom sheet moves on its own spring (Sheet.tsx); the desktop's centred-dialog keyframe would take its transform
    for 200ms, drawing it open at once and then pulling it down before it rises */
-.dusk-mobile .mobile-sheet.mobile-sheet[role="dialog"] { animation: none; }
+.madani-mobile .mobile-sheet.mobile-sheet[role="dialog"] { animation: none; }
 
 /* the bot sheet's share and close sit where every other sheet's buttons do, 22 under its top and 16 in, clear of its
    rounded corner */
-.dusk-mobile .mobile-panel-sheet [data-panel-bar] { height: auto; margin-inline-start: 0; padding: 22px 16px 0; }
+.madani-mobile .mobile-panel-sheet [data-panel-bar] { height: auto; margin-inline-start: 0; padding: 22px 16px 0; }
 
 /* the profile's pencil sits on its own small dark disc at the avatar's corner, visible on every mascot colour */
-.dusk-mobile .mobile-panel-sheet [data-panel-avatar] > span[aria-hidden="true"] {
+.madani-mobile .mobile-panel-sheet [data-panel-avatar] > span[aria-hidden="true"] {
   inset: auto -14px -10px auto;
   width: 26px;
   height: 26px;
@@ -22,61 +22,61 @@
   opacity: 1;
   box-shadow: 0 0 0 3px var(--color-app);
 }
-.dusk-mobile .mobile-panel-sheet [data-panel-avatar] > span:first-child { filter: none; }
+.madani-mobile .mobile-panel-sheet [data-panel-avatar] > span:first-child { filter: none; }
 
 /* the bot's name is the sheet's title, a clear step above the 17px rows under it */
-.dusk-mobile .mobile-panel-sheet :is([data-panel-rename], [data-panel-rename-input]) { font-size: 22px; line-height: 28px; font-weight: 600; letter-spacing: -0.01em; }
+.madani-mobile .mobile-panel-sheet :is([data-panel-rename], [data-panel-rename-input]) { font-size: 22px; line-height: 28px; font-weight: 600; letter-spacing: -0.01em; }
 
 /* tabs read as tabs at phone size: 15px at a medium weight, the unselected ones a darker grey */
-.dusk-mobile .mobile-panel-sheet [data-panel-tabs] [role="tab"] { min-height: 40px; font-size: 15px; font-weight: 500; }
-.dusk-mobile .mobile-panel-sheet [data-panel-tabs] [role="tab"][aria-selected="false"] { color: color-mix(in srgb, var(--color-ink) 62%, transparent); }
+.madani-mobile .mobile-panel-sheet [data-panel-tabs] [role="tab"] { min-height: 40px; font-size: 15px; font-weight: 500; }
+.madani-mobile .mobile-panel-sheet [data-panel-tabs] [role="tab"][aria-selected="false"] { color: color-mix(in srgb, var(--color-ink) 62%, transparent); }
 
 /* a row's title and hint at the settings rows' sizes, so a routine reads like the model row under it */
-.dusk-mobile .mobile-panel-sheet [data-panel-card-surface] [data-row-title] { font-size: 16px; line-height: 22px; font-weight: 500; }
-.dusk-mobile .mobile-panel-sheet [data-panel-card-surface] [data-row-hint] { font-size: 14px; line-height: 20px; }
+.madani-mobile .mobile-panel-sheet [data-panel-card-surface] [data-row-title] { font-size: 16px; line-height: 22px; font-weight: 500; }
+.madani-mobile .mobile-panel-sheet [data-panel-card-surface] [data-row-hint] { font-size: 14px; line-height: 20px; }
 
 /* a card's empty slot (a usage meter with nothing to report) takes no room */
-.dusk-mobile .mobile-panel-sheet [data-panel-card-surface] > :empty { display: none; }
+.madani-mobile .mobile-panel-sheet [data-panel-card-surface] > :empty { display: none; }
 
 /* explanatory lines in the panel at the phone's body size and a readable grey */
-.dusk-mobile .mobile-panel-sheet [data-panel-empty] > p,
-.dusk-mobile .mobile-panel-sheet [data-panel-tabpanel] > p,
-.dusk-mobile .mobile-panel-sheet [data-panel-page-view] > p,
-.dusk-mobile .mobile-panel-sheet [data-settings-footnote] { font-size: 15px; line-height: 22px; color: color-mix(in srgb, var(--color-ink) 64%, transparent); }
+.madani-mobile .mobile-panel-sheet [data-panel-empty] > p,
+.madani-mobile .mobile-panel-sheet [data-panel-tabpanel] > p,
+.madani-mobile .mobile-panel-sheet [data-panel-page-view] > p,
+.madani-mobile .mobile-panel-sheet [data-settings-footnote] { font-size: 15px; line-height: 22px; color: color-mix(in srgb, var(--color-ink) 64%, transparent); }
 
 /* in a light skin the computer tab's 6%-ink fills (the browser's frame, its closed note) are the page's own grey: they
    take the white segment fill the Details tab's rows sit on. Dark skins already lift them off the page */
-:root:not([data-skin="grok-dark"], [data-skin="midnight"], [data-skin="dusk"], [data-skin="foundry"], [data-skin="graphite"], [data-skin="halloween"])
-  .dusk-mobile .mobile-panel-sheet [data-panel-tabpanel="computer"] [class*="bg-[color-mix(in_srgb,var(--color-composer),var(--color-ink)_6%)]"] {
+:root:not([data-skin="grok-dark"], [data-skin="midnight"], [data-skin="madani"], [data-skin="foundry"], [data-skin="graphite"], [data-skin="halloween"])
+  .madani-mobile .mobile-panel-sheet [data-panel-tabpanel="computer"] [class*="bg-[color-mix(in_srgb,var(--color-composer),var(--color-ink)_6%)]"] {
   background-color: var(--color-menu);
 }
 
 /* the bot's computer screen reads as a device's screen: a panel a step darker than the sheet round it, light or dark */
-.dusk-mobile .mobile-panel-sheet [data-panel-tabpanel="computer"] [data-panel-screen] {
+.madani-mobile .mobile-panel-sheet [data-panel-tabpanel="computer"] [data-panel-screen] {
   border-radius: 18px;
   background-color: color-mix(in srgb, #000 7%, var(--color-app));
 }
-:root:is([data-skin="grok-dark"], [data-skin="midnight"], [data-skin="dusk"], [data-skin="foundry"], [data-skin="graphite"], [data-skin="halloween"])
-  .dusk-mobile .mobile-panel-sheet [data-panel-tabpanel="computer"] [data-panel-screen],
-.dusk-mobile[data-scheme="dark"] .mobile-panel-sheet [data-panel-tabpanel="computer"] [data-panel-screen] {
+:root:is([data-skin="grok-dark"], [data-skin="midnight"], [data-skin="madani"], [data-skin="foundry"], [data-skin="graphite"], [data-skin="halloween"])
+  .madani-mobile .mobile-panel-sheet [data-panel-tabpanel="computer"] [data-panel-screen],
+.madani-mobile[data-scheme="dark"] .mobile-panel-sheet [data-panel-tabpanel="computer"] [data-panel-screen] {
   background-color: color-mix(in srgb, #000 38%, var(--color-app));
 }
 
 /* every sheet is iOS Settings' grouped page: a grey page, and each group a stack of white rows 2px apart inside 16px
    corners, as the bot's sheet draws its own */
 html[data-mobile-app] { --m-sheet-page: color-mix(in srgb, var(--color-ink) 5%, var(--color-app)); }
-.dusk-mobile [data-settings-card] > :not(ul, [role="status"]),
-.dusk-mobile [data-settings-card] > :is(ul, [role="status"]) > * { background-color: var(--color-menu); }
-.dusk-mobile [data-settings-card] > :is(ul, [role="status"]) { display: flex; flex-direction: column; gap: 2px; }
+.madani-mobile [data-settings-card] > :not(ul, [role="status"]),
+.madani-mobile [data-settings-card] > :is(ul, [role="status"]) > * { background-color: var(--color-menu); }
+.madani-mobile [data-settings-card] > :is(ul, [role="status"]) { display: flex; flex-direction: column; gap: 2px; }
 
 /* in dark, an app's logo sits on a light plate: most marks (GitHub's, Notion's) are drawn for a light ground */
-html[data-skin="grok-dark"] .dusk-mobile [data-app-face] { background-color: #ececee; color: #3a3a3e; }
+html[data-skin="grok-dark"] .madani-mobile [data-app-face] { background-color: #ececee; color: #3a3a3e; }
 
 /* a row's dropdown is a tonal pill, no hairline, as every other control on the phone */
-.dusk-mobile .mobile-panel-sheet [data-panel-select] { border-color: transparent; background-color: color-mix(in srgb, var(--color-ink) 6%, transparent); }
+.madani-mobile .mobile-panel-sheet [data-panel-select] { border-color: transparent; background-color: color-mix(in srgb, var(--color-ink) 6%, transparent); }
 
 /* inside a bot's own sheets a switch that is on wears the bot's colour (src/lib/bot-accent.ts keeps it readable); the
    rest of the sheet keeps ink */
-.dusk-mobile [data-bot-accent] [data-ui-toggle][aria-checked="true"] { background-color: var(--bot-accent); }
-.dusk-mobile [data-bot-accent] [data-ui-toggle] > span { background-color: #fdfdfd; }
-.dusk-mobile .mobile-panel-sheet [data-panel-tabs] [role="tab"][aria-selected="true"] { color: var(--color-ink); }
+.madani-mobile [data-bot-accent] [data-ui-toggle][aria-checked="true"] { background-color: var(--bot-accent); }
+.madani-mobile [data-bot-accent] [data-ui-toggle] > span { background-color: #fdfdfd; }
+.madani-mobile .mobile-panel-sheet [data-panel-tabs] [role="tab"][aria-selected="true"] { color: var(--color-ink); }

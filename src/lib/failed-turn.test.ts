@@ -65,7 +65,7 @@ describe("failed turn text", () => {
   });
 
   it("previews a tool step in plain words and a status row without its marker", () => {
-    expect(activityPreview({ name: "mcp__dusk__computer_batch", ok: true }, engine())).toBe("Use the screen");
+    expect(activityPreview({ name: "mcp__madani__computer_batch", ok: true }, engine())).toBe("Use the screen");
     expect(activityPreview({ name: "GITHUB_GET_A_COMMIT", ok: true }, engine())).toBe("Get a commit");
     expect(activityPreview({ name: "notice: this thread now uses Sonnet.", ok: true }, engine())).toBe("this thread now uses Sonnet.");
     expect(activityPreview({ name: "recovery: automatic recovery: trying Codex once.", ok: true }, engine())).toBe("automatic recovery: trying Codex once.");
@@ -73,7 +73,7 @@ describe("failed turn text", () => {
   });
 
   it("previews a Data result by its title", () => {
-    const tool = { name: "mcp__dusk__computer_batch", ok: true };
+    const tool = { name: "mcp__madani__computer_batch", ok: true };
     const dataResult = { botId: "bot", cardId: "result", title: "Revenue", kind: "chart" as const };
     expect(activityPreview(tool, engine(), dataResult)).toBe("Revenue");
   });

@@ -48,7 +48,7 @@ async function binaryVersion(candidate) {
 }
 
 async function officialBinary() {
-  const cache = join(root, "node_modules", ".cache", "duskbot", `cua-driver-${release.version}-win`);
+  const cache = join(root, "node_modules", ".cache", "madanibot", `cua-driver-${release.version}-win`);
   const cachedBinary = join(cache, "cua-driver.exe");
   if (!cross && (await binaryVersion(cachedBinary)) === expectedVersion) return cachedBinary;
 
@@ -57,7 +57,7 @@ async function officialBinary() {
   const url = `https://github.com/trycua/cua/releases/download/cua-driver-rs-v${release.version}/${release.file}`;
   console.log(`Downloading CUA Driver ${release.version} from the official release…`);
   const response = await fetch(url, {
-    headers: { "user-agent": "DuskBot-packager" },
+    headers: { "user-agent": "MadaniBot-packager" },
     signal: AbortSignal.timeout(120_000),
   });
   if (!response.ok) throw new Error(`CUA Driver download failed: HTTP ${response.status}`);
@@ -72,8 +72,8 @@ async function officialBinary() {
     await run("unzip", ["-q", "-o", archive, "-d", cache], { timeout: 60_000 });
   } else {
     await run("powershell.exe", ["-NoProfile", "-NonInteractive", "-Command",
-      "Expand-Archive -LiteralPath $env:DUSK_CUA_ARCHIVE -DestinationPath $env:DUSK_CUA_EXTRACT"], {
-      env: { ...process.env, DUSK_CUA_ARCHIVE: archive, DUSK_CUA_EXTRACT: cache },
+      "Expand-Archive -LiteralPath $env:MADANI_CUA_ARCHIVE -DestinationPath $env:MADANI_CUA_EXTRACT"], {
+      env: { ...process.env, MADANI_CUA_ARCHIVE: archive, MADANI_CUA_EXTRACT: cache },
       timeout: 60_000,
       windowsHide: true,
     });
@@ -126,7 +126,7 @@ await writeFile(join(stage, "cua-driver-background.exe"), createBackgroundExecut
 const nativeDir = join(stage, "cua-sdk", "native");
 let winNativePackage = join(dependencyRoot, "@trycua", "cua-driver-win32-x64-msvc");
 if (cross && !existsSync(winNativePackage)) {
-  winNativePackage = await packedPackage("cua-driver-win32-x64-msvc", expectedVersion, join(root, "node_modules", ".cache", "duskbot", "cua-win-native"), "@trycua");
+  winNativePackage = await packedPackage("cua-driver-win32-x64-msvc", expectedVersion, join(root, "node_modules", ".cache", "madanibot", "cua-win-native"), "@trycua");
 }
 if (!existsSync(winNativePackage)) {
   throw new Error(
@@ -146,7 +146,7 @@ await build({
       'export { EmbeddedCuaDriverHost } from "@trycua/cua-driver/embedded";',
     ].join("\n"),
     resolveDir: root,
-    sourcefile: "duskbot-cua-entry.mjs",
+    sourcefile: "madanibot-cua-entry.mjs",
     loader: "js",
   },
   bundle: true,
@@ -154,13 +154,13 @@ await build({
   target: "node20",
   format: "esm",
   banner: {
-    js: 'import { createRequire as __duskbotCreateRequire } from "node:module"; const require = __duskbotCreateRequire(import.meta.url);',
+    js: 'import { createRequire as __madanibotCreateRequire } from "node:module"; const require = __madanibotCreateRequire(import.meta.url);',
   },
   outfile: bundle,
   logLevel: "silent",
 });
 // The SDK resolves its native library through @ubjs at runtime; the bundled
-// resolver is patched so DUSK_CUA_SDK_LIBRARY (the staged DLL) wins over
+// resolver is patched so MADANI_CUA_SDK_LIBRARY (the staged DLL) wins over
 // node_modules lookups that do not exist in the packaged app.
 const bundledSource = await readFile(bundle, "utf8");
 const resolverPattern = /function resolveLibPath\d*\(opts\) \{/g;
@@ -172,7 +172,7 @@ await writeFile(
   bundle,
   bundledSource.replace(
     resolverPattern,
-    `${resolvers[0]}\n      if (process.env.DUSK_CUA_SDK_LIBRARY) return resolveOverride(opts.crateName, process.env.DUSK_CUA_SDK_LIBRARY);`,
+    `${resolvers[0]}\n      if (process.env.MADANI_CUA_SDK_LIBRARY) return resolveOverride(opts.crateName, process.env.MADANI_CUA_SDK_LIBRARY);`,
   ),
 );
 

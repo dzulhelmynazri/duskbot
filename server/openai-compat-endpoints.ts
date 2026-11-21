@@ -40,9 +40,9 @@ export function isAddedEndpoint(instanceId: string, entry: InstanceConfig | unde
   return entry?.driver === "openai-compat" && instanceId.startsWith(ADDED_ENDPOINT_PREFIX);
 }
 
-/** What dusk cloud says to an address only the person's own computer or network has (model-providers.ts addressProblem):
+/** What madani cloud says to an address only the person's own computer or network has (model-providers.ts addressProblem):
  * the cloud runs the bot, so it would call that address from itself and never reach it. */
-export const CLOUD_CANT_REACH = "dusk cloud can't reach an address on your own computer or network. Use a public address.";
+export const CLOUD_CANT_REACH = "madani cloud can't reach an address on your own computer or network. Use a public address.";
 
 export function addEndpoint(instances: InstanceConfigMap, body: AddEndpoint, where: { cloudHome?: boolean } = {}): { instanceId: string } | { error: string } {
   const url = endpointBaseUrl(body.url);

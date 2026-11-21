@@ -22,7 +22,7 @@ import type { PairedDevice } from "./ServerPairingCard";
 import { friendlyError } from "@/lib/plain-error";
 import { ANDROID_APP_URL, storeUrl } from "../mobile/connection/phone-update";
 
-const PHONE_ACCESS_COMMAND = "npx duskbot setup";
+const PHONE_ACCESS_COMMAND = "npx madanibot setup";
 
 export function platformLabelKey(platform: string) {
   return platform === "ios" ? "settings.mobile.ios" : platform === "android" ? "settings.mobile.android" : "settings.mobile.phone";
@@ -53,7 +53,7 @@ export interface PhoneParts {
 type Flow = "loading" | "home" | "platform" | "link";
 export type PhoneKind = "ios" | "android";
 
-/** the Android app is out as a signed APK on dusk.bot (not Google Play): its card is pickable */
+/** the Android app is out as a signed APK on madani.bot (not Google Play): its card is pickable */
 export const ANDROID_APP_OUT = true;
 
 /** a live code is swapped for a new one this long before it ends, so the screen never shows a dead code */
@@ -61,13 +61,13 @@ export const RENEW_BEFORE_MS = 60_000;
 /** silent swaps after the one the person asked for: about an hour with the screen open, then it ends and says so */
 export const AUTO_RENEWALS = 5;
 
-/** what the link screen shows: the qr's link, the typed code, and for a dusk cloud the account the code logs into */
+/** what the link screen shows: the qr's link, the typed code, and for a madani cloud the account the code logs into */
 type Offer = { qr: string; code: string | null; expiresAt: number; email?: string };
 
-/** a dusk cloud's phone sign-in codes come from the desktop app's own account sign-in; a browser tab or an older app has none */
+/** a madani cloud's phone sign-in codes come from the desktop app's own account sign-in; a browser tab or an older app has none */
 function cloudCodeBridge(cloudHome: boolean): (Required<Pick<CloudPlanBridge, "phoneSignIn">> & Pick<CloudPlanBridge, "signIn">) | null {
   if (!cloudHome || typeof window === "undefined") return null;
-  const bridge = window.duskDesktop?.cloudPlan;
+  const bridge = window.madaniDesktop?.cloudPlan;
   return typeof bridge?.phoneSignIn === "function"
     ? { phoneSignIn: bridge.phoneSignIn.bind(bridge), ...(typeof bridge.signIn === "function" ? { signIn: bridge.signIn.bind(bridge) } : {}) }
     : null;
@@ -78,12 +78,12 @@ type AccountBridge = Required<Pick<CloudPlanBridge, "phoneSignIn" | "signIn" | "
 /** how long main renews a phone sign-in code without asking again (electron/cloud-plan-ipc.mjs PHONE_SIGN_IN_RENEW_MS, 75 min), less a margin */
 const SIGN_IN_QUIET_MS = 70 * 60_000;
 
-/** The desktop app's own dusk bot account, for its phone QR: the QR shows only once this computer is signed in, and
+/** The desktop app's own madani bot account, for its phone QR: the QR shows only once this computer is signed in, and
  * carries a code that logs the phone in to the same account as it pairs. A browser tab, a remote server's page and an
  * older app have none. */
 export function desktopAccountBridge(remote: boolean, cloudHome: boolean): AccountBridge | null {
   if (remote || cloudHome || typeof window === "undefined" || desktopShowsOtherServer()) return null;
-  const bridge = window.duskDesktop?.cloudPlan;
+  const bridge = window.madaniDesktop?.cloudPlan;
   return typeof bridge?.phoneSignIn === "function" && typeof bridge.signIn === "function" && typeof bridge.signedIn === "function"
     ? { phoneSignIn: bridge.phoneSignIn.bind(bridge), signIn: bridge.signIn.bind(bridge), signedIn: bridge.signedIn.bind(bridge) } : null;
 }
@@ -99,9 +99,9 @@ class SignedOutHere extends Error {}
 export type NoRoute = "server" | "sign-in" | "computer";
 
 export async function noRouteFix(remote: boolean): Promise<NoRoute> {
-  if (remote || typeof window === "undefined" || !window.duskDesktop || desktopShowsOtherServer()) return "server";
+  if (remote || typeof window === "undefined" || !window.madaniDesktop || desktopShowsOtherServer()) return "server";
   const relay = await phoneRelayBridge()?.state().catch(() => null);
-  return relay?.status === "signed-out" && typeof window.duskDesktop.cloudPlan?.signIn === "function" ? "sign-in" : "computer";
+  return relay?.status === "signed-out" && typeof window.madaniDesktop.cloudPlan?.signIn === "function" ? "sign-in" : "computer";
 }
 
 const pause = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
@@ -111,7 +111,7 @@ const retryable = (cause: unknown) => !(cause instanceof EmailLogInInstead || ca
 
 export function MobilePairingCard({ remote, cloudHome = false, email, children }: {
   remote: boolean;
-  /** a dusk cloud refuses phone codes (server/index.ts createMobileLink refusal): the iPhone app reaches it by signing in */
+  /** a madani cloud refuses phone codes (server/index.ts createMobileLink refusal): the iPhone app reaches it by signing in */
   cloudHome?: boolean;
   /** the account's email, filled in on the phone's sign-in */
   email?: string;
@@ -594,7 +594,7 @@ export function MobilePairingCard({ remote, cloudHome = false, email, children }
       </div>
     </div>
   );
-  const signInForRelay = () => void window.duskDesktop?.cloudPlan?.signIn?.().then(() => create(true), () => {});
+  const signInForRelay = () => void window.madaniDesktop?.cloudPlan?.signIn?.().then(() => create(true), () => {});
   const failedBlock = unreachable === "server" ? unreachableBlock
     : unreachable === "sign-in" ? notice("error", t("settings.phone.signInToPair"), t("phone.relay.signInAction"), { "data-pairing-failed": "" }, "alert", signInForRelay)
     : unreachable === "computer" ? notice("error", t("settings.phone.computerUnreachable"), t("settings.phone.tryAgain"), { "data-pairing-failed": "" }, "alert")
@@ -648,7 +648,7 @@ export function MobilePairingCard({ remote, cloudHome = false, email, children }
     card(offerTile(t("settings.phone.cloudCodeQr")), typed, codeActions, status(t("settings.phone.waitingCloud"), countdown)),
     t(ios ? "settings.phone.openIos" : "settings.phone.openAndroid"));
 
-  // a cloud in a browser tab or an older app: no code to make, the qr opens the app at its dusk cloud log in with the email filled in
+  // a cloud in a browser tab or an older app: no code to make, the qr opens the app at its madani cloud log in with the email filled in
   const cloudLink = (live: boolean) => codesInCloud && !emailOnly ? cloudCodeLink(live) : column(live, { "data-phone-cloud": "" }, t(ios ? "settings.phone.cloudIos" : "settings.phone.cloudAndroid"), undefined,
     card(qrTile(universalSignInLink(signInEmail), t("settings.phone.cloudQr")),
       signInEmail
@@ -712,15 +712,15 @@ export function MobilePairingCard({ remote, cloudHome = false, email, children }
         [data-reduced-motion="true"] .phone-link-wait { animation-play-state: paused; }
         .phone-wipe { display: grid; }
         .phone-wipe[data-wiping] { overflow: clip; }
-        .phone-wipe-layer { position: relative; z-index: 0; grid-area: 1 / 1; min-width: 0; background-color: var(--color-app); animation-duration: ${WIPE_MS}ms; animation-timing-function: var(--dusk-ease-out); }
+        .phone-wipe-layer { position: relative; z-index: 0; grid-area: 1 / 1; min-width: 0; background-color: var(--color-app); animation-duration: ${WIPE_MS}ms; animation-timing-function: var(--madani-ease-out); }
         .phone-wipe-layer[data-wipe-out] { pointer-events: none; animation-fill-mode: forwards; }
-        .phone-wipe-layer[data-wipe="push"]:not([data-wipe-out]) { z-index: 1; animation-name: dusk-wipe-push-in; }
-        .phone-wipe-layer[data-wipe="push"][data-wipe-out] { animation-name: dusk-wipe-push-out; }
-        .phone-wipe-layer[data-wipe="pop"]:not([data-wipe-out]) { animation-name: dusk-wipe-pop-in; }
-        .phone-wipe-layer[data-wipe="pop"][data-wipe-out] { z-index: 1; animation-name: dusk-wipe-pop-out; }
+        .phone-wipe-layer[data-wipe="push"]:not([data-wipe-out]) { z-index: 1; animation-name: madani-wipe-push-in; }
+        .phone-wipe-layer[data-wipe="push"][data-wipe-out] { animation-name: madani-wipe-push-out; }
+        .phone-wipe-layer[data-wipe="pop"]:not([data-wipe-out]) { animation-name: madani-wipe-pop-in; }
+        .phone-wipe-layer[data-wipe="pop"][data-wipe-out] { z-index: 1; animation-name: madani-wipe-pop-out; }
         .phone-wipe-layer[data-wipe="fade"] { animation-duration: 150ms; }
-        .phone-wipe-layer[data-wipe="fade"]:not([data-wipe-out]) { z-index: 1; background-color: transparent; animation-name: dusk-fade-in; }
-        .phone-wipe-layer[data-wipe="fade"][data-wipe-out] { animation-name: dusk-fade-out; }
+        .phone-wipe-layer[data-wipe="fade"]:not([data-wipe-out]) { z-index: 1; background-color: transparent; animation-name: madani-fade-in; }
+        .phone-wipe-layer[data-wipe="fade"][data-wipe-out] { animation-name: madani-fade-out; }
       `}</style>
       {children ? children(parts) : <div className="flex flex-col gap-5">{parts.top}{parts.phones}</div>}
     </>

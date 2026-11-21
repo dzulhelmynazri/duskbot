@@ -6,29 +6,29 @@ import { BringMyCloud } from "./BringMyCloud";
 
 (globalThis as { IS_REACT_ACT_ENVIRONMENT?: boolean }).IS_REACT_ACT_ENVIRONMENT = true;
 const TEAM = { id: "team-acme", name: "Acme", ready: true };
-const ATLAS = { id: "atlas", name: "Atlas" }, BEACON = { id: "beacon", name: "Beacon" }, MAUS = { id: "maus", name: "Dusk", stays: "default" as const };
+const ATLAS = { id: "atlas", name: "Atlas" }, BEACON = { id: "beacon", name: "Beacon" }, MAUS = { id: "maus", name: "Madani", stays: "default" as const };
 const movingAtlas = { bot: { id: "atlas", name: "Atlas" }, team: { id: "team-acme", name: "Acme" }, phase: "moving" as const };
 
 let host: HTMLElement, root: Root;
 beforeEach(() => { host = document.createElement("div"); document.body.append(host); root = createRoot(host); });
-afterEach(async () => { await act(async () => root.unmount()); host.remove(); vi.useRealTimers(); (window as { duskDesktop?: unknown }).duskDesktop = undefined; });
+afterEach(async () => { await act(async () => root.unmount()); host.remove(); vi.useRealTimers(); (window as { madaniDesktop?: unknown }).madaniDesktop = undefined; });
 
 function page(bots: unknown[], over: Record<string, unknown> = {}) {
   const bridge = { teamBring: vi.fn(async () => ({ team: TEAM, bots })), teamBringMove: vi.fn(async () => ({ started: true, move: movingAtlas })), teamBringStatus: vi.fn(async () => movingAtlas), ...over };
-  (window as { duskDesktop?: unknown }).duskDesktop = { cloudSendPage: bridge };
+  (window as { madaniDesktop?: unknown }).madaniDesktop = { cloudSendPage: bridge };
   return bridge;
 }
 const draw = async () => { await act(async () => { root.render(createElement(BringMyCloud)); }); await act(async () => {}); };
 const moveButton = (id: string) => host.querySelector<HTMLButtonElement>(`[data-bring-move="${id}"]`);
 
-it("lists My Cloud's bots with one Move each, and says why Dusk stays", async () => {
+it("lists My Cloud's bots with one Move each, and says why Madani stays", async () => {
   page([MAUS, ATLAS, BEACON]);
   await draw();
   expect(host.textContent).toContain("Move a bot here from my cloud");
   expect(moveButton("atlas")).not.toBeNull();
   expect(moveButton("beacon")).not.toBeNull();
   expect(moveButton("maus")).toBeNull();
-  expect(host.querySelector('[data-bring-bot="maus"]')?.textContent).toContain("Dusk");
+  expect(host.querySelector('[data-bring-bot="maus"]')?.textContent).toContain("Madani");
   expect(host.querySelector('[data-bring-bot="maus"]')?.textContent).toContain("Stays on my cloud: everyone on a team gets their own");
 });
 
@@ -39,7 +39,7 @@ it("shows nothing with no bot to bring, on an older app, or in a browser", async
   page([ATLAS], { teamBringMove: undefined });
   await draw();
   expect(host.innerHTML).toBe("");
-  (window as { duskDesktop?: unknown }).duskDesktop = undefined;
+  (window as { madaniDesktop?: unknown }).madaniDesktop = undefined;
   await draw();
   expect(host.innerHTML).toBe("");
 });

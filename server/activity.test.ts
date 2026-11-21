@@ -67,7 +67,7 @@ let dataDir: string;
 let eventsDir: string;
 
 beforeEach(() => {
-  dataDir = mkdtempSync(join(tmpdir(), "dusk-activity-"));
+  dataDir = mkdtempSync(join(tmpdir(), "madani-activity-"));
   eventsDir = join(dataDir, "events");
   mkdirSync(eventsDir);
 });

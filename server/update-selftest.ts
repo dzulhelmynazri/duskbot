@@ -37,7 +37,7 @@ export async function runSelfTest(checks: SelfTestChecks, before: SelfTestResult
   return { ok: !regressed, at: now(), checks: results };
 }
 
-export const SELFTEST_MARK = "dusk-selftest-page";
+export const SELFTEST_MARK = "madani-selftest-page";
 
 /**
  * Opens one page in the browser binary headless, in a throwaway profile (never the bot's own), and reads it back.
@@ -47,7 +47,7 @@ export function browserPageCheck(binary: () => Promise<string | null>, options: 
   return async () => {
     const path = await binary().catch(() => null);
     if (!path) return null;
-    const profile = mkdtempSync(join(tmpdir(), "dusk-selftest-"));
+    const profile = mkdtempSync(join(tmpdir(), "madani-selftest-"));
     try {
       const page = `data:text/html,<title>ok</title><p>${SELFTEST_MARK}</p>`;
       return await new Promise<boolean>(resolve => {

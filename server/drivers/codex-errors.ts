@@ -4,7 +4,7 @@ import { USAGE_LIMIT } from "./retry.ts";
 import { CODEX_USAGE_LIMIT_REACHED } from "../../shared/codex-usage-limit.ts";
 import { failureCode } from "../../shared/usage-signals.ts";
 
-/** How a Codex turn reaches OpenAI: dusk bot's ChatGPT plan, Codex's own sign-in, or any other provider. */
+/** How a Codex turn reaches OpenAI: madani bot's ChatGPT plan, Codex's own sign-in, or any other provider. */
 export type CodexRoute = "plan" | "own" | "other";
 
 // codex-cli 0.160.1 holding no login sends no Authorization header and gets this 401.
@@ -14,11 +14,11 @@ export function codexNotSignedIn(): string {
   return `Codex isn't signed in on this computer.${cloudHomeConfigured() ? " Sign-ins don't copy over when you move to My Cloud." : ""} Sign in to Codex in Settings → Model providers → Codex.`;
 }
 
-/** Codex's own words name ChatGPT's plans ("Upgrade to Pro"), which read as Dusk's. codex-cli 0.160.1 ends them
+/** Codex's own words name ChatGPT's plans ("Upgrade to Pro"), which read as Madani's. codex-cli 0.160.1 ends them
  * with "Try again at 5:23 PM." or "…or try again at Oct 17th, 2026 5:23 PM.", in its local time. */
 export function codexLimitMessage(said: string, timeZone = hostTimeZone()): string {
   const resets = /\btry again at ([^.]+)/i.exec(said)?.[1]?.trim();
-  return `${CODEX_USAGE_LIMIT_REACHED} This is OpenAI's limit, not your dusk bot plan. ${resets
+  return `${CODEX_USAGE_LIMIT_REACHED} This is OpenAI's limit, not your madani bot plan. ${resets
     ? `It resets at ${resets} (${timeZone}). Until then, manage your Codex usage in ChatGPT or switch this bot to another AI.`
     : "Manage your Codex usage in ChatGPT, or switch this bot to another AI until it resets."}`;
 }

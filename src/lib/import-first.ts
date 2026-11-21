@@ -2,7 +2,7 @@ const DAY = 86_400_000;
 const NEW_FOR_MS = 5 * DAY;
 const AWAY_FOR_MS = 3 * DAY;
 const SETTLED_BOTS = 5;
-const LAST_OPEN = "dusk.lastOpenedAt";
+const LAST_OPEN = "madani.lastOpenedAt";
 
 /** when the app was last opened before this run, read once per run and then moved to now */
 let previousOpen: number | null | undefined;

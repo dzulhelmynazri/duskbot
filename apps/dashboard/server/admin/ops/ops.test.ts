@@ -89,7 +89,7 @@ describe("collectors", () => {
     const fake = (async (_url: string, init: RequestInit) => {
       sent = { auth: new Headers(init.headers).get("authorization"), body: JSON.parse(String(init.body)) };
       return json({ data: { viewer: { accounts: [{
-        w: [{ dimensions: { scriptName: "dusk-edge", date: "2026-11-12" }, sum: { requests: 100, errors: 2, cpuTimeUs: 5_500 } }],
+        w: [{ dimensions: { scriptName: "madani-edge", date: "2026-11-12" }, sum: { requests: 100, errors: 2, cpuTimeUs: 5_500 } }],
         r: [{ dimensions: { bucketName: "makedesign", date: "2026-11-12" }, max: { payloadSize: 3_000, metadataSize: 10, objectCount: 7 } },
           { dimensions: { bucketName: "makedesign", date: "2026-11-11" }, max: { payloadSize: 1, metadataSize: 0, objectCount: 1 } }],
       }] } }, errors: null });
@@ -97,7 +97,7 @@ describe("collectors", () => {
     const data = await collectCloudflare({ token: "cf-token", accountId: "acc", now: NOW, fetch: fake });
     expect(sent!.auth).toBe("Bearer cf-token");
     expect(sent!.body.variables).toMatchObject({ a: "acc", s: "2026-11-01T00:00:00.000Z" });
-    expect(data).toEqual({ days: [{ day: "2026-11-12", script: "dusk-edge", requests: 100, cpuMs: 6, errors: 2 }], buckets: [{ name: "makedesign", bytes: 3_010, objects: 7 }] });
+    expect(data).toEqual({ days: [{ day: "2026-11-12", script: "madani-edge", requests: 100, cpuMs: 6, errors: 2 }], buckets: [{ name: "makedesign", bytes: 3_010, objects: 7 }] });
   });
   it("turns a refused token into a short reason without the token", async () => {
     const refused = (async () => json({ errors: [{ message: "no" }] }, 403)) as unknown as typeof fetch;
@@ -138,8 +138,8 @@ describe("collectors", () => {
     expect(backupRun("Result=exit-code\nExecMainExitTimestamp=\n")).toEqual({ result: "exit-code", exitedAt: null });
   });
   it("accepts a host report field by field", () => {
-    expect(parseReport({ host: "oracle", cpu: 3, mem: 18, disk: 61, load: [0.1, 0.1, 0.1], cores: 2, backups: [{ set: "dusk", at: 5 }, { set: "../x", at: 1 }], extra: "dropped" }))
-      .toEqual({ host: "oracle", cpu: 3, mem: 18, disk: 61, load: [0.1, 0.1, 0.1], cores: 2, memTotalBytes: null, diskTotalBytes: null, backups: [{ set: "dusk", at: 5 }] });
+    expect(parseReport({ host: "oracle", cpu: 3, mem: 18, disk: 61, load: [0.1, 0.1, 0.1], cores: 2, backups: [{ set: "madani", at: 5 }, { set: "../x", at: 1 }], extra: "dropped" }))
+      .toEqual({ host: "oracle", cpu: 3, mem: 18, disk: 61, load: [0.1, 0.1, 0.1], cores: 2, memTotalBytes: null, diskTotalBytes: null, backups: [{ set: "madani", at: 5 }] });
     expect(parseReport({ host: "Oracle Box" })).toBeNull();
     expect(parseReport({ host: "oracle", cpu: 400 })?.cpu).toBeNull();
   });
@@ -154,7 +154,7 @@ describe("ops alerts into incidents", () => {
     let time = NOW;
     const store = memoryOpsStore(), infra = memoryInfraStore();
     const reports: Array<{ key: string; name: string; message: string }> = [], recoveries: string[] = [];
-    const ops = createOps({ store, env: { DUSK_OPS_CERT_HOSTS: " ", DUSK_OPS_PROBES: "x=x=https://x.test/", ...env }, now: () => time, fetch: (async () => json({ ok: true })) as unknown as typeof fetch,
+    const ops = createOps({ store, env: { MADANI_OPS_CERT_HOSTS: " ", MADANI_OPS_PROBES: "x=x=https://x.test/", ...env }, now: () => time, fetch: (async () => json({ ok: true })) as unknown as typeof fetch,
       db: null, infra, clouds: () => [], egress: () => null, emails: () => new Map([["heavy", "heavy@example.test"]]), customers: () => [], ledger: () => [], invoices: () => [],
       errors: createErrorCounter(() => time), selfUrl: null, environment: "production", host: false, mailUsage,
       incidents: { report: input => { reports.push(input); return `inc-${reports.length}`; }, recovered: async id => { recoveries.push(id); return true; } } });
@@ -179,7 +179,7 @@ describe("ops alerts into incidents", () => {
   });
 
   it("mails once when brevo's day passes 80% of its limit", async () => {
-    const f = fixture({ DUSK_BREVO_API_KEY: "k", DUSK_BREVO_DAILY_LIMIT: "300" });
+    const f = fixture({ MADANI_BREVO_API_KEY: "k", MADANI_BREVO_DAILY_LIMIT: "300" });
     const brevo = (sent: number) => f.store.setLatest({ source: "brevo", at: NOW, ok: true, error: null, data: { today: { sent, delivered: sent, bounced: 0, blocked: 0 }, month: { sent }, plan: null } });
     await brevo(200); await f.ops.evaluate();
     expect(f.reports).toHaveLength(0);
@@ -194,7 +194,7 @@ describe("ops alerts into incidents", () => {
     const router = createMailRouter({ providers: { resend: { async send() {} }, brevo: { async send() {} } }, caps: { resend: { daily: 5, monthly: 3_000 }, brevo: { daily: 300, monthly: 10_000 } },
       usage, now: () => time, log: line => log.push(line) });
     const f = fixture({}, () => router.usage());
-    const code = { to: "person@example.test", subject: "01234567 is your dusk bot code", text: "t", html: "<p>t</p>", transactional: true };
+    const code = { to: "person@example.test", subject: "01234567 is your madani bot code", text: "t", html: "<p>t</p>", transactional: true };
     for (let i = 0; i < 4; i++) await router.send(code);
     await router.send({ ...code, transactional: false });
     await f.ops.evaluate();
@@ -241,16 +241,16 @@ describe("ops alerts into incidents", () => {
     const f = fixture();
     await f.ops.report({ host: "oracle", cpu: 1, mem: 10, disk: 95, load: [0, 0, 0], cores: 2, backups: [] });
     await f.ops.evaluate();
-    const again = createOps({ store: f.store, env: { DUSK_OPS_CERT_HOSTS: " " }, now: () => NOW + MINUTE, db: null, infra: f.infra, clouds: () => [], egress: () => null, emails: () => new Map(),
+    const again = createOps({ store: f.store, env: { MADANI_OPS_CERT_HOSTS: " " }, now: () => NOW + MINUTE, db: null, infra: f.infra, clouds: () => [], egress: () => null, emails: () => new Map(),
       customers: () => [], ledger: () => [], invoices: () => [], errors: createErrorCounter(), selfUrl: null, environment: "production", host: false,
       incidents: { report: input => { f.reports.push(input); return "dup"; }, recovered: async () => true } });
     await again.evaluate();
     expect(f.reports.filter(r => r.key.startsWith("ops-oracle-disk"))).toHaveLength(1);
   });
 
-  it("records rules but mails nothing outside production unless DUSK_OPS_ALERTS=on", async () => {
+  it("records rules but mails nothing outside production unless MADANI_OPS_ALERTS=on", async () => {
     const f = fixture();
-    const quiet = createOps({ store: memoryOpsStore(), env: { DUSK_OPS_CERT_HOSTS: " " }, now: () => NOW, db: null, infra: f.infra, clouds: () => [], egress: () => null, emails: () => new Map(),
+    const quiet = createOps({ store: memoryOpsStore(), env: { MADANI_OPS_CERT_HOSTS: " " }, now: () => NOW, db: null, infra: f.infra, clouds: () => [], egress: () => null, emails: () => new Map(),
       customers: () => [], ledger: () => [], invoices: () => [], errors: createErrorCounter(), selfUrl: null, environment: "preview", host: false,
       incidents: { report: input => { f.reports.push(input); return "x"; }, recovered: async () => true } });
     await quiet.report({ host: "oracle", disk: 99 });
@@ -279,7 +279,7 @@ describe("ops alerts into incidents", () => {
   });
 
   it("collects on demand and builds the page from what was stored", async () => {
-    const f = fixture({ DUSK_CF_ANALYTICS_TOKEN: "t", DUSK_CF_ACCOUNT_ID: "a" });
+    const f = fixture({ MADANI_CF_ANALYTICS_TOKEN: "t", MADANI_CF_ACCOUNT_ID: "a" });
     const answer0 = await f.ops.answer();
     expect(answer0.spend.workers).toBeNull();
     const ran = await f.ops.collect();
@@ -296,10 +296,10 @@ describe("ops routes", () => {
   const csrf = new Map<string, string>();
   const origin = "http://127.0.0.1:7999";
   beforeEach(async () => {
-    dataDir = mkdtempSync(join(tmpdir(), "dusk-ops-test-"));
+    dataDir = mkdtempSync(join(tmpdir(), "madani-ops-test-"));
     mailer = memoryMailer();
     app = createDashboardApp({ dataDir, publicUrl: origin, mailer, staticDir: null, now: () => NOW, analytics: { sink: memorySink(() => NOW), infra: memoryInfraStore() },
-      admin: { emails: [ADMIN], env: { DUSK_OPS_REPORT_TOKEN: TOKEN, DUSK_OPS_CERT_HOSTS: " ", DUSK_OPS_PROBES: "x=x=http://127.0.0.1:9/" } } });
+      admin: { emails: [ADMIN], env: { MADANI_OPS_REPORT_TOKEN: TOKEN, MADANI_OPS_CERT_HOSTS: " ", MADANI_OPS_PROBES: "x=x=http://127.0.0.1:9/" } } });
     server = createServer(app.handle);
     await new Promise<void>(resolve => server.listen(0, "127.0.0.1", resolve));
     url = `http://127.0.0.1:${(server.address() as { port: number }).port}`;
@@ -337,7 +337,7 @@ describe("ops routes", () => {
   });
 
   it("takes a host report only with the report token", async () => {
-    const report = { host: "oracle", cpu: 3, mem: 18, disk: 61, load: [0.1, 0.1, 0.1], cores: 2, backups: [{ set: "dusk", at: NOW - 3_600_000 }] };
+    const report = { host: "oracle", cpu: 3, mem: 18, disk: 61, load: [0.1, 0.1, 0.1], cores: 2, backups: [{ set: "madani", at: NOW - 3_600_000 }] };
     expect((await call("/v1/ops/report", { body: report })).status).toBe(401);
     expect((await call("/v1/ops/report", { body: report, headers: { authorization: `Bearer ${"w".repeat(32)}` } })).status).toBe(401);
     expect((await call("/v1/ops/report", { body: { host: "../x" }, headers: { authorization: `Bearer ${TOKEN}` } })).status).toBe(400);
@@ -345,7 +345,7 @@ describe("ops routes", () => {
     const admin = await login(ADMIN);
     const body = await (await call("/v1/admin/ops", { cookie: admin })).json() as OpsAnswer;
     expect(body.health.boxes.find(box => box.name === "oracle")).toMatchObject({ disk: 61, cores: 2 });
-    expect(body.health.checks.find(check => check.id === "backup-oracle-dusk")).toMatchObject({ level: "ok", value: "1h ago" });
+    expect(body.health.checks.find(check => check.id === "backup-oracle-madani")).toMatchObject({ level: "ok", value: "1h ago" });
   });
 
   it("hides the report route when no token is set", async () => {

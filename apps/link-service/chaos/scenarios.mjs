@@ -207,7 +207,7 @@ export const SCENARIOS = [
     },
   },
   {
-    name: "server-restart", title: "dusk bot on the server restarts (down 6 s)", quick: true, budgetMs: 10_000,
+    name: "server-restart", title: "madani bot on the server restarts (down 6 s)", quick: true, budgetMs: 10_000,
     async run(world) {
       await world.bot.stop();
       await sleep(6000);
@@ -236,7 +236,7 @@ export const SCENARIOS = [
   {
     name: "server-disk-full", title: "server's agent folder not writable, agent restarts", budgetMs: 20_000,
     async run(world) {
-      const folder = join(world.dir, "server-home", ".config", "duskbot-link");
+      const folder = join(world.dir, "server-home", ".config", "madanibot-link");
       chmodSync(folder, 0o500);
       try {
         await world.agent.restart();

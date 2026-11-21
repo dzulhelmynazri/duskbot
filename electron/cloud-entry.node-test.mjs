@@ -21,20 +21,20 @@ function fixture({ open = async () => true } = {}) {
 const settle = async () => { for (let i = 0; i < 5; i++) await Promise.resolve(); };
 
 test("the Cloud protocol is a fixed action without URL routing or credentials", () => {
-  assert.equal(CLOUD_DEEP_LINK, "duskbot://cloud");
-  assert.equal(isCloudDeepLink("duskbot://cloud"), true);
-  for (const value of [null, undefined, {}, ["duskbot://cloud"], "", "duskbot://cloud/", "duskbot://cloud?", "duskbot://cloud#",
-    "duskbot://cloud?code=ABCDE-FGHJK", "duskbot://cloud#code=ABCD-EFGH-JKLM", "duskbot://cloud?url=https://home.example",
-    "duskbot://cloud/pair", "duskbot://user@cloud", "duskbot://cloud:443", "duskbot://cloud.evil", "duskbot://CLOUD",
-    "DUSK://cloud", "duskbot:cloud", "duskbot:///cloud", "https://cloud", " duskbot://cloud", "duskbot://cloud ",
-    "duskbot://%63loud", "duskbot://organization", "duskbot://install?url=https://github.com/x/y"]) {
+  assert.equal(CLOUD_DEEP_LINK, "madanibot://cloud");
+  assert.equal(isCloudDeepLink("madanibot://cloud"), true);
+  for (const value of [null, undefined, {}, ["madanibot://cloud"], "", "madanibot://cloud/", "madanibot://cloud?", "madanibot://cloud#",
+    "madanibot://cloud?code=ABCDE-FGHJK", "madanibot://cloud#code=ABCD-EFGH-JKLM", "madanibot://cloud?url=https://home.example",
+    "madanibot://cloud/pair", "madanibot://user@cloud", "madanibot://cloud:443", "madanibot://cloud.evil", "madanibot://CLOUD",
+    "MADANI://cloud", "madanibot:cloud", "madanibot:///cloud", "https://cloud", " madanibot://cloud", "madanibot://cloud ",
+    "madanibot://%63loud", "madanibot://organization", "madanibot://install?url=https://github.com/x/y"]) {
     assert.equal(isCloudDeepLink(value), false, String(value));
   }
 });
 
 test("consuming a launch action prevents it replaying on a later restart without changing other arguments", () => {
-  const original = ["/Applications/dusk bot", "--profile=fixture", "duskbot://cloud?ignored", "duskbot://organization", "duskbot://install/example"];
-  const argv = [...original, "duskbot://cloud", "duskbot://cloud"];
+  const original = ["/Applications/madani bot", "--profile=fixture", "madanibot://cloud?ignored", "madanibot://organization", "madanibot://install/example"];
+  const argv = [...original, "madanibot://cloud", "madanibot://cloud"];
   assert.equal(takeCloudDeepLink(argv), true);
   assert.deepEqual(argv, original);
   assert.equal(takeCloudDeepLink(argv), false, "the action is consumed exactly once");
@@ -43,9 +43,9 @@ test("consuming a launch action prevents it replaying on a later restart without
 
 test("a cold-start link waits until main can navigate, then opens exactly once", async () => {
   const h = fixture();
-  const argv = ["/Applications/dusk bot", "--fixture", "duskbot://cloud"];
+  const argv = ["/Applications/madani bot", "--fixture", "madanibot://cloud"];
   assert.equal(h.entry.fromLaunch(argv), true);
-  assert.deepEqual(argv, ["/Applications/dusk bot", "--fixture"]);
+  assert.deepEqual(argv, ["/Applications/madani bot", "--fixture"]);
   await settle();
   assert.deepEqual(h.calls, [], "no window exists to reveal or navigate yet");
   assert.equal(await h.entry.ready(), true);
@@ -56,15 +56,15 @@ test("a cold-start link waits until main can navigate, then opens exactly once",
 
 test("a launch without the link leaves nothing pending", async () => {
   const h = fixture();
-  assert.equal(h.entry.fromLaunch(["/Applications/dusk bot", "duskbot://cloud/"]), false);
+  assert.equal(h.entry.fromLaunch(["/Applications/madani bot", "madanibot://cloud/"]), false);
   assert.equal(await h.entry.ready(), false);
   assert.deepEqual(h.calls, []);
 });
 
 test("macOS open-url before ready is held, and several links open once", async () => {
   const h = fixture();
-  assert.equal(h.entry.fromUrl("duskbot://cloud"), true);
-  assert.equal(h.entry.fromUrl("duskbot://cloud"), true);
+  assert.equal(h.entry.fromUrl("madanibot://cloud"), true);
+  assert.equal(h.entry.fromUrl("madanibot://cloud"), true);
   await settle();
   assert.deepEqual(h.calls, ["reveal", "reveal"]);
   assert.equal(await h.entry.ready(), true);
@@ -74,20 +74,20 @@ test("macOS open-url before ready is held, and several links open once", async (
 test("once ready, open-url and a second instance open immediately and consume the argument", async () => {
   const h = fixture();
   await h.entry.ready();
-  assert.equal(h.entry.fromUrl("duskbot://cloud"), true);
+  assert.equal(h.entry.fromUrl("madanibot://cloud"), true);
   await settle();
   assert.deepEqual(h.calls, ["reveal", "open"]);
-  const commandLine = ["C:\\Dusk Bot.exe", "--flag", "duskbot://cloud"];
+  const commandLine = ["C:\\Madani Bot.exe", "--flag", "madanibot://cloud"];
   assert.equal(h.entry.fromArgs(commandLine), true);
   await settle();
   assert.deepEqual(h.calls, ["reveal", "open", "reveal", "open"]);
-  assert.deepEqual(commandLine, ["C:\\Dusk Bot.exe", "--flag"]);
+  assert.deepEqual(commandLine, ["C:\\Madani Bot.exe", "--flag"]);
 });
 
 test("anything else is left to the other link handlers without revealing or opening", async () => {
   const h = fixture();
   await h.entry.ready();
-  for (const url of ["duskbot://organization", "duskbot://install?url=https://github.com/x/y", "duskbot://cloud?code=X", "duskbot://cloud/"]) {
+  for (const url of ["madanibot://organization", "madanibot://install?url=https://github.com/x/y", "madanibot://cloud?code=X", "madanibot://cloud/"]) {
     assert.equal(h.entry.fromUrl(url), false);
     const argv = ["/app", url];
     assert.equal(h.entry.fromArgs(argv), false);
@@ -100,23 +100,23 @@ test("anything else is left to the other link handlers without revealing or open
 test("a failed open is contained and a later link still opens", async () => {
   let fail = true;
   const h = fixture({ open: async () => { if (fail) throw new Error("load failed"); return true; } });
-  h.entry.fromLaunch(["/app", "duskbot://cloud"]);
+  h.entry.fromLaunch(["/app", "madanibot://cloud"]);
   assert.equal(await h.entry.ready(), false);
   fail = false;
-  h.entry.fromUrl("duskbot://cloud");
+  h.entry.fromUrl("madanibot://cloud");
   await settle();
   assert.deepEqual(h.calls, ["open", "reveal", "open"]);
 });
 
 test("a consumed launch link is not replayed by the companion relaunch", () => {
-  const argv = ["/fixture/dusk bot", "--fixture", "duskbot://cloud", "duskbot://cloud?ignored"];
+  const argv = ["/fixture/madani bot", "--fixture", "madanibot://cloud", "madanibot://cloud?ignored"];
   takeCloudDeepLink(argv);
   const calls = [];
   runInNewContext(`${between("function relaunchAfterDesktopRemoteChange()", 'ipcMain.handle("desktop-remote:state"')}\nrelaunchAfterDesktopRemoteChange();`, {
     desktopShutdownStarted: false, process: { argv, env: {} }, setTimeout: callback => { callback(); return {}; },
     app: { relaunch: options => calls.push(options.args), quit: () => {} },
   });
-  assert.deepEqual(calls, [["--fixture", "duskbot://cloud?ignored"]]);
+  assert.deepEqual(calls, [["--fixture", "madanibot://cloud?ignored"]]);
 });
 
 test("main takes the link from launch arguments, open-url and a second instance", () => {

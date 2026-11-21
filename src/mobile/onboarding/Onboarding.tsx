@@ -21,12 +21,12 @@ import { editCode, formatCode, fullCode, typedCodeComplete } from "./code-field"
 import { BackButton, ErrorLine, FIELD, HEADLINE, LINE, PRIMARY, QUIET, Screen, StepPane, TONAL } from "./parts";
 
 export type Step = "welcome" | "signin" | "clouds" | "switch" | "confirm" | "scan" | "code" | "paste";
-/** a dusk cloud's QR or link: the account it logs in to, its code when it carries one, and the cloud it was drawn on */
+/** a madani cloud's QR or link: the account it logs in to, its code when it carries one, and the cloud it was drawn on */
 type CloudQr = { email: string; code?: string; cloud?: string; pair?: TypedPairing };
 type Failure = { code: PairError["code"] | "account-offline"; name: string; companion: boolean };
 type PhoneCodeOutcome = Awaited<ReturnType<NonNullable<ReturnType<typeof useMobileAccount>>["signIn"]["phoneCode"]>>["outcome"];
 
-/** a dusk cloud code that did not log in, as the failure the code screen says */
+/** a madani cloud code that did not log in, as the failure the code screen says */
 export function phoneCodeFailure(outcome: Exclude<PhoneCodeOutcome, "signed-in">): Failure["code"] {
   switch (outcome) {
     case "wrong-code": return "unknown";
@@ -38,7 +38,7 @@ export function phoneCodeFailure(outcome: Exclude<PhoneCodeOutcome, "signed-in">
   }
 }
 
-export const DOWNLOAD_URL = "https://dusk.bot/download";
+export const DOWNLOAD_URL = "https://madani.bot/download";
 /** the account sign-in a desktop's QR carries waits this long at most, then the pairing goes on without it */
 const CARRIED_SIGN_IN_MS = 5_000;
 
@@ -77,18 +77,18 @@ function Failed({ failure, onSignIn }: { failure: Failure; onSignIn?: () => void
 }
 
 /** First launch to linked. Pairing with your own computer needs no account (App Store guideline 5.1.1(v)): scan its QR
- * code first, or type its code. Signing in is only for a dusk cloud (the account finds it and pairs with it). The success moment and the hand-off
+ * code first, or type its code. Signing in is only for a madani cloud (the account finds it and pairs with it). The success moment and the hand-off
  * to Home belong to the connection gate. */
 export function Onboarding({ initial = null, initialSignIn, reason = null, startAtLink = false, startAt = "welcome", email, signInCode, signInCloud, onLinked, onOpen, onCancel }: {
   /** the account sign-in a signed-in desktop's pairing QR carried with `initial` */
   initialSignIn?: PairSignIn;
-  /** the dusk cloud a QR or link was drawn on, opened once the phone is logged in */
+  /** the madani cloud a QR or link was drawn on, opened once the phone is logged in */
   signInCloud?: string;
   /** a place this phone already links, to open instead of pairing it again */
   onOpen?(id: string): void;
   /** where a sheet opened from inside the app starts */
   startAt?: OnboardingStart;
-  /** a dusk cloud's qr named the account to sign in with */
+  /** a madani cloud's qr named the account to sign in with */
   email?: string;
   /** and carried a desktop's code that logs the phone in: it is redeemed at once, on the code screen */
   signInCode?: string;
@@ -113,7 +113,7 @@ export function Onboarding({ initial = null, initialSignIn, reason = null, start
   // a sign-in made here opens its only cloud at once; one the phone already held (the Keychain keeps it through a
   // delete and reinstall) lists the places to pick from
   const [justSignedIn, setJustSignedIn] = useState(false);
-  // a dusk cloud's QR or link logged in here: its cloud (or the account's only one) opens without a pick
+  // a madani cloud's QR or link logged in here: its cloud (or the account's only one) opens without a pick
   const [qrTarget, setQrTarget] = useState<{ origin: string | null } | null>(null);
   const [switchTo, setSwitchTo] = useState<CloudQr | null>(null);
   const carriedSignIn = useRef(initialSignIn);
@@ -199,7 +199,7 @@ export function Onboarding({ initial = null, initialSignIn, reason = null, start
     }
   };
 
-  /** the 8 letters a desktop or dusk cloud showed: the phone logs in to their account and goes on to its cloud */
+  /** the 8 letters a desktop or madani cloud showed: the phone logs in to their account and goes on to its cloud */
   const codeSignIn = async (code: string, cloud: string | null, from: Step) => {
     if (!account) throw new PairError("sign-in");
     const result = await account.signIn.phoneCode(code);
@@ -225,7 +225,7 @@ export function Onboarding({ initial = null, initialSignIn, reason = null, start
     await linkDeadline(account.signIn.phoneCode(signIn.code), CARRIED_SIGN_IN_MS).catch(() => null);
     return true;
   };
-  /** a dusk cloud's QR or link: a phone on another account asks before it switches; one on this account or none goes on */
+  /** a madani cloud's QR or link: a phone on another account asks before it switches; one on this account or none goes on */
   const fromQr = async (qr: CloudQr, from: Step) => {
     const current = account?.account?.email;
     if (current && qr.email && current.toLowerCase() !== qr.email.toLowerCase()) { setSwitchTo(qr); go("switch"); return; }
@@ -345,7 +345,7 @@ export function Onboarding({ initial = null, initialSignIn, reason = null, start
   );
 
   return (
-    <main className="dusk-mobile relative size-full overflow-hidden bg-app text-ink" data-scan-clear aria-busy={busy}>
+    <main className="madani-mobile relative size-full overflow-hidden bg-app text-ink" data-scan-clear aria-busy={busy}>
       <AnimatePresence mode="wait" initial={false}>
         {step === "welcome" && (
           <StepPane id="welcome">
@@ -444,7 +444,7 @@ export function Onboarding({ initial = null, initialSignIn, reason = null, start
                   ) : (
                     <div className="flex w-full gap-2">
                       <input id={fieldId} autoFocus value={value} disabled={busy} onChange={(event) => { setValue(event.target.value); setFailure(null); }}
-                        inputMode="url" autoCapitalize="none" autoCorrect="off" spellCheck={false} placeholder="duskbot://pair?..." aria-invalid={Boolean(failure) || undefined}
+                        inputMode="url" autoCapitalize="none" autoCorrect="off" spellCheck={false} placeholder="madanibot://pair?..." aria-invalid={Boolean(failure) || undefined}
                         className={`${FIELD} flex-1`} />
                       {platform.readClipboard && <button type="button" onClick={() => void paste()} aria-label={t("mobile.onboarding.pasteFromClipboard")} className="mobile-press flex size-[52px] shrink-0 items-center justify-center rounded-[16px] bg-ink/[0.06] text-ink"><ClipboardPaste size={20} /></button>}
                     </div>

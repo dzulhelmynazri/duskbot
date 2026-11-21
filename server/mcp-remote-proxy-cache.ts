@@ -10,9 +10,9 @@ type Metadata = { initialize: Json; pages: Record<string, Json> };
 const record = (value: unknown): value is Json => !!value && typeof value === "object" && !Array.isArray(value);
 const cursorKey = (params: unknown) => JSON.stringify(record(params) ? params.cursor ?? null : null);
 const nextCursor = (page: Json) => page.nextCursor === undefined || page.nextCursor === null || page.nextCursor === "" ? undefined : page.nextCursor;
-export const REMOTE_MCP_CACHE_ENV = "DUSK_REMOTE_MCP_CACHE_DIR";
-export const REMOTE_MCP_CACHE_ID_ENV = "DUSK_REMOTE_MCP_CACHE_ID";
-export const remoteMcpCacheIdentity = Symbol.for("duskbot.remoteMcpCacheIdentity");
+export const REMOTE_MCP_CACHE_ENV = "MADANI_REMOTE_MCP_CACHE_DIR";
+export const REMOTE_MCP_CACHE_ID_ENV = "MADANI_REMOTE_MCP_CACHE_ID";
+export const remoteMcpCacheIdentity = Symbol.for("madanibot.remoteMcpCacheIdentity");
 
 export function remoteMcpCacheDirectory(directory: string | undefined, home: string): string | undefined {
   if (!directory || basename(directory) !== "remote-mcp-cache") return directory;

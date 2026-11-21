@@ -1,18 +1,18 @@
-// The smoke's dusk account on the preview account service, signed in through the desktop app's own account client
-// (electron/cloud-account.mjs) with a real sign-in code. Smoke addresses are at qa.dusk.test: the account service never
+// The smoke's madani account on the preview account service, signed in through the desktop app's own account client
+// (electron/cloud-account.mjs) with a real sign-in code. Smoke addresses are at qa.madani.test: the account service never
 // mails them (no Brevo, no one's inbox) and keeps the code in its test mailbox, read here with the preview ops token
-// (DUSK_OPS_TOKEN_PREVIEW in the dusk env file, never printed). The session is kept in the smoke profile so a run within a
+// (MADANI_OPS_TOKEN_PREVIEW in the madani env file, never printed). The session is kept in the smoke profile so a run within a
 // day reuses it instead of asking for another code.
 import { chmodSync, existsSync, readFileSync, writeFileSync } from "node:fs";
 import { homedir } from "node:os";
 import { join } from "node:path";
 import { pathToFileURL } from "node:url";
 
-export const PREVIEW_ORIGIN = "https://preview.dusk.bot";
+export const PREVIEW_ORIGIN = "https://preview.madani.bot";
 const FRESH_SIGN_IN_MS = 20 * 60 * 60 * 1000;
 const sleep = (ms) => new Promise((done) => setTimeout(done, ms));
 
-export function envValue(name, file = process.env.DUSK_ENV_FILE || join(homedir(), ".config", "duskbot", "dusk.env")) {
+export function envValue(name, file = process.env.MADANI_ENV_FILE || join(homedir(), ".config", "madanibot", "madani.env")) {
   if (process.env[name]) return process.env[name];
   if (!existsSync(file)) return null;
   for (const line of readFileSync(file, "utf8").split("\n")) {
@@ -23,14 +23,14 @@ export function envValue(name, file = process.env.DUSK_ENV_FILE || join(homedir(
 }
 
 /** harness addresses: mail to this domain never leaves the account service (apps/dashboard/server/auth/mail.ts) */
-export const TEST_MAIL_DOMAIN = "qa.dusk.test";
+export const TEST_MAIL_DOMAIN = "qa.madani.test";
 export const isTestAddress = (email) => String(email).trim().toLowerCase().endsWith(`@${TEST_MAIL_DOMAIN}`);
 
 /** the newest 8-digit sign-in code the account service kept for test address `email` after `since` (ms), or null */
 export async function testMailCode(email, since, origin = PREVIEW_ORIGIN) {
   if (!isTestAddress(email)) throw new Error(`${email} is not a test address (@${TEST_MAIL_DOMAIN}); harnesses never send real mail`);
-  const token = envValue("DUSK_OPS_TOKEN_PREVIEW") ?? envValue("DUSK_OPS_TOKEN");
-  if (!token) throw new Error("DUSK_OPS_TOKEN_PREVIEW is not set (dusk env file), so the test mailbox cannot be read");
+  const token = envValue("MADANI_OPS_TOKEN_PREVIEW") ?? envValue("MADANI_OPS_TOKEN");
+  if (!token) throw new Error("MADANI_OPS_TOKEN_PREVIEW is not set (madani env file), so the test mailbox cannot be read");
   const response = await fetch(`${origin}/v1/ops/test-mail?to=${encodeURIComponent(email)}&since=${Math.max(0, since - 5_000)}`, { headers: { authorization: `Bearer ${token}` } });
   if (response.status === 404) return null;
   if (!response.ok) throw new Error(`the test mailbox answered ${response.status}`);
@@ -56,7 +56,7 @@ export async function smokeAccount({ root, profile, email, force = false, appVer
     },
   };
   if (!isTestAddress(email)) throw new Error(`${email} is not a test address (@${TEST_MAIL_DOMAIN}); harnesses never send real mail`);
-  const client = createCloudAccountClient({ origin: PREVIEW_ORIGIN, platform: process.platform, deviceName: "dusk smoke", appVersion, store, openBrowser: async () => {}, warn: () => {} });
+  const client = createCloudAccountClient({ origin: PREVIEW_ORIGIN, platform: process.platform, deviceName: "madani smoke", appVersion, store, openBrowser: async () => {}, warn: () => {} });
   let state = await client.start();
   if (state?.status === "connected") return { client, state, how: "kept today's session" };
   const since = Date.now();

@@ -1,6 +1,6 @@
 // a real mac update without opening a window: unpacks a published older build into a temp folder, then runs this
 // checkout's updater (electron/app-update.mjs) against the live signed manifest, SHA256SUMS and the real zip, with
-// GitHub failing once and the dusk.bot download dropping part way (both injected at fetch), so it falls back and
+// GitHub failing once and the madani.bot download dropping part way (both injected at fetch), so it falls back and
 // resumes. the zip goes through squirrelInstaller's real 127.0.0.1 feed to a stand-in for Squirrel.Mac that does what
 // Squirrel checks before a swap (unzip with ditto, the new app must satisfy the running app's designated requirement)
 // and then swaps the bundle in the temp folder. Squirrel.Mac itself only runs inside the launched app, so not here.
@@ -16,19 +16,19 @@ import { createAppUpdater, squirrelInstaller, zipUrl } from "../../electron/app-
 const arg = (name, fallback) => { const at = process.argv.indexOf(`--${name}`); return at > 0 ? process.argv[at + 1] : fallback; };
 const from = arg("from", "0.2.14"), keep = process.argv.includes("--keep"), arch = process.arch;
 const DROP_AT = 90 * 1024 * 1024;
-const work = mkdtempSync(join(tmpdir(), "dusk-update-real-"));
+const work = mkdtempSync(join(tmpdir(), "madani-update-real-"));
 const run = (file, args) => execFileSync(file, args, { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] }).trim();
 const version = (app) => run("/usr/bin/plutil", ["-extract", "CFBundleShortVersionString", "raw", join(app, "Contents/Info.plist")]);
 const say = (line) => console.log(`[${new Date().toISOString().slice(11, 19)}] ${line}`);
 
 say(`work folder ${work}`);
-const oldZip = join(work, `DuskBot-${from}-${arch}.zip`);
+const oldZip = join(work, `MadaniBot-${from}-${arch}.zip`);
 say(`REAL download of the published ${from} build`);
-run("/usr/bin/curl", ["-fsSL", "--retry", "3", "-o", oldZip, zipUrl(from, `DuskBot-${from}-${arch}.zip`)]);
+run("/usr/bin/curl", ["-fsSL", "--retry", "3", "-o", oldZip, zipUrl(from, `MadaniBot-${from}-${arch}.zip`)]);
 mkdirSync(join(work, "Applications"));
 run("/usr/bin/ditto", ["-x", "-k", oldZip, join(work, "Applications")]);
 rmSync(oldZip);
-const installed = join(work, "Applications", "Dusk Bot.app");
+const installed = join(work, "Applications", "Madani Bot.app");
 const current = version(installed);
 const shown = spawnSync("/usr/bin/codesign", ["-d", "-r-", installed], { encoding: "utf8" });
 const requirement = /^designated => (.+)$/m.exec(`${shown.stdout}\n${shown.stderr}`)?.[1] ?? "";
@@ -46,7 +46,7 @@ async function fetchImpl(url, init = {}) {
   }
   const answer = await fetch(url, init);
   log.push(`REAL       ${init.method ?? "GET"} ${url}${range ? ` (range ${range})` : ""} -> ${answer.status}`);
-  if (url.endsWith(".zip") && url.startsWith("https://dusk.bot/") && !dropped && answer.body) {
+  if (url.endsWith(".zip") && url.startsWith("https://madani.bot/") && !dropped && answer.body) {
     dropped = true;
     let sent = 0;
     const cut = new TransformStream({ transform(chunk, controller) {
@@ -72,14 +72,14 @@ const squirrel = Object.assign(new EventEmitter(), {
       writeFileSync(zip, Buffer.from(await (await fetch(feed.url)).arrayBuffer()));
       mkdirSync(staged);
       run("/usr/bin/ditto", ["-x", "-k", zip, staged]);
-      run("/usr/bin/codesign", ["--verify", "--deep", "--strict", `-R=${requirement}`, join(staged, "Dusk Bot.app")]);
+      run("/usr/bin/codesign", ["--verify", "--deep", "--strict", `-R=${requirement}`, join(staged, "Madani Bot.app")]);
       say(`REAL codesign: the new app satisfies the running app's designated requirement (Squirrel.Mac's check)`);
       this.emit("update-downloaded");
     })().catch((error) => this.emit("error", error));
   },
   quitAndInstall() {
     renameSync(installed, `${installed}.old`);
-    renameSync(join(staged, "Dusk Bot.app"), installed);
+    renameSync(join(staged, "Madani Bot.app"), installed);
     rmSync(`${installed}.old`, { recursive: true, force: true });
     this.swapped = version(installed);
   },

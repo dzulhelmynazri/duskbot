@@ -8,18 +8,18 @@ import { MongoClient } from "mongodb";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
 // the account service restarted the way its supervisor does it (and the way that crash-looped production on
-// 2026-11-20): two real processes on one database. needs a replica set: DUSK_TEST_MONGODB_URI, DUSK_TEST_MONGODB_DB (its
+// 2026-11-20): two real processes on one database. needs a replica set: MADANI_TEST_MONGODB_URI, MADANI_TEST_MONGODB_DB (its
 // collections are dropped; run apart from mongo.test.ts, which uses the same database)
-const uri = process.env.DUSK_TEST_MONGODB_URI, dbName = process.env.DUSK_TEST_MONGODB_DB || "dusk_test";
+const uri = process.env.MADANI_TEST_MONGODB_URI, dbName = process.env.MADANI_TEST_MONGODB_DB || "madani_test";
 const MAIN = fileURLToPath(new URL("../main.ts", import.meta.url));
 
 const freePort = () => new Promise<number>(resolve => { const s = createServer().listen(0, "127.0.0.1", () => { const { port } = s.address() as { port: number }; s.close(() => resolve(port)); }); });
 const children: ChildProcess[] = [], dirs: string[] = [];
 
 function start(port: number) {
-  const data = mkdtempSync(join(tmpdir(), "dusk-restart-")); dirs.push(data);
-  const child = spawn(process.execPath, [MAIN], { env: { ...process.env, MONGODB_URI: uri, MONGODB_DB: dbName, DUSK_DASHBOARD_PORT: String(port), DUSK_DASHBOARD_DATA: data,
-    DUSK_DASHBOARD_PUBLIC_URL: `http://127.0.0.1:${port}`, DUSK_DASHBOARD_STATIC: "", DUSK_ALERTS: "off", DUSK_BILLING_PROVIDER: "preview", DUSK_OPS_TOKEN: "restart-test-".padEnd(40, "x") }, stdio: ["ignore", "pipe", "pipe"] });
+  const data = mkdtempSync(join(tmpdir(), "madani-restart-")); dirs.push(data);
+  const child = spawn(process.execPath, [MAIN], { env: { ...process.env, MONGODB_URI: uri, MONGODB_DB: dbName, MADANI_DASHBOARD_PORT: String(port), MADANI_DASHBOARD_DATA: data,
+    MADANI_DASHBOARD_PUBLIC_URL: `http://127.0.0.1:${port}`, MADANI_DASHBOARD_STATIC: "", MADANI_ALERTS: "off", MADANI_BILLING_PROVIDER: "preview", MADANI_OPS_TOKEN: "restart-test-".padEnd(40, "x") }, stdio: ["ignore", "pipe", "pipe"] });
   children.push(child);
   let out = "";
   child.stdout!.on("data", chunk => { out += chunk; });

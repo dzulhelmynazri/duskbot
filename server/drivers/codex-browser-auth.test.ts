@@ -39,7 +39,7 @@ describe("Codex normal browser sign-in through a relayed callback", () => {
   let home: string;
   let controller: CodexDeviceAuthController | null = null;
   beforeEach(() => {
-    home = mkdtempSync(join(tmpdir(), "dusk-codex-browser-"));
+    home = mkdtempSync(join(tmpdir(), "madani-codex-browser-"));
     writeFileSync(join(home, "codex.mjs"), FAKE, { mode: 0o700 });
   });
   afterEach(async () => {

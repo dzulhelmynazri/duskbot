@@ -1,42 +1,42 @@
 #!/usr/bin/env node
-// uptime checks for dusk.bot from a box other than the one it watches (the Oracle VPS watches the Contabo one), run every
-// minute by dusk-uptime.timer. per outage one "down" email (after DUSK_UPTIME_FAILS misses in a row) and one "back up"
-// email with how long it was down, nothing in between; one TLS warning per certificate with under DUSK_UPTIME_TLS_DAYS
-// left, until it is renewed; at most DUSK_UPTIME_MAILS_PER_DAY emails a day. a failed email is retried each run.
-//   DUSK_ALERT_TO          comma-separated addresses; DUSK_ALERT_FROM the sender ("Name <address>")
-//   DUSK_BREVO_API_KEY     Brevo transactional key; DUSK_RESEND_API_KEY a fallback sender when set
-//   DUSK_UPTIME_TARGETS    space-separated name=url or name=url=text-the-body-must-contain (default below)
-//   DUSK_UPTIME_TLS        space-separated hosts whose certificates are checked hourly
-//   DUSK_UPTIME_STATE      state folder (default /var/lib/dusk-uptime)
+// uptime checks for madani.bot from a box other than the one it watches (the Oracle VPS watches the Contabo one), run every
+// minute by madani-uptime.timer. per outage one "down" email (after MADANI_UPTIME_FAILS misses in a row) and one "back up"
+// email with how long it was down, nothing in between; one TLS warning per certificate with under MADANI_UPTIME_TLS_DAYS
+// left, until it is renewed; at most MADANI_UPTIME_MAILS_PER_DAY emails a day. a failed email is retried each run.
+//   MADANI_ALERT_TO          comma-separated addresses; MADANI_ALERT_FROM the sender ("Name <address>")
+//   MADANI_BREVO_API_KEY     Brevo transactional key; MADANI_RESEND_API_KEY a fallback sender when set
+//   MADANI_UPTIME_TARGETS    space-separated name=url or name=url=text-the-body-must-contain (default below)
+//   MADANI_UPTIME_TLS        space-separated hosts whose certificates are checked hourly
+//   MADANI_UPTIME_STATE      state folder (default /var/lib/madani-uptime)
 import { readFileSync, renameSync, writeFileSync, mkdirSync } from "node:fs";
 import { connect } from "node:tls";
 import { pathToFileURL } from "node:url";
 
 const MINUTE = 60_000, HOUR = 60 * MINUTE, DAY = 24 * HOUR;
 export const DEFAULT_TARGETS = [
-  "waitlist=https://dusk.bot/", "dashboard=https://dusk.bot/dashboard/", "api=https://dusk.bot/v1/health=\"ok\":true",
-  "waitlist-count=https://dusk.bot/api/waitlist/count=\"count\"", "preview-api=https://preview.dusk.bot/v1/health=\"ok\":true",
-  "installer=https://dusk.bot/install.sh", "link=https://link.dusk.bot/healthz",
+  "waitlist=https://madani.bot/", "dashboard=https://madani.bot/dashboard/", "api=https://madani.bot/v1/health=\"ok\":true",
+  "waitlist-count=https://madani.bot/api/waitlist/count=\"count\"", "preview-api=https://preview.madani.bot/v1/health=\"ok\":true",
+  "installer=https://madani.bot/install.sh", "link=https://link.madani.bot/healthz",
 ].join(" ");
 
 export function settings(env = process.env) {
   const number = (value, fallback) => Number.isFinite(Number(value)) && Number(value) > 0 ? Number(value) : fallback;
   return {
-    targets: (env.DUSK_UPTIME_TARGETS || DEFAULT_TARGETS).split(/\s+/).filter(Boolean).map(pair => {
+    targets: (env.MADANI_UPTIME_TARGETS || DEFAULT_TARGETS).split(/\s+/).filter(Boolean).map(pair => {
       const [name, ...rest] = pair.split("="), joined = rest.join("=");
       const at = joined.search(/=(?=[^/]*$)/);
       return at > 8 ? { name, url: joined.slice(0, at), expect: joined.slice(at + 1) } : { name, url: joined, expect: null };
     }),
-    tls: (env.DUSK_UPTIME_TLS ?? "dusk.bot preview.dusk.bot link.dusk.bot").split(/\s+/).filter(Boolean),
-    control: env.DUSK_UPTIME_CONTROL || "https://www.cloudflare.com/cdn-cgi/trace",
-    fails: number(env.DUSK_UPTIME_FAILS, 2),
-    mailsPerDay: number(env.DUSK_UPTIME_MAILS_PER_DAY, 10),
-    tlsDays: number(env.DUSK_UPTIME_TLS_DAYS, 14),
-    state: env.DUSK_UPTIME_STATE || "/var/lib/dusk-uptime",
-    to: (env.DUSK_ALERT_TO || "").split(",").map(item => item.trim()).filter(item => /^[^\s@]+@[^\s@]+$/.test(item)),
-    from: env.DUSK_ALERT_FROM || "alerts@dusk.bot",
-    brevo: env.DUSK_BREVO_API_KEY || null,
-    resend: env.DUSK_RESEND_API_KEY || null,
+    tls: (env.MADANI_UPTIME_TLS ?? "madani.bot preview.madani.bot link.madani.bot").split(/\s+/).filter(Boolean),
+    control: env.MADANI_UPTIME_CONTROL || "https://www.cloudflare.com/cdn-cgi/trace",
+    fails: number(env.MADANI_UPTIME_FAILS, 2),
+    mailsPerDay: number(env.MADANI_UPTIME_MAILS_PER_DAY, 10),
+    tlsDays: number(env.MADANI_UPTIME_TLS_DAYS, 14),
+    state: env.MADANI_UPTIME_STATE || "/var/lib/madani-uptime",
+    to: (env.MADANI_ALERT_TO || "").split(",").map(item => item.trim()).filter(item => /^[^\s@]+@[^\s@]+$/.test(item)),
+    from: env.MADANI_ALERT_FROM || "alerts@madani.bot",
+    brevo: env.MADANI_BREVO_API_KEY || null,
+    resend: env.MADANI_RESEND_API_KEY || null,
   };
 }
 
@@ -48,7 +48,7 @@ const when = at => `${new Date(at).toISOString().slice(11, 16)} utc`;
 
 export async function probe(target, fetcher = fetch) {
   try {
-    const response = await fetcher(target.url, { redirect: "follow", signal: AbortSignal.timeout(15_000), headers: { "user-agent": "dusk-uptime/2" } });
+    const response = await fetcher(target.url, { redirect: "follow", signal: AbortSignal.timeout(15_000), headers: { "user-agent": "madani-uptime/2" } });
     const body = target.expect ? (await response.text()).slice(0, 65_536) : (await response.body?.cancel(), "");
     if (response.status < 200 || response.status >= 400) return { ok: false, detail: `http ${response.status}` };
     if (target.expect && !body.includes(target.expect)) return { ok: false, detail: `http ${response.status} without ${target.expect}` };
@@ -88,9 +88,9 @@ export function decide(state, results, cfg, time) {
   return { down, recovered };
 }
 
-const EMAIL_CFG = { assets: "https://dusk.bot/email", site: "https://dusk.bot", app: "https://dusk.bot/dashboard", address: null };
-const REASON = "you got this because your address is in DUSK_ALERT_TO on the oracle uptime checker.";
-const PANEL = "https://dusk.bot/admin/health";
+const EMAIL_CFG = { assets: "https://madani.bot/email", site: "https://madani.bot", app: "https://madani.bot/dashboard", address: null };
+const REASON = "you got this because your address is in MADANI_ALERT_TO on the oracle uptime checker.";
+const PANEL = "https://madani.bot/admin/health";
 
 export async function layout() {
   for (const candidate of [new URL("./layout.ts", import.meta.url), new URL("../../apps/dashboard/server/email/layout.ts", import.meta.url)]) {
@@ -128,9 +128,9 @@ export async function deliver(cfg, message, fetcher = fetch) {
   const senders = [];
   if (cfg.brevo) senders.push(() => fetcher("https://api.brevo.com/v3/smtp/email", { method: "POST", signal: AbortSignal.timeout(20_000),
     headers: { "api-key": cfg.brevo, "content-type": "application/json", accept: "application/json" },
-    body: JSON.stringify({ sender: { name: "dusk bot", email: address }, to: cfg.to.map(email => ({ email })), subject: message.subject, textContent: message.text, htmlContent: message.html }) }));
+    body: JSON.stringify({ sender: { name: "madani bot", email: address }, to: cfg.to.map(email => ({ email })), subject: message.subject, textContent: message.text, htmlContent: message.html }) }));
   if (cfg.resend) senders.push(() => fetcher("https://api.resend.com/emails", { method: "POST", signal: AbortSignal.timeout(20_000),
-    headers: { authorization: `Bearer ${cfg.resend}`, "content-type": "application/json" }, body: JSON.stringify({ from: `dusk bot <${address}>`, to: cfg.to, subject: message.subject, text: message.text, html: message.html }) }));
+    headers: { authorization: `Bearer ${cfg.resend}`, "content-type": "application/json" }, body: JSON.stringify({ from: `madani bot <${address}>`, to: cfg.to, subject: message.subject, text: message.text, html: message.html }) }));
   for (const [index, send] of senders.entries()) {
     try {
       const response = await send();

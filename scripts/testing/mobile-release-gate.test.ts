@@ -9,7 +9,7 @@ import { flaggedHashes, inspect } from "../../apps/mobile/scripts/release-gate.m
 
 const dirs: string[] = [];
 function bundle(files: Record<string, string | Buffer>): string {
-  const dir = mkdtempSync(join(tmpdir(), "dusk-gate-"));
+  const dir = mkdtempSync(join(tmpdir(), "madani-gate-"));
   dirs.push(dir);
   for (const [name, body] of Object.entries(files)) {
     mkdirSync(join(dir, name, ".."), { recursive: true });

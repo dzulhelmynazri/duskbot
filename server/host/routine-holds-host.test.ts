@@ -16,7 +16,7 @@ const IN = { ready: true, signedIn: true }, OUT = { ready: false, signedIn: fals
 
 /** A Cloud home's routines and bots: the owner's Chief, a teammate's later one, and a bot that is no Chief. */
 function world(dataDir?: string) {
-  const dir = dataDir ?? mkdtempSync(join(tmpdir(), "dusk-routine-holds-host-"));
+  const dir = dataDir ?? mkdtempSync(join(tmpdir(), "madani-routine-holds-host-"));
   if (!dataDir) dirs.push(dir);
   let now = START;
   let mcp = 0;
@@ -26,7 +26,7 @@ function world(dataDir?: string) {
   const bots = [
     { id: "ops", name: "Ops", threadId: "ops-main", createdAt: 1 },
     { id: "chief-2", name: "Second", threadId: "chief-2-main", createdAt: 3, chiefOfStaff: true },
-    { id: "chief", name: "Dusk", threadId: "chief-main", createdAt: 2, chiefOfStaff: true, defaultBot: {} },
+    { id: "chief", name: "Madani", threadId: "chief-main", createdAt: 2, chiefOfStaff: true, defaultBot: {} },
   ];
   const host = createRoutineHoldsHost({
     dataDir: dir, now: () => now,

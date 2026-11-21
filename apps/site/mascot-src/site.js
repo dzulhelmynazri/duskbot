@@ -1,6 +1,6 @@
 // the site's bots: pixel/ draws and moves them; this file finds them in the page and tells them what is going on
 // around them. the build already drew each one at rest, so this only takes over
-import { DuskPixel } from './pixel/crowd.js';
+import { MadaniPixel } from './pixel/crowd.js';
 
 const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const fine = matchMedia('(hover: hover) and (pointer: fine)').matches;
@@ -15,7 +15,7 @@ const MOVES = { tap: 'poke', greet: 'boing', open: 'nod', wiggle: 'wobble', perk
 
 const bots = new Map();
 $$('svg.bot[data-px], .sea-bots .sb[data-px]').forEach((el, i) => {
-  bots.set(el, { el, sea: el.classList.contains('sb'), bot: DuskPixel.create(el, { body: el.dataset.px, seed: i * 7 + 3, tap: false }) });
+  bots.set(el, { el, sea: el.classList.contains('sb'), bot: MadaniPixel.create(el, { body: el.dataset.px, seed: i * 7 + 3, tap: false }) });
 });
 
 const botOf = (el) => bots.get(el) || (el?.closest && bots.get(el.closest('svg.bot, .sb'))) || null;
@@ -29,8 +29,8 @@ document.addEventListener('click', (e) => {
   if (rec) rec.bot.poke(e);
 });
 
-// for the rest of the page: duskBots.react(el, 'hop'), duskBots.state(el, 'working'); el is a bot or anything around bots
-window.duskBots = {
+// for the rest of the page: madaniBots.react(el, 'hop'), madaniBots.state(el, 'working'); el is a bot or anything around bots
+window.madaniBots = {
   react: (el, kind) => (botOf(el) ? [botOf(el)] : botsIn(el)).forEach((rec) => react(rec, kind)),
   state: (el, state) => (botOf(el) ? [botOf(el)] : botsIn(el)).forEach((rec) => setState(rec, state)),
 };

@@ -1,5 +1,5 @@
 // The browser half of an account step (the account context redirect), as a person does it: the page the app opened
-// (its browser sign-in, /cloud/desktop?code=), sign in or up there with a qa.dusk.test address (the code read from the
+// (its browser sign-in, /cloud/desktop?code=), sign in or up there with a qa.madani.test address (the code read from the
 // account service's test mailbox, no mail sent), approve the app, then wherever the app's intent lands: a plain sign-in
 // says the app is signed in too, an upgrade goes to the plan's checkout, paid with Dodo's test card in the same tab,
 // and comes back to "you're all set". In a headless Chrome of its own.

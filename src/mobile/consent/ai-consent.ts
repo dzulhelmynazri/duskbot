@@ -5,7 +5,7 @@ import type { MobilePlatform } from "../platform";
 export type AiConsent = { answer: "allowed"; at: number; providers: string[] } | { answer: "declined"; at: number };
 
 /** per account and per linked computer: another computer runs other AIs, another account is another person */
-export const consentKey = (accountId: string | null, connection: string) => `dusk.mobile.ai-consent.v1.${accountId ?? "none"}.${connection}`;
+export const consentKey = (accountId: string | null, connection: string) => `madani.mobile.ai-consent.v1.${accountId ?? "none"}.${connection}`;
 
 /** The AI services the bots use, by the names the computer gives them, so the question can say who gets the messages. */
 export function aiProviders(bots: readonly Pick<Bot, "modelSelection">[], instances: readonly Pick<InstanceInfo, "instanceId" | "displayName">[]): string[] {

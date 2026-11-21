@@ -51,7 +51,7 @@ export interface LiveEventsPlatform {
   now: () => number;
   /** A background read that never wakes a sleeping Cloud: true when it answers, so it was woken elsewhere. */
   cloudAnswers?: () => Promise<boolean>;
-  /** A read that tells a deleted dusk cloud from one that is only unreachable: true when the edge says it is gone. */
+  /** A read that tells a deleted madani cloud from one that is only unreachable: true when the edge says it is gone. */
   placeGone?: () => Promise<boolean>;
 }
 

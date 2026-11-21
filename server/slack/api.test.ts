@@ -25,7 +25,7 @@ async function fixture(handler: (req: IncomingMessage, res: ServerResponse, body
     server.closeAllConnections();
   }));
   const origin = `http://127.0.0.1:${(server.address() as AddressInfo).port}`;
-  return { origin, env: { DUSK_SLACK_API_URL: origin } };
+  return { origin, env: { MADANI_SLACK_API_URL: origin } };
 }
 
 const json = (value: unknown, status = 200, headers?: Record<string, string>) => new Response(JSON.stringify(value), { status, headers });
@@ -291,13 +291,13 @@ describe("Slack URL boundaries", () => {
   });
 
   it.each(["http://127.0.0.1:1", "http://127.0.0.1:99", "http://127.0.0.1:12345"])("accepts the exact loopback override %s", (origin) => {
-    expect(slackApiBase({ DUSK_SLACK_API_URL: origin })).toBe(`${origin}/api/`);
-    expect(slackTestOrigin({ DUSK_SLACK_API_URL: origin })).toBe(origin);
+    expect(slackApiBase({ MADANI_SLACK_API_URL: origin })).toBe(`${origin}/api/`);
+    expect(slackTestOrigin({ MADANI_SLACK_API_URL: origin })).toBe(origin);
   });
 
   it.each(["https://evil", "http://localhost:1", "http://127.0.0.1:99/x", "http://127.0.0.1:99/", "http://127.0.0.1:99?x", "https://127.0.0.1:99", "http://127.0.0.1:123456", "http://127.0.0.1", "http://user@127.0.0.1:99", "HTTP://127.0.0.1:99", " http://127.0.0.1:99", "http://127.0.0.1:99\n"])("ignores an unsafe API override %s", (origin) => {
-    expect(slackApiBase({ DUSK_SLACK_API_URL: origin })).toBe("https://slack.com/api/");
-    expect(slackTestOrigin({ DUSK_SLACK_API_URL: origin })).toBeNull();
+    expect(slackApiBase({ MADANI_SLACK_API_URL: origin })).toBe("https://slack.com/api/");
+    expect(slackTestOrigin({ MADANI_SLACK_API_URL: origin })).toBeNull();
   });
 
   it.each([
@@ -327,11 +327,11 @@ describe("Slack URL boundaries", () => {
   });
 
   it.each(["https://example.com/callback", "http://127.0.0.1:99/callback", "http://127.0.0.1:80/callback"])("accepts redirect override %s", (url) => {
-    expect(slackRedirectUrl({ DUSK_SLACK_REDIRECT_URL: url })).toBe(url);
+    expect(slackRedirectUrl({ MADANI_SLACK_REDIRECT_URL: url })).toBe(url);
   });
 
   it.each(["", "bad", "http://evil/callback", "http://localhost:99/callback", "http://127.0.0.1/callback", "http://127.0.0.1:99.evil/callback", "https://user:pass@example.com/callback", "ftp://example.com/callback"])("defaults unsafe redirect case %#", (url) => {
-    expect(slackRedirectUrl({ DUSK_SLACK_REDIRECT_URL: url })).toBe(SLACK_DEFAULT_REDIRECT_URL);
+    expect(slackRedirectUrl({ MADANI_SLACK_REDIRECT_URL: url })).toBe(SLACK_DEFAULT_REDIRECT_URL);
     expect(slackRedirectUrl({})).toBe(SLACK_DEFAULT_REDIRECT_URL);
   });
 });

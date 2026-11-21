@@ -3,8 +3,8 @@
 // powerMonitor "shutdown" covers macOS and Linux, and on Windows the app's quit needs it too: utilityProcess.kill()
 // there ends the server without a signal, so the server's own graceful shutdown never runs.
 
-export const BROWSERS_FLUSH = "duskbot:browsers-flush";
-export const BROWSERS_FLUSHED = "duskbot:browsers-flushed";
+export const BROWSERS_FLUSH = "madanibot:browsers-flush";
+export const BROWSERS_FLUSHED = "madanibot:browsers-flushed";
 /** Long enough for Chrome to quit and write its profile; short enough that the OS does not call the app hung. */
 export const BROWSERS_FLUSH_MS = 4_000;
 

@@ -4,14 +4,14 @@
   "title": "Claude Code for email: find the mail you need again",
   "nav": "claude code for email",
   "h1": "claude code for email: clean up one slice first",
-  "description": "Use Claude Code in dusk bot to sort one slice of Gmail and make label changes you approved, with trash left out of the job.",
+  "description": "Use Claude Code in madani bot to sort one slice of Gmail and make label changes you approved, with trash left out of the job.",
   "keyword": "claude code for email",
   "keywords": [
     "claude code email agent",
     "i used claude code to clean up my gmail inbox",
     "claude gmail"
   ],
-  "answer": "**find that old contract without spending lunch in gmail search.** a claude code bot in dusk can read one sender's mail and propose labels.[^1][^2] start read only, open the full threads and choose what belongs together. then allow the label changes you want. leave deletion out; ongoing inbox triage is a separate job.",
+  "answer": "**find that old contract without spending lunch in gmail search.** a claude code bot in madani can read one sender's mail and propose labels.[^1][^2] start read only, open the full threads and choose what belongs together. then allow the label changes you want. leave deletion out; ongoing inbox triage is a separate job.",
   "updated": "2026-11-12",
   "review": {
     "status": "approved",
@@ -50,7 +50,7 @@
     },
     {
       "h": "give the bot reading access",
-      "md": "**get the first shortlist while your mail stays untouched.** choose claude code for a dusk bot. connect gmail under **connected apps** and allow that bot to read only.[^1][^3]\n\nyou sign in on google's page. composio holds the connection; dusk stores no gmail sign-in credentials.[^1]\n\nlabel separate inboxes and name the one you mean. dusk supports up to five usable accounts per app. an empty search might mean the wrong mailbox.[^1]\n\nyour claude sign-in runs on anthropic's terms, not ours. read them (checked 12 november 2026) before you put it on a schedule.[^6]"
+      "md": "**get the first shortlist while your mail stays untouched.** choose claude code for a madani bot. connect gmail under **connected apps** and allow that bot to read only.[^1][^3]\n\nyou sign in on google's page. composio holds the connection; madani stores no gmail sign-in credentials.[^1]\n\nlabel separate inboxes and name the one you mean. madani supports up to five usable accounts per app. an empty search might mean the wrong mailbox.[^1]\n\nyour claude sign-in runs on anthropic's terms, not ours. read them (checked 12 november 2026) before you put it on a schedule.[^6]"
     },
     {
       "h": "read the conversation before choosing the label",
@@ -58,7 +58,7 @@
     },
     {
       "h": "allow one visible change",
-      "md": "**file the messages you chose under the label you agreed.** allow only the actions the job needs.[^1][^2]\n\n**modify email labels** happens to count as a send in dusk, so it waits for **Allow**. the thread and batch versions don't wait. leave those two out. a daily sending amount also permits changes without asking.[^2][^4]\n\nfor this step, allow **modify email labels** and **create label**. leave deletion and outgoing email out. the thread action is **modify thread labels**; the batch action is **batch modify gmail messages**."
+      "md": "**file the messages you chose under the label you agreed.** allow only the actions the job needs.[^1][^2]\n\n**modify email labels** happens to count as a send in madani, so it waits for **Allow**. the thread and batch versions don't wait. leave those two out. a daily sending amount also permits changes without asking.[^2][^4]\n\nfor this step, allow **modify email labels** and **create label**. leave deletion and outgoing email out. the thread action is **modify thread labels**; the batch action is **batch modify gmail messages**."
     },
     {
       "h": "find the contract under its new label",
@@ -66,11 +66,11 @@
     },
     {
       "h": "know when a label job becomes an account-settings job",
-      "md": "**labels get you organised; filters need extra permissions.** so do vacation replies, imap, pop, forwarding, send-as and delegates. the standard gmail connection cannot use those settings.[^1]\n\nyour own composio project can add them. on dusk cloud, ask support. the bot should tell you about the limit rather than retrying.\n\na label won't change gmail settings or explain why you kept a message. tell the bot that context. for microsoft mail, start with [outlook's actions](/integrations/outlook)."
+      "md": "**labels get you organised; filters need extra permissions.** so do vacation replies, imap, pop, forwarding, send-as and delegates. the standard gmail connection cannot use those settings.[^1]\n\nyour own composio project can add them. on madani cloud, ask support. the bot should tell you about the limit rather than retrying.\n\na label won't change gmail settings or explain why you kept a message. tell the bot that context. for microsoft mail, start with [outlook's actions](/integrations/outlook)."
     },
     {
       "h": "finish once before making it repeat",
-      "md": "**finish the backlog, then stop.** a cleanup is usually a one-off. schedule a separate review only if new work keeps arriving. name the source, time, result and quiet rule.[^5]\n\nlocal dusk routines need an awake computer and open app. dusk cloud keeps them running.\n\nif choosing the bot is unfamiliar, start with the [non-developer guide](/guides/claude-code-for-non-developers). the win is finding that contract in five seconds next month."
+      "md": "**finish the backlog, then stop.** a cleanup is usually a one-off. schedule a separate review only if new work keeps arriving. name the source, time, result and quiet rule.[^5]\n\nlocal madani routines need an awake computer and open app. madani cloud keeps them running.\n\nif choosing the bot is unfamiliar, start with the [non-developer guide](/guides/claude-code-for-non-developers). the win is finding that contract in five seconds next month."
     }
   ],
   "faq": [
@@ -89,7 +89,7 @@
   ],
   "sources": [
     {
-      "label": "dusk bot docs: files and apps",
+      "label": "madani bot docs: files and apps",
       "url": "/docs/files-and-apps"
     },
     {
@@ -98,15 +98,15 @@
       "checked": "2026-11-12"
     },
     {
-      "label": "dusk bot docs: ai setup",
+      "label": "madani bot docs: ai setup",
       "url": "/docs/getting-started"
     },
     {
-      "label": "dusk bot docs: approval settings",
+      "label": "madani bot docs: approval settings",
       "url": "/docs/computer"
     },
     {
-      "label": "dusk bot docs: routines",
+      "label": "madani bot docs: routines",
       "url": "/docs/routines"
     },
     {

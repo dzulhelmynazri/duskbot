@@ -27,8 +27,8 @@ export function checkedGroupResponder(value: unknown, memberIds: string[]): Grou
   if (responder.kind === "everyone") return { kind: "everyone" };
   if (responder.kind === "mentions") return { kind: "mentions" };
   if (responder.kind === "auto") {
-    if (responder.by !== undefined && responder.by !== "dusk" && responder.by !== LEGACY.short) return null;
-    const by = responder.by !== undefined ? { by: "dusk" as const } : {};
+    if (responder.by !== undefined && responder.by !== "madani" && responder.by !== LEGACY.short) return null;
+    const by = responder.by !== undefined ? { by: "madani" as const } : {};
     if (responder.fallbackBotId === undefined || responder.fallbackBotId === null) return { kind: "auto", ...by };
     return typeof responder.fallbackBotId === "string" && memberIds.includes(responder.fallbackBotId)
       ? { kind: "auto", fallbackBotId: responder.fallbackBotId, ...by }

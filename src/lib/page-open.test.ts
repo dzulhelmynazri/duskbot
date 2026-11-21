@@ -5,21 +5,21 @@ import { createRoot } from "react-dom/client";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { isPublishedPageUrl, pagePanelBot, requestPanelPage, usePanelPage, withPageOpen, type PageOpenFacts, type PanelPage } from "./page-open";
 
-const PAGE = "https://abcdefghijklmnopqrstuvwxyz.page.dusk.bot/";
+const PAGE = "https://abcdefghijklmnopqrstuvwxyz.page.madani.bot/";
 const facts = (over: Partial<PageOpenFacts> = {}): PageOpenFacts => ({
   selectedId: "pepper", bots: [{ id: "pepper" }], groups: [{ id: "room" }],
   config: { features: { browser: true }, browserEngine: { kind: "engine" } }, desktop: {}, ...over,
 });
 
 describe("a published page's link", () => {
-  it("is only https://<page id>.page.dusk.bot, never an app, chat or look-alike link", () => {
+  it("is only https://<page id>.page.madani.bot, never an app, chat or look-alike link", () => {
     expect(isPublishedPageUrl(PAGE)).toBe(true);
     expect(isPublishedPageUrl(`${PAGE}charts/index.html?region=EU#top`)).toBe(true);
     for (const other of [
-      "duskbot://thread/t1?bot=pepper", "duskbot://bot/pepper", "http://abcdefghijklmnopqrstuvwxyz.page.dusk.bot/",
-      "https://page.dusk.bot/", "https://www.page.dusk.bot/", "https://upload.page.dusk.bot/", "https://a.b.abcdefghijklmnopqrstuvwxyz.page.dusk.bot/",
-      "https://abcdefghijklmnopqrstuvwxyz.page.dusk.bot.evil.test/", "https://abcdefghijklmnopqrstuvwxyz.dusk.pages/",
-      "https://user:pw@abcdefghijklmnopqrstuvwxyz.page.dusk.bot/", "https://abcdefghijklmnopqrstuvwxyz.page.dusk.bot:8443/",
+      "madanibot://thread/t1?bot=pepper", "madanibot://bot/pepper", "http://abcdefghijklmnopqrstuvwxyz.page.madani.bot/",
+      "https://page.madani.bot/", "https://www.page.madani.bot/", "https://upload.page.madani.bot/", "https://a.b.abcdefghijklmnopqrstuvwxyz.page.madani.bot/",
+      "https://abcdefghijklmnopqrstuvwxyz.page.madani.bot.evil.test/", "https://abcdefghijklmnopqrstuvwxyz.madani.pages/",
+      "https://user:pw@abcdefghijklmnopqrstuvwxyz.page.madani.bot/", "https://abcdefghijklmnopqrstuvwxyz.page.madani.bot:8443/",
       "javascript:alert(1)", "not a url", "", undefined, null,
     ]) expect(isPublishedPageUrl(other), String(other)).toBe(false);
   });
@@ -46,7 +46,7 @@ describe("where a published page opens", () => {
   });
 
   it("never sends any other link to the panel", () => {
-    for (const link of ["https://example.com/", "duskbot://thread/t1?bot=pepper", "https://page.dusk.bot/"]) expect(pagePanelBot(link, facts())).toBeNull();
+    for (const link of ["https://example.com/", "madanibot://thread/t1?bot=pepper", "https://page.madani.bot/"]) expect(pagePanelBot(link, facts())).toBeNull();
   });
 });
 

@@ -17,13 +17,13 @@ describe("self-hosted update row", () => {
   });
 
   it("names the new version and how this install is updated", () => {
-    const docker = check({ available: true, latest: "0.1.93", command: "docker compose pull dusk && docker compose up -d", restart: false });
+    const docker = check({ available: true, latest: "0.1.93", command: "docker compose pull madani && docker compose up -d", restart: false });
     expect(serverUpdateRow("available", docker)).toEqual({
       label: "Version 0.1.93 available (release notes)",
-      subtitle: "Update with: docker compose pull dusk && docker compose up -d",
+      subtitle: "Update with: docker compose pull madani && docker compose up -d",
     });
-    const npm = check({ install: "npm", available: true, latest: "0.1.93", command: "npm install -g duskbot@latest", restart: true });
-    expect(serverUpdateRow("available", npm).subtitle).toBe("Update with: npm install -g duskbot@latest, then restart the app");
+    const npm = check({ install: "npm", available: true, latest: "0.1.93", command: "npm install -g madanibot@latest", restart: true });
+    expect(serverUpdateRow("available", npm).subtitle).toBe("Update with: npm install -g madanibot@latest, then restart the app");
     // an install it cannot recognise still learns there is a new version
     expect(serverUpdateRow("available", check({ install: "unknown", available: true, latest: "0.1.93" }))).toEqual({
       label: "Version 0.1.93 available (release notes)",
@@ -60,15 +60,15 @@ describe("self-hosted update row", () => {
 
   it("explains servers that are updated elsewhere", () => {
     expect(serverUpdateRow("up-to-date", check({ install: "desktop" })).label).toBe(
-      "Updates come from the dusk bot app on the computer these bots run on",
+      "Updates come from the madani bot app on the computer these bots run on",
     );
     expect(serverUpdateRow("up-to-date", check({ install: "managed" })).label).toBe("Kept up to date for you");
   });
 
   it("points a desktop app with a newer signed release at the download page", () => {
-    const desktop = check({ install: "desktop", available: true, latest: "0.1.150", releaseUrl: "https://dusk.bot/download" });
+    const desktop = check({ install: "desktop", available: true, latest: "0.1.150", releaseUrl: "https://madani.bot/download" });
     expect(serverCheckPhase(desktop, "0.1.141")).toBe("available");
-    expect(serverUpdateRow("available", desktop)).toEqual({ label: "Version 0.1.150 available (release notes)", subtitle: "Download it from dusk.bot/download" });
+    expect(serverUpdateRow("available", desktop)).toEqual({ label: "Version 0.1.150 available (release notes)", subtitle: "Download it from madani.bot/download" });
   });
 
   it("reports a failed check plainly", () => {
@@ -77,16 +77,16 @@ describe("self-hosted update row", () => {
 });
 
 describe("the update row for another server the app shows", () => {
-  const npm = check({ current: "0.1.116", install: "npm", available: true, latest: "0.1.127", command: "npm install -g duskbot@latest", restart: true });
+  const npm = check({ current: "0.1.116", install: "npm", available: true, latest: "0.1.127", command: "npm install -g madanibot@latest", restart: true });
 
   it("says whose update it is, and that whoever runs that server installs it", () => {
     expect(serverUpdateRow("available", npm, "0.1.116", "Office Mac")).toEqual({
       label: "Office Mac can update to 0.1.127",
-      subtitle: "Whoever runs that server updates it with: npm install -g duskbot@latest, then restarts it",
+      subtitle: "Whoever runs that server updates it with: npm install -g madanibot@latest, then restarts it",
     });
-    const docker = check({ available: true, latest: "0.1.127", command: "docker compose pull dusk && docker compose up -d", restart: false });
+    const docker = check({ available: true, latest: "0.1.127", command: "docker compose pull madani && docker compose up -d", restart: false });
     expect(serverUpdateRow("available", docker, "0.1.116", "Office Mac").subtitle).toBe(
-      "Whoever runs that server updates it with: docker compose pull dusk && docker compose up -d",
+      "Whoever runs that server updates it with: docker compose pull madani && docker compose up -d",
     );
     expect(serverUpdateRow("up-to-date", check({ current: "0.1.127" }), "0.1.127", "Office Mac")).toEqual({
       label: "Office Mac is up to date",
@@ -96,7 +96,7 @@ describe("the update row for another server the app shows", () => {
 
   it("keeps the rows of servers updated for their owner, and the row of this computer", () => {
     expect(serverUpdateRow("up-to-date", check({ install: "desktop" }), "0.1.116", "Office Mac").label).toBe(
-      "Updates come from the dusk bot app on the computer these bots run on",
+      "Updates come from the madani bot app on the computer these bots run on",
     );
     expect(serverUpdateRow("up-to-date", check({ install: "managed" }), "0.1.116", "Office Mac").label).toBe("Kept up to date for you");
     expect(serverUpdateRow("available", npm, "0.1.116", null).label).toBe("Version 0.1.127 available (release notes)");
@@ -107,7 +107,7 @@ describe("the update row for another server the app shows", () => {
     try {
       expect(serverUpdateRow("available", npm, "0.1.116", "Office Mac")).toEqual({
         label: "Office Mac kann auf 0.1.127 aktualisiert werden",
-        subtitle: "Wer diesen Server betreibt, aktualisiert ihn mit: npm install -g duskbot@latest und startet ihn danach neu",
+        subtitle: "Wer diesen Server betreibt, aktualisiert ihn mit: npm install -g madanibot@latest und startet ihn danach neu",
       });
     } finally {
       setLocale("en");

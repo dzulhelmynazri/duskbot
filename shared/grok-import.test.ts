@@ -159,7 +159,7 @@ describe("what comes over", () => {
     expect(agent.soul).toContain(`## Your instructions from Grok Bot\n${BOT.instructions}`);
     expect(agent.soul).toMatch(/## What you are for\nYou are Account Health, Customer success\./);
     expect(agent.soul).toContain("These came over paused: Morning watch list, Monday check.");
-    expect(agent.soul).not.toMatch(/\u2014|\bDusk\b/);
+    expect(agent.soul).not.toMatch(/\u2014|\bMadani\b/);
     const memory = agent.seed!.memory["MEMORY.md"]!;
     expect(memory.match(/three weeks without a login/gi)).toHaveLength(1);
     // facts about the person go to About me, each once, not into the bot's notebook

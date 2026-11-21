@@ -15,7 +15,7 @@
   "updated": "2026-11-12",
   "review": {
     "status": "approved",
-    "by": "lead agent, after two independent reviewer passes, against dusk bot docs and the composio catalog",
+    "by": "lead agent, after two independent reviewer passes, against madani bot docs and the composio catalog",
     "at": "2026-11-12"
   },
   "tags": [
@@ -45,7 +45,7 @@
     "toolkit": "outlook",
     "slug": "OUTLOOK_CREATE_DRAFT"
   },
-  "what": "**get the introduction written while you decide who needs it.** give the bot the purpose and facts it can use. subject and body are required. to, cc, bcc and attachments are optional; addresses can stay empty.\n\nanswering an existing conversation? use create draft reply instead. that keeps the thread, but dusk counts that separate action as a send, so it follows your sending setting.",
+  "what": "**get the introduction written while you decide who needs it.** give the bot the purpose and facts it can use. subject and body are required. to, cc, bcc and attachments are optional; addresses can stay empty.\n\nanswering an existing conversation? use create draft reply instead. that keeps the thread, but madani counts that separate action as a send, so it follows your sending setting.",
   "uses": [
     "prepare an introduction from your brief with the recipient left for you",
     "save an event invitation with the venue brief attached",
@@ -80,15 +80,15 @@
   ],
   "sources": [
     {
-      "label": "dusk bot docs: files and apps",
+      "label": "madani bot docs: files and apps",
       "url": "/docs/files-and-apps"
     },
     {
-      "label": "dusk bot docs: routines",
+      "label": "madani bot docs: routines",
       "url": "/docs/routines"
     },
     {
-      "label": "dusk bot docs: computer permissions",
+      "label": "madani bot docs: computer permissions",
       "url": "/docs/computer"
     }
   ],

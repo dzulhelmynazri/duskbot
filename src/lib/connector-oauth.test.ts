@@ -54,7 +54,7 @@ describe("OAuth tab reservation", () => {
   it("keeps Electron external opening without reserving a browser tab", async () => {
     const openExternal = vi.fn(async () => {});
     const open = vi.fn();
-    vi.stubGlobal("window", { duskDesktop: { openExternal }, open });
+    vi.stubGlobal("window", { madaniDesktop: { openExternal }, open });
     const launch = reserveConnectionPage();
     expect(open).not.toHaveBeenCalled();
     expect(await launch.open("https://auth.example.test/flow")).toBe(true);
@@ -85,7 +85,7 @@ describe("OAuth tab reservation", () => {
 
   it("opens the real link in a desktop workspace page, whose window.open is always handed to the system browser", async () => {
     const open = vi.fn(() => null);
-    vi.stubGlobal("window", { duskDesktop: { platform: "darwin" }, open });
+    vi.stubGlobal("window", { madaniDesktop: { platform: "darwin" }, open });
     const launch = reserveConnectionPage();
     expect(open).not.toHaveBeenCalled();
     expect(await launch.open("https://auth.example.test/flow")).toBe(true);

@@ -67,7 +67,7 @@ export function CloudsPage() {
   const { data, error, loading, reload } = useAdmin<{ clouds: CloudRow[]; now: number }>(`/clouds?status=${status}`, 30_000);
   return (
     <>
-      <AdminHeader title="clouds" sub={data ? `${n(data.clouds.length)} shown · refreshes every 30 s` : "every dusk cloud machine"} action={<Segmented<typeof status> label="state" value={status} options={[...STATES]} onChange={setStatus} />} />
+      <AdminHeader title="clouds" sub={data ? `${n(data.clouds.length)} shown · refreshes every 30 s` : "every madani cloud machine"} action={<Segmented<typeof status> label="state" value={status} options={[...STATES]} onChange={setStatus} />} />
       {error && <Failed error={error} retry={reload} />}
       {!data && loading && <Loading />}
       {data && (data.clouds.length ? <CloudTable clouds={data.clouds} onChanged={reload} /> : <p className="rounded-[18px] bg-card px-4 py-6 text-center text-14 text-ink-3">no clouds in this state.</p>)}

@@ -12,7 +12,7 @@ const W = 1100, H = 700;
 const LEAD = 300;
 const SPRING_SOFT = "linear(0, 0.052, 0.172, 0.318, 0.462, 0.592, 0.701, 0.788, 0.855, 0.905, 0.94, 0.964, 0.979, 0.988, 0.994, 0.997, 0.999, 1)";
 const RELEASE = "cubic-bezier(0.28, 1.4, 0.36, 1)";
-const DUSK_OUT = "cubic-bezier(0.22, 1, 0.36, 1)";
+const MADANI_OUT = "cubic-bezier(0.22, 1, 0.36, 1)";
 const QUINT = "cubic-bezier(0.16, 1, 0.3, 1)";
 
 export const PICK_LABELS: Record<string, string> = { a: "A  now", b: "B  fast and soft", c: "C  expressive" };
@@ -45,7 +45,7 @@ function cut(el: Element, from: Keyframe, to: Keyframe, at: number): number {
 }
 
 function resolve(easing: string): string {
-  return easing.replace("var(--dusk-spring-soft)", SPRING_SOFT).replace("var(--dusk-ease-release)", RELEASE);
+  return easing.replace("var(--madani-spring-soft)", SPRING_SOFT).replace("var(--madani-ease-release)", RELEASE);
 }
 
 const OUT = () => cssCurve(null);
@@ -132,11 +132,11 @@ function palette(stage: HTMLElement, m: DesktopMotion): number {
   const list = h("div", "position:relative;padding:8px;display:flex;flex-direction:column;gap:2px;", "", box);
   const glide = m.palette.glideMs > 0;
   const hi = h("div", `position:absolute;left:8px;right:8px;top:8px;height:49px;border-radius:10px;background:${C.hover};`, "", list);
-  const rowsA = [["dusk bot", "Your own bot, on this Mac"], ["New bot", "Make another bot"], ["New group chat", "Bots and people together"], ["Keyboard shortcuts", ""], ["Settings: General", ""], ["Settings: Texting", ""], ["Settings: Computer", ""], ["Settings: Permissions", ""]];
+  const rowsA = [["madani bot", "Your own bot, on this Mac"], ["New bot", "Make another bot"], ["New group chat", "Bots and people together"], ["Keyboard shortcuts", ""], ["Settings: General", ""], ["Settings: Texting", ""], ["Settings: Computer", ""], ["Settings: Permissions", ""]];
   const rowsB = [["Settings: General", ""], ["Settings: Texting", ""], ["Settings: Computer", ""], ["Settings: Permissions", ""]];
   const draw = (items: string[][]) => items.map(([name, detail], i) => {
     const row = h("div", `position:relative;height:49px;display:flex;align-items:center;gap:10px;padding:0 10px;border-radius:10px;font-size:13px;color:${C.ink};`, "", list);
-    h("span", `width:24px;height:24px;border-radius:8px;flex:none;background:${i === 0 && name === "dusk bot" ? C.accent : C.hover};`, "", row);
+    h("span", `width:24px;height:24px;border-radius:8px;flex:none;background:${i === 0 && name === "madani bot" ? C.accent : C.hover};`, "", row);
     const t = h("div", "", "", row);
     h("div", "", name, t);
     if (detail) h("div", `color:${C.soft};`, detail, t);
@@ -215,7 +215,7 @@ function settings(stage: HTMLElement, m: DesktopMotion): number {
     cut(items[next - 1], { background: C.hover }, { background: "transparent" }, at);
     cut(items[next], { background: "transparent" }, { background: C.hover }, at);
     cut(panes[next - 1], { opacity: 1 }, { opacity: 0 }, at);
-    if (a) play(panes[next], [{ opacity: 0, transform: "translateY(4px)" }, { opacity: 1, transform: "none" }], at, 180, DUSK_OUT);
+    if (a) play(panes[next], [{ opacity: 0, transform: "translateY(4px)" }, { opacity: 1, transform: "none" }], at, 180, MADANI_OUT);
     else play(panes[next], [{ opacity: m.swap.from, transform: `translateY(${m.swap.y}px)`, filter: `blur(${m.swap.blur}px)` }, { opacity: 1, transform: "none", filter: "blur(0px)" }], at, pacedMs(m.swap.ms), OUT());
     at += 800;
   }
@@ -248,7 +248,7 @@ function panel(stage: HTMLElement, m: DesktopMotion): number {
   cut(tabEls[0], { background: C.menu }, { background: "transparent" }, at);
   cut(tabEls[1], { background: "transparent" }, { background: C.menu }, at);
   cut(bodies[0], { opacity: 1 }, { opacity: 0 }, at);
-  if (m.pick === "a") play(bodies[1], [{ opacity: 0, transform: "translateY(6px)" }, { opacity: 1, transform: "none" }], at, 220, DUSK_OUT);
+  if (m.pick === "a") play(bodies[1], [{ opacity: 0, transform: "translateY(6px)" }, { opacity: 1, transform: "none" }], at, 220, MADANI_OUT);
   else play(bodies[1], [{ opacity: m.swap.from, transform: `translateY(${m.swap.y}px)`, filter: `blur(${m.swap.blur}px)` }, { opacity: 1, transform: "none", filter: "blur(0px)" }], at, pacedMs(m.swap.ms), OUT());
   return play(panelSlot, [{ width: "320px" }, { width: "0px" }], at + 1100, ms, ease, "forwards") + 500;
 }
@@ -370,7 +370,7 @@ function press(stage: HTMLElement, m: DesktopMotion): number {
   const hover = 140;
   play(row, [{ backgroundColor: "rgb(0 0 0 / 0)" }, { backgroundColor: C.hover }], LEAD, hover, QUINT);
   const down = (el: HTMLElement, scale: number, at: number) => {
-    play(el, [{ scale: "1" }, { scale: String(scale) }], at, p.downMs, DUSK_OUT, "forwards");
+    play(el, [{ scale: "1" }, { scale: String(scale) }], at, p.downMs, MADANI_OUT, "forwards");
     return play(el, [{ scale: String(scale) }, { scale: "1" }], at + 180, p.upMs, cssCurve(p.up), "forwards");
   };
   down(row, p.soft, LEAD + 500);

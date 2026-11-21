@@ -7,9 +7,9 @@ import { DatabaseSync } from "node:sqlite";
 import { performance, monitorEventLoopDelay } from "node:perf_hooks";
 import { setTimeout as delay, setImmediate } from "node:timers/promises";
 
-const directory = mkdtempSync(join(tmpdir(), "dusk-maintenance-probe-"));
-const previousDataDir = process.env.DUSK_DATA_DIR;
-process.env.DUSK_DATA_DIR = directory;
+const directory = mkdtempSync(join(tmpdir(), "madani-maintenance-probe-"));
+const previousDataDir = process.env.MADANI_DATA_DIR;
+process.env.MADANI_DATA_DIR = directory;
 const db = await import("../server/message-db.ts");
 const { Store } = await import("../server/store.ts");
 const memory = await import("../server/workspace.ts");
@@ -67,7 +67,7 @@ try {
   });
 } finally {
   db.closeMessageDb();
-  if (previousDataDir === undefined) delete process.env.DUSK_DATA_DIR;
-  else process.env.DUSK_DATA_DIR = previousDataDir;
+  if (previousDataDir === undefined) delete process.env.MADANI_DATA_DIR;
+  else process.env.MADANI_DATA_DIR = previousDataDir;
   rmSync(directory, { recursive: true, force: true });
 }

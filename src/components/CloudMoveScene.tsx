@@ -68,7 +68,7 @@ function Pixels({ at, pixels, cell = CELL }: { at: { x: number; y: number }; pix
 
 const spot = (slot: { x: number; y: number }) => `translate(${slot.x - BOT / 2}px, ${slot.y - BOT}px)`;
 
-/** Bots hopping from this computer onto dusk cloud: `progress` 0 to 1, the last bot hops only once everything arrived. */
+/** Bots hopping from this computer onto madani cloud: `progress` 0 to 1, the last bot hops only once everything arrived. */
 export function CloudMoveScene({ progress, done = false, className }: { progress: number; done?: boolean; className?: string }) {
   const reduced = useMotionReduced();
   const across = botsAcross(done ? 1 : progress, BOTS.length);
@@ -101,7 +101,7 @@ const BAND_LAPTOP = { x: 30, y: 40 }, BAND_CLOUD = { x: 146, y: 36 };
 const BAND_ON = { laptop: { x: 63, y: 42 }, cloud: { x: 182, y: 47 } } as const;
 const bandSpot = (slot: { x: number; y: number }, size: number) => `translate(${slot.x - size / 2}px, ${slot.y - size}px)`;
 
-/** Bots and their way to dusk cloud, as a short band: asleep on this computer, on the cloud, or hopping across.
+/** Bots and their way to madani cloud, as a short band: asleep on this computer, on the cloud, or hopping across.
  * One bot stands alone; a group chat's bots (up to three drawn) stand side by side and hop one after another. */
 export function CloudHopScene({ bots, on, asleep = false, sky = true, className }: {
   bots: readonly Pick<Bot, "id" | "color" | "mascotBody" | "name">[];

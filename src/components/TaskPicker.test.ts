@@ -5,7 +5,7 @@ import { filterTasks } from "./TaskPicker";
 describe("filterTasks", () => {
   const tasks = [
     { title: "Clean up" },
-    { title: "dusk bot Update" },
+    { title: "madani bot Update" },
     { title: "Investment report" },
     { title: "Report drafts" },
   ];
@@ -16,7 +16,7 @@ describe("filterTasks", () => {
   });
 
   it("matches titles case-insensitively", () => {
-    expect(filterTasks(tasks, "dusk b").map((task) => task.title)).toEqual(["dusk bot Update"]);
+    expect(filterTasks(tasks, "madani b").map((task) => task.title)).toEqual(["madani bot Update"]);
   });
 
   it("ranks prefix hits ahead of substring hits, keeping input order in each tier", () => {

@@ -17,15 +17,15 @@ type AccountContextValue = { account: MobileAccount | null; origin: string;
   accounts: MobileAccount[];
   /** counts the sign-ins made since launch, so a sign-in screen opened while signed in knows when its own one landed */
   signIns: number;
-  /** this app keeps a dusk account (the native app, or the preview's ?account=1) */
+  /** this app keeps a madani account (the native app, or the preview's ?account=1) */
   offered: boolean;
   /** another account signed in on the phone becomes the one in use; false when it is not signed in here */
   switchAccount(id: string): Promise<boolean>;
   /** the account only, for a sign-in screen moving to another service */
   signOut(): Promise<void>;
-  /** Settings' Sign out: the account in use and its dusk clouds leave the phone, which opens again on what is left */
+  /** Settings' Sign out: the account in use and its madani clouds leave the phone, which opens again on what is left */
   signOutOfPhone(): Promise<void>;
-  /** Every account and every dusk cloud leave the phone, for a move to another account service. */
+  /** Every account and every madani cloud leave the phone, for a move to another account service. */
   signOutEverywhere(): Promise<void>;
   /** deletes the account from the app; false when it could not be done (nothing changed) */
   deleteAccount(): Promise<boolean>; enrollGrant(): Promise<{ enrollToken: string; dashboardUrl: string } | null>;
@@ -39,14 +39,14 @@ type AccountContextValue = { account: MobileAccount | null; origin: string;
     cancelEmail(): void; browser(provider: OAuthProvider): Promise<void>;
     /** a code from a signed-in desktop's settings › phone: logs this phone in to that account, no email step */
     phoneCode(code: string): Promise<PhoneCodeResult>;
-    /** a sign-in that came back through duskbot://auth and did not finish */
+    /** a sign-in that came back through madanibot://auth and did not finish */
     problem?: string; signedIn(): void;
   } };
 const AccountContext = createContext<AccountContextValue | null>(null);
 export const useMobileAccount = () => useContext(AccountContext);
 
 export function mobileAccountOrigin(native: boolean, params: URLSearchParams): string {
-  const configured = import.meta.env.VITE_DUSK_ACCOUNT_ORIGIN;
+  const configured = import.meta.env.VITE_MADANI_ACCOUNT_ORIGIN;
   if (configured) return configured;
   const value = !native && params.get("accountOrigin");
   if (value) {
@@ -93,11 +93,11 @@ function authProblem(result: AuthResult): string | undefined {
 export function AccountGate({ children }: { children: ReactNode }) {
   const platform = usePlatform();
   const params = new URLSearchParams(location.search);
-  const wanted = platform.native ? import.meta.env.VITE_DUSK_ALLOW_SIGNED_OUT !== "1" : params.get("account") === "1";
+  const wanted = platform.native ? import.meta.env.VITE_MADANI_ALLOW_SIGNED_OUT !== "1" : params.get("account") === "1";
   // a sign-in kept from the other service (production or the preview stack) is followed there, never left unread
   const [, setFollowed] = useState<string | null>(null);
   const origin = mobileAccountOrigin(platform.native, params);
-  const follows = platform.native && !import.meta.env.VITE_DUSK_ACCOUNT_ORIGIN;
+  const follows = platform.native && !import.meta.env.VITE_MADANI_ACCOUNT_ORIGIN;
   const client = useMemo(() => createMobileAccount({ platform, origin }), [platform, origin]);
   const [account, setAccount] = useState<MobileAccount | null>(null);
   const [signIns, setSignIns] = useState(0);
@@ -210,6 +210,6 @@ export function AccountGate({ children }: { children: ReactNode }) {
       },
     };
   }, [account, signIns, origin, wanted, client, platform, problem]);
-  if (wanted && restoring) return <div className="dusk-mobile flex size-full items-center justify-center bg-app"><MascotLoader naps={false} /></div>;
+  if (wanted && restoring) return <div className="madani-mobile flex size-full items-center justify-center bg-app"><MascotLoader naps={false} /></div>;
   return <AccountContext value={context}>{children}</AccountContext>;
 }

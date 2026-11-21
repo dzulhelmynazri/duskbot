@@ -21,20 +21,20 @@ const mount = async (element: ReturnType<typeof createElement>) => {
 };
 
 it("the sidebar switcher shows a Cloud named and coloured while it was set up: its name on its colour's tile", async () => {
-  Object.assign(window, { duskDesktop: { workspaces: { state: async () => ({ local: false, name: "Studio", origin: "https://dusk-u-1.fly.dev", color: "teal" }), menu: async () => {} } } });
+  Object.assign(window, { madaniDesktop: { workspaces: { state: async () => ({ local: false, name: "Studio", origin: "https://madani-u-1.fly.dev", color: "teal" }), menu: async () => {} } } });
   const root = await mount(createElement(DesktopWorkspaceSwitcher));
   expect(host.textContent).toContain("Studio");
   expect(host.innerHTML).toContain("background: var(--identity-teal)");
   await act(async () => root.unmount());
-  Object.assign(window, { duskDesktop: { workspaces: { state: async () => ({ local: false, name: "VPS", origin: "https://bots.example.test", color: "url(x)" }), menu: async () => {} } } });
+  Object.assign(window, { madaniDesktop: { workspaces: { state: async () => ({ local: false, name: "VPS", origin: "https://bots.example.test", color: "url(x)" }), menu: async () => {} } } });
   const plain = await mount(createElement(DesktopWorkspaceSwitcher));
   expect(host.innerHTML).not.toContain("--identity-"); expect(host.textContent).toContain("VPS");
   await act(async () => plain.unmount());
 });
 
 it("Settings → Servers lists the Cloud under its name, on its colour's tile; other servers keep the plain mark", async () => {
-  Object.assign(window, { duskDesktop: { environments: { state: async () => ({ localOrigin: "http://127.0.0.1:1", remote: false, packaged: false, activeId: "local",
-    environments: [{ id: "c", kind: "remote", name: "Studio", origin: "https://dusk-u-1.fly.dev", color: "purple" }, { id: "v", kind: "remote", name: "VPS", origin: "https://bots.example.test" }] }),
+  Object.assign(window, { madaniDesktop: { environments: { state: async () => ({ localOrigin: "http://127.0.0.1:1", remote: false, packaged: false, activeId: "local",
+    environments: [{ id: "c", kind: "remote", name: "Studio", origin: "https://madani-u-1.fly.dev", color: "purple" }, { id: "v", kind: "remote", name: "VPS", origin: "https://bots.example.test" }] }),
     switch: vi.fn(), forget: vi.fn(), addFromLink: vi.fn(), onOpenSettings: () => () => {} } } });
   const root = await mount(createElement(ConnectedWorkspacesSettings));
   expect(host.textContent).toContain("Studio"); expect(host.textContent).toContain("VPS");

@@ -17,7 +17,7 @@ import { createProactive, WATCH_FILE, WATCH_NAME } from "./proactive.ts";
 import { proactiveOwner } from "./proactive-owner.ts";
 import { CHECKS_FILE } from "./routine-checks.ts";
 
-// Dusk owns the proactive side: the "Keep an eye on my day" routine, the brief and the add-a-key suggestion. Each
+// Madani owns the proactive side: the "Keep an eye on my day" routine, the brief and the add-a-key suggestion. Each
 // `start()` reads the store, the routines and the proactive files from disk, as the server does when it starts.
 const selection = () => ({ instanceId: "claude", model: "claude-sonnet-5" });
 const ada: EmailHeader = { id: "m1", threadId: "t1", at: 0, from: "Ada <ada@x.test>", subject: "Q3 numbers", preview: "Can you send them?" };
@@ -71,7 +71,7 @@ function turnOn(place: ReturnType<typeof start>): Routine {
   return place.briefing().find((routine) => routine.name === WATCH_NAME)!;
 }
 
-/** An install from before Dusk owned the watch: its Chief made it, and Dusk joined later. */
+/** An install from before Madani owned the watch: its Chief made it, and Madani joined later. */
 function existingInstall() {
   const first = start();
   const clive = first.store.createBot({ name: "Clive" });
@@ -81,13 +81,13 @@ function existingInstall() {
   return { first, clive, watch };
 }
 
-describe("Dusk keeps an eye on the day", () => {
+describe("Madani keeps an eye on the day", () => {
   beforeEach(() => {
     closeMessageDb();
     rmSync(DATA_DIR, { recursive: true, force: true });
   });
 
-  it("on a new install, its Dusk is the Chief and gets the one watch, once it is turned on", () => {
+  it("on a new install, its Madani is the Chief and gets the one watch, once it is turned on", () => {
     const first = start();
     first.store.seedIfEmpty();
     const maus = ensureDefaultBot(first.store, { dataDir: DATA_DIR })!;
@@ -98,7 +98,7 @@ describe("Dusk keeps an eye on the day", () => {
     expect(again.briefing().map((routine) => routine.botId)).toEqual([maus.id]);
   });
 
-  it("on an install where Dusk comes later, the watch is suggested and made on Dusk, not the Chief", () => {
+  it("on an install where Madani comes later, the watch is suggested and made on Madani, not the Chief", () => {
     const first = start();
     const clive = first.store.createBot({ name: "Clive" });
     first.store.setChiefOfStaff(clive.id);
@@ -108,7 +108,7 @@ describe("Dusk keeps an eye on the day", () => {
     expect(start().briefing()).toHaveLength(1);
   });
 
-  it("on an existing install, the Chief's watch moves to Dusk once, exactly as the person left it", async () => {
+  it("on an existing install, the Chief's watch moves to Madani once, exactly as the person left it", async () => {
     const { first, clive, watch } = existingInstall();
     await first.proactive.brief.report({ routine: watch, at: Date.now(), picked: [{ email: ada, why: "Ada needs the numbers.", needsReply: true }] });
     expect(briefCards(first.store, clive)).toHaveLength(1);
@@ -170,10 +170,10 @@ describe("Dusk keeps an eye on the day", () => {
     expect(json(WATCH_FILE).handed[watch.id]).toBe(maus.id);
   });
 
-  it("never leaves two watches on: the Chief's is the one kept, Dusk's own is paused, and none is deleted", () => {
+  it("never leaves two watches on: the Chief's is the one kept, Madani's own is paused, and none is deleted", () => {
     const { first, watch } = existingInstall();
     const maus = ensureDefaultBot(first.store, { dataDir: DATA_DIR })!;
-    const own = first.routines.create({ name: "Dusk's watch", prompt: "Watch.", botId: maus.id, enabled: true, checks: ["mail"], deliver: "brief",
+    const own = first.routines.create({ name: "Madani's watch", prompt: "Watch.", botId: maus.id, enabled: true, checks: ["mail"], deliver: "brief",
       schedule: { type: "interval", everyMinutes: 15, anchorAt: Date.now() + 60_000 } });
     const after = start();
     after.proactive.ensureWatch();
@@ -185,7 +185,7 @@ describe("Dusk keeps an eye on the day", () => {
     const { first, watch } = existingInstall();
     first.routines.update(watch.id, { enabled: false });
     const maus = ensureDefaultBot(first.store, { dataDir: DATA_DIR })!;
-    first.routines.create({ name: "Dusk's watch", prompt: "Watch.", botId: maus.id, enabled: true, checks: ["mail"], deliver: "brief",
+    first.routines.create({ name: "Madani's watch", prompt: "Watch.", botId: maus.id, enabled: true, checks: ["mail"], deliver: "brief",
       schedule: { type: "interval", everyMinutes: 15, anchorAt: Date.now() + 60_000 } });
     const after = start();
     after.proactive.ensureWatch();
@@ -216,7 +216,7 @@ describe("Dusk keeps an eye on the day", () => {
     expect(frozen.briefing().map((routine) => routine.botId)).toEqual([clive.id]);
   });
 
-  it("posts the brief, its notification, the presence answer and the add-a-key card to Dusk hidden from the sidebar", async () => {
+  it("posts the brief, its notification, the presence answer and the add-a-key card to Madani hidden from the sidebar", async () => {
     const { first, clive, watch } = existingInstall();
     await first.proactive.brief.report({ routine: watch, at: Date.now(), picked: [{ email: { ...ada, id: "m0" }, why: "Earlier today.", needsReply: false }] });
     expect(briefCards(first.store, clive)).toHaveLength(1);
@@ -239,7 +239,7 @@ describe("Dusk keeps an eye on the day", () => {
     expect(watch.id).toBe(moved.id);
   });
 
-  it("on a Team Cloud: no watch, nothing handed over, and a member's Dusk never reads the shared inbox", async () => {
+  it("on a Team Cloud: no watch, nothing handed over, and a member's Madani never reads the shared inbox", async () => {
     const first = start({ team: true });
     first.store.seedIfEmpty({ defaultBot: false });
     const chief = first.store.bots.find((bot) => bot.chiefOfStaff)!;
@@ -255,15 +255,15 @@ describe("Dusk keeps an eye on the day", () => {
     expect(first.routines.listRoutines().find((routine) => routine.id === restored.id)?.botId).toBe(chief.id);
     expect(await first.proactive.checks.check(own, { manual: true })).toEqual({});
     expect(await first.proactive.checks.check(restored, { manual: true })).toEqual({});
-    // Off a team too, a member's Dusk is never the proactive bot.
+    // Off a team too, a member's Madani is never the proactive bot.
     const untagged = start();
     expect(proactiveOwner(untagged.store)?.id).toBe(chief.id);
     expect(await untagged.proactive.checks.check(own, { manual: true })).toEqual({});
     expect([...first.reads, ...untagged.reads]).toEqual([]);
   });
 
-  it("moves to My Cloud with Dusk, untouched as it looks, once the person changed the watch, and is the only watch on there", async () => {
-    // This computer: the watch was handed to a Dusk nobody has opened yet.
+  it("moves to My Cloud with Madani, untouched as it looks, once the person changed the watch, and is the only watch on there", async () => {
+    // This computer: the watch was handed to a Madani nobody has opened yet.
     const { first, clive, watch } = existingInstall();
     const maus = ensureDefaultBot(first.store, { dataDir: DATA_DIR })!;
     const here = start();
@@ -291,7 +291,7 @@ describe("Dusk keeps an eye on the day", () => {
     const mausFields = pick(here.store.bot(maus.id)!), cliveFields = pick(here.store.bot(clive.id)!);
     const routine = kindRecord(deps(here), "routine", watch.id)!;
 
-    // My Cloud: its own Dusk and its own watch, then this computer's bots, then its automations, as a move sends them.
+    // My Cloud: its own Madani and its own watch, then this computer's bots, then its automations, as a move sends them.
     closeMessageDb();
     rmSync(DATA_DIR, { recursive: true, force: true });
     const cloud = start();
@@ -303,11 +303,11 @@ describe("Dusk keeps an eye on the day", () => {
       let status = 0;
       await moveKindsRoute(deps(cloud), { path: "/api/cloud-send/kind", method: "PUT", url: new URL("http://127.0.0.1/api/cloud-send/kind"), auth: {} as never, req: {} as never,
         res: { setHeader() {} } as never, json: ((_res: unknown, code: number) => { status = code; }) as never,
-        readBody: (async () => ({ v: 1, key, dataDir: "/Users/amit/.duskbot", record, ...(runs ? { runs } : {}) })) as never });
+        readBody: (async () => ({ v: 1, key, dataDir: "/Users/amit/.madanibot", record, ...(runs ? { runs } : {}) })) as never });
       return status;
     };
     cloud.store.createBot({ name: "Clive" }, { id: clive.id, seedMessages: false });
-    cloud.store.createBot({ name: "Dusk" }, { id: maus.id, seedMessages: false });
+    cloud.store.createBot({ name: "Madani" }, { id: maus.id, seedMessages: false });
     expect(await take(`bot:${clive.id}`, cliveFields)).toBe(200);
     expect(await take(`bot:${maus.id}`, mausFields)).toBe(200);
     cloud.proactive.ensureWatch();

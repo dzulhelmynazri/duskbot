@@ -25,7 +25,7 @@ const say = (line) => console.error(`${new Date().toISOString().slice(11, 19)} $
 
 /** the whole loopback world; `world.reset()` puts every fault back */
 async function bringUp() {
-  const dir = process.env.DUSK_CHAOS_DIR;
+  const dir = process.env.MADANI_CHAOS_DIR;
   const certs = makeCerts(dir);
   const ids = ["contabo", "oracle-in"];
   const pub = {}, nodePorts = {}, fronts = {}, nodes = {}, net = {}, appNet = {}, agentNet = {};
@@ -50,9 +50,9 @@ async function bringUp() {
   async function linkServer({ name = "server", placeOn = null } = {}) {
     const phone = option("--client") === "phone";
     const rtc = option("--direct") === "rtc";
-    const agent = createAgent({ home: join(dir, `${name}-home`), serverPort: bot.port, ca: certs.ca, log, env: { DUSK_CHAOS_PORTS: ids.map((id) => `${pub[id]}:${agentNet[id].port}`).join(","), ...(phone ? { DUSK_LINK_PHONES: "on" } : {}),
+    const agent = createAgent({ home: join(dir, `${name}-home`), serverPort: bot.port, ca: certs.ca, log, env: { MADANI_CHAOS_PORTS: ids.map((id) => `${pub[id]}:${agentNet[id].port}`).join(","), ...(phone ? { MADANI_LINK_PHONES: "on" } : {}),
       // --direct rtc: the agent answers webrtc offers with the node-datachannel this checkout has
-      ...(rtc ? { DUSK_LINK_DIRECT: "on", DUSK_LINK_NDC_DIR: fileURLToPath(new URL("../../..", import.meta.url)), DUSK_LINK_RTC_FETCH: "off", DUSK_LINK_WSS_PORT: String(await freePort()) } : {}) } });
+      ...(rtc ? { MADANI_LINK_DIRECT: "on", MADANI_LINK_NDC_DIR: fileURLToPath(new URL("../../..", import.meta.url)), MADANI_LINK_RTC_FETCH: "off", MADANI_LINK_WSS_PORT: String(await freePort()) } : {}) } });
     const relay = createRelayClient({ base });
     const keys = newLinkKeys();
     const made = await relay.create({ verifier: keys.verifier, appPub: keys.pub });
@@ -66,7 +66,7 @@ async function bringUp() {
       for (let i = 0; i < 100 && !agent.lines.some((line) => line.includes(`lives on node ${placeOn}`)); i += 1) await sleep(100);
       for (const id of ids) await agentNet[id].set("pass");
     }
-    process.env.DUSK_CHAOS_PORTS = ids.map((id) => `${pub[id]}:${appNet[id].port}`).join(",");
+    process.env.MADANI_CHAOS_PORTS = ids.map((id) => `${pub[id]}:${appNet[id].port}`).join(",");
     let app;
     if (phone) {
       // --client phone: the phone app's transport on a device channel the stand-in server hands the agent
@@ -77,12 +77,12 @@ async function bringUp() {
       await sleep(1500);
       app = createApp({ link: { base, id: cid, token, key: sealKeyOf(pair.priv, pair.pub, bot.agentPub(), cid).toString("base64url") }, ca: certs.ca, log, runner: "phone-runner.mjs" });
     } else {
-      if (rtc) process.env.DUSK_CHAOS_DIRECT = "rtc";
+      if (rtc) process.env.MADANI_CHAOS_DIRECT = "rtc";
       app = createApp({ link, ca: certs.ca, log });
     }
     await app.start();
-    delete process.env.DUSK_CHAOS_PORTS;
-    delete process.env.DUSK_CHAOS_DIRECT;
+    delete process.env.MADANI_CHAOS_PORTS;
+    delete process.env.MADANI_CHAOS_DIRECT;
     return { agent, app, link };
   }
   const { agent, app, link } = await linkServer({ placeOn: option("--home") });
@@ -327,14 +327,14 @@ async function main() {
 }
 
 // the run trusts its own throwaway ca like every process it starts, and node reads that only at start
-if (!process.env.DUSK_CHAOS_DIR) {
+if (!process.env.MADANI_CHAOS_DIR) {
   const dir = scratch();
   makeCerts(dir);
-  const child = spawn(process.execPath, [fileURLToPath(import.meta.url), ...args], { stdio: "inherit", env: { ...process.env, DUSK_CHAOS_DIR: dir, NODE_EXTRA_CA_CERTS: join(dir, "ca.pem") } });
+  const child = spawn(process.execPath, [fileURLToPath(import.meta.url), ...args], { stdio: "inherit", env: { ...process.env, MADANI_CHAOS_DIR: dir, NODE_EXTRA_CA_CERTS: join(dir, "ca.pem") } });
   child.on("exit", (code) => { removeScratch(dir); process.exit(code ?? 2); });
   for (const signal of ["SIGINT", "SIGTERM"]) process.on(signal, () => child.kill(signal));
 } else {
-  process.env.DUSK_CHAOS_PARENT = String(process.pid);
+  process.env.MADANI_CHAOS_PARENT = String(process.pid);
   for (const signal of ["SIGINT", "SIGTERM"]) process.on(signal, () => process.exit(130));
   main().catch((error) => { console.error(error); process.exit(2); });
 }

@@ -6,7 +6,7 @@ import { afterEach, beforeEach, expect, test, vi } from "vitest";
 (globalThis as { IS_REACT_ACT_ENVIRONMENT?: boolean }).IS_REACT_ACT_ENVIRONMENT = true;
 
 const state = vi.hoisted(() => ({
-  session: { account: { id: "acct_a", email: "current@duskbot.test" } as { id: string; email: string } | null },
+  session: { account: { id: "acct_a", email: "current@madanibot.test" } as { id: string; email: string } | null },
   api: { handoff: async (_token: string, _opts?: { confirm?: boolean; replace?: boolean }): Promise<{ account: unknown; next: string } | { ask: "confirm" | "other_account"; email: string }> => ({ account: {}, next: "/billing?plan=pro&src=app_computer_move" }) },
   left: [] as string[],
 }));
@@ -43,24 +43,24 @@ test("takes the token out of the address bar before rendering; the same account 
 });
 
 test("signed out: asks first, then confirms once with the same token", async () => {
-  const handoff = vi.spyOn(state.api, "handoff").mockResolvedValueOnce({ ask: "confirm", email: "owner@duskbot.test" });
+  const handoff = vi.spyOn(state.api, "handoff").mockResolvedValueOnce({ ask: "confirm", email: "owner@madanibot.test" });
   const host = await land(`#t=${token}`);
   expect(state.left).toEqual([]);
-  expect(host.textContent).toContain("continue as owner@duskbot.test?");
+  expect(host.textContent).toContain("continue as owner@madanibot.test?");
   await act(async () => button(host, "continue")!.click());
   expect(handoff).toHaveBeenLastCalledWith(token, { confirm: true });
   expect(state.left).toEqual(["/billing?plan=pro&src=app_computer_move"]);
 });
 
 test("another account in this browser: asks first, then switches with replace; not you? goes to sign in", async () => {
-  const handoff = vi.spyOn(state.api, "handoff").mockResolvedValueOnce({ ask: "other_account", email: "owner@duskbot.test" });
+  const handoff = vi.spyOn(state.api, "handoff").mockResolvedValueOnce({ ask: "other_account", email: "owner@madanibot.test" });
   let host = await land(`#t=${token}`);
-  expect(host.textContent).toContain("this browser is signed in as current@duskbot.test");
+  expect(host.textContent).toContain("this browser is signed in as current@madanibot.test");
   await act(async () => button(host, "continue")!.click());
   expect(handoff).toHaveBeenLastCalledWith(token, { confirm: true, replace: true });
   expect(state.left).toEqual(["/billing?plan=pro&src=app_computer_move"]);
   state.left = [];
-  handoff.mockResolvedValueOnce({ ask: "other_account", email: "owner@duskbot.test" });
+  handoff.mockResolvedValueOnce({ ask: "other_account", email: "owner@madanibot.test" });
   host = await land(`#t=${token}`);
   await act(async () => button(host, "not you? sign in")!.click());
   expect(state.left).toEqual(["/sign-in"]);

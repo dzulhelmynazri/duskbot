@@ -15,11 +15,11 @@ import { hostTimeout } from "./testing/host-timeout.ts";
 import { freePortBlock } from "./testing/ports.ts";
 
 const SERVER_DIR = dirname(fileURLToPath(import.meta.url));
-const HOST = "dusk-t-0123456789ab.fly.dev";
+const HOST = "madani-t-0123456789ab.fly.dev";
 const MACHINE_ID = "3f9c2a4e-8b1d-4c6e-9a7f-2d5e8c1b0a93";
 const secret = randomBytes(32).toString("base64url");
-const home = mkdtempSync(join(tmpdir(), "dusk-cloud-sharing-"));
-const dataDir = join(home, ".duskbot");
+const home = mkdtempSync(join(tmpdir(), "madani-cloud-sharing-"));
+const dataDir = join(home, ".madanibot");
 const dump = join(home, "claude.json");
 let base = "";
 let port = 0;
@@ -54,9 +54,9 @@ async function boot(asCloud: boolean) {
   child = spawn(process.execPath, ["--import", offline, join(SERVER_DIR, "index.ts")], {
     cwd: join(SERVER_DIR, ".."),
     env: {
-      PATH: process.env.PATH, HOME: home, USERPROFILE: home, DUSK_DATA_DIR: dataDir, DUSK_PORT: String(port), DUSK_WEBHOOK_PORT: String(port + 1),
-      ...(asCloud ? { DUSK_CLOUD_ROLE: "home", DUSK_CLOUD_MACHINE_ID: MACHINE_ID, DUSK_CLOUD_ADMIN_URL: "https://cloud.example.test",
-        DUSK_CLOUD_BOOTSTRAP_SECRET: secret, DUSK_PUBLIC_URL: `https://${HOST}` } : {}),
+      PATH: process.env.PATH, HOME: home, USERPROFILE: home, MADANI_DATA_DIR: dataDir, MADANI_PORT: String(port), MADANI_WEBHOOK_PORT: String(port + 1),
+      ...(asCloud ? { MADANI_CLOUD_ROLE: "home", MADANI_CLOUD_MACHINE_ID: MACHINE_ID, MADANI_CLOUD_ADMIN_URL: "https://cloud.example.test",
+        MADANI_CLOUD_BOOTSTRAP_SECRET: secret, MADANI_PUBLIC_URL: `https://${HOST}` } : {}),
     },
     stdio: ["ignore", "pipe", "pipe"],
   });
@@ -76,11 +76,11 @@ async function shutdown() {
 }
 
 async function ownersDevice(): Promise<string> {
-  const body = JSON.stringify({ label: "dusk bot app (Cloud)", ttlSeconds: 300 });
+  const body = JSON.stringify({ label: "madani bot app (Cloud)", ttlSeconds: 300 });
   const timestamp = String(Math.floor(Date.now() / 1000)), nonce = randomBytes(16).toString("base64url");
   const response = await fetch(`${base}/api/cloud/pairing`, { method: "POST", headers: {
     host: HOST, "x-forwarded-for": "203.0.113.9", "x-forwarded-proto": "https", "content-type": "application/json",
-    "x-dusk-cloud-timestamp": timestamp, "x-dusk-cloud-nonce": nonce, "x-dusk-cloud-signature": `v1=${cloudPairingSignature(secret, timestamp, nonce, body)}`,
+    "x-madani-cloud-timestamp": timestamp, "x-madani-cloud-nonce": nonce, "x-madani-cloud-signature": `v1=${cloudPairingSignature(secret, timestamp, nonce, body)}`,
   }, body });
   const granted = await response.json() as { code: string };
   return (await api("POST", "/api/auth/pair", { body: { code: granted.code } })).body.token;

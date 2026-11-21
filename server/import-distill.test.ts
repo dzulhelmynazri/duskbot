@@ -13,7 +13,7 @@ afterEach(() => {
 });
 
 function setup(options: { engine?: boolean; bots?: string[]; note?: string } = {}) {
-  const dir = mkdtempSync(join(tmpdir(), "dusk-import-distill-"));
+  const dir = mkdtempSync(join(tmpdir(), "madani-import-distill-"));
   dirs.push(dir);
   const state = { engine: options.engine ?? true, bots: new Set(options.bots ?? ["ana"]) };
   const capture = vi.fn(async (_batch: CaptureBatch) => ({ at: 0, added: 2, topics: 0, aboutMe: 1, ...(options.note ? { note: options.note } : {}) }));

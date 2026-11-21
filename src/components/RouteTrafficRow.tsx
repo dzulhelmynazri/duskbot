@@ -47,7 +47,7 @@ export function RouteTrafficRow({ blockedOnly = false }: { blockedOnly?: boolean
     }
   };
 
-  const inApp = typeof window !== "undefined" && window.duskDesktop?.remoteClient?.active === true;
+  const inApp = typeof window !== "undefined" && window.madaniDesktop?.remoteClient?.active === true;
   const state = egressRouteState(status);
   const fallback = state === "offline" || state === "slow";
   const hint = state === "off" || state === "unknown" ? t("routeTraffic.hint") : state === "offline" ? t("routeTraffic.offline") : state === "slow" ? t("routeTraffic.slow") : t("routeTraffic.through");

@@ -4,7 +4,7 @@
   "title": "GitHub AI assistant for issues, pull requests and releases",
   "nav": "github",
   "h1": "a github bot that reads the work before you weigh in",
-  "description": "Give a bot in dusk bot a GitHub repo to follow. Get issue triage, pull request context and release notes, with clear limits on what it can change.",
+  "description": "Give a bot in madani bot a GitHub repo to follow. Get issue triage, pull request context and release notes, with clear limits on what it can change.",
   "keyword": "claude github",
   "keywords": [
     "chatgpt github",
@@ -12,7 +12,7 @@
     "github ai agent",
     "github mcp"
   ],
-  "answer": "**walk into standup knowing why the pull request stalled.** connect github to a dusk bot for issue context, changed files and release outlines. choose claude, chatgpt or another ai. a read-only bot brings the findings here. add labels, assignments or comments later, once you want it to act on the queue as well as read it.",
+  "answer": "**walk into standup knowing why the pull request stalled.** connect github to a madani bot for issue context, changed files and release outlines. choose claude, chatgpt or another ai. a read-only bot brings the findings here. add labels, assignments or comments later, once you want it to act on the queue as well as read it.",
   "updated": "2026-11-12",
   "review": {
     "status": "approved",
@@ -107,7 +107,7 @@
   "asks": "**let the bot read the queue before you let it run the queue.** comments count as sends and ask for **allow** or **deny** by default. a daily amount permits some sends on its own.\n\ncareful with **Full access**: a bot there with no sending rule can send up to 25 a day without asking. give it **Ask every time**.\n\nlabels, assignments, closures, merges and submitted reviews are other app changes. they don't wait for a send card. keep review bots read only; for writes, put 'ask me before you change anything' in the routine.",
   "cannot": [
     "**keep merge and label tools outside a reading job.** read only blocks merges, labels and assignments before they reach github.",
-    "**give overnight triage an awake host.** local work stops during sleep or when dusk closes; dusk cloud works with your machine off.",
+    "**give overnight triage an awake host.** local work stops during sleep or when madani closes; madani cloud works with your machine off.",
     "**use the diff summary to decide what needs testing.** these routines gather evidence; they do not run code or reproduce the bug."
   ],
   "sections": [
@@ -131,24 +131,24 @@
     },
     {
       "q": "where does my issue triage bot run when my laptop is closed?",
-      "a": "**local triage stops during sleep or when dusk closes.** dusk cloud gives the routine an always-on machine."
+      "a": "**local triage stops during sleep or when madani closes.** madani cloud gives the routine an always-on machine."
     }
   ],
   "sources": [
     {
-      "label": "dusk bot docs: files and apps",
+      "label": "madani bot docs: files and apps",
       "url": "/docs/files-and-apps"
     },
     {
-      "label": "dusk bot docs: routines",
+      "label": "madani bot docs: routines",
       "url": "/docs/routines"
     },
     {
-      "label": "dusk bot docs: permissions and sends",
+      "label": "madani bot docs: permissions and sends",
       "url": "/docs/computer"
     },
     {
-      "label": "dusk bot docs: bots",
+      "label": "madani bot docs: bots",
       "url": "/docs/bots"
     }
   ],

@@ -42,7 +42,7 @@ export type BoxScratchMode = "turn" | "sweep";
 
 export function boxScratchArgs(alias: string, container: string, mode: BoxScratchMode, limit = DISK_GUARD_PERCENT): string[] {
   if (!CONTAINER_REF.test(container)) throw new Error("invalid bot desktop identity");
-  return vpsDockerArgs(alias, ["exec", "-u", "cua", container, "bash", "-c", BOX_SCRATCH_SCRIPT, "dusk-scratch", mode, String(limit)]);
+  return vpsDockerArgs(alias, ["exec", "-u", "cua", container, "bash", "-c", BOX_SCRATCH_SCRIPT, "madani-scratch", mode, String(limit)]);
 }
 
 export interface BoxScratchResult { usedPercent: number; full: boolean }

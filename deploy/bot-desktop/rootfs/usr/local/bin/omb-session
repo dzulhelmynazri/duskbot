@@ -2,21 +2,21 @@
 # the desktop session, as uid 1000: X + VNC, the window manager, dock, viewer bridge and Cua Driver. no compositor.
 set -eu
 
-geometry="${DUSK_RESOLUTION:-1280x800}"
+geometry="${MADANI_RESOLUTION:-1280x800}"
 case "$geometry" in [0-9]*x[0-9]*) ;; *) geometry=1280x800 ;; esac
-screen="${DUSK_SCREEN_DISPLAY:-1}"
+screen="${MADANI_SCREEN_DISPLAY:-1}"
 case "$screen" in
   1)
     runtime=/run/user/1000
-    cua_socket="$runtime/duskbot-cua.sock"
+    cua_socket="$runtime/madanibot-cua.sock"
     profile=/home/cua/.config/chromium
     cdp_port=9222
     logs=/tmp/omb-log
     ;;
   2|3|4|5|6|7|8|9|10|11|12|13|14|15|16|17|18|19|20|21)
-    [ "${DUSK_SCREEN_MANAGED:-}" = 1 ] || exit 64
-    hash="${DUSK_SCREEN_BOT_HASH:-}"
-    generation="${DUSK_SCREEN_GENERATION:-}"
+    [ "${MADANI_SCREEN_MANAGED:-}" = 1 ] || exit 64
+    hash="${MADANI_SCREEN_BOT_HASH:-}"
+    generation="${MADANI_SCREEN_GENERATION:-}"
     case "$hash" in ''|*[!0-9a-f]*) exit 64 ;; esac
     [ "${#hash}" = 64 ] || exit 64
     case "$generation" in ????????-????-????-????-????????????) ;; *) exit 64 ;; esac
@@ -34,7 +34,7 @@ vnc_port=$((5900 + screen))
 viewer_port=$((6900 + screen))
 export DISPLAY=":$screen" XDG_RUNTIME_DIR="$runtime" HOME=/home/cua
 export DBUS_SESSION_BUS_ADDRESS="unix:path=$XDG_RUNTIME_DIR/bus"
-export DUSK_CHROMIUM_PROFILE="$profile" DUSK_CDP_PORT="$cdp_port"
+export MADANI_CHROMIUM_PROFILE="$profile" MADANI_CDP_PORT="$cdp_port"
 
 shutdown_primary() {
   trap '' TERM INT
@@ -94,10 +94,10 @@ keep openbox openbox --config-file /etc/xdg/openbox/rc.xml
 keep tint2 tint2 -c /etc/xdg/tint2/tint2rc
 keep cua-driver env CUA_DRIVER_BROWSER_NO_SANDBOX=1 CUA_DRIVER_INSTALL_CHANNEL=python_package \
   CUA_DRIVER_RS_TELEMETRY_ENABLED=0 CUA_DRIVER_WINDOW_CHANGE_TIMEOUT_MS=200 NO_COLOR=1 \
-  /usr/local/libexec/duskbot/cua-driver serve --socket "$cua_socket" \
+  /usr/local/libexec/madanibot/cua-driver serve --socket "$cua_socket" \
   --permission-mode standard --cursor-reduced-motion on --no-overlay
 
-[ "${DUSK_BROWSER_AT_START:-off}" = off ] || (sleep 0.3; exec chromium "${DUSK_START_URL:-https://www.google.com}" >>"$logs/chromium.log" 2>&1) &
+[ "${MADANI_BROWSER_AT_START:-off}" = off ] || (sleep 0.3; exec chromium "${MADANI_START_URL:-https://www.google.com}" >>"$logs/chromium.log" 2>&1) &
 
 echo "omb-session: desktop ready on $DISPLAY ($geometry)"
 wait

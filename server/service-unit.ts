@@ -16,8 +16,8 @@ export interface ServiceSpec {
   label?: string;
 }
 
-export const SYSTEMD_UNIT_NAME = "duskbot.service";
-export const LAUNCHD_LABEL = "bot.dusk.serve";
+export const SYSTEMD_UNIT_NAME = "madanibot.service";
+export const LAUNCHD_LABEL = "bot.madani.serve";
 
 function quoteSystemd(value: string): string {
   // systemd's ExecStart splits on whitespace and understands double quotes.
@@ -34,9 +34,9 @@ export function serviceCommand(spec: Pick<ServiceSpec, "node" | "script" | "serv
 
 export function systemdUnit(spec: ServiceSpec): string {
   const lines = [
-    "# Written by `duskbot service install`. Re-run it to change the options.",
+    "# Written by `madanibot service install`. Re-run it to change the options.",
     "[Unit]",
-    `Description=dusk bot${spec.label ? ` (${spec.label})` : ""}`,
+    `Description=madani bot${spec.label ? ` (${spec.label})` : ""}`,
     "After=network-online.target",
     "Wants=network-online.target",
     "",
@@ -45,7 +45,7 @@ export function systemdUnit(spec: ServiceSpec): string {
     `User=${spec.user}`,
     `WorkingDirectory=${spec.home}`,
     `Environment=HOME=${spec.home}`,
-    `Environment=DUSK_DATA_DIR=${spec.dataDir}`,
+    `Environment=MADANI_DATA_DIR=${spec.dataDir}`,
     `ExecStart=${serviceCommand(spec).map(quoteSystemd).join(" ")}`,
     "Restart=always",
     "RestartSec=3",
@@ -82,7 +82,7 @@ export function launchdPlist(spec: ServiceSpec): string {
     "\t<dict>",
     "\t\t<key>HOME</key>",
     `\t\t<string>${xml(spec.home)}</string>`,
-    "\t\t<key>DUSK_DATA_DIR</key>",
+    "\t\t<key>MADANI_DATA_DIR</key>",
     `\t\t<string>${xml(spec.dataDir)}</string>`,
     "\t\t<key>PATH</key>",
     "\t\t<string>/usr/local/bin:/opt/homebrew/bin:/usr/bin:/bin</string>",
@@ -107,7 +107,7 @@ export function launchdPlist(spec: ServiceSpec): string {
 export function unstableInstallWarning(script: string): string | null {
   const normalized = script.replace(/\\/g, "/");
   if (/\/_npx\//.test(normalized) || /\/\.npm\/_npx\//.test(normalized)) {
-    return `this command runs from an npx cache (${dirname(script)}), which npm may delete at any time. Install the private package permanently first (npm install --global --prefix "$HOME/.local" ./duskbot-private.tgz) and run \`duskbot service install\` from that install.`;
+    return `this command runs from an npx cache (${dirname(script)}), which npm may delete at any time. Install the private package permanently first (npm install --global --prefix "$HOME/.local" ./madanibot-private.tgz) and run \`madanibot service install\` from that install.`;
   }
   return null;
 }
@@ -134,8 +134,8 @@ export function servicePlan(platform: NodeJS.Platform, dataDir: string, home = h
   return null;
 }
 
-export const SENTINEL_LAUNCHD_LABEL = "bot.dusk.sentinel";
-export const SENTINEL_SYSTEMD_NAME = "duskbot-sentinel";
+export const SENTINEL_LAUNCHD_LABEL = "bot.madani.sentinel";
+export const SENTINEL_SYSTEMD_NAME = "madanibot-sentinel";
 export const SENTINEL_INTERVAL_SECONDS = 120;
 
 export type SentinelServiceSpec = Pick<ServiceSpec, "node" | "script" | "dataDir" | "home"> & {
@@ -149,10 +149,10 @@ export function shippedSentinelCli(
   platform: NodeJS.Platform, home: string, exists: (path: string) => boolean, hasSentinel: (script: string) => boolean = () => true,
 ): { node: string; script: string } | null {
   const candidates = platform === "darwin"
-    ? ["/Applications/Dusk Bot.app", join(home, "Applications", "Dusk Bot.app")].map((app) => ({
-      node: join(app, "Contents", "MacOS", "Dusk Bot"), script: join(app, "Contents", "Resources", "server", "duskbot.js"),
+    ? ["/Applications/Madani Bot.app", join(home, "Applications", "Madani Bot.app")].map((app) => ({
+      node: join(app, "Contents", "MacOS", "Madani Bot"), script: join(app, "Contents", "Resources", "server", "madanibot.js"),
     }))
-    : platform === "linux" ? [{ node: "/opt/dusk-bot/duskbot", script: "/opt/dusk-bot/resources/server/duskbot.js" }] : [];
+    : platform === "linux" ? [{ node: "/opt/madani-bot/madanibot", script: "/opt/madani-bot/resources/server/madanibot.js" }] : [];
   return candidates.find((cli) => exists(cli.node) && exists(cli.script) && hasSentinel(cli.script)) ?? null;
 }
 
@@ -217,9 +217,9 @@ function systemdQuoted(value: string, command = false): string {
 export function sentinelSystemdService(spec: SentinelServiceSpec): string {
   for (const [label, value] of [["home", spec.home], ["node", spec.node], ["script", spec.script], ["data dir", spec.dataDir], ["output", spec.out]] as const) assertUnitValue(label, value);
   return [
-    "# Written by `duskbot service install --sentinel`. Started by its timer.",
+    "# Written by `madanibot service install --sentinel`. Started by its timer.",
     "[Unit]",
-    "Description=dusk bot Sentinel health scan",
+    "Description=madani bot Sentinel health scan",
     "",
     "[Service]",
     "Type=oneshot",
@@ -234,9 +234,9 @@ export function sentinelSystemdService(spec: SentinelServiceSpec): string {
 
 export function sentinelSystemdTimer(): string {
   return [
-    "# Written by `duskbot service install --sentinel`.",
+    "# Written by `madanibot service install --sentinel`.",
     "[Unit]",
-    "Description=Run the dusk bot Sentinel health scan every two minutes",
+    "Description=Run the madani bot Sentinel health scan every two minutes",
     "",
     "[Timer]",
     `OnBootSec=${SENTINEL_INTERVAL_SECONDS}s`,
@@ -333,6 +333,6 @@ export function currentUser(): string {
   try {
     return userInfo().username;
   } catch {
-    return process.env.USER || process.env.USERNAME || "duskbot";
+    return process.env.USER || process.env.USERNAME || "madanibot";
   }
 }

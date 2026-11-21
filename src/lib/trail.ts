@@ -5,7 +5,7 @@
 import { en, type LocaleKey } from "@/locales";
 import { activeLocale, t } from "@/lib/i18n";
 
-export const TRAIL_HEADER = "x-dusk-trail";
+export const TRAIL_HEADER = "x-madani-trail";
 export const TRAIL_EXPORT_PREVIEW_KEY = "settings.usageLog.preview";
 
 type Value = string | number | boolean | null | undefined | { [key: string]: string | number | boolean | null | undefined };
@@ -16,7 +16,7 @@ const MAX_QUEUE = 500;
 let queue: Array<{ ev: string; ts: string } & TrailFields> = [];
 let timer: ReturnType<typeof setTimeout> | null = null;
 
-const bridge = () => (typeof window === "undefined" ? undefined : window.duskDesktop?.trail);
+const bridge = () => (typeof window === "undefined" ? undefined : window.madaniDesktop?.trail);
 
 export function trailAvailable(): boolean {
   return Boolean(bridge());
@@ -42,7 +42,7 @@ export function trail(ev: string, fields: TrailFields = {}): void {
   } catch { /* never */ }
 }
 
-/** a short random id for one action, sent as x-dusk-trail so the server's trail names the same action */
+/** a short random id for one action, sent as x-madani-trail so the server's trail names the same action */
 export function newTrailId(): string {
   const bytes = new Uint8Array(8);
   crypto.getRandomValues(bytes);

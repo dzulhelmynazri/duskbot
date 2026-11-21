@@ -2,14 +2,14 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 
 import type { NotificationLogEntry, NotifyKind } from "../shared/notification.ts";
 import { readTeamRolesWith } from "./chief-level.ts";
-import { DUSK_TOOL_DEFINITIONS, DUSK_TOOL_NAMES } from "./drivers/agents-dusk-tools.ts";
-import { listUnread, markRead, type NotificationsHost } from "./dusk-notifications.ts";
-import { createDuskNotificationRoutes } from "./routes/dusk-notifications.ts";
+import { MADANI_TOOL_DEFINITIONS, MADANI_TOOL_NAMES } from "./drivers/agents-madani-tools.ts";
+import { listUnread, markRead, type NotificationsHost } from "./madani-notifications.ts";
+import { createMadaniNotificationRoutes } from "./routes/madani-notifications.ts";
 import { PASS } from "./routes/table.ts";
 import type { BotRecord } from "./store.ts";
 
 const NOW = 1_000_000_000;
-const MAUS = { id: "maus", name: "Dusk", defaultBot: {} } as BotRecord;
+const MAUS = { id: "maus", name: "Madani", defaultBot: {} } as BotRecord;
 const ALL_KINDS = ["approval", "question", "done", "routine-failed", "routine-deferred", "turn-failed", "incident", "sign-in", "delegation-settled", "mention", "spend", "brief", "wait"] satisfies NotifyKind[];
 const entry = (id: string, kind: string, extra: Partial<NotificationLogEntry> = {}): NotificationLogEntry =>
   ({ id, kind, botId: "pip", botName: "Pip", threadId: `t-${id}`, title: `Title ${id}`, body: `Body ${id}`, at: NOW - 5 * 60_000, read: false, ...extra }) as NotificationLogEntry;
@@ -88,10 +88,10 @@ describe("marking read", () => {
 });
 
 describe("who may", () => {
-  it("is Dusk alone, and on a personal install", () => {
+  it("is Madani alone, and on a personal install", () => {
     const pip = { id: "pip", name: "Pip" } as BotRecord;
     const chief = { id: "chief", name: "Chief", chiefOfStaff: true } as BotRecord;
-    const team = { id: "ada", name: "Dusk", defaultBot: { person: "ada@example.com" } } as BotRecord;
+    const team = { id: "ada", name: "Madani", defaultBot: { person: "ada@example.com" } } as BotRecord;
     readTeamRolesWith(() => "admin");
     const { host, rows } = setup([entry("a", "done")], [MAUS, pip, chief, team]);
     for (const id of ["pip", "chief", "missing"]) {
@@ -103,7 +103,7 @@ describe("who may", () => {
     expect(rows[0]!.read).toBe(false);
   });
 
-  it("refuses on any shared workspace, even for a Dusk with no person", () => {
+  it("refuses on any shared workspace, even for a Madani with no person", () => {
     const { host, rows } = setup([entry("a", "done")], [MAUS], true);
     expect(listUnread(host, "maus")).toMatchObject({ ok: false, error: expect.stringContaining("read in the app") });
     expect(markRead(host, "maus", ["a"])).toMatchObject({ ok: false });
@@ -111,14 +111,14 @@ describe("who may", () => {
   });
 
   it("annotates the list read-only and the marker not", () => {
-    const hints = DUSK_TOOL_DEFINITIONS.map((tool) => [tool.name, (tool as { annotations?: { readOnlyHint?: boolean } }).annotations?.readOnlyHint ?? false]);
+    const hints = MADANI_TOOL_DEFINITIONS.map((tool) => [tool.name, (tool as { annotations?: { readOnlyHint?: boolean } }).annotations?.readOnlyHint ?? false]);
     expect(hints).toEqual([["list_unread_notifications", true], ["mark_notifications_read", false]]);
   });
 
-  it("is mounted for the Dusk profile and flat", () => {
-    expect([...DUSK_TOOL_NAMES]).toEqual(["list_unread_notifications", "mark_notifications_read"]);
-    expect(DUSK_TOOL_DEFINITIONS.map((tool) => tool.name)).toEqual([...DUSK_TOOL_NAMES]);
-    expect(JSON.stringify(DUSK_TOOL_DEFINITIONS)).not.toMatch(/"(oneOf|anyOf|allOf|const|format)"/);
+  it("is mounted for the Madani profile and flat", () => {
+    expect([...MADANI_TOOL_NAMES]).toEqual(["list_unread_notifications", "mark_notifications_read"]);
+    expect(MADANI_TOOL_DEFINITIONS.map((tool) => tool.name)).toEqual([...MADANI_TOOL_NAMES]);
+    expect(JSON.stringify(MADANI_TOOL_DEFINITIONS)).not.toMatch(/"(oneOf|anyOf|allOf|const|format)"/);
   });
 });
 
@@ -126,12 +126,12 @@ describe("the internal route", () => {
   async function call(botId: string, method: string, path: string, body?: unknown) {
     const { host, rows } = setup([entry("a", "done"), entry("b", "question")], [MAUS, { id: "pip", name: "Pip" } as BotRecord]);
     const json = vi.fn();
-    const outcome = await createDuskNotificationRoutes(host)({ method, path, res: {} as never, json, botId, readBody: async () => body });
+    const outcome = await createMadaniNotificationRoutes(host)({ method, path, res: {} as never, json, botId, readBody: async () => body });
     const [, status, payload] = json.mock.calls[0] ?? [];
     return { outcome, status: status as number | undefined, payload: payload as { text?: string; error?: string } | undefined, rows };
   }
 
-  it("lists and marks for Dusk, 403 for any other bot, 400 for a bad body, and passes other paths", async () => {
+  it("lists and marks for Madani, 403 for any other bot, 400 for a bad body, and passes other paths", async () => {
     expect((await call("maus", "GET", "/api/internal/notifications")).status).toBe(200);
     const marked = await call("maus", "POST", "/api/internal/notifications/read", { ids: ["a", "b"] });
     expect([marked.status, marked.rows.map((row) => row.read)]).toEqual([200, [true, false]]);

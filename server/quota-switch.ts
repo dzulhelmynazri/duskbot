@@ -92,7 +92,7 @@ const LIMITS: ReadonlySet<TakeoverScope> = new Set<TakeoverScope>(["engine", "mo
 
 const ENDED: ReadonlySet<string> = new Set(["completed", "failed", "cancelled"]);
 
-/** On unless DUSK_QUOTA_SWITCH=0: a limited AI's work carries on with another AI by itself. Off, only the backups
+/** On unless MADANI_QUOTA_SWITCH=0: a limited AI's work carries on with another AI by itself. Off, only the backups
  * Automatic recovery names take over, as before. */
 /** The failed-reply row a turn left after the person's message `afterId`, while nothing newer has answered it. */
 export function turnFailureRow(messages: readonly Message[], afterId: string | undefined): Message | undefined {
@@ -106,7 +106,7 @@ export function turnFailureRow(messages: readonly Message[], afterId: string | u
 }
 
 export function quotaSwitchEnabled(env: NodeJS.ProcessEnv = process.env): boolean {
-  return env.DUSK_QUOTA_SWITCH?.trim() !== "0";
+  return env.MADANI_QUOTA_SWITCH?.trim() !== "0";
 }
 
 const nameOf = (engine: QuotaSwitchEngine): string => engine.displayName || engine.driverKind;
@@ -282,7 +282,7 @@ export function createQuotaSwitch(deps: QuotaSwitchDeps): QuotaSwitch {
       const from = thread.modelSelection;
       if (scope === "engine") limited.add(from.instanceId);
       const providerUntil = scope === "provider" ? deps.takeover?.holdProvider?.(from) : undefined;
-      // DUSK_QUOTA_SWITCH=0: nothing carries on by itself; the person still hears once that the bot waits.
+      // MADANI_QUOTA_SWITCH=0: nothing carries on by itself; the person still hears once that the bot waits.
       const backups = enabled() ? deps.takeover?.backups(bot.id, from, scope, approvalModeFor(thread)) ?? [] : [];
       const resetsAt = scope === "signed-out" ? undefined : scope === "provider" ? providerUntil : flags?.limitResetsAt ?? (RESETS.has(scope) ? limitResetFromWords(cause ?? "") : undefined);
       // A sign-out is told once, first and without a backup's name: what the person must do is sign in again.

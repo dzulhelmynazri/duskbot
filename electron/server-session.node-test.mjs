@@ -37,25 +37,25 @@ const request = (session, url) => new Promise((resolve) => session.hooks.request
 test("the app window's own requests to the server carry the owner header on http and WebSocket alike", async () => {
   const { defaultSession, setToken } = install();
   for (const url of [`http://127.0.0.1:${SERVER_PORT}/api/bots`, `ws://127.0.0.1:${SERVER_PORT}/api/desktop-viewer/local/shared/websockify`]) {
-    assert.equal((await sendHeaders(defaultSession, url))["X-Dusk-Desktop-Owner"], "a".repeat(43), url);
+    assert.equal((await sendHeaders(defaultSession, url))["X-Madani-Desktop-Owner"], "a".repeat(43), url);
   }
   for (const url of [`http://127.0.0.1:${SERVER_PORT + 1}/`, `https://127.0.0.1:${SERVER_PORT}/`, "https://example.com/", `http://localhost:${SERVER_PORT}/`, "not a url"]) {
-    assert.equal((await sendHeaders(defaultSession, url))["X-Dusk-Desktop-Owner"], undefined, url);
+    assert.equal((await sendHeaders(defaultSession, url))["X-Madani-Desktop-Owner"], undefined, url);
   }
   setToken(null);
-  assert.equal((await sendHeaders(defaultSession, `http://127.0.0.1:${SERVER_PORT}/api/bots`))["X-Dusk-Desktop-Owner"], undefined);
+  assert.equal((await sendHeaders(defaultSession, `http://127.0.0.1:${SERVER_PORT}/api/bots`))["X-Madani-Desktop-Owner"], undefined);
 });
 
 test("in development the owner header also rides requests to the dev UI, which proxies /api to the server", async () => {
   const listeners = [];
   const defaultSession = fakeSession();
   installServerSessions({ app: { on: (_e, h) => listeners.push(h) }, defaultSession, serverPort: () => SERVER_PORT, ownerToken: () => "a".repeat(43), uiPort: () => 5199 });
-  assert.equal((await sendHeaders(defaultSession, "http://127.0.0.1:5199/api/config"))["X-Dusk-Desktop-Owner"], "a".repeat(43));
-  assert.equal((await sendHeaders(defaultSession, "ws://127.0.0.1:5199/api/stream"))["X-Dusk-Desktop-Owner"], "a".repeat(43));
-  assert.equal((await sendHeaders(defaultSession, "http://127.0.0.1:5200/api/config"))["X-Dusk-Desktop-Owner"], undefined);
+  assert.equal((await sendHeaders(defaultSession, "http://127.0.0.1:5199/api/config"))["X-Madani-Desktop-Owner"], "a".repeat(43));
+  assert.equal((await sendHeaders(defaultSession, "ws://127.0.0.1:5199/api/stream"))["X-Madani-Desktop-Owner"], "a".repeat(43));
+  assert.equal((await sendHeaders(defaultSession, "http://127.0.0.1:5200/api/config"))["X-Madani-Desktop-Owner"], undefined);
   const packaged = fakeSession();
   installServerSessions({ app: { on: () => {} }, defaultSession: packaged, serverPort: () => SERVER_PORT, ownerToken: () => "a".repeat(43) });
-  assert.equal((await sendHeaders(packaged, "http://127.0.0.1:5199/api/config"))["X-Dusk-Desktop-Owner"], undefined);
+  assert.equal((await sendHeaders(packaged, "http://127.0.0.1:5199/api/config"))["X-Madani-Desktop-Owner"], undefined);
 });
 
 test("no session but the app window's may reach the server, in any spelling of this machine", async () => {
@@ -86,7 +86,7 @@ test("every session main creates gets the guard before it loads anything", () =>
 test("the server hears about every port this app listens on, and about new ones as they open", async () => {
   const messages = [];
   reportOwnListeners({ postMessage: (message) => messages.push(message) }, [8810]);
-  assert.equal(messages.at(-1).type, "duskbot:own-listeners");
+  assert.equal(messages.at(-1).type, "madanibot:own-listeners");
   assert.ok(messages.at(-1).ports.includes(8810));
   const server = createServer();
   await new Promise((resolve) => server.listen(0, "127.0.0.1", resolve));

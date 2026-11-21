@@ -266,7 +266,7 @@ function AntigravityAccountAction({ instance, action }: { instance: InstanceInfo
   </>;
 }
 
-/** A provider dusk bot found here by itself: it is offered, never used, until the person says so. */
+/** A provider madani bot found here by itself: it is offered, never used, until the person says so. */
 export function FoundProvider({ instance }: { instance: InstanceInfo }) {
   const { refreshInstances } = useStore();
   const [busy, setBusy] = useState(false);
@@ -292,7 +292,7 @@ export function FoundProvider({ instance }: { instance: InstanceInfo }) {
   );
 }
 
-/** Out of every list and every automatic choice until Reconnect; bots on it move to another AI. Where dusk bot can sign
+/** Out of every list and every automatic choice until Reconnect; bots on it move to another AI. Where madani bot can sign
  * out of it, Disconnect does that too, so a signed-in app on this computer cannot bring it back; Keep sign-in only hides it. */
 export function DisconnectProvider({ instance }: { instance: InstanceInfo }) {
   const { refreshInstances } = useStore();
@@ -473,7 +473,7 @@ export function HiddenEngines() {
 
 export function EnginesSettings({ simple = false, more }: { simple?: boolean; more?: { id: string; open: boolean; onToggle: () => void } }) {
   const { state } = useStore();
-  // Leaving Settings ends the "now uses the copy dusk bot installed" lines.
+  // Leaving Settings ends the "now uses the copy madani bot installed" lines.
   useEffect(() => forgetAppCopySwitches, []);
   const listed = state.instances.filter((i) => i.readOnly || i.cli !== undefined || i.cliDefault !== undefined || i.snapshot.state === "unavailable" || isApiKeyEngine(i));
   // A provider's accounts share one card, which takes the place of its first account.

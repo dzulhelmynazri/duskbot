@@ -10,8 +10,8 @@ export async function verifyBrowserRecovery(input: {
   binaryPath: string; executablePath: string; dataDir: string; previewUrl: string; testPage: string;
   screenshotPath: string;
 }) {
-  const playwrightPath = process.env.DUSK_VERIFY_PLAYWRIGHT;
-  if (!playwrightPath) throw new Error("Set DUSK_VERIFY_PLAYWRIGHT to an installed Playwright module for --recovery.");
+  const playwrightPath = process.env.MADANI_VERIFY_PLAYWRIGHT;
+  if (!playwrightPath) throw new Error("Set MADANI_VERIFY_PLAYWRIGHT to an installed Playwright module for --recovery.");
   const { chromium } = await import(playwrightPath);
   const runtime = new BrowserRuntime();
   const session = `recovery-${randomUUID()}`;

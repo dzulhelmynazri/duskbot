@@ -15,7 +15,7 @@
   "updated": "2026-11-12",
   "review": {
     "status": "approved",
-    "by": "lead agent, after two independent reviewer passes, against dusk bot docs and the composio catalog",
+    "by": "lead agent, after two independent reviewer passes, against madani bot docs and the composio catalog",
     "at": "2026-11-12"
   },
   "tags": [
@@ -43,7 +43,7 @@
     "toolkit": "googlecalendar",
     "slug": "GOOGLECALENDAR_DELETE_EVENT"
   },
-  "what": "**cancel friday's meeting and keep next week's.** give the bot an event reference or ask it to find the meeting. name the date you mean; deleting the series removes every occurrence.\n\ngoogle can email guests about the cancellation. choose who should hear, since those notices don't follow dusk's sending setting. your connected account needs permission to delete from that calendar.",
+  "what": "**cancel friday's meeting and keep next week's.** give the bot an event reference or ask it to find the meeting. name the date you mean; deleting the series removes every occurrence.\n\ngoogle can email guests about the cancellation. choose who should hear, since those notices don't follow madani's sending setting. your connected account needs permission to delete from that calendar.",
   "uses": [
     "cancel a training session after the facilitator withdraws it",
     "remove one date during an office closure while keeping the series",
@@ -68,7 +68,7 @@
   ],
   "faq": [
     {
-      "q": "will dusk ask before cancelling a meeting?",
+      "q": "will madani ask before cancelling a meeting?",
       "a": "**only if you tell it to.** the sending control does not hold this calendar change. write the confirmation step into your request."
     },
     {
@@ -78,15 +78,15 @@
   ],
   "sources": [
     {
-      "label": "dusk bot docs: files and apps",
+      "label": "madani bot docs: files and apps",
       "url": "/docs/files-and-apps"
     },
     {
-      "label": "dusk bot docs: routines",
+      "label": "madani bot docs: routines",
       "url": "/docs/routines"
     },
     {
-      "label": "dusk bot docs: a bot's computer",
+      "label": "madani bot docs: a bot's computer",
       "url": "/docs/computer"
     }
   ],

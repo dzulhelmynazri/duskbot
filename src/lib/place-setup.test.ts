@@ -57,9 +57,9 @@ describe("connecting by address", () => {
     expect(pairingLink("https://a.example.com/pair#code=nope", "")).toEqual({ error: "address" });
   });
 
-  it("takes the public link out of everything `duskbot pair` printed, pasted as it is", () => {
+  it("takes the public link out of everything `madanibot pair` printed, pasted as it is", () => {
     const printed = pairingBlock({
-      code: "ABCD-2345-EFGH", url: "https://bots.example.com/pair#code=ABCD-2345-EFGH", inviteUrl: "duskbot://pair?address=bots.example.com&token=x",
+      code: "ABCD-2345-EFGH", url: "https://bots.example.com/pair#code=ABCD-2345-EFGH", inviteUrl: "madanibot://pair?address=bots.example.com&token=x",
       localUrl: "http://127.0.0.1:8799/pair#code=ABCD-2345-EFGH", expiresAt: Date.now() + 60_000,
     });
     expect(pairingLink(printed, "")).toEqual({ link: "https://bots.example.com/pair#code=ABCD-2345-EFGH" });

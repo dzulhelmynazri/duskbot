@@ -74,7 +74,7 @@ beforeEach(() => {
   setLocale("en");
   installs.length = 0;
   dispatch.mockReset();
-  vi.stubGlobal("duskDesktop", undefined);
+  vi.stubGlobal("madaniDesktop", undefined);
   vi.stubGlobal("fetch", vi.fn(async (path: string, init?: RequestInit) => {
     if (String(path).endsWith("/install")) {
       installs.push(String(path));

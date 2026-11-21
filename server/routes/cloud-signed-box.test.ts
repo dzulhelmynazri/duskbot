@@ -27,7 +27,7 @@ function routes(box?: () => BoxReport) {
   const handle = createCloudSignedRoutes({ secret, sessions, health, box, now });
   const sign = (target: string, method = "GET", key = secret) => {
     const timestamp = String(Math.floor(now() / 1000)), nonce = `nonce-${String(++counter).padStart(12, "0")}`;
-    return { "x-dusk-cloud-timestamp": timestamp, "x-dusk-cloud-nonce": nonce, "x-dusk-cloud-signature": `v1=${cloudRequestSignature(key, timestamp, nonce, method, target, "")}` };
+    return { "x-madani-cloud-timestamp": timestamp, "x-madani-cloud-nonce": nonce, "x-madani-cloud-signature": `v1=${cloudRequestSignature(key, timestamp, nonce, method, target, "")}` };
   };
   const send = async (method: string, target: string, headers: Record<string, string>) => {
     const req = Object.assign(new PassThrough(), { method, url: target, headers, socket: { remoteAddress: "127.0.0.1" } }) as unknown as IncomingMessage;

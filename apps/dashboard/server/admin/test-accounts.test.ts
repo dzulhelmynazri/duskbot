@@ -3,14 +3,14 @@ import { isAdminTestAccount, isDevBuild, isTestEvent, isTestInstall, testAccount
 
 describe("admin test accounts", () => {
   it("flags harness, reserved-domain and review addresses, never real ones", () => {
-    for (const email of ["qa-smoke@qa.dusk.test", "billing-1@qa.dusk.test", "qa@dusk.bot", "qa-user@dusk.bot", "QA-JP2@dusk.bot", "dusk-appconn-mwf7ync4@fldubai.com",
-      "dusk-e2e-abc@mail.tm", "someone@example.com", "a@mail.example.org", "x@foo.test", "y@thing.invalid"]) expect(isAdminTestAccount(email), email).toBe(true);
-    expect(isAdminTestAccount("app-review@dusk.bot", "app-review@dusk.bot")).toBe(true);
-    for (const email of ["meenasiddarth72@gmail.com", "siddz.dev@gmail.com", "app-review@dusk.bot", "hello@dusk.bot", "qaisar@gmail.com", "qa@dusk.bot.com",
+    for (const email of ["qa-smoke@qa.madani.test", "billing-1@qa.madani.test", "qa@madani.bot", "qa-user@madani.bot", "QA-JP2@madani.bot", "madani-appconn-mwf7ync4@fldubai.com",
+      "madani-e2e-abc@mail.tm", "someone@example.com", "a@mail.example.org", "x@foo.test", "y@thing.invalid"]) expect(isAdminTestAccount(email), email).toBe(true);
+    expect(isAdminTestAccount("app-review@madani.bot", "app-review@madani.bot")).toBe(true);
+    for (const email of ["meenasiddarth72@gmail.com", "siddz.dev@gmail.com", "app-review@madani.bot", "hello@madani.bot", "qaisar@gmail.com", "qa@madani.bot.com",
       "me@example.co", "me@testing.com", "me@notexample.com"]) expect(isAdminTestAccount(email), email).toBe(false);
   });
   it("drops the accounts' sign-ins, sessions and billing rows and the refunds of their payments, without touching the input", () => {
-    const directory = { accounts: [{ id: "a", email: "real@gmail.com" }, { id: "t", email: "qa-1@qa.dusk.test" }],
+    const directory = { accounts: [{ id: "a", email: "real@gmail.com" }, { id: "t", email: "qa-1@qa.madani.test" }],
       identities: [{ accountId: "t", provider: "google" }], sessions: [{ accountId: "a" }, { accountId: "t" }] };
     const hidden = testAccountIds(directory.accounts);
     expect([...hidden]).toEqual(["t"]);
@@ -30,6 +30,6 @@ describe("admin test accounts", () => {
     expect(isTestEvent({ accountId: null, ctx: { install: "app:qatest_1" } }, new Set())).toBe(true);
     expect(isTestEvent({ accountId: null, ctx: { app: { version: "0.0.0-e2e" } } }, new Set())).toBe(true);
     expect(isTestEvent({ accountId: "a", ctx: { install: "x1", app: { version: "0.2.9" } } }, new Set(["t"]))).toBe(false);
-    expect([...testBuyerIds([{ accountId: "gone", email: "rev-buyer@qa.dusk.test" }, { accountId: "a", email: "real@gmail.com" }])]).toEqual(["gone"]);
+    expect([...testBuyerIds([{ accountId: "gone", email: "rev-buyer@qa.madani.test" }, { accountId: "a", email: "real@gmail.com" }])]).toEqual(["gone"]);
   });
 });

@@ -11,7 +11,7 @@ const roots: string[] = [];
 afterEach(async () => { await Promise.all(roots.splice(0).map(removeTempDir)); });
 
 function store() {
-  const root = mkdtempSync(join(tmpdir(), "dusk-documents-"));
+  const root = mkdtempSync(join(tmpdir(), "madani-documents-"));
   roots.push(root);
   let clock = 1_000;
   return { documents: new BotDocuments(root, () => (clock += 10)), root };

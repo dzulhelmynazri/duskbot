@@ -1,6 +1,6 @@
 import { existsSync, readFileSync, rmSync } from "node:fs";
 import { expect, it } from "vitest";
-import { launchVerificationServer } from "../scripts/control-dusk.ts";
+import { launchVerificationServer } from "../scripts/control-madani.ts";
 import { callTool, toolCallContextFromEnv } from "./drivers/agents-call.ts";
 
 it("installs and updates a shared skill through bot tools, retaining readable prompt paths and refusing stale revisions", async () => {

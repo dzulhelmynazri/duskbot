@@ -1,4 +1,4 @@
-// The first run's last screen on dusk cloud: the Cloud being made, step by step as the Admin reports it (the session's
+// The first run's last screen on madani cloud: the Cloud being made, step by step as the Admin reports it (the session's
 // `clouds` entry, else its `machine`). This computer's AI sign-ins are handed to the Admin once, to be held for that Cloud
 // until it runs. Ready opens its chat here; the app may be closed meanwhile and the run resumes on this screen.
 import { useEffect, useRef, useState } from "react";
@@ -136,7 +136,7 @@ function useAnswering(making: Making): Making {
   return { kind: "setting-up", step: "checking", progress: 0.95, slow: false };
 }
 
-const OPEN_TRIED = "dusk.making.openTried";
+const OPEN_TRIED = "madani.making.openTried";
 /** How long after an automatic open this page coming back means that open didn't take. */
 export const OPEN_RETURN_MS = 2 * 60_000;
 function openTriedRecently(now = Date.now()): boolean {
@@ -148,7 +148,7 @@ function markOpenTried(now = Date.now()): void {
 
 /** Follows the Admin's word on the Cloud, holds this computer's AI sign-ins for it once, and opens its chat when it is ready. */
 export function MakingStep({ onOpened }: { onOpened: () => void }) {
-  const bridge = window.duskDesktop?.cloudAccount;
+  const bridge = window.madaniDesktop?.cloudAccount;
   const [account, setAccount] = useState<CloudAccountState | null>(null);
   const [opening, setOpening] = useState(false);
   // this page back right after an automatic open: the cloud didn't show, so Try again and this computer are offered

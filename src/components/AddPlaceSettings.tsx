@@ -14,7 +14,7 @@ import { PlaceArt } from "./ui/PlaceArt";
 
 export const isAddPlacePage = (at: string | undefined) => at === ADD_PLACE_PAGE || at === PLACE_SERVER_PAGE || at === PLACE_INSTALL_PAGE || Boolean(at?.startsWith(PLACE_WAY_PAGE));
 
-/** Settings → Computer → add a place: dusk cloud up front, a server of one's own below it, and that server's whole guided
+/** Settings → Computer → add a place: madani cloud up front, a server of one's own below it, and that server's whole guided
  * setup on the pages after it. */
 export function AddPlacePage() {
   const sub = useSubPage();
@@ -41,7 +41,7 @@ export function AddPlacePage() {
   );
 }
 
-/** dusk cloud: what it gives, what it costs from, and the buying sheet; or the person's own cloud, one click away. */
+/** madani cloud: what it gives, what it costs from, and the buying sheet; or the person's own cloud, one click away. */
 function CloudWay() {
   const { dispatch } = useStore();
   const rail = usePlaces();
@@ -49,13 +49,13 @@ function CloudWay() {
   const offer = useCloudOffer(plan !== null && buyOfferAllowed(plan.view), plan?.account?.offer);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
-  const remote = window.duskDesktop?.remoteClient?.active === true;
+  const remote = window.madaniDesktop?.remoteClient?.active === true;
   const mine = rail.places.find((place) => place.kind === "cloud");
-  const canBuy = Boolean(window.duskDesktop?.cloudAccount) && !remote;
+  const canBuy = Boolean(window.madaniDesktop?.cloudAccount) && !remote;
   if (!mine && !canBuy) return null;
   const cheapest = offer?.plans.length ? Math.min(...offer.plans.map((entry) => entry.amount)) : null;
   const open = () => {
-    const bridge = window.duskDesktop?.workspaces;
+    const bridge = window.madaniDesktop?.workspaces;
     if (!mine || !bridge?.open || busy) return;
     setBusy(true); setError("");
     void bridge.open(mine.id).catch(() => setError(t("connectedWorkspaces.switchError"))).finally(() => setBusy(false));

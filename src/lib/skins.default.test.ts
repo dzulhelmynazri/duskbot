@@ -9,7 +9,7 @@ async function boot() {
   vi.resetModules();
   const skins = await import("./skins");
   skins.applySkinChoice(skins.readSkinChoice());
-  return { skin: document.documentElement.dataset.skin, stored: values.get("dusk-skin") };
+  return { skin: document.documentElement.dataset.skin, stored: values.get("madani-skin") };
 }
 
 function setOsDark(dark: boolean) {
@@ -39,7 +39,7 @@ afterEach(() => { vi.unstubAllGlobals(); });
 describe("default skin", () => {
   it("opens a fresh install following the computer's light or dark setting, in Simple mode, and keeps following it", async () => {
     expect(await boot()).toEqual({ skin: "grok", stored: "system" });
-    values.set("dusk-installed", "2026-10-17T00:00:00.000Z");
+    values.set("madani-installed", "2026-10-17T00:00:00.000Z");
     os.dark = true;
     expect(await boot()).toEqual({ skin: "grok-dark", stored: "system" });
   });
@@ -58,11 +58,11 @@ describe("default skin", () => {
     skins.applySkin("meadow");
     setOsDark(true);
     expect(document.documentElement.dataset.skin).toBe("meadow");
-    expect(values.get("dusk-skin")).toBe("meadow");
+    expect(values.get("madani-skin")).toBe("meadow");
   });
 
   it("moves an install that ran before onto the Grok look once, then keeps what it picks", async () => {
-    values.set("dusk-skin", "lagoon");
+    values.set("madani-skin", "lagoon");
     expect(await boot()).toMatchObject({ skin: "grok", stored: "system" });
     const skins = await import("./skins");
     skins.applySkin("lagoon");
@@ -70,27 +70,27 @@ describe("default skin", () => {
   });
 
   it("keeps an install that ran before in Midnight when nobody picked a skin", async () => {
-    values.set("dusk-skin-grok", "1");
-    values.set("dusk-skin", "midnight");
+    values.set("madani-skin-grok", "1");
+    values.set("madani-skin", "midnight");
     expect(await boot()).toMatchObject({ skin: "midnight", stored: "midnight" });
   });
 
   it("keeps Midnight for an earlier install whose saved skin is missing or no longer exists", async () => {
-    values.set("dusk-skin-grok", "1");
-    values.set("dusk-installed", "2026-01-01T00:00:00.000Z");
+    values.set("madani-skin-grok", "1");
+    values.set("madani-installed", "2026-01-01T00:00:00.000Z");
     expect(await boot()).toEqual({ skin: "midnight", stored: "midnight" });
-    values.set("dusk-skin", "retired-skin");
+    values.set("madani-skin", "retired-skin");
     expect(await boot()).toMatchObject({ skin: "midnight", stored: "midnight" });
   });
 
   it("always honours a skin someone chose", async () => {
-    values.set("dusk-skin-grok", "1");
-    values.set("dusk-skin", "lagoon");
+    values.set("madani-skin-grok", "1");
+    values.set("madani-skin", "lagoon");
     expect(await boot()).toMatchObject({ skin: "lagoon" });
     values.clear();
-    values.set("dusk-skin-grok", "1");
-    values.set("dusk-skin", "midnight");
-    values.set("dusk-advanced-mode", "0");
+    values.set("madani-skin-grok", "1");
+    values.set("madani-skin", "midnight");
+    values.set("madani-advanced-mode", "0");
     expect(await boot()).toMatchObject({ skin: "midnight" });
   });
 

@@ -94,7 +94,7 @@ describe("a create button with no room", () => {
     expect(seen.error).toBeNull();
   });
 
-  it("leaves the Dusk out of the count, as the server does", async () => {
+  it("leaves the Madani out of the count, as the server does", async () => {
     await mount([botNamed("maus", { defaultBot: {} } as never), ...five().slice(1)], STARTER);
     created = () => json({ bot: botNamed("new") }, 201);
     await send(CREATE);

@@ -5,7 +5,7 @@ import { connect, type Socket } from "node:net";
 import { join } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { expect, it } from "vitest";
-import { launchVerificationServer, runControlDusk, verificationServerEnvironment } from "../scripts/control-dusk.ts";
+import { launchVerificationServer, runControlMadani, verificationServerEnvironment } from "../scripts/control-madani.ts";
 import { waitForExit } from "./testing/cleanup.ts";
 
 it("runs every routine in the bot's main chat as an ordinary turn, with no run conversation, line or card, and its approvals there", async () => {
@@ -22,7 +22,7 @@ it("runs every routine in the bot's main chat as an ordinary turn, with no run c
     if (method !== "GET") evidence.push({ method, path, body, status: response.status, result: value });
     return value;
   };
-  const control = (args: string[]) => runControlDusk([...args, "--url", fixture.info.url]);
+  const control = (args: string[]) => runControlMadani([...args, "--url", fixture.info.url]);
   const runState = async (id: string) => (await api("GET", "/api/routines")).runs.find((run: any) => run.id === id);
   const messages = async (id: string) => (await api("GET", `/api/threads/${id}/messages?limit=100`)).messages as any[];
   const currentBot = async (id: string) => (await api("GET", "/api/bots")).bots.find((candidate: any) => candidate.id === id);
@@ -69,10 +69,10 @@ it("runs every routine in the bot's main chat as an ordinary turn, with no run c
     expect((await runState(pending.id)).threadId).toBe(chosen);
     await expect.poll(() => {
       if (!existsSync(fixture.fixtureDumpPath)) return false;
-      return JSON.parse(readFileSync(fixture.fixtureDumpPath, "utf8")).mcpConfig?.mcpServers?.agents?.env?.DUSK_THREAD_ID === chosen;
+      return JSON.parse(readFileSync(fixture.fixtureDumpPath, "utf8")).mcpConfig?.mcpServers?.agents?.env?.MADANI_THREAD_ID === chosen;
     }, { timeout: 15_000 }).toBe(true);
     const launched = JSON.parse(readFileSync(fixture.fixtureDumpPath, "utf8"));
-    broker = connect(launched.mcpConfig.mcpServers.dusk.args.at(-1));
+    broker = connect(launched.mcpConfig.mcpServers.madani.args.at(-1));
     broker.on("error", () => {});
     await new Promise<void>((resolve, reject) => { broker!.once("connect", resolve); broker!.once("error", reject); });
     broker.write(JSON.stringify({ t: "ask", id: "results-approval", kind: "permission", tool: "Bash", input: { command: "echo fixture-approval" } }) + "\n");
@@ -110,7 +110,7 @@ it("runs a routine made in a chat in that chat, not the bot's first thread or a 
     if (method !== "GET") evidence.push({ method, path, body, status: response.status, result: value });
     return value;
   };
-  const cli = (...args: string[]) => runControlDusk([...args, "--url", fixture.info.url]) as Promise<any>;
+  const cli = (...args: string[]) => runControlMadani([...args, "--url", fixture.info.url]) as Promise<any>;
   const messages = async (id: string) => (await api("GET", `/api/threads/${id}/messages?limit=100`)).messages as any[];
   try {
     const { bot } = await cli("new-bot", "--name", "Chat routine fixture");
@@ -169,7 +169,7 @@ async function resultsFixture() {
     expect(response.status, `${method} ${path}: ${JSON.stringify(value)}`).toBe(status);
     return value;
   };
-  const control = (...args: string[]) => runControlDusk([...args, "--url", url]) as Promise<any>;
+  const control = (...args: string[]) => runControlMadani([...args, "--url", url]) as Promise<any>;
   const messages = async (id: string) => (await api("GET", `/api/threads/${id}/messages?limit=100`)).messages as any[];
   const savedBot = async (id: string) => (await api("GET", "/api/bots")).bots.find((candidate: any) => candidate.id === id);
   const destination = async (id: string) => (await api("GET", "/api/routines")).routines.find((candidate: any) => candidate.id === id).resultsThreadId;

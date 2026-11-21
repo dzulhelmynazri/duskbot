@@ -10,8 +10,8 @@ const cfg = { fails: 2 };
 
 test("reads targets with an expected body text", () => {
   const { targets } = settings({});
-  assert.deepEqual(targets.find(item => item.name === "api"), { name: "api", url: "https://dusk.bot/v1/health", expect: "\"ok\":true" });
-  assert.deepEqual(targets.find(item => item.name === "waitlist"), { name: "waitlist", url: "https://dusk.bot/", expect: null });
+  assert.deepEqual(targets.find(item => item.name === "api"), { name: "api", url: "https://madani.bot/v1/health", expect: "\"ok\":true" });
+  assert.deepEqual(targets.find(item => item.name === "waitlist"), { name: "waitlist", url: "https://madani.bot/", expect: null });
 });
 
 test("one down email after two misses, nothing while down, one back up email with the downtime", () => {
@@ -39,7 +39,7 @@ test("a run mails once, keeps a failed mail for the next run, and stays quiet wh
       if (url.includes("cloudflare")) { if (!internet) throw new TypeError("fetch failed"); return new Response("ok"); }
       return new Response("{\"ok\":true}", { status: site });
     };
-    const config = { ...settings({ DUSK_UPTIME_TARGETS: "api=https://x.test/v1/health=\"ok\":true", DUSK_UPTIME_TLS: "", DUSK_ALERT_TO: "owner@example.test", DUSK_BREVO_API_KEY: "k", DUSK_UPTIME_STATE: dir }) };
+    const config = { ...settings({ MADANI_UPTIME_TARGETS: "api=https://x.test/v1/health=\"ok\":true", MADANI_UPTIME_TLS: "", MADANI_ALERT_TO: "owner@example.test", MADANI_BREVO_API_KEY: "k", MADANI_UPTIME_STATE: dir }) };
     let t = Date.parse("2026-11-12T10:00:00Z");
     const go = () => run(config, { fetcher, now: () => (t += MINUTE) });
     await go(); await go();

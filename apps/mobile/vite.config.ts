@@ -11,21 +11,21 @@ const repoRoot = fileURLToPath(new URL("../../", import.meta.url));
 const modules = fileURLToPath(new URL("../../node_modules", import.meta.url));
 const allow = existsSync(modules) ? [repoRoot, realpathSync(modules)] : [repoRoot];
 const { version } = JSON.parse(readFileSync(new URL("../../package.json", import.meta.url), "utf8")) as { version: string };
-const target = `http://127.0.0.1:${process.env.DUSK_PORT || 8799}`;
+const target = `http://127.0.0.1:${process.env.MADANI_PORT || 8799}`;
 
 export default defineConfig({
   root,
   plugins: [react(), tailwindcss(), licenseFiles(repoRoot)],
   resolve: { alias: { "@": fileURLToPath(new URL("../../src", import.meta.url)) } },
-  define: { __APP_VERSION__: JSON.stringify(version), __DUSK_ERROR_DSN__: JSON.stringify(process.env.DUSK_ERROR_DSN ?? "") },
+  define: { __APP_VERSION__: JSON.stringify(version), __MADANI_ERROR_DSN__: JSON.stringify(process.env.MADANI_ERROR_DSN ?? "") },
   server: {
     host: "127.0.0.1",
-    port: Number(process.env.DUSK_MOBILE_PORT) || 5320,
+    port: Number(process.env.MADANI_MOBILE_PORT) || 5320,
     strictPort: true,
     fs: { allow },
     proxy: {
       "/api": { ws: true, target },
-      "/.well-known/duskbot/environment": { target },
+      "/.well-known/madanibot/environment": { target },
     },
   },
   build: {

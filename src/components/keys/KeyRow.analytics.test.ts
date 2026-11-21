@@ -98,7 +98,7 @@ describe("a key saved in Settings → API keys", () => {
 
   it("reports a provider key refused over the desktop bridge as rejected", async () => {
     const setCredential = vi.fn().mockRejectedValue(new Error(`Error invoking remote method 'credential:set': KeyRejected: That doesn't look like a Composio API key: ${KEY.slice(0, 12)}`));
-    vi.stubGlobal("window", { duskDesktop: { setCredential } });
+    vi.stubGlobal("window", { madaniDesktop: { setCredential } });
     await enterKey({ id: "composio" });
     expect(setCredential).toHaveBeenCalledWith("composioApiKey", KEY);
     expect(fixture.api).not.toHaveBeenCalled();
@@ -115,7 +115,7 @@ describe("a key saved in Settings → API keys", () => {
 
   it("saves an xAI key through the desktop's encrypted store, so Remove clears the stored copy too", async () => {
     const setCredential = vi.fn().mockResolvedValue({ xai: { configured: true } });
-    vi.stubGlobal("window", { duskDesktop: { setCredential } });
+    vi.stubGlobal("window", { madaniDesktop: { setCredential } });
     fixture.api.mockResolvedValue({ ok: true });
     await enterKey({ id: "xai" });
     expect(setCredential).toHaveBeenCalledWith("xaiApiKey", KEY);

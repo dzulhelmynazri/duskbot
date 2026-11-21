@@ -28,10 +28,10 @@ async function fixture(body) {
 ROOT=$1
 CALLS=$ROOT/calls; export CALLS
 UNITS=$ROOT/units; TMP=$ROOT/tmp; STATE=$ROOT/state
-SVC_HOME=$ROOT/home/$SVC_USER; DATA=$SVC_HOME/.duskbot
+SVC_HOME=$ROOT/home/$SVC_USER; DATA=$SVC_HOME/.madanibot
 LINK_HOME=$ROOT/var/lib/omb-link; HANDOFF=$LINK_HOME/handoff
-ETC=$ROOT/etc/duskbot; LIB=$ROOT/usr/local/lib/duskbot; GATE=$LIB/docker-gate.mjs
-NAME=fixture; AGENT=/opt/duskbot-link/agent.mjs
+ETC=$ROOT/etc/madanibot; LIB=$ROOT/usr/local/lib/madanibot; GATE=$LIB/docker-gate.mjs
+NAME=fixture; AGENT=/opt/madanibot-link/agent.mjs
 mkdir -p "$UNITS" "$TMP" "$STATE"
 touch "$ROOT/users"
 log() { printf '%s\\n' "$*" >> "$CALLS"; }
@@ -64,10 +64,10 @@ const read = (path) => readFile(path, "utf8");
 describe("the installer's units", () => {
   it("runs the server hardened, out of the docker group, with every turn boxed and docker only through the gate", async () => {
     const dir = await fixture("server_unit; helper_units; handoff_script");
-    const server = await read(join(dir, "units", "duskbot.service"));
-    for (const line of ["User=dusk", "SupplementaryGroups=omb-dockergate", "Environment=DUSK_BOT_BOX=required", `Environment=DUSK_BOX_CODE_ROOTS=${dir}/home/dusk/.local/bin:${dir}/home/dusk/.local/lib`,
-      "Environment=DUSK_VPS_DOCKER=local", "Environment=DOCKER_HOST=unix:///run/duskbot-docker/docker.sock", `EnvironmentFile=-${dir}/etc/duskbot/engines.env`,
-      "NoNewPrivileges=yes", "CapabilityBoundingSet=", "ProtectSystem=strict", "ProtectHome=tmpfs", `BindPaths=${dir}/home/dusk`, `ReadWritePaths=${dir}/home/dusk`,
+    const server = await read(join(dir, "units", "madanibot.service"));
+    for (const line of ["User=madani", "SupplementaryGroups=omb-dockergate", "Environment=MADANI_BOT_BOX=required", `Environment=MADANI_BOX_CODE_ROOTS=${dir}/home/madani/.local/bin:${dir}/home/madani/.local/lib`,
+      "Environment=MADANI_VPS_DOCKER=local", "Environment=DOCKER_HOST=unix:///run/madanibot-docker/docker.sock", `EnvironmentFile=-${dir}/etc/madanibot/engines.env`,
+      "NoNewPrivileges=yes", "CapabilityBoundingSet=", "ProtectSystem=strict", "ProtectHome=tmpfs", `BindPaths=${dir}/home/madani`, `ReadWritePaths=${dir}/home/madani`,
       "PrivateTmp=yes", "ProtectProc=invisible", "UMask=0077"]) {
       expect(server.split("\n"), line).toContain(line);
     }
@@ -79,47 +79,47 @@ describe("the installer's units", () => {
     // and mounts a fresh /proc, which the kernel refuses under a partly covered one
     for (const masking of ["ProtectKernelTunables", "ProtectKernelLogs", "ProcSubset", "PrivateDevices"]) expect(server).not.toContain(masking);
     expect(server).toContain("RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6 AF_NETLINK");
-    expect(server).not.toContain("config/duskbot/engines.env");
+    expect(server).not.toContain("config/madanibot/engines.env");
 
-    const link = await read(join(dir, "units", "duskbot-link.service"));
-    for (const line of ["User=omb-link", `Environment=HOME=${dir}/var/lib/omb-link`, `Environment=DUSK_LINK_ENGINES_FILE=${dir}/var/lib/omb-link/handoff/engines.env`,
-      `Environment=DUSK_LINK_CODEX_AUTH_FILE=${dir}/var/lib/omb-link/handoff/codex-auth.json`, "NoNewPrivileges=yes", "ProtectHome=yes", "RestrictNamespaces=yes", "ProtectKernelTunables=yes", "PrivateDevices=yes", `ReadWritePaths=${dir}/var/lib/omb-link`,
-      "WantedBy=multi-user.target duskbot.service"]) {
+    const link = await read(join(dir, "units", "madanibot-link.service"));
+    for (const line of ["User=omb-link", `Environment=HOME=${dir}/var/lib/omb-link`, `Environment=MADANI_LINK_ENGINES_FILE=${dir}/var/lib/omb-link/handoff/engines.env`,
+      `Environment=MADANI_LINK_CODEX_AUTH_FILE=${dir}/var/lib/omb-link/handoff/codex-auth.json`, "NoNewPrivileges=yes", "ProtectHome=yes", "RestrictNamespaces=yes", "ProtectKernelTunables=yes", "PrivateDevices=yes", `ReadWritePaths=${dir}/var/lib/omb-link`,
+      "WantedBy=multi-user.target madanibot.service"]) {
       expect(link.split("\n"), line).toContain(line);
     }
     // a server restart must not restart the link: that drops the app's tunnel and every phone's stream; a stop still
     // takes it down, from the server's own stop hook
     expect(link).not.toMatch(/^(?:PartOf|BindsTo|StopPropagatedFrom)=/m);
-    expect(server).toContain("ExecStopPost=+/bin/sh -c 'systemctl list-jobs --no-legend duskbot.service 2>/dev/null | grep -qw stop && systemctl stop --no-block duskbot-link.service || true'");
-    expect(link).not.toContain("User=dusk");
+    expect(server).toContain("ExecStopPost=+/bin/sh -c 'systemctl list-jobs --no-legend madanibot.service 2>/dev/null | grep -qw stop && systemctl stop --no-block madanibot-link.service || true'");
+    expect(link).not.toContain("User=madani");
 
     const gate = await read(join(dir, "units", "omb-docker-gate.service"));
-    for (const line of ["User=omb-docker", "Group=omb-dockergate", "SupplementaryGroups=docker", "RuntimeDirectory=duskbot-docker", "RestrictAddressFamilies=AF_UNIX", "IPAddressDeny=any", "NoNewPrivileges=yes", "CapabilityBoundingSet="]) {
+    for (const line of ["User=omb-docker", "Group=omb-dockergate", "SupplementaryGroups=docker", "RuntimeDirectory=madanibot-docker", "RestrictAddressFamilies=AF_UNIX", "IPAddressDeny=any", "NoNewPrivileges=yes", "CapabilityBoundingSet="]) {
       expect(gate.split("\n"), line).toContain(line);
     }
-    expect(gate).toContain(`ExecStart=/usr/bin/node ${dir}/usr/local/lib/duskbot/docker-gate.mjs --listen /run/duskbot-docker/docker.sock --upstream /var/run/docker.sock`);
+    expect(gate).toContain(`ExecStart=/usr/bin/node ${dir}/usr/local/lib/madanibot/docker-gate.mjs --listen /run/madanibot-docker/docker.sock --upstream /var/run/docker.sock`);
 
-    const path = await read(join(dir, "units", "duskbot-engines.path"));
+    const path = await read(join(dir, "units", "madanibot-engines.path"));
     expect(path).toContain(`PathExists=${dir}/var/lib/omb-link/handoff/engines.env`);
-    expect(path).toContain("Unit=duskbot-handoff.service");
-    expect(existsSync(join(dir, "units", "duskbot-restart.service"))).toBe(false);
-    expect((await stat(join(dir, "usr", "local", "lib", "duskbot", "engine-handoff.sh"))).mode & 0o777).toBe(0o755);
+    expect(path).toContain("Unit=madanibot-handoff.service");
+    expect(existsSync(join(dir, "units", "madanibot-restart.service"))).toBe(false);
+    expect((await stat(join(dir, "usr", "local", "lib", "madanibot", "engine-handoff.sh"))).mode & 0o777).toBe(0o755);
   });
 
-  it("the hand-off keeps only the Claude token line, puts the codex sign-in in dusk's home and restarts the server", async () => {
+  it("the hand-off keeps only the Claude token line, puts the codex sign-in in madani's home and restarts the server", async () => {
     const dir = await fixture(`handoff_script
 mkdir -p "$HANDOFF" "$ETC" "$SVC_HOME"
 printf 'NODE_OPTIONS=--require /tmp/x.js\\n${TOKEN}\\nPATH=/evil\\n' > "$HANDOFF/engines.env"
 printf '{"tokens":{"id_token":"x"}}' > "$HANDOFF/codex-auth.json"
 sh "$LIB/engine-handoff.sh"`);
-    expect(await read(join(dir, "etc", "duskbot", "engines.env"))).toBe(`${TOKEN}\n`);
-    expect(await read(join(dir, "home", "dusk", ".codex", "auth.json"))).toBe('{"tokens":{"id_token":"x"}}');
+    expect(await read(join(dir, "etc", "madanibot", "engines.env"))).toBe(`${TOKEN}\n`);
+    expect(await read(join(dir, "home", "madani", ".codex", "auth.json"))).toBe('{"tokens":{"id_token":"x"}}');
     expect(existsSync(join(dir, "var", "lib", "omb-link", "handoff", "engines.env"))).toBe(false);
     expect(existsSync(join(dir, "var", "lib", "omb-link", "handoff", "codex-auth.json"))).toBe(false);
     const calls = await read(join(dir, "calls"));
     expect(calls).toContain("runuser omb-link");
-    expect(calls).toContain("runuser dusk");
-    expect(calls).toContain("systemctl restart duskbot.service");
+    expect(calls).toContain("runuser madani");
+    expect(calls).toContain("systemctl restart madanibot.service");
   });
 
   it("a hand-off with no valid token changes nothing and restarts nothing", async () => {
@@ -128,19 +128,19 @@ mkdir -p "$HANDOFF" "$ETC"
 printf '${TOKEN}\\n' > "$ETC/engines.env"
 printf 'NODE_OPTIONS=--require /tmp/x.js\\n' > "$HANDOFF/engines.env"
 sh "$LIB/engine-handoff.sh"`);
-    expect(await read(join(dir, "etc", "duskbot", "engines.env"))).toBe(`${TOKEN}\n`);
+    expect(await read(join(dir, "etc", "madanibot", "engines.env"))).toBe(`${TOKEN}\n`);
     expect(await read(join(dir, "calls")).catch(() => "")).not.toContain("systemctl restart");
   });
 });
 
 describe("the installer's account split on an older install", () => {
   const older = `
-SVC_USER=$OLD_SVC_USER; SVC_HOME=$ROOT/home/$SVC_USER; DATA=$SVC_HOME/.duskbot
+SVC_USER=$OLD_SVC_USER; SVC_HOME=$ROOT/home/$SVC_USER; DATA=$SVC_HOME/.madanibot
 mkdir -p "$SVC_HOME/.config/${LEGACY.linkConfigDir}" "$SVC_HOME/.config/${LEGACY.devName}" "$SVC_HOME/.ssh" "$DATA/workspaces/b1" "$SVC_HOME/.codex/sessions/2026" "$SVC_HOME/.claude/projects/p"
 echo maus >> "$ROOT/users"; echo docker >> "$ROOT/group-names"
 echo "maus docker" > "$ROOT/groups-maus"
 printf '{"v":1,"id":"abcdefghij","key":"k"}' > "$SVC_HOME/.config/${LEGACY.linkConfigDir}/tunnel.json"
-printf 'ssh-ed25519 AAAA mine\\nrestrict,command="/usr/bin/node /opt/duskbot-link/agent.mjs direct" ssh-ed25519 BBBB omb-link-abcdefghij\\n' > "$SVC_HOME/.ssh/authorized_keys"
+printf 'ssh-ed25519 AAAA mine\\nrestrict,command="/usr/bin/node /opt/madanibot-link/agent.mjs direct" ssh-ed25519 BBBB omb-link-abcdefghij\\n' > "$SVC_HOME/.ssh/authorized_keys"
 printf 'NODE_OPTIONS=--require /tmp/x.js\\n${TOKEN}\\n' > "$SVC_HOME/.config/${LEGACY.devName}/engines.env"
 echo rollout > "$SVC_HOME/.codex/sessions/2026/r.jsonl"; echo transcript > "$SVC_HOME/.claude/projects/p/s.jsonl"; echo '{}' > "$SVC_HOME/.claude.json"
 echo db > "$DATA/messages.db"
@@ -150,18 +150,18 @@ echo db > "$DATA/messages.db"
     const dir = await fixture(`${older}
 do_user > "$ROOT/out" 2>&1 || { cat "$ROOT/out" >&2; exit 1; }`);
     const home = join(dir, "home", "maus"), linkHome = join(dir, "var", "lib", "omb-link");
-    expect(await read(join(linkHome, ".config", "duskbot-link", "tunnel.json"))).toBe('{"v":1,"id":"abcdefghij","key":"k"}');
+    expect(await read(join(linkHome, ".config", "madanibot-link", "tunnel.json"))).toBe('{"v":1,"id":"abcdefghij","key":"k"}');
     expect(existsSync(join(home, ".config", LEGACY.linkConfigDir))).toBe(false);
     expect(await read(join(home, ".ssh", "authorized_keys"))).toBe("ssh-ed25519 AAAA mine\n");
-    expect(await read(join(dir, "etc", "duskbot", "engines.env"))).toBe(`${TOKEN}\n`);
+    expect(await read(join(dir, "etc", "madanibot", "engines.env"))).toBe(`${TOKEN}\n`);
     expect(existsSync(join(home, ".config", LEGACY.devName, "engines.env"))).toBe(false);
-    const engine = join(home, ".duskbot", "engine-home");
+    const engine = join(home, ".madanibot", "engine-home");
     expect(await read(join(engine, ".codex", "sessions", "2026", "r.jsonl"))).toBe("rollout\n");
     expect(await read(join(engine, ".claude", "projects", "p", "s.jsonl"))).toBe("transcript\n");
     expect(await read(join(engine, ".claude.json"))).toBe("{}\n");
-    expect(await read(join(home, ".duskbot", "messages.db"))).toBe("db\n");
+    expect(await read(join(home, ".madanibot", "messages.db"))).toBe("db\n");
     expect((await stat(home)).mode & 0o777).toBe(0o700);
-    expect((await stat(join(home, ".duskbot"))).mode & 0o777).toBe(0o700);
+    expect((await stat(join(home, ".madanibot"))).mode & 0o777).toBe(0o700);
     const calls = await read(join(dir, "calls"));
     expect(calls).toContain("gpasswd -d maus docker");
     expect(calls).toMatch(/useradd --system --no-create-home .* --gid omb-dockergate omb-docker/);
@@ -182,8 +182,8 @@ do_user > "$ROOT/out2" 2>&1 || { cat "$ROOT/out2" >&2; exit 1; }`);
     expect(calls).not.toContain("useradd");
     expect(calls).not.toContain("groupadd");
     expect(calls).not.toContain("gpasswd");
-    expect(await read(join(dir, "home", "maus", ".duskbot", "engine-home", ".codex", "kept"))).toBe("later\n");
-    expect(await read(join(dir, "var", "lib", "omb-link", ".config", "duskbot-link", "tunnel.json"))).toContain("abcdefghij");
+    expect(await read(join(dir, "home", "maus", ".madanibot", "engine-home", ".codex", "kept"))).toBe("later\n");
+    expect(await read(join(dir, "var", "lib", "omb-link", ".config", "madanibot-link", "tunnel.json"))).toContain("abcdefghij");
   });
 });
 

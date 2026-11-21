@@ -50,7 +50,7 @@ export function parsePartsManifest(value: unknown): PartsManifest {
 
 /** The manifest the packaged app ships, or null in a source checkout or a build that bundles everything. */
 export function readPartsManifest(env: NodeJS.ProcessEnv = process.env): PartsManifest | null {
-  const resources = env.DUSK_RESOURCES_PATH;
+  const resources = env.MADANI_RESOURCES_PATH;
   if (!resources) return null;
   const file = join(resolve(resources), PARTS_FILE);
   if (!existsSync(file)) return null;
@@ -59,9 +59,9 @@ export function readPartsManifest(env: NodeJS.ProcessEnv = process.env): PartsMa
 
 /** Shared by every workspace of this app (Start fresh keeps them): beside its user data, not in a workspace. */
 export function partsRoot(env: NodeJS.ProcessEnv = process.env): string | null {
-  const explicit = env.DUSK_PARTS_DIR?.trim();
+  const explicit = env.MADANI_PARTS_DIR?.trim();
   if (explicit) return resolve(explicit);
-  const userData = env.DUSK_USER_DATA?.trim();
+  const userData = env.MADANI_USER_DATA?.trim();
   return userData ? join(resolve(userData), "parts") : null;
 }
 
@@ -78,7 +78,7 @@ export function partInstalled(root: string, part: PartSpec): boolean {
 let cached: { key: string; manifest: PartsManifest | null } | null = null;
 /** For lookups on request paths: what this app declares for `name`, and where it lives once here. */
 export function declaredPart(name: PartName, env: NodeJS.ProcessEnv = process.env): { part: PartSpec; root: string; directory: string; installed: boolean } | null {
-  const key = `${env.DUSK_RESOURCES_PATH ?? ""}\0${env.DUSK_PARTS_DIR ?? ""}\0${env.DUSK_USER_DATA ?? ""}`;
+  const key = `${env.MADANI_RESOURCES_PATH ?? ""}\0${env.MADANI_PARTS_DIR ?? ""}\0${env.MADANI_USER_DATA ?? ""}`;
   if (cached?.key !== key) {
     let manifest: PartsManifest | null = null;
     try { manifest = readPartsManifest(env); } catch (error) { console.warn(`app parts: ${(error as Error).message}`); }
@@ -268,12 +268,12 @@ export type PartState =
 /** Tries after a failure: soon, then less often; offline it keeps trying every ten minutes. */
 export const PART_RETRY_MS = [5_000, 30_000, 120_000, 600_000];
 
-const DOWNLOADS_PART = /^https:\/\/github\.com\/DuskBotAI\/duskbot-releases\/releases\/download\/v(\d+\.\d+\.\d+)\/(DuskBot-\1-[A-Za-z0-9_.-]+\.zip)$/;
-/** where a part can come from, tried in turn after each failure: its pinned url, then dusk.bot's copy of a downloads-repo
+const DOWNLOADS_PART = /^https:\/\/github\.com\/MadaniBotAI\/madanibot-releases\/releases\/download\/v(\d+\.\d+\.\d+)\/(MadaniBot-\1-[A-Za-z0-9_.-]+\.zip)$/;
+/** where a part can come from, tried in turn after each failure: its pinned url, then madani.bot's copy of a downloads-repo
  * part (scripts/mirror-release.sh puts it there). either is checked against the same pinned size and SHA-256 */
 export function partSources(url: string): string[] {
   const match = DOWNLOADS_PART.exec(url);
-  return match ? [url, `https://dusk.bot/releases/${match[1]}/${match[2]}`] : [url];
+  return match ? [url, `https://madani.bot/releases/${match[1]}/${match[2]}`] : [url];
 }
 
 export interface PartsDownloader {

@@ -29,14 +29,14 @@ afterEach(() => { vi.unstubAllGlobals(); vi.restoreAllMocks(); });
 
 describe("typed pairing", () => {
   it("parses phone links and 12-character workspace codes without inventing credentials", () => {
-    expect(parseTypedPairing(`duskbot://pair?address=https%3A%2F%2Fworkspace.test&token=${credential}`)).toMatchObject(payload);
+    expect(parseTypedPairing(`madanibot://pair?address=https%3A%2F%2Fworkspace.test&token=${credential}`)).toMatchObject(payload);
     expect(parseTypedPairing("workspace.test abcd1234efgh")).toEqual({ ...payload, v: 1, credential: "", code: "ABCD1234EFGH" });
     // the desktop's qr is an https link, and the app's own scanner reads it too
-    expect(parseTypedPairing(`https://dusk.bot/m/pair#address=https%3A%2F%2Fworkspace.test&token=${credential}`)).toMatchObject(payload);
+    expect(parseTypedPairing(`https://madani.bot/m/pair#address=https%3A%2F%2Fworkspace.test&token=${credential}`)).toMatchObject(payload);
     expect((parseTypedPairing(" https://workspace.test:8443 ABCD1234EFGH ") as MobilePairingPayload)?.origin).toBe("https://workspace.test:8443");
   });
 
-  it.each(["workspace.test 123456", "http://workspace.test ABCD1234EFGH", "https://person:secret@workspace.test ABCD1234EFGH", "https://workspace.test/path ABCD1234EFGH", "https://workspace.test?query ABCD1234EFGH", "https://workspace.test#fragment ABCD1234EFGH", "https://workspace.test\\elsewhere ABCD1234EFGH", "duskbot://pair?address=workspace.test", "unrelated text"])("rejects %s", (input) => {
+  it.each(["workspace.test 123456", "http://workspace.test ABCD1234EFGH", "https://person:secret@workspace.test ABCD1234EFGH", "https://workspace.test/path ABCD1234EFGH", "https://workspace.test?query ABCD1234EFGH", "https://workspace.test#fragment ABCD1234EFGH", "https://workspace.test\\elsewhere ABCD1234EFGH", "madanibot://pair?address=workspace.test", "unrelated text"])("rejects %s", (input) => {
     expect(parseTypedPairing(input)).toBeNull();
   });
 });
@@ -64,7 +64,7 @@ describe("pairing exchange", () => {
     const retry = JSON.parse(String(fetcher.mock.calls[1][1]?.body));
     expect(first.pairRequestId).toBe(retry.pairRequestId);
     expect(first).toMatchObject({ credential, deviceName: "Test phone" });
-    expect([...preferences.keys()]).toEqual([expect.stringMatching(/^dusk\.mobile\.pairAttempt\.[a-f0-9]{12}$/)]);
+    expect([...preferences.keys()]).toEqual([expect.stringMatching(/^madani\.mobile\.pairAttempt\.[a-f0-9]{12}$/)]);
     expect([...preferences.values()]).not.toContain(credential);
     expect(result.record).toMatchObject({ label: "Studio", environmentId: "studio", sessionId: "session-1", capabilities: { computerControl: true, routines: true, notifications: true, settingsWrite: true, openOnDesktop: false } });
     expect(result.record.sessionRef).toBe(`token.${result.record.id}`);
@@ -156,7 +156,7 @@ function v2Payload(): MobileLinkPayload {
 }
 function v2Answer(): MobileRedeemResponse {
   return {
-    token: "dusk_sess_test", workspace: { name: "Studio", environmentId: "studio", kind: "vps" }, scopes: ["client", "admin"],
+    token: "madani_sess_test", workspace: { name: "Studio", environmentId: "studio", kind: "vps" }, scopes: ["client", "admin"],
     device: { id: "device-1", name: "Test phone", platform: "ios", createdAt: 1, lastSeenAt: 1, expiresAt: 1000, relay: true, push: null },
     relay: { base: "https://relay.test", channel: "klmnopqrst", agentPub: Buffer.alloc(32, 7).toString("base64url") },
   };
@@ -198,7 +198,7 @@ describe("v2 pairing", () => {
     const channel = { request: vi.fn().mockRejectedValue(new TypeError("offline")), close: vi.fn() };
     vi.spyOn(relay, "open").mockReturnValue(channel);
     const fetcher = vi.fn<typeof fetch>().mockImplementation(async () => {
-      const id = preferences.get("dusk.mobile.attempt.grant-id");
+      const id = preferences.get("madani.mobile.attempt.grant-id");
       expect(id).toBeTruthy();
       expect(secrets.has(`relay.${id}`)).toBe(true);
       throw new TypeError("lost response");
@@ -227,7 +227,7 @@ describe("v2 pairing", () => {
     const [first, second] = fetcher.mock.calls.map((call) => JSON.parse(String(call[1]?.body)).device.install);
     expect(first).toMatch(/^[0-9a-f-]{36}$/);
     expect(second).toBe(first);
-    expect(preferences.get("dusk.mobile.install")).toBe(first);
+    expect(preferences.get("madani.mobile.install")).toBe(first);
   });
 
   it("times a grant that says when it was issued on the phone's own clock, so a computer an hour slow still pairs", async () => {
@@ -241,7 +241,7 @@ describe("v2 pairing", () => {
     await expect(redeemPairing(late, platform)).resolves.toMatchObject({ token: expect.any(String) });
     expect(fetcher).toHaveBeenCalled();
     fetcher.mockClear();
-    preferences.set("dusk.mobile.grantSeen.grant-id", String(Date.now() - 11 * 60_000));
+    preferences.set("madani.mobile.grantSeen.grant-id", String(Date.now() - 11 * 60_000));
     await expect(redeemPairing(late, platform)).rejects.toMatchObject({ code: "expired" });
     expect(fetcher).not.toHaveBeenCalled();
   });
@@ -266,7 +266,7 @@ describe("v2 pairing", () => {
     vi.stubGlobal("fetch", vi.fn().mockRejectedValue(new TypeError("offline")));
     const { record, token } = await redeemPairing(pairingFromPayload(v2Payload()), fakePlatform().platform);
     expect(record.relay).toEqual(v2Answer().relay);
-    expect(token).toBe("dusk_sess_test");
+    expect(token).toBe("madani_sess_test");
     expect(channel.request).toHaveBeenCalledTimes(2);
     expect(channel.request.mock.calls[1][3]).toEqual(channel.request.mock.calls[0][3]);
 
@@ -384,10 +384,10 @@ describe("workspace reconnect", () => {
     await expect(connectToWorkspace(record, token, platform, new AbortController().signal)).rejects.toMatchObject({ code: "unreachable" });
   });
 
-  it("opens a dusk cloud whose edge says it sleeps instead of calling it unreachable: no read could ever wake it", async () => {
+  it("opens a madani cloud whose edge says it sleeps instead of calling it unreachable: no read could ever wake it", async () => {
     const { record, token, platform } = await saved();
     record.via = [{ kind: "https", url: "https://workspace.test" }];
-    const asleep = () => new Response("asleep", { status: 503, headers: { "x-dusk-cloud-power": "asleep", "retry-after": "5" } });
+    const asleep = () => new Response("asleep", { status: 503, headers: { "x-madani-cloud-power": "asleep", "retry-after": "5" } });
     vi.stubGlobal("fetch", vi.fn().mockResolvedValue(asleep()));
     expect(await connectToWorkspace(record, token, platform, new AbortController().signal)).toEqual({ kind: "bearer", origin: "https://workspace.test", token, asleep: true });
     // a plain outage is still unreachable
@@ -395,10 +395,10 @@ describe("workspace reconnect", () => {
     await expect(connectToWorkspace(record, token, platform, new AbortController().signal)).rejects.toMatchObject({ code: "unreachable" });
   });
 
-  it("says a dusk cloud whose edge answers gone was deleted, never unreachable or unpaired", async () => {
+  it("says a madani cloud whose edge answers gone was deleted, never unreachable or unpaired", async () => {
     const { record, token, platform } = await saved();
     record.via = [{ kind: "https", url: "https://workspace.test" }];
-    const gone = () => new Response("This dusk bot was deleted.", { status: 410, headers: { "x-dusk-cloud-power": "gone" } });
+    const gone = () => new Response("This madani bot was deleted.", { status: 410, headers: { "x-madani-cloud-power": "gone" } });
     vi.stubGlobal("fetch", vi.fn().mockImplementation(async () => gone()));
     await expect(connectToWorkspace(record, token, platform, new AbortController().signal)).rejects.toBeInstanceOf(PlaceGoneError);
     // a 410 without the edge's word is no more than a failed route
@@ -457,7 +457,7 @@ describe("workspace reconnect", () => {
     preferences.set(outboxKey(record.id), "[]");
     await store.remove(record.id);
     expect(preferences.has(outboxKey(record.id))).toBe(false);
-    expect(deleted).toEqual([`dusk-transcripts.${record.id}`]);
+    expect(deleted).toEqual([`madani-transcripts.${record.id}`]);
   });
 
   it("keeps what was written offline when the same installation is linked again, and drops the old link's chats", async () => {
@@ -470,19 +470,19 @@ describe("workspace reconnect", () => {
     await store.save(again, "token-2");
     expect(preferences.has(outboxKey(record.id))).toBe(false);
     expect(preferences.get(outboxKey(again.id))).toBe("[\"held\"]");
-    expect(deleted).toEqual([`dusk-transcripts.${record.id}`]);
+    expect(deleted).toEqual([`madani-transcripts.${record.id}`]);
   });
 
-  it("replaces a dusk cloud linked again at its new address, and keeps two places that only share an address fallback", async () => {
+  it("replaces a madani cloud linked again at its new address, and keeps two places that only share an address fallback", async () => {
     const { record, token, platform, preferences } = await saved();
     deletedShelves();
     const store = createConnectionStore(platform);
-    const cloud = { ...record, transport: "https" as const, origin: "https://old.dusk.bot", environmentId: "env-cloud", relay: undefined, via: undefined };
+    const cloud = { ...record, transport: "https" as const, origin: "https://old.madani.bot", environmentId: "env-cloud", relay: undefined, via: undefined };
     await store.save(cloud, token);
     preferences.set(outboxKey(cloud.id), "[\"held\"]");
-    const moved = { ...cloud, id: `${cloud.id}-moved`, sessionRef: `token.${cloud.id}-moved`, origin: "https://new.dusk.bot" };
+    const moved = { ...cloud, id: `${cloud.id}-moved`, sessionRef: `token.${cloud.id}-moved`, origin: "https://new.madani.bot" };
     await store.save(moved, "token-2");
-    expect((await store.list()).map((one) => one.origin)).toEqual(["https://new.dusk.bot"]);
+    expect((await store.list()).map((one) => one.origin)).toEqual(["https://new.madani.bot"]);
     expect(preferences.get(outboxKey(moved.id))).toBe("[\"held\"]");
     const bare = { ...cloud, id: "bare-a", sessionRef: "token.bare-a", origin: "https://a.example", environmentId: "https://a.example" };
     await store.save(bare, "token-3");
@@ -532,7 +532,7 @@ describe("push registration", () => {
     const { platform, fetcher, preferences, record } = await fixture();
     fetcher.mockRejectedValueOnce(new Error("offline"));
     await expect(registerPushForConnection(platform)).resolves.toBeUndefined();
-    expect(preferences.has(`dusk.mobile.push.${record.id}`)).toBe(false);
+    expect(preferences.has(`madani.mobile.push.${record.id}`)).toBe(false);
     await registerPushForConnection(platform);
     expect(puts(fetcher)).toHaveLength(2);
     platform.native = false;
@@ -545,27 +545,27 @@ describe("the app's own scanner reads every qr the desktop, the site or an older
   const v2 = mobileLinkUrl({
     v: MOBILE_LINK_VERSION, workspace: { name: "Studio", environmentId: "env_1", kind: "mac" },
     grant: { id: "g1", secret: "s3cret", expiresAt: 1_900_000_000_000 },
-    via: [{ kind: "relay", base: "https://link.dusk.bot", channel: "abcdefghij", token: "tok_1", key: "k".repeat(43) }],
+    via: [{ kind: "relay", base: "https://link.madani.bot", channel: "abcdefghij", token: "tok_1", key: "k".repeat(43) }],
   });
 
-  it("pairs from this computer's qr, the https link and its duskbot:// form alike", () => {
+  it("pairs from this computer's qr, the https link and its madanibot:// form alike", () => {
     for (const text of [universalPairLink(v2, "QWER-TYPL-KMNB"), universalPairLink(v2, null), v2, ` ${v2} `]) {
       expect(readScanned(text), text).toMatchObject({ kind: "pair", payload: { v: 2, credential: "s3cret", grantId: "g1" } });
     }
   });
 
   it("pairs from an older server or companion qr", () => {
-    expect(readScanned(`duskbot://pair?address=https%3A%2F%2Fworkspace.test&token=${credential}`)).toMatchObject({ kind: "pair", payload: { origin: "https://workspace.test" } });
-    expect(readScanned(`https://dusk.bot/m/pair#address=https%3A%2F%2Fworkspace.test&token=${credential}`)).toMatchObject({ kind: "pair" });
+    expect(readScanned(`madanibot://pair?address=https%3A%2F%2Fworkspace.test&token=${credential}`)).toMatchObject({ kind: "pair", payload: { origin: "https://workspace.test" } });
+    expect(readScanned(`https://madani.bot/m/pair#address=https%3A%2F%2Fworkspace.test&token=${credential}`)).toMatchObject({ kind: "pair" });
   });
 
-  it("opens the dusk cloud log in from a cloud's qr, with its email, the https link and duskbot:// alike", () => {
+  it("opens the madani cloud log in from a cloud's qr, with its email, the https link and madanibot:// alike", () => {
     expect(readScanned(universalSignInLink("owner@example.test"))).toEqual({ kind: "signin", email: "owner@example.test" });
-    expect(readScanned("duskbot://signin?email=owner%40example.test")).toEqual({ kind: "signin", email: "owner@example.test" });
+    expect(readScanned("madanibot://signin?email=owner%40example.test")).toEqual({ kind: "signin", email: "owner@example.test" });
     expect(readScanned(universalSignInLink(null))).toEqual({ kind: "signin", email: "" });
   });
 
-  it("a cloud qr with a code, or 8 typed letters, is a dusk cloud log in by code; 12 is still a computer's", () => {
+  it("a cloud qr with a code, or 8 typed letters, is a madani cloud log in by code; 12 is still a computer's", () => {
     expect(readScanned(universalSignInLink("owner@example.test", "ABCD-EFGH"))).toEqual({ kind: "signin", email: "owner@example.test", code: "ABCDEFGH" });
     expect(readScanned("abcd-efgh")).toEqual({ kind: "account", code: "ABCDEFGH" });
     expect(readScanned(" ABCD EFGH ")).toEqual({ kind: "account", code: "ABCDEFGH" });
@@ -574,9 +574,9 @@ describe("the app's own scanner reads every qr the desktop, the site or an older
 
   it("knows the store qr, takes a typed code, and refuses anything else", () => {
     expect(readScanned("https://apps.apple.com/app/id6834725640")).toEqual({ kind: "store" });
-    expect(readScanned("https://dusk.bot/download")).toEqual({ kind: "store" });
+    expect(readScanned("https://madani.bot/download")).toEqual({ kind: "store" });
     expect(readScanned("qwer-typl-kmnb")).toEqual({ kind: "code", code: "QWERTYPLKMNB" });
-    for (const text of ["https://dusk.bot/m/pair?m=x", "https://evil.example/m/pair#m=x", "https://dusk.bot/pricing", "hello", ""]) expect(readScanned(text), text).toBeNull();
+    for (const text of ["https://madani.bot/m/pair?m=x", "https://evil.example/m/pair#m=x", "https://madani.bot/pricing", "hello", ""]) expect(readScanned(text), text).toBeNull();
   });
 });
 

@@ -27,7 +27,7 @@ describe("what the phone says about its live connection", () => {
     expect(connectionNotice({ ...base, connected: true, downSince: null, answeredAt: 0, now: 1 })).toBeNull();
   });
 
-  it("says nothing for a dusk cloud that agreed to sleep: the next action wakes it", () => {
+  it("says nothing for a madani cloud that agreed to sleep: the next action wakes it", () => {
     expect(connectionNotice({ ...base, asleep: true, now: STUCK_AFTER_MS * 10 })).toBeNull();
     expect(connectionNotice({ ...base, asleep: true, waking: true, downSince: null, wakingSince: 0, now: 1 })).toBe("waking");
   });
@@ -40,11 +40,11 @@ describe("what the phone says about its live connection", () => {
 });
 
 describe("which kind of place a link is", () => {
-  it("names a managed dusk cloud by its address, everything else a computer", () => {
-    expect(isCloudOrigin("https://db8dd36a8c78f9624d31d.dusk.bot")).toBe(true);
-    expect(isCloudOrigin("https://dusk.bot")).toBe(false);
-    expect(isCloudOrigin("https://db8dd36a8c78f9624d31d.dusk.bot.evil.example")).toBe(false);
-    expect(placeKind({ origin: undefined, via: [{ kind: "https", url: "https://dbe8ba878381340a6f57a.dusk.bot" }] })).toBe("cloud");
+  it("names a managed madani cloud by its address, everything else a computer", () => {
+    expect(isCloudOrigin("https://db8dd36a8c78f9624d31d.madani.bot")).toBe(true);
+    expect(isCloudOrigin("https://madani.bot")).toBe(false);
+    expect(isCloudOrigin("https://db8dd36a8c78f9624d31d.madani.bot.evil.example")).toBe(false);
+    expect(placeKind({ origin: undefined, via: [{ kind: "https", url: "https://dbe8ba878381340a6f57a.madani.bot" }] })).toBe("cloud");
     expect(placeKind({ origin: "https://192.168.1.4:5331" })).toBe("computer");
     expect(placeKind(undefined)).toBe("computer");
   });

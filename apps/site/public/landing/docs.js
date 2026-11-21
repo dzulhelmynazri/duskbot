@@ -51,7 +51,7 @@ for (const box of $$('[data-search]')) {
     const words = q.toLowerCase().split(/[^a-z0-9$]+/).filter(Boolean), found = find(q);
     hits.innerHTML = found.length
       ? found.map((e, n) => `<a id="${input.id}-hit-${n}" role="option" aria-selected="false" href="${e.u}"><b>${marked(e.h || e.t, words)}${e.h ? `<small>${esc(e.t)}</small>` : ''}</b><span>${marked(snippet(e, words), words)}</span></a>`).join('')
-      : `<p class="none">nothing for “${esc(q)}”. try fewer words, or ask <a href="mailto:hello@dusk.bot">hello@dusk.bot</a>.</p>`;
+      : `<p class="none">nothing for “${esc(q)}”. try fewer words, or ask <a href="mailto:hello@madani.bot">hello@madani.bot</a>.</p>`;
     show(true); pick(found.length ? 0 : -1);
   };
   input.addEventListener('focus', () => { load(); if (input.value.trim()) run(); });

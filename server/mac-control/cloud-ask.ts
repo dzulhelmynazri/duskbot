@@ -1,4 +1,4 @@
-// With "Ask before each command" on (the Mac's own choice), a dusk cloud's bot asks before each command, download,
+// With "Ask before each command" on (the Mac's own choice), a madani cloud's bot asks before each command, download,
 // file change or open on the person's Mac, at every approval level, Full access included. Pending asks live in
 // memory; a card a previous run left open is closed at startup.
 import { posix } from "node:path";

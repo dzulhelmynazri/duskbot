@@ -2,17 +2,17 @@
 import { readFileSync } from "node:fs";
 import { execFile } from "node:child_process";
 import { promisify } from "node:util";
-import { launchVerificationServer, runControlDusk } from "./control-dusk.ts";
+import { launchVerificationServer, runControlMadani } from "./control-madani.ts";
 import { mountPreview, parkUntilSignal, type MountedPreview } from "./testing/preview-fixture.ts";
 
 
-const binaryPath = process.env.DUSK_VERIFY_BROWSER_BINARY;
-const executablePath = process.env.DUSK_VERIFY_BROWSER_CHROME;
-if (!binaryPath || !executablePath) throw new Error("Set DUSK_VERIFY_BROWSER_BINARY and DUSK_VERIFY_BROWSER_CHROME to explicit installed binaries.");
+const binaryPath = process.env.MADANI_VERIFY_BROWSER_BINARY;
+const executablePath = process.env.MADANI_VERIFY_BROWSER_CHROME;
+if (!binaryPath || !executablePath) throw new Error("Set MADANI_VERIFY_BROWSER_BINARY and MADANI_VERIFY_BROWSER_CHROME to explicit installed binaries.");
 const fixture = await launchVerificationServer(process.env, undefined, undefined, { binaryPath, executablePath });
 let ui: MountedPreview | undefined;
 try {
-  await runControlDusk(["new-bot", "--name", "Pepper", "--url", fixture.info.url]);
+  await runControlMadani(["new-bot", "--name", "Pepper", "--url", fixture.info.url]);
   const { bots } = await (await fetch(`${fixture.info.url}/api/bots`)).json() as any;
   await fetch(`${fixture.info.url}/api/config`, { method: "PATCH", headers: { "content-type": "application/json" }, body: JSON.stringify({ features: { browser: true } }) });
   await fetch(`${fixture.info.url}/api/bots/${bots[0].id}`, { method: "PATCH", headers: { "content-type": "application/json" }, body: JSON.stringify({ browser: true }) });

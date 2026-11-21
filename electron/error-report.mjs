@@ -130,7 +130,7 @@ export function createErrorReporter(options) {
     },
   };
   function post(event) {
-    const auth = `Sentry sentry_version=7, sentry_key=${target.key}, sentry_client=duskbot/1`;
+    const auth = `Sentry sentry_version=7, sentry_key=${target.key}, sentry_client=madanibot/1`;
     void Promise.resolve(send(target.endpoint, { method: "POST", headers: { "content-type": "application/x-sentry-envelope", "x-sentry-auth": auth }, body: envelope(event), signal: AbortSignal.timeout(10_000) })).catch(() => {});
   }
 }

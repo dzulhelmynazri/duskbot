@@ -4,7 +4,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { createMobileSessions } from "../src/mobile.ts";
 import { createProxyHandler } from "../src/proxy.ts";
 
-const TOKEN = `dusk_sess_${"a".repeat(43)}`;
+const TOKEN = `madani_sess_${"a".repeat(43)}`;
 const servers: Server[] = [];
 
 async function listen(server: Server): Promise<number> {
@@ -70,7 +70,7 @@ describe("the phone app's WebView origin", () => {
   it("lets the app read a refused credential", async () => {
     const app = await fixture((_req, res) => res.end());
     const response = await fetch(`${app.url}/api/events`, {
-      headers: { origin: "https://localhost", authorization: "Bearer dusk_unknown_device" },
+      headers: { origin: "https://localhost", authorization: "Bearer madani_unknown_device" },
     });
     expect(response.status).toBe(401);
     expect(response.headers.get("access-control-allow-origin")).toBe("https://localhost");

@@ -8,7 +8,7 @@ import { dedicatedUserData, linkKeys, originFor, poolBootstrap } from "./bootstr
 import { PoolFullError } from "./pool.ts";
 import { RetryableCloudError } from "./http.ts";
 
-/** what a Team Cloud is called on its machine (DUSK_CLOUD_TEAM_NAME: 1 to 80 characters, no control characters) */
+/** what a Team Cloud is called on its machine (MADANI_CLOUD_TEAM_NAME: 1 to 80 characters, no control characters) */
 export function teamName(value: string) { return value.replace(/[\p{Cc}]/gu, " ").replace(/\s+/g, " ").trim().slice(0, 80) || "team"; }
 import type { createSealer } from "./seal.ts";
 import type { CloudProvider, CloudsService, DesktopPlan, HomeClient, SlotQuota, StoredCloud, TeamMemberClaim } from "./types.ts";
@@ -31,7 +31,7 @@ export interface CloudsConfig {
   originTemplate?: string;
   poolQuota(kind: DesktopPlan["kind"], spec: MachineSpec, botComputers: number | null): SlotQuota;
   maxAttempts?: number;
-  /** how many dusk cloud (managed) machines one upkeep pass looks after at once; a slow one (a backup, a wake) no longer
+  /** how many madani cloud (managed) machines one upkeep pass looks after at once; a slow one (a backup, a wake) no longer
    *  holds up the rest. the older pool and dedicated clouds still go one by one */
   upkeepConcurrency?: number;
 }
@@ -66,7 +66,7 @@ export interface CloudsServiceOptions {
 }
 export type CloudEventKind = "ready" | "deleted";
 interface State { v: 1; clouds: StoredCloud[] }
-/** dusk cloud machines looked after at once in one upkeep pass: enough that one slow backup does not stall the rest, few
+/** madani cloud machines looked after at once in one upkeep pass: enough that one slow backup does not stall the rest, few
  *  enough to stay gentle on the shared box (each backup streams through a small buffer) and on the provider's start limits */
 const UPKEEP_CONCURRENCY = 4;
 const failureOf = (error: unknown) => error instanceof Error ? `${error.name}: ${error.message}`.replace(/\s+/g, " ").slice(0, 300) : String(error).slice(0, 300);
@@ -142,7 +142,7 @@ export function createCloudsService(options: CloudsServiceOptions): CloudsServic
   function requireCloud(id: string) { const cloud = get(id); if (!cloud) throw new CloudError(404, "not_found"); return cloud; }
   async function pairCloud(c: StoredCloud, member?: TeamMemberClaim) {
     if (c.status !== "running" || !c.origin || c.suspended !== null || c.ended || c.destroyAt !== null && c.destroyAt <= now()) throw new CloudError(409, "unavailable");
-    const claims = c.team && member ? { label: "dusk bot app (Team Cloud)", team: c.team, member } : { label: "dusk bot app (Cloud)" };
+    const claims = c.team && member ? { label: "madani bot app (Team Cloud)", team: c.team, member } : { label: "madani bot app (Cloud)" };
     const result = await (c.backend ? options.managedHome ?? home : home).pair(c.origin, sealer.unseal(c.bootstrapSecret), { ...claims, ttlSeconds: 300 });
     // the cloud's link public key: the app checks its cloud's sealed Mac jobs against it (docs/cloud-uses-mac.md)
     return { origin: c.origin, code: result.code, expiresAt: result.expiresAt, ...(c.linkPublicKey ? { linkKey: c.linkPublicKey } : {}) };
@@ -251,7 +251,7 @@ export function createCloudsService(options: CloudsServiceOptions): CloudsServic
       c.status = "stopped"; succeeded(c); return;
     }
     if (config.configured?.[c.placement] === false) {
-      c.error = "dusk cloud is not configured."; save(c); return;
+      c.error = "madani cloud is not configured."; save(c); return;
     }
     if (c.suspended !== null) {
       if (!c.suspensionApplied || c.serverId && (await provider.status(c.serverId)).state !== "off") {

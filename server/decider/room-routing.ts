@@ -32,10 +32,10 @@ export interface RoomRoutingInput {
   message: { from: string; text: string };
 }
 
-/** Who decided: the decider (Jev and its backends), or a quick model of the person's own engine (Dusk decides). */
-export type RoomRouteProvider = DeciderProvider | "dusk";
+/** Who decided: the decider (Jev and its backends), or a quick model of the person's own engine (Madani decides). */
+export type RoomRouteProvider = DeciderProvider | "madani";
 
-/** Several members joined by this mark, in `choice`, mean exactly those members; only Dusk answers that way. */
+/** Several members joined by this mark, in `choice`, mean exactly those members; only Madani answers that way. */
 export const SEVERAL_MARK = "+";
 
 export type RoomRoute =
@@ -44,7 +44,7 @@ export type RoomRoute =
   | { kind: "everyone"; probability: number; provider: RoomRouteProvider }
   | { kind: "fallback"; reason: DeciderFailure | "low_confidence" | "no_choice" };
 
-/** The one contract the decider and Dusk share: pick an option, sure by `pTop`. */
+/** The one contract the decider and Madani share: pick an option, sure by `pTop`. */
 export interface RoomChooser {
   choose(
     seam: "roomRouting",

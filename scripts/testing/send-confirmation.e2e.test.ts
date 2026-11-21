@@ -4,7 +4,7 @@ import { createServer } from "node:http";
 import type { AddressInfo } from "node:net";
 import { performance } from "node:perf_hooks";
 import { expect, it, vi } from "vitest";
-import { launchVerificationServer, runControlDusk } from "../control-dusk.ts";
+import { launchVerificationServer, runControlMadani } from "../control-madani.ts";
 import { publishLiveFrame } from "../../src/lib/live-events.ts";
 import { sendReconciled } from "../../src/state/optimistic-send.ts";
 import type { WireBot, WireMessage } from "../../shared/wire.ts";
@@ -66,7 +66,7 @@ it("confirms a send through SSE while its relay response is held, without stoppi
     expect(result).toEqual({ arrived: true });
     expect(responseReleased).toBe(false);
     await vi.waitFor(() => expect(responseAborted).toBe(true));
-    const settled = await runControlDusk(["wait", "--bot", bot.id, "--task", bot.threadId, "--timeout", "15", "--url", fixture.info.url]) as { status: string };
+    const settled = await runControlMadani(["wait", "--bot", bot.id, "--task", bot.threadId, "--timeout", "15", "--url", fixture.info.url]) as { status: string };
     expect(settled.status).toBe("settled");
     const post = { method: "POST", body: JSON.stringify({ text, threadId: bot.threadId, sendId }) };
     const duplicates = await Promise.all(Array.from({ length: 10 }, () => api<{ message?: WireMessage }>(`/api/bots/${bot.id}/messages`, post)));

@@ -424,7 +424,7 @@ if (["text", "json"].includes(argAfter("--output-format") ?? "")) {
       writeDumpAtomic(process.env.FAKE_CLAUDE_COMPACT_DUMP, JSON.stringify({
         pid: process.pid, argv, prompt, cwd: process.cwd(), mcpConfig: JSON.parse(file("--mcp-config") ?? "null"),
         settings: JSON.parse(file("--settings") ?? "null"), systemPrompt: file("--append-system-prompt-file"),
-        hookEnv: Object.keys(process.env).filter((key) => key.startsWith("DUSK_HOOK_")),
+        hookEnv: Object.keys(process.env).filter((key) => key.startsWith("MADANI_HOOK_")),
       }, null, 2));
     }
     compactionPause();
@@ -677,14 +677,14 @@ const useCloudComputer = () => {
   const server = (launchFiles.mcpConfig as { mcpServers?: Record<string, { command?: string; args?: string[]; env?: Record<string, string> }> } | null)
     ?.mcpServers?.computer;
   if (!server?.command) return;
-  const scopedGate = server.env?.DUSK_CONTROL_URL && server.env?.DUSK_CONTROL_TOKEN;
+  const scopedGate = server.env?.MADANI_CONTROL_URL && server.env?.MADANI_CONTROL_TOKEN;
   const harnessProxy = server.args?.at(-1) === "computer" && /harness-mcp-proxy/.test(server.args[0] ?? "");
   if (!scopedGate && !harnessProxy) return;
   const id = `tu-${process.pid}-${++toolUseCount}`;
   out({ type: "assistant", message: { content: [{ type: "tool_use", id, name: "mcp__computer__screenshot", input: {} }] } });
   const command = scopedGate ? process.execPath : server.command;
   const args: string[] = scopedGate ? ["--input-type=module", "-e", `
-const response = await fetch(process.env.DUSK_CONTROL_URL, { headers: { authorization: 'Bearer ' + process.env.DUSK_CONTROL_TOKEN } });
+const response = await fetch(process.env.MADANI_CONTROL_URL, { headers: { authorization: 'Bearer ' + process.env.MADANI_CONTROL_TOKEN } });
 const state = await response.json();
 console.log(JSON.stringify({ result: { isError: !response.ok || state.held, content: [{ type: 'text', text: JSON.stringify(state) }] } }));
 `] : server.args ?? [];

@@ -606,7 +606,7 @@ export function LocalComputerSection() {
     return body as Status;
   };
 
-  const confirmAction = (message: string) => window.duskDesktop?.confirm ? window.duskDesktop.confirm(message) : window.confirm(message);
+  const confirmAction = (message: string) => window.madaniDesktop?.confirm ? window.madaniDesktop.confirm(message) : window.confirm(message);
 
   const act = async (action: Action) => {
     if (pending !== null || actionController.current) return;
@@ -871,7 +871,7 @@ export function LocalComputerSection() {
     <>
       {announcer}
       <RowsCard label={t("settings.w6.group.cloudDesktop")} data-settings-block="vps-desktops">
-        {vpsConfigured === false && !vpsLoading && !vpsUnavailableReason && (typeof window === "undefined" || window.duskDesktop?.remoteClient?.active !== true) && <NavRow title={t("vpsLink.add")} hint={t("vpsLink.addHint")} onClick={() => openPlaceSetup("server")} />}
+        {vpsConfigured === false && !vpsLoading && !vpsUnavailableReason && (typeof window === "undefined" || window.madaniDesktop?.remoteClient?.active !== true) && <NavRow title={t("vpsLink.add")} hint={t("vpsLink.addHint")} onClick={() => openPlaceSetup("server")} />}
         <VpsComputersCard
           instances={vpsInventory}
           configured={vpsConfigured}

@@ -11,10 +11,10 @@ import { PixelIcon } from "./ui/PixelIcon";
 import { openPlaceSetup, pastedPairingLink } from "@/lib/place-setup";
 import { vpsLinkAvailable } from "@/lib/vps-link";
 
-type SavedWorkspaces = Awaited<ReturnType<NonNullable<NonNullable<Window["duskDesktop"]>["environments"]>["state"]>>;
+type SavedWorkspaces = Awaited<ReturnType<NonNullable<NonNullable<Window["madaniDesktop"]>["environments"]>["state"]>>;
 
 export function ConnectedWorkspacesSettings() {
-  const bridge = window.duskDesktop?.environments;
+  const bridge = window.madaniDesktop?.environments;
   const [saved, setSaved] = useState<SavedWorkspaces | null>(null);
   const [address, setAddress] = useState("");
   const [name, setName] = useState("");

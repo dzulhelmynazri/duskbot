@@ -67,13 +67,13 @@ type Intent = () => boolean | Promise<boolean>;
 /** The desktop app's one-shot permission for a capture that starts without a click (macOS). Async: an app whose main
  * process is older than its page rejects it, and that only means no live screen. */
 function liveIntent(): Intent | null {
-  const live = typeof window === "undefined" ? undefined : window.duskDesktop?.screenLive;
+  const live = typeof window === "undefined" ? undefined : window.madaniDesktop?.screenLive;
   return typeof live?.begin === "function" ? () => live.begin() : null;
 }
 
 /** The click-bound permission every desktop app has; synchronous so the request stays inside the click. */
 function gestureIntent(): Intent | null {
-  const begin = typeof window === "undefined" ? undefined : window.duskDesktop?.beginScreenPreviewIntent;
+  const begin = typeof window === "undefined" ? undefined : window.madaniDesktop?.beginScreenPreviewIntent;
   return typeof begin === "function" ? () => begin() : null;
 }
 

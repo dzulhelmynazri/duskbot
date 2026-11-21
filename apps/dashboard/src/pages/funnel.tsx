@@ -12,7 +12,7 @@ export function FreeSheet({ open, catalog, plan, onClose, onFree, primary, freeL
   if (!b) return null;
   return (
     <Modal open={open} onClose={onClose} wide title="what free leaves out" footer={<><Button onClick={onFree}>{freeLabel}</Button>{primary}</>}>
-      <p>free keeps every bot, chat and connector for personal use. here is what changes without dusk cloud.</p>
+      <p>free keeps every bot, chat and connector for personal use. here is what changes without madani cloud.</p>
       <div className="mt-5 grid grid-cols-2 gap-x-5 pb-2.5 text-13" aria-hidden>
         <span className="text-ink-3">free <span className="num">$0</span></span>
         <span className="font-medium text-ink">{b.name} <span className="num">{dollars(b.monthly)}/mo</span></span>

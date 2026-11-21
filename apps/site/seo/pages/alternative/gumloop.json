@@ -4,13 +4,13 @@
   "title": "Gumloop alternatives: a builder or a bot you text?",
   "nav": "gumloop",
   "h1": "gumloop alternatives when you want to give a job in a message",
-  "description": "Compare Gumloop with dusk bot on browser work, credits, model choice and setup, with dated sources and reasons to choose either.",
+  "description": "Compare Gumloop with madani bot on browser work, credits, model choice and setup, with dated sources and reasons to choose either.",
   "keyword": "gumloop alternative",
   "keywords": [
     "gumloop vs n8n",
     "gumloop vs zapier"
   ],
-  "answer": "**keep the builder if you like building. text a bot if you want to hand over the job.** gumloop already has chat, agents and browser work. dusk gives you named bots with standing jobs and a choice of where they live. choose by how you want to work, then add up both the hosting and ai bills.",
+  "answer": "**keep the builder if you like building. text a bot if you want to hand over the job.** gumloop already has chat, agents and browser work. madani gives you named bots with standing jobs and a choice of where they live. choose by how you want to work, then add up both the hosting and ai bills.",
   "updated": "2026-11-12",
   "review": {
     "status": "approved",
@@ -47,7 +47,7 @@
       "you want a no-code builder with 400+ connectors for agents and workflows",
       "you want a hosted browser with saved logins and up to 25 agent chats at once"
     ],
-    "dusk": [
+    "madani": [
       "you want each named bot's job, chats and memory together",
       "you want to start on your computer and pay the ai provider separately",
       "you want to describe a small repeating job and adjust it in conversation"
@@ -58,7 +58,7 @@
     "intro": "**put the handoff beside the bill.** prices as of 12 november 2026. compare fees and credits before paying; the table covers features, not measured reply quality.",
     "cols": [
       "Gumloop",
-      "dusk bot"
+      "madani bot"
     ],
     "rows": [
       {
@@ -87,7 +87,7 @@
         "label": "where work lives",
         "cells": [
           "hosted cloud; optional virtual private cloud on enterprise",
-          "choose your computer, your server or dusk cloud"
+          "choose your computer, your server or madani cloud"
         ],
         "src": [
           2,
@@ -143,19 +143,19 @@
       }
     ]
   },
-  "method": "**we make dusk bot. we haven't raced it against gumloop.** this comparison uses gumloop's homepage and pricing as of 12 november 2026, alongside dusk docs.\n\nwe have no matching-job measurements for speed, accuracy or cost per result. try your own small job before moving a workflow.",
+  "method": "**we make madani bot. we haven't raced it against gumloop.** this comparison uses gumloop's homepage and pricing as of 12 november 2026, alongside madani docs.\n\nwe have no matching-job measurements for speed, accuracy or cost per result. try your own small job before moving a workflow.",
   "sections": [
     {
       "h": "chat and browser work are already there",
-      "md": "**gumloop already gives you agents and a browser.** it saves browser logins and lists chat, slack, teams, imessage and email on its homepage.[^1]\n\nuse its builder when you want to lay out the process. try dusk when you want to give a bot a standing job and adjust it in conversation.\n\nif the workflow is what you enjoy shaping, compare [n8n](/alternatives/n8n) and [zapier agents](/alternatives/zapier-agents) too."
+      "md": "**gumloop already gives you agents and a browser.** it saves browser logins and lists chat, slack, teams, imessage and email on its homepage.[^1]\n\nuse its builder when you want to lay out the process. try madani when you want to give a bot a standing job and adjust it in conversation.\n\nif the workflow is what you enjoy shaping, compare [n8n](/alternatives/n8n) and [zapier agents](/alternatives/zapier-agents) too."
     },
     {
       "h": "the credit terms belong beside the price",
-      "md": "**price the job, not just the $37 plan.** as of 12 november 2026, gumloop pro advertises 20,000 monthly credits. here's the split:[^2]\n\n```text\n7,400 regular credits\n+ 12,600 bonus credits\n= 20,000 credits\n```\n\n- standard orchestration fee: 8%\n- unused credits expire\n- bring your own api keys: model-use credits fall to zero, but the fee rises to 16%\n\ndusk bills hosting separately; your provider bills ai. personal desktop use is free, while work needs a license.[^5][^6][^12] add both bills and read your provider's current sign-in terms. we haven't measured what the same job costs in each."
+      "md": "**price the job, not just the $37 plan.** as of 12 november 2026, gumloop pro advertises 20,000 monthly credits. here's the split:[^2]\n\n```text\n7,400 regular credits\n+ 12,600 bonus credits\n= 20,000 credits\n```\n\n- standard orchestration fee: 8%\n- unused credits expire\n- bring your own api keys: model-use credits fall to zero, but the fee rises to 16%\n\nmadani bills hosting separately; your provider bills ai. personal desktop use is free, while work needs a license.[^5][^6][^12] add both bills and read your provider's current sign-in terms. we haven't measured what the same job costs in each."
     },
     {
       "h": "test the handoff on five files",
-      "md": "**give it a small job before rebuilding your workflow.** try: \"list the five newest files in this folder and explain each. leave the files alone.\" compare the list with the folder.\n\ndusk accepts attached documents. output lives in the bot's folder or a project folder you choose.[^8] if that works, consider a [routine](/scheduled-ai-tasks).\n\nlocal routines stop when dusk closes or your computer sleeps. use an awake machine or dusk cloud for work that must run on time.[^9]"
+      "md": "**give it a small job before rebuilding your workflow.** try: \"list the five newest files in this folder and explain each. leave the files alone.\" compare the list with the folder.\n\nmadani accepts attached documents. output lives in the bot's folder or a project folder you choose.[^8] if that works, consider a [routine](/scheduled-ai-tasks).\n\nlocal routines stop when madani closes or your computer sleeps. use an awake machine or madani cloud for work that must run on time.[^9]"
     }
   ],
   "faq": [
@@ -184,31 +184,31 @@
       "checked": "2026-11-12"
     },
     {
-      "label": "dusk bot: getting started",
+      "label": "madani bot: getting started",
       "url": "/docs/getting-started"
     },
     {
-      "label": "dusk bot: a bot's computer",
+      "label": "madani bot: a bot's computer",
       "url": "/docs/computer"
     },
     {
-      "label": "dusk bot: dusk cloud",
-      "url": "/docs/dusk-cloud"
+      "label": "madani bot: madani cloud",
+      "url": "/docs/madani-cloud"
     },
     {
-      "label": "dusk bot: account and billing",
+      "label": "madani bot: account and billing",
       "url": "/docs/account-and-billing"
     },
     {
-      "label": "dusk bot: phone",
+      "label": "madani bot: phone",
       "url": "/docs/phone"
     },
     {
-      "label": "dusk bot: files and apps",
+      "label": "madani bot: files and apps",
       "url": "/docs/files-and-apps"
     },
     {
-      "label": "dusk bot: routines",
+      "label": "madani bot: routines",
       "url": "/docs/routines"
     },
     {
@@ -217,18 +217,18 @@
       "checked": "2026-11-12"
     },
     {
-      "label": "dusk bot: bots",
+      "label": "madani bot: bots",
       "url": "/docs/bots"
     },
     {
-      "label": "dusk bot: work license",
+      "label": "madani bot: work license",
       "url": "/docs/faq"
     }
   ],
   "quick": {
     "steps": [
       "pick one folder with five files you know",
-      "ask a dusk bot for the file list and one line about each",
+      "ask a madani bot for the file list and one line about each",
       "read its output beside the files, then inspect the usage charge"
     ]
   },
@@ -262,11 +262,11 @@
       ],
       [
         "named bots with separate jobs and your choice of ai",
-        "dusk bot"
+        "madani bot"
       ],
       [
         "personal work on your own machine",
-        "dusk bot"
+        "madani bot"
       ]
     ]
   },

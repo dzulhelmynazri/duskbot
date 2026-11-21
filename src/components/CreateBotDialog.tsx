@@ -2,7 +2,7 @@ import { ModalLayer } from "./ui/ModalLayer";
 import { ScrimMotion, SheetMotion, useDialogMotion } from "./ui/SheetMotion";
 import { AnimatePresence } from "motion/react";
 import { useEffect, useId, useRef, useState, type FocusEvent as ReactFocusEvent, type PointerEvent as ReactPointerEvent } from "react";
-import { DUSK_BODY_IDS, type DuskBodyId } from "../../shared/body-migration";
+import { MADANI_BODY_IDS, type MadaniBodyId } from "../../shared/body-migration";
 import { takeImportName } from "../../shared/import-name";
 import { MAUS_COLOR_LABEL, PICKER_COLORS, colorSwatch, rowsOfFive, type MausColor } from "@/lib/mascot";
 import { useStore } from "@/state/store";
@@ -19,7 +19,7 @@ import { hoverGaze } from "./mascot-engine";
 import { BodyRing } from "./mascot-view";
 
 /** Our bodies, in two rows of five. */
-const SHAPES: DuskBodyId[][] = rowsOfFive(DUSK_BODY_IDS);
+const SHAPES: MadaniBodyId[][] = rowsOfFive(MADANI_BODY_IDS);
 
 
 export { openCreateBot };
@@ -47,7 +47,7 @@ function CreateBotForm({ section, onClose }: { section?: string; onClose: () => 
   const [name, setName] = useState("");
   const sameName = state.bots.find((bot) => bot.name.trim().toLowerCase() === name.trim().toLowerCase() && name.trim())?.name;
   // the dialog opens on a shape and colour of its own choosing, a new one each time
-  const [body, setBody] = useState<DuskBodyId>(() => pick(DUSK_BODY_IDS));
+  const [body, setBody] = useState<MadaniBodyId>(() => pick(MADANI_BODY_IDS));
   const [color, setColor] = useState<MausColor>(() => pick(PICKER_COLORS));
   const dialog = useRef<HTMLDivElement>(null);
   const played = useDialogMotion();
@@ -62,7 +62,7 @@ function CreateBotForm({ section, onClose }: { section?: string; onClose: () => 
   const [error, setError] = useState<string | null>(null);
   const started = useRef(false);
   // the defaults the bot is made from are read while the name is typed, so Create goes straight to making it
-  useEffect(() => { if (!window.duskDesktop?.remoteClient?.active) prefetchBotDefaults(); }, []);
+  useEffect(() => { if (!window.madaniDesktop?.remoteClient?.active) prefetchBotDefaults(); }, []);
   const canCreate = name.trim().length > 0 && !pending && !creating;
   useEffect(() => {
     if (pending) started.current = true;
@@ -81,7 +81,7 @@ function CreateBotForm({ section, onClose }: { section?: string; onClose: () => 
     onFocus: (event: ReactFocusEvent<HTMLElement>) => { if (event.currentTarget.matches(":focus-visible")) lookAt(event.currentTarget); },
   };
   const rest = () => setLook(FACING);
-  const pickBody = (id: DuskBodyId) => { if (id !== body) { setBody(id); mascot.current?.react?.("hop"); } };
+  const pickBody = (id: MadaniBodyId) => { if (id !== body) { setBody(id); mascot.current?.react?.("hop"); } };
   const pickColor = (next: MausColor) => { if (next !== color) { setColor(next); mascot.current?.react?.("wiggle"); } };
   const rename = (next: string) => {
     if (!name.trim() && next.trim()) mascot.current?.react?.("greet");
@@ -228,7 +228,7 @@ const FACING = { x: 0, y: 0 } as const;
 /** A shape to pick, in the chosen colour. Hovered, focused or chosen, a 1px ring follows its outline 3px out: faint on
  * hover, darker once chosen. */
 function ShapeTile({ id, color, selected, onPick, onPointerEnter, onFocus }: {
-  id: DuskBodyId; color: MausColor; selected: boolean; onPick: () => void;
+  id: MadaniBodyId; color: MausColor; selected: boolean; onPick: () => void;
   onPointerEnter: (event: ReactPointerEvent<HTMLElement>) => void; onFocus: (event: ReactFocusEvent<HTMLElement>) => void;
 }) {
   return (

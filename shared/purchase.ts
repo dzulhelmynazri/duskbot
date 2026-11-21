@@ -101,7 +101,7 @@ export function isPurchaseTool(slug: string): boolean {
   return tokens.some((token) => MONEY_WORDS.has(token)) && tokens.some((token) => CREATES.has(token));
 }
 
-/** A button or link whose words finish a purchase. Words a shop uses on its last step, in the languages dusk bot ships. */
+/** A button or link whose words finish a purchase. Words a shop uses on its last step, in the languages madani bot ships. */
 export const PURCHASE_BUTTON = /\b(?:place (?:your |my )?order|buy now|buy it now|complete (?:order|purchase|checkout|payment|booking)|confirm (?:and pay|order|purchase|payment|booking)|pay(?: now| securely| with| \$| €| £| ₹)?|submit (?:order|payment)|order now|checkout now|book now|reserve now|subscribe(?: now)?|start (?:subscription|membership)|send money|send payment|purchase|pagar|comprar(?: ahora)?|realizar pedido|finalizar (?:compra|pedido)|confirmar (?:compra|pedido|pago)|bezahlen|jetzt kaufen|kaufen|zahlungspflichtig bestellen|commander|payer|passer (?:la|ma) commande|acheter)\b|注文を確定|購入する|支払う|ऑर्डर करें|भुगतान करें/iu;
 
 /** Words a button carries that only look like the last step: adding to a cart, going to checkout, saving a card. */

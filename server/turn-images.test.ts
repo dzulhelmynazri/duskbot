@@ -32,7 +32,7 @@ describe("turn image admission", () => {
   const temporary: string[] = [];
 
   const store = (suffix = "") => {
-    const root = mkdtempSync(join(tmpdir(), `dusk-turn-images${suffix}-`));
+    const root = mkdtempSync(join(tmpdir(), `madani-turn-images${suffix}-`));
     temporary.push(root);
     return root;
   };

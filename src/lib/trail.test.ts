@@ -28,7 +28,7 @@ describe("trailed requests", () => {
   afterEach(() => { vi.unstubAllGlobals(); vi.useRealTimers(); });
   const written = () => {
     const write = vi.fn();
-    vi.stubGlobal("window", { duskDesktop: { trail: { write } } });
+    vi.stubGlobal("window", { madaniDesktop: { trail: { write } } });
     vi.useFakeTimers();
     return () => { vi.runAllTimers(); return write.mock.calls.flat(2) as { ev: string; code?: string; cancelled?: boolean }[]; };
   };

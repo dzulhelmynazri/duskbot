@@ -33,5 +33,5 @@ scripts/tighten-ratchets.mjs text eol=lf
 server/testing/fixtures/*.pdf binary
 deploy/bot-desktop/Dockerfile text eol=lf
 deploy/bot-desktop/*.sh text eol=lf
-deploy/bot-desktop/rootfs/usr/local/bin/dusk-* text eol=lf
+deploy/bot-desktop/rootfs/usr/local/bin/madani-* text eol=lf
 deploy/bot-desktop/rootfs/etc/chromium.d/omb text eol=lf

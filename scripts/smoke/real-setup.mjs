@@ -5,8 +5,8 @@
 //
 //   node scripts/smoke/real-setup.mjs [--root DIR] [--out DIR] [--profile DIR] [--fresh-sign-in] [--only a,b]
 //
-// Writes to the owner's server: one paired session labelled "dusk smoke" (first run only), one short message to the
-// smoke bot (DUSK_SMOKE_BOT, a test bot) per run, and take control / hand back on that bot's screen. Nothing is deleted.
+// Writes to the owner's server: one paired session labelled "madani smoke" (first run only), one short message to the
+// smoke bot (MADANI_SMOKE_BOT, a test bot) per run, and take control / hand back on that bot's screen. Nothing is deleted.
 import { spawn } from "node:child_process";
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { connect } from "node:net";
@@ -22,16 +22,16 @@ const option = (name, fallback = null) => { const at = args.indexOf(name); retur
 const flag = (name) => args.includes(name);
 const root = resolve(option("--root", join(dirname(fileURLToPath(import.meta.url)), "..", "..")));
 const stamp = new Date().toISOString().replace(/[:.]/g, "-").slice(0, 19);
-const out = resolve(option("--out", join(root, ".dusk-scratch", "smoke", stamp)));
+const out = resolve(option("--out", join(root, ".madani-scratch", "smoke", stamp)));
 // kept between runs (the paired server session, today's account session): outside any checkout
-const profile = resolve(option("--profile", process.env.DUSK_SMOKE_PROFILE || join(homedir(), ".cache", "dusk-smoke", "profile")));
+const profile = resolve(option("--profile", process.env.MADANI_SMOKE_PROFILE || join(homedir(), ".cache", "madani-smoke", "profile")));
 const only = option("--only")?.split(",") ?? null;
-const SSH_HOST = process.env.DUSK_SMOKE_SSH_HOST || "oracle";
-const SERVER_USER = process.env.DUSK_SMOKE_SERVER_USER || "maus";
-const SERVER_PORT = Number(process.env.DUSK_SMOKE_SERVER_PORT || 8799);
-const TUNNEL_PORT = Number(process.env.DUSK_SMOKE_TUNNEL_PORT || 7462);
-const BOT = process.env.DUSK_SMOKE_BOT || "Nova";
-const EMAIL = process.env.DUSK_SMOKE_EMAIL || "qa-smoke@qa.dusk.test";
+const SSH_HOST = process.env.MADANI_SMOKE_SSH_HOST || "oracle";
+const SERVER_USER = process.env.MADANI_SMOKE_SERVER_USER || "maus";
+const SERVER_PORT = Number(process.env.MADANI_SMOKE_SERVER_PORT || 8799);
+const TUNNEL_PORT = Number(process.env.MADANI_SMOKE_TUNNEL_PORT || 7462);
+const BOT = process.env.MADANI_SMOKE_BOT || "Nova";
+const EMAIL = process.env.MADANI_SMOKE_EMAIL || "qa-smoke@qa.madani.test";
 const SERVER_ORIGIN = `http://127.0.0.1:${TUNNEL_PORT}`;
 const PROVIDER_HOSTS = ["connect.composio.dev", "backend.composio.dev", "accounts.google.com", "app.composio.dev"];
 const RAW_ERROR = /\bundefined\b|\bNaN\b|\[object Object\]|TypeError|ReferenceError|SyntaxError|Unexpected token|Something went wrong|Cannot read prop|is not a function|ECONNREFUSED|Internal Server Error/;
@@ -133,14 +133,14 @@ function ssh(command, timeout = 60_000) {
 const asServer = (command) => `sudo -n -u ${SERVER_USER} sh -c ${js(`cd ~ && ${command}`)}`;
 /** a single-use pairing code minted on the owner's server for this device; the code itself is never printed */
 async function pairingCode() {
-  const text = await ssh(asServer(`~/.local/bin/duskbot pair --label "dusk smoke" 2>&1`));
+  const text = await ssh(asServer(`~/.local/bin/madanibot pair --label "madani smoke" 2>&1`));
   const code = /\b([A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4})\b/.exec(text)?.[1];
   if (!code) throw new Error("the server did not print a pairing code");
   return code;
 }
 async function openTunnel() {
   const busy = await new Promise((done) => { const socket = connect(TUNNEL_PORT, "127.0.0.1"); socket.once("connect", () => { socket.destroy(); done(true); }); socket.once("error", () => done(false)); });
-  if (busy) throw new Error(`port ${TUNNEL_PORT} is taken; stop what holds it or set DUSK_SMOKE_TUNNEL_PORT`);
+  if (busy) throw new Error(`port ${TUNNEL_PORT} is taken; stop what holds it or set MADANI_SMOKE_TUNNEL_PORT`);
   tunnel = spawn("ssh", ["-o", "BatchMode=yes", "-o", "ExitOnForwardFailure=yes", "-o", "ServerAliveInterval=15", "-N", "-L", `${TUNNEL_PORT}:127.0.0.1:${SERVER_PORT}`, SSH_HOST], { stdio: "ignore" });
   await until(() => fetch(`${SERVER_ORIGIN}/api/health`).then((response) => response.ok, () => false), { timeout: 30_000, what: "the tunnel to the owner's server" });
 }
@@ -218,13 +218,13 @@ async function main() {
     const cloud = state.clouds[0];
     const origin = cloud.origin ?? cloud.machine?.origin;
     if (!origin) throw new Error(`the cloud is listed without an address (${cloud.status ?? "no status"})`);
-    // a read never wakes a home: one asleep (x-dusk-cloud-power: asleep) is woken the way the app does on a click, through
+    // a read never wakes a home: one asleep (x-madani-cloud-power: asleep) is woken the way the app does on a click, through
     // the account service, then read until it answers; a wake under way is waited out. Up to 3 minutes either way.
     const started = Date.now();
     let health, waited = false, woke = null;
     for (;;) {
       health = await fetch(`${origin}/api/health`, { signal: AbortSignal.timeout(30_000) });
-      const power = health.status === 503 ? health.headers.get("x-dusk-cloud-power") : null;
+      const power = health.status === 503 ? health.headers.get("x-madani-cloud-power") : null;
       if (!power || Date.now() - started > 180_000) break;
       if (power === "asleep" && woke === null) woke = await accountClient?.wakeHome("click").catch(() => null) ?? "no client";
       waited = true;
@@ -299,12 +299,12 @@ async function main() {
   await step("server", "pairs with the owner's server and opens its bots", async () => {
     await openTunnel();
     facts.serverVersion = (await fetch(`${SERVER_ORIGIN}/api/version`).then((r) => (r.ok ? r.json() : null), () => null))?.version
-      ?? (await ssh(asServer("node -p \"require(process.env.HOME + '/.local/lib/node_modules/duskbot/package.json').version\""))).trim();
-    const environments = await evaluate(`window.duskDesktop.environments.state()`);
+      ?? (await ssh(asServer("node -p \"require(process.env.HOME + '/.local/lib/node_modules/madanibot/package.json').version\""))).trim();
+    const environments = await evaluate(`window.madaniDesktop.environments.state()`);
     const saved = environments?.environments?.find((e) => e.origin === SERVER_ORIGIN);
     // the window navigates away while these answer: fire them, then follow the window
-    if (saved) await evaluate(`void window.duskDesktop.environments.switch(${js(saved.id)}); true`);
-    else await evaluate(`void window.duskDesktop.environments.addFromLink(${js(`${SERVER_ORIGIN}/pair#code=${await pairingCode()}`)}, "owner server (smoke)"); true`);
+    if (saved) await evaluate(`void window.madaniDesktop.environments.switch(${js(saved.id)}); true`);
+    else await evaluate(`void window.madaniDesktop.environments.addFromLink(${js(`${SERVER_ORIGIN}/pair#code=${await pairingCode()}`)}, "owner server (smoke)"); true`);
     await app.reattach(SERVER_ORIGIN);
     await viewport(1280, 820);
     let how = saved ? "kept its paired session" : "paired as its own device";
@@ -395,7 +395,7 @@ async function main() {
   await step("relay", "the owner's server is reached directly or through Cloudflare", async () => {
     const paths = [];
     // the owner's own app record: which way its link takes (read-only, no keys)
-    const ownerLink = readJson(join(homedir(), "Library", "Application Support", "duskbot", "vps-link.json"));
+    const ownerLink = readJson(join(homedir(), "Library", "Application Support", "madanibot", "vps-link.json"));
     const link = ownerLink?.links?.find((entry) => entry.id === ownerLink.current) ?? ownerLink?.links?.[0];
     if (link) {
       facts.ownerLink = { mode: link.mode, base: link.base, direct: link.direct ? `${link.direct.user}@${link.direct.host}:${link.direct.port}` : null };
@@ -410,7 +410,7 @@ async function main() {
         paths.push(`link service ${new URL(link.base).host} ${health?.status ?? "unreachable"}`);
       }
     } else paths.push("no owner link on this Mac");
-    const relay = envValue("DUSK_CF_RELAY_URL");
+    const relay = envValue("MADANI_CF_RELAY_URL");
     if (relay) {
       const health = await fetch(new URL("/health", relay), { signal: AbortSignal.timeout(10_000) }).catch(() => null);
       paths.push(`Cloudflare relay ${health ? health.status : "unreachable"}`);
@@ -452,7 +452,7 @@ try {
 }
 // after the app is gone: the owner's app, config and logs are as they were
 await sleep(1500);
-const ownerProblems = compareOwner(ownerBefore, ["oracle smoke", "owner server (smoke)", "dusk smoke", `127.0.0.1:${TUNNEL_PORT}`, "dusk-smoke", profile]);
+const ownerProblems = compareOwner(ownerBefore, ["oracle smoke", "owner server (smoke)", "madani smoke", `127.0.0.1:${TUNNEL_PORT}`, "madani-smoke", profile]);
 results.push({ id: "owner-untouched", title: "the owner's app, config and logs are untouched", status: ownerProblems.length ? "fail" : "pass",
   note: ownerProblems.join("; ").slice(0, 600), ms: 0, shot: null, issues: [] });
 log(`${ownerProblems.length ? "FAIL" : "PASS"} the owner's app, config and logs are untouched${ownerProblems.length ? `: ${ownerProblems.join("; ")}` : ""}`);

@@ -304,7 +304,7 @@ body:has(.p-doc) .bar { max-width: 1440px; padding-left: 32px; padding-right: 32
 .docs-index span { font-size: 14.5px; line-height: 1.4; color: var(--ink-2); font-weight: 500; }
 .docs-foot { margin-top: 88px; }
 
-/* download: the button for your system on the left, dusk cloud as the other way in on the right */
+/* download: the button for your system on the left, madani cloud as the other way in on the right */
 .dl-hero { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 440px); gap: 64px; align-items: center; }
 .dl-hero > .dl-cloud { animation-delay: 120ms; }
 .phead .dl-lead h1 { max-width: 9em; }

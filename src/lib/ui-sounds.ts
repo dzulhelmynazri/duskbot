@@ -19,7 +19,7 @@ export const UI_SOUND_NAMES = Object.keys(UI_SOUNDS) as UiSoundName[];
 export const DEFAULT_UI_SOUND: UiSoundName = "chime-b";
 /** pings play at half volume: a soft nudge, not an alarm */
 export const DEFAULT_UI_VOLUME = 0.5;
-export const UI_SOUND_KEY = "dusk-notification-sound";
+export const UI_SOUND_KEY = "madani-notification-sound";
 
 let audio: HTMLAudioElement | null = null;
 

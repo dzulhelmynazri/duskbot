@@ -50,7 +50,7 @@ import {
   type PhonePairingAttemptLock,
   type PhonePairingAttemptQueue,
 } from "../lib/phone-setup";
-import type { CompanionAccountState } from "../types/duskDesktop";
+import type { CompanionAccountState } from "../types/madaniDesktop";
 import {
   companionStateRefreshIsCurrent,
   mutateCompanionBridgeState,
@@ -59,7 +59,7 @@ import {
 import { ConnectionDetail } from "./ConnectionDetail";
 import { requireUserPresence } from "@/lib/user-presence";
 import { phoneRelayBridge, relayPairingUsable } from "@/lib/phone-relay";
-import type { PhoneRelayState } from "../types/duskDesktop";
+import type { PhoneRelayState } from "../types/madaniDesktop";
 import { AnywhereUnavailableRows, ErrorLine, FIELD, FlowRow, RelayPairingRows, WifiRow } from "./PhoneFlowRows";
 
 export interface PhoneDevice {
@@ -104,7 +104,7 @@ export type CompanionBridge = {
   revoke: (deviceId: string) => Promise<CompanionState>;
 };
 
-type AccountBridge = NonNullable<NonNullable<Window["duskDesktop"]>["companionAccount"]>;
+type AccountBridge = NonNullable<NonNullable<Window["madaniDesktop"]>["companionAccount"]>;
 type StateBridge<T> = { state: () => Promise<T> };
 // Functions, not constants: a message resolved at import time would keep the language the app booted in.
 const directPairingUnavailable = () => t("phone.error.directUnavailable");
@@ -125,7 +125,7 @@ export { companionBridge };
 
 export const companionAccountBridge = (): AccountBridge | null =>
   // SAFETY: Electron exposes only these account operations and never sends credentials to the renderer.
-  (globalThis as { duskDesktop?: { companionAccount?: AccountBridge } }).duskDesktop?.companionAccount ?? null;
+  (globalThis as { madaniDesktop?: { companionAccount?: AccountBridge } }).madaniDesktop?.companionAccount ?? null;
 
 export const loadCompanionBridgeState = async (
   companion: StateBridge<CompanionState> | null,

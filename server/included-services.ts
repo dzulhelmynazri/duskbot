@@ -1,14 +1,14 @@
 // One relay URL + token pair per included service:
-//   DUSK_CLOUD_VOICE_URL   + DUSK_CLOUD_VOICE_TOKEN    the ElevenLabs relay, ending in /v1
-//   DUSK_CLOUD_DECIDER_URL + DUSK_CLOUD_DECIDER_TOKEN  the Jev relay, a Jev base URL
-//   DUSK_CLOUD_X_URL       + DUSK_CLOUD_X_TOKEN        the X research relay (a desktop gets its own over the parent port)
+//   MADANI_CLOUD_VOICE_URL   + MADANI_CLOUD_VOICE_TOKEN    the ElevenLabs relay, ending in /v1
+//   MADANI_CLOUD_DECIDER_URL + MADANI_CLOUD_DECIDER_TOKEN  the Jev relay, a Jev base URL
+//   MADANI_CLOUD_X_URL       + MADANI_CLOUD_X_TOKEN        the X research relay (a desktop gets its own over the parent port)
 // The person's own key always wins and is resolved per request; an included token goes only to its relay and is never
 // written to config.json or reported to a client.
 import { JEV_DEFAULT_BASE_URL } from "./decider/jev.ts";
 
 export const ELEVENLABS_API_DEFAULT = "https://api.elevenlabs.io/v1";
 /** Must also be on WORKSPACE_CREDENTIAL_ENV. */
-export const INCLUDED_TOKEN_ENV = ["DUSK_CLOUD_VOICE_TOKEN", "DUSK_CLOUD_DECIDER_TOKEN", "DUSK_CLOUD_X_TOKEN"] as const;
+export const INCLUDED_TOKEN_ENV = ["MADANI_CLOUD_VOICE_TOKEN", "MADANI_CLOUD_DECIDER_TOKEN", "MADANI_CLOUD_X_TOKEN"] as const;
 
 export interface ServiceCredential {
   token: string;
@@ -30,9 +30,9 @@ function includedService(url: string | undefined, token: string | undefined): Se
 }
 
 const includedFrom = (env: NodeJS.ProcessEnv): Included => ({
-  voice: includedService(env.DUSK_CLOUD_VOICE_URL, env.DUSK_CLOUD_VOICE_TOKEN),
-  decider: includedService(env.DUSK_CLOUD_DECIDER_URL, env.DUSK_CLOUD_DECIDER_TOKEN),
-  x: includedService(env.DUSK_CLOUD_X_URL, env.DUSK_CLOUD_X_TOKEN),
+  voice: includedService(env.MADANI_CLOUD_VOICE_URL, env.MADANI_CLOUD_VOICE_TOKEN),
+  decider: includedService(env.MADANI_CLOUD_DECIDER_URL, env.MADANI_CLOUD_DECIDER_TOKEN),
+  x: includedService(env.MADANI_CLOUD_X_URL, env.MADANI_CLOUD_X_TOKEN),
 });
 
 let held: Included | null = null;
@@ -53,7 +53,7 @@ function resolve(own: string | undefined, providerApi: string, included: Service
 }
 
 export const elevenLabsProviderApi = (env: NodeJS.ProcessEnv = process.env): string =>
-  env.DUSK_ELEVENLABS_API || ELEVENLABS_API_DEFAULT;
+  env.MADANI_ELEVENLABS_API || ELEVENLABS_API_DEFAULT;
 
 export function voiceCredential(own: string | undefined, env: NodeJS.ProcessEnv = process.env): ServiceCredential | null {
   return resolve(own, elevenLabsProviderApi(env), (held ?? includedFrom(env)).voice);
@@ -68,7 +68,7 @@ export function deciderCredential(
 }
 
 /** X research's relay token on a signed-in desktop: the desktop's main process
- * fetches it with its dusk cloud sign-in while the plan is paid
+ * fetches it with its madani cloud sign-in while the plan is paid
  * (electron/main.mjs) and hands it over on the private parent port. Held in
  * memory only, never written to config. */
 let desktopX: ServiceCredential | null = null;
@@ -77,11 +77,11 @@ let desktopXRefused = false;
 
 const LOOPBACK = new Set(["127.0.0.1", "localhost", "[::1]"]);
 
-/** `{ type: "duskbot:included-x", access: { url, token } | null }` from
+/** `{ type: "madanibot:included-x", access: { url, token } | null }` from
  * the desktop's main process. True when it was one (then applied), false for
  * any other message; a malformed one throws and changes nothing. */
 export function applyIncludedXMessage(message: unknown): boolean {
-  if (!message || typeof message !== "object" || (message as { type?: unknown }).type !== "duskbot:included-x") return false;
+  if (!message || typeof message !== "object" || (message as { type?: unknown }).type !== "madanibot:included-x") return false;
   const access = (message as { access?: unknown }).access;
   if (access === null) {
     desktopX = null;
@@ -119,7 +119,7 @@ export function xCredential(env: NodeJS.ProcessEnv = process.env): ServiceCreden
 export const TREG_API_DEFAULT = "https://treg.to";
 /** Security: the person's treg key goes only to treg (https), or to a loopback stand-in in development and tests. */
 export function tregProviderApi(env: NodeJS.ProcessEnv = process.env): string {
-  const configured = env.DUSK_TREG_URL?.trim().replace(/\/+$/, "");
+  const configured = env.MADANI_TREG_URL?.trim().replace(/\/+$/, "");
   if (!configured) return TREG_API_DEFAULT;
   try {
     const parsed = new URL(configured);

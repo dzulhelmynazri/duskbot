@@ -1,5 +1,5 @@
 /** The level of the HTTP API a server speaks to the app, sent as `capabilities.api` in GET
- * /.well-known/duskbot/environment. A server from before levels sends none. Raise it when the app starts needing a route
+ * /.well-known/madanibot/environment. A server from before levels sends none. Raise it when the app starts needing a route
  * an older server lacks, and add that feature to SERVER_FEATURES at the new level. */
 export const SERVER_API_LEVEL = 1;
 
@@ -19,7 +19,7 @@ export const SERVER_FEATURES = {
 export type ServerFeature = keyof typeof SERVER_FEATURES;
 
 /** The phone app's own level (apps/mobile, this build). Raise it when the phone starts needing what an older server
- * lacks: a VPS or dusk cloud server updates itself to catch up, so the phone shows nothing for that. */
+ * lacks: a VPS or madani cloud server updates itself to catch up, so the phone shows nothing for that. */
 export const MOBILE_APP_LEVEL = 1;
 /** The oldest phone app level this server still serves, sent as `capabilities.minMobile`. Raise it only when a route an
  * older phone app calls changes shape; that phone then shows one line with a way to the store. */

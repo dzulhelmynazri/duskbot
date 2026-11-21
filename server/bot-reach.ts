@@ -7,4 +7,4 @@ export function runsCommands(bot: { computer?: string | null }, driverKind: stri
 }
 
 /** What a bot that runs nothing is told about a teammate or a bot it made, so it never promises that bot's tests or runs. */
-export const RUNS_NOTHING_NOTE = "It has no computer here, so it can write code and text but cannot run code, tests or commands until the person connects a computer to it (their Mac, a VPS or dusk cloud, in its settings). Say that in one line when you describe it, never say it will run or test anything, and do not hand it work that needs running.";
+export const RUNS_NOTHING_NOTE = "It has no computer here, so it can write code and text but cannot run code, tests or commands until the person connects a computer to it (their Mac, a VPS or madani cloud, in its settings). Say that in one line when you describe it, never say it will run or test anything, and do not hand it work that needs running.";

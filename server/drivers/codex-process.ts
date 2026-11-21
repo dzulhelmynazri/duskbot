@@ -2,9 +2,9 @@ import type { ChildProcess } from "node:child_process";
 import { existsSync } from "node:fs";
 import { splitCliString } from "../env-path.ts";
 
-/** Unlimited unless DUSK_CODEX_LAUNCH_SLOTS caps how many Codex app-servers may be starting at once. */
+/** Unlimited unless MADANI_CODEX_LAUNCH_SLOTS caps how many Codex app-servers may be starting at once. */
 export function codexLaunchLimit(): number {
-  const configured = Number(process.env.DUSK_CODEX_LAUNCH_SLOTS);
+  const configured = Number(process.env.MADANI_CODEX_LAUNCH_SLOTS);
   return Number.isInteger(configured) && configured > 0 ? configured : Number.POSITIVE_INFINITY;
 }
 

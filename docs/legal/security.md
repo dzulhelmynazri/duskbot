@@ -2,11 +2,11 @@
 
 Effective date: 12 November 2026. Last updated: 12 November 2026.
 
-If you find a security issue in dusk bot, email security@dusk.bot. This policy is offered by dusk bot, the operator of the services. You can find security.txt at https://dusk.bot/.well-known/security.txt.
+If you find a security issue in madani bot, email security@madani.bot. This policy is offered by madani bot, the operator of the services. You can find security.txt at https://madani.bot/.well-known/security.txt.
 
 ## Scope
 
-You may report vulnerabilities affecting dusk.bot (including /dashboard, /admin and the API), link.dusk.bot, the dusk bot desktop and phone apps, and the VPS installer.
+You may report vulnerabilities affecting madani.bot (including /dashboard, /admin and the API), link.madani.bot, the madani bot desktop and phone apps, and the VPS installer.
 
 Denial of service, social engineering and third-party providers are out of scope. Report issues in an AI provider, payment service or other third-party system through that provider's own process. This policy does not authorise testing their systems.
 
@@ -32,4 +32,4 @@ Test only accounts, devices and data you own or have explicit permission to use.
 
 We aim to acknowledge your report within 3 business days. We will assess the issue and communicate with you about findings and next steps. Acknowledgement is not a promise of a fix by a particular date. Please coordinate public disclosure with us so we can address the issue without exposing users.
 
-There is no public bug bounty yet. This policy does not promise payment or another reward. For vulnerability reports and follow-up, use security@dusk.bot. For general enquiries, use hello@dusk.bot.
+There is no public bug bounty yet. This policy does not promise payment or another reward. For vulnerability reports and follow-up, use security@madani.bot. For general enquiries, use hello@madani.bot.

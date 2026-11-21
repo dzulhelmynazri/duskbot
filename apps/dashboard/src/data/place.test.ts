@@ -6,7 +6,7 @@ import type { CloudDesktop } from "./contracts.ts";
 const now = 100 * 3_600_000;
 const cloud = (status: CloudDesktop["status"], extra: Partial<CloudDesktop> = {}) => ({ id: "c", status, ...extra }) as CloudDesktop;
 
-test("a dusk cloud we put to sleep reads online; only its owner's pause reads stopped", () => {
+test("a madani cloud we put to sleep reads online; only its owner's pause reads stopped", () => {
   const slept = placeState("offline", now - 16 * 3_600_000, now, cloud("running", { resting: true }));
   assert.deepEqual([slept.label, slept.tone], ["online", "good"]);
   assert.equal(placeState("offline", 0, now, cloud("sleeping")).label, "stopped");
@@ -24,7 +24,7 @@ test("a mac or server that went quiet says when it was last seen, never offline"
   assert.equal(placeState("live", now, now).label, "online");
 });
 
-test("an action for a dusk cloud we put to sleep wakes it first; only an owner's stop or a quiet mac waits", () => {
+test("an action for a madani cloud we put to sleep wakes it first; only an owner's stop or a quiet mac waits", () => {
   assert.equal(reachOf("offline", cloud("running", { resting: true })), "wake");
   assert.equal(reachOf("live", cloud("waking")), "wake");
   assert.equal(reachOf("offline", cloud("running")), "ready");

@@ -1,4 +1,4 @@
-// tiny static server for the dusk.bot placeholder sites. zero deps.
+// tiny static server for the madani.bot placeholder sites. zero deps.
 // usage: node server.js <site>   (serves public/<site>/ on process.env.PORT)
 import http from 'node:http';
 import fs from 'node:fs';
@@ -15,10 +15,10 @@ const here = path.dirname(fileURLToPath(import.meta.url));
 const site = process.argv[2] || 'landing';
 if (!/^[a-z0-9-]+$/.test(site)) throw new Error(`bad site name ${site}`);
 const root = path.join(here, 'public', site);
-// a one-page site (the waitlist on dusk.bot before launch): every page address that is not there goes home
-const HOME_ONLY = process.env.DUSK_HOME_ONLY === '1';
-// a staging copy (preview) is never indexed: search engines only see dusk.bot
-const NO_INDEX = process.env.DUSK_NO_INDEX === '1';
+// a one-page site (the waitlist on madani.bot before launch): every page address that is not there goes home
+const HOME_ONLY = process.env.MADANI_HOME_ONLY === '1';
+// a staging copy (preview) is never indexed: search engines only see madani.bot
+const NO_INDEX = process.env.MADANI_NO_INDEX === '1';
 if (!fs.statSync(root, { throwIfNoEntry: false })?.isDirectory()) throw new Error(`no such site: ${root}`);
 const port = Number(process.env.PORT) || 3000;
 
@@ -74,12 +74,12 @@ function redirectFor(urlPath) {
 }
 
 // the waitlist (landing only): POST /api/waitlist takes {email, source?, ref?, website?}, GET /api/waitlist/count.
-// signups go to mongodb (waitlist-mongo.js) when MONGODB_URI is set (database MONGODB_DB, default dusk); otherwise to
-// waitlist-store.js, a jsonl file at DUSK_WAITLIST_FILE (default data/waitlist.jsonl here)
-const waitlistFile = path.resolve(here, process.env.DUSK_WAITLIST_FILE || 'data/waitlist.jsonl');
-if (waitlistFile.startsWith(path.join(here, 'public') + path.sep)) throw new Error('DUSK_WAITLIST_FILE must not be inside public/');
+// signups go to mongodb (waitlist-mongo.js) when MONGODB_URI is set (database MONGODB_DB, default madani); otherwise to
+// waitlist-store.js, a jsonl file at MADANI_WAITLIST_FILE (default data/waitlist.jsonl here)
+const waitlistFile = path.resolve(here, process.env.MADANI_WAITLIST_FILE || 'data/waitlist.jsonl');
+if (waitlistFile.startsWith(path.join(here, 'public') + path.sep)) throw new Error('MADANI_WAITLIST_FILE must not be inside public/');
 const store = site !== 'landing' ? null
-  : process.env.MONGODB_URI ? openMongoStore(process.env.MONGODB_URI, process.env.MONGODB_DB || 'dusk') : openStore(waitlistFile);
+  : process.env.MONGODB_URI ? openMongoStore(process.env.MONGODB_URI, process.env.MONGODB_DB || 'madani') : openStore(waitlistFile);
 if (store) console.log(`waitlist: stored in ${process.env.MONGODB_URI ? 'mongodb' : 'a jsonl file'}`);
 const EMAIL = /^[a-z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?(?:\.[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?)+$/;
 const JUNK = new Set(['mailinator.com', 'guerrillamail.com', 'guerrillamail.net', 'sharklasers.com', 'grr.la', '10minutemail.com', 'temp-mail.org',
@@ -103,9 +103,9 @@ function tooMany(ip) {
   if (tries.size > 5000) for (const [k, v] of tries) if (now - v[v.length - 1] > 60_000) tries.delete(k);
   return recent.length > 20;
 }
-// and a generous day's cap on new joins per network (DUSK_WAITLIST_PER_IP_DAY, default 200), so a script cannot fill the list
+// and a generous day's cap on new joins per network (MADANI_WAITLIST_PER_IP_DAY, default 200), so a script cannot fill the list
 // with made-up addresses; an ipv6 caller counts by its /64. the count starts over each utc day
-const PER_DAY = Math.max(1, Number(process.env.DUSK_WAITLIST_PER_IP_DAY) || 200);
+const PER_DAY = Math.max(1, Number(process.env.MADANI_WAITLIST_PER_IP_DAY) || 200);
 let joins = { day: '', map: new Map() };
 function netOf(ip) {
   const v4 = /^(?:::ffff:)?(\d+\.\d+\.\d+\.\d+)$/i.exec(ip);
@@ -191,19 +191,19 @@ function waitlist(req, res, urlPath) {
 
 // /unsubscribe?t=<token> from the news emails: GET shows a page, POST is the one-click answer to List-Unsubscribe-Post
 // (rfc 8058). both mark the waitlist entry unsubscribed; nothing is deleted
-const UNSUB_SECRET = process.env.DUSK_UNSUBSCRIBE_SECRET || '';
-if (store && !UNSUB_SECRET) console.warn('unsubscribe: DUSK_UNSUBSCRIBE_SECRET is not set, every link reads as invalid');
+const UNSUB_SECRET = process.env.MADANI_UNSUBSCRIBE_SECRET || '';
+if (store && !UNSUB_SECRET) console.warn('unsubscribe: MADANI_UNSUBSCRIBE_SECRET is not set, every link reads as invalid');
 const htmlEsc = (v) => String(v).replace(/[&<>"']/g, (c) => `&#${c.charCodeAt(0)};`);
 function unsubscribePage(title, text) {
   const shell = resolveFile('/404.html');
   const section = `<section class="lost wrap">\n  <h1>${htmlEsc(title)}</h1>\n  <p>${htmlEsc(text)}</p>\n  <p class="actions"><a class="btn dark" href="/">go home</a></p>\n</section>`;
   if (shell) {
     const page = fs.readFileSync(shell, 'utf8');
-    const out = page.replace(/<title>[^<]*<\/title>/, `<title>${htmlEsc(title)} / dusk bot</title>`)
+    const out = page.replace(/<title>[^<]*<\/title>/, `<title>${htmlEsc(title)} / madani bot</title>`)
       .replace(/<section class="lost wrap">[\s\S]*?<\/section>/, section);
     if (out !== page) return out;
   }
-  return `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="robots" content="noindex"><title>${htmlEsc(title)} / dusk bot</title><link rel="stylesheet" href="/site.css"></head><body><main id="main" class="inner">${section}</main></body></html>`;
+  return `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="robots" content="noindex"><title>${htmlEsc(title)} / madani bot</title><link rel="stylesheet" href="/site.css"></head><body><main id="main" class="inner">${section}</main></body></html>`;
 }
 async function unsubscribe(req, res) {
   const post = req.method === 'POST';
@@ -215,17 +215,17 @@ async function unsubscribe(req, res) {
     res.end(req.method === 'HEAD' ? undefined : body);
   };
   const email = emailFromToken(UNSUB_SECRET, new URL(req.url || '/', 'http://x').searchParams.get('t'));
-  const invalid = () => answer(400, "This unsubscribe link doesn't work.", "It may have been cut short. Open it again from the email, or write to hello@dusk.bot and we'll take you off the list.");
+  const invalid = () => answer(400, "This unsubscribe link doesn't work.", "It may have been cut short. Open it again from the email, or write to hello@madani.bot and we'll take you off the list.");
   if (!email) return invalid();
-  if (req.method === 'HEAD') return answer(200, "You're unsubscribed from dusk bot news.", '');
+  if (req.method === 'HEAD') return answer(200, "You're unsubscribed from madani bot news.", '');
   try {
     const { found } = await store.unsubscribe(email);
     if (!found) return invalid();
     console.log('unsubscribe: one entry marked');
-    answer(200, "You're unsubscribed from dusk bot news.", "We won't send you any more news emails.");
+    answer(200, "You're unsubscribed from madani bot news.", "We won't send you any more news emails.");
   } catch (err) {
     console.error(`unsubscribe: could not save (${err.code || err.name})`);
-    answer(500, "We couldn't do that just now.", 'Try the link again in a minute, or write to hello@dusk.bot.');
+    answer(500, "We couldn't do that just now.", 'Try the link again in a minute, or write to hello@madani.bot.');
   }
 }
 
@@ -278,7 +278,7 @@ const server = http.createServer((req, res) => {
     return res.end('User-agent: *\nDisallow: /\n');
   }
   if (serveMirrored(req, res, urlPath) || serveVoiceModel(req, res, urlPath)) return;
-  // curl -fsSL https://dusk.bot/install-mac | sh: the mac installer has a short address
+  // curl -fsSL https://madani.bot/install-mac | sh: the mac installer has a short address
   let file = resolveFile(urlPath === '/install-mac' ? '/install-mac.sh' : urlPath), status = 200;
   // a page has one address, without the slash at its end
   if (file && urlPath.length > 1 && urlPath.endsWith('/') && file.endsWith('index.html')) {
@@ -326,5 +326,5 @@ const server = http.createServer((req, res) => {
   res.end(req.method === 'HEAD' ? undefined : body);
 });
 
-server.listen(port, '127.0.0.1', () => console.log(`dusk ${site} on 127.0.0.1:${port}`));
+server.listen(port, '127.0.0.1', () => console.log(`madani ${site} on 127.0.0.1:${port}`));
 for (const sig of ['SIGTERM', 'SIGINT']) process.on(sig, () => server.close(() => process.exit(0)));

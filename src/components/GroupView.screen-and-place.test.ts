@@ -49,7 +49,7 @@ const render = (members: Bot[], g: Group, config?: AppState["config"]) => {
 };
 // the simple header is one pill of faces; the member row with its place badges is the full header a remote client keeps
 const renderFullHeader = (members: Bot[], g: Group) => {
-  vi.stubGlobal("window", { addEventListener() {}, removeEventListener() {}, duskDesktop: { remoteClient: { active: true } } });
+  vi.stubGlobal("window", { addEventListener() {}, removeEventListener() {}, madaniDesktop: { remoteClient: { active: true } } });
   return render(members, g);
 };
 

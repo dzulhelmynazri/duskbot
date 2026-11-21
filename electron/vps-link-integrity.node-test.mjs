@@ -204,7 +204,7 @@ test("the system proxy is read from chromium's answer: an http proxy that tunnel
 test("the server's agent goes out through HTTPS_PROXY, except to NO_PROXY hosts", async () => {
   const { envProxy } = await import("../apps/link-service/agent.mjs");
   const pick = envProxy({ HTTPS_PROXY: "http://user:p%40ss@proxy.corp:3128", NO_PROXY: "localhost,.internal" });
-  assert.deepEqual(pick(new URL("https://link.dusk.bot")), { host: "proxy.corp", port: 3128, auth: "user:p@ss" });
+  assert.deepEqual(pick(new URL("https://link.madani.bot")), { host: "proxy.corp", port: 3128, auth: "user:p@ss" });
   assert.equal(pick(new URL("https://api.internal")), null);
   assert.equal(pick(new URL("https://localhost:3000")), null);
   assert.equal(envProxy({}), null);

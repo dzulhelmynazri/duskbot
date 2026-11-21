@@ -1,5 +1,5 @@
 // X research: the x_* agents tools' only way out, through treg (treg.to). With the person's own treg key it calls treg
-// directly, billed to their treg balance; otherwise it calls the dusk cloud Admin's relay, which calls treg on our
+// directly, billed to their treg balance; otherwise it calls the madani cloud Admin's relay, which calls treg on our
 // account for paying Cloud plans within each plan's monthly calls. It hands back compact posts and profiles, never a
 // scraper's raw JSON, and turns every failure into an XResearchError carrying a sentence a bot can pass on.
 //
@@ -18,7 +18,7 @@ const MAX_PAGES = 3;
 const TEXT_LIMIT = 1_500;
 const QUOTE_LIMIT = 300;
 const MAX_BODY_BYTES = 2 * 1024 * 1024;
-/** Longer than the relay's own 30 s with treg (dusk-cloud X_TIMEOUT_MS): the relay's answer, counted or given
+/** Longer than the relay's own 30 s with treg (madani-cloud X_TIMEOUT_MS): the relay's answer, counted or given
  * back, arrives before this side gives up and falls back to a second, also counted, call. */
 export const X_CLIENT_TIMEOUT_MS = 35_000;
 /** Characters an answer may take: under the agents server's 24,000-character
@@ -29,7 +29,7 @@ const RESULT_BUDGET = 22_000;
 
 /** treg catalog ids: the cheapest scraper for each job, then treg's routed
  * endpoint for the same job (identity fields only, one page). The relay serves
- * exactly these (dusk-cloud X_ENDPOINTS). */
+ * exactly these (madani-cloud X_ENDPOINTS). */
 export const TREG_X_ENDPOINTS = {
   search: "anyapi.x.search.posts",
   searchRouted: "treg.x.search.posts",
@@ -47,13 +47,13 @@ export const TREG_TOP_UP_URL = "https://treg.to";
 
 /** Every sentence a bot or the Settings page can be shown about X research. */
 export const X_MESSAGES = {
-  noKey: "Research isn't set up on this server. Add a treg key in Settings → API keys, or use a paid dusk cloud plan.",
+  noKey: "Research isn't set up on this server. Add a treg key in Settings → API keys, or use a paid madani cloud plan.",
   botOff: "Research is off for this bot. Turn it on in this bot's settings under Access.",
-  badKey: "Sign in to dusk cloud again (your account menu) to use X research.",
+  badKey: "Sign in to madani cloud again (your account menu) to use X research.",
   ownBadKey: "treg rejected your key. Check it in Settings → API keys.",
   /** A Cloud home's relay token is the Admin's to replace; the person has no sign-in to redo there. */
-  homeBadKey: "X research isn't connected on this Cloud right now. It comes with your plan, so there is nothing to sign in to: try again later, and tell dusk bot support if it keeps happening.",
-  noPlan: "X research comes with dusk cloud plans, and this account's plan isn't active.",
+  homeBadKey: "X research isn't connected on this Cloud right now. It comes with your plan, so there is nothing to sign in to: try again later, and tell madani bot support if it keeps happening.",
+  noPlan: "X research comes with madani cloud plans, and this account's plan isn't active.",
   rateLimited: "X research is busy right now. Try again in a moment.",
   badRequest: "That X research request was refused. Check the query, handle or post link.",
   unavailable: "X research is temporarily unavailable. Try again shortly.",
@@ -290,7 +290,7 @@ function newestOf(posts: XPost[]): string | undefined {
 
 /** An HTTP refusal from treg as one of the sentences in X_MESSAGES. */
 export function errorFor(status: number, body: unknown): XResearchError {
-  // The relay's own refusals (dusk-cloud server/cloud-services.ts); a 5xx
+  // The relay's own refusals (madani-cloud server/cloud-services.ts); a 5xx
   // there is a scraper or our treg account, never the person's to fix.
   if (status === 401 || status === 403) return new XResearchError("bad_key", X_MESSAGES.badKey);
   if (status === 402) return new XResearchError("no_credit", X_MESSAGES.noPlan);
@@ -400,7 +400,7 @@ export function tregAuthHeaders(credential: ServiceCredential): Record<string, s
   return credential.included ? { authorization: `Bearer ${credential.token}` } : { "x-treg-token": credential.token };
 }
 
-/** `url` and `token` are the relay's (DUSK_CLOUD_X_URL, or a desktop's from its Cloud sign-in), or, with `own`, treg's
+/** `url` and `token` are the relay's (MADANI_CLOUD_X_URL, or a desktop's from its Cloud sign-in), or, with `own`, treg's
  * own base URL and the person's treg key. */
 export function createXRelayClient(options: { url: string; token: string; own?: boolean; fetcher?: typeof fetch; timeoutMs?: number }): XResearchClient {
   const fetcher = options.fetcher ?? fetch;

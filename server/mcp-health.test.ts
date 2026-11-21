@@ -14,7 +14,7 @@ const blender: StdioMcpSpec & { bot?: string } = { command: "/usr/bin/python3", 
 const notes: StdioMcpSpec = { command: "npx", args: ["-y", "@x/notes-mcp"], env: {} };
 
 function fixture(options: { startsFor?: (name: string, botId: string) => boolean; servers?: Record<string, StdioMcpSpec & { bot?: string }> } = {}) {
-  const dir = mkdtempSync(join(tmpdir(), "dusk-mcp-health-"));
+  const dir = mkdtempSync(join(tmpdir(), "madani-mcp-health-"));
   dirs.push(dir);
   let now = 1_000_000;
   const starts: string[] = [];

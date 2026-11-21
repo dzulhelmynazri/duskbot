@@ -15,13 +15,13 @@ vi.mock("@/state/store", () => ({ useStore: () => ({ state: { instances: ais.ins
 vi.mock("@/components/onboarding/ConnectAi", () => ({ ConnectAiDialog: () => createElement("div", { "data-connect-ai": "" }) }));
 vi.mock("@/components/EngineLibrary", () => ({ engineReady: (instance: { ready?: boolean }) => instance.ready === true }));
 const mount = async (line: ReturnType<typeof vi.fn>, remote = false, state: Record<string, unknown> = { local: false, name: "My Cloud" }) => {
-  window.duskDesktop = { workspaces: { state: vi.fn().mockResolvedValue(state), menu: vi.fn(), line }, ...(remote ? { remoteClient: { active: true } } : {}) } as unknown as typeof window.duskDesktop;
+  window.madaniDesktop = { workspaces: { state: vi.fn().mockResolvedValue(state), menu: vi.fn(), line }, ...(remote ? { remoteClient: { active: true } } : {}) } as unknown as typeof window.madaniDesktop;
   flushSync(() => root.render(createElement(HomeLine)));
   await new Promise((resolve) => setTimeout(resolve, 0));
 };
 
 beforeEach(() => { setLocale("en"); host = document.createElement("div"); document.body.append(host); root = createRoot(host); });
-afterEach(() => { flushSync(() => root.unmount()); host.remove(); delete window.duskDesktop; });
+afterEach(() => { flushSync(() => root.unmount()); host.remove(); delete window.madaniDesktop; });
 
 it("says the one line main has for the next page, in plain words, and nothing when there is none", async () => {
   await mount(vi.fn().mockResolvedValue({ kind: "left", name: "Acme" }));
@@ -41,7 +41,7 @@ it("asks once; a later null (a strict-mode remount) never takes the line back, a
   await new Promise((resolve) => setTimeout(resolve, 10));
   expect(host.querySelector("[data-home-line]")).not.toBeNull();
   flushSync(() => root.unmount()); root = createRoot(host);
-  window.duskDesktop = { workspaces: { state: vi.fn(), menu: vi.fn() } } as unknown as typeof window.duskDesktop;
+  window.madaniDesktop = { workspaces: { state: vi.fn(), menu: vi.fn() } } as unknown as typeof window.madaniDesktop;
   flushSync(() => root.render(createElement(HomeLine)));
   expect(host.innerHTML).toBe("");
   flushSync(() => root.unmount()); root = createRoot(host);

@@ -1,5 +1,5 @@
 // The once-only corner card for someone who has other AI tools on this computer and never brought them in: the first
-// run's bring step can be skipped, or never shown (dusk cloud, an older version), and Settings' import page is quiet.
+// run's bring step can be skipped, or never shown (madani cloud, an older version), and Settings' import page is quiet.
 import { useEffect, useState } from "react";
 import { useStore } from "@/state/store";
 import type { SetupDetection } from "../../shared/setup-import";

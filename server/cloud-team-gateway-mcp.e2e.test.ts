@@ -1,9 +1,9 @@
-// A Team Cloud (DUSK_CLOUD_ROLE=team) with an MCP server behind a gateway that checks two service-token headers, as
+// A Team Cloud (MADANI_CLOUD_ROLE=team) with an MCP server behind a gateway that checks two service-token headers, as
 // Cloudflare Access does. An admin pastes the `claude mcp add` command into Add MCP server and fills in the two values
 // its variables stood for; the server is added for the whole team through the panel's own routes. A member's turn on
 // the synthetic Claude CLI then lists and calls its tool, and neither value reaches the engine's environment, the logs or
 // anything a route answers. The bot box is Linux-only, so here the engine's MCP config holds the headers, inside the env
-// of dusk bot's own proxy that is the gateway's client.
+// of madani bot's own proxy that is the gateway's client.
 import { randomBytes } from "node:crypto";
 import { existsSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
@@ -40,7 +40,7 @@ beforeAll(async () => {
     requireHeaders: { "CF-Access-Client-Id": CLIENT_ID, "CF-Access-Client-Secret": CLIENT_SECRET },
     callResult: (params) => ({ content: [{ type: "text", text: `order ${String((params as { arguments?: { id?: unknown } }).arguments?.id)} shipped` }] }),
   });
-  fx = await launchCloudSendFixture({ onePasswordToken: TOKEN, team: { id: "team-acme-1", name: "Acme", engine: ENGINE, env: { DUSK_BOT_BOX: "0" } } });
+  fx = await launchCloudSendFixture({ onePasswordToken: TOKEN, team: { id: "team-acme-1", name: "Acme", engine: ENGINE, env: { MADANI_BOT_BOX: "0" } } });
   team = fx.team!;
   admin = (await team.pair(ADMIN)).token!;
   ada = (await team.pair(ADA)).token!;
@@ -95,11 +95,11 @@ it("adds the pasted command for the whole team, tests it through the gateway and
 
 type Engine = { env: Record<string, string>; argv: string[]; mcpConfig: { mcpServers: Record<string, unknown> } };
 
-/** A remote server reaches the engine as dusk bot's own proxy, the upstream (headers and all) in its env in the 0600 MCP config. */
+/** A remote server reaches the engine as madani bot's own proxy, the upstream (headers and all) in its env in the 0600 MCP config. */
 function upstream(engine: Engine, name: string): unknown {
   const entry = engine.mcpConfig.mcpServers[name] as { args?: string[]; env?: Record<string, string> };
   expect(entry.args?.join(" ")).toContain("mcp-remote-proxy");
-  return JSON.parse(entry.env!.DUSK_REMOTE_MCP_SERVER!);
+  return JSON.parse(entry.env!.MADANI_REMOTE_MCP_SERVER!);
 }
 
 /** One turn in `token`'s own chat with Scout, with these scripted tool calls; what the engine was launched with. */
@@ -140,7 +140,7 @@ it("lets a member's turn list and call the gateway's tool, with both values sent
 it("rejects shared header values on a personal OAuth-to-key edit and accepts a private replacement", async () => {
   const own = "Bearer converted-personal-key-8842";
   const mail = await startFakeHttpMcp({ tools: [{ name: "read_private_inbox" }], acceptBearer: (authorization) => authorization === own });
-  const saved = () => JSON.parse(readFileSync(join(team.home, ".duskbot/config.json"), "utf8"));
+  const saved = () => JSON.parse(readFileSync(join(team.home, ".madanibot/config.json"), "utf8"));
   try {
     const oauth = { type: "http", url: mail.url, headers: {}, oauth: { clientId: "fixture-client-id" } };
     expect((await as(admin, "POST", "/api/mcp/servers", { name: "private-mail", ...oauth })).status).toBe(201);
@@ -184,7 +184,7 @@ it("rejects a personal key when another admin changes the URL between the shared
     expect(refused.status).toBe(409);
     expect(refused.body.error).toMatch(/address changed/i);
     expect((await as(admin, "GET", "/api/team/my-connections")).body.mcp).toContainEqual(expect.objectContaining({ name: "raced-mail", connected: false }));
-    const keysFile = join(team.home, ".duskbot/people-connections/mcp-keys.json");
+    const keysFile = join(team.home, ".madanibot/people-connections/mcp-keys.json");
     expect(existsSync(keysFile) ? readFileSync(keysFile, "utf8") : "").not.toContain(own);
   } finally {
     await as(admin, "DELETE", "/api/mcp/servers/raced-mail");
@@ -200,7 +200,7 @@ it("keeps a one-key server Only for me: the admin's own chat gets it with their 
     expect((await as(admin, "PUT", "/api/team/connection-scopes", { kind: "mcp", id: "mail", scope: "person" })).body).toEqual({ scopes: { apps: [], mcp: ["mail"] } });
     expect((await as(admin, "PUT", "/api/team/my-connections/mcp/mail/key", { value: own, url: mail.url })).body).toEqual({ ok: true });
     expect((await as(admin, "PUT", "/api/mcp/servers/mail", shared)).status).toBe(200);
-    const saved = () => JSON.parse(readFileSync(join(team.home, ".duskbot/config.json"), "utf8"));
+    const saved = () => JSON.parse(readFileSync(join(team.home, ".madanibot/config.json"), "utf8"));
     expect(saved().mcpServers.mail.headers).toEqual({ Authorization: "" });
     expect((await as(admin, "GET", "/api/team/my-connections")).body.mcp).toContainEqual(expect.objectContaining({ name: "mail", connected: true, how: "key" }));
     expect((await as(admin, "POST", "/api/mcp/servers/mail/test")).body).toMatchObject({ ok: true });

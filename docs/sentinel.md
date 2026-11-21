@@ -1,6 +1,6 @@
 # Sentinel
 
-Sentinel is an opt-in health scanner for a dusk bot data dir. It reads the
+Sentinel is an opt-in health scanner for a madani bot data dir. It reads the
 data dir's databases and logs without modifying them, groups failures into
 issues, and writes those issues to its own folder outside the data dir (see
 [Privacy model](#privacy-model)). An `--out` inside the data dir is refused.
@@ -10,9 +10,9 @@ crashes. The code lives in [`server/sentinel/`](../server/sentinel/). Every
 input is explicit, so the same scan could later run inside the server.
 
 ```sh
-duskbot sentinel [--data-dir DIR] [--out DIR] [--once] [--json]
+madanibot sentinel [--data-dir DIR] [--out DIR] [--once] [--json]
                      [--queue-wait SECONDS] [--cost USD]
-duskbot sentinel --check-install [--json]
+madanibot sentinel --check-install [--json]
 ```
 
 Each run does one scan, prints a short summary (or JSON with `--json`) and
@@ -82,11 +82,11 @@ Issues hold references and a normalized title, never raw content. A line in
   `events` → event id, `runtime` → assignment id). A later stage can look the
   evidence up there for someone who is allowed to see it.
 - Output goes to a folder outside the data dir: on macOS
-  `~/Library/Application Support/duskbot-sentinel/`, on Linux
-  `$XDG_STATE_HOME/duskbot-sentinel/` (by default
-  `~/.local/state/duskbot-sentinel/`), on Windows
-  `%LOCALAPPDATA%\duskbot-sentinel\`. You can choose another folder with
-  `--out`. A data dir other than `~/.duskbot` gets its own `data-<hash>`
+  `~/Library/Application Support/madanibot-sentinel/`, on Linux
+  `$XDG_STATE_HOME/madanibot-sentinel/` (by default
+  `~/.local/state/madanibot-sentinel/`), on Windows
+  `%LOCALAPPDATA%\madanibot-sentinel\`. You can choose another folder with
+  `--out`. A data dir other than `~/.madanibot` gets its own `data-<hash>`
   subfolder. The folder is `0700` and its files are `0600`. Sentinel refuses
   an `--out` inside a git repository or inside the data dir, so it never
   writes into the folder it reads, and backups of the data dir never carry its
@@ -117,19 +117,19 @@ in its `index.ts`. A detector may see the same record on several scans. The
 
 | Kind | Fires on | Origin |
 |---|---|---|
-| `tool_error` | A failed tool call, grouped by tool and normalized error | `harness` for dusk bot's own MCP servers (`mcp__agents__*`, `computer`, `browser`, …) and harness notices; `shell` for Bash and exec; `external` for other MCP servers and the engine's built-in tools |
+| `tool_error` | A failed tool call, grouped by tool and normalized error | `harness` for madani bot's own MCP servers (`mcp__agents__*`, `computer`, `browser`, …) and harness notices; `shell` for Bash and exec; `external` for other MCP servers and the engine's built-in tools |
 | `turn_timeout` / `turn_stop` | A `turn.completed` that is not ok (stops the person chose are excluded), a turn stopped on budget (`max_tokens`, `max_turns`), or a room turn the harness stopped for running too long | `external` for account stops (`auth_required`, `quota`, …), otherwise `harness` |
 | `queue_wait` | Delegated work that waited longer than `--queue-wait` (default 300 s) before starting, or is still waiting | `harness` |
 | `cost` | A single turn that cost more than `--cost` (default $5) | `harness` |
 | `retry_loop` | The same tool failing with the same signature 3 or more times in one turn | That of the tool |
 
-Harness failures are ranked `high`, because they are bugs in dusk bot
+Harness failures are ranked `high`, because they are bugs in madani bot
 itself.
 
 ## Installing it
 
 ```sh
-duskbot service install --sentinel [--data-dir DIR]
+madanibot service install --sentinel [--data-dir DIR]
 ```
 
 This writes the schedule into Sentinel's own folder (above) and prints the
@@ -137,14 +137,14 @@ commands that install it. It doesn't install anything itself, and it writes
 nothing to the data dir. The scheduled command passes `--data-dir` and `--out`
 explicitly, so the paths it prints are the ones the scan uses.
 
-- **macOS:** a launchd agent `bot.dusk.sentinel` with
+- **macOS:** a launchd agent `bot.madani.sentinel` with
   `StartInterval` 120, logging to `sentinel.log` in Sentinel's folder.
-- **Linux:** a systemd user service and timer, `duskbot-sentinel`, that
+- **Linux:** a systemd user service and timer, `madanibot-sentinel`, that
   runs every 120 s. It doesn't need root.
 - **Windows:** prints a `schtasks` command that runs the same scan every two
   minutes.
 
-`duskbot service uninstall --sentinel` prints the commands that remove it.
+`madanibot service uninstall --sentinel` prints the commands that remove it.
 
 ### Which CLI the schedule runs
 
@@ -154,8 +154,8 @@ ships, whichever command you ran it from:
 
 | Platform | Node | Script |
 |---|---|---|
-| macOS | `/Applications/Dusk Bot.app/Contents/MacOS/Dusk Bot` (or under `~/Applications`) | `…/Contents/Resources/server/duskbot.js` |
-| Ubuntu `.deb` | `/opt/dusk-bot/duskbot` | `/opt/dusk-bot/resources/server/duskbot.js` |
+| macOS | `/Applications/Madani Bot.app/Contents/MacOS/Madani Bot` (or under `~/Applications`) | `…/Contents/Resources/server/madanibot.js` |
+| Ubuntu `.deb` | `/opt/madani-bot/madanibot` | `/opt/madani-bot/resources/server/madanibot.js` |
 
 The app's own executable runs as Node with `ELECTRON_RUN_AS_NODE=1`, just as
 the [MCP server](mcp-server.md#from-the-installed-desktop-app) does. App
@@ -170,11 +170,11 @@ after an nvm upgrade or a fresh checkout.
 ### After an update
 
 ```sh
-duskbot sentinel --check-install
+madanibot sentinel --check-install
 ```
 
 This reads the installed plist or unit and checks that its Node and script
-paths still exist. It prints `stale install: … rerun duskbot service
+paths still exist. It prints `stale install: … rerun madanibot service
 install --sentinel` if either path is missing. This matters because launchd
 and systemd fail quietly when a path is gone: nothing reaches Sentinel's own
 log, because Sentinel never starts. After moving the app, upgrading Node, or

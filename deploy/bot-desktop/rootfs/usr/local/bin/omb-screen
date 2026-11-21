@@ -26,7 +26,7 @@ PROFILE_ROOT = Path("/home/cua/.config/omb/screens")
 PRIMARY = Path("/run/user/1000/omb-primary")
 HASH = re.compile(r"[a-f0-9]{64}\Z")
 GENERATION = re.compile(r"[a-f0-9]{8}-(?:[a-f0-9]{4}-){3}[a-f0-9]{12}\Z")
-DRIVER = "/usr/local/libexec/duskbot/cua-driver"
+DRIVER = "/usr/local/libexec/madanibot/cua-driver"
 LOW_MEMORY = "This computer is low on memory. Close an unused browser or use a larger computer, then retry."
 
 
@@ -133,10 +133,10 @@ def process(pid):
             return None
         fields = (base / "stat").read_text().rsplit(")", 1)[1].split()
         env = dict(item.split(b"=", 1) for item in (base / "environ").read_bytes().split(b"\0") if b"=" in item)
-        display = int(env.get(b"DUSK_SCREEN_DISPLAY", b"0"))
-        bot = env.get(b"DUSK_SCREEN_BOT_HASH", b"").decode("ascii")
-        generation = env.get(b"DUSK_SCREEN_GENERATION", b"").decode("ascii")
-        if env.get(b"DUSK_SCREEN_MANAGED") != b"1" or display not in DISPLAYS or not HASH.fullmatch(bot) or not GENERATION.fullmatch(generation):
+        display = int(env.get(b"MADANI_SCREEN_DISPLAY", b"0"))
+        bot = env.get(b"MADANI_SCREEN_BOT_HASH", b"").decode("ascii")
+        generation = env.get(b"MADANI_SCREEN_GENERATION", b"").decode("ascii")
+        if env.get(b"MADANI_SCREEN_MANAGED") != b"1" or display not in DISPLAYS or not HASH.fullmatch(bot) or not GENERATION.fullmatch(generation):
             return None
         return {"pid": pid, "display": display, "botHash": bot, "generation": generation,
                 "start": fields[19], "group": int(fields[2]), "session": int(fields[3])}
@@ -409,8 +409,8 @@ def ensure(display, bot, generation):
     require_memory(64)
     require_running_primary()
     directory(PROFILE_ROOT / bot / "chromium")
-    env = dict(os.environ, DUSK_SCREEN_MANAGED="1", DUSK_SCREEN_DISPLAY=str(display),
-               DUSK_SCREEN_BOT_HASH=bot, DUSK_SCREEN_GENERATION=generation, DUSK_BROWSER_AT_START="off", DUSK_START_URL="about:blank")
+    env = dict(os.environ, MADANI_SCREEN_MANAGED="1", MADANI_SCREEN_DISPLAY=str(display),
+               MADANI_SCREEN_BOT_HASH=bot, MADANI_SCREEN_GENERATION=generation, MADANI_BROWSER_AT_START="off", MADANI_START_URL="about:blank")
     log_fd = os.open(runtime / "session.log", os.O_WRONLY | os.O_CREAT | os.O_TRUNC | os.O_NOFOLLOW | os.O_CLOEXEC, 0o600)
     with os.fdopen(log_fd, "wb") as log:
         child = subprocess.Popen(["/bin/sh", "/usr/local/bin/omb-session"], env=env, stdin=subprocess.DEVNULL,
@@ -478,11 +478,11 @@ def ensure_browser(state):
         child = None
         if not existing:
             require_memory(384)
-            env = dict(os.environ, DUSK_SCREEN_MANAGED="1", DUSK_SCREEN_DISPLAY=str(display),
-                       DUSK_SCREEN_BOT_HASH=state["botHash"], DUSK_SCREEN_GENERATION=state["generation"],
+            env = dict(os.environ, MADANI_SCREEN_MANAGED="1", MADANI_SCREEN_DISPLAY=str(display),
+                       MADANI_SCREEN_BOT_HASH=state["botHash"], MADANI_SCREEN_GENERATION=state["generation"],
                        DISPLAY=f":{display}", HOME="/home/cua", XDG_RUNTIME_DIR=str(runtime),
                        DBUS_SESSION_BUS_ADDRESS=f"unix:path={runtime}/bus",
-                       DUSK_CHROMIUM_PROFILE=str(PROFILE_ROOT / state["botHash"] / "chromium"), DUSK_CDP_PORT=str(9222 + display))
+                       MADANI_CHROMIUM_PROFILE=str(PROFILE_ROOT / state["botHash"] / "chromium"), MADANI_CDP_PORT=str(9222 + display))
             log_fd = os.open(runtime / "browser.log", os.O_WRONLY | os.O_CREAT | os.O_APPEND | os.O_NOFOLLOW | os.O_CLOEXEC, 0o600)
             with os.fdopen(log_fd, "ab") as log:
                 child = subprocess.Popen(["/bin/sh", "-c", "chromium about:blank & wait"], env=env,
@@ -545,7 +545,7 @@ def primary_session(pid):
         env = dict(item.split(b"=", 1) for item in (base / "environ").read_bytes().split(b"\0") if b"=" in item)
     except OSError:
         return None
-    if b"/usr/local/bin/omb-session" not in command or env.get(b"DISPLAY") != b":1" or env.get(b"DUSK_SCREEN_MANAGED") == b"1":
+    if b"/usr/local/bin/omb-session" not in command or env.get(b"DISPLAY") != b":1" or env.get(b"MADANI_SCREEN_MANAGED") == b"1":
         return None
     return parent
 
@@ -599,7 +599,7 @@ def primary_browser_ensure():
         if not browser:
             env = dict(os.environ, DISPLAY=":1", HOME="/home/cua", XDG_RUNTIME_DIR="/run/user/1000",
                        DBUS_SESSION_BUS_ADDRESS="unix:path=/run/user/1000/bus",
-                       DUSK_CHROMIUM_PROFILE="/home/cua/.config/chromium", DUSK_CDP_PORT="9222")
+                       MADANI_CHROMIUM_PROFILE="/home/cua/.config/chromium", MADANI_CDP_PORT="9222")
             child = subprocess.Popen(["chromium"], env=env, stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL,
                                      stderr=subprocess.DEVNULL, start_new_session=True, close_fds=True)
             browser = process_identity(child.pid)

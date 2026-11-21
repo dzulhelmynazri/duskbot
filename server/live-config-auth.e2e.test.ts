@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
-import { launchVerificationServer } from "../scripts/control-dusk.ts";
+import { launchVerificationServer } from "../scripts/control-madani.ts";
 import type { LiveSettings } from "../shared/wire.ts";
 import { sealedConfigBody } from "./testing/sealed-config.ts";
 

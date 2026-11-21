@@ -309,7 +309,7 @@ export interface UsageFrustration {
   retries: number;
   summary?: string;
 }
-/** a weekly line about what one person uses Dusk for, written by their own engine on the workspace and scrubbed there */
+/** a weekly line about what one person uses Madani for, written by their own engine on the workspace and scrubbed there */
 export interface UsageDigest { id: string; at: number; turns: number; days: number; summary: string }
 /** a big or long session in one chat: what it touched, counted, and a note on what worked and what was friction,
  * written by the person's own engine on the workspace and scrubbed there */
@@ -446,7 +446,7 @@ export const NOTE_WORDS: ReadonlySet<string> = new Set([
   ...USAGE_APPS, ...USAGE_ENGINES, "google", "calendar", "drive", "docs", "sheets", "outlook", "teams", "whatsapp", "telegram", "imessage", "chrome", "safari", "mac", "macos",
   "windows", "linux", "iphone", "android", "excel", "word", "powerpoint", "pdf", "chatgpt", "openai", "anthropic", "mcp", "api", "vps", "ai", "ok", "i", "x",
   "linkedin", "instagram", "facebook", "youtube", "tiktok", "zoom", "meet", "canva", "spotify", "perplexity", "claude", "vscode", "messenger",
-  "dusk", "bot", "bots", "chat", "chats", "browser", "app", "apps", "assistant", "agent", "model", "computer", "screen", "terminal", "phone", "desktop",
+  "madani", "bot", "bots", "chat", "chats", "browser", "app", "apps", "assistant", "agent", "model", "computer", "screen", "terminal", "phone", "desktop",
   "cloud", "web", "website", "site", "page", "tab", "link", "search", "routine", "routines", "memory", "skill", "skills", "task", "tasks", "email", "emails",
   "message", "messages", "post", "posts", "reply", "draft", "file", "files", "folder", "note", "notes", "account", "settings", "room", "team",
 ]);

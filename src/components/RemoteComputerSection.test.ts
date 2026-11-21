@@ -34,15 +34,15 @@ describe("self-hosted server pairing links", () => {
     "https://bots.example.com/pair?code=secret#code=ABCD-EFGH-JKLM",
     "https://bots.example.com/pair#code=ABCD EFGH JKLM",
     "https://bots.example.com\\@other.example/pair#code=ABCD-EFGH-JKLM",
-    "duskbot://pair?code=123456",
+    "madanibot://pair?code=123456",
   ])("rejects an incomplete, malformed, or insecure link: %s", (link) => {
     expect(isServerPairingLink(link)).toBe(false);
   });
 });
 
 describe("remote connection Settings", () => {
-  const render = (duskDesktop?: unknown) => {
-    vi.stubGlobal("window", { duskDesktop });
+  const render = (madaniDesktop?: unknown) => {
+    vi.stubGlobal("window", { madaniDesktop });
     setLocale("en");
     return renderToStaticMarkup(createElement(RemoteComputerSection));
   };

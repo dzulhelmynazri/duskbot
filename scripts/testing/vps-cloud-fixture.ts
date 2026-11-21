@@ -1,4 +1,4 @@
-// Two real servers for the move straight from a VPS to My Cloud: a server of the person's own ("vps", `duskbot serve`,
+// Two real servers for the move straight from a VPS to My Cloud: a server of the person's own ("vps", `madanibot serve`,
 // paired with this app as a pairing link pairs it) and the person's Cloud home ("cloud", paired the way the Admin pairs
 // it), with main's own wiring for the move (electron/vps-cloud-move.mjs) between them. Disposable homes, a synthetic
 // Claude CLI; no network.
@@ -16,7 +16,7 @@ import { removeTempDir, waitForExit } from "../../server/testing/cleanup.ts";
 import { freePortBlock } from "../../server/testing/ports.ts";
 
 const SERVER_DIR = fileURLToPath(new URL("../../server/", import.meta.url));
-const CLOUD_HOST = "dusk-t-5e6d7c8b9a0f.fly.dev";
+const CLOUD_HOST = "madani-t-5e6d7c8b9a0f.fly.dev";
 const EDGE = { host: CLOUD_HOST, "x-forwarded-for": "203.0.113.9", "x-forwarded-proto": "https", origin: `https://${CLOUD_HOST}` };
 const parse = (text: string) => { try { return JSON.parse(text); } catch { return null; } };
 type Answer = { status: number; body: any };
@@ -32,7 +32,7 @@ export interface VpsCloudFixture {
   cloud: Side;
   place: { id: string; kind: "remote"; name: string; origin: string };
   main: ReturnType<typeof installVpsCloudMove>;
-  /** The dusk cloud sign-in's state main reads; a test empties `machine` for "no Cloud yet". */
+  /** The madani cloud sign-in's state main reads; a test empties `machine` for "no Cloud yet". */
   account: { state: any };
   journalFile: string;
   /** Throwing here is the app killed the moment that journal write would land. */
@@ -48,14 +48,14 @@ export interface VpsCloudFixture {
 }
 
 export async function launchVpsCloudFixture({ vpsEnv = {} }: { vpsEnv?: NodeJS.ProcessEnv } = {}): Promise<VpsCloudFixture> {
-  const root = mkdtempSync(join(tmpdir(), "dusk-vps-cloud-"));
+  const root = mkdtempSync(join(tmpdir(), "madani-vps-cloud-"));
   const secret = randomBytes(32).toString("base64url");
   const children = new Set<ChildProcess>();
   let logs = "";
 
   async function start(name: string, own: NodeJS.ProcessEnv, port: number): Promise<ChildProcess> {
     const home = join(root, name);
-    const dataDir = join(home, ".duskbot");
+    const dataDir = join(home, ".madanibot");
     mkdirSync(dataDir, { recursive: true });
     const cli = join(home, "fixture-claude.mjs");
     writeFileSync(cli, `#!/usr/bin/env node
@@ -71,8 +71,8 @@ await import(${JSON.stringify(pathToFileURL(join(SERVER_DIR, "testing", "fake-cl
     const offline = `data:text/javascript,${encodeURIComponent('const real = globalThis.fetch; globalThis.fetch = async (url, init) => String(url).startsWith("http://127.0.0.1:") ? real(url, init) : new Response("offline fixture", { status: 503 });')}`;
     const child = spawn(process.execPath, ["--import", offline, join(SERVER_DIR, "index.ts")], {
       cwd: join(SERVER_DIR, ".."),
-      env: { PATH: process.env.PATH, ...(process.env.SystemRoot ? { SystemRoot: process.env.SystemRoot } : {}), HOME: home, USERPROFILE: home, DUSK_DATA_DIR: dataDir,
-        DUSK_PORT: String(port), DUSK_WEBHOOK_PORT: String(port + 1), DUSK_NO_TEST_BOTS: "1", ...own },
+      env: { PATH: process.env.PATH, ...(process.env.SystemRoot ? { SystemRoot: process.env.SystemRoot } : {}), HOME: home, USERPROFILE: home, MADANI_DATA_DIR: dataDir,
+        MADANI_PORT: String(port), MADANI_WEBHOOK_PORT: String(port + 1), MADANI_NO_TEST_BOTS: "1", ...own },
       stdio: ["ignore", "pipe", "pipe"],
     });
     children.add(child);
@@ -90,10 +90,10 @@ await import(${JSON.stringify(pathToFileURL(join(SERVER_DIR, "testing", "fake-cl
 
   const vpsPort = await freePortBlock([0, 1]);
   const vpsBase = `http://127.0.0.1:${vpsPort}`;
-  await start("vps", { DUSK_ENVIRONMENT_LABEL: "Hetzner box", ...vpsEnv }, vpsPort);
+  await start("vps", { MADANI_ENVIRONMENT_LABEL: "Hetzner box", ...vpsEnv }, vpsPort);
   const minted = await fetch(`${vpsBase}/api/auth/pairing`, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ label: "My desktop" }) });
   const pairing = (await minted.json() as { code: string }).code;
-  const paired = await fetch(`${vpsBase}/api/auth/pair`, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ code: pairing, label: "dusk bot app" }) });
+  const paired = await fetch(`${vpsBase}/api/auth/pair`, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ code: pairing, label: "madani bot app" }) });
   const vpsToken = (await paired.json() as { token: string }).token;
   const vps: Side = async (method, path, body) => {
     const response = await fetch(`${vpsBase}${path}`, { method, headers: { authorization: `Bearer ${vpsToken}`, ...(body === undefined ? {} : { "content-type": "application/json" }) },
@@ -103,16 +103,16 @@ await import(${JSON.stringify(pathToFileURL(join(SERVER_DIR, "testing", "fake-cl
 
   const cloudPort = await freePortBlock([0, 1]);
   const cloudBase = `http://127.0.0.1:${cloudPort}`;
-  await start("cloud", { DUSK_CLOUD_ROLE: "home", DUSK_CLOUD_MACHINE_ID: "7c1d2e3f-4a5b-4c6d-8e7f-9a0b1c2d3e4f", DUSK_CLOUD_ADMIN_URL: "https://cloud.example.test",
-    DUSK_CLOUD_BOOTSTRAP_SECRET: secret, DUSK_PUBLIC_URL: `https://${CLOUD_HOST}` }, cloudPort);
+  await start("cloud", { MADANI_CLOUD_ROLE: "home", MADANI_CLOUD_MACHINE_ID: "7c1d2e3f-4a5b-4c6d-8e7f-9a0b1c2d3e4f", MADANI_CLOUD_ADMIN_URL: "https://cloud.example.test",
+    MADANI_CLOUD_BOOTSTRAP_SECRET: secret, MADANI_PUBLIC_URL: `https://${CLOUD_HOST}` }, cloudPort);
   const mintCode = async (label: string) => {
     const body = JSON.stringify({ label, ttlSeconds: 300 });
     const timestamp = String(Math.floor(Date.now() / 1000)), nonce = randomBytes(16).toString("base64url");
     const response = await fetch(`${cloudBase}/api/cloud/pairing`, { method: "POST", headers: { ...EDGE, "content-type": "application/json",
-      "x-dusk-cloud-timestamp": timestamp, "x-dusk-cloud-nonce": nonce, "x-dusk-cloud-signature": `v1=${cloudPairingSignature(secret, timestamp, nonce, body)}` }, body });
+      "x-madani-cloud-timestamp": timestamp, "x-madani-cloud-nonce": nonce, "x-madani-cloud-signature": `v1=${cloudPairingSignature(secret, timestamp, nonce, body)}` }, body });
     return ((await response.json()) as { code: string }).code;
   };
-  const ownerPaired = await fetch(`${cloudBase}/api/auth/pair`, { method: "POST", headers: { ...EDGE, "content-type": "application/json" }, body: JSON.stringify({ code: await mintCode("dusk bot app (Cloud)") }) });
+  const ownerPaired = await fetch(`${cloudBase}/api/auth/pair`, { method: "POST", headers: { ...EDGE, "content-type": "application/json" }, body: JSON.stringify({ code: await mintCode("madani bot app (Cloud)") }) });
   const owner = ((await ownerPaired.json()) as { token: string }).token;
   const cloud: Side = async (method, path, body) => {
     const response = await fetch(`${cloudBase}${path}`, { method, headers: { ...EDGE, authorization: `Bearer ${owner}`, ...(body === undefined ? {} : { "content-type": "application/json" }) },
@@ -143,7 +143,7 @@ await import(${JSON.stringify(pathToFileURL(join(SERVER_DIR, "testing", "fake-cl
     fetch: windowFetch,
     environments: () => [place],
     cloud: () => oneHomeCloud(account.state),
-    home: () => (account.state.machine?.origin ? { origin: cloudBase, grant: async () => ({ origin: cloudBase, code: await mintCode("dusk bot app (Cloud)") }) } : null),
+    home: () => (account.state.machine?.origin ? { origin: cloudBase, grant: async () => ({ origin: cloudBase, code: await mintCode("madani bot app (Cloud)") }) } : null),
     cloudRead: (route) => fetch(`${cloudBase}${route}`, { headers: { ...EDGE, authorization: `Bearer ${owner}`, accept: "application/json", ...BACKGROUND_HEADERS } }),
     cloudFetch: windowFetch,
     journal: file("vps-cloud-move.json"),

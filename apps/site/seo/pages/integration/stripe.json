@@ -10,7 +10,7 @@
     "claude stripe",
     "stripe ai agent"
   ],
-  "answer": "**find the overdue invoice before the billing question becomes an awkward call.** dusk brings stripe invoices, subscriptions and refund records into chat. ask for amounts, currencies and dates with read-only access. you get the evidence without giving the bot a way to move money. add refund access later only with a sending rule and a review of each amount.",
+  "answer": "**find the overdue invoice before the billing question becomes an awkward call.** madani brings stripe invoices, subscriptions and refund records into chat. ask for amounts, currencies and dates with read-only access. you get the evidence without giving the bot a way to move money. add refund access later only with a sending rule and a review of each amount.",
   "updated": "2026-11-12",
   "review": {
     "status": "approved",
@@ -104,9 +104,9 @@
   ],
   "asks": "**keep the refund decision beside the customer, charge, currency and amount.** refunds, charges, transfers and invoice payments count as sends. with **ask every time**, they wait for **allow**.\n\nthese actions are ordinary writes and can act without that prompt:\n\n- confirm payment intent\n- capture payment intent\n- create credit note\n- create subscription\n- cancel subscription\n- finalize an invoice\n- void an invoice\n\nkeep billing readers read only. a separate refund bot needs only create refund and the required reads.\n\ncareful with **Full access**: a bot there with no sending rule can send up to 25 a day without asking. give it **Ask every time**.[^2]",
   "cannot": [
-    "**refund or edit billing with read-only access.** dusk blocks those calls before they reach stripe.",
+    "**refund or edit billing with read-only access.** madani blocks those calls before they reach stripe.",
     "**complete your accounts from invoice totals.** group currencies separately and follow up unexplained differences.",
-    "**run a local report while the computer sleeps.** use dusk cloud or another awake machine when it must arrive early."
+    "**run a local report while the computer sleeps.** use madani cloud or another awake machine when it must arrive early."
   ],
   "sections": [
     {
@@ -134,15 +134,15 @@
   ],
   "sources": [
     {
-      "label": "dusk bot docs: connected apps and sends",
+      "label": "madani bot docs: connected apps and sends",
       "url": "/docs/files-and-apps"
     },
     {
-      "label": "dusk bot docs: allow and deny",
+      "label": "madani bot docs: allow and deny",
       "url": "/docs/computer"
     },
     {
-      "label": "dusk bot docs: routines",
+      "label": "madani bot docs: routines",
       "url": "/docs/routines"
     }
   ],

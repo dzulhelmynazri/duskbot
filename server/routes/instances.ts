@@ -44,7 +44,7 @@ export interface InstanceRouteDeps {
   activeGroupTurnForBot(botId: string): { threadId: string } | null;
   /** The server's tested-AI record (server/tested-ai.ts): a check there also settles the new-bot default. */
   checkInstance?(instance: ProviderInstance): Promise<EngineCheck>;
-  /** This server is a dusk cloud: an address on the person's own computer or network is out of its reach. */
+  /** This server is a madani cloud: an address on the person's own computer or network is out of its reach. */
   cloudHome?: boolean;
   /** Moves every bot, backup, conversation and default off a provider being disconnected; without it one in use stays. */
   releaseProvider?(instanceId: string): Promise<void>;
@@ -225,7 +225,7 @@ export function createInstanceRoutes(deps: InstanceRouteDeps): RouteHandler {
           if (!instance) return json(res, 404, { error: "unknown instance" });
           // The official local OAuth callback terminates on this machine, not a phone or a remote browser.
           if (instance.authenticationMethod === "browser-pkce" && (isProxied(req) || !isLoopbackHost(req.socket.remoteAddress))) {
-            return json(res, 403, { error: "Continue with ChatGPT on the computer running dusk bot. Hosted Pro sign-in requires OpenAI's hosted-app approval." });
+            return json(res, 403, { error: "Continue with ChatGPT on the computer running madani bot. Hosted Pro sign-in requires OpenAI's hosted-app approval." });
           }
           const startBody = await readBody(req, 4096).catch(() => null);
           const started = await providerAuthSessions.start(instance, owner, { browser: startBody?.browser === true });
@@ -405,7 +405,7 @@ export function createInstanceRoutes(deps: InstanceRouteDeps): RouteHandler {
       if (providerInUse(instanceId)) {
         return json(res, 409, { error: "Choose another account for the bots and default model using this account before removing it." });
       }
-      // dusk bot keeps a ChatGPT account's sign-in in its own data folder: removing the account clears it.
+      // madani bot keeps a ChatGPT account's sign-in in its own data folder: removing the account clears it.
       const live = addedChatgpt ? registry.get(instanceId) : undefined;
       if (live?.signOut) {
         try { await providerAuthSessions.signOut(live, auth.kind === "session" ? auth.session.id : "loopback"); }
@@ -420,7 +420,7 @@ export function createInstanceRoutes(deps: InstanceRouteDeps): RouteHandler {
       try {
         delete instances[instanceId];
         await persistProviderInstance(instanceId, instances);
-        // An added Antigravity account's Google sign-in lives in dusk bot's data folder too: removing the account deletes it.
+        // An added Antigravity account's Google sign-in lives in madani bot's data folder too: removing the account deletes it.
         if (addedAntigravity) await removeAntigravityProfile(instanceId);
         return json(res, 200, { instances: await describeInstances() });
       } finally {

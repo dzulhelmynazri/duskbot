@@ -16,7 +16,7 @@ if (at === -1) throw new Error("--shots <dir> is required");
 const shots = resolve(process.argv[at + 1] ?? "");
 const onlyAt = process.argv.indexOf("--only");
 const only = onlyAt === -1 ? null : new Set((process.argv[onlyAt + 1] ?? "").split(",").filter(Boolean));
-const CHROME = process.env.DUSK_CDP_CHROME ?? "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome";
+const CHROME = process.env.MADANI_CDP_CHROME ?? "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome";
 const [WIDTH, HEIGHT] = [1280, 800];
 const PHONE = { width: 390, height: 844 };
 const SUBJECT = /^\/api\/(?:bots|threads|groups|routines)\//;
@@ -99,7 +99,7 @@ const before = process.argv.includes("--before");
 const fx = await launchCloudSendFixture({ onePasswordToken: `ops_fake-team-${randomBytes(8).toString("hex")}`, team: { id: "team-acme-1", name: "Acme" } });
 const team = fx.team!;
 const token = {} as Record<Who, string>;
-const profile = mkdtempSync(join(tmpdir(), "dusk-team-access-chrome-"));
+const profile = mkdtempSync(join(tmpdir(), "madani-team-access-chrome-"));
 let chrome: Awaited<ReturnType<typeof openChrome>> | undefined;
 let ui: MountedPreview | undefined;
 try {

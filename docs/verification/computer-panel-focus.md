@@ -6,11 +6,11 @@ tab, or its close button when the panel has no tab row — and closing from the
 panel puts focus back on the button that opened it.
 
 ```sh
-DUSK_UI_E2E=1 node node_modules/vitest/vitest.mjs run scripts/testing/computer-panel-focus-ui.e2e.test.ts
+MADANI_UI_E2E=1 node node_modules/vitest/vitest.mjs run scripts/testing/computer-panel-focus-ui.e2e.test.ts
 ```
 
 The regression drives the real app through the standard isolated
-`scripts/control-dusk.ts ui launch` harness and reads `document.activeElement`
+`scripts/control-madani.ts ui launch` harness and reads `document.activeElement`
 after real key presses and a real pointer click:
 
 1. **Enter** on the focused chat header computer button opens the panel with the
@@ -28,7 +28,7 @@ so the same checks run against `scripts/testing/cloud-preview.tsx`, whose
 opener button stays mounted while its panel is up:
 
 ```sh
-DUSK_UI_E2E=1 node node_modules/vitest/vitest.mjs run scripts/testing/cloud-preview.e2e.test.ts
+MADANI_UI_E2E=1 node node_modules/vitest/vitest.mjs run scripts/testing/cloud-preview.e2e.test.ts
 ```
 
 There the Computer panel lands on its active tab; closing it with **Enter** on
@@ -48,7 +48,7 @@ browser has dropped focus to the body. Unit coverage lives in
 What this does not prove:
 
 - The remote-client panel is proven against that fixture, not through a paired
-  phone's real bridge. Run that file's regression with `DUSK_UI_E2E=1`, or follow
+  phone's real bridge. Run that file's regression with `MADANI_UI_E2E=1`, or follow
   item 14 of the cloud preview recipe by hand.
 - Escape does not close this panel; only its own X and the gear that hands over
   to bot settings return focus.

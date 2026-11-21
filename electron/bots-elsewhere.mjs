@@ -1,7 +1,7 @@
 // This computer's page with no bots of its own, while the person's live somewhere else (the server they moved to, My
 // Cloud, a team's Cloud, a server they linked): the page says where they are and opens that place, never a blank first
 // run. Signed in, the place is also noted for the account (account-setup-store.mjs), so a fresh install of the same
-// account says "You already set up dusk bot on …" and offers to connect.
+// account says "You already set up madani bot on …" and offers to connect.
 
 import { BACKGROUND_HEADERS } from "./cloud-power.mjs";
 
@@ -27,7 +27,7 @@ export function placesElsewhere({ environments = [], moved = null, cloudOrigin =
   return places;
 }
 
-/** The person's own bots in a JSON answer of GET /api/bots: dusk, the helper every place gets, and bots off the sidebar
+/** The person's own bots in a JSON answer of GET /api/bots: madani, the helper every place gets, and bots off the sidebar
  * don't count. Null for anything else. */
 export function ownBotCount(body) {
   return Array.isArray(body?.bots) ? body.bots.filter((bot) => bot && typeof bot === "object" && !bot.defaultBot && !bot.hidden).length : null;

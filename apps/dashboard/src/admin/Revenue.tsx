@@ -112,7 +112,7 @@ export function Badges({ badges }: { badges: Badge[] }) {
 }
 
 export interface Cheer { key: string; at: number; text: string; seed: string; money: boolean }
-const SEEN = "dusk-admin-cheered";
+const SEEN = "madani-admin-cheered";
 /** signups and payments newer than the last one cheered on this browser; the first visit only remembers, never cheers */
 export function useCheer(marks: Mark[] | undefined, payments: RecentPayment[] | undefined) {
   const [cheer, setCheer] = useState<Cheer | null>(null);

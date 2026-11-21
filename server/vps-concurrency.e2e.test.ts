@@ -6,7 +6,7 @@ import { pathToFileURL } from "node:url";
 import { expect, it } from "vitest";
 import WebSocket from "ws";
 
-import { launchVerificationServer, type VerificationServer } from "../scripts/control-dusk.ts";
+import { launchVerificationServer, type VerificationServer } from "../scripts/control-madani.ts";
 import { launchCloudSendFixture } from "../scripts/testing/cloud-send-fixture.ts";
 import { createTeamVpsFixture } from "../scripts/testing/team-vps-fixture.ts";
 import { openSse } from "./testing/sse.ts";
@@ -20,7 +20,7 @@ async function harness(options: Parameters<typeof createTeamVpsFixture>[0] & { h
     mcpCommand: process.execPath, mcpArgs: ["mcp"], mcpEnv: {} }));
   let fixture: VerificationServer;
   // the fixture host is not measured; these checks are about screen sharing, not the memory cap
-  try { fixture = await launchVerificationServer({ DUSK_VPS_MAX_DESKTOPS: "20", ...(host ? { DUSK_TEST_DESKTOP_CUA_CONNECTION: hostDescriptor } : {}) }, undefined, vps.localVm); }
+  try { fixture = await launchVerificationServer({ MADANI_VPS_MAX_DESKTOPS: "20", ...(host ? { MADANI_TEST_DESKTOP_CUA_CONNECTION: hostDescriptor } : {}) }, undefined, vps.localVm); }
   catch (error) { await vps.close(); throw error; }
   const evidence: Array<Record<string, unknown>> = [];
   const pids = new Set<number>();
@@ -44,7 +44,7 @@ async function harness(options: Parameters<typeof createTeamVpsFixture>[0] & { h
     'const at = process.argv.indexOf("--mcp-config");',
     'let thread = "background";',
     'if (at >= 0) { const servers = JSON.parse(readFileSync(process.argv[at + 1], "utf8")).mcpServers ?? {};',
-    '  thread = Object.values(servers).find(server => server.env?.DUSK_THREAD_ID)?.env.DUSK_THREAD_ID ?? thread; }',
+    '  thread = Object.values(servers).find(server => server.env?.MADANI_THREAD_ID)?.env.MADANI_THREAD_ID ?? thread; }',
     'process.env.FAKE_CLAUDE_MODE = "slow";',
     `process.env.FAKE_CLAUDE_DUMP = join(${JSON.stringify(fixture.info.dataDir)}, thread + ".dump.json");`,
     `process.env.FAKE_CLAUDE_SLOW_FINISH_GATE = join(${JSON.stringify(fixture.info.dataDir)}, process.pid + ".finish");`,
@@ -108,7 +108,7 @@ it.skipIf(process.platform === "win32")("keeps sends, cancellation and stale cap
     const old = await h.launched(first);
     expect((await h.api("POST", `/api/bots/${bot.id}/messages`, { text: "SECOND_THREAD_ONLY", threadId: second })).status).toBe(202);
     const other = await h.launched(second);
-    const token = old.mcpConfig.mcpServers.agents.env.DUSK_COMMS_TOKEN;
+    const token = old.mcpConfig.mcpServers.agents.env.MADANI_COMMS_TOKEN;
     pendingBody = httpRequest(h.fixture.info.url + "/api/internal/memory", {
       method: "POST", headers: { authorization: `Bearer ${token}`, "content-type": "application/json" },
     });
@@ -161,7 +161,7 @@ it.skipIf(process.platform === "win32")("leaves ordinary Auto chats off Docker, 
       expect(turn.mcpConfig.mcpServers.browser).toBeUndefined();
     }
     for (let i = 0; i < bots.length; i++) {
-      const selected = await h.api("POST", "/api/internal/computer/select", { surface: "cloud" }, initial[i].mcpConfig.mcpServers.agents.env.DUSK_COMMS_TOKEN);
+      const selected = await h.api("POST", "/api/internal/computer/select", { surface: "cloud" }, initial[i].mcpConfig.mcpServers.agents.env.MADANI_COMMS_TOKEN);
       expect(selected, JSON.stringify(selected.body)).toMatchObject({ status: 200, body: { status: "pending", surface: "cloud" } });
       h.release(initial[i].pid);
     }
@@ -169,14 +169,14 @@ it.skipIf(process.platform === "win32")("leaves ordinary Auto chats off Docker, 
     const computers = mounted.map(turn => turn.mcpConfig.mcpServers.computer);
     expect(computers[0].args).toEqual(computers[1].args);
     expect(computers[0].args).toEqual(computers[2].args);
-    expect(new Set(computers.map(computer => computer.env.DUSK_CONTROL_TOKEN)).size).toBe(3);
+    expect(new Set(computers.map(computer => computer.env.MADANI_CONTROL_TOKEN)).size).toBe(3);
     for (let i = 0; i < bots.length; i++) {
-      expect(new URL(computers[i].env.DUSK_CONTROL_URL).searchParams.get("botId")).toBe(bots[i].id);
+      expect(new URL(computers[i].env.MADANI_CONTROL_URL).searchParams.get("botId")).toBe(bots[i].id);
     }
     const control = async (computer: any, botId?: string) => {
-      const url = new URL(computer.env.DUSK_CONTROL_URL);
+      const url = new URL(computer.env.MADANI_CONTROL_URL);
       if (botId) url.searchParams.set("botId", botId);
-      const response = await fetch(url, { headers: { authorization: `Bearer ${computer.env.DUSK_CONTROL_TOKEN}` }, signal: AbortSignal.timeout(15_000) });
+      const response = await fetch(url, { headers: { authorization: `Bearer ${computer.env.MADANI_CONTROL_TOKEN}` }, signal: AbortSignal.timeout(15_000) });
       return { status: response.status, body: await response.json() as any };
     };
     expect((await control(computers[0])).body).toMatchObject({ held: false });
@@ -240,7 +240,7 @@ it.skipIf(process.platform === "win32")("provisions a missing shared VPS only af
     expect((await h.api("POST", `/api/bots/${bot.id}/messages`, { text: "Say hello before choosing a computer" })).status).toBe(202);
     const first = await h.launched(bot.threadId);
     expect(readFileSync(h.vps.calls, "utf8").slice(before)).toBe("");
-    const token = first.mcpConfig.mcpServers.agents.env.DUSK_COMMS_TOKEN;
+    const token = first.mcpConfig.mcpServers.agents.env.MADANI_COMMS_TOKEN;
     const inspect = await h.api("GET", "/api/internal/computer/select", undefined, token);
     expect(inspect.body.options.find((option: any) => option.surface === "cloud")).toMatchObject({ ready: false, canCreate: true });
     expect(readFileSync(h.vps.calls, "utf8").slice(before)).not.toMatch(/"run"/);
@@ -265,7 +265,7 @@ it.skipIf(process.platform === "win32")("never wakes a bot's own VPS computer fo
       const first = await h.launched(bot.threadId);
       expect(first.mcpConfig.mcpServers.computer).toBeUndefined();
       expect(readFileSync(h.vps.calls, "utf8").slice(before)).not.toMatch(/"(?:run|start)"/);
-      const token = first.mcpConfig.mcpServers.agents.env.DUSK_COMMS_TOKEN;
+      const token = first.mcpConfig.mcpServers.agents.env.MADANI_COMMS_TOKEN;
       expect((await h.api("POST", "/api/internal/computer/select", { surface: "cloud" }, token)).body).toMatchObject({ status: "pending" });
       // it starts while this turn is still ending, not after: the continuation joins that same start
       await expect.poll(() => readFileSync(h.vps.calls, "utf8").slice(before).includes('"run"'), { timeout: 10_000 }).toBe(true);
@@ -286,7 +286,7 @@ it.skipIf(process.platform !== "darwin")("never moves an unavailable cloud desti
     expect((await h.api("PATCH", `/api/bots/${local.id}`, { computer: "local" })).status).toBe(200);
     expect((await h.api("POST", `/api/bots/${local.id}/messages`, { text: "Hold with the synthetic local connection" })).status).toBe(202);
     const host = await h.launched(local.threadId);
-    expect(host.mcpConfig.mcpServers.computer.env.DUSK_CUA_COMMAND).toBe(process.execPath);
+    expect(host.mcpConfig.mcpServers.computer.env.MADANI_CUA_COMMAND).toBe(process.execPath);
     h.release(host.pid); await h.idle(local.id, local.threadId);
     const cloud = (await h.api("POST", "/api/bots", { name: "Cloud must stay cloud" })).body.bot;
     expect((await h.api("PATCH", `/api/bots/${cloud.id}`, { computer: "cloud" })).status).toBe(200);
@@ -307,7 +307,7 @@ it.skipIf(process.platform !== "darwin")("keeps fresh native Auto chat on its sy
     const bot = (await h.api("POST", "/api/bots", { name: "Fresh native Auto" })).body.bot;
     expect((await h.api("POST", `/api/bots/${bot.id}/messages`, { text: "Hello, what can you help with?" })).status).toBe(202);
     const turn = await h.launched(bot.threadId);
-    expect(turn.mcpConfig.mcpServers.computer.env.DUSK_CUA_COMMAND).toBe(process.execPath);
+    expect(turn.mcpConfig.mcpServers.computer.env.MADANI_CUA_COMMAND).toBe(process.execPath);
     expect(readFileSync(h.vps.calls, "utf8").slice(before)).toBe("");
     h.release(turn.pid); await h.idle(bot.id, bot.threadId);
   } finally { await h.close(); }
@@ -338,7 +338,7 @@ it.skipIf(process.platform === "win32")("keeps the private default bots of two a
   let fixture: Awaited<ReturnType<typeof launchCloudSendFixture>> | undefined;
   try {
     fixture = await launchCloudSendFixture({ onePasswordToken: "synthetic-vps-concurrency-token",
-      team: { id: "team-vps-privacy", name: "VPS privacy", env: { DUSK_EXTRA_PATH: vps.localVm.binDir } } });
+      team: { id: "team-vps-privacy", name: "VPS privacy", env: { MADANI_EXTRA_PATH: vps.localVm.binDir } } });
     const team = fixture.team!;
     const owner = await team.pair({ email: "owner@privacy.test", role: "owner" });
     const member = await team.pair({ email: "member@privacy.test", role: "member" });
@@ -373,7 +373,7 @@ it.skipIf(process.platform === "win32")("rejects malformed internal computer and
     expect((await h.api("PATCH", `/api/bots/${bot.id}`, { computer: "off" })).status).toBe(200);
     expect((await h.api("POST", `/api/bots/${bot.id}/messages`, { text: "Hold while malformed payloads are rejected" })).status).toBe(202);
     const turn = await h.launched(bot.threadId);
-    const token = turn.mcpConfig.mcpServers.agents.env.DUSK_COMMS_TOKEN;
+    const token = turn.mcpConfig.mcpServers.agents.env.MADANI_COMMS_TOKEN;
     const cases = [
       ...[null, [], true, 42, "cloud"].flatMap(body => ["/api/internal/computer/select", "/api/internal/memory", "/api/internal/memory/log"].map(path => [path, body] as const)),
       ["/api/internal/computer/select", { surface: { toString: "cloud" } }],
@@ -396,8 +396,8 @@ it.skipIf(process.platform === "win32")("keeps independent bot screens parallel,
   let viewer: WebSocket | undefined;
   const calls = () => readFileSync(h.vps.calls, "utf8").trim().split("\n").filter(Boolean).map(line => JSON.parse(line) as string[]);
   const control = async (computer: any) => {
-    const response = await fetch(computer.env.DUSK_CONTROL_URL, {
-      headers: { authorization: `Bearer ${computer.env.DUSK_CONTROL_TOKEN}` }, signal: AbortSignal.timeout(20_000),
+    const response = await fetch(computer.env.MADANI_CONTROL_URL, {
+      headers: { authorization: `Bearer ${computer.env.MADANI_CONTROL_TOKEN}` }, signal: AbortSignal.timeout(20_000),
     });
     return { status: response.status, body: await response.json() as any };
   };
@@ -417,7 +417,7 @@ it.skipIf(process.platform === "win32")("keeps independent bot screens parallel,
       mounted.push(computer); screens.push(JSON.parse(computer.args.at(-1)));
     }
     expect(new Set(mounted.map(computer => computer.args.at(-2))).size).toBe(1);
-    expect(new Set(mounted.map(computer => computer.env.DUSK_CONTROL_TOKEN)).size).toBe(4);
+    expect(new Set(mounted.map(computer => computer.env.MADANI_CONTROL_TOKEN)).size).toBe(4);
     for (const key of ["display", "socket", "chromiumProfile", "generation"]) expect(new Set(screens.map(screen => screen[key])).size, key).toBe(4);
     expect(screens.map(screen => screen.display).sort()).toEqual([2, 3, 4, 5]);
     for (let i = 0; i < bots.length; i++) {

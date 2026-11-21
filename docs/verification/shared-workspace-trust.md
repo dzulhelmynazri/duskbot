@@ -8,8 +8,8 @@ description is in [self-hosting](../self-hosting.md#loopback-trust-owner-or-serv
 ## Sub-features
 
 - **Loopback trust.** At start-up the server logs `local requests: owner
-  trust (…)` or `local requests: service trust (…)`. A self-hosted server defaults to `owner`; dusk cloud defaults to `service`.
-  `DUSK_LOOPBACK_TRUST=owner|service` overrides (anything else means
+  trust (…)` or `local requests: service trust (…)`. A self-hosted server defaults to `owner`; madani cloud defaults to `service`.
+  `MADANI_LOOPBACK_TRUST=owner|service` overrides (anything else means
   `service`); the desktop app always keeps `owner` behind its per-launch
   capability. Under `service` a session-less loopback request may use only
   `SERVICE_ALLOW` (`server/request-auth.ts`): health, who-am-I, edition,
@@ -20,11 +20,11 @@ description is in [self-hosting](../self-hosting.md#loopback-trust-owner-or-serv
   exactly the set the cloud Slack worker calls (checked against the cloud
   repository's worker source, every released version), so the deployed
   worker needs no change.
-- **The CLI under service trust.** `duskbot serve` hands the server it
+- **The CLI under service trust.** `madanibot serve` hands the server it
   starts a per-launch secret over the server's stdin; that secret opens
   `/api/auth/pairing` for that CLI alone, so `serve` still prints the first
   pairing code, and if a code is refused anyway it says why and keeps the
-  server running. Later `duskbot pair` and `duskbot sessions` are
+  server running. Later `madanibot pair` and `madanibot sessions` are
   refused with an explanation. A browser on an SSH tunnel gets the sign-in
   page, not an app whose every admin call fails.
 - **Who may answer a card.** With an email sign-in list
@@ -44,7 +44,7 @@ description is in [self-hosting](../self-hosting.md#loopback-trust-owner-or-serv
   records `actor` (session id, device label, email, and account id).
 - **Decision log retention.** Rows go to `<data>/decisions/YYYY-MM.ndjson`. A
   month file is deleted once all of it is older than the window (180 days by
-  default; `decisions.retentionDays` or `DUSK_DECISION_RETENTION_DAYS`). An
+  default; `decisions.retentionDays` or `MADANI_DECISION_RETENTION_DAYS`). An
   older server's `decisions.ndjson` and `.1` are still read and age out by
   their last write. `GET /api/decisions?limit=` is unchanged; `GET
   /api/decisions.csv?from=&to=` (admin) exports a date range with formula
@@ -70,12 +70,12 @@ pnpm exec vitest run server/request-auth.test.ts server/decision-log.test.ts \
   bot opened mid-way through a member's request (through the real
   `/api/internal/threads` handoff) leads back to that member, a card that
   names nobody is answered by any member, an admin and the owner answer
-  anyone's card, and under `DUSK_LOOPBACK_TRUST=service` a session-less caller
+  anyone's card, and under `MADANI_LOOPBACK_TRUST=service` a session-less caller
   cannot approve (or use the bot-scoped route or always-allow) but can
   decline, while a Slack-shaped guarded request stays answerable by any
   member. Each answer's decision row and card name who answered.
-- `server/cli-service-trust.e2e.test.ts` runs the real `duskbot serve`
-  with `DUSK_LOOPBACK_TRUST=service`: it prints a pairing code and keeps
+- `server/cli-service-trust.e2e.test.ts` runs the real `madanibot serve`
+  with `MADANI_LOOPBACK_TRUST=service`: it prints a pairing code and keeps
   running, the pairing route refuses every other local caller, and later
   `pair` and `sessions` commands exit with the explanation.
 
@@ -95,7 +95,7 @@ pnpm exec vitest run server/request-auth.test.ts server/decision-log.test.ts \
 
 ## Observed local result — 2026-09-23
 
-On a disposable worktree rebased onto dusk bot main `0bb37982`:
+On a disposable worktree rebased onto madani bot main `0bb37982`:
 `pnpm typecheck`, `pnpm lint`, `pnpm i18n:check`, `pnpm test:packaged-server`,
 and the files above plus `server/index.test.ts`,
 `server/chat-followups-restart.test.ts`, `server/steer-e2e.test.ts`,

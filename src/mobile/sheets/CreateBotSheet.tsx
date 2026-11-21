@@ -6,13 +6,13 @@ import { t } from "@/lib/i18n";
 import { cn } from "@/lib/cn";
 import { PICKER_COLORS, colorSwatch, type MausColor } from "@/lib/mascot";
 import { useStore } from "@/state/store";
-import { DEFAULT_BOT_BODY, DUSK_BODY_IDS, DUSK_BODY_NAMES, type DuskBodyId } from "../../../shared/body-migration";
+import { DEFAULT_BOT_BODY, MADANI_BODY_IDS, MADANI_BODY_NAMES, type MadaniBodyId } from "../../../shared/body-migration";
 import { Sheet } from "../Sheet";
 import { haptic } from "../haptics";
 import { spring } from "../motion";
 import type { SheetPageProps } from "./registry";
 
-const BODIES = DUSK_BODY_IDS;
+const BODIES = MADANI_BODY_IDS;
 const COLORS = PICKER_COLORS;
 
 function moveRadio(event: KeyboardEvent<HTMLDivElement>) {
@@ -30,7 +30,7 @@ function moveRadio(event: KeyboardEvent<HTMLDivElement>) {
 export function CreateBotSheet({ open, onClose, onOpenChat }: SheetPageProps<"create">) {
   const { state, dispatch } = useStore();
   const [name, setName] = useState("");
-  const [body, setBody] = useState<DuskBodyId>(DEFAULT_BOT_BODY);
+  const [body, setBody] = useState<MadaniBodyId>(DEFAULT_BOT_BODY);
   const [color, setColor] = useState<MausColor>("blue");
   const [revision, setRevision] = useState(0);
   const [error, setError] = useState(false);
@@ -62,7 +62,7 @@ export function CreateBotSheet({ open, onClose, onOpenChat }: SheetPageProps<"cr
         <p id={`${nameId}-look`} className="-mb-2 px-1 text-[14px] font-semibold text-ink-secondary">{t("mobile.create.look")}</p>
         <div role="radiogroup" aria-label={t("mobile.create.body")} onKeyDown={moveRadio} className="grid grid-cols-5 justify-items-center gap-y-3">
           {BODIES.map((id) => (
-            <button key={id} type="button" role="radio" aria-checked={id === body} aria-label={DUSK_BODY_NAMES[id]} tabIndex={id === body ? 0 : -1} onClick={() => { if (id !== body) { setBody(id); setRevision((value) => value + 1); haptic("pick"); } }} className="mobile-press flex size-12 items-center justify-center rounded-full">
+            <button key={id} type="button" role="radio" aria-checked={id === body} aria-label={MADANI_BODY_NAMES[id]} tabIndex={id === body ? 0 : -1} onClick={() => { if (id !== body) { setBody(id); setRevision((value) => value + 1); haptic("pick"); } }} className="mobile-press flex size-12 items-center justify-center rounded-full">
               <span className={cn("flex size-10 items-center justify-center rounded-full", id === body && "ring-2 ring-ink ring-offset-[3px] ring-offset-(--m-sheet-page)")}><MausAvatar bodyId={id} color={color} size={40} animated={false} label="" /></span>
             </button>
           ))}

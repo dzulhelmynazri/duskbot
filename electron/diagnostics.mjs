@@ -7,41 +7,41 @@ export const CREDENTIAL_ENV_NAMES = [
   "XAI_API_KEY",
   "MISTRAL_API_KEY",
   "CEREBRAS_API_KEY",
-  "DUSK_GROQ_API_KEY",
-  "DUSK_GREENFERENCE_API_KEY",
-  "DUSK_META_API_KEY",
-  "DUSK_DEEPSEEK_API_KEY",
-  "DUSK_ANTHROPIC_API_KEY",
-  "DUSK_ANTHROPIC_API_URL",
+  "MADANI_GROQ_API_KEY",
+  "MADANI_GREENFERENCE_API_KEY",
+  "MADANI_META_API_KEY",
+  "MADANI_DEEPSEEK_API_KEY",
+  "MADANI_ANTHROPIC_API_KEY",
+  "MADANI_ANTHROPIC_API_URL",
   "OPENAI_COMPAT_API_KEY",
   "OPENAI_COMPAT_URL",
-  "DUSK_OPENAI_API_KEY",
-  "DUSK_OPENROUTER_API_KEY",
+  "MADANI_OPENAI_API_KEY",
+  "MADANI_OPENROUTER_API_KEY",
   "BOX_TOKEN",
   "OPENCODE_API_KEY",
-  "DUSK_TTS_KEY",
-  "DUSK_FISH_AUDIO_API_KEY",
-  "DUSK_GEMINI_API_KEY",
-  "DUSK_DEEPGRAM_API_KEY",
-  "DUSK_CARTESIA_API_KEY",
-  "DUSK_ASSEMBLYAI_API_KEY",
-  "DUSK_JEV_API_KEY",
-  "DUSK_OPENROUTER_DECIDER_KEY",
-  "DUSK_GATEWAY_DECIDER_KEY",
-  "DUSK_WORKERS_AI_TOKEN",
-  "DUSK_OPENAI_IMAGE_KEY",
-  "DUSK_CUSTOM_IMAGE_KEY",
-  "DUSK_OPENAI_LIVE_KEY",
-  "DUSK_TREG_KEY",
+  "MADANI_TTS_KEY",
+  "MADANI_FISH_AUDIO_API_KEY",
+  "MADANI_GEMINI_API_KEY",
+  "MADANI_DEEPGRAM_API_KEY",
+  "MADANI_CARTESIA_API_KEY",
+  "MADANI_ASSEMBLYAI_API_KEY",
+  "MADANI_JEV_API_KEY",
+  "MADANI_OPENROUTER_DECIDER_KEY",
+  "MADANI_GATEWAY_DECIDER_KEY",
+  "MADANI_WORKERS_AI_TOKEN",
+  "MADANI_OPENAI_IMAGE_KEY",
+  "MADANI_CUSTOM_IMAGE_KEY",
+  "MADANI_OPENAI_LIVE_KEY",
+  "MADANI_TREG_KEY",
   "COMPOSIO_API_KEY",
-  "DUSK_COMPOSIO_BROKER_TOKEN",
-  "DUSK_CLOUD_VOICE_TOKEN",
-  "DUSK_CLOUD_DECIDER_TOKEN",
-  "DUSK_CLOUD_X_TOKEN",
-  "DUSK_CLOUD_CONNECTED_APPS_GRANT",
+  "MADANI_COMPOSIO_BROKER_TOKEN",
+  "MADANI_CLOUD_VOICE_TOKEN",
+  "MADANI_CLOUD_DECIDER_TOKEN",
+  "MADANI_CLOUD_X_TOKEN",
+  "MADANI_CLOUD_CONNECTED_APPS_GRANT",
   // Private even though they are not traditional API credentials.
-  "DUSK_BROWSER_CONNECTION",
-  "DUSK_USER_DATA",
+  "MADANI_BROWSER_CONNECTION",
+  "MADANI_USER_DATA",
 ];
 
 // Kept in parity with server/redact.ts: unmistakable token formats are masked wherever they appear, keyed or not.
@@ -273,7 +273,7 @@ export function buildDiagnosticsReport({
   now = new Date().toISOString(),
 } = {}) {
   const lines = [];
-  lines.push("dusk bot diagnostics");
+  lines.push("madani bot diagnostics");
   lines.push(`Generated: ${now}`);
   lines.push("");
   lines.push("## App");
@@ -313,7 +313,7 @@ export function buildDiagnosticsReport({
 export function diagnosticsFileName(date = new Date()) {
   const pad = (n) => String(n).padStart(2, "0");
   return (
-    `duskbot-diagnostics-${date.getFullYear()}${pad(date.getMonth() + 1)}${pad(date.getDate())}` +
+    `madanibot-diagnostics-${date.getFullYear()}${pad(date.getMonth() + 1)}${pad(date.getDate())}` +
     `-${pad(date.getHours())}${pad(date.getMinutes())}${pad(date.getSeconds())}.txt`
   );
 }

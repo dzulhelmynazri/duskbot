@@ -19,13 +19,13 @@ const cleanup: Array<() => void | Promise<void>> = [];
 afterEach(async () => { for (const fn of cleanup.splice(0).reverse()) await fn(); vi.unstubAllEnvs(); });
 
 async function fixture() {
-  for (const key of ["DUSK_BILLING_PROVIDER", "DUSK_CLOUD_PROVIDER", "DUSK_POOL_DRIVER", "DUSK_CLOUD_SEAL_KEY", "DUSK_DODO_PRODUCTS", "DUSK_SLACK_EDGE"]) vi.stubEnv(key, undefined);
+  for (const key of ["MADANI_BILLING_PROVIDER", "MADANI_CLOUD_PROVIDER", "MADANI_POOL_DRIVER", "MADANI_CLOUD_SEAL_KEY", "MADANI_DODO_PRODUCTS", "MADANI_SLACK_EDGE"]) vi.stubEnv(key, undefined);
   const fake = await startFakeSlack();
   cleanup.push(() => fake.close());
-  const api = createSlackApi({ env: { DUSK_SLACK_API_URL: fake.url }, minGapMs: 0 });
+  const api = createSlackApi({ env: { MADANI_SLACK_API_URL: fake.url }, minGapMs: 0 });
   const appId = (await api.call<{ app_id: string }>("apps.manifest.create", fake.config.access, { manifest: { settings: { socket_mode_enabled: true } } })).app_id;
   const appToken = fake.mintAppToken(appId);
-  const dir = mkdtempSync(join(tmpdir(), "dusk-slack-edge-")), desktopDir = mkdtempSync(join(tmpdir(), "dusk-slack-desktop-"));
+  const dir = mkdtempSync(join(tmpdir(), "madani-slack-edge-")), desktopDir = mkdtempSync(join(tmpdir(), "madani-slack-desktop-"));
   cleanup.push(() => { rmSync(dir, { recursive: true, force: true }); rmSync(desktopDir, { recursive: true, force: true }); });
   const server = createServer();
   await new Promise<void>(resolve => server.listen(0, "127.0.0.1", resolve));
@@ -33,7 +33,7 @@ async function fixture() {
   const origin = `http://127.0.0.1:${address.port}`;
   cleanup.push(() => new Promise<void>(resolve => { server.close(() => resolve()); server.closeAllConnections(); }));
   const app = createDashboardApp({ dataDir: dir, publicUrl: origin, mailer: memoryMailer(), staticDir: null,
-    slackEdge: { env: { DUSK_SLACK_EDGE: "1", DUSK_SLACK_API_URL: fake.url, DUSK_CLOUD_SEAL_KEY: randomBytes(32).toString("base64url") } } });
+    slackEdge: { env: { MADANI_SLACK_EDGE: "1", MADANI_SLACK_API_URL: fake.url, MADANI_CLOUD_SEAL_KEY: randomBytes(32).toString("base64url") } } });
   cleanup.push(() => app.close());
   server.on("request", app.handle);
   const billing = vi.mocked(createBilling).mock.results.at(-1)!.value as ReturnType<typeof createBilling>;
@@ -49,7 +49,7 @@ async function fixture() {
   const link = (JSON.parse(slot.bootstrap) as { files: Array<{ path: string; content: string }> }).files.find(file => file.path.endsWith("dashboard-link.json"))!.content;
   writeFileSync(join(desktopDir, "dashboard-link.json"), link, { mode: 0o600 });
   const delivered: Array<{ botId: string; payload: Record<string, unknown> }> = [];
-  const handover = createSlackHandover({ dataDir: desktopDir, env: { DUSK_CLOUD_ROLE: "home" }, syncMs: 3_600_000,
+  const handover = createSlackHandover({ dataDir: desktopDir, env: { MADANI_CLOUD_ROLE: "home" }, syncMs: 3_600_000,
     bots: () => [{ botId: "bot_edge", appId, botUserId: "U0BOT", appToken }], deliver: async (botId, payload) => { delivered.push({ botId, payload }); } });
   cleanup.push(() => handover.stop());
   return { fake, appId, appToken, dir, origin, app, billing, account, cloud, handover, delivered, edge: app.slackEdge.edge };

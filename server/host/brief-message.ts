@@ -62,7 +62,7 @@ export function plain(value: string): string {
     .replace(/^(\s*)([#+=-]|\d+[.)])/, (_match, space: string, mark: string) => `${space}${mark.slice(0, -1)}${entity(mark.slice(-1))}`);
 }
 
-const threadUrl = (target: OpenTarget): string => `duskbot://thread/${encodeURIComponent(target.threadId)}?bot=${encodeURIComponent(target.botId)}`;
+const threadUrl = (target: OpenTarget): string => `madanibot://thread/${encodeURIComponent(target.threadId)}?bot=${encodeURIComponent(target.botId)}`;
 /** `label` is already escaped; a url is always the server's own. */
 const link = (label: string, url: string | undefined): string => (url ? `[${label}](<${url}>)` : label);
 const gmailLink = (email: BriefEmail): string | undefined => (email.threadId.length <= TEXT.link ? gmailUrl(email.threadId) : undefined);

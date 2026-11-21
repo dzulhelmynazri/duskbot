@@ -113,7 +113,7 @@ describe("the compact browser in the Computer tab", () => {
     expect(f.sent.filter((input) => (input as { type: string }).type === "navigate")).toEqual([]);
   });
 
-  it("shows the dusk cloud card only at the panel's own width, never under the expanded browser", async () => {
+  it("shows the madani cloud card only at the panel's own width, never under the expanded browser", async () => {
     await render();
     await message({ type: "tabs", tabs: TABS });
     expect(q("[data-cta]")).not.toBeNull();

@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 
 vi.mock("electron", () => ({
-  app: { name: "dusk bot" },
+  app: { name: "madani bot" },
   Menu: { buildFromTemplate: (template) => template },
   shell: { openExternal: vi.fn(async () => {}) },
 }));
@@ -35,11 +35,11 @@ describe("buildApplicationMenu", () => {
 
   it.each(["darwin", "linux", "win32"])("lists a saved local environment by its folder, so switching servers never fails on %s", platform => {
     const onSwitch = vi.fn();
-    const local = { id: "e1", kind: "local", name: "Work", dataDir: "/Users/me/.duskbot-work" };
+    const local = { id: "e1", kind: "local", name: "Work", dataDir: "/Users/me/.madanibot-work" };
     const tailnet = { id: "t1", name: "Mac mini", origin: "https://mac-mini.tail1f3f14.ts.net" };
     const template = build(platform, { environments: [local, tailnet], activeId: "t1", onSwitch });
     const items = template.find(entry => entry.label === "Server").submenu;
-    expect(items.find(entry => entry.label === "Work · /Users/me/.duskbot-work")).toMatchObject({ checked: false });
+    expect(items.find(entry => entry.label === "Work · /Users/me/.madanibot-work")).toMatchObject({ checked: false });
     expect(items.find(entry => entry.label === "Mac mini · mac-mini.tail1f3f14.ts.net")).toMatchObject({ checked: true });
     items.find(entry => entry.label.startsWith("Work")).click();
     expect(onSwitch).toHaveBeenCalledWith("e1");
@@ -49,7 +49,7 @@ describe("buildApplicationMenu", () => {
     const onToggle = vi.fn();
     const template = build(platform, { openAtLogin: { checked: false, onToggle } });
     const item = template[0].submenu.find((entry) => entry.id === "open-at-login");
-    expect(template[0].label).toBe(platform === "darwin" ? "dusk bot" : "File");
+    expect(template[0].label).toBe(platform === "darwin" ? "madani bot" : "File");
     expect(item).toMatchObject({ label: "Open at login", type: "checkbox", checked: false });
     item.click();
     expect(onToggle).toHaveBeenCalledWith(true);
@@ -73,7 +73,7 @@ describe("buildApplicationMenu", () => {
     const item = template[0].submenu.find((entry) => entry.id === "quit");
     expect(item.role).toBeUndefined();
     expect(item.accelerator).toBe(platform === "win32" ? undefined : "CmdOrCtrl+Q");
-    expect(item.label).toBe(platform === "darwin" ? "Quit dusk bot" : platform === "win32" ? "Exit" : "Quit");
+    expect(item.label).toBe(platform === "darwin" ? "Quit madani bot" : platform === "win32" ? "Exit" : "Quit");
     item.click(item, null, { triggeredByAccelerator: true });
     item.click(item, null, { triggeredByAccelerator: false });
     expect(onQuit.mock.calls).toEqual([[true], [false]]);
@@ -95,7 +95,7 @@ describe("buildApplicationMenu", () => {
     const template = build(platform);
     expect(template[0].role).toBe("fileMenu");
     for (const item of template) {
-      expect(item.label).not.toBe("dusk bot");
+      expect(item.label).not.toBe("madani bot");
     }
   });
 
@@ -109,10 +109,10 @@ describe("buildApplicationMenu", () => {
   });
 
   it("mirrors Add a Cloud… under the saved servers only when main offers it, and names My Cloud's line", () => {
-    const servers = [{ id: "cloud", name: "My Cloud", origin: "https://dusk-u-1.fly.dev" }];
+    const servers = [{ id: "cloud", name: "My Cloud", origin: "https://madani-u-1.fly.dev" }];
     const without = build("darwin", { environments: servers }).find(entry => entry.label === "Server").submenu;
     expect(without.some(entry => entry.id === "add-cloud")).toBe(false);
-    expect(without.find(entry => entry.type === "radio" && entry.label.startsWith("My Cloud")).label).toBe("My Cloud · dusk-u-1.fly.dev");
+    expect(without.find(entry => entry.type === "radio" && entry.label.startsWith("My Cloud")).label).toBe("My Cloud · madani-u-1.fly.dev");
     const onAddCloud = vi.fn();
     const submenu = build("darwin", { environments: servers, onAddCloud, sublabels: { cloud: "Always on" } }).find(entry => entry.label === "Server").submenu;
     expect(submenu.map(entry => entry.id ?? entry.label ?? entry.type).slice(0, 4)).toEqual(["This computer", "My Cloud · Always on", "add-cloud", "separator"]);
@@ -122,7 +122,7 @@ describe("buildApplicationMenu", () => {
   });
 
   it("once My Cloud is home, lists only the other saved servers with Back to My Cloud, and has no Server menu without any", () => {
-    const home = { origin: "https://dusk-t-1.fly.dev", onBack: vi.fn() };
+    const home = { origin: "https://madani-t-1.fly.dev", onBack: vi.fn() };
     const cloud = { id: "c", name: "My Cloud", origin: home.origin };
     const office = { id: "o", name: "Office", origin: "https://office.example.test" };
     const alone = build("darwin", { environments: [cloud], activeId: "c", home });
@@ -141,8 +141,8 @@ describe("buildApplicationMenu", () => {
   it.each(["darwin", "linux", "win32"])("has a Help menu with the docs, what's new and support on %s", async platform => {
     const { shell } = await import("electron");
     const help = build(platform).find((entry) => entry.role === "help");
-    expect(help.submenu.filter((entry) => entry.label).map((entry) => entry.label)).toEqual(["dusk bot help", "What's new", "Contact support"]);
+    expect(help.submenu.filter((entry) => entry.label).map((entry) => entry.label)).toEqual(["madani bot help", "What's new", "Contact support"]);
     for (const entry of help.submenu) entry.click?.();
-    expect(shell.openExternal.mock.calls.slice(-3).map(([url]) => url)).toEqual(["https://dusk.bot/docs", "https://dusk.bot/changelog", "mailto:hello@dusk.bot"]);
+    expect(shell.openExternal.mock.calls.slice(-3).map(([url]) => url)).toEqual(["https://madani.bot/docs", "https://madani.bot/changelog", "mailto:hello@madani.bot"]);
   });
 });

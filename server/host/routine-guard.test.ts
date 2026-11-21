@@ -17,7 +17,7 @@ const MINUTE = 60_000;
 type EventBody = RuntimeEvent extends infer E ? E extends RuntimeEvent ? Omit<E, "eventId" | "provider" | "threadId" | "createdAt"> : never : never;
 
 function harness(over: { cap?: CapHit | null } = {}) {
-  const dir = mkdtempSync(join(tmpdir(), "dusk-routine-guard-"));
+  const dir = mkdtempSync(join(tmpdir(), "madani-routine-guard-"));
   dirs.push(dir);
   let now = START;
   let tasks = 0;

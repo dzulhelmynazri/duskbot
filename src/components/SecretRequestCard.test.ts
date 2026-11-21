@@ -84,7 +84,7 @@ describe("SecretRequestCard superseded requests", () => {
 
 describe("SecretRequestCard on a page reached through a desktop paired to another computer", () => {
   const remote = (secret: Record<string, unknown>) => {
-    vi.stubGlobal("window", { duskDesktop: { remoteClient: { active: true } } });
+    vi.stubGlobal("window", { madaniDesktop: { remoteClient: { active: true } } });
     return view(secret);
   };
 
@@ -204,7 +204,7 @@ describe("SecretRequestCard key analytics", () => {
 
   it("reports a voice key saved over the desktop bridge once, even when only the resume is retried", async () => {
     const setCredential = vi.fn().mockResolvedValue({ tts: { configured: true } });
-    vi.stubGlobal("window", { duskDesktop: { setCredential } });
+    vi.stubGlobal("window", { madaniDesktop: { setCredential } });
     fixture.api.mockRejectedValueOnce(new Error("resume failed")).mockResolvedValueOnce({ ok: true });
     await submit("ttsKey");
     card("ttsKey").find((node) => node.type === "form")!.props.onSubmit!({ preventDefault: () => {} });
@@ -216,7 +216,7 @@ describe("SecretRequestCard key analytics", () => {
   });
 
   it("reports a voice key the provider refused as rejected", async () => {
-    vi.stubGlobal("window", { duskDesktop: { setCredential: vi.fn().mockRejectedValue(new Error("Error invoking remote method 'credential:set': KeyRejected: The voice provider rejected that key")) } });
+    vi.stubGlobal("window", { madaniDesktop: { setCredential: vi.fn().mockRejectedValue(new Error("Error invoking remote method 'credential:set': KeyRejected: The voice provider rejected that key")) } });
     await submit("ttsKey");
     expect(fixture.track.mock.calls).toEqual([["api_key_saved", { provider: "elevenlabs", via: "chat_request", result: "rejected" }]]);
   });
@@ -225,7 +225,7 @@ describe("SecretRequestCard key analytics", () => {
   // never the bridge's settings-file store: on My Cloud no bridge exists, and the Cloud's Logins is where bots read it.
   it("saves a 1Password token through Logins, never the settings bridge, then resumes the bot", async () => {
     const setCredential = vi.fn();
-    vi.stubGlobal("window", { duskDesktop: { setCredential } });
+    vi.stubGlobal("window", { madaniDesktop: { setCredential } });
     fixture.api.mockResolvedValueOnce({ onePassword: { connected: true } }).mockResolvedValueOnce({ ok: true });
     await submit("onePasswordToken", "ops_ZZtestSECRET0123456789");
     expect(setCredential).not.toHaveBeenCalled();
@@ -245,7 +245,7 @@ describe("SecretRequestCard key analytics", () => {
   // Settings keeps an AI provider key in the server's settings, not the desktop's store: the card does the same.
   it("saves an Anthropic key where Settings does, never through the desktop store, keeping Claude sign-ins", async () => {
     const setCredential = vi.fn();
-    vi.stubGlobal("window", { duskDesktop: { setCredential } });
+    vi.stubGlobal("window", { madaniDesktop: { setCredential } });
     fixture.api.mockResolvedValueOnce({ anthropic: { configured: true } }).mockResolvedValueOnce({ ok: true });
     await submit("anthropicApiKey", "sk-ant-ZZtestSECRET0123456789");
     expect(setCredential).not.toHaveBeenCalled();
@@ -255,7 +255,7 @@ describe("SecretRequestCard key analytics", () => {
 
   it("saves the Composio key in the desktop store's slot, as Settings does", async () => {
     const setCredential = vi.fn().mockResolvedValue({ composio: { configured: true } });
-    vi.stubGlobal("window", { duskDesktop: { setCredential } });
+    vi.stubGlobal("window", { madaniDesktop: { setCredential } });
     fixture.api.mockResolvedValueOnce({ ok: true });
     await submit("composioApiKey", "ak_ZZtestSECRET0123456789");
     expect(setCredential).toHaveBeenCalledExactlyOnceWith("composioApiKey", "ak_ZZtestSECRET0123456789");
@@ -264,7 +264,7 @@ describe("SecretRequestCard key analytics", () => {
   // A custom secret goes only to its own card's save, which resumes the bot: never Settings, the desktop store or an event.
   it("keeps a custom secret behind its card, with no product event naming it", async () => {
     const setCredential = vi.fn();
-    vi.stubGlobal("window", { duskDesktop: { setCredential } });
+    vi.stubGlobal("window", { madaniDesktop: { setCredential } });
     fixture.api.mockResolvedValueOnce({ sealKey: { version: 1, keyId: "k1", x: "x", y: "y" } }).mockResolvedValueOnce({ provided: true, resumed: true });
     await submit("customSecret", "sk_live_ZZtestSECRET0123456789", { delivery: "ref", helpUrl: "" });
     expect(setCredential).not.toHaveBeenCalled();

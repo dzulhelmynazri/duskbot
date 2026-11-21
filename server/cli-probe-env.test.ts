@@ -12,7 +12,7 @@ import { freePortBlock } from "./testing/ports.ts";
 
 const SERVER_DIR = dirname(fileURLToPath(import.meta.url));
 const secretNames = [...new Set<string>([
-  ...WORKSPACE_CREDENTIAL_ENV, ...PROVIDER_CREDENTIAL_ENV, ...CONTROL_PLANE_ENV, "DUSK_CLOUD_FIXTURE_TOKEN",
+  ...WORKSPACE_CREDENTIAL_ENV, ...PROVIDER_CREDENTIAL_ENV, ...CONTROL_PLANE_ENV, "MADANI_CLOUD_FIXTURE_TOKEN",
 ])];
 const secrets: Record<string, string> = Object.fromEntries(secretNames.map((name) => {
   const unique = randomBytes(12).toString("hex");
@@ -51,8 +51,8 @@ function expectNoCredentials(file: string) {
 }
 
 beforeAll(async () => {
-  home = mkdtempSync(join(tmpdir(), "dusk-cli-probe-env-"));
-  const dataDir = join(home, ".duskbot");
+  home = mkdtempSync(join(tmpdir(), "madani-cli-probe-env-"));
+  const dataDir = join(home, ".madanibot");
   mkdirSync(dataDir, { recursive: true });
   // Answers like a signed-in Claude Code; `probe` (the CLI test) and
   // `update` (the Claude update) record the environment they ran with.
@@ -79,7 +79,7 @@ else if (args.at(-1) === "--version") console.log("9.9.9 (Claude Code)");
       PATH: process.env.PATH,
       ...(process.env.PATHEXT ? { PATHEXT: process.env.PATHEXT } : {}),
       ...(process.env.SystemRoot ? { SystemRoot: process.env.SystemRoot } : {}),
-      HOME: home, USERPROFILE: home, DUSK_DATA_DIR: dataDir, DUSK_PORT: String(port), DUSK_WEBHOOK_PORT: String(port + 1),
+      HOME: home, USERPROFILE: home, MADANI_DATA_DIR: dataDir, MADANI_PORT: String(port), MADANI_WEBHOOK_PORT: String(port + 1),
       ...kept,
       ...secrets,
     },

@@ -90,7 +90,7 @@
   --chat-rule: 12%;
   --chat-ts: 56%;
 }
-:root:is([data-skin="grok-dark"], [data-skin="midnight"], [data-skin="dusk"], [data-skin="foundry"], [data-skin="graphite"], [data-skin="halloween"]) {
+:root:is([data-skin="grok-dark"], [data-skin="midnight"], [data-skin="madani"], [data-skin="foundry"], [data-skin="graphite"], [data-skin="halloween"]) {
   --chat-wash: 4%;
   --chat-gloss: 0.03;
   --chat-gloss-own: 0.01;
@@ -426,24 +426,24 @@
 }
 .turn-status-in {
   transform-origin: 0 18px;
-  animation: turn-status-in 260ms var(--dusk-ease-out) backwards;
+  animation: turn-status-in 260ms var(--madani-ease-out) backwards;
 }
 .turn-status-in .turn-status-mark {
-  animation: turn-mark-pop 360ms var(--dusk-ease-out) backwards;
+  animation: turn-mark-pop 360ms var(--madani-ease-out) backwards;
 }
 .turn-status-in .turn-label-slot {
-  animation: turn-label-rise 260ms var(--dusk-ease-out) 40ms backwards;
+  animation: turn-label-rise 260ms var(--madani-ease-out) 40ms backwards;
 }
 .turn-status-out {
   transform-origin: 0 18px;
-  animation: turn-status-out 140ms var(--dusk-ease-out) forwards;
+  animation: turn-status-out 140ms var(--madani-ease-out) forwards;
 }
 .turn-label-in {
-  animation: turn-label-rise 180ms var(--dusk-ease-out) backwards;
+  animation: turn-label-rise 180ms var(--madani-ease-out) backwards;
 }
 /* after a Stop: one quiet word where the line was, faded in once the line has left */
 .turn-stopped {
-  animation: dusk-fade-in 180ms var(--dusk-ease-out) backwards;
+  animation: madani-fade-in 180ms var(--madani-ease-out) backwards;
 }
 .status-shimmer {
   --status-shimmer-ink: var(--color-ink);
@@ -457,7 +457,7 @@
   background-size: 200% 100%;
   -webkit-background-clip: text;
   background-clip: text;
-  animation: status-shimmer 3.4s var(--dusk-ease-heavy) infinite;
+  animation: status-shimmer 3.4s var(--madani-ease-heavy) infinite;
 }
 @keyframes status-shimmer {
   from { background-position: 200% 0; }
@@ -465,7 +465,7 @@
 }
 @media (prefers-reduced-motion: reduce) {
   .turn-status-in, .turn-status-in .turn-status-mark, .turn-status-in .turn-label-slot, .turn-label-in { animation-name: chat-row-fade; }
-  .turn-status-out { animation-name: dusk-fade-out; }
+  .turn-status-out { animation-name: madani-fade-out; }
   .status-shimmer { animation: none; background-image: none; color: var(--color-ink-secondary); }
 }
 

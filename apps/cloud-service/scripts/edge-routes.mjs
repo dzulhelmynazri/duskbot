@@ -2,7 +2,7 @@
 // Points https://<label>.<domain> at the edge Worker on Cloudflare: a proxied wildcard record, the Worker route
 // *.<domain>/*, and a route with no Worker for every other proxied host of the zone so the wildcard route never takes
 // them (Cloudflare picks the most specific route). Idempotent; rerun after adding a proxied host to the zone.
-//   CLOUDFLARE_API_TOKEN=... CLOUDFLARE_ZONE_ID=... node apps/cloud-service/scripts/edge-routes.mjs dusk.bot dusk-edge
+//   CLOUDFLARE_API_TOKEN=... CLOUDFLARE_ZONE_ID=... node apps/cloud-service/scripts/edge-routes.mjs madani.bot madani-edge
 const [domain, script] = process.argv.slice(2);
 const token = process.env.CLOUDFLARE_API_TOKEN, zone = process.env.CLOUDFLARE_ZONE_ID;
 if (!domain || !script || !token || !zone) { console.error("usage: CLOUDFLARE_API_TOKEN=.. CLOUDFLARE_ZONE_ID=.. edge-routes.mjs <domain> <worker>"); process.exit(2); }

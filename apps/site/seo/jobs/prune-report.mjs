@@ -27,9 +27,9 @@ export function decide(pages, snapshot, rules, today, siteUrl) {
 }
 
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
-  const today = localDay(), siteUrl = (process.env.SITE_URL || 'https://dusk.bot').replace(/\/+$/, '');
+  const today = localDay(), siteUrl = (process.env.SITE_URL || 'https://madani.bot').replace(/\/+$/, '');
   const file = process.argv.find((a) => a.startsWith('--snapshot='))?.split('=')[1];
-  if (!file && !gscConfigured()) { console.log('no data: connect search console (DUSK_GSC_CREDENTIALS, DUSK_GSC_SITE) and run seo/jobs/release.mjs first, or pass --snapshot=seo/reports/gsc-<day>.json'); process.exit(0); }
+  if (!file && !gscConfigured()) { console.log('no data: connect search console (MADANI_GSC_CREDENTIALS, MADANI_GSC_SITE) and run seo/jobs/release.mjs first, or pass --snapshot=seo/reports/gsc-<day>.json'); process.exit(0); }
   const snap = JSON.parse(fs.readFileSync(file || fs.readdirSync(path.join(seoDir, 'reports')).filter((f) => f.startsWith('gsc-')).sort().map((f) => path.join(seoDir, 'reports', f)).at(-1), 'utf8'));
   const { records } = plan({ preview: false });
   const rules = JSON.parse(fs.readFileSync(path.join(seoDir, 'growth.json'), 'utf8')).prune;

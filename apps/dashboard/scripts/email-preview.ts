@@ -1,6 +1,6 @@
 // node apps/dashboard/scripts/email-preview.ts <out dir> [local asset dir]
 // writes every account email as html and text, light and dark screenshots and emails-sheet.png. the html points at the
-// hosted art (DUSK_EMAIL_ASSET_BASE); a local asset dir answers those requests instead, for art not deployed yet.
+// hosted art (MADANI_EMAIL_ASSET_BASE); a local asset dir answers those requests instead, for art not deployed yet.
 // playwright is not a dependency here: PLAYWRIGHT_FROM names a folder whose node_modules has it, CHROMIUM_PATH a browser.
 import { createRequire } from "node:module";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
@@ -9,7 +9,7 @@ import { samples } from "../server/email/samples.ts";
 import { emailConfig } from "../server/email/templates.ts";
 
 const out = resolve(process.argv[2] ?? "email-previews"), local = process.argv[3] ? resolve(process.argv[3]) : null;
-const cfg = emailConfig(process.env, { publicUrl: process.env.DUSK_DASHBOARD_PUBLIC_URL ?? "https://preview.dusk.bot", pageBase: process.env.DUSK_DASHBOARD_PAGE_BASE ?? "/dashboard" });
+const cfg = emailConfig(process.env, { publicUrl: process.env.MADANI_DASHBOARD_PUBLIC_URL ?? "https://preview.madani.bot", pageBase: process.env.MADANI_DASHBOARD_PAGE_BASE ?? "/dashboard" });
 const { chromium } = createRequire(join(resolve(process.env.PLAYWRIGHT_FROM ?? "."), "package.json"))("playwright");
 mkdirSync(out, { recursive: true });
 

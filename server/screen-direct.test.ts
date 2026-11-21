@@ -24,7 +24,7 @@ it("reads a firewall port range and ignores anything else", () => {
 });
 
 it("turns the direct path off without the native module, and on request", async () => {
-  expect(loadDataChannel({ DUSK_SCREEN_DIRECT: "off" })).toBeNull();
+  expect(loadDataChannel({ MADANI_SCREEN_DIRECT: "off" })).toBeNull();
   const off = createScreenDirect({ load: () => null });
   expect(off.available()).toBe(false);
   await expect(off.answer({ type: "offer", sdp: offerSdp() }, () => {})).rejects.toMatchObject({ status: 503 });

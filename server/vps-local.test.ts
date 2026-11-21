@@ -15,27 +15,27 @@ afterEach(() => { vi.unstubAllEnvs(); });
 
 describe("a server on its own linked VPS", () => {
   it("knows it is one from the link agent's tunnel file, on Linux only, and the env can say either way", () => {
-    const home = mkdtempSync(join(tmpdir(), "dusk-vps-local-"));
+    const home = mkdtempSync(join(tmpdir(), "madani-vps-local-"));
     try {
       expect(detectThisServerVps({}, "linux", home)).toBe(false);
-      mkdirSync(join(home, ".config", "duskbot-link"), { recursive: true });
-      writeFileSync(join(home, ".config", "duskbot-link", "tunnel.json"), "{}");
+      mkdirSync(join(home, ".config", "madanibot-link"), { recursive: true });
+      writeFileSync(join(home, ".config", "madanibot-link", "tunnel.json"), "{}");
       expect(detectThisServerVps({}, "linux", home)).toBe(true);
       expect(detectThisServerVps({}, "darwin", home)).toBe(false);
-      expect(detectThisServerVps({ DUSK_VPS_DOCKER: "ssh" }, "linux", home)).toBe(false);
-      expect(detectThisServerVps({ DUSK_VPS_DOCKER: "local" }, "darwin", home)).toBe(true);
+      expect(detectThisServerVps({ MADANI_VPS_DOCKER: "ssh" }, "linux", home)).toBe(false);
+      expect(detectThisServerVps({ MADANI_VPS_DOCKER: "local" }, "darwin", home)).toBe(true);
     } finally {
       rmSync(home, { recursive: true, force: true });
     }
   });
 
   it("drives its own Docker with no SSH, while a saved alias still goes over SSH", () => {
-    vi.stubEnv("DUSK_VPS_DOCKER", "local");
+    vi.stubEnv("MADANI_VPS_DOCKER", "local");
     expect(vpsSshAlias({})).toBe(THIS_SERVER_VPS);
     expect(vpsSshAlias({ vps: { sshAlias: "production-vps" } })).toBe("production-vps");
     expect(vpsDockerArgs(THIS_SERVER_VPS, ["ps"])).toEqual(["ps"]);
     expect(vpsDockerArgs("production-vps", ["ps"])).toEqual(["-H", "ssh://production-vps", "ps"]);
-    vi.stubEnv("DUSK_VPS_DOCKER", "ssh");
+    vi.stubEnv("MADANI_VPS_DOCKER", "ssh");
     expect(vpsSshAlias({})).toBeNull();
   });
 

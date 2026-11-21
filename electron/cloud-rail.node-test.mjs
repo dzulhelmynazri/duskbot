@@ -7,7 +7,7 @@ import { parseCloudList } from "./cloud-list.mjs";
 import { addCloudView, createAddedCloudNotice, installCloudRail, railPlaces } from "./cloud-rail.mjs";
 import { otherCloudSnapshot } from "./cloud-plan-ipc.mjs";
 
-const HOME = "https://dusk-u-1a2b3c4d5e6f.fly.dev", CLIENT_A = "https://dusk-c-a.fly.dev", TEAM = "https://dusk-t-acme.fly.dev", VPS = "https://bots.example.test";
+const HOME = "https://madani-u-1a2b3c4d5e6f.fly.dev", CLIENT_A = "https://madani-c-a.fly.dev", TEAM = "https://madani-t-acme.fly.dev", VPS = "https://bots.example.test";
 const LOCAL = "http://127.0.0.1:8799";
 const entry = (over = {}) => ({ id: "c-a", name: "Client A", color: "green", role: "owner", tier: "pro", runsOn: "cloud", status: "ready", origin: CLIENT_A,
   teamId: null, primary: false, ...over });
@@ -243,7 +243,7 @@ test("“{name}” is ready, once per Cloud this app bought, unless its sheet sh
 });
 
 test("a Cloud of your own that ended is marked, and its menu offers Remove from list only when the Admin says so; a running Cloud or a team's never does", () => {
-  const OLD = "https://dusk-c-old.fly.dev";
+  const OLD = "https://madani-c-old.fly.dev";
   const withOld = (over = {}) => saved("home", [{ id: "old", kind: "remote", name: "Old", origin: OLD, cloud: { id: "c-old", role: "owner" } }, ...(over.extra ?? [])]);
   const clouds = parseCloudList([PRIMARY, entry(), entry({ id: "c-old", name: "Old", color: null, status: "ended", origin: OLD, deleteAfter: 1_800_000_000_000, removable: true }),
     entry({ id: "c-team", name: "Acme", color: "amber", teamId: "team-acme", role: "owner", origin: TEAM, status: "ended", removable: true })]);
@@ -256,7 +256,7 @@ test("a Cloud of your own that ended is marked, and its menu offers Remove from 
 });
 
 test("My Cloud that ended and was removed from the list leaves the rail; while it is listed it is a circle that opens its own screen", () => {
-  const OLD = "https://dusk-u-old.fly.dev";
+  const OLD = "https://madani-u-old.fly.dev";
   const before = { activeId: "local", environments: [{ id: "mine", kind: "remote", name: "My Cloud", origin: OLD, home: true }, { id: "a", kind: "remote", name: "Client A", origin: CLIENT_A, cloud: { id: "c-a", role: "owner" } }] };
   const ended = entry({ id: "c-home", name: "My Cloud", color: null, origin: OLD, primary: true, status: "ended", deleteAfter: 1_800_000_000_000, removable: true });
   const listed = railPlaces({ saved: before, home: null, mine: OLD, state: session({ machine: { status: "stopped", origin: OLD }, teams: [], clouds: parseCloudList([ended, entry()]) }) });
@@ -270,7 +270,7 @@ test("My Cloud that ended and was removed from the list leaves the rail; while i
 });
 
 test("Remove from list from a circle's menu: only the rail's own page, only a circle main listed as removable, and by main's own word for the Cloud", async () => {
-  const OLD = "https://dusk-c-old.fly.dev", hidden = [];
+  const OLD = "https://madani-c-old.fly.dev", hidden = [];
   const clouds = parseCloudList([PRIMARY, entry(), entry({ id: "c-old", name: "Old", status: "ended", origin: OLD, removable: true })]);
   const savedOld = saved("home", [{ id: "old", kind: "remote", name: "Old", origin: OLD, cloud: { id: "c-old", role: "owner" } }]);
   const account = { state: () => session({ clouds }), offer: async () => null, hideCloud: async (id) => { hidden.push(id); return { outcome: "removed" }; } };
@@ -294,18 +294,18 @@ test("Remove from list from a circle's menu: only the rail's own page, only a ci
   assert.deepEqual(making.opened, ["cloud:c-b"], "its own screen, never a saved place or an address");
 });
 
-test("Move to dusk cloud: only on a server main says may move, from the rail's own page, by main's own word for it", async () => {
+test("Move to madani cloud: only on a server main says may move, from the rail's own page, by main's own word for it", async () => {
   const movable = new Set(["vps"]), asked = [];
   const r = rail({ places: () => railPlaces({ saved: saved(), home: HOME, mine: HOME, state: session(),
     cloudMoves: entry => movable.has(entry.id) || entry.id === "home" || entry.id === "a" }), cloudMove: id => { asked.push(id); return true; } });
   const places = (await r.call("workspaces:places")).places;
   assert.deepEqual(places.filter(place => place.cloudMove).map(place => place.id), ["vps"], "never a Cloud, whatever main says");
   assert.equal(await r.call("workspaces:cloud-move", "vps"), true);
-  for (const id of ["home", "a", "https://box.example.test"]) assert.throws(() => r.call("workspaces:cloud-move", id), /can't move to dusk cloud/, id);
+  for (const id of ["home", "a", "https://box.example.test"]) assert.throws(() => r.call("workspaces:cloud-move", id), /can't move to madani cloud/, id);
   assert.deepEqual(asked, ["vps"]);
   r.w.lists = false;
   assert.throws(() => r.call("workspaces:cloud-move", "vps"), /only available/, "any other page: refused");
-  assert.throws(() => rail().call("workspaces:cloud-move", "vps"), /can't move to dusk cloud/, "a main that offers it nowhere");
+  assert.throws(() => rail().call("workspaces:cloud-move", "vps"), /can't move to madani cloud/, "a main that offers it nowhere");
 });
 
 test("Make … my home: only on a server connected by hand that main offers it for, from the rail's own page, by main's own word for it", async () => {
@@ -330,7 +330,7 @@ const PRELOAD = readFileSync(new URL("./preload.cjs", import.meta.url), "utf8");
 function preload(origin, { activation = false } = {}) {
   let bridge; const invoked = [];
   vm.runInNewContext(PRELOAD, {
-    process: { platform: "darwin", argv: [`--dusk-local-origin=${LOCAL}`, "--dusk-company-desktop=1"] },
+    process: { platform: "darwin", argv: [`--madani-local-origin=${LOCAL}`, "--madani-company-desktop=1"] },
     location: { origin }, navigator: { userActivation: { isActive: activation } }, TextEncoder, localStorage: { getItem: () => null }, queueMicrotask,
     require: () => ({ webUtils: {}, contextBridge: { exposeInMainWorld: (_name, value) => { bridge = value; } },
       ipcRenderer: { on() {}, removeListener() {}, send() {}, sendSync: () => null, invoke: (...args) => { invoked.push(args); return Promise.resolve(); } } }),
@@ -355,7 +355,7 @@ test("a Cloud's page gets the rail and the add sheet's narrow bridges; a circle,
   await assert.rejects(page.bridge.workspaces.recolor("vps", "rose"), /Choose a color/);
   await assert.rejects(page.bridge.workspaces.remove("old"), /Choose Remove from list/, "Remove from list only from the person's click");
   await assert.rejects(page.bridge.workspaces.makeHome("vps"), /Choose Make my home/, "a move starts only from the person's click");
-  await assert.rejects(page.bridge.workspaces.cloudMove("vps"), /Choose Move to dusk cloud/, "the move sheet opens only from the person's click");
+  await assert.rejects(page.bridge.workspaces.cloudMove("vps"), /Choose Move to madani cloud/, "the move sheet opens only from the person's click");
   await page.bridge.workspaces.look();
   assert.deepEqual(page.invoked.at(-1), ["workspaces:look"]);
   const clicked = preload(HOME, { activation: true });

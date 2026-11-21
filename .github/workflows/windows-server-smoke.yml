@@ -10,7 +10,7 @@ on:
       published_url:
         description: published setup.exe to compare against
         required: false
-        default: "https://dusk.bot/releases/0.2.17/DuskBot-0.2.17-setup.exe"
+        default: "https://madani.bot/releases/0.2.17/MadaniBot-0.2.17-setup.exe"
   push:
     branches: ["exp/windows-smoke*", "hotfix/windows-*"]
 
@@ -43,7 +43,7 @@ jobs:
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: installer
-          path: release/DuskBot-*-setup.exe
+          path: release/MadaniBot-*-setup.exe
           if-no-files-found: error
           retention-days: 3
 
@@ -67,7 +67,7 @@ jobs:
         shell: pwsh
         run: |
           $url = "${{ inputs.published_url }}"
-          if (-not $url) { $url = "https://dusk.bot/releases/0.2.17/DuskBot-0.2.17-setup.exe" }
+          if (-not $url) { $url = "https://madani.bot/releases/0.2.17/MadaniBot-0.2.17-setup.exe" }
           Invoke-WebRequest -Uri $url -OutFile "$env:RUNNER_TEMP\setup.exe"
       - name: Take the built installer
         if: matrix.source == 'built'

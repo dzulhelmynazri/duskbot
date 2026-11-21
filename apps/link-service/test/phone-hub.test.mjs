@@ -347,7 +347,7 @@ describe("phone relay hub", () => {
   it("registers through owner loopback sync and only forwards the grant's three allowed paths", async () => {
     const info = grant();
     await start([info.spec]);
-    expect(syncSeen[0]).toMatchObject({ base, tunnel: id, pub: keys.pub, applied: 0, failed: [], wait: 0, origin: "https://vps.example", spki: null, headers: { "x-dusk-cli": "1" } });
+    expect(syncSeen[0]).toMatchObject({ base, tunnel: id, pub: keys.pub, applied: 0, failed: [], wait: 0, origin: "https://vps.example", spki: null, headers: { "x-madani-cli": "1" } });
     expect(syncSeen[1]).toMatchObject({ applied: rev, wait: 25 });
     expect(puts[0]).toEqual({ channels: [{ id: cid, verifier: info.spec.verifier, kind: "grant", expiresAt: info.spec.expiresAt }] });
     const client = await phone(info);
@@ -356,13 +356,13 @@ describe("phone relay hub", () => {
     expect(await redeemed.json()).toEqual({ token: "omb_sess_test" });
     // a phone in use keeps the agent's self-update waiting, like the app does
     expect(hub.usedAt()).toBeGreaterThan(0);
-    for (const path of ["/.well-known/duskbot/environment?x=1", "/api/health"]) expect((await client.get(path)).status).toBe(200);
+    for (const path of ["/.well-known/madanibot/environment?x=1", "/api/health"]) expect((await client.get(path)).status).toBe(200);
     for (const [method, path] of [["GET", "/api/json"], ["POST", "/api/health"], ["GET", "/api/mobile/redeem"], ["GET", "/api/mobile/redeem/../relay/sync"]]) {
       const refused = await client.get(path, { method });
       expect(refused.status).toBe(502);
       expect(await refused.json()).toEqual({ error: "This pairing channel only redeems its grant." });
     }
-    expect(seen.map((entry) => entry.path)).toEqual(["/api/mobile/redeem", "/.well-known/duskbot/environment", "/api/health"]);
+    expect(seen.map((entry) => entry.path)).toEqual(["/api/mobile/redeem", "/.well-known/madanibot/environment", "/api/health"]);
   });
 
   it("serves a device's JSON request using its independently derived key", async () => {
@@ -405,7 +405,7 @@ describe("phone relay hub", () => {
     await start([info.spec]);
     const client = await phone(info);
     const socket = await new Promise((resolve, reject) => {
-      const req = httpRequest({ host: "127.0.0.1", port: client.port, path: "/ws", headers: { host: client.host, connection: "Upgrade", upgrade: "websocket", "sec-websocket-version": "13", "sec-websocket-key": randomBytes(16).toString("base64"), "x-dusk-cli": "1", cookie: "owner=true" } });
+      const req = httpRequest({ host: "127.0.0.1", port: client.port, path: "/ws", headers: { host: client.host, connection: "Upgrade", upgrade: "websocket", "sec-websocket-version": "13", "sec-websocket-key": randomBytes(16).toString("base64"), "x-madani-cli": "1", cookie: "owner=true" } });
       req.on("upgrade", (res, socket, head) => { expect(res.statusCode).toBe(101); expect(head.length).toBe(0); resolve(socket); });
       req.on("response", () => reject(new Error("upgrade refused")));
       req.on("error", reject);
@@ -419,7 +419,7 @@ describe("phone relay hub", () => {
       expect(Buffer.concat(chunks)).toEqual(payload);
       const headers = seen.find((entry) => entry.path === "/ws").headers;
       expect(headers["x-forwarded-for"]).toBe(address(cid));
-      expect(headers["x-dusk-cli"]).toBeUndefined();
+      expect(headers["x-madani-cli"]).toBeUndefined();
       expect(headers.cookie).toBeUndefined();
     } finally { socket.destroy(); }
   });
@@ -428,16 +428,16 @@ describe("phone relay hub", () => {
     const info = device();
     await start([info.spec]);
     const client = await phone(info);
-    await (await client.get("/api/json", { headers: { "X-Dusk-Cli": "1", "x-dusk-service": "owner", "x-dusk-custom": "true", cookie: "session=owner", "x-forwarded-for": "127.0.0.1", authorization: "Bearer omb_sess_test" } })).text();
+    await (await client.get("/api/json", { headers: { "X-Madani-Cli": "1", "x-madani-service": "owner", "x-madani-custom": "true", cookie: "session=owner", "x-forwarded-for": "127.0.0.1", authorization: "Bearer omb_sess_test" } })).text();
     expect(seen[0].headers["x-forwarded-for"]).toBe(address(cid));
-    expect(Object.keys(seen[0].headers).some((name) => name.startsWith("x-dusk-"))).toBe(false);
+    expect(Object.keys(seen[0].headers).some((name) => name.startsWith("x-madani-"))).toBe(false);
     expect(seen[0].headers.cookie).toBeUndefined();
     expect(seen[0].headers.authorization).toBe("Bearer omb_sess_test");
   });
 
   it("refuses a phone control frame without executing its credential write", async () => {
     const info = device(), file = join(dir, "phone-auth.json");
-    vi.stubEnv("DUSK_LINK_CODEX_AUTH_FILE", file);
+    vi.stubEnv("MADANI_LINK_CODEX_AUTH_FILE", file);
     await start([info.spec]);
     const client = await phone(info);
     await expect(client.proxy.control("codex-auth", { auth: "{}" })).rejects.toThrow("not allowed");

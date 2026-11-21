@@ -19,7 +19,7 @@ section 4(b)). The git history records what changed.
 
 ## Commercial use
 
-Commercial use needs a separate license: https://dusk.bot/license.
+Commercial use needs a separate license: https://madani.bot/license.
 
 ## Third-party components and trademarks
 

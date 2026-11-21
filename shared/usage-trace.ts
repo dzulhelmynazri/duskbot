@@ -45,8 +45,8 @@ export interface TraceTool {
   endedAt?: number;
   status: TraceStatus;
   error?: string;
-  /** Who measured it: dusk bot's own tools are timed by the server on every engine. */
-  timedBy: "engine" | "dusk";
+  /** Who measured it: madani bot's own tools are timed by the server on every engine. */
+  timedBy: "engine" | "madani";
   running?: boolean;
 }
 
@@ -150,7 +150,7 @@ export function traceRootId(threadId: string, turnId: string): string {
 }
 
 const SERVER_ICONS: Readonly<Record<string, TraceToolIcon>> = { phone: "phone", data: "data", dweb: "web", browser: "browser", computer: "computer" };
-const OWN_SERVERS = new Set(["agents", "dusk", "composio", OWN_APPS_SERVER, ...Object.keys(SERVER_ICONS)]);
+const OWN_SERVERS = new Set(["agents", "madani", "composio", OWN_APPS_SERVER, ...Object.keys(SERVER_ICONS)]);
 const COMPOSIO_ACTION = /^([A-Z][A-Z0-9]+)_[A-Z0-9_]+$/;
 // the connected-apps meta tools that run another tool named in their arguments (`tool_slug`)
 const COMPOSIO_RUNNER = /(?:^|__|_)COMPOSIO_(?:MULTI_)?EXECUTE_TOOL$/;

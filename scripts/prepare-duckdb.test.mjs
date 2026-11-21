@@ -60,7 +60,7 @@ function writePackage(directory, name, version, files, scope = "@duckdb", extra 
 
 /** A flat node_modules (npm's layout) holding the DuckDB, resvg, 1Password and node-datachannel packages for one target. */
 function flatInstall({ version = PIN, platform = "linux", arch = "x64", nativeFiles, resvgBinary = "node", onePasswordCore = OP_PIN, dataChannelVersion = DC_PIN, dataChannelBinary } = {}) {
-  const root = temporary("dusk-duckdb-root-");
+  const root = temporary("madani-duckdb-root-");
   fs.writeFileSync(path.join(root, "package.json"), JSON.stringify({ dependencies: { "@duckdb/node-api": PIN, "@resvg/resvg-js": RESVG_PIN, "@1password/sdk": OP_PIN, "node-datachannel": DC_PIN } }));
   const nodeModules = path.join(root, "node_modules");
   const scope = path.join(nodeModules, "@duckdb");
@@ -128,13 +128,13 @@ describe("the pin", () => {
 
   it("stages both mac arches and x64 elsewhere", () => {
     expect(targetsFor("darwin", {})).toEqual([{ platform: "darwin", arch: "arm64" }, { platform: "darwin", arch: "x64" }]);
-    expect(targetsFor("darwin", { DUSK_CUA_ARCHES: "arm64", DUSK_CUA_ARCHES_PARTIAL: "1" })).toEqual([{ platform: "darwin", arch: "arm64" }]);
+    expect(targetsFor("darwin", { MADANI_CUA_ARCHES: "arm64", MADANI_CUA_ARCHES_PARTIAL: "1" })).toEqual([{ platform: "darwin", arch: "arm64" }]);
     expect(targetsFor("linux", {})).toEqual([{ platform: "linux", arch: "x64" }]);
     // The Docker build stages the image's CPU, which need not be the build host's (linux/arm64 under buildx).
-    expect(targetsFor("linux", { DUSK_DUCKDB_ARCH: "arm64" })).toEqual([{ platform: "linux", arch: "arm64" }]);
-    expect(targetsFor("linux", { DUSK_DUCKDB_ARCH: "x64" })).toEqual([{ platform: "linux", arch: "x64" }]);
-    expect(() => targetsFor("linux", { DUSK_DUCKDB_ARCH: "amd64" })).toThrow(/DUSK_DUCKDB_ARCH/);
-    expect(targetsFor("win32", { DUSK_DUCKDB_ARCH: "arm64" })).toEqual([{ platform: "win32", arch: "x64" }]);
+    expect(targetsFor("linux", { MADANI_DUCKDB_ARCH: "arm64" })).toEqual([{ platform: "linux", arch: "arm64" }]);
+    expect(targetsFor("linux", { MADANI_DUCKDB_ARCH: "x64" })).toEqual([{ platform: "linux", arch: "x64" }]);
+    expect(() => targetsFor("linux", { MADANI_DUCKDB_ARCH: "amd64" })).toThrow(/MADANI_DUCKDB_ARCH/);
+    expect(targetsFor("win32", { MADANI_DUCKDB_ARCH: "arm64" })).toEqual([{ platform: "win32", arch: "x64" }]);
     expect(targetsFor("win32", {})).toEqual([{ platform: "win32", arch: "x64" }]);
   });
 });
@@ -167,7 +167,7 @@ describe("staging from an install", () => {
   });
 
   it("finds the 1Password core beside the SDK in pnpm's store, and refuses a tree without the core it needs", async () => {
-    const root = temporary("dusk-duckdb-pnpm-1p-");
+    const root = temporary("madani-duckdb-pnpm-1p-");
     const nodeModules = path.join(root, "node_modules");
     const store = path.join(nodeModules, ".pnpm", `@1password+sdk@${OP_PIN}`, "node_modules", "@1password");
     writePackage(path.join(store, "sdk"), "sdk", OP_PIN, {}, "@1password");
@@ -185,7 +185,7 @@ describe("staging from an install", () => {
   });
 
   it("finds the packages through pnpm's store links", () => {
-    const root = temporary("dusk-duckdb-pnpm-");
+    const root = temporary("madani-duckdb-pnpm-");
     const nodeModules = path.join(root, "node_modules");
     const store = path.join(nodeModules, ".pnpm");
     const api = path.join(store, `@duckdb+node-api@${PIN}`, "node_modules", "@duckdb");
@@ -224,7 +224,7 @@ describe("staging from an install", () => {
       return directory;
     };
     const staged = await stageDuckdb({ root, targets: [{ platform: "win32", arch: "x64" }], pack, sign: false, log: null });
-    const cache = path.join(root, "node_modules", ".cache", "duskbot", "duckdb");
+    const cache = path.join(root, "node_modules", ".cache", "madanibot", "duckdb");
     // Both native packages the host lacks are fetched, each at its own pin.
     expect(packed).toEqual([
       { name: "node-bindings-win32-x64", version: PIN, cache, scope: "@duckdb" },
@@ -282,7 +282,7 @@ describe("the direct screen path", () => {
   });
 
   it("checks the addon's own binary format and CPU", () => {
-    const directory = temporary("dusk-dc-format-");
+    const directory = temporary("madani-dc-format-");
     const file = path.join(directory, "node_datachannel.node");
     const check = (bytes, platform, arch) => {
       fs.writeFileSync(file, bytes);
@@ -304,7 +304,7 @@ describe("the direct screen path", () => {
   });
 
   it("stages the image's CPU from pnpm's store, fetching the platform package the install lacks at the pin", async () => {
-    const root = temporary("dusk-duckdb-pnpm-dc-");
+    const root = temporary("madani-duckdb-pnpm-dc-");
     const { root: flat, nodeModules: flatModules } = flatInstall({ arch: "arm64" });
     fs.cpSync(flat, root, { recursive: true });
     const nodeModules = path.join(root, "node_modules");
@@ -388,7 +388,7 @@ describe.skipIf(!canBuildMachO)("macOS slices", () => {
   const archs = (file) => execFileSync("/usr/bin/lipo", ["-archs", file], { encoding: "utf8" }).trim();
 
   beforeAll(() => {
-    directory = fs.mkdtempSync(path.join(os.tmpdir(), "dusk-duckdb-macho-"));
+    directory = fs.mkdtempSync(path.join(os.tmpdir(), "madani-duckdb-macho-"));
     fs.writeFileSync(path.join(directory, "main.c"), "int main(void) { return 0; }\n");
     for (const arch of ["arm64", "x86_64"]) {
       binaries[arch] = path.join(directory, arch);

@@ -22,7 +22,7 @@ const isCharted = (id: KpiId): id is ChartedId => (CHARTED as readonly string[])
 export const mainOf = (layout: KpiLayout): ChartedId | null => layout.order.filter(isCharted).find((id) => tintOf(layout, id) === "green") ?? null;
 
 export interface KpiLayout { order: KpiId[]; tints: Partial<Record<KpiId, Tint>> }
-export const KPI_KEY = "dusk-admin-kpis";
+export const KPI_KEY = "madani-admin-kpis";
 
 const isId = (v: unknown): v is KpiId => typeof v === "string" && (KPI_IDS as readonly string[]).includes(v);
 const isTint = (v: unknown): v is Tint => typeof v === "string" && (TINTS as readonly string[]).includes(v);

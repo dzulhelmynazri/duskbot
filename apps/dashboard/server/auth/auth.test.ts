@@ -27,7 +27,7 @@ describe("local account service", () => {
   let mailer: ReturnType<typeof memoryMailer>;
   let options: DashboardAppOptions;
   beforeEach(async () => {
-    dataDir = mkdtempSync(join(tmpdir(), "dusk-auth-test-"));
+    dataDir = mkdtempSync(join(tmpdir(), "madani-auth-test-"));
     time = Date.now(); mailer = memoryMailer();
     options = { dataDir, publicUrl: "http://127.0.0.1:7480", mailer, staticDir: null, now: () => time };
     app = createDashboardApp(options);
@@ -84,7 +84,7 @@ describe("local account service", () => {
     const started = await start(" OWNER@EXAMPLE.TEST ");
     expect(started).toMatchObject({ expiresIn: 600, resendAfter: 30, signupOpen: true });
     expect(started.attempt).toMatch(/^[A-Za-z0-9_-]{43}$/);
-    expect(mailer.outbox[0]).toMatchObject({ to: email, subject: `${code()} is your dusk bot code` });
+    expect(mailer.outbox[0]).toMatchObject({ to: email, subject: `${code()} is your madani bot code` });
     expect(mailer.outbox[0].text).toContain("works for 10 minutes.");
     expect(mailer.outbox[0].html).toContain(code());
     const first = await body<WebSignInAnswer>(call("/v1/auth/verify", { attempt: started.attempt, code: code() }));
@@ -325,7 +325,7 @@ describe("local account service", () => {
     for (const path of ["/api/cloud/app/sign-in/start", "/api/cloud/app/sign-in/verify", "/api/cloud/desktop/session", "/v1/app/enroll-grant", "/v1/auth/app/token"]) {
       const response = await call(path, undefined, { origin: "capacitor://localhost", "access-control-request-method": "POST" }, "OPTIONS");
       expect(response.status).toBe(204); expect(response.headers.get("access-control-allow-origin")).toBe("*");
-      expect(response.headers.get("access-control-allow-headers")).toBe("content-type, authorization, x-dusk-version");
+      expect(response.headers.get("access-control-allow-headers")).toBe("content-type, authorization, x-madani-version");
       expect(response.headers.get("access-control-allow-methods")).toBe("GET, POST, DELETE, OPTIONS");
       expect(response.headers.get("access-control-allow-credentials")).toBeNull(); expect(response.headers.get("cache-control")).toBe("no-store");
     }
@@ -631,7 +631,7 @@ describe("local account service", () => {
     const first = await login(); time += 30_000;
     const recovered = await body<EmailStartAnswer>(call("/v1/auth/start", { email, recover: true }));
     const mail = mailer.outbox.at(-1)!;
-    expect(mail).toMatchObject({ to: email, subject: expect.stringMatching(/^\d{8} is your dusk bot code$/) });
+    expect(mail).toMatchObject({ to: email, subject: expect.stringMatching(/^\d{8} is your madani bot code$/) });
     expect(mail.text).toContain("this account signs in with an emailed code.");
     const link = new URL(/^sign in: (\S+)$/m.exec(mail.text)![1]!), secret = new URLSearchParams(link.hash.slice(1));
     // the code in the fragment: never sent to a server, so never in a log. the attempt (nothing without the code) rides in
@@ -749,10 +749,10 @@ describe("local account service", () => {
 
     it("is off without both settings and refuses a malformed one", () => {
       expect(reviewAccountFromEnv({})).toBeNull();
-      expect(reviewAccountFromEnv({ DUSK_REVIEW_EMAIL: " Review@Example.test ", DUSK_REVIEW_CODE: "12345678" })).toEqual({ email: "review@example.test", code: "12345678" });
-      expect(() => reviewAccountFromEnv({ DUSK_REVIEW_EMAIL: reviewer })).toThrow();
-      expect(() => reviewAccountFromEnv({ DUSK_REVIEW_EMAIL: reviewer, DUSK_REVIEW_CODE: "1234" })).toThrow();
-      expect(() => reviewAccountFromEnv({ DUSK_REVIEW_EMAIL: "nope", DUSK_REVIEW_CODE: "12345678" })).toThrow();
+      expect(reviewAccountFromEnv({ MADANI_REVIEW_EMAIL: " Review@Example.test ", MADANI_REVIEW_CODE: "12345678" })).toEqual({ email: "review@example.test", code: "12345678" });
+      expect(() => reviewAccountFromEnv({ MADANI_REVIEW_EMAIL: reviewer })).toThrow();
+      expect(() => reviewAccountFromEnv({ MADANI_REVIEW_EMAIL: reviewer, MADANI_REVIEW_CODE: "1234" })).toThrow();
+      expect(() => reviewAccountFromEnv({ MADANI_REVIEW_EMAIL: "nope", MADANI_REVIEW_CODE: "12345678" })).toThrow();
     });
   });
 

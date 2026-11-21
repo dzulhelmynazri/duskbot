@@ -6,7 +6,7 @@
 import { CHECKOUT_PAGE, finishesPurchase, PURCHASE_BUTTON } from "../shared/purchase.ts";
 import { PURCHASE_PASS_MS } from "./purchase-gate.ts";
 
-export const COMPUTER_PURCHASE_REFUSAL = "dusk bot did not do this: the screen shows the last step of a purchase or payment, which needs the person's confirmation first. Call confirm_purchase with the order summary on screen (items and quantities, total with shipping, masked payment method, delivery address, expected delivery). It shows the person a card and waits for their tap; once they confirm, take this step again. If they cancel, do not buy.";
+export const COMPUTER_PURCHASE_REFUSAL = "madani bot did not do this: the screen shows the last step of a purchase or payment, which needs the person's confirmation first. Call confirm_purchase with the order summary on screen (items and quantities, total with shipping, masked payment method, delivery address, expected delivery). It shows the person a card and waits for their tap; once they confirm, take this step again. If they cancel, do not buy.";
 
 /** The query flag a bridge adds to its control check for a call it marked. */
 export const PURCHASE_QUERY = "purchase";

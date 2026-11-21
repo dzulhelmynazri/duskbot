@@ -4,14 +4,14 @@
   "title": "An n8n alternative if you would rather text a bot",
   "nav": "n8n",
   "h1": "an n8n alternative for people who do not want to build workflows",
-  "description": "Compare n8n workflows with dusk bot routines: who builds the steps, where they run, EUR execution prices and the limits of a chat-based approach.",
+  "description": "Compare n8n workflows with madani bot routines: who builds the steps, where they run, EUR execution prices and the limits of a chat-based approach.",
   "keyword": "n8n alternative for non technical",
   "keywords": [
     "n8n ai agent",
     "openclaw vs n8n",
     "make.com alternative"
   ],
-  "answer": "**if you enjoy drawing the steps, keep n8n.** its visual canvas gives you the sequence to build and inspect. if you would rather describe the job, dusk gives you a bot to steer and a result to review. both can run on servers. choose how much process you want to build and maintain yourself.",
+  "answer": "**if you enjoy drawing the steps, keep n8n.** its visual canvas gives you the sequence to build and inspect. if you would rather describe the job, madani gives you a bot to steer and a result to review. both can run on servers. choose how much process you want to build and maintain yourself.",
   "updated": "2026-11-12",
   "review": {
     "status": "approved",
@@ -49,7 +49,7 @@
       "**host the community edition.** you accept its sustainable use license.",
       "**pay per execution.** that meter suits you better than counting steps or users."
     ],
-    "dusk": [
+    "madani": [
       "**describe the job once.** make routines through chat.",
       "**keep context with a bot.** its job, conversations and memory stay together.",
       "**try the desktop app first.** decide on hosting once the work needs it."
@@ -60,7 +60,7 @@
     "intro": "**n8n starter is 20 eur a month, with the year paid up front.** prices are as of 12 november 2026. executions measure workflow runs; your finished job can take more than one.",
     "cols": [
       "n8n",
-      "dusk bot"
+      "madani bot"
     ],
     "rows": [
       {
@@ -79,7 +79,7 @@
         "label": "places to run",
         "cells": [
           "n8n cloud or your own server; community edition can be self-hosted",
-          "local computer, a server you maintain, or dusk cloud"
+          "local computer, a server you maintain, or madani cloud"
         ],
         "src": [
           2,
@@ -101,7 +101,7 @@
         "label": "cloud entry price",
         "cells": [
           "starter 20 eur/month billed annually, with 2,500 executions",
-          "dusk cloud plus $20/month or $200/year; ai usage separate"
+          "madani cloud plus $20/month or $200/year; ai usage separate"
         ],
         "src": [
           2,
@@ -112,7 +112,7 @@
         "label": "larger plan",
         "cells": [
           "pro 50 eur/month billed annually, with 10,000 executions",
-          "dusk cloud pro $50/month or $500/year; for heavy workloads"
+          "madani cloud pro $50/month or $500/year; for heavy workloads"
         ],
         "src": [
           2,
@@ -144,33 +144,33 @@
       }
     ]
   },
-  "method": "**we compared the offers, not matching test runs.** n8n's repository and pricing were checked on 12 november 2026. dusk details come from our docs.\n\nwe didn't build the same workflow in both. use the comparison to choose the kind of setup you want, then test your actual job.",
+  "method": "**we compared the offers, not matching test runs.** n8n's repository and pricing were checked on 12 november 2026. madani details come from our docs.\n\nwe didn't build the same workflow in both. use the comparison to choose the kind of setup you want, then test your actual job.",
   "sections": [
     {
       "h": "first decide who should spell out the steps",
-      "md": "**own the sequence when the sequence matters.** n8n represents multi-step workflows and ai agents visually.[^1] inspect the steps you built, then read the result.\n\na dusk routine starts with the job: \"every friday at 4, list files added to this project folder this week. give one line on each.\"[^7][^8]\n\ntry a small report first. [gumloop](/alternatives/gumloop) offers another approach if the workflow shape matters most."
+      "md": "**own the sequence when the sequence matters.** n8n represents multi-step workflows and ai agents visually.[^1] inspect the steps you built, then read the result.\n\na madani routine starts with the job: \"every friday at 4, list files added to this project folder this week. give one line on each.\"[^7][^8]\n\ntry a small report first. [gumloop](/alternatives/gumloop) offers another approach if the workflow shape matters most."
     },
     {
       "h": "execution pricing is useful, but not the whole budget",
-      "md": "**budget for the job you will repeat.** as of 12 november 2026, n8n bills per workflow execution, rather than per step or user.[^2]\n\n- starter: 20 eur/month, billed annually; 2,500 executions\n- pro: 50 eur/month, billed annually; 10,000 executions\n- business: 667 eur/month, billed annually; 40,000 executions; self-hosted only\n- community edition: free to self-host[^2]\n\nn8n cloud also includes ai model access and assistant credits.[^2] an execution and a dusk message count different things. price a real run before deciding which bill is smaller."
+      "md": "**budget for the job you will repeat.** as of 12 november 2026, n8n bills per workflow execution, rather than per step or user.[^2]\n\n- starter: 20 eur/month, billed annually; 2,500 executions\n- pro: 50 eur/month, billed annually; 10,000 executions\n- business: 667 eur/month, billed annually; 40,000 executions; self-hosted only\n- community edition: free to self-host[^2]\n\nn8n cloud also includes ai model access and assistant credits.[^2] an execution and a madani message count different things. price a real run before deciding which bill is smaller."
     },
     {
       "h": "a server does not turn one tool into the other",
-      "md": "**choose who keeps the machine running.** n8n offers cloud and self-hosting. dusk offers your computer, your server or dusk cloud.[^2][^4] [openclaw](/alternatives/openclaw) gives you another route to compare.\n\nlocal dusk routines stop when the app closes or the computer sleeps. misses under 12 hours run once when you return; older ones skip.[^7] [scheduled work](/scheduled-ai-tasks) needs an awake machine.\n\nstart connected apps read only. for later edits, write \"ask me before you change anything\"; ordinary app changes use that boundary, rather than the sending setting.[^8][^10] read your ai provider's current terms before relying on its sign-in.[^10]"
+      "md": "**choose who keeps the machine running.** n8n offers cloud and self-hosting. madani offers your computer, your server or madani cloud.[^2][^4] [openclaw](/alternatives/openclaw) gives you another route to compare.\n\nlocal madani routines stop when the app closes or the computer sleeps. misses under 12 hours run once when you return; older ones skip.[^7] [scheduled work](/scheduled-ai-tasks) needs an awake machine.\n\nstart connected apps read only. for later edits, write \"ask me before you change anything\"; ordinary app changes use that boundary, rather than the sending setting.[^8][^10] read your ai provider's current terms before relying on its sign-in.[^10]"
     }
   ],
   "faq": [
     {
       "q": "is there an n8n alternative for non-technical people?",
-      "a": "**try dusk for a small job in plain words.** choose n8n if you need its visual workflow canvas. decide whether you want to control each step or review the finished work."
+      "a": "**try madani for a small job in plain words.** choose n8n if you need its visual workflow canvas. decide whether you want to control each step or review the finished work."
     },
     {
       "q": "where do your agents actually run when your laptop is closed?",
-      "a": "**on a different machine that stays on.** n8n offers its cloud or your server.[^2] dusk offers dusk cloud or your server. the local dusk app stops during sleep.[^4][^7]"
+      "a": "**on a different machine that stays on.** n8n offers its cloud or your server.[^2] madani offers madani cloud or your server. the local madani app stops during sleep.[^4][^7]"
     },
     {
       "q": "is n8n open source?",
-      "a": "**its repository calls it fair-code.** the sustainable use license and separate enterprise licensing are not osi open source. dusk is source-available: personal use is free; work needs a license.[^1][^6]"
+      "a": "**its repository calls it fair-code.** the sustainable use license and separate enterprise licensing are not osi open source. madani is source-available: personal use is free; work needs a license.[^1][^6]"
     }
   ],
   "sources": [
@@ -185,35 +185,35 @@
       "checked": "2026-11-12"
     },
     {
-      "label": "dusk bot: getting started",
+      "label": "madani bot: getting started",
       "url": "/docs/getting-started"
     },
     {
-      "label": "dusk bot: dusk cloud",
-      "url": "/docs/dusk-cloud"
+      "label": "madani bot: madani cloud",
+      "url": "/docs/madani-cloud"
     },
     {
-      "label": "dusk bot: account and billing",
+      "label": "madani bot: account and billing",
       "url": "/docs/account-and-billing"
     },
     {
-      "label": "dusk bot: faq",
+      "label": "madani bot: faq",
       "url": "/docs/faq"
     },
     {
-      "label": "dusk bot: routines",
+      "label": "madani bot: routines",
       "url": "/docs/routines"
     },
     {
-      "label": "dusk bot: files and apps",
+      "label": "madani bot: files and apps",
       "url": "/docs/files-and-apps"
     },
     {
-      "label": "dusk bot: bots",
+      "label": "madani bot: bots",
       "url": "/docs/bots"
     },
     {
-      "label": "dusk bot: computer",
+      "label": "madani bot: computer",
       "url": "/docs/computer"
     }
   ],
@@ -237,7 +237,7 @@
       ],
       [
         "give a bot a job and steer its work",
-        "dusk bot"
+        "madani bot"
       ],
       [
         "self-host the community workflow platform",
@@ -245,7 +245,7 @@
       ],
       [
         "start locally with separate bot memories",
-        "dusk bot"
+        "madani bot"
       ]
     ]
   },

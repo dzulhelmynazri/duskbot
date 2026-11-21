@@ -74,10 +74,10 @@ describe("the agent's request reaches the route", () => {
   const dirs: string[] = [];
   afterEach(() => { for (const dir of dirs.splice(0)) rmSync(dir, { recursive: true, force: true }); });
   // exactly what agent.mjs's local() sends to 127.0.0.1:8799
-  const agentRequest = { headers: { host: "127.0.0.1:8799", accept: "application/json", "x-dusk-cli": "1" }, method: "GET" } as unknown as IncomingMessage;
+  const agentRequest = { headers: { host: "127.0.0.1:8799", accept: "application/json", "x-madani-cli": "1" }, method: "GET" } as unknown as IncomingMessage;
 
   function resolve(options: { loopbackTrust?: "owner" | "service"; loopbackMutationToken?: string }) {
-    const dir = mkdtempSync(join(tmpdir(), "dusk-screen-agent-"));
+    const dir = mkdtempSync(join(tmpdir(), "madani-screen-agent-"));
     dirs.push(dir);
     return resolveRequestAuth(agentRequest, { sessions: new SessionRegistry({ file: join(dir, "sessions.json") }), cookieName: "c", streamPath: "/api/events", url: new URL(SCREEN_TRANSPORT_AGENT_PATH, "http://127.0.0.1:8799"), ...options });
   }

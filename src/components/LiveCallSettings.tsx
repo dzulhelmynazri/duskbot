@@ -45,8 +45,8 @@ export function LiveCallSettings({ onClose }: { onClose: () => void }) {
     setSaving(true);
     setError(null);
     try {
-      const status: ConfigStatus = window.duskDesktop?.setCredential
-        ? await window.duskDesktop.setCredential("openaiLiveKey", "")
+      const status: ConfigStatus = window.madaniDesktop?.setCredential
+        ? await window.madaniDesktop.setCredential("openaiLiveKey", "")
         : await api("/api/config", { method: "PUT", body: JSON.stringify({ live: { key: "" } }) });
       dispatch({ type: "configStatus", config: status });
     } catch (removeError) {

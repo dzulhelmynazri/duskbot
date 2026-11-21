@@ -5,12 +5,12 @@
 import { mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { launchVerificationServer } from "../control-dusk.ts";
+import { launchVerificationServer } from "../control-madani.ts";
 import { fixtureApi } from "../testing/preview-fixture.ts";
 
-const scratch = mkdtempSync(join(tmpdir(), "dusk-clock-"));
+const scratch = mkdtempSync(join(tmpdir(), "madani-clock-"));
 const release = join(scratch, "release");
-const fixture = await launchVerificationServer({ ...process.env, DUSK_TEST_RESUME_CLOCK: "1", FAKE_CLAUDE_MODE: "hang", FAKE_CLAUDE_RELEASE: release });
+const fixture = await launchVerificationServer({ ...process.env, MADANI_TEST_RESUME_CLOCK: "1", FAKE_CLAUDE_MODE: "hang", FAKE_CLAUDE_RELEASE: release });
 const api = fixtureApi(fixture.info.url, { headers: { origin: fixture.info.url } });
 const skew = (ms: number) => writeFileSync(join(fixture.info.dataDir, "resume-clock-ms"), String(ms));
 const sleep = (ms: number) => new Promise((done) => setTimeout(done, ms));

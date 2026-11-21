@@ -29,39 +29,39 @@ const text = (body: string): Message => ({ id: `m${++seq}`, at: seq, role: "bot"
 const ask = (body: string): Message => ({ id: `u${++seq}`, at: seq, role: "user", kind: "text", text: body });
 const stagedSkill = (card: Record<string, unknown> = {}): Message => ({
   id: `o${++seq}`, at: seq, role: "bot", kind: "options",
-  card: { title: "Enable this skill?", options: [], skillRequest: { name: "verify-dusk" }, ...card } as unknown as Message["card"],
+  card: { title: "Enable this skill?", options: [], skillRequest: { name: "verify-madani" }, ...card } as unknown as Message["card"],
 });
 const triggerTerms = (): string[] =>
   JSON.parse(readFileSync(new URL("../../skills/create-verification-skill/manifest.json", import.meta.url), "utf8")).triggerTerms;
 
-const DOCTOR = "pnpm control:dusk doctor --url http://127.0.0.1:8799";
-const SEND = "node --experimental-strip-types scripts/control-dusk.ts send --bot x --text y";
+const DOCTOR = "pnpm control:madani doctor --url http://127.0.0.1:8799";
+const SEND = "node --experimental-strip-types scripts/control-madani.ts send --bot x --text y";
 const PRESS = './node_modules/.bin/control-atlas.mjs press "Meta+K"';
 const PUSH = "git push origin main";
 
 describe("parseControlCommand", () => {
   it.each([
-    ["pnpm control:dusk doctor --url http://127.0.0.1:1", "doctor"],
-    ["pnpm run control:dusk doctor", "doctor"],
-    ["npm run control:dusk -- doctor", "doctor"],
+    ["pnpm control:madani doctor --url http://127.0.0.1:1", "doctor"],
+    ["pnpm run control:madani doctor", "doctor"],
+    ["npm run control:madani -- doctor", "doctor"],
     [SEND, "send"],
     [PRESS, "press"],
-    ["cd repo && node scripts/control-dusk.ts doctor", "doctor"],
-    ["node scripts\\control-dusk.ts doctor", "doctor"],
-    ["FOO=1 pnpm control:dusk wait --bot b", "wait"],
-    ["timeout 30 npx tsx ./scripts/control-dusk.ts screenshot > out.png 2>&1", "screenshot"],
-    ["sudo -u maus pnpm control:dusk doctor", "doctor"],
+    ["cd repo && node scripts/control-madani.ts doctor", "doctor"],
+    ["node scripts\\control-madani.ts doctor", "doctor"],
+    ["FOO=1 pnpm control:madani wait --bot b", "wait"],
+    ["timeout 30 npx tsx ./scripts/control-madani.ts screenshot > out.png 2>&1", "screenshot"],
+    ["sudo -u maus pnpm control:madani doctor", "doctor"],
   ])("accepts %s as a control-CLI invocation of %s", (command, subcommand) => {
     expect(parseControlCommand(command)).toEqual({ subcommand, dryRun: false });
   });
 
   it.each([
-    "cat scripts/control-dusk.ts",
-    "sed -n 1,40p scripts/control-dusk.ts",
-    "git log -- scripts/control-dusk.ts",
-    "grep -n doctor scripts/control-dusk.ts",
-    "cat docs/access-control-dusk.tsx",
-    "npmcontrol:dusk doctor",
+    "cat scripts/control-madani.ts",
+    "sed -n 1,40p scripts/control-madani.ts",
+    "git log -- scripts/control-madani.ts",
+    "grep -n doctor scripts/control-madani.ts",
+    "cat docs/access-control-madani.tsx",
+    "npmcontrol:madani doctor",
     "pnpm typecheck",
     "pnpm typecheck && pnpm test",
   ])("rejects %s: the CLI is not what runs", (command) => {
@@ -69,13 +69,13 @@ describe("parseControlCommand", () => {
   });
 
   it("marks a dry run wherever the flag sits in the segment", () => {
-    expect(parseControlCommand("pnpm control:dusk send --bot b --dry-run")).toEqual({ subcommand: "send", dryRun: true });
-    expect(parseControlCommand("pnpm control:dusk --dry-run send")).toEqual({ subcommand: "send", dryRun: true });
-    expect(parseControlCommand("pnpm control:dusk doctor && pnpm release --dry-run")).toEqual({ subcommand: "doctor", dryRun: false });
+    expect(parseControlCommand("pnpm control:madani send --bot b --dry-run")).toEqual({ subcommand: "send", dryRun: true });
+    expect(parseControlCommand("pnpm control:madani --dry-run send")).toEqual({ subcommand: "send", dryRun: true });
+    expect(parseControlCommand("pnpm control:madani doctor && pnpm release --dry-run")).toEqual({ subcommand: "doctor", dryRun: false });
   });
 
   it("falls back to the CLI token's basename when no subcommand follows", () => {
-    expect(parseControlCommand("pnpm control:dusk --help")?.subcommand).toBe("control:dusk");
+    expect(parseControlCommand("pnpm control:madani --help")?.subcommand).toBe("control:madani");
     expect(parseControlCommand("./scripts/control-atlas.mjs && echo done")?.subcommand).toBe("control-atlas.mjs");
   });
 });
@@ -119,7 +119,7 @@ describe("parseRunCommand", () => {
     ["npx tsx scripts/x.ts", "npx"],
     ["./node_modules/.bin/vitest run", "vitest"],
     ["FOO=1 timeout 30 git push", "git push"],
-    ["sudo -u maus systemctl restart dusk", "systemctl"],
+    ["sudo -u maus systemctl restart madani", "systemctl"],
   ])("%s is a step labelled %s", (command, label) => {
     expect(parseRunCommand(command)).toEqual({ label, verified: false, dryRun: false });
   });
@@ -177,7 +177,7 @@ describe("runSteps", () => {
       codex(SEND, false),
       acp(PRESS),
       claude("git status", true),
-      claude("cat scripts/control-dusk.ts", true),
+      claude("cat scripts/control-madani.ts", true),
       claude(PUSH, true),
     ]);
     expect(steps.map((s) => [s.label, s.status, s.verified])).toEqual([

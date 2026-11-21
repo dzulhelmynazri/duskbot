@@ -30,7 +30,7 @@ describe("ACP memory one-shot (generateMemoryText)", () => {
   beforeEach(() => {
     ensureDirs();
     chmodSync(FAKE_CLI, 0o755);
-    scratch = mkdtempSync(join(tmpdir(), "dusk-acp-memory-test-"));
+    scratch = mkdtempSync(join(tmpdir(), "madani-acp-memory-test-"));
   });
 
   afterEach(async () => {
@@ -55,7 +55,7 @@ describe("ACP memory one-shot (generateMemoryText)", () => {
     expect(answer).toBe('[{"text":"The person likes jazz","kind":"preference"}]');
     const session = JSON.parse(readFileSync(`${process.env.FAKE_ACP_DUMP}.session.json`, "utf8"));
     expect(session.mcpServers).toEqual([]);
-    expect(session.cwd).toMatch(/dusk-acp-memory-/);
+    expect(session.cwd).toMatch(/madani-acp-memory-/);
     expect(existsSync(session.cwd)).toBe(false);
     expect(usage).toEqual([expect.objectContaining({ input: 12, output: 4 })]);
   });

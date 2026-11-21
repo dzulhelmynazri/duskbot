@@ -95,7 +95,7 @@ describe("ready-made bots gallery", () => {
   });
 
   it("on a paired device, which cannot read the host's defaults, makes the bot at once", () => {
-    vi.stubGlobal("duskDesktop", { remoteClient: { active: true } });
+    vi.stubGlobal("madaniDesktop", { remoteClient: { active: true } });
     render();
     flushSync(() => button("Add Penny, Bookkeeper").click());
     expect(opened.props).toBeNull();

@@ -10,9 +10,9 @@ const OTHER = "7c9e6679-7425-40de-944b-e07fc1f90ae7";
 const scratch: string[] = [];
 const stores: CloudSyncStore[] = [];
 function setup() {
-  const home = mkdtempSync(join(tmpdir(), "dusk-sync-store-"));
+  const home = mkdtempSync(join(tmpdir(), "madani-sync-store-"));
   scratch.push(home);
-  const dataDir = join(home, ".duskbot");
+  const dataDir = join(home, ".madanibot");
   mkdirSync(dataDir);
   const store = new CloudSyncStore({ dataDir, now: () => 1_000 });
   stores.push(store);
@@ -23,9 +23,9 @@ afterEach(() => {
   for (const dir of scratch.splice(0)) rmSync(dir, { recursive: true, force: true });
 });
 
-it("puts synced folders beside the data folder unless DUSK_SYNC_ROOT says otherwise", () => {
-  expect(syncRoot("/data/.duskbot", {})).toBe(join("/data", "Synced"));
-  expect(syncRoot("/data/.duskbot", { DUSK_SYNC_ROOT: "/mnt/sync" })).toBe("/mnt/sync");
+it("puts synced folders beside the data folder unless MADANI_SYNC_ROOT says otherwise", () => {
+  expect(syncRoot("/data/.madanibot", {})).toBe(join("/data", "Synced"));
+  expect(syncRoot("/data/.madanibot", { MADANI_SYNC_ROOT: "/mnt/sync" })).toBe("/mnt/sync");
 });
 
 it("keeps a lent folder's copy in the data folder, out of bots' reach and the prompt; a copy kept before stays where it is", () => {
@@ -102,9 +102,9 @@ it("lists a folder with hashes, hashing again only what changed", async () => {
 
 it("keeps a removed file in the trash for 30 days", async () => {
   let now = 1_000;
-  const home = mkdtempSync(join(tmpdir(), "dusk-sync-trash-"));
+  const home = mkdtempSync(join(tmpdir(), "madani-sync-trash-"));
   scratch.push(home);
-  const store = new CloudSyncStore({ dataDir: join(home, ".duskbot"), now: () => now });
+  const store = new CloudSyncStore({ dataDir: join(home, ".madanibot"), now: () => now });
   stores.push(store);
   const folder = store.register({ computerId: PC, computerName: "PC", pcPath: "/p", name: "P" });
   writeFileSync(join(folder.cloudPath, "a.txt"), "hello");

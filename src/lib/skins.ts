@@ -7,7 +7,7 @@ export const SKIN_IDS = [
   "lagoon",
   "graphite",
   "linen",
-  "dusk",
+  "madani",
   "daylight",
   "meadow",
   "pop",
@@ -32,9 +32,9 @@ export const SKINS: readonly Skin[] = [
   { id: "lagoon", name: "Lagoon", tagline: "Cool daylight. Porcelain and deep teal." },
   { id: "graphite", name: "Graphite", tagline: "Quiet charcoal and softened steel blue." },
   { id: "linen", name: "Linen", tagline: "Clean daylight with a restrained navy accent." },
-  { id: "dusk", name: "Dusk", tagline: "Muted plum after dark, calm and low-key." },
+  { id: "madani", name: "Madani", tagline: "Muted plum after dark, calm and low-key." },
   { id: "daylight", name: "Daylight", tagline: "Midnight in reverse. Near-white, ink-black bubbles." },
-  { id: "meadow", name: "Meadow", tagline: "Fresh white with a calm green. The Dusk look." },
+  { id: "meadow", name: "Meadow", tagline: "Fresh white with a calm green. The Madani look." },
   { id: "pop", name: "Pop", tagline: "Cream paper, thick ink outlines, hard shadows. Chunky and cheerful." },
   { id: "halloween", name: "Halloween", tagline: "Plum after dark, lit in pumpkin orange. Bats optional." },
 ];
@@ -46,9 +46,9 @@ export const THEME_SKINS = { light: "grok", dark: "grok-dark" } as const satisfi
 export const DEFAULT_SKIN_CHOICE: SkinChoice = "system";
 export const PRIOR_INSTALL_SKIN: SkinId = "midnight";
 
-const KEY = "dusk-skin";
+const KEY = "madani-skin";
 // set once every install has been moved onto the Grok look; a pick made after that sticks
-const GROK_MOVE_KEY = "dusk-skin-grok";
+const GROK_MOVE_KEY = "madani-skin-grok";
 const DARK_QUERY = "(prefers-color-scheme: dark)";
 
 function isSkinId(value: unknown): value is SkinId {
@@ -116,7 +116,7 @@ function paintSkin(id: SkinId): void {
   for (const listener of listeners) listener();
   // On Windows the caption buttons sit in a native overlay the main process paints, out of CSS's reach.
   try {
-    void window.duskDesktop?.applySkin?.(id)?.catch(() => undefined);
+    void window.madaniDesktop?.applySkin?.(id)?.catch(() => undefined);
   } catch {
   }
 }

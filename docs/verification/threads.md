@@ -70,7 +70,7 @@ switching and Stop can be exercised without a real provider or account.
     sibling has its own activity entry under that bot. Follow a notification,
     a thread chip or a search hit to a third thread of that bot: the sibling
     keeps its unread entry, and the third thread is read once open. A
-    `duskbot://bot/<id>` link opens the main thread. A row or tile with a
+    `madanibot://bot/<id>` link opens the main thread. A row or tile with a
     mark on it opens the thread the mark is about (waiting on you, then unread,
     then work under way, a thread another bot opened included); a second click
     returns to the main thread.
@@ -117,7 +117,7 @@ orders of the full response and slim event, including late old-thread messages.
 
 For approval verification, new fake-provider launches also write fixture-only
 `<thread-id>.launch.json` receipts inside the printed disposable data directory.
-The live broker in their `mcpConfig.mcpServers.dusk` entry can be exercised using
+The live broker in their `mcpConfig.mcpServers.madani` entry can be exercised using
 the same `permission` recipe in `server/thread-capacity-api.test.ts`. Request a
 synthetic approval, switch away, and navigate back using an activity control
 with Show threads off. Answer **Allow once** and verify that broker receives

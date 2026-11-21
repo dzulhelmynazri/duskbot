@@ -1,6 +1,6 @@
-/* the phone app's own layer over the shared app styles; every rule is scoped under .dusk-mobile */
+/* the phone app's own layer over the shared app styles; every rule is scoped under .madani-mobile */
 
-.dusk-mobile {
+.madani-mobile {
   --m-ease-out: cubic-bezier(.22, 1, .36, 1);
   --m-ease-release: cubic-bezier(.28, 1.4, .36, 1);
   --m-fast: .16s;
@@ -22,24 +22,24 @@
 }
 
 /* the shared root pads for safe areas and the keyboard; inside the phone shell each layer pads itself */
-#root:has(> .dusk-mobile) { padding: 0; }
+#root:has(> .madani-mobile) { padding: 0; }
 
-.dusk-mobile .mobile-press {
+.madani-mobile .mobile-press {
   transition: scale .2s var(--m-ease-release), background-color .15s ease, opacity .15s ease;
 }
-.dusk-mobile .mobile-press:active:not(:disabled) {
+.madani-mobile .mobile-press:active:not(:disabled) {
   scale: .96;
   transition-duration: .16s, .15s, .15s;
   transition-timing-function: var(--m-ease-out), ease, ease;
 }
 /* the shared phone layout dims every pressed control; the shell's own controls scale instead */
-.dusk-mobile .mobile-press:active { opacity: 1; }
+.madani-mobile .mobile-press:active { opacity: 1; }
 
-.dusk-mobile .mobile-float {
+.madani-mobile .mobile-float {
   box-shadow: 0 4px 14px -2px rgb(28 28 28 / .10), 0 1px 3px rgb(28 28 28 / .06);
 }
-[data-skin="grok-dark"] .dusk-mobile .mobile-float,
-.dusk-mobile[data-scheme="dark"] .mobile-float {
+[data-skin="grok-dark"] .madani-mobile .mobile-float,
+.madani-mobile[data-scheme="dark"] .mobile-float {
   box-shadow: 0 4px 14px -2px rgb(0 0 0 / .5);
 }
 
@@ -47,58 +47,58 @@
 html[data-mobile-app][data-skin="grok-dark"] { --color-menu: #2a2a2d; }
 
 /* the phone writes in sentence case, grok's capitalised unread line included */
-.dusk-mobile [data-unread-divider] .uppercase { text-transform: none; font-size: 13px; letter-spacing: 0; }
+.madani-mobile [data-unread-divider] .uppercase { text-transform: none; font-size: 13px; letter-spacing: 0; }
 
-.dusk-mobile .mobile-page { box-shadow: -12px 0 32px rgb(10 10 12 / .10); }
+.madani-mobile .mobile-page { box-shadow: -12px 0 32px rgb(10 10 12 / .10); }
 /* the list under an open chat is out of sight: its working dots and other loops hold still until it shows again. Named
    loops only: a rule on every element under it restyles the whole list each time a chat opens and closes */
-.dusk-mobile .mobile-nav > [inert] :is(.dusk-breathe, .dusk-zzz, .dusk-typing-dot, .working-mascot-bob, .working-mascot-glance, .working-mascot-blink, .maus-character, .maus-orbit, .maus-orbit-dot, .status-shimmer, .thinking-sheen > span) {
+.madani-mobile .mobile-nav > [inert] :is(.madani-breathe, .madani-zzz, .madani-typing-dot, .working-mascot-bob, .working-mascot-glance, .working-mascot-blink, .maus-character, .maus-orbit, .maus-orbit-dot, .status-shimmer, .thinking-sheen > span) {
   animation-play-state: paused !important;
 }
 
 /* a keyboard or Switch Control focus shows a ring; text fields show their caret instead, and controls that draw their own
    focus ring keep it */
-.dusk-mobile :focus-visible:not(input, textarea, [contenteditable], [class*="focus-visible:ring"]) {
+.madani-mobile :focus-visible:not(input, textarea, [contenteditable], [class*="focus-visible:ring"]) {
   outline: 2px solid var(--color-focus);
   outline-offset: 2px;
 }
-.dusk-mobile :is(input, textarea, [contenteditable]):focus-visible { outline: none; }
-.dusk-mobile .mobile-row:focus-visible { outline-offset: -2px; border-radius: 16px; }
+.madani-mobile :is(input, textarea, [contenteditable]):focus-visible { outline: none; }
+.madani-mobile .mobile-row:focus-visible { outline-offset: -2px; border-radius: 16px; }
 
 
 /* the keyboard: during its slide the transcript and composer ride it on the compositor; once it settles the layout
    takes the space and the transform returns to zero in the same frame (src/mobile/keyboard.ts) */
-.dusk-mobile [data-mobile-chat] .glass-scroller,
-.dusk-mobile [data-mobile-chat] [data-grok-inset] {
+.madani-mobile [data-mobile-chat] .glass-scroller,
+.madani-mobile [data-mobile-chat] [data-grok-inset] {
   transform: translate3d(0, calc(-1 * var(--m-kb-shift)), 0);
 }
-.dusk-mobile[data-kb-moving] [data-mobile-chat] .glass-scroller,
-.dusk-mobile[data-kb-moving] [data-mobile-chat] [data-grok-inset] {
+.madani-mobile[data-kb-moving] [data-mobile-chat] .glass-scroller,
+.madani-mobile[data-kb-moving] [data-mobile-chat] [data-grok-inset] {
   transition: transform var(--m-kb-dur) var(--m-kb-ease) var(--m-kb-delay, 0s);
   will-change: transform;
 }
-.dusk-mobile [data-mobile-chat] { padding-bottom: max(var(--m-safe-bottom), var(--m-kb)); }
+.madani-mobile [data-mobile-chat] { padding-bottom: max(var(--m-safe-bottom), var(--m-kb)); }
 
 /* the shared chat header row keeps its height as the spacer under the shell's floating nav */
-.dusk-mobile [data-mobile-chat] :is([data-chathead-row], [data-roomhead-row]) { visibility: hidden; }
-.dusk-mobile [data-mobile-chat] main { padding-top: var(--m-safe-top); }
+.madani-mobile [data-mobile-chat] :is([data-chathead-row], [data-roomhead-row]) { visibility: hidden; }
+.madani-mobile [data-mobile-chat] main { padding-top: var(--m-safe-top); }
 
 @media (prefers-reduced-motion: reduce) {
-  .dusk-mobile .mobile-press, .dusk-mobile .mobile-press:active { scale: 1; }
-  .dusk-mobile[data-kb-moving] [data-mobile-chat] .glass-scroller,
-  .dusk-mobile[data-kb-moving] [data-mobile-chat] [data-grok-inset] { transition-duration: .01s; transition-delay: 0s; }
+  .madani-mobile .mobile-press, .madani-mobile .mobile-press:active { scale: 1; }
+  .madani-mobile[data-kb-moving] [data-mobile-chat] .glass-scroller,
+  .madani-mobile[data-kb-moving] [data-mobile-chat] [data-grok-inset] { transition-duration: .01s; transition-delay: 0s; }
 }
 
 /* the web phone preview draws a status bar and home indicator around an iframe, which reports no safe areas */
-[data-phone-frame] .dusk-mobile { --m-safe-top: 54px; --m-safe-bottom: 34px; }
+[data-phone-frame] .madani-mobile { --m-safe-top: 54px; --m-safe-bottom: 34px; }
 
-.dusk-mobile .mobile-press[data-opening] { scale: .96; }
+.madani-mobile .mobile-press[data-opening] { scale: .96; }
 
 /* the native camera draws behind the webview */
 html.mobile-scanning,
 html.mobile-scanning body,
 html.mobile-scanning #root,
-html.mobile-scanning .dusk-mobile,
+html.mobile-scanning .madani-mobile,
 html.mobile-scanning [data-scan-clear] { background: transparent !important; }
 html.mobile-scanning [data-scan-hide] { visibility: hidden; }
 
@@ -112,20 +112,20 @@ html[data-mobile-app] [data-selectable] { -webkit-user-select: text; user-select
 html[data-mobile-app] [data-selectable] :is(button, [role="button"]) { -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
 
 /* touch targets the shared desktop components draw smaller than a thumb needs: at least 44px inside the phone shell */
-.dusk-mobile [data-mobile-chat] [data-grok-inset] button:not([role="menuitem"]),
-.dusk-mobile .side-panel [data-panel-head] button,
-.dusk-mobile .side-panel > div > div > button[aria-label],
-.dusk-mobile .side-panel [data-panel-share],
-.dusk-mobile [data-mobile-chat] form button { min-width: 44px; min-height: 44px; }
+.madani-mobile [data-mobile-chat] [data-grok-inset] button:not([role="menuitem"]),
+.madani-mobile .side-panel [data-panel-head] button,
+.madani-mobile .side-panel > div > div > button[aria-label],
+.madani-mobile .side-panel [data-panel-share],
+.madani-mobile [data-mobile-chat] form button { min-width: 44px; min-height: 44px; }
 /* an attached file's remove button is a small disc on its thumbnail; it answers 44 through the rule below */
-.dusk-mobile [data-mobile-chat] [data-grok-inset] [data-composer-attachment] button:not([role="menuitem"]) { min-width: 0; min-height: 0; }
+.madani-mobile [data-mobile-chat] [data-grok-inset] [data-composer-attachment] button:not([role="menuitem"]) { min-width: 0; min-height: 0; }
 
 /* the rest (a code block's copy, a message's actions, a panel switch, an inline link) answer a 44px square around
    their centre without changing how they look; in the base layer, so a control placed with a position utility keeps it */
 @layer base {
   @media (pointer: coarse) {
-    .dusk-mobile :where(button, a[href], [role="button"], [role="switch"]):not([class*="after:"]) { position: relative; }
-    .dusk-mobile :where(button, a[href], [role="button"], [role="switch"]):not([class*="after:"])::after {
+    .madani-mobile :where(button, a[href], [role="button"], [role="switch"]):not([class*="after:"]) { position: relative; }
+    .madani-mobile :where(button, a[href], [role="button"], [role="switch"]):not([class*="after:"])::after {
       content: ""; position: absolute; left: 50%; top: 50%; width: max(100%, 44px); height: max(100%, 44px); transform: translate(-50%, -50%);
     }
   }
@@ -135,8 +135,8 @@ html[data-mobile-app] [data-selectable] :is(button, [role="button"]) { -webkit-u
    bubble and outside its box, so the bubble keeps one size from the composer to the server's copy */
 @keyframes m-sending { to { opacity: 1; } }
 @keyframes m-sending-dim { to { opacity: .6; } }
-.dusk-mobile [data-chat-bubble][data-sending] { position: relative; animation: m-sending-dim .2s ease-out 1.2s forwards; }
-.dusk-mobile [data-chat-bubble][data-sending]::after {
+.madani-mobile [data-chat-bubble][data-sending] { position: relative; animation: m-sending-dim .2s ease-out 1.2s forwards; }
+.madani-mobile [data-chat-bubble][data-sending]::after {
   content: attr(data-sending);
   position: absolute;
   top: 100%;
@@ -152,7 +152,7 @@ html[data-mobile-app] [data-selectable] :is(button, [role="button"]) { -webkit-u
 }
 
 /* the safe answer to an approval is a real button on a phone, not a bare word beside the filled one */
-.dusk-mobile [data-approval-deny] {
+.madani-mobile [data-approval-deny] {
   min-height: 44px;
   padding-inline: 18px;
   border-radius: 9999px;
@@ -162,11 +162,11 @@ html[data-mobile-app] [data-selectable] :is(button, [role="button"]) { -webkit-u
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .dusk-mobile [data-chat-bubble][data-sending], .dusk-mobile [data-chat-bubble][data-sending]::after { animation-duration: .01s; }
+  .madani-mobile [data-chat-bubble][data-sending], .madani-mobile [data-chat-bubble][data-sending]::after { animation-duration: .01s; }
 }
 
 /* a message's actions, brought up by a tap or long press, rise as one raised pill out of the bubble's side */
-.dusk-mobile [data-mobile-chat] [data-testid="message-actions"] {
+.madani-mobile [data-mobile-chat] [data-testid="message-actions"] {
   padding: 2px 4px;
   border-radius: 9999px;
   background-color: var(--color-composer);
@@ -175,17 +175,17 @@ html[data-mobile-app] [data-selectable] :is(button, [role="button"]) { -webkit-u
   scale: .9;
   transition: opacity .16s var(--m-ease-out), scale .26s cubic-bezier(.3, 1.12, .4, 1);
 }
-.dusk-mobile [data-mobile-chat] [data-testid="message-actions"].flex-row-reverse { transform-origin: right center; }
-.dusk-mobile [data-mobile-chat] [data-testid="message-actions"][data-shown] { scale: 1; }
-.dusk-mobile [data-mobile-chat] [data-testid="message-actions"] > button svg { width: 18px; height: 18px; }
-[data-skin="grok-dark"] .dusk-mobile [data-mobile-chat] [data-testid="message-actions"] { box-shadow: 0 6px 18px -4px rgb(0 0 0 / .55); }
+.madani-mobile [data-mobile-chat] [data-testid="message-actions"].flex-row-reverse { transform-origin: right center; }
+.madani-mobile [data-mobile-chat] [data-testid="message-actions"][data-shown] { scale: 1; }
+.madani-mobile [data-mobile-chat] [data-testid="message-actions"] > button svg { width: 18px; height: 18px; }
+[data-skin="grok-dark"] .madani-mobile [data-mobile-chat] [data-testid="message-actions"] { box-shadow: 0 6px 18px -4px rgb(0 0 0 / .55); }
 @media (prefers-reduced-motion: reduce) {
-  .dusk-mobile [data-mobile-chat] [data-testid="message-actions"] { scale: 1; }
+  .madani-mobile [data-mobile-chat] [data-testid="message-actions"] { scale: 1; }
 }
 
 /* with the system's context menu (iOS 26) a message's actions live in that menu: the bar leaves the row, still there
    for VoiceOver and for the menu to read, and the bubble takes the room it held */
-html[data-native-menu] .dusk-mobile [data-mobile-chat] [data-message-row] [data-testid="message-actions"] {
+html[data-native-menu] .madani-mobile [data-mobile-chat] [data-message-row] [data-testid="message-actions"] {
   position: absolute;
   width: 1px;
   height: 1px;
@@ -196,27 +196,27 @@ html[data-native-menu] .dusk-mobile [data-mobile-chat] [data-message-row] [data-
 }
 /* bubbles read like a chat app: a bot reply and your own both stop at 85% of the column. the actions pill holds no
    room in the row for that, it rises over the bubble's top corner when a tap brings it up */
-.dusk-mobile [data-mobile-chat] [data-message-row] :has(> [data-testid="message-actions"]) { position: relative; }
-.dusk-mobile [data-mobile-chat] [data-message-row] [data-testid="message-actions"] {
+.madani-mobile [data-mobile-chat] [data-message-row] :has(> [data-testid="message-actions"]) { position: relative; }
+.madani-mobile [data-mobile-chat] [data-message-row] [data-testid="message-actions"] {
   position: absolute;
   bottom: calc(100% - 6px);
   inset-inline-start: 0;
   z-index: 2;
   transform-origin: left bottom;
 }
-.dusk-mobile [data-mobile-chat] [data-message-row] [data-testid="message-actions"].flex-row-reverse {
+.madani-mobile [data-mobile-chat] [data-message-row] [data-testid="message-actions"].flex-row-reverse {
   inset-inline: auto 0;
   transform-origin: right bottom;
 }
-.dusk-mobile [data-mobile-chat] [data-chat-bubble][class*="100%-82px"] { max-width: calc(100% - 44px); }
+.madani-mobile [data-mobile-chat] [data-chat-bubble][class*="100%-82px"] { max-width: calc(100% - 44px); }
 
 /* the room's setup form is drawn at desktop density; on a phone its labels and hints read at the shell's sizes */
-.dusk-mobile [data-testid="room-setup"] .text-\[13px\] { font-size: 15px; line-height: 20px; }
-.dusk-mobile [data-testid="room-setup"] .text-\[12px\] { font-size: 13px; line-height: 18px; }
-.dusk-mobile [data-testid="room-setup"] .text-\[11px\] { font-size: 12px; line-height: 16px; }
+.madani-mobile [data-testid="room-setup"] .text-\[13px\] { font-size: 15px; line-height: 20px; }
+.madani-mobile [data-testid="room-setup"] .text-\[12px\] { font-size: 13px; line-height: 18px; }
+.madani-mobile [data-testid="room-setup"] .text-\[11px\] { font-size: 12px; line-height: 16px; }
 
 /* the page's stand-in for the native glass (the chat's header pills and composer, Home's top buttons): blur and a hairline, no highlight or glow */
-.dusk-mobile :is([data-mobile-chat], [data-home-bar]) {
+.madani-mobile :is([data-mobile-chat], [data-home-bar]) {
   --g-tint: rgb(255 255 255 / .55);
   --g-tint-quiet: rgb(24 24 32 / .055);
   --g-solid: rgb(250 250 252 / .97);
@@ -224,7 +224,7 @@ html[data-native-menu] .dusk-mobile [data-mobile-chat] [data-message-row] [data-
   --g-rim: rgb(20 20 28 / .08);
   --g-shadow: 0 8px 24px -12px rgb(30 32 40 / .25);
 }
-[data-skin="grok-dark"] .dusk-mobile :is([data-mobile-chat], [data-home-bar]), .dusk-mobile[data-scheme="dark"] :is([data-mobile-chat], [data-home-bar]) {
+[data-skin="grok-dark"] .madani-mobile :is([data-mobile-chat], [data-home-bar]), .madani-mobile[data-scheme="dark"] :is([data-mobile-chat], [data-home-bar]) {
   --g-tint: rgb(48 48 52 / .55);
   --g-tint-quiet: rgb(255 255 255 / .07);
   --g-solid: rgb(38 38 42 / .97);
@@ -232,8 +232,8 @@ html[data-native-menu] .dusk-mobile [data-mobile-chat] [data-message-row] [data-
   --g-rim: rgb(255 255 255 / .07);
   --g-shadow: 0 8px 24px -12px rgb(0 0 0 / .6);
 }
-.dusk-mobile :is([data-mobile-chat], [data-home-bar]) .m-glass,
-.dusk-mobile [data-mobile-chat] [data-tour="composer"] {
+.madani-mobile :is([data-mobile-chat], [data-home-bar]) .m-glass,
+.madani-mobile [data-mobile-chat] [data-tour="composer"] {
   background-color: var(--g-tint);
   -webkit-backdrop-filter: blur(16px) saturate(180%);
   backdrop-filter: blur(16px) saturate(180%);
@@ -242,7 +242,7 @@ html[data-native-menu] .dusk-mobile [data-mobile-chat] [data-message-row] [data-
 }
 
 /* under the status bar the transcript fades into the page, so text never runs into the clock */
-.dusk-mobile [data-mobile-chat] .m-edge-top {
+.madani-mobile [data-mobile-chat] .m-edge-top {
   pointer-events: none;
   position: absolute;
   inset-inline: 0;
@@ -251,13 +251,13 @@ html[data-native-menu] .dusk-mobile [data-mobile-chat] [data-message-row] [data-
 }
 
 @media (prefers-reduced-transparency: reduce) {
-  .dusk-mobile :is([data-mobile-chat] :is(.m-glass, [data-tour="composer"]), [data-home-bar] .m-glass) { background-color: var(--g-solid); -webkit-backdrop-filter: none; backdrop-filter: none; }
+  .madani-mobile :is([data-mobile-chat] :is(.m-glass, [data-tour="composer"]), [data-home-bar] .m-glass) { background-color: var(--g-solid); -webkit-backdrop-filter: none; backdrop-filter: none; }
 }
 /* android webviews drop frames compositing backdrop-filter on many phones: there every glass surface is its solid twin */
 /* named, not every element: a rule ending in a universal selector is tried on each element at every restyle */
 html[data-mobile-app="android"] :is(.glass-surface, .m-glass, [data-tour="composer"], [class*="backdrop-blur"]),
 html[data-mobile-app="android"] .glass-bar::before { -webkit-backdrop-filter: none !important; backdrop-filter: none !important; }
-html[data-mobile-app="android"] .dusk-mobile :is([data-mobile-chat] :is(.m-glass, [data-tour="composer"]), [data-home-bar] .m-glass) { background-color: var(--g-solid); }
+html[data-mobile-app="android"] .madani-mobile :is([data-mobile-chat] :is(.m-glass, [data-tour="composer"]), [data-home-bar] .m-glass) { background-color: var(--g-solid); }
 html[data-mobile-app="android"] .glass-surface { background: var(--color-menu); }
 html[data-mobile-app="android"] :is(.glass-card, .glass-surface .bg-card) { background: var(--color-card); }
 html[data-mobile-app="android"] .glass-rail { background: var(--color-app); }
@@ -266,17 +266,17 @@ html[data-mobile-app="android"] .glass-bar:not([data-glass-fade])::before { back
 html[data-mobile-app="android"] button.mobile-press.backdrop-blur-md { background-color: rgb(0 0 0 / .45); }
 /* android is Material, not glass: the composer is a tonal surface (M3's surface container) with a hairline and no
    shadow, and its controls answer a touch with a ripple from the centre (M3's emphasized decelerate) instead of a scale */
-html[data-mobile-app="android"] .dusk-mobile [data-mobile-chat] [data-tour="composer"] {
+html[data-mobile-app="android"] .madani-mobile [data-mobile-chat] [data-tour="composer"] {
   background-color: var(--g-container);
   box-shadow: inset 0 0 0 .5px var(--g-rim);
 }
 /* and the chat's header is M3's center-aligned top app bar: one surface from under the status bar, a soft edge below it,
    and plain icon buttons and title (no discs, no pill) that answer the same centred ripple */
-html[data-mobile-app="android"] .dusk-mobile [data-mobile-chat] [data-glass-nav] {
+html[data-mobile-app="android"] .madani-mobile [data-mobile-chat] [data-glass-nav] {
   background-color: var(--color-app);
   padding-block-end: 6px;
 }
-html[data-mobile-app="android"] .dusk-mobile [data-mobile-chat] [data-glass-nav]::after {
+html[data-mobile-app="android"] .madani-mobile [data-mobile-chat] [data-glass-nav]::after {
   content: "";
   position: absolute;
   inset-inline: 0;
@@ -285,19 +285,19 @@ html[data-mobile-app="android"] .dusk-mobile [data-mobile-chat] [data-glass-nav]
   pointer-events: none;
   background: linear-gradient(to bottom, var(--color-app), transparent);
 }
-html[data-mobile-app="android"] .dusk-mobile [data-mobile-chat] [data-glass-nav] .m-glass {
+html[data-mobile-app="android"] .madani-mobile [data-mobile-chat] [data-glass-nav] .m-glass {
   background-color: transparent;
   box-shadow: none;
 }
-html[data-mobile-app="android"] .dusk-mobile [data-mobile-chat] [data-glass-nav] .mobile-press:active:not(:disabled) { scale: 1; }
-html[data-mobile-app="android"] .dusk-mobile [data-mobile-chat] [data-glass-nav] button { position: relative; }
+html[data-mobile-app="android"] .madani-mobile [data-mobile-chat] [data-glass-nav] .mobile-press:active:not(:disabled) { scale: 1; }
+html[data-mobile-app="android"] .madani-mobile [data-mobile-chat] [data-glass-nav] button { position: relative; }
 /* Home's top buttons: M3's tonal icon buttons, flat on the page */
-html[data-mobile-app="android"] .dusk-mobile [data-home-bar] :is(.m-glass, .mobile-float) {
+html[data-mobile-app="android"] .madani-mobile [data-home-bar] :is(.m-glass, .mobile-float) {
   background-color: var(--g-container);
   box-shadow: none;
 }
-html[data-mobile-app="android"] .dusk-mobile [data-mobile-chat] [data-glass-nav] button::after,
-html[data-mobile-app="android"] .dusk-mobile [data-mobile-chat] [data-tour="composer"] button:not([role="menuitem"])::after {
+html[data-mobile-app="android"] .madani-mobile [data-mobile-chat] [data-glass-nav] button::after,
+html[data-mobile-app="android"] .madani-mobile [data-mobile-chat] [data-tour="composer"] button:not([role="menuitem"])::after {
   content: "";
   position: absolute;
   inset: 0;
@@ -307,34 +307,34 @@ html[data-mobile-app="android"] .dusk-mobile [data-mobile-chat] [data-tour="comp
   opacity: 0;
   transition: background-size 400ms cubic-bezier(.05, .7, .1, 1), opacity 300ms linear 100ms;
 }
-html[data-mobile-app="android"] .dusk-mobile [data-mobile-chat] [data-glass-nav] button:active::after,
-html[data-mobile-app="android"] .dusk-mobile [data-mobile-chat] [data-tour="composer"] button:not([role="menuitem"]):active::after {
+html[data-mobile-app="android"] .madani-mobile [data-mobile-chat] [data-glass-nav] button:active::after,
+html[data-mobile-app="android"] .madani-mobile [data-mobile-chat] [data-tour="composer"] button:not([role="menuitem"]):active::after {
   background-size: 300% 300%;
   opacity: .12;
   transition: background-size 400ms cubic-bezier(.05, .7, .1, 1), opacity 0ms;
 }
-html[data-mobile-app="android"] .dusk-mobile [data-mobile-chat] :active > [data-composer-plus] { scale: 1; }
+html[data-mobile-app="android"] .madani-mobile [data-mobile-chat] :active > [data-composer-plus] { scale: 1; }
 /* every other control's touch ripple (press.ts installRipple): a disc from the finger, painted over the control's own
    background so nothing round it moves or is clipped; rows and menu items take none */
 @property --m-ripple { syntax: "<length>"; inherits: false; initial-value: 0px; }
 @property --m-ripple-a { syntax: "<number>"; inherits: false; initial-value: 1; }
-html[data-mobile-app="android"] .dusk-mobile [data-ripple] {
+html[data-mobile-app="android"] .madani-mobile [data-ripple] {
   background-image: radial-gradient(circle at var(--m-rx, 50%) var(--m-ry, 50%),
     color-mix(in srgb, currentColor calc(8% * var(--m-ripple-a)), transparent) var(--m-ripple),
     transparent calc(var(--m-ripple) + 1px));
 }
 @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-  .dusk-mobile :is([data-mobile-chat] :is(.m-glass, [data-tour="composer"]), [data-home-bar] .m-glass) { background-color: var(--g-solid); }
+  .madani-mobile :is([data-mobile-chat] :is(.m-glass, [data-tour="composer"]), [data-home-bar] .m-glass) { background-color: var(--g-solid); }
 }
 @media (forced-colors: active) {
-  .dusk-mobile :is([data-mobile-chat], [data-home-bar]) .m-glass { background: Canvas; border: 1px solid CanvasText; }
+  .madani-mobile :is([data-mobile-chat], [data-home-bar]) .m-glass { background: Canvas; border: 1px solid CanvasText; }
 }
 
-/* the composer is one glass pill, measured on the reference (docs: dusk-review 2026-11-19 spec): 30 in from each side at
+/* the composer is one glass pill, measured on the reference (docs: madani-review 2026-11-19 spec): 30 in from each side at
    rest and 6 with the keyboard up, riding the keyboard's curve; 48 high on one line with 8 round its 32 controls (each
    still answers 44); a plain +, the field 10 after it at the body's 17/24, then the mic and the call, or send */
-.dusk-mobile [data-mobile-chat] [data-composer-backdrop] { display: none; }
-.dusk-mobile [data-mobile-chat] [data-tour="composer"] {
+.madani-mobile [data-mobile-chat] [data-composer-backdrop] { display: none; }
+.madani-mobile [data-mobile-chat] [data-tour="composer"] {
   align-items: stretch;
   gap: 0;
   /* the dock pads 16 */
@@ -344,22 +344,22 @@ html[data-mobile-app="android"] .dusk-mobile [data-ripple] {
   box-shadow: inset 0 0 0 .5px var(--g-rim), 0 2px 10px -6px rgb(20 20 28 / .14);
   transition: margin-inline var(--m-kb-dur, .35s) var(--m-kb-ease, ease) var(--m-kb-delay, 0s), opacity 200ms cubic-bezier(0.22, 1, 0.36, 1);
 }
-.dusk-mobile[data-keyboard="open"] [data-mobile-chat] [data-tour="composer"] { margin-inline: -10px; }
+.madani-mobile[data-keyboard="open"] [data-mobile-chat] [data-tour="composer"] { margin-inline: -10px; }
 /* in a call its bar takes the composer's place, one bar at a time: the same glass pill on the same frame (30 in from
    each side, 12 above the dock's foot, 48 high, 32 controls 8 in), the composer fading out under it as it comes and back
    as it goes */
-.dusk-mobile [data-mobile-chat]:has([data-call-surface]:not([data-call-leaving])) [data-tour="composer"] {
+.madani-mobile [data-mobile-chat]:has([data-call-surface]:not([data-call-leaving])) [data-tour="composer"] {
   opacity: 0;
   visibility: hidden;
   transition: margin-inline var(--m-kb-dur, .35s) var(--m-kb-ease, ease) var(--m-kb-delay, 0s), opacity 200ms cubic-bezier(0.22, 1, 0.36, 1), visibility 0s 200ms;
 }
-.dusk-mobile [data-mobile-chat] .voice-call-dock {
+.madani-mobile [data-mobile-chat] .voice-call-dock {
   gap: 8px;
   padding: 0 30px 12px;
   background: none;
   animation-duration: 200ms;
 }
-.dusk-mobile [data-mobile-chat] .voice-call-pill {
+.madani-mobile [data-mobile-chat] .voice-call-pill {
   width: 100%;
   height: 48px;
   gap: 8px;
@@ -372,31 +372,31 @@ html[data-mobile-app="android"] .dusk-mobile [data-ripple] {
   box-shadow: inset 0 0 0 .5px var(--g-rim), 0 2px 10px -6px rgb(20 20 28 / .14);
   animation: voice-call-fade 200ms cubic-bezier(0.22, 1, 0.36, 1) both;
 }
-.dusk-mobile [data-mobile-chat] .voice-call-pill-out { animation: voice-call-unfade 200ms cubic-bezier(0.22, 1, 0.36, 1) both; }
-.dusk-mobile [data-mobile-chat] .voice-call-pill > [data-call-wave] { flex: 1; min-width: 0; padding-inline: 0; }
+.madani-mobile [data-mobile-chat] .voice-call-pill-out { animation: voice-call-unfade 200ms cubic-bezier(0.22, 1, 0.36, 1) both; }
+.madani-mobile [data-mobile-chat] .voice-call-pill > [data-call-wave] { flex: 1; min-width: 0; padding-inline: 0; }
 /* plain glyphs like the composer's own controls; only hanging up (and a muted mic) is a filled disc */
-.dusk-mobile [data-mobile-chat] .voice-call-pill .voice-call-press { width: 32px; height: 32px; }
-.dusk-mobile [data-mobile-chat] .voice-call-pill .voice-call-press:not([data-call-filled]) { background-color: transparent; }
-html[data-mobile-app="android"] .dusk-mobile [data-mobile-chat] .voice-call-pill { background-color: var(--g-container); box-shadow: inset 0 0 0 .5px var(--g-rim); }
+.madani-mobile [data-mobile-chat] .voice-call-pill .voice-call-press { width: 32px; height: 32px; }
+.madani-mobile [data-mobile-chat] .voice-call-pill .voice-call-press:not([data-call-filled]) { background-color: transparent; }
+html[data-mobile-app="android"] .madani-mobile [data-mobile-chat] .voice-call-pill { background-color: var(--g-container); box-shadow: inset 0 0 0 .5px var(--g-rim); }
 @media (prefers-reduced-transparency: reduce) {
-  .dusk-mobile [data-mobile-chat] .voice-call-pill { background-color: var(--g-solid); -webkit-backdrop-filter: none; backdrop-filter: none; }
+  .madani-mobile [data-mobile-chat] .voice-call-pill { background-color: var(--g-solid); -webkit-backdrop-filter: none; backdrop-filter: none; }
 }
 /* while a card waits above the composer nothing is working, so the working line's empty slot gives its room back */
-.dusk-mobile [data-mobile-chat]:has([data-approval-dock]) .turn-status-slot:empty { display: none; }
+.madani-mobile [data-mobile-chat]:has([data-approval-dock]) .turn-status-slot:empty { display: none; }
 /* a card waiting on the person above the composer stops under the top bar: its words scroll, its title and buttons stay */
-.dusk-mobile [data-mobile-chat] [data-approval-dock] [data-ask-card="approval"] {
+.madani-mobile [data-mobile-chat] [data-approval-dock] [data-ask-card="approval"] {
   display: flex;
   flex-direction: column;
   max-height: calc(100dvh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px) - 208px);
 }
-.dusk-mobile [data-mobile-chat] [data-tour="composer"] > div:has(> [data-composer-row]) {
+.madani-mobile [data-mobile-chat] [data-tour="composer"] > div:has(> [data-composer-row]) {
   min-height: 32px;
   padding: 0;
   border-radius: 16px;
   background: transparent;
   box-shadow: none;
 }
-.dusk-mobile [data-mobile-chat] [data-tour="composer"] textarea {
+.madani-mobile [data-mobile-chat] [data-tour="composer"] textarea {
   font-size: 17px;
   line-height: 24px;
   /* one line sits in the 32 row whatever the text size does to the line */
@@ -406,52 +406,52 @@ html[data-mobile-app="android"] .dusk-mobile [data-mobile-chat] .voice-call-pill
   min-height: 32px;
   max-height: calc(5lh + 2 * max(0px, calc((32px - 1lh) / 2)));
 }
-.dusk-mobile [data-mobile-chat] [data-tour="composer"] textarea::placeholder { color: var(--color-ink-tertiary); opacity: 1; }
+.madani-mobile [data-mobile-chat] [data-tour="composer"] textarea::placeholder { color: var(--color-ink-tertiary); opacity: 1; }
 /* a placeholder longer than the field ends in an ellipsis on its one line, as the native field's does */
-.dusk-mobile [data-mobile-chat] [data-tour="composer"] textarea:placeholder-shown { white-space: nowrap; text-overflow: ellipsis; overflow: hidden; }
-.dusk-mobile [data-mobile-chat] [data-composer-plus] {
+.madani-mobile [data-mobile-chat] [data-tour="composer"] textarea:placeholder-shown { white-space: nowrap; text-overflow: ellipsis; overflow: hidden; }
+.madani-mobile [data-mobile-chat] [data-composer-plus] {
   width: 32px;
   height: 32px;
   color: var(--color-ink-secondary);
   background-color: transparent;
   transition: scale .2s var(--m-ease-release);
 }
-.dusk-mobile [data-mobile-chat] [data-composer-plus] svg { width: 22px; height: 22px; }
-.dusk-mobile [data-mobile-chat] [data-tour="composer"] button:not([role="menuitem"]):is([data-composer-send], [data-voice-mic], [data-composer-stop], [data-composer-discard], [data-call-button], :has(> [data-composer-plus])) {
+.madani-mobile [data-mobile-chat] [data-composer-plus] svg { width: 22px; height: 22px; }
+.madani-mobile [data-mobile-chat] [data-tour="composer"] button:not([role="menuitem"]):is([data-composer-send], [data-voice-mic], [data-composer-stop], [data-composer-discard], [data-call-button], :has(> [data-composer-plus])) {
   position: relative;
   width: 32px; height: 32px; min-width: 32px; min-height: 32px;
 }
 /* each control draws at 32 and answers the 44 round it */
-.dusk-mobile [data-mobile-chat] [data-tour="composer"] button:not([role="menuitem"]):is([data-composer-send], [data-voice-mic], [data-composer-stop], [data-composer-discard], [data-call-button], :has(> [data-composer-plus]))::before {
+.madani-mobile [data-mobile-chat] [data-tour="composer"] button:not([role="menuitem"]):is([data-composer-send], [data-voice-mic], [data-composer-stop], [data-composer-discard], [data-call-button], :has(> [data-composer-plus]))::before {
   content: "";
   position: absolute;
   inset: -6px;
 }
 /* the mic's held spot draws at the controls' size, or the empty bar stands taller than a typed one */
-.dusk-mobile [data-mobile-chat] [data-composer-stop-ghost],
-.dusk-mobile [data-mobile-chat] [data-composer-actions] [data-mic-spacer] { width: 32px; height: 32px; min-width: 32px; }
+.madani-mobile [data-mobile-chat] [data-composer-stop-ghost],
+.madani-mobile [data-mobile-chat] [data-composer-actions] [data-mic-spacer] { width: 32px; height: 32px; min-width: 32px; }
 /* desktop's hold-the-spot swap: Stop turns in where the mic was, the mic springs in beside it, and when the turn ends
    the stop disc fades out over the mic's glyph popping back (keyframes in src/styles/composer.css) */
-.dusk-mobile [data-mobile-chat] [data-composer-stop="slot"] .composer-stop-glyph { animation: composer-stop-in 260ms var(--composer-glyph-ease); }
-.dusk-mobile [data-mobile-chat] .composer-mic-back > svg { animation: composer-glyph-in 200ms var(--composer-glyph-ease); }
+.madani-mobile [data-mobile-chat] [data-composer-stop="slot"] .composer-stop-glyph { animation: composer-stop-in 260ms var(--composer-glyph-ease); }
+.madani-mobile [data-mobile-chat] .composer-mic-back > svg { animation: composer-glyph-in 200ms var(--composer-glyph-ease); }
 @media (prefers-reduced-motion: reduce) {
-  .dusk-mobile [data-mobile-chat] :is([data-composer-stop="slot"] .composer-stop-glyph, .composer-mic-back > svg) { animation-name: composer-glyph-fade; }
-  .dusk-mobile [data-mobile-chat] [data-tour="composer"] { transition: none; }
+  .madani-mobile [data-mobile-chat] :is([data-composer-stop="slot"] .composer-stop-glyph, .composer-mic-back > svg) { animation-name: composer-glyph-fade; }
+  .madani-mobile [data-mobile-chat] [data-tour="composer"] { transition: none; }
 }
-.dusk-mobile [data-mobile-chat] :active > [data-composer-plus] { scale: .9; transition-duration: .14s; }
-.dusk-mobile [data-mobile-chat] [data-composer-actions] { gap: 8px; }
+.madani-mobile [data-mobile-chat] :active > [data-composer-plus] { scale: .9; transition-duration: .14s; }
+.madani-mobile [data-mobile-chat] [data-composer-actions] { gap: 8px; }
 /* the mic, the call and discard are plain glyphs in the quiet ink, no disc behind them */
-.dusk-mobile [data-mobile-chat] [data-composer-actions] :is([data-voice-mic="start"], [data-call-button="composer"]:not([data-call-active]), [data-composer-discard], [data-composer-mic-ghost]) {
+.madani-mobile [data-mobile-chat] [data-composer-actions] :is([data-voice-mic="start"], [data-call-button="composer"]:not([data-call-active]), [data-composer-discard], [data-composer-mic-ghost]) {
   background-color: transparent;
   color: var(--color-ink-tertiary);
 }
-.dusk-mobile [data-mobile-chat] [data-composer-actions] :is([data-voice-mic="start"], [data-call-button="composer"], [data-composer-discard]) svg { width: 22px; height: 22px; }
-.dusk-mobile [data-mobile-chat] [data-composer-actions] :is([data-composer-discard], [data-voice-mic="done"]) svg { animation: composer-glyph-in 200ms var(--composer-glyph-ease); }
+.madani-mobile [data-mobile-chat] [data-composer-actions] :is([data-voice-mic="start"], [data-call-button="composer"], [data-composer-discard]) svg { width: 22px; height: 22px; }
+.madani-mobile [data-mobile-chat] [data-composer-actions] :is([data-composer-discard], [data-voice-mic="done"]) svg { animation: composer-glyph-in 200ms var(--composer-glyph-ease); }
 /* a press scales; the narrow layout's dim on top of it read as the button flashing lighter */
-.dusk-mobile [data-mobile-chat] [data-composer-actions] button:active { opacity: 1; }
+.madani-mobile [data-mobile-chat] [data-composer-actions] button:active { opacity: 1; }
 
 /* under the composer the transcript dims into the home indicator; it rides the keyboard with the dock */
-.dusk-mobile [data-mobile-chat] [data-grok-inset]::before {
+.madani-mobile [data-mobile-chat] [data-grok-inset]::before {
   content: "";
   position: absolute;
   inset: -20px 0 calc(-1 * var(--m-safe-bottom)) 0;
@@ -461,34 +461,34 @@ html[data-mobile-app="android"] .dusk-mobile [data-mobile-chat] .voice-call-pill
 
 /* send wears the bot's own button, as on the desktop; the round button holds its spot as the field fills, only its glyph
    turns, while the mic springs out beside it (composer-mic-in) and slips back in as the field empties (composer-mic-out) */
-.dusk-mobile [data-mobile-chat] [data-composer-actions] [data-composer-send] svg { animation: composer-glyph-in 200ms var(--composer-glyph-ease); }
-.dusk-mobile [data-mobile-chat] [data-composer-actions] [data-composer-mic-ghost] {
+.madani-mobile [data-mobile-chat] [data-composer-actions] [data-composer-send] svg { animation: composer-glyph-in 200ms var(--composer-glyph-ease); }
+.madani-mobile [data-mobile-chat] [data-composer-actions] [data-composer-mic-ghost] {
   right: 40px;
   width: 32px;
   height: 32px;
 }
-.dusk-mobile [data-mobile-chat] [data-composer-actions] :is([data-composer-send], [data-voice-mic], [data-composer-discard]) { transition: scale .2s var(--m-ease-release); }
-.dusk-mobile [data-mobile-chat] [data-composer-actions] :is([data-composer-send], [data-voice-mic], [data-composer-discard]):active:not(:disabled) { scale: .9; transition-duration: .14s; }
+.madani-mobile [data-mobile-chat] [data-composer-actions] :is([data-composer-send], [data-voice-mic], [data-composer-discard]) { transition: scale .2s var(--m-ease-release); }
+.madani-mobile [data-mobile-chat] [data-composer-actions] :is([data-composer-send], [data-voice-mic], [data-composer-discard]):active:not(:disabled) { scale: .9; transition-duration: .14s; }
 @media (prefers-reduced-motion: reduce) {
-  .dusk-mobile [data-mobile-chat] [data-composer-actions] :is([data-composer-send], [data-composer-discard], [data-voice-mic="done"]) svg { animation-name: composer-glyph-fade; }
-  .dusk-mobile [data-mobile-chat] [data-composer-actions] :is([data-composer-send], [data-voice-mic]):active { scale: 1; }
+  .madani-mobile [data-mobile-chat] [data-composer-actions] :is([data-composer-send], [data-composer-discard], [data-voice-mic="done"]) svg { animation-name: composer-glyph-fade; }
+  .madani-mobile [data-mobile-chat] [data-composer-actions] :is([data-composer-send], [data-voice-mic]):active { scale: 1; }
 }
-.dusk-mobile [data-mobile-chat] [data-composer-actions] :is([data-composer-send], [data-voice-mic="send"], [data-voice-mic="done"]) svg { width: 18px; height: 18px; stroke-width: 2.5; }
+.madani-mobile [data-mobile-chat] [data-composer-actions] :is([data-composer-send], [data-voice-mic="send"], [data-voice-mic="done"]) svg { width: 18px; height: 18px; stroke-width: 2.5; }
 
 /* the native glass draws the header and composer over the page: the page's own stay in place, unseen, for layout,
    menus and focus */
-html[data-native-glass-header] .dusk-mobile [data-glass-nav] [data-glass] { opacity: 0; }
-html[data-native-glass-home] .dusk-mobile [data-home-bar] [data-home-glass] { opacity: 0; }
-.dusk-mobile [data-home-bar] [data-home-glass].mobile-press { transition: scale .2s var(--m-ease-release), background-color .15s ease; }
+html[data-native-glass-header] .madani-mobile [data-glass-nav] [data-glass] { opacity: 0; }
+html[data-native-glass-home] .madani-mobile [data-home-bar] [data-home-glass] { opacity: 0; }
+.madani-mobile [data-home-bar] [data-home-glass].mobile-press { transition: scale .2s var(--m-ease-release), background-color .15s ease; }
 /* the glass and the page's header swap in one frame both ways: a press's opacity fade here would leave a blank header
    (or two) for its length */
-.dusk-mobile [data-glass-nav] [data-glass].mobile-press { transition: scale .2s var(--m-ease-release), background-color .15s ease; }
+.madani-mobile [data-glass-nav] [data-glass].mobile-press { transition: scale .2s var(--m-ease-release), background-color .15s ease; }
 /* where the native glass draws the header, a sheet hands it to the page's own (the glass cannot sit under the sheet):
    that one wears the glass's symbols, its live dot and its pill's inset, so the swap shows nothing */
-html[data-native-glyphs~="back"] .dusk-mobile [data-glass-nav] [data-glass="back"] > svg,
-html[data-native-glyphs~="right"] .dusk-mobile [data-glass-nav] [data-glass="right"] > svg { visibility: hidden; }
-html[data-native-glyphs~="back"] .dusk-mobile [data-glass-nav] [data-glass="back"]::after,
-html[data-native-glyphs~="right"] .dusk-mobile [data-glass-nav] [data-glass="right"]::after {
+html[data-native-glyphs~="back"] .madani-mobile [data-glass-nav] [data-glass="back"] > svg,
+html[data-native-glyphs~="right"] .madani-mobile [data-glass-nav] [data-glass="right"] > svg { visibility: hidden; }
+html[data-native-glyphs~="back"] .madani-mobile [data-glass-nav] [data-glass="back"]::after,
+html[data-native-glyphs~="right"] .madani-mobile [data-glass-nav] [data-glass="right"]::after {
   content: "";
   position: absolute;
   left: 50%;
@@ -502,53 +502,53 @@ html[data-native-glyphs~="right"] .dusk-mobile [data-glass-nav] [data-glass="rig
   height: var(--glyph-h);
   pointer-events: none;
 }
-html[data-native-glyphs~="back"] .dusk-mobile [data-glass-nav] [data-glass="back"] { --glyph: var(--native-glyph-back); --glyph-w: var(--native-glyph-back-w); --glyph-h: var(--native-glyph-back-h); }
-html[data-native-glyphs~="right"] .dusk-mobile [data-glass-nav] [data-glass="right"] { --glyph: var(--native-glyph-right); --glyph-w: var(--native-glyph-right-w); --glyph-h: var(--native-glyph-right-h); }
-html[data-native-glyphs~="right"] .dusk-mobile [data-glass-nav] [data-glass-live] { top: 6px; right: 6px; }
-html[data-native-glyphs] .dusk-mobile [data-glass-nav] [data-glass="title"] { padding-left: 7px; }
-html[data-native-glass-composer] .dusk-mobile [data-mobile-chat] [data-tour="composer"] {
+html[data-native-glyphs~="back"] .madani-mobile [data-glass-nav] [data-glass="back"] { --glyph: var(--native-glyph-back); --glyph-w: var(--native-glyph-back-w); --glyph-h: var(--native-glyph-back-h); }
+html[data-native-glyphs~="right"] .madani-mobile [data-glass-nav] [data-glass="right"] { --glyph: var(--native-glyph-right); --glyph-w: var(--native-glyph-right-w); --glyph-h: var(--native-glyph-right-h); }
+html[data-native-glyphs~="right"] .madani-mobile [data-glass-nav] [data-glass-live] { top: 6px; right: 6px; }
+html[data-native-glyphs] .madani-mobile [data-glass-nav] [data-glass="title"] { padding-left: 7px; }
+html[data-native-glass-composer] .madani-mobile [data-mobile-chat] [data-tour="composer"] {
   visibility: hidden;
   height: var(--glass-composer-h, auto) !important;
 }
-html[data-native-glass-composer] .dusk-mobile [data-mobile-chat] [data-tour="composer"] textarea { visibility: visible; opacity: 0; caret-color: transparent; }
-html[data-native-glass-composer] .dusk-mobile [data-mobile-chat] [data-tour="composer"] :is([role="menu"], [role="listbox"], [data-sidebar-popover-menu], [data-composer-menu], [data-call-popover]) { visibility: visible; }
+html[data-native-glass-composer] .madani-mobile [data-mobile-chat] [data-tour="composer"] textarea { visibility: visible; opacity: 0; caret-color: transparent; }
+html[data-native-glass-composer] .madani-mobile [data-mobile-chat] [data-tour="composer"] :is([role="menu"], [role="listbox"], [data-sidebar-popover-menu], [data-composer-menu], [data-call-popover]) { visibility: visible; }
 /* the + menu is its own surface over the chat: a tone off the chat's ground (deeper in a light skin, lifted in a dark
    one) rather than the chat's own colour under a shadow */
-.dusk-mobile [data-mobile-chat] [data-composer-menu] {
+.madani-mobile [data-mobile-chat] [data-composer-menu] {
   background-color: color-mix(in srgb, var(--color-ink) 8%, var(--color-app));
   box-shadow: 0 6px 20px -8px rgb(0 0 0 / .18);
 }
 
 /* message text at the phone's body size, 17 on a 24 line, regular weight; the bot's bubble is a little roomier at the
    sides than the person's, and every bubble keeps one 20px radius, no tail */
-.dusk-mobile [data-mobile-chat] [data-chat-bubble]:not([data-emoji-only]) {
+.madani-mobile [data-mobile-chat] [data-chat-bubble]:not([data-emoji-only]) {
   font-size: 17px;
   line-height: 24px;
   font-weight: 400;
 }
-.dusk-mobile [data-mobile-chat] [data-chat-bubble]:not([data-emoji-only], [data-bubble-group]) {
+.madani-mobile [data-mobile-chat] [data-chat-bubble]:not([data-emoji-only], [data-bubble-group]) {
   padding: 8px 14px;
   border-radius: 20px;
 }
-.dusk-mobile [data-mobile-chat] [data-chat-bubble].chat-bubble-bot { padding-inline: 16px; }
-.dusk-mobile [data-mobile-chat] [data-chat-bubble] :is(.chat-text, .chat-md, p, li, blockquote, td, th) { font-size: inherit; line-height: inherit; }
-.dusk-mobile [data-mobile-chat] .turn-label-slot { font-size: 17px; }
+.madani-mobile [data-mobile-chat] [data-chat-bubble].chat-bubble-bot { padding-inline: 16px; }
+.madani-mobile [data-mobile-chat] [data-chat-bubble] :is(.chat-text, .chat-md, p, li, blockquote, td, th) { font-size: inherit; line-height: inherit; }
+.madani-mobile [data-mobile-chat] .turn-label-slot { font-size: 17px; }
 
 /* a touch screen always shows a code block's copy key (top right), so the code starts below it instead of under it;
    inline code that wraps keeps its padding and corners on every line */
-.dusk-mobile [data-mobile-chat] [data-chat-bubble] .chat-code-block[data-lang] pre { padding-top: 36px; }
-.dusk-mobile [data-mobile-chat] [data-chat-bubble] .chat-code-block:not([data-lang]) pre { padding-top: 44px; }
-.dusk-mobile [data-mobile-chat] [data-chat-bubble] .chat-md code.ui-code-chip { -webkit-box-decoration-break: clone; box-decoration-break: clone; }
+.madani-mobile [data-mobile-chat] [data-chat-bubble] .chat-code-block[data-lang] pre { padding-top: 36px; }
+.madani-mobile [data-mobile-chat] [data-chat-bubble] .chat-code-block:not([data-lang]) pre { padding-top: 44px; }
+.madani-mobile [data-mobile-chat] [data-chat-bubble] .chat-md code.ui-code-chip { -webkit-box-decoration-break: clone; box-decoration-break: clone; }
 
 /* the shared desktop switch (a bot's own colour, 32 by 20) takes the phone's one switch: 51 by 31, ink when on */
-.dusk-mobile [data-ui-toggle] { width: 51px; height: 31px; }
-.dusk-mobile [data-ui-toggle][aria-checked="true"] { background-color: var(--color-ink); }
-.dusk-mobile [data-ui-toggle][aria-checked="false"] { background-color: color-mix(in srgb, var(--color-ink) 14%, transparent); }
-.dusk-mobile [data-ui-toggle] > span { width: 27px; height: 27px; background-color: var(--color-app); }
-.dusk-mobile [data-ui-toggle][aria-checked="true"] > span { translate: 20px 0; }
+.madani-mobile [data-ui-toggle] { width: 51px; height: 31px; }
+.madani-mobile [data-ui-toggle][aria-checked="true"] { background-color: var(--color-ink); }
+.madani-mobile [data-ui-toggle][aria-checked="false"] { background-color: color-mix(in srgb, var(--color-ink) 14%, transparent); }
+.madani-mobile [data-ui-toggle] > span { width: 27px; height: 27px; background-color: var(--color-app); }
+.madani-mobile [data-ui-toggle][aria-checked="true"] > span { translate: 20px 0; }
 
 /* each message's time, beside it in the gutter the transcript uncovers when it is dragged to the left */
-.dusk-mobile [data-mobile-chat] [data-message-row][data-time]::after {
+.madani-mobile [data-mobile-chat] [data-message-row][data-time]::after {
   content: attr(data-time);
   position: absolute;
   inset-inline-end: -72px;

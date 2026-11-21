@@ -38,7 +38,7 @@ const { SimpleModelMenu } = await import("./SimpleModelMenu");
 let nativeDirectory: string;
 let discovered: InstanceInfo["models"];
 beforeAll(async () => {
-  nativeDirectory = await mkdtemp(join(tmpdir(), "dusk-custom-picker-ui-"));
+  nativeDirectory = await mkdtemp(join(tmpdir(), "madani-custom-picker-ui-"));
   const fakeCli = fileURLToPath(new URL("../../server/testing/fake-custom-acp-models.ts", import.meta.url));
   discovered = await resolveCustomAcpModels({ HOME: nativeDirectory, USERPROFILE: nativeDirectory,
     PATH: dirname(process.execPath), FAKE_CUSTOM_ACP_DIRECTORY: nativeDirectory },

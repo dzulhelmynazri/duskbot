@@ -1,10 +1,10 @@
 {
   "path": "/vs/manus",
-  "title": "Manus vs dusk bot: finished tasks and recurring roles",
+  "title": "Manus vs madani bot: finished tasks and recurring roles",
   "nav": "manus",
-  "h1": "manus vs dusk bot: a task service or bots you keep",
-  "description": "Compare Manus credits, cloud tasks and automation limits with dusk bot roles and separate AI billing, without guessing a cost per task.",
-  "answer": "**want a finished deck or a colleague for the next brief too?** manus produces research, websites and slides in its cloud computers.[^1] dusk bots keep lasting jobs, chats and memory. manus bundles models into credit plans; dusk separates hosting from your ai bill.[^2][^5] choose the handoff you want, then try the same small brief before paying for more.",
+  "h1": "manus vs madani bot: a task service or bots you keep",
+  "description": "Compare Manus credits, cloud tasks and automation limits with madani bot roles and separate AI billing, without guessing a cost per task.",
+  "answer": "**want a finished deck or a colleague for the next brief too?** manus produces research, websites and slides in its cloud computers.[^1] madani bots keep lasting jobs, chats and memory. manus bundles models into credit plans; madani separates hosting from your ai bill.[^2][^5] choose the handoff you want, then try the same small brief before paying for more.",
   "tags": [
     "manus",
     "comparison",
@@ -36,17 +36,17 @@
       "you want a hosted task to produce research, slides or a website",
       "you want models inside a credit plan instead of a separate ai bill"
     ],
-    "dusk": [
+    "madani": [
       "you want bots that keep their jobs and memory between tasks",
       "you want to choose an ai per bot and decide on hosting separately"
     ]
   },
   "compare": {
     "h": "compare the budget and the handoff",
-    "intro": "**$20 buys different things here.** these are monthly usd figures as of 12 november 2026. manus credits cover work inside its service; dusk cloud buys the machine, with ai billed separately.",
+    "intro": "**$20 buys different things here.** these are monthly usd figures as of 12 november 2026. manus credits cover work inside its service; madani cloud buys the machine, with ai billed separately.",
     "cols": [
       "Manus",
-      "dusk bot"
+      "madani bot"
     ],
     "rows": [
       {
@@ -120,19 +120,19 @@
       }
     ]
   },
-  "method": "**we make dusk bot. we haven't run the same brief through both.** this compares manus's product and pricing as of 12 november 2026 with dusk docs.\n\nwe cannot price an identical report in manus credits or name a winner for research accuracy and finished files.",
+  "method": "**we make madani bot. we haven't run the same brief through both.** this compares manus's product and pricing as of 12 november 2026 with madani docs.\n\nwe cannot price an identical report in manus credits or name a winner for research accuracy and finished files.",
   "sections": [
     {
       "h": "a finished task or a lasting role",
-      "md": "**start with what you want to hand over.** manus offers research, websites, slides, images and video.[^1] its telegram post also describes recurring summaries.[^3]\n\ndusk keeps a bot's job and editable memory between tasks. change its ai and the chats, files and memory stay.[^4] try an ongoing reviewer if that suits your work.\n\nuse the [research brief](/use-cases/market-research) to narrow the task. manus said on 1 september 2026 that it resumed independent operations.[^12]"
+      "md": "**start with what you want to hand over.** manus offers research, websites, slides, images and video.[^1] its telegram post also describes recurring summaries.[^3]\n\nmadani keeps a bot's job and editable memory between tasks. change its ai and the chats, files and memory stay.[^4] try an ongoing reviewer if that suits your work.\n\nuse the [research brief](/use-cases/market-research) to narrow the task. manus said on 1 september 2026 that it resumed independent operations.[^12]"
     },
     {
       "h": "credits leave one number unknown",
-      "md": "**run your brief once and watch the credits it eats.** as of 12 november 2026, manus lists:[^2]\n\n- free: 300 daily credits, separate from the monthly pools\n- pro: $20/month and 4,000 monthly credits\n- max: $200/month and 40,000 monthly credits, then pay as you go\n\nthat gives you the allowance, but only a trial tells you what your report consumes.\n\ndusk's bill has two parts: the machine and ai. personal local use is free; cloud plus is $20/month and pro $50/month. your provider bills ai.[^5][^8] work needs a license; cloud pro includes one for one person.[^8][^11] put every line in the [cost guide](/guides/how-much-does-an-ai-agent-cost)."
+      "md": "**run your brief once and watch the credits it eats.** as of 12 november 2026, manus lists:[^2]\n\n- free: 300 daily credits, separate from the monthly pools\n- pro: $20/month and 4,000 monthly credits\n- max: $200/month and 40,000 monthly credits, then pay as you go\n\nthat gives you the allowance, but only a trial tells you what your report consumes.\n\nmadani's bill has two parts: the machine and ai. personal local use is free; cloud plus is $20/month and pro $50/month. your provider bills ai.[^5][^8] work needs a license; cloud pro includes one for one person.[^8][^11] put every line in the [cost guide](/guides/how-much-does-an-ai-agent-cost)."
     },
     {
       "h": "make the missing answers visible",
-      "md": "**get the unanswered questions before they reach the client.** give both products a few proposals and your requirements. ask for file evidence beside each claim, with missing answers left open. read the claims against the files.\n\nfor dusk, start with attachments. inspect notes under memory, or turn off let this bot use memory.[^10] ask for the source file even when the bot remembers the context. see [manus alternatives](/alternatives/manus) for other ways to hand over the work."
+      "md": "**get the unanswered questions before they reach the client.** give both products a few proposals and your requirements. ask for file evidence beside each claim, with missing answers left open. read the claims against the files.\n\nfor madani, start with attachments. inspect notes under memory, or turn off let this bot use memory.[^10] ask for the source file even when the bot remembers the context. see [manus alternatives](/alternatives/manus) for other ways to hand over the work."
     }
   ],
   "faq": [
@@ -146,7 +146,7 @@
     },
     {
       "q": "can i message manus from telegram?",
-      "a": "**yes.** its launch post describes linking telegram and getting recurring summaries there.[^3] dusk has its own desktop and paired phone interface. store phone apps are still on the way.[^7]"
+      "a": "**yes.** its launch post describes linking telegram and getting recurring summaries there.[^3] madani has its own desktop and paired phone interface. store phone apps are still on the way.[^7]"
     }
   ],
   "sources": [
@@ -166,35 +166,35 @@
       "checked": "2026-11-12"
     },
     {
-      "label": "dusk bot: lasting jobs and model changes",
+      "label": "madani bot: lasting jobs and model changes",
       "url": "/docs/bots"
     },
     {
-      "label": "dusk bot: personal use and ai billing",
+      "label": "madani bot: personal use and ai billing",
       "url": "/docs/account-and-billing"
     },
     {
-      "label": "dusk bot: setup and model options",
+      "label": "madani bot: setup and model options",
       "url": "/docs/getting-started"
     },
     {
-      "label": "dusk bot: current phone interface",
+      "label": "madani bot: current phone interface",
       "url": "/docs/phone"
     },
     {
-      "label": "dusk bot: hosting prices",
-      "url": "/docs/dusk-cloud"
+      "label": "madani bot: hosting prices",
+      "url": "/docs/madani-cloud"
     },
     {
-      "label": "dusk bot: schedule controls",
+      "label": "madani bot: schedule controls",
       "url": "/docs/routines"
     },
     {
-      "label": "dusk bot: saved notes and memory switch",
+      "label": "madani bot: saved notes and memory switch",
       "url": "/docs/memory"
     },
     {
-      "label": "dusk bot: work licensing",
+      "label": "madani bot: work licensing",
       "url": "/docs/faq"
     },
     {
@@ -204,7 +204,7 @@
     }
   ],
   "type": "comparison",
-  "keyword": "manus vs dusk bot",
+  "keyword": "manus vs madani bot",
   "keywords": [
     "manus ai vs chatgpt",
     "openclaw vs manus"
@@ -253,11 +253,11 @@
       ],
       [
         "a bot that keeps its job and editable memory",
-        "dusk bot"
+        "madani bot"
       ],
       [
         "to choose the ai and host separately",
-        "dusk bot"
+        "madani bot"
       ]
     ]
   },

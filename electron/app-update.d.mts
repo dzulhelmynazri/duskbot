@@ -5,7 +5,7 @@ export interface AppUpdateState {
   checking?: boolean; failed?: boolean; retrying?: boolean;
   /** "move": this mac runs a copy the updater can't replace (translocated, or on a disk image) until it is moved to Applications */
   blocked?: "move" | null;
-  /** a newer version this app can't install by itself, and the link that downloads it (an installer, or dusk.bot/download) */
+  /** a newer version this app can't install by itself, and the link that downloads it (an installer, or madani.bot/download) */
   manual?: { version: string; url: string } | null;
   /** main's word on how this app updates: "self" installs its own, "dev" runs from a code checkout, "notice" points at the download page */
   mode?: "self" | "dev" | "notice";
@@ -20,9 +20,9 @@ export interface AppUpdateBridge {
   restart(): Promise<boolean>;
   /** the "updated to" note was shown */
   seen?(): Promise<void>;
-  /** opens the state's `manual` link, or dusk.bot/download */
+  /** opens the state's `manual` link, or madani.bot/download */
   open?(): Promise<boolean>;
-  /** moves the app to Applications and relaunches it from there; false (and dusk.bot/download opens) when it can't */
+  /** moves the app to Applications and relaunches it from there; false (and madani.bot/download opens) when it can't */
   move?(): Promise<boolean>;
   onState(cb: (state: AppUpdateState) => void): () => void;
 }

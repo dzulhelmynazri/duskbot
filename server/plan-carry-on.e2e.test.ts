@@ -4,13 +4,13 @@ import { mkdtempSync, readFileSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { expect, it } from "vitest";
-import { launchVerificationServer, runControlDusk } from "../scripts/control-dusk.ts";
+import { launchVerificationServer, runControlMadani } from "../scripts/control-madani.ts";
 
 const STEPS = ["Find flights", "Compare hotels", "Check visa rules", "Price local transport", "Draft the itinerary", "Total the budget"];
 const plan = (done: number) => ({ name: "TodoWrite", input: { todos: STEPS.map((content, i) => ({ content, status: i < done ? "completed" : i === done ? "in_progress" : "pending" })) } });
 
 it("carries a multi-step plan through to the end while each turn closes a step", async () => {
-  const scratch = mkdtempSync(join(tmpdir(), "dusk-plan-carry-on-"));
+  const scratch = mkdtempSync(join(tmpdir(), "madani-plan-carry-on-"));
   const prompts = join(scratch, "prompts.jsonl");
   const replies = STEPS.map((step, i) => (i === STEPS.length - 1 ? "Your Lisbon trip plan is ready: 1,840 euros in total." : `${step}: done.`));
   const fixture = await launchVerificationServer({
@@ -20,7 +20,7 @@ it("carries a multi-step plan through to the end while each turn closes a step",
     FAKE_CLAUDE_TOOL_CALLS_BY_TURN: JSON.stringify(STEPS.map((_, i) => [plan(i + 1)])),
     FAKE_CLAUDE_PROMPTS: prompts,
   });
-  const cli = (...args: string[]) => runControlDusk([...args, "--url", fixture.info.url]) as Promise<any>;
+  const cli = (...args: string[]) => runControlMadani([...args, "--url", fixture.info.url]) as Promise<any>;
   const rows = async (threadId: string) => {
     const response = await fetch(`${fixture.info.url}/api/threads/${encodeURIComponent(threadId)}/messages?limit=200`);
     return ((await response.json()) as { messages: Array<{ role: string; kind: string; text?: string; tool?: { name: string } }> }).messages;

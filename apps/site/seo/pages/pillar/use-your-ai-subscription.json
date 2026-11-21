@@ -4,7 +4,7 @@
   "title": "Automate with the AI you already sign in to",
   "nav": "the ai you already sign in to",
   "h1": "using the ai you already sign in to for automation",
-  "description": "How dusk bot runs official AI apps, what each provider says about sign-in, and when an API key or a local model fits better.",
+  "description": "How madani bot runs official AI apps, what each provider says about sign-in, and when an API key or a local model fits better.",
   "keyword": "use chatgpt subscription instead of api",
   "keywords": [
     "claude code without api key",
@@ -13,7 +13,7 @@
     "bring your own ai subscription",
     "use claude pro with other apps"
   ],
-  "answer": "**put the ai you already pay for to work on a job you keep repeating.** dusk runs vendors’ official command-line apps, with your own sign-in, an api key or a local model. your provider’s rules decide which route fits. as of 12 november 2026, those conditions differ. read the current terms for your setup before scheduling the work.",
+  "answer": "**put the ai you already pay for to work on a job you keep repeating.** madani runs vendors’ official command-line apps, with your own sign-in, an api key or a local model. your provider’s rules decide which route fits. as of 12 november 2026, those conditions differ. read the current terms for your setup before scheduling the work.",
   "updated": "2026-11-12",
   "review": {
     "status": "approved",
@@ -97,7 +97,7 @@
   "sections": [
     {
       "h": "what runs when you send a message",
-      "md": "**dusk brings the bot’s job and your chosen ai together.** it has no model of its own. each bot keeps its chats and memory while using the ai you choose.\n\nit runs official command-line apps such as claude code and codex cli on the machine where your bots live. sign in yourself in the app.[^8]\n\nyour message goes from that machine straight to your ai provider. it does not pass through dusk. your provider bills usage on your plan.[^15]\n\ndo not paste copied login secrets into an unknown app because a tutorial says it works. running a vendor’s program and handling its login yourself are different arrangements.\n\ndusk is independent. anthropic, openai, google and xai do not own, fund or affiliate with it.[^14]"
+      "md": "**madani brings the bot’s job and your chosen ai together.** it has no model of its own. each bot keeps its chats and memory while using the ai you choose.\n\nit runs official command-line apps such as claude code and codex cli on the machine where your bots live. sign in yourself in the app.[^8]\n\nyour message goes from that machine straight to your ai provider. it does not pass through madani. your provider bills usage on your plan.[^15]\n\ndo not paste copied login secrets into an unknown app because a tutorial says it works. running a vendor’s program and handling its login yourself are different arrangements.\n\nmadani is independent. anthropic, openai, google and xai do not own, fund or affiliate with it.[^14]"
     },
     {
       "h": "anthropic distinguishes its own program from borrowed logins",
@@ -109,17 +109,17 @@
     },
     {
       "h": "choose an api key or local model when it fits",
-      "md": "**you do not have to make every job depend on a subscription login.** dusk accepts api keys under settings, api keys. it supports anthropic, xai, openrouter, groq and services using the openai api.[^8]\n\nfor local ai, run ollama or lm studio and choose use a local model. an api key still has a provider bill and terms. local setup has its own practical work too.\n\nchoose around the task and the access your provider allows. [claude plans versus api](/guides/claude-subscription-vs-api) walks through costs. [scheduled ai tasks](/scheduled-ai-tasks) helps decide where repeating jobs should live."
+      "md": "**you do not have to make every job depend on a subscription login.** madani accepts api keys under settings, api keys. it supports anthropic, xai, openrouter, groq and services using the openai api.[^8]\n\nfor local ai, run ollama or lm studio and choose use a local model. an api key still has a provider bill and terms. local setup has its own practical work too.\n\nchoose around the task and the access your provider allows. [claude plans versus api](/guides/claude-subscription-vs-api) walks through costs. [scheduled ai tasks](/scheduled-ai-tasks) helps decide where repeating jobs should live."
     }
   ],
   "faq": [
     {
       "q": "can i sign in to chatgpt from openclaw or codex?",
-      "a": "**openai supports chatgpt sign-in in codex cli as of 12 november 2026.** it also lists openclaw, opencode, pi and t3 as apps using your plan. dusk is not on that list; it runs official codex cli. requests still use existing plan limits.[^2][^3]"
+      "a": "**openai supports chatgpt sign-in in codex cli as of 12 november 2026.** it also lists openclaw, opencode, pi and t3 as apps using your plan. madani is not on that list; it runs official codex cli. requests still use existing plan limits.[^2][^3]"
     },
     {
       "q": "what happens if my ai plan runs out?",
-      "a": "**the bot tells you.** wait for the reset or switch ai. chats, files and memory stay. a dusk cloud payment adds no ai usage.[^8][^13][^15]"
+      "a": "**the bot tells you.** wait for the reset or switch ai. chats, files and memory stay. a madani cloud payment adds no ai usage.[^8][^13][^15]"
     },
     {
       "q": "does a working sign-in mean the provider allows my setup?",
@@ -163,7 +163,7 @@
       "checked": "2026-11-12"
     },
     {
-      "label": "dusk bot: getting started",
+      "label": "madani bot: getting started",
       "url": "/docs/getting-started"
     },
     {
@@ -187,15 +187,15 @@
       "checked": "2026-11-12"
     },
     {
-      "label": "dusk bot: bots",
+      "label": "madani bot: bots",
       "url": "/docs/bots"
     },
     {
-      "label": "dusk bot: about",
+      "label": "madani bot: about",
       "url": "/about"
     },
     {
-      "label": "dusk bot: account and billing",
+      "label": "madani bot: account and billing",
       "url": "/docs/account-and-billing"
     },
     {

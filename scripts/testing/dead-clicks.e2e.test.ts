@@ -4,15 +4,15 @@
 // which nothing observable happens within a second (no change on the page, no navigation or window, no request, no
 // message to the desktop app, no focus move, scroll, copy or sound) fails the run, as a "take over" that did nothing
 // once did. Presses that would reach outside the test (the OS, a real browser, money, ending the session) are skipped
-// by name (dead-clicks/crawl.ts). Evidence: DUSK_DEAD_CLICKS_DIR (default .dusk-scratch/verify-evidence/dead-clicks).
+// by name (dead-clicks/crawl.ts). Evidence: MADANI_DEAD_CLICKS_DIR (default .madani-scratch/verify-evidence/dead-clicks).
 //
-//   DUSK_UI_E2E=1 pnpm exec vitest run scripts/testing/dead-clicks.e2e.test.ts
-//   DUSK_DEAD_CLICKS_ONLY=gallery (or app) and DUSK_DEAD_CLICKS_SCENARIOS=cards-pending narrow the run.
+//   MADANI_UI_E2E=1 pnpm exec vitest run scripts/testing/dead-clicks.e2e.test.ts
+//   MADANI_DEAD_CLICKS_ONLY=gallery (or app) and MADANI_DEAD_CLICKS_SCENARIOS=cards-pending narrow the run.
 import { mkdirSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { expect, it } from "vitest";
-import { launchVerificationServer, runControlDusk, type VerificationServer } from "../control-dusk.ts";
-import { ensureUiBrowser } from "./control-dusk-ui.ts";
+import { launchVerificationServer, runControlMadani, type VerificationServer } from "../control-madani.ts";
+import { ensureUiBrowser } from "./control-madani-ui.ts";
 import { encodePng } from "./png.ts";
 import { fixtureApi, mountPreview, REPO_ROOT, type MountedPreview } from "./preview-fixture.ts";
 import { GALLERY_IMAGE, GALLERY_WIDE_IMAGE, SCENARIOS } from "./chat-gallery/fixtures.ts";
@@ -20,9 +20,9 @@ import { crawlDeadClicks, type CrawlReport, type DeadClick } from "./dead-clicks
 import { openChrome, type ChromeTab } from "./dead-clicks/chrome.ts";
 import { NOTICES } from "../../src/lib/notices.ts";
 
-const enabled = process.env.DUSK_UI_E2E === "1";
-if (!enabled) console.log("skipping the dead-click guard: set DUSK_UI_E2E=1 for isolated browser qualification");
-const ONLY = process.env.DUSK_DEAD_CLICKS_ONLY;
+const enabled = process.env.MADANI_UI_E2E === "1";
+if (!enabled) console.log("skipping the dead-click guard: set MADANI_UI_E2E=1 for isolated browser qualification");
+const ONLY = process.env.MADANI_DEAD_CLICKS_ONLY;
 const started = Date.now();
 const log = (line: string) => console.log(`[dead-clicks ${Math.round((Date.now() - started) / 1000)}s] ${line}`);
 
@@ -43,7 +43,7 @@ const wide = encodePng(480, 120, (x, y) => [200, 100 + (x % 100), 80 + (y % 40)]
   let gallery: MountedPreview | undefined;
   let app: MountedPreview | undefined;
   let tab: ChromeTab | undefined;
-  const evidence = process.env.DUSK_DEAD_CLICKS_DIR || join(process.env.DUSK_UI_EVIDENCE_DIR || join(REPO_ROOT, ".dusk-scratch", "verify-evidence"), "dead-clicks");
+  const evidence = process.env.MADANI_DEAD_CLICKS_DIR || join(process.env.MADANI_UI_EVIDENCE_DIR || join(REPO_ROOT, ".madani-scratch", "verify-evidence"), "dead-clicks");
   mkdirSync(evidence, { recursive: true });
   const reports: CrawlReport[] = [];
   try {
@@ -54,11 +54,11 @@ const wide = encodePng(480, 120, (x, y) => [200, 100 + (x % 100), 80 + (y % 40)]
     await api("PATCH", "/api/config", { language: "en", onboarding: { completedAt: new Date().toISOString(), version: 999 } });
     const { bots } = await api("GET", "/api/bots");
     for (const bot of bots.filter((bot: { defaultBot?: unknown }) => bot.defaultBot)) await api("PATCH", `/api/bots/${bot.id}`, { welcomed: true });
-    await runControlDusk(["new-bot", "--name", "Pepper", "--url", fixture.info.url]);
+    await runControlMadani(["new-bot", "--name", "Pepper", "--url", fixture.info.url]);
     tab = await openChrome(tools.chrome, fixture.info.dataDir);
     await tab.viewport(1100, 900);
     const page = tab;
-    const quiet = `try { for (const notice of ${JSON.stringify(NOTICES)}) localStorage.setItem(notice, "1"); localStorage.setItem("dusk-email-gate", "skipped"); } catch {}`;
+    const quiet = `try { for (const notice of ${JSON.stringify(NOTICES)}) localStorage.setItem(notice, "1"); localStorage.setItem("madani-email-gate", "skipped"); } catch {}`;
 
     if (!ONLY || ONLY === "gallery") {
       gallery = await mountPreview(fixture, {
@@ -70,7 +70,7 @@ const wide = encodePng(480, 120, (x, y) => [200, 100 + (x % 100), 80 + (y % 40)]
           res.end(name === GALLERY_IMAGE ? photo : wide);
         } }],
       });
-      const only = process.env.DUSK_DEAD_CLICKS_SCENARIOS?.split(",");
+      const only = process.env.MADANI_DEAD_CLICKS_SCENARIOS?.split(",");
       for (const scenario of SCENARIOS.filter((one) => !only || only.includes(one.id))) {
         const url = `${gallery.previewUrl}?scenario=${scenario.id}&skin=grok`;
         reports.push(await crawlDeadClicks({
@@ -81,12 +81,12 @@ const wide = encodePng(480, 120, (x, y) => [200, 100 + (x % 100), 80 + (y % 40)]
     }
 
     if (!ONLY || ONLY === "app") {
-      app = await mountPreview(fixture, { entry: "/src/main.tsx", route: "/__app.html", title: "dusk bot", logLevel: "warn", hmr: false });
+      app = await mountPreview(fixture, { entry: "/src/main.tsx", route: "/__app.html", title: "madani bot", logLevel: "warn", hmr: false });
       const url = `${app.previewUrl}`;
       reports.push(await crawlDeadClicks({
         evaluate: (expression) => page.evaluate(expression),
         open: async () => { await page.evaluate(quiet).catch(() => undefined); await page.navigate(url, "[data-tour=composer] textarea", 120_000); },
-      }, { name: "app", budget: Number(process.env.DUSK_DEAD_CLICKS_BUDGET) || 25, log }));
+      }, { name: "app", budget: Number(process.env.MADANI_DEAD_CLICKS_BUDGET) || 25, log }));
     }
 
     writeFileSync(join(evidence, "report.json"), JSON.stringify(reports, null, 2));

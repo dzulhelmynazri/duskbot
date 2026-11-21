@@ -31,7 +31,7 @@ describe("claudeToolSearchSetting", () => {
   };
 
   beforeEach(() => {
-    root = mkdtempSync(join(tmpdir(), "dusk-tool-search-"));
+    root = mkdtempSync(join(tmpdir(), "madani-tool-search-"));
     home = join(root, "home");
     mkdirSync(home);
     env = { HOME: home };

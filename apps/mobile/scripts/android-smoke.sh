@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
 # Smoke run of the phone app on a booted emulator (the android-smoke workflow): install, launch, tap the first screen,
-# back, rotate, open duskbot:// links. Screenshots, ui dumps and logcat go to the out dir; summary.txt says what died.
+# back, rotate, open madanibot:// links. Screenshots, ui dumps and logcat go to the out dir; summary.txt says what died.
 #
 #   apps/mobile/scripts/android-smoke.sh <apk> <out dir>
 set -uo pipefail
 apk="$1"
 out="$2"
-pkg=bot.dusk.mobile
+pkg=bot.madani.mobile
 mkdir -p "$out"
 summary="$out/summary.txt"
 : > "$summary"
@@ -33,7 +33,7 @@ try:
 except Exception:
     sys.exit(0)
 for node in root.iter("node"):
-    if node.get("package") != "bot.dusk.mobile" or node.get("clickable") != "true":
+    if node.get("package") != "bot.madani.mobile" or node.get("clickable") != "true":
         continue
     label = (node.get("text") or node.get("content-desc") or "").strip()
     if not label:
@@ -89,14 +89,14 @@ sleep 5
 shot 06-portrait-again
 alive "after rotate back"
 
-adb shell am start -W -a android.intent.action.VIEW -d "duskbot://cloud" "$pkg" > /dev/null 2>&1
+adb shell am start -W -a android.intent.action.VIEW -d "madanibot://cloud" "$pkg" > /dev/null 2>&1
 sleep 6
 shot 07-deeplink-cloud
-alive "after duskbot://cloud"
-adb shell am start -W -a android.intent.action.VIEW -d "duskbot://pair?m=bm90LWEtcGF5bG9hZA" "$pkg" > /dev/null 2>&1
+alive "after madanibot://cloud"
+adb shell am start -W -a android.intent.action.VIEW -d "madanibot://pair?m=bm90LWEtcGF5bG9hZA" "$pkg" > /dev/null 2>&1
 sleep 6
 shot 08-deeplink-bad-pair
-alive "after duskbot://pair with a bad payload"
+alive "after madanibot://pair with a bad payload"
 
 adb logcat -d -v threadtime > "$out/logcat-full.txt"
 grep -E "FATAL EXCEPTION|AndroidRuntime|ANR in|Capacitor/Console|chromium|Capacitor|$pkg|DEBUG +: " "$out/logcat-full.txt" > "$out/logcat-app.txt" || true

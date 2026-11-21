@@ -1,4 +1,4 @@
-// Frame-by-frame capture for the motion labs: bundles an entry, opens it in headless Chrome (DUSK_CDP_CHROME, else the
+// Frame-by-frame capture for the motion labs: bundles an entry, opens it in headless Chrome (MADANI_CDP_CHROME, else the
 // installed Google Chrome, in a throwaway profile), seeks every animation to each 60 fps frame and encodes mp4s with
 // ffmpeg from PATH.
 import { spawn, spawnSync } from "node:child_process";
@@ -9,7 +9,7 @@ import { setTimeout as delay } from "node:timers/promises";
 import { pathToFileURL } from "node:url";
 import { build } from "esbuild";
 
-const CHROME = process.env.DUSK_CDP_CHROME ?? "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome";
+const CHROME = process.env.MADANI_CDP_CHROME ?? "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome";
 export const FPS = 60;
 
 /** Writes `<out>/live.html` from `entry` and records each job ({ query, file, scale }) into `<out>/<file>`. */

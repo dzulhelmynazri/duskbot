@@ -50,9 +50,9 @@ browser tools back. That is an image change and a security decision, not made he
 ```sh
 pnpm exec vitest run server/vps-exec.test.ts server/sandbox-computer-guidance.test.ts server/vps-routing.test.ts
 pnpm exec vitest run server/host/desktop-login.test.ts server/host/fill-login-turn.test.ts server/host/secret-cards.test.ts server/bot-logins.test.ts
-DUSK_CDP_E2E=1 pnpm exec vitest run server/box-login-page.e2e.test.ts   # a real Chromium behind a DevTools port, as on the desktop
+MADANI_CDP_E2E=1 pnpm exec vitest run server/box-login-page.e2e.test.ts   # a real Chromium behind a DevTools port, as on the desktop
 ```
 
 On a live VPS, the same argv `vpsExecArgs` builds can be run by hand against a bot's container
-(`docker exec -u cua -w /home/cua/workspace ... sh -c '<wrapper>' dusk-exec 60 'ls -l' MARK:`); it prints the output and
+(`docker exec -u cua -w /home/cua/workspace ... sh -c '<wrapper>' madani-exec 60 'ls -l' MARK:`); it prints the output and
 `MARK:<exit code>` on stderr.

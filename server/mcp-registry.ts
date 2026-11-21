@@ -8,7 +8,7 @@ export { importedMcpServerName } from "../shared/mcp-name.ts";
 /** The computer a server runs on when its program, files or address are that computer's own: kept with its entry so a
  * bot can reach it through that computer, and never started anywhere else. */
 export interface McpRunsOn {
-  /** That computer's dusk bot environment id. */
+  /** That computer's madani bot environment id. */
   environmentId: string;
   /** Its name, as the person knows it. */
   label: string;
@@ -17,7 +17,7 @@ export interface McpRunsOn {
 /** One config.json `mcpServers` entry: the block Claude Code, Cursor and Claude Desktop write. */
 export interface StoredStdioMcpServer extends StdioMcpSpec {
   enabled: boolean;
-  /** Characters of one tool result allowed into context; 0 = never trim, absent = DUSK_MCP_RESULT_BUDGET, else 8,000. */
+  /** Characters of one tool result allowed into context; 0 = never trim, absent = MADANI_MCP_RESULT_BUDGET, else 8,000. */
   resultBudget?: number;
   runsOn?: McpRunsOn;
   /** The id of the bot whose own server this is: its program or files are in that bot's folder, so it starts only for
@@ -97,10 +97,10 @@ const HEADER_NAME = /^[!#$%&'*+.^_`|~0-9A-Za-z-]{1,128}$/;
 
 /** Codex exposes MCP env names through one app-server process: a custom server claiming one could take a built-in proxy's bearer. */
 export function isHarnessOwnedMcpEnvName(name: string): boolean {
-  return name === "ELECTRON_RUN_AS_NODE" || name.startsWith("DUSK_") || name.startsWith("DUSK_");
+  return name === "ELECTRON_RUN_AS_NODE" || name.startsWith("MADANI_") || name.startsWith("MADANI_");
 }
 
-/** Codex shares one environment across MCP children: DUSK_/DUSK_ carry bearers, and ELECTRON_RUN_AS_NODE may only repeat the "1" the harness proxies need. */
+/** Codex shares one environment across MCP children: MADANI_/MADANI_ carry bearers, and ELECTRON_RUN_AS_NODE may only repeat the "1" the harness proxies need. */
 export function isReservedMcpEnvEntry(name: string, value: string): boolean {
   if (name === "ELECTRON_RUN_AS_NODE") return value !== "1";
   return isHarnessOwnedMcpEnvName(name);
@@ -110,8 +110,8 @@ function environmentEntryError(name: string, value: string): string | null {
   if (!ENV_NAME.test(name)) return `Environment variable “${name}” is not valid.`;
   if (isReservedMcpEnvEntry(name, value)) {
     return name === "ELECTRON_RUN_AS_NODE"
-      ? `Environment variable “${name}” is reserved by dusk bot; a custom server may set it to “1” only.`
-      : `Environment variable “${name}” is reserved by dusk bot.`;
+      ? `Environment variable “${name}” is reserved by madani bot; a custom server may set it to “1” only.`
+      : `Environment variable “${name}” is reserved by madani bot.`;
   }
   return null;
 }
@@ -224,7 +224,7 @@ export function mcpServerNameError(name: string): string | null {
   if (!MCP_NAME.test(name)) {
     return "Use 1–32 lowercase letters, numbers, underscores, or hyphens, starting with a letter.";
   }
-  if (RESERVED_MCP_NAMES.has(name)) return "That name is reserved by dusk bot.";
+  if (RESERVED_MCP_NAMES.has(name)) return "That name is reserved by madani bot.";
   return null;
 }
 

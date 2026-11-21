@@ -29,7 +29,7 @@ const botOn = (instanceId: string, effort?: string) =>
 let root: Root | null = null;
 const mount = (bot: Bot) => {
   const host = document.body.appendChild(document.createElement("div"));
-  host.className = "dusk-mobile";
+  host.className = "madani-mobile";
   root = createRoot(host);
   flushSync(() => root!.render(createElement(PhoneThinkingRow, { bot })));
 };

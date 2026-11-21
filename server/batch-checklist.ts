@@ -31,7 +31,7 @@ export function itemKey(text: string): string {
 const MARK: Record<ItemState, string> = { open: " ", done: "x", skipped: "~" };
 const LINE = /^\s*[-*]\s+\[([ xX~])\]\s+(.+?)\s*$/;
 const NOTE = /\s+\((?:skipped|note):\s*([^)]*)\)$/i;
-const META = /^<!--\s*dusk bot checklist:\s*verb=([^;>]*?)\s*-->$/;
+const META = /^<!--\s*madani bot checklist:\s*verb=([^;>]*?)\s*-->$/;
 
 export function parseChecklist(text: string): Checklist | null {
   let title = "";
@@ -58,7 +58,7 @@ export function formatChecklist(list: Checklist): string {
     const note = item.note ? ` (${item.state === "skipped" ? "skipped" : "note"}: ${item.note.replace(/[()]/g, "")})` : "";
     return `- [${MARK[item.state]}] ${item.text}${note}`;
   });
-  return `# ${list.title}\n<!-- dusk bot checklist: verb=${list.verb.replace(/[;>]/g, "")} -->\n\n${lines.join("\n")}\n`;
+  return `# ${list.title}\n<!-- madani bot checklist: verb=${list.verb.replace(/[;>]/g, "")} -->\n\n${lines.join("\n")}\n`;
 }
 
 export function counts(list: Checklist): ChecklistCounts {

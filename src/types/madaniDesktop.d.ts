@@ -163,7 +163,7 @@ const __APP_VERSION__: string;
   }
 
   interface Window {
-    duskDesktop?: {
+    madaniDesktop?: {
       platform: NodeJS.Platform;
       /** process.arch of the desktop app, for usage signals */
       arch?: string;
@@ -190,14 +190,14 @@ const __APP_VERSION__: string;
       sealTrust?: { check(identity: string): Promise<{ ok: boolean; pinned: boolean }> };
       /** A linked server's page only: the direct ssh path for that link (null where it does not apply). */
       linkDirect?: { state(): Promise<LinkDirectState | null>; set(on: boolean): Promise<LinkDirectState | null> };
-      /** This computer's page and the person's own dusk cloud page: whether that cloud's bots may use this Mac, its
+      /** This computer's page and the person's own madani cloud page: whether that cloud's bots may use this Mac, its
        * folders, the work running now and the kill switch. Absent in a browser, on the phone and on an older app. */
       cloudMac?: CloudMacBridge;
-      /** A VPS's own page: its bots straight to dusk cloud. Absent on an older app. */
+      /** A VPS's own page: its bots straight to madani cloud. Absent on an older app. */
       vpsCloudMove?: import("../lib/vps-cloud-move").VpsCloudMoveBridge;
       /** This computer's page only: Add your VPS, its install, sign-in, move, and the Transfer pane (electron/vps-link.mjs). */
       vpsLink?: import("../lib/vps-link").VpsLinkBridge;
-      /** The bot panel's Start fresh: deletes everything this person has with dusk bot (electron/start-fresh.mjs). Absent on an older app. */
+      /** The bot panel's Start fresh: deletes everything this person has with madani bot (electron/start-fresh.mjs). Absent on an older app. */
       startFresh?: {
         available(): Promise<boolean>;
         preview(): Promise<import("../../electron/start-fresh.mjs").StartFreshView>;
@@ -267,7 +267,7 @@ const __APP_VERSION__: string;
         remove?: (id: string) => Promise<{ outcome: import("../../electron/cloud-account.mjs").CloudRemoveOutcome }>;
         /** Make a server of the person's own, which the rail lists with `makeHome`, their bots' home: the move starts. */
         makeHome?: (id: string) => Promise<{ started: true }>;
-        /** Opens a server the rail lists with `cloudMove`, with its move to dusk cloud sheet. */
+        /** Opens a server the rail lists with `cloudMove`, with its move to madani cloud sheet. */
         cloudMove?: (id: string) => Promise<boolean>;
         /** Main's word that the places or the sign-in changed: read them again. */
         onChanged?: (callback: () => void) => () => void;
@@ -335,7 +335,7 @@ const __APP_VERSION__: string;
       };
       confirm(message: string): Promise<boolean>;
       /** Touch ID, Windows Hello or polkit, else an in-app confirm; true only when the person passed. Absent in older
-       * desktop builds. `reason` completes "dusk bot wants to …". */
+       * desktop builds. `reason` completes "madani bot wants to …". */
       requireUserPresence?(reason: string): Promise<boolean>;
       getCapabilities(): Promise<DesktopCapabilities>;
       onCapabilitiesChanged(cb: (capabilities: DesktopCapabilities) => void): () => void;
@@ -469,20 +469,20 @@ const __APP_VERSION__: string;
         /** Widens the window by up to `deltaWidth` CSS px within its screen; resolves to the px it grew by. */
         resizeWidthBy?(deltaWidth: number): Promise<number>;
       };
-      /** Receives a GitHub package URL opened through duskbot://install. */
+      /** Receives a GitHub package URL opened through madanibot://install. */
       onPackageInstall?(cb: (url: string) => void): () => void;
-      /** Receives a chat link (duskbot://thread/… or duskbot://bot/…)
+      /** Receives a chat link (madanibot://thread/… or madanibot://bot/…)
        * opened from outside the app. */
       onChatLink?(cb: (link: string) => void): () => void;
       onSlackOAuth?(cb: (link: string) => void): () => void;
       /** The desktop shell's app-menu Preferences… item was activated; open
        * app Settings. Every server's page in the window receives it, and the
        * bridge is absent in the browser. "cloud" is the
-       * duskbot://cloud link (Settings → dusk cloud, opened by the link). */
+       * madanibot://cloud link (Settings → madani cloud, opened by the link). */
       onOpenAppSettings?(cb: (section?: "organization" | "cloud" | "cloud-settings" | "cloud-add" | "cloud-add-howto") => void): () => void;
       /** Updates the native Dock/taskbar unread indicator. */
       setUnreadCount?(count: number): void;
-      /** Opens a live desktop as a sandboxed window owned by dusk bot. */
+      /** Opens a live desktop as a sandboxed window owned by madani bot. */
       desktopViewer?: {
         open(url: string, title: string, contextId: string): Promise<boolean>;
         /** Closes the live-desktop window, but only when it belongs to this bot. */
@@ -520,7 +520,7 @@ const __APP_VERSION__: string;
         write(events: Array<{ ev: string; ts?: string } & Record<string, unknown>>): void;
         exportUsageLog(): Promise<{ saved: boolean; sent: boolean }>;
       };
-      /** Asks where to save a bot-created file (inside ~/.duskbot), copies
+      /** Asks where to save a bot-created file (inside ~/.madanibot), copies
        * it there and reveals it. Resolves the chosen path, or null if the
        * user cancelled the dialog. */
       saveFile?(filePath: string): Promise<string | null>;
@@ -557,7 +557,7 @@ export interface LinuxLocalControlStatus {
   warnings?: Array<{ label: string; status: string; message: string; detail?: string }>;
 }
 
-/** `off`: remote access is off (it can start); `signed-out`: no dusk account to make the relay with; `error`: the link
+/** `off`: remote access is off (it can start); `signed-out`: no madani account to make the relay with; `error`: the link
  * service refused, `message` says why. */
 export interface PhoneRelayState {
   status: "off" | "signed-out" | "starting" | "ready" | "error";

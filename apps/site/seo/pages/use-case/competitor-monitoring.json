@@ -54,7 +54,7 @@
     },
     {
       "h": "keep failed reads in the report",
-      "md": "**know which pages the bot actually read.** private discounts, sales calls and changes between weekly visits sit outside the report. a page that wouldn't load belongs in a separate failure note.\n\nmissing monday's run? open **automations** and look at run history. local routines need the computer awake and dusk open. [dusk cloud](/docs/dusk-cloud) runs them on time, though a blocked competitor page can still fail to load."
+      "md": "**know which pages the bot actually read.** private discounts, sales calls and changes between weekly visits sit outside the report. a page that wouldn't load belongs in a separate failure note.\n\nmissing monday's run? open **automations** and look at run history. local routines need the computer awake and madani open. [madani cloud](/docs/madani-cloud) runs them on time, though a blocked competitor page can still fail to load."
     }
   ],
   "safeguards": [
@@ -74,25 +74,25 @@
     },
     {
       "q": "where does the bot run when my laptop is closed?",
-      "a": "**use dusk cloud or your own server to keep the weekly read going.** on your laptop, it needs dusk open and the computer awake."
+      "a": "**use madani cloud or your own server to keep the weekly read going.** on your laptop, it needs madani open and the computer awake."
     }
   ],
   "sources": [
     {
-      "label": "dusk bot docs: routines",
+      "label": "madani bot docs: routines",
       "url": "/docs/routines"
     },
     {
-      "label": "dusk bot docs: files and apps",
+      "label": "madani bot docs: files and apps",
       "url": "/docs/files-and-apps"
     },
     {
-      "label": "dusk bot docs: a bot’s computer",
+      "label": "madani bot docs: a bot’s computer",
       "url": "/docs/computer"
     },
     {
-      "label": "dusk bot docs: dusk cloud",
-      "url": "/docs/dusk-cloud"
+      "label": "madani bot docs: madani cloud",
+      "url": "/docs/madani-cloud"
     }
   ],
   "quick": {

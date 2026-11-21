@@ -438,7 +438,7 @@ describe("ApprovalCard tool-call kinds", () => {
       ["think", "Think"],
       ["other", "Take an action"],
       ["tool", "Use a tool"],
-      ["mcp__dusk__computer_batch", "computer batch"],
+      ["mcp__madani__computer_batch", "computer batch"],
     ];
     for (const [tool, phrase] of cases) {
       const html = renderToStaticMarkup(createElement(ApprovalCard, { bot, message: kindMessage(tool) }));

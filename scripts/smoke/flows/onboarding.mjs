@@ -1,7 +1,7 @@
-// Onboarding as a brand-new person: a fresh profile and a fresh dusk bot account on preview (a *@qa.dusk.test sink
+// Onboarding as a brand-new person: a fresh profile and a fresh madani bot account on preview (a *@qa.madani.test sink
 // address), the app's account gate, then the welcome funnel down one path, end to end:
 //   mac:    this Mac's sheet, an AI (the free model), notes from another AI, then the first bot's first reply
-//   cloud:  dusk cloud goes straight to the browser (the account intent's one-time handoff to the plans page), a plan,
+//   cloud:  madani cloud goes straight to the browser (the account intent's one-time handoff to the plans page), a plan,
 //           Dodo's TEST-mode checkout paid with the test card, the app noticing by itself, the AI while the cloud is
 //           made, the cloud's chat and a bot's reply on it. The trial's renewal is cancelled at the end (--keep skips it).
 //   server: the install line (add-server.mjs runs a real server)
@@ -24,10 +24,10 @@ import { walkthrough } from "./recorder.mjs";
 const { option, flag, root, out, profile, email } = flowArgs("onb");
 const path = option("--path", "mac");
 if (!["mac", "cloud", "server"].includes(path)) throw new Error("--path is mac, cloud or server");
-// signed out, as the installed app starts now; --gate starts at the sign-in an install can still require (DUSK_REQUIRE_ACCOUNT)
+// signed out, as the installed app starts now; --gate starts at the sign-in an install can still require (MADANI_REQUIRE_ACCOUNT)
 const gate = flag("--gate");
-const flow = createFlow({ name: `onboarding-${path}`, title: `onboarding (${path === "mac" ? "this Mac" : path === "cloud" ? "dusk cloud" : "own server"}, ${gate ? "signed in at the gate" : "signed out"})`,
-  root, out, profile, email, env: gate ? { DUSK_REQUIRE_ACCOUNT: "1" } : {} });
+const flow = createFlow({ name: `onboarding-${path}`, title: `onboarding (${path === "mac" ? "this Mac" : path === "cloud" ? "madani cloud" : "own server"}, ${gate ? "signed in at the gate" : "signed out"})`,
+  root, out, profile, email, env: gate ? { MADANI_REQUIRE_ACCOUNT: "1" } : {} });
 
 /** the app's main window sizes (electron/window-state.cjs): the default and the smallest it can be */
 const SIZES = walkthrough.enabled ? [["normal", 1040, 760]] : [["normal", 1040, 760], ["min", 768, 520]];
@@ -55,9 +55,9 @@ async function shots(label) {
 const at = () => flow.evaluate(`document.querySelector("[data-welcome]")?.dataset.welcome ?? null`);
 const funnelText = () => flow.evaluate(`(() => { const all = [...document.querySelectorAll("h1,h2")].filter((h) => h.getClientRects().length).map((h) => h.innerText.trim()); return all.join(" / "); })()`);
 
-/** the notes another AI writes when the funnel's prompt is pasted there, as dusk-bot-notes.json in Downloads */
+/** the notes another AI writes when the funnel's prompt is pasted there, as madani-bot-notes.json in Downloads */
 const NOTES = {
-  format: "dusk-bot-notes", version: 2, from: "ChatGPT",
+  format: "madani-bot-notes", version: 2, from: "ChatGPT",
   about_me: { basics: ["Sam Rivera, lives in Lisbon, time zone Europe/Lisbon"], work: ["Runs a two-person bakery called Forno"], projects: ["A second shop in Porto, March 2027"],
     goals: ["Wholesale to 40 cafes"], people: ["Ana, business partner"], preferences: ["Short answers"], writing_style: ["Plain and friendly"], tools: ["Gmail", "Google Sheets"], schedule: ["Starts at 5am"] },
   instructions: "Keep it short. Use euros.", memories: ["Sam sends invoices on Fridays"], open_threads: ["Pick a Porto landlord"], recurring_tasks: [], connected_apps: ["Gmail"],
@@ -97,11 +97,11 @@ await runFlow(flow, async () => {
     await flow.launch();
     await flow.viewport(SIZES[0][1], SIZES[0][2]);
     if (!gate) {
-      await flow.waitText(/where should your bots live|meet dusk bot|sign in to dusk bot/i, "the first screen", { timeout: 120_000 });
-      if (/sign in to dusk bot/i.test(await flow.text())) throw new Error("the app asked for an account before anything else");
+      await flow.waitText(/where should your bots live|meet madani bot|sign in to madani bot/i, "the first screen", { timeout: 120_000 });
+      if (/sign in to madani bot/i.test(await flow.text())) throw new Error("the app asked for an account before anything else");
       return `account: ${(await flow.accountState().catch(() => null))?.status ?? "none"}`;
     }
-    await flow.waitText(/sign in to dusk bot/i, "the account gate", { timeout: 120_000 });
+    await flow.waitText(/sign in to madani bot/i, "the account gate", { timeout: 120_000 });
     await shots("account-gate");
     const providers = await flow.evaluate(`[...document.querySelectorAll("button")].map((b) => b.innerText.trim()).filter((t) => /^continue with/i.test(t))`);
     flow.facts.gateProviders = providers;
@@ -111,7 +111,7 @@ await runFlow(flow, async () => {
   if (gate) await flow.step("sign-in", "signs in with an emailed code (sink address)", () => flow.signInAtGate(), { critical: true });
 
   await flow.step("place", "the first screen asks where the bots live", async () => {
-    await flow.waitText(/meet dusk bot|where should your bots live/i, "the welcome", { timeout: 60_000 });
+    await flow.waitText(/meet madani bot|where should your bots live/i, "the welcome", { timeout: 60_000 });
     funnelStarted.at = Date.now();
     if (await flow.evaluate(`Boolean([...document.querySelectorAll("button")].find((b) => /^get started$/i.test(b.innerText.trim()) && b.getClientRects().length))`)) {
       flow.facts.helloScreen = true;
@@ -122,7 +122,7 @@ await runFlow(flow, async () => {
     await shots("place");
     const tile = await flow.evaluate(`document.querySelector("[data-funnel-place=cloud]")?.innerText.replace(/\\s+/g, " ") ?? ""`);
     flow.facts.cloudTile = tile;
-    if (!/\$|free/i.test(tile)) flow.friction("confusing", "place", "dusk cloud's tile says no price or trial");
+    if (!/\$|free/i.test(tile)) flow.friction("confusing", "place", "madani cloud's tile says no price or trial");
     return `${await funnelText()} | cloud tile: ${tile}`;
   }, { critical: true });
 
@@ -139,7 +139,7 @@ await runFlow(flow, async () => {
 
   if (path === "cloud") {
     let handoff = null;
-    await flow.step("pick-cloud", "dusk cloud goes straight to the browser and waits calmly beside it", async () => {
+    await flow.step("pick-cloud", "madani cloud goes straight to the browser and waits calmly beside it", async () => {
       const since = Date.now();
       await flow.clickSelector("[data-funnel-place=cloud]");
       await sleep(2500);
@@ -235,19 +235,19 @@ await runFlow(flow, async () => {
     await flow.step("making", "the cloud being made, then its chat by itself", async () => {
       await flow.waitFor(`document.querySelector("[data-welcome]")?.dataset.welcome === "making" || !document.querySelector("[data-welcome]")`, "the cloud being made", 30_000);
       if (await at()) await shots("making");
-      const cloud = await until(() => flow.evaluate(`window.duskDesktop?.cloudAccount?.state().then((s) => (s.clouds ?? []).find((c) => c.status === "ready") ?? false)`).catch(() => false), { timeout: 15 * 60_000, every: 5000, what: "the cloud to be ready" });
+      const cloud = await until(() => flow.evaluate(`window.madaniDesktop?.cloudAccount?.state().then((s) => (s.clouds ?? []).find((c) => c.status === "ready") ?? false)`).catch(() => false), { timeout: 15 * 60_000, every: 5000, what: "the cloud to be ready" });
       const host = new URL(cloud.origin).host;
       const started = Date.now();
       for (;;) {
         const where = await flow.evaluate(`location.host`).catch(() => "");
         if (where === host) { await flow.app.reattach(`https://${host}`).catch(() => {}); }
         const chat = await flow.evaluate(`Boolean(document.querySelector('textarea[aria-label^="Message"]'))`).catch(() => false);
-        const welcome = await flow.evaluate(`/welcome to dusk cloud/i.test(document.body.innerText)`).catch(() => false);
+        const welcome = await flow.evaluate(`/welcome to madani cloud/i.test(document.body.innerText)`).catch(() => false);
         if (where === host && chat && !welcome) break;
         const pressed = await flow.evaluate(`(() => {
           const shown = (sel) => [...document.querySelectorAll(sel)].filter((e) => e.getClientRects().length && !e.disabled);
           const move = shown("[data-cloud-move-accept]")[0]; if (move) { move.click(); return "move"; }
-          for (const word of ["start chatting", "open dusk cloud", "open chat", "start with the free model", "continue"]) { const b = shown("button").find((e) => e.innerText.trim().toLowerCase() === word); if (b) { b.click(); return word; } }
+          for (const word of ["start chatting", "open madani cloud", "open chat", "start with the free model", "continue"]) { const b = shown("button").find((e) => e.innerText.trim().toLowerCase() === word); if (b) { b.click(); return word; } }
           return null; })()`).catch(() => null);
         if (pressed) flow.facts.pressedOnCloud = [...(flow.facts.pressedOnCloud ?? []), pressed];
         if (Date.now() - started > 10 * 60_000) throw new Error(`not on the cloud's chat after 10 minutes (window at ${where})`);
@@ -303,7 +303,7 @@ await runFlow(flow, async () => {
     // what the other AI does with the prompt: a file in Downloads
     mkdirSync(join(profile, "home", "Downloads"), { recursive: true });
     await sleep(1500);
-    writeFileSync(join(profile, "home", "Downloads", "dusk-bot-notes.json"), JSON.stringify(NOTES, null, 2));
+    writeFileSync(join(profile, "home", "Downloads", "madani-bot-notes.json"), JSON.stringify(NOTES, null, 2));
     flow.facts.notesWrittenAfterMs = Date.now() - since;
     await flow.click("continue");
     return "prompt copied, notes saved to Downloads";
@@ -311,7 +311,7 @@ await runFlow(flow, async () => {
 
   await flow.step("phone", "the phone step (skipped) or straight on", async () => {
     await sleep(1500);
-    if (/dusk bot on your phone/i.test(await flow.text())) {
+    if (/madani bot on your phone/i.test(await flow.text())) {
       flow.friction("extra-click", "phone step", "a phone QR step in the first run before the person has used a bot");
       await flow.click("skip");
       return "skipped";
@@ -344,7 +344,7 @@ await runFlow(flow, async () => {
   });
 
   await flow.step("first-reply", "the first bot answers on this Mac", async () => {
-    await flow.click("Dusk", { contains: true, scope: "nav, aside, body" }).catch(() => {});
+    await flow.click("Madani", { contains: true, scope: "nav, aside, body" }).catch(() => {});
     await sleep(1000);
     return firstReply("this Mac");
   });

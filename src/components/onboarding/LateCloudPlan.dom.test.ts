@@ -30,7 +30,7 @@ let root: Root | null = null;
 let host: HTMLDivElement;
 
 function desktop(account: unknown, { arrived }: { arrived: boolean }) {
-  (window as unknown as { duskDesktop: unknown }).duskDesktop = {
+  (window as unknown as { madaniDesktop: unknown }).madaniDesktop = {
     remoteClient: { active: false },
     workspaces: { arrived: () => arrived },
     cloudAccount: { state: async () => account, onState: () => () => {} },
@@ -51,7 +51,7 @@ beforeEach(() => {
 });
 afterEach(async () => { await act(async () => root?.unmount()); root = null; });
 
-describe("switching to this Mac with a dusk cloud already running", () => {
+describe("switching to this Mac with a madani cloud already running", () => {
   it("a ready cloud on an install without the hint: no making screen after a switch, the hint recorded quietly", async () => {
     desktop(cloud("ready"), { arrived: true });
     await mount();

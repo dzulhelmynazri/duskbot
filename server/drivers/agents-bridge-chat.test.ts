@@ -74,7 +74,7 @@ it("a bridged turn on the chat-completions runtime carries on after use_tool nam
   const agents: NonNullable<SendTurnInput["integrations"]>["agents"] = {
     command: process.execPath,
     args: [join(dirname(fileURLToPath(import.meta.url)), "agents-proxy.ts")],
-    env: { DUSK_HARNESS_URL: "http://127.0.0.1:9", DUSK_BOT_ID: "bot-chat", DUSK_THREAD_ID: "thread-chat", DUSK_COMMS_TOKEN: "unused", DUSK_TURN_DEPTH: "0", [TOOL_BRIDGE_ENV]: "1" },
+    env: { MADANI_HARNESS_URL: "http://127.0.0.1:9", MADANI_BOT_ID: "bot-chat", MADANI_THREAD_ID: "thread-chat", MADANI_COMMS_TOKEN: "unused", MADANI_TURN_DEPTH: "0", [TOOL_BRIDGE_ENV]: "1" },
   };
   const threadId = randomUUID();
   await instance.adapter.sendTurn({ threadId, text: "Schedule my morning brief.", model: "fixture-model", integrations: { agents } });

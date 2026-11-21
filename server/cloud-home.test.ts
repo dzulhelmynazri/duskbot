@@ -19,14 +19,14 @@ import { portableWorkspaceConfig, restoredWorkspaceConfig } from "./workspace-ba
 
 const directories: string[] = [];
 afterEach(async () => { for (const directory of directories.splice(0)) await removeTempDir(directory); });
-const directory = () => { const value = mkdtempSync(join(tmpdir(), "dusk-cloud-home-")); directories.push(value); return value; };
+const directory = () => { const value = mkdtempSync(join(tmpdir(), "madani-cloud-home-")); directories.push(value); return value; };
 
-// Shapes exactly as dusk-cloud's provisioner writes them.
+// Shapes exactly as madani-cloud's provisioner writes them.
 const secret = "S".repeat(43);
 const machineId = "3f9c2a4e-8b1d-4c6e-9a7f-2d5e8c1b0a93";
 const contract = (extra: NodeJS.ProcessEnv = {}): NodeJS.ProcessEnv => ({
-  DUSK_CLOUD_ROLE: "home", DUSK_CLOUD_MACHINE_ID: machineId, DUSK_CLOUD_ADMIN_URL: "https://cloud.example.test",
-  DUSK_PUBLIC_URL: "https://dusk-u-1a2b3c4d5e6f.fly.dev", DUSK_CLOUD_BOOTSTRAP_SECRET: secret, ...extra,
+  MADANI_CLOUD_ROLE: "home", MADANI_CLOUD_MACHINE_ID: machineId, MADANI_CLOUD_ADMIN_URL: "https://cloud.example.test",
+  MADANI_PUBLIC_URL: "https://madani-u-1a2b3c4d5e6f.fly.dev", MADANI_CLOUD_BOOTSTRAP_SECRET: secret, ...extra,
 });
 // A platform gateway's settings, as an Admin from before Cloud Pro dropped
 // included AI wrote them. A Cloud home ignores them.
@@ -34,35 +34,35 @@ const contract = (extra: NodeJS.ProcessEnv = {}): NodeJS.ProcessEnv => ({
 it("is off on every ordinary server and desktop", () => {
   expect(cloudHomeConfigured({})).toBe(false);
   expect(cloudHomeConfiguration({})).toBeNull();
-  expect(cloudHomeConfiguration({ DUSK_PUBLIC_URL: "https://selfhosted.example.test" })).toBeNull();
+  expect(cloudHomeConfiguration({ MADANI_PUBLIC_URL: "https://selfhosted.example.test" })).toBeNull();
 });
 
 it("reads the Admin's contract", () => {
   expect(cloudHomeConfiguration(contract())).toEqual({
-    role: "home", team: null, machineId, adminOrigin: "https://cloud.example.test", publicOrigin: "https://dusk-u-1a2b3c4d5e6f.fly.dev", bootstrapSecret: secret, warnings: [],
+    role: "home", team: null, machineId, adminOrigin: "https://cloud.example.test", publicOrigin: "https://madani-u-1a2b3c4d5e6f.fly.dev", bootstrapSecret: secret, warnings: [],
   });
-  expect(cloudHomeConfiguration(contract({ DUSK_CLOUD_ADMIN_URL: "https://cloud.example.test/" }))!.adminOrigin).toBe("https://cloud.example.test");
+  expect(cloudHomeConfiguration(contract({ MADANI_CLOUD_ADMIN_URL: "https://cloud.example.test/" }))!.adminOrigin).toBe("https://cloud.example.test");
 });
 
 it.each<[string, NodeJS.ProcessEnv]>([
-  ["only one key", { DUSK_CLOUD_MACHINE_ID: machineId }],
-  ["no role", { ...contract(), DUSK_CLOUD_ROLE: undefined }],
-  ["the desktop role", contract({ DUSK_CLOUD_ROLE: "desktop" })],
-  ["no public URL", { ...contract(), DUSK_PUBLIC_URL: undefined }],
-  ["an http Admin", contract({ DUSK_CLOUD_ADMIN_URL: "http://cloud.example.test" })],
-  ["an Admin URL with a path", contract({ DUSK_CLOUD_ADMIN_URL: "https://cloud.example.test/api" })],
-  ["an Admin URL with credentials", contract({ DUSK_CLOUD_ADMIN_URL: "https://user:pass@cloud.example.test" })],
-  ["an http public URL", contract({ DUSK_PUBLIC_URL: "http://dusk-u-1a2b3c4d5e6f.fly.dev" })],
-  ["a machine id with a slash", contract({ DUSK_CLOUD_MACHINE_ID: "home/../x" })],
-  ["a short secret", contract({ DUSK_CLOUD_BOOTSTRAP_SECRET: "S".repeat(42) })],
-  ["a secret with padding", contract({ DUSK_CLOUD_BOOTSTRAP_SECRET: `${"S".repeat(42)}=` })],
-  ["the desktop app", contract({ DUSK_DESKTOP_PARENT: "1" })],
+  ["only one key", { MADANI_CLOUD_MACHINE_ID: machineId }],
+  ["no role", { ...contract(), MADANI_CLOUD_ROLE: undefined }],
+  ["the desktop role", contract({ MADANI_CLOUD_ROLE: "desktop" })],
+  ["no public URL", { ...contract(), MADANI_PUBLIC_URL: undefined }],
+  ["an http Admin", contract({ MADANI_CLOUD_ADMIN_URL: "http://cloud.example.test" })],
+  ["an Admin URL with a path", contract({ MADANI_CLOUD_ADMIN_URL: "https://cloud.example.test/api" })],
+  ["an Admin URL with credentials", contract({ MADANI_CLOUD_ADMIN_URL: "https://user:pass@cloud.example.test" })],
+  ["an http public URL", contract({ MADANI_PUBLIC_URL: "http://madani-u-1a2b3c4d5e6f.fly.dev" })],
+  ["a machine id with a slash", contract({ MADANI_CLOUD_MACHINE_ID: "home/../x" })],
+  ["a short secret", contract({ MADANI_CLOUD_BOOTSTRAP_SECRET: "S".repeat(42) })],
+  ["a secret with padding", contract({ MADANI_CLOUD_BOOTSTRAP_SECRET: `${"S".repeat(42)}=` })],
+  ["the desktop app", contract({ MADANI_DESKTOP_PARENT: "1" })],
 ])("refuses to start with %s", (_why, env) => {
   expect(() => cloudHomeConfiguration(env)).toThrow(/Cloud home configuration is invalid/);
 });
 
 it("never echoes a secret in its refusal", () => {
-  try { cloudHomeConfiguration(contract({ DUSK_CLOUD_BOOTSTRAP_SECRET: `${secret}!` })); expect.unreachable(); }
+  try { cloudHomeConfiguration(contract({ MADANI_CLOUD_BOOTSTRAP_SECRET: `${secret}!` })); expect.unreachable(); }
   catch (error) { expect(String(error)).not.toContain(secret); }
 });
 
@@ -75,7 +75,7 @@ it("offers the built-in browser and cloud computers, never this computer or a Lo
 
 it("refuses the places it never offers with what is true there, not a setup step", () => {
   const local = cloudHomePlaceRefusal("local")!, vm = cloudHomePlaceRefusal("vm")!;
-  expect(local).toBe("This computer isn't a place in the Cloud. Set Works on to Auto, Cloud desktop or Browser; your own computer is reached while dusk bot is open on it.");
+  expect(local).toBe("This computer isn't a place in the Cloud. Set Works on to Auto, Cloud desktop or Browser; your own computer is reached while madani bot is open on it.");
   expect(vm).toBe("Cloud bots can't use a private desktop. Set Works on to Auto, Cloud desktop or Browser.");
   for (const text of [local, vm]) {
     expect(text).not.toMatch(/configure|Computer panel|install|set (?:it|one) up/i);
@@ -91,7 +91,7 @@ function fixture() {
   const sessions = new SessionRegistry({ file: join(root, "sessions.json"), now: () => now });
   const pairing = createCloudPairing({ secret, sessions, now: () => now });
   let counter = 0;
-  const sign = (body = JSON.stringify({ label: "dusk bot app (Cloud)", ttlSeconds: 300 }), options: { key?: string; at?: number; nonce?: string } = {}) => {
+  const sign = (body = JSON.stringify({ label: "madani bot app (Cloud)", ttlSeconds: 300 }), options: { key?: string; at?: number; nonce?: string } = {}) => {
     const timestamp = String(Math.floor((options.at ?? now) / 1000)), nonce = options.nonce ?? `nonce-${String(++counter).padStart(12, "0")}`;
     return { timestamp, nonce, signature: `v1=${cloudPairingSignature(options.key ?? secret, timestamp, nonce, body)}`, body: Buffer.from(body) };
   };
@@ -109,7 +109,7 @@ it("opens one ordinary pairing window for a correctly signed request", () => {
   expect(granted.body.credential).toMatch(/^omb_pair_[A-Za-z0-9_-]{43}$/);
   expect(granted.body.expiresAt).toBe(f.now() + 300_000);
   const paired = f.exchange(granted.body.code as string);
-  expect(paired).toMatchObject({ ok: true, session: { label: "dusk bot app (Cloud)", scopes: ["admin", "client"] } });
+  expect(paired).toMatchObject({ ok: true, session: { label: "madani bot app (Cloud)", scopes: ["admin", "client"] } });
 });
 
 it("matches the Admin's signature byte for byte", () => {
@@ -120,7 +120,7 @@ it("matches the Admin's signature byte for byte", () => {
 });
 
 it("signs a health read over its method, path and query, byte for byte as the Admin does", () => {
-  // Same vector in dusk-cloud tests/cloud-health.test.ts:
+  // Same vector in madani-cloud tests/cloud-health.test.ts:
   // printf 'v1\n1800000000\nnonce-fixture-0001\nGET\n/api/cloud/health?after=0\n<b64url sha256 of the empty body>' | openssl dgst -sha256 -hmac k -binary | base64url
   expect(cloudRequestSignature("k", "1800000000", "nonce-fixture-0001", "GET", "/api/cloud/health?after=0", "")).toBe("qX07j43XUqYYi8T3l9T8WnC-hWLZSYuuvmRguJpbJKc");
   expect(cloudRequestSignature("k", "1800000000", "nonce-fixture-0001", "GET", "/api/cloud/health?after=1", "")).not.toBe("qX07j43XUqYYi8T3l9T8WnC-hWLZSYuuvmRguJpbJKc");
@@ -131,7 +131,7 @@ it("refuses a wrong key, a tampered request or a malformed signature, and counts
   const good = f.sign();
   const variants = [
     f.sign(undefined, { key: "W".repeat(43) }),
-    { ...good, body: Buffer.from(JSON.stringify({ label: "dusk bot app (Cloud)", ttlSeconds: 600 })) },
+    { ...good, body: Buffer.from(JSON.stringify({ label: "madani bot app (Cloud)", ttlSeconds: 600 })) },
     { ...good, nonce: "nonce-tampered-000" },
     { ...good, timestamp: String(Number(good.timestamp) + 1) },
     { ...good, signature: good.signature.slice(3) },
@@ -184,7 +184,7 @@ it("keeps every window single use and short lived, capping what the Admin asks f
   expect(f.exchange(long.body.code as string).ok).toBe(false);
   const plain = f.mint(f.sign("{}"));
   expect(plain.body.expiresAt).toBe(f.now() + 300_000);
-  expect(f.exchange(plain.body.code as string)).toMatchObject({ ok: true, session: { label: "dusk cloud" } });
+  expect(f.exchange(plain.body.code as string)).toMatchObject({ ok: true, session: { label: "madani cloud" } });
 });
 
 it("opens a browser sign-in only a browser redeems, by credential alone, for at most two minutes", () => {
@@ -235,7 +235,7 @@ it("treats a request the edge forwards as remote, whatever Host it claims", () =
     { host: "home-7f3k2.fly.dev", "x-forwarded-for": "203.0.113.9", "x-forwarded-proto": "https" },
     { host: "localhost:8799", "x-forwarded-for": "203.0.113.9", "x-forwarded-proto": "https" },
   ]) {
-    const result = resolveRequestAuth(request(headers), { sessions, cookieName: "dusk_session_x", streamPath: "/api/events", url });
+    const result = resolveRequestAuth(request(headers), { sessions, cookieName: "madani_session_x", streamPath: "/api/events", url });
     expect(result.auth).toBeNull();
     expect(result.status).toBe(403);
   }
@@ -259,9 +259,9 @@ it("binds a fresh volume to its machine and refuses anyone else's data", () => {
 it("a new home on a kept volume clears the data-directory lease the previous machine left, once the volume is confirmed its own, and never this machine's or another Cloud's (2026-10-23)", () => {
   const home = directory(), dataDir = cloudHomeDataDir({}, home);
   // The image runs on Linux, so the server is given a POSIX path; here only where it sits under the home is the point.
-  expect(relative(home, dataDir)).toBe(".duskbot");
-  expect(cloudHomeDataDir({}, "/data")).toBe("/data/.duskbot");
-  expect(cloudHomeDataDir({ DUSK_DATA_DIR: "/elsewhere" }, home)).toBe("/elsewhere");
+  expect(relative(home, dataDir)).toBe(".madanibot");
+  expect(cloudHomeDataDir({}, "/data")).toBe("/data/.madanibot");
+  expect(cloudHomeDataDir({ MADANI_DATA_DIR: "/elsewhere" }, home)).toBe("/elsewhere");
   mkdirSync(join(home, "lost+found"));
   const locked: string[] = [];
   const lock = (volume: string) => { locked.push(volume); };
@@ -276,7 +276,7 @@ it("a new home on a kept volume clears the data-directory lease the previous mac
   expect(() => prepareCloudHomeData(home, dataDir, "home-other", lock)).toThrow(/another Cloud machine/);
   expect(readFileSync(lease, "utf8")).toContain("d8d9e0f1a2b3c4");
   // A volume another live home holds: refused before the volume is even checked.
-  const held = () => { throw new Error("Another dusk cloud home is already running on this volume. No data was changed."); };
+  const held = () => { throw new Error("Another madani cloud home is already running on this volume. No data was changed."); };
   expect(() => prepareCloudHomeData(home, dataDir, "home-7f3k2", held)).toThrow(/already running on this volume/);
   expect(readFileSync(lease, "utf8")).toContain("d8d9e0f1a2b3c4");
   expect(prepareCloudHomeData(home, dataDir, "home-7f3k2", lock)).toEqual({ volume: "existing", cleared: [{ path: lease, host: "d8d9e0f1a2b3c4", pid: 613 }] });
@@ -291,7 +291,7 @@ it("holds its volume for as long as it lives, and says plainly why it will not s
   const home = directory();
   const calls: number[] = [];
   const answer = (status: number | null, extra: { error?: Error; stderr?: string } = {}) => (fd: number) => { calls.push(fd); return { status, ...extra }; };
-  expect(() => holdVolume(home, answer(75))).toThrow("Another dusk cloud home is already running on this volume. No data was changed.");
+  expect(() => holdVolume(home, answer(75))).toThrow("Another madani cloud home is already running on this volume. No data was changed.");
   expect(() => holdVolume(home, answer(null, { error: new Error("spawnSync /usr/bin/flock ENOENT") }))).toThrow(/could not lock its volume \(spawnSync \/usr\/bin\/flock ENOENT\)/);
   expect(() => holdVolume(home, answer(1, { stderr: "flock: 3: Bad file descriptor\n" }))).toThrow(/could not lock its volume \(flock: 3: Bad file descriptor\)/);
   holdVolume(home, answer(0));
@@ -310,7 +310,7 @@ it.skipIf(!existsSync("/usr/bin/flock"))("a second home on a volume a live home 
       holder.stdout.on("data", (chunk: Buffer) => { if (chunk.toString().includes("held")) resolve(); });
       holder.once("exit", (code) => reject(new Error(`the holder exited ${code}`)));
     });
-    expect(() => holdVolume(home)).toThrow("Another dusk cloud home is already running on this volume. No data was changed.");
+    expect(() => holdVolume(home)).toThrow("Another madani cloud home is already running on this volume. No data was changed.");
   } finally {
     holder.kill("SIGKILL");
   }
@@ -321,17 +321,17 @@ it.skipIf(!existsSync("/usr/bin/flock"))("a second home on a volume a live home 
 it("lets only the tunnel name the client on an own server, and only Fly's proxy on Fly, exactly as before", () => {
   const config = cloudHomeConfiguration(contract())!;
   const own = cloudHomeChildEnvironments(config, { ...contract(), PATH: "/usr/bin" }, "/data").edge;
-  expect(own).toMatchObject({ DUSK_CLOUD_EDGE_CLIENT_IP_HEADER: "Cf-Connecting-IP", DUSK_CLOUD_EDGE_TRUSTED_PROXIES: "127.0.0.1/32 ::1/128" });
-  const fly = cloudHomeChildEnvironments(config, { ...contract(), PATH: "/usr/bin", FLY_APP_NAME: "dusk-u-1a2b3c4d5e6f" }, "/data").edge;
-  expect(fly).toMatchObject({ DUSK_CLOUD_EDGE_CLIENT_IP_HEADER: "Fly-Client-IP", DUSK_CLOUD_EDGE_TRUSTED_PROXIES: "private_ranges" });
+  expect(own).toMatchObject({ MADANI_CLOUD_EDGE_CLIENT_IP_HEADER: "Cf-Connecting-IP", MADANI_CLOUD_EDGE_TRUSTED_PROXIES: "127.0.0.1/32 ::1/128" });
+  const fly = cloudHomeChildEnvironments(config, { ...contract(), PATH: "/usr/bin", FLY_APP_NAME: "madani-u-1a2b3c4d5e6f" }, "/data").edge;
+  expect(fly).toMatchObject({ MADANI_CLOUD_EDGE_CLIENT_IP_HEADER: "Fly-Client-IP", MADANI_CLOUD_EDGE_TRUSTED_PROXIES: "private_ranges" });
   expect(edgeClientAddress({ FLY_APP_NAME: " " })).toEqual(edgeClientAddress({}));
   // Both values are written into the edge's config as they are, so neither may come from anywhere but here.
-  for (const env of [{}, { FLY_APP_NAME: "dusk-u-1a2b3c4d5e6f" }, { DUSK_CLOUD_EDGE_CLIENT_IP_HEADER: "X-Real-IP", DUSK_CLOUD_EDGE_TRUSTED_PROXIES: "0.0.0.0/0" }]) {
+  for (const env of [{}, { FLY_APP_NAME: "madani-u-1a2b3c4d5e6f" }, { MADANI_CLOUD_EDGE_CLIENT_IP_HEADER: "X-Real-IP", MADANI_CLOUD_EDGE_TRUSTED_PROXIES: "0.0.0.0/0" }]) {
     const edge = cloudHomeChildEnvironments(config, { ...contract(), PATH: "/usr/bin", ...env }, "/data").edge;
-    expect(edge.DUSK_CLOUD_EDGE_CLIENT_IP_HEADER).toMatch(/^(?:Fly-Client-IP|Cf-Connecting-IP)$/);
-    expect(edge.DUSK_CLOUD_EDGE_TRUSTED_PROXIES).toMatch(/^(?:private_ranges|127\.0\.0\.1\/32 ::1\/128)$/);
+    expect(edge.MADANI_CLOUD_EDGE_CLIENT_IP_HEADER).toMatch(/^(?:Fly-Client-IP|Cf-Connecting-IP)$/);
+    expect(edge.MADANI_CLOUD_EDGE_TRUSTED_PROXIES).toMatch(/^(?:private_ranges|127\.0\.0\.1\/32 ::1\/128)$/);
   }
-  expect(cloudHomeChildEnvironments(config, { ...contract(), PATH: "/usr/bin", FLY_APP_NAME: "dusk-u-1a2b3c4d5e6f" }, "/data").server).not.toHaveProperty("DUSK_CLOUD_EDGE_CLIENT_IP_HEADER");
+  expect(cloudHomeChildEnvironments(config, { ...contract(), PATH: "/usr/bin", FLY_APP_NAME: "madani-u-1a2b3c4d5e6f" }, "/data").server).not.toHaveProperty("MADANI_CLOUD_EDGE_CLIENT_IP_HEADER");
 });
 
 it("never names the public host twice in the edge's host matcher, which Caddy refuses", () => {
@@ -342,21 +342,21 @@ it("never names the public host twice in the edge's host matcher, which Caddy re
 });
 
 it("gives the edge only its routing name and the server the contract, never a secret", () => {
-  const relay = { DUSK_CLOUD_VOICE_TOKEN: `dusk_voice_${"v".repeat(43)}`, DUSK_CLOUD_DECIDER_TOKEN: `dusk_decide_${"d".repeat(43)}`,
-    DUSK_CLOUD_X_TOKEN: `dusk_xd_${"x".repeat(43)}` };
+  const relay = { MADANI_CLOUD_VOICE_TOKEN: `madani_voice_${"v".repeat(43)}`, MADANI_CLOUD_DECIDER_TOKEN: `madani_decide_${"d".repeat(43)}`,
+    MADANI_CLOUD_X_TOKEN: `madani_xd_${"x".repeat(43)}` };
   const config = cloudHomeConfiguration(contract())!;
   const { server, edge, secrets } = cloudHomeChildEnvironments(config, { ...contract(), ...relay, PATH: "/usr/bin" }, "/data");
-  expect(server).toMatchObject({ HOME: "/data", DUSK_DATA_DIR: "/data/.duskbot", NODE_COMPILE_CACHE: "/data/.duskbot/cache/node-compile", DUSK_PORT: "8799", DUSK_WEBHOOK_PORT: "8800",
-    DUSK_PUBLIC_URL: "https://dusk-u-1a2b3c4d5e6f.fly.dev", DUSK_WEBHOOK_PUBLIC_URL: "https://dusk-u-1a2b3c4d5e6f.fly.dev", DUSK_CLOUD_SECRETS_FD: "3" });
+  expect(server).toMatchObject({ HOME: "/data", MADANI_DATA_DIR: "/data/.madanibot", NODE_COMPILE_CACHE: "/data/.madanibot/cache/node-compile", MADANI_PORT: "8799", MADANI_WEBHOOK_PORT: "8800",
+    MADANI_PUBLIC_URL: "https://madani-u-1a2b3c4d5e6f.fly.dev", MADANI_WEBHOOK_PUBLIC_URL: "https://madani-u-1a2b3c4d5e6f.fly.dev", MADANI_CLOUD_SECRETS_FD: "3" });
   // The bot box switch reaches the server; an unknown name does not.
-  expect(cloudHomeChildEnvironments(config, { ...contract(), PATH: "/usr/bin", DUSK_BOT_BOX: "0", DUSK_SOMETHING_ELSE: "x" }, "/data").server).toMatchObject({ DUSK_BOT_BOX: "0" });
-  expect(cloudHomeChildEnvironments(config, { ...contract(), PATH: "/usr/bin", DUSK_SOMETHING_ELSE: "x" }, "/data").server).not.toHaveProperty("DUSK_SOMETHING_ELSE");
-  expect(secrets).toEqual({ DUSK_CLOUD_BOOTSTRAP_SECRET: secret, ...relay });
+  expect(cloudHomeChildEnvironments(config, { ...contract(), PATH: "/usr/bin", MADANI_BOT_BOX: "0", MADANI_SOMETHING_ELSE: "x" }, "/data").server).toMatchObject({ MADANI_BOT_BOX: "0" });
+  expect(cloudHomeChildEnvironments(config, { ...contract(), PATH: "/usr/bin", MADANI_SOMETHING_ELSE: "x" }, "/data").server).not.toHaveProperty("MADANI_SOMETHING_ELSE");
+  expect(secrets).toEqual({ MADANI_CLOUD_BOOTSTRAP_SECRET: secret, ...relay });
   for (const value of Object.values(secrets)) {
     expect(JSON.stringify(server)).not.toContain(value);
     expect(JSON.stringify(edge)).not.toContain(value);
   }
-  expect(edge.DUSK_CLOUD_PUBLIC_HOST).toBe(cloudHomeHost(config));
+  expect(edge.MADANI_CLOUD_PUBLIC_HOST).toBe(cloudHomeHost(config));
   expect(JSON.stringify(edge)).not.toContain(secret);
   expect(passwdIds("root:x:0:0::/root:/bin/sh\nmaus:x:1001:1002::/data:/bin/bash\n", "maus")).toEqual({ uid: 1001, gid: 1002 });
   expect(passwdIds("root:x:0:0::/root:/bin/sh\n", "maus")).toBeNull();
@@ -364,38 +364,38 @@ it("gives the edge only its routing name and the server the contract, never a se
 
 it("holds requests at the edge while the server starts only when the Admin asked for it (a plan that sleeps)", () => {
   const config = cloudHomeConfiguration(contract())!;
-  expect(cloudHomeChildEnvironments(config, { ...contract(), PATH: "/usr/bin" }, "/data").edge.DUSK_CLOUD_EDGE_HOLD).toBe("0s");
-  expect(cloudHomeChildEnvironments(config, { ...contract(), PATH: "/usr/bin", DUSK_CLOUD_EDGE_HOLD: "30s" }, "/data").edge.DUSK_CLOUD_EDGE_HOLD).toBe("30s");
-  expect(cloudHomeChildEnvironments(config, { ...contract(), PATH: "/usr/bin", DUSK_CLOUD_EDGE_HOLD: "30s" }, "/data").server).not.toHaveProperty("DUSK_CLOUD_EDGE_HOLD");
+  expect(cloudHomeChildEnvironments(config, { ...contract(), PATH: "/usr/bin" }, "/data").edge.MADANI_CLOUD_EDGE_HOLD).toBe("0s");
+  expect(cloudHomeChildEnvironments(config, { ...contract(), PATH: "/usr/bin", MADANI_CLOUD_EDGE_HOLD: "30s" }, "/data").edge.MADANI_CLOUD_EDGE_HOLD).toBe("30s");
+  expect(cloudHomeChildEnvironments(config, { ...contract(), PATH: "/usr/bin", MADANI_CLOUD_EDGE_HOLD: "30s" }, "/data").server).not.toHaveProperty("MADANI_CLOUD_EDGE_HOLD");
   for (const raw of [undefined, "", "30", "1m", "-5s", "121s", "30s; respond 200", "9999s"]) expect(edgeHold(raw), String(raw)).toBe("0s");
   expect(edgeHold(" 045s ")).toBe("45s");
 });
 
 it("hands the server the Admin's export-only switch, so an ended Cloud started for its owner's export runs frozen", () => {
-  // Seen on a real staging test Cloud on Oct 22: the Admin booted the held Cloud with DUSK_CLOUD_EXPORT_ONLY=1, the log said
-  // "not passed to the server: … DUSK_CLOUD_EXPORT_ONLY …", and it ran its routines every 5 minutes for the whole export
+  // Seen on a real staging test Cloud on Oct 22: the Admin booted the held Cloud with MADANI_CLOUD_EXPORT_ONLY=1, the log said
+  // "not passed to the server: … MADANI_CLOUD_EXPORT_ONLY …", and it ran its routines every 5 minutes for the whole export
   // window while the computers that came home ran the same ones.
   const config = cloudHomeConfiguration(contract())!;
-  expect(cloudHomeChildEnvironments(config, { ...contract(), PATH: "/usr/bin", DUSK_CLOUD_EXPORT_ONLY: "1" }, "/data").server).toMatchObject({ DUSK_CLOUD_EXPORT_ONLY: "1" });
+  expect(cloudHomeChildEnvironments(config, { ...contract(), PATH: "/usr/bin", MADANI_CLOUD_EXPORT_ONLY: "1" }, "/data").server).toMatchObject({ MADANI_CLOUD_EXPORT_ONLY: "1" });
 });
 
 it("gives the server only an allow-listed environment: a secret added later, a test's key or anything unknown never reaches it", () => {
   const config = cloudHomeConfiguration(contract())!;
-  const env = { ...contract(), PATH: "/usr/bin", LANG: "C.UTF-8", LC_ALL: "C.UTF-8", NODE_ENV: "production", DUSK_STATIC_DIR: "/app/dist",
-    DUSK_CLOUD_VOICE_URL: "https://cloud.example.test/voice", DUSK_TTS_DEFAULT_VOICE: "alloy", DUSK_CLOUD_X_URL: "https://cloud.example.test/api/cloud/services/x",
-    DUSK_COMPOSIO_BROKER_URL: "https://broker.example.test", DUSK_COMPOSIO_BROKER_TOKEN: "b".repeat(64),
-    DUSK_CLOUD_FUTURE_SECRET: "later", DUSK_TEST_CLOUD_LEFT_BEHIND_KEY: "k".repeat(43), FLY_API_TOKEN: "fly", SOME_TOKEN: "t", HOME: "/root" };
+  const env = { ...contract(), PATH: "/usr/bin", LANG: "C.UTF-8", LC_ALL: "C.UTF-8", NODE_ENV: "production", MADANI_STATIC_DIR: "/app/dist",
+    MADANI_CLOUD_VOICE_URL: "https://cloud.example.test/voice", MADANI_TTS_DEFAULT_VOICE: "alloy", MADANI_CLOUD_X_URL: "https://cloud.example.test/api/cloud/services/x",
+    MADANI_COMPOSIO_BROKER_URL: "https://broker.example.test", MADANI_COMPOSIO_BROKER_TOKEN: "b".repeat(64),
+    MADANI_CLOUD_FUTURE_SECRET: "later", MADANI_TEST_CLOUD_LEFT_BEHIND_KEY: "k".repeat(43), FLY_API_TOKEN: "fly", SOME_TOKEN: "t", HOME: "/root" };
   const { server, dropped } = cloudHomeChildEnvironments(config, env, "/data");
-  expect(server).toMatchObject({ PATH: "/usr/bin", LANG: "C.UTF-8", LC_ALL: "C.UTF-8", NODE_ENV: "production", DUSK_STATIC_DIR: "/app/dist",
-    DUSK_CLOUD_ROLE: "home", DUSK_CLOUD_MACHINE_ID: machineId, DUSK_CLOUD_ADMIN_URL: "https://cloud.example.test",
-    DUSK_CLOUD_VOICE_URL: "https://cloud.example.test/voice", DUSK_TTS_DEFAULT_VOICE: "alloy", DUSK_CLOUD_X_URL: "https://cloud.example.test/api/cloud/services/x", HOME: "/data",
+  expect(server).toMatchObject({ PATH: "/usr/bin", LANG: "C.UTF-8", LC_ALL: "C.UTF-8", NODE_ENV: "production", MADANI_STATIC_DIR: "/app/dist",
+    MADANI_CLOUD_ROLE: "home", MADANI_CLOUD_MACHINE_ID: machineId, MADANI_CLOUD_ADMIN_URL: "https://cloud.example.test",
+    MADANI_CLOUD_VOICE_URL: "https://cloud.example.test/voice", MADANI_TTS_DEFAULT_VOICE: "alloy", MADANI_CLOUD_X_URL: "https://cloud.example.test/api/cloud/services/x", HOME: "/data",
     // A staging Cloud may name its connected-apps service; the Cloud registers its own token, never one from outside.
-    DUSK_COMPOSIO_BROKER_URL: "https://broker.example.test" });
-  for (const name of ["DUSK_CLOUD_FUTURE_SECRET", "DUSK_TEST_CLOUD_LEFT_BEHIND_KEY", "FLY_API_TOKEN", "SOME_TOKEN", "DUSK_COMPOSIO_BROKER_TOKEN"]) {
+    MADANI_COMPOSIO_BROKER_URL: "https://broker.example.test" });
+  for (const name of ["MADANI_CLOUD_FUTURE_SECRET", "MADANI_TEST_CLOUD_LEFT_BEHIND_KEY", "FLY_API_TOKEN", "SOME_TOKEN", "MADANI_COMPOSIO_BROKER_TOKEN"]) {
     expect(server).not.toHaveProperty(name);
     expect(dropped).toContain(name);
   }
-  expect(dropped).not.toContain("DUSK_CLOUD_BOOTSTRAP_SECRET");
+  expect(dropped).not.toContain("MADANI_CLOUD_BOOTSTRAP_SECRET");
 });
 
 it("the root supervisor runs and trusts only root's code, never the volume's or anything maus could rewrite", () => {
@@ -460,7 +460,7 @@ it("records the first finished bot turn once, on a Cloud home only, and a moved 
 
 // The launcher only runs on Linux (the image); Windows passes descriptors differently.
 it.skipIf(process.platform === "win32")("hands the server its secrets over a pipe it reads once: never its environment, never a grandchild's", async () => {
-  const dir = mkdtempSync(join(tmpdir(), "dusk-cloud-secrets-"));
+  const dir = mkdtempSync(join(tmpdir(), "madani-cloud-secrets-"));
   try {
     const script = join(dir, "server.mjs");
     const out = join(dir, "out.json");
@@ -477,17 +477,17 @@ const parentEnviron = (pid) => process.platform === "linux"
 const child = spawnSync(process.execPath, ["-e", "process.stdout.write(JSON.stringify(process.env))"], { encoding: "utf8" });
 writeFileSync(${JSON.stringify(out)}, JSON.stringify({ secrets, env: process.env, own: parentEnviron(process.pid), child: child.stdout }));
 `);
-    const env: NodeJS.ProcessEnv = { PATH: process.env.PATH, ...(process.env.SystemRoot ? { SystemRoot: process.env.SystemRoot } : {}), DUSK_CLOUD_SECRETS_FD: "3", VISIBLE_PROBE: "visible" };
-    const child = spawnWithSecrets(process.execPath, [script], env, { DUSK_CLOUD_BOOTSTRAP_SECRET: secret, DUSK_CLOUD_VOICE_TOKEN: "box_dusk_probe-token" });
+    const env: NodeJS.ProcessEnv = { PATH: process.env.PATH, ...(process.env.SystemRoot ? { SystemRoot: process.env.SystemRoot } : {}), MADANI_CLOUD_SECRETS_FD: "3", VISIBLE_PROBE: "visible" };
+    const child = spawnWithSecrets(process.execPath, [script], env, { MADANI_CLOUD_BOOTSTRAP_SECRET: secret, MADANI_CLOUD_VOICE_TOKEN: "box_madani_probe-token" });
     await new Promise((resolve) => child.once("exit", resolve));
     const seen = JSON.parse(readFileSync(out, "utf8"));
-    expect(seen.secrets).toEqual({ DUSK_CLOUD_BOOTSTRAP_SECRET: secret, DUSK_CLOUD_VOICE_TOKEN: "box_dusk_probe-token" });
+    expect(seen.secrets).toEqual({ MADANI_CLOUD_BOOTSTRAP_SECRET: secret, MADANI_CLOUD_VOICE_TOKEN: "box_madani_probe-token" });
     if (process.platform !== "win32") expect(seen.own).toContain("VISIBLE_PROBE=visible");
     for (const where of [seen.own, JSON.stringify(seen.env), seen.child]) {
       expect(where).not.toContain(secret);
-      expect(where).not.toContain("box_dusk_probe-token");
+      expect(where).not.toContain("box_madani_probe-token");
     }
-    expect(seen.child).not.toContain("DUSK_CLOUD_SECRETS_FD");
+    expect(seen.child).not.toContain("MADANI_CLOUD_SECRETS_FD");
   } finally {
     await removeTempDir(dir);
   }
@@ -499,7 +499,7 @@ it("captures a child's stdout and stderr when asked, and shares this process's o
   writeFileSync(script, `process.stdout.write("stdout marker"); process.stderr.write("stderr marker");`);
   const env: NodeJS.ProcessEnv = { PATH: process.env.PATH, ...(process.env.SystemRoot ? { SystemRoot: process.env.SystemRoot } : {}) };
   const run = async (capture: boolean) => {
-    const child = spawnWithSecrets(process.execPath, [script], env, { DUSK_CLOUD_BOOTSTRAP_SECRET: secret }, undefined, capture);
+    const child = spawnWithSecrets(process.execPath, [script], env, { MADANI_CLOUD_BOOTSTRAP_SECRET: secret }, undefined, capture);
     let out = "", err = "";
     child.stdout?.on("data", (chunk) => { out += chunk; });
     child.stderr?.on("data", (chunk) => { err += chunk; });
@@ -524,24 +524,24 @@ it("the Cloud supervisor hardens the host before anything runs as maus: hidepid 
   expect(hardenHost({}, run(0))).toEqual(["/proc: hidepid=invisible", "/.fly: root only"]);
   expect(calls).toEqual(["mount -o remount,hidepid=invisible /proc", "chmod 700 /.fly"]);
   expect(hardenHost({}, run(32, false))).toEqual(["/proc: hidepid not applied (mount: permission denied)"]);
-  expect(hardenHost({ DUSK_CLOUD_HARDEN: "0" }, run(0))).toEqual(["hardening skipped (DUSK_CLOUD_HARDEN=0)"]);
+  expect(hardenHost({ MADANI_CLOUD_HARDEN: "0" }, run(0))).toEqual(["hardening skipped (MADANI_CLOUD_HARDEN=0)"]);
   const failing = { ...run(0), chmod: () => { throw new Error("read-only"); } };
   expect(hardenHost({}, failing)).toEqual(["/proc: hidepid=invisible", "/.fly: left as is (read-only)"]);
 });
 
 it("boots as a Team Cloud with the Admin's team id and name, and refuses a team without them", () => {
-  const team = cloudHomeConfiguration(contract({ DUSK_CLOUD_ROLE: "team", DUSK_CLOUD_TEAM_ID: "team-7f3a", DUSK_CLOUD_TEAM_NAME: " Acme " }))!;
+  const team = cloudHomeConfiguration(contract({ MADANI_CLOUD_ROLE: "team", MADANI_CLOUD_TEAM_ID: "team-7f3a", MADANI_CLOUD_TEAM_NAME: " Acme " }))!;
   expect(team).toMatchObject({ role: "team", team: { id: "team-7f3a", name: "Acme" } });
   expect(cloudHomeConfiguration(contract())).toMatchObject({ role: "home", team: null });
-  expect(() => cloudHomeConfiguration(contract({ DUSK_CLOUD_ROLE: "team" }))).toThrow(/DUSK_CLOUD_TEAM_ID/);
-  expect(() => cloudHomeConfiguration(contract({ DUSK_CLOUD_ROLE: "team", DUSK_CLOUD_TEAM_ID: "team-7f3a" }))).toThrow(/DUSK_CLOUD_TEAM_NAME/);
-  expect(() => cloudHomeConfiguration(contract({ DUSK_CLOUD_ROLE: "team", DUSK_CLOUD_TEAM_ID: "../x", DUSK_CLOUD_TEAM_NAME: "Acme" }))).toThrow(/DUSK_CLOUD_TEAM_ID/);
-  expect(() => cloudHomeConfiguration(contract({ DUSK_CLOUD_ROLE: "team", DUSK_CLOUD_TEAM_ID: "t", DUSK_CLOUD_TEAM_NAME: "a\nb" }))).toThrow(/DUSK_CLOUD_TEAM_NAME/);
-  expect(() => cloudHomeConfiguration(contract({ DUSK_CLOUD_ROLE: "team", DUSK_CLOUD_TEAM_ID: "t", DUSK_CLOUD_TEAM_NAME: "x".repeat(81) }))).toThrow(/DUSK_CLOUD_TEAM_NAME/);
+  expect(() => cloudHomeConfiguration(contract({ MADANI_CLOUD_ROLE: "team" }))).toThrow(/MADANI_CLOUD_TEAM_ID/);
+  expect(() => cloudHomeConfiguration(contract({ MADANI_CLOUD_ROLE: "team", MADANI_CLOUD_TEAM_ID: "team-7f3a" }))).toThrow(/MADANI_CLOUD_TEAM_NAME/);
+  expect(() => cloudHomeConfiguration(contract({ MADANI_CLOUD_ROLE: "team", MADANI_CLOUD_TEAM_ID: "../x", MADANI_CLOUD_TEAM_NAME: "Acme" }))).toThrow(/MADANI_CLOUD_TEAM_ID/);
+  expect(() => cloudHomeConfiguration(contract({ MADANI_CLOUD_ROLE: "team", MADANI_CLOUD_TEAM_ID: "t", MADANI_CLOUD_TEAM_NAME: "a\nb" }))).toThrow(/MADANI_CLOUD_TEAM_NAME/);
+  expect(() => cloudHomeConfiguration(contract({ MADANI_CLOUD_ROLE: "team", MADANI_CLOUD_TEAM_ID: "t", MADANI_CLOUD_TEAM_NAME: "x".repeat(81) }))).toThrow(/MADANI_CLOUD_TEAM_NAME/);
 });
 
 it("a Team Cloud takes the team's default language from the Admin, and boots in its own default when it is missing or unknown", () => {
-  const team = (language?: string) => cloudHomeConfiguration(contract({ DUSK_CLOUD_ROLE: "team", DUSK_CLOUD_TEAM_ID: "team-7f3a", DUSK_CLOUD_TEAM_NAME: "Acme", ...(language === undefined ? {} : { DUSK_CLOUD_TEAM_LANGUAGE: language }) }))!.team;
+  const team = (language?: string) => cloudHomeConfiguration(contract({ MADANI_CLOUD_ROLE: "team", MADANI_CLOUD_TEAM_ID: "team-7f3a", MADANI_CLOUD_TEAM_NAME: "Acme", ...(language === undefined ? {} : { MADANI_CLOUD_TEAM_LANGUAGE: language }) }))!.team;
   expect(team("de")).toEqual({ id: "team-7f3a", name: "Acme", language: "de" });
   expect(team(" PT-BR ")).toMatchObject({ language: "pt-br" });
   expect(team()).toEqual({ id: "team-7f3a", name: "Acme" });
@@ -555,7 +555,7 @@ it("a Team Cloud's pairing binds the Admin's member claim to the session it open
   const pairing = createCloudPairing({ secret, sessions, team: { id: "team-1", name: "Acme" }, now: () => now });
   let counter = 0;
   const mint = (claims: Record<string, unknown>) => {
-    const body = JSON.stringify({ label: "dusk bot app (Team Cloud)", ttlSeconds: 300, ...claims });
+    const body = JSON.stringify({ label: "madani bot app (Team Cloud)", ttlSeconds: 300, ...claims });
     const timestamp = String(Math.floor(now / 1000)), nonce = `nonce-${String(++counter).padStart(12, "0")}`;
     return pairing.handle({ timestamp, nonce, signature: `v1=${cloudPairingSignature(secret, timestamp, nonce, body)}`, body: Buffer.from(body), source: "203.0.113.9" });
   };
@@ -594,7 +594,7 @@ it("a Team Cloud pairing at a new role ends that person's sessions, phones and w
   const pairing = createCloudPairing({ secret, sessions, team: { id: "team-1", name: "Acme" }, now: () => now });
   let counter = 0;
   const mint = (email: string, role: string) => {
-    const body = JSON.stringify({ label: "dusk bot app (Team Cloud)", ttlSeconds: 300, member: { email, role } });
+    const body = JSON.stringify({ label: "madani bot app (Team Cloud)", ttlSeconds: 300, member: { email, role } });
     const timestamp = String(Math.floor(now / 1000)), nonce = `nonce-${String(++counter).padStart(12, "0")}`;
     return pairing.handle({ timestamp, nonce, signature: `v1=${cloudPairingSignature(secret, timestamp, nonce, body)}`, body: Buffer.from(body), source: "203.0.113.9" });
   };

@@ -28,7 +28,7 @@ export function vpsExecArgs(alias: string, containerId: string, command: string,
     "exec", "-u", "cua", "-w", VM_WORKSPACE_GUEST,
     "-e", "HOME=/home/cua", "-e", `DISPLAY=:${opts.display}`,
     containerId,
-    "sh", "-c", WRAPPER, "dusk-exec", String(opts.seconds), command, opts.marker,
+    "sh", "-c", WRAPPER, "madani-exec", String(opts.seconds), command, opts.marker,
   ]);
 }
 
@@ -43,7 +43,7 @@ export async function vpsContainerExec(
   if (command.length > MAX_COMMAND) throw refusal("command is too long", 400);
   if (options.timeoutSeconds !== undefined && !Number.isFinite(options.timeoutSeconds)) throw refusal("timeout_seconds must be finite", 400);
   const seconds = Math.min(Math.max(Math.floor(options.timeoutSeconds ?? DEFAULT_SECONDS), 1), MAX_SECONDS);
-  const marker = `dusk-exit-${randomBytes(8).toString("hex")}:`;
+  const marker = `madani-exit-${randomBytes(8).toString("hex")}:`;
   const args = vpsExecArgs(alias, containerId, command, { seconds, display: options.display ?? 1, marker });
   let out: { stdout: string; stderr: string };
   try {
@@ -76,7 +76,7 @@ export async function pullVpsFile(alias: string, containerId: string, guestPath:
   const guest = posix.join(GUEST_HOME, ...relative(hostDir, local).split(sep));
   let stdout: string;
   try {
-    ({ stdout } = await runner(vpsDockerArgs(alias, ["exec", "-u", "cua", containerId, "sh", "-c", PULL, "dusk-pull", guest, String(VPS_PULL_MAX_BYTES)]), { timeoutMs: 60_000 }));
+    ({ stdout } = await runner(vpsDockerArgs(alias, ["exec", "-u", "cua", containerId, "sh", "-c", PULL, "madani-pull", guest, String(VPS_PULL_MAX_BYTES)]), { timeoutMs: 60_000 }));
   } catch (error) {
     const detail = error instanceof Error ? error.message : "";
     if (/^missing$/m.test(detail)) throw refusal(`No file was found at ${guest} on your VPS computer. Save it under /home/cua/workspace and pass its exact path.`, 404);
@@ -92,7 +92,7 @@ export async function pullVpsFile(alias: string, containerId: string, guestPath:
 export async function withVpsGuestFile<T>(desktop: () => Promise<{ alias: string; containerId: string } | undefined>, guestPath: string, use: (guest?: { root: string; host: string }) => Promise<T>): Promise<T> {
   const vps = guestWorkspaceToHost(guestPath, GUEST_HOME, "/") ? await desktop() : undefined;
   if (!vps) return use();
-  const dir = await mkdtemp(join(tmpdir(), "dusk-vps-file-"));
+  const dir = await mkdtemp(join(tmpdir(), "madani-vps-file-"));
   try {
     await pullVpsFile(vps.alias, vps.containerId, guestPath, dir);
     return await use({ root: GUEST_HOME, host: dir });

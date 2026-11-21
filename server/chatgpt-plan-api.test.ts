@@ -6,7 +6,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
-import { verificationServerEnvironment } from "../scripts/control-dusk.ts";
+import { verificationServerEnvironment } from "../scripts/control-madani.ts";
 import { removeTempDir, waitForExit } from "./testing/cleanup.ts";
 import { freePortBlock } from "./testing/ports.ts";
 import { excludedWorkspaceAuthPath } from "./workspace-backup-policy.ts";
@@ -48,11 +48,11 @@ function expectSignedOut(instance: Record<string, any>) {
 }
 
 beforeAll(async () => {
-  home = mkdtempSync(join(tmpdir(), "dusk-chatgpt-api-"));
+  home = mkdtempSync(join(tmpdir(), "madani-chatgpt-api-"));
   mkdirSync(join(home, "tmp"));
   const port = await freePortBlock([0, 1]);
   base = `http://127.0.0.1:${port}`;
-  logPath = join(tmpdir(), `dusk-chatgpt-api-${port}-${process.pid}.log`);
+  logPath = join(tmpdir(), `madani-chatgpt-api-${port}-${process.pid}.log`);
   // Non-product instance names avoid adding unrelated native CLIs to this fixture.
   writeFileSync(join(home, "config.json"), JSON.stringify({ instances: {
     fixture: { driver: "claudeAgent", config: { cli: join(ROOT, "server/testing/fake-claude-cli.ts") } },
@@ -156,7 +156,7 @@ describe("ChatGPT plan accounts over isolated HTTP", () => {
     ] as const) {
       const refused = await api("POST", "/api/instances/chatgpt/auth/start", {}, { ...owner, [header]: value });
       expect(refused.status).toBe(403);
-      expect(refused.body.error).toContain("computer running dusk bot");
+      expect(refused.body.error).toContain("computer running madani bot");
       expect(refused.body).not.toHaveProperty("auth");
     }
   });

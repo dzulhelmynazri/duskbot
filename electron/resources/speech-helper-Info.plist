@@ -3,15 +3,15 @@
 <plist version="1.0">
   <dict>
     <key>CFBundleDisplayName</key>
-    <string>Dusk Bot</string>
+    <string>Madani Bot</string>
     <key>CFBundleExecutable</key>
     <string>speech-helper</string>
     <key>CFBundleIdentifier</key>
-    <string>bot.dusk.app.speech-helper</string>
+    <string>bot.madani.app.speech-helper</string>
     <key>CFBundleInfoDictionaryVersion</key>
     <string>6.0</string>
     <key>CFBundleName</key>
-    <string>Dusk Bot Speech</string>
+    <string>Madani Bot Speech</string>
     <key>CFBundlePackageType</key>
     <string>APPL</string>
     <key>LSBackgroundOnly</key>

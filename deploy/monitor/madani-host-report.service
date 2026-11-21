@@ -1,17 +1,17 @@
 [Unit]
-Description=dusk bot host report to the ops page
+Description=madani bot host report to the ops page
 After=network-online.target
 Wants=network-online.target
 
 [Service]
 Type=oneshot
-# DUSK_OPS_REPORT_URL, DUSK_OPS_REPORT_TOKEN, DUSK_HOST_NAME; root-owned, mode 0600
-EnvironmentFile=/etc/dusk-host-report.env
-ExecStart=/usr/bin/node /opt/dusk-uptime/host-report.mjs
+# MADANI_OPS_REPORT_URL, MADANI_OPS_REPORT_TOKEN, MADANI_HOST_NAME; root-owned, mode 0600
+EnvironmentFile=/etc/madani-host-report.env
+ExecStart=/usr/bin/node /opt/madani-uptime/host-report.mjs
 TimeoutStartSec=60
 DynamicUser=yes
 NoNewPrivileges=yes
 ProtectSystem=strict
 ProtectHome=yes
 PrivateTmp=yes
-ReadOnlyPaths=/srv/dusk-backups
+ReadOnlyPaths=/srv/madani-backups

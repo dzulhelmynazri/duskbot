@@ -204,7 +204,7 @@ export function useLocalFileSave(filePath: string, name?: string, message?: Mess
     request.current = controller;
     try {
       const response = await requestMessageFile(filePath, message, controller.signal, entry === undefined ? { list: true } : { entry });
-      if (response.headers.get("x-dusk-folder") === "1") {
+      if (response.headers.get("x-madani-folder") === "1") {
         const listing = await response.json() as MessageFolderListing;
         if (!mounted.current || controller.signal.aborted) return;
         setFolder(listing);
@@ -330,9 +330,9 @@ export function MessageFolderFiles({ folderPath, listing, message }: {
 }
 
 const REVEALABLE_PATH = /^(?:\/(?!\/)|[a-zA-Z]:[\\/])/;
-function revealBridge(): NonNullable<Window["duskDesktop"]>["revealInFolder"] {
-  const duskDesktop = typeof window === "undefined" ? undefined : window.duskDesktop;
-  return duskDesktop?.remoteClient?.active ? undefined : duskDesktop?.revealInFolder;
+function revealBridge(): NonNullable<Window["madaniDesktop"]>["revealInFolder"] {
+  const madaniDesktop = typeof window === "undefined" ? undefined : window.madaniDesktop;
+  return madaniDesktop?.remoteClient?.active ? undefined : madaniDesktop?.revealInFolder;
 }
 
 export function OutsideWorkspaceFile({ filePath }: { filePath: string }) {

@@ -17,7 +17,7 @@ import {
 const PREVIEW = 3;
 
 const rowCls = "group relative flex min-h-11 w-full min-w-0 items-center gap-2 rounded-lg px-2 py-1.5 text-left text-[13px] leading-[18px] tracking-[0.015em] text-ink";
-const smallButton = "dusk-press inline-flex h-7 shrink-0 items-center rounded-full px-2.5 text-[13px] leading-[18px] focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-focus disabled:opacity-50";
+const smallButton = "madani-press inline-flex h-7 shrink-0 items-center rounded-full px-2.5 text-[13px] leading-[18px] focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-focus disabled:opacity-50";
 
 /** One file: its name opens it; the menu renames, downloads or deletes it, each in place. */
 function FileRow({ bot, doc, now, onOpen, onChanged }: {

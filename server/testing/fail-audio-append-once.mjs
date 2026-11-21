@@ -1,8 +1,8 @@
-// Loaded only with DUSK_TEST_FAIL_AUDIO_APPEND_ONCE=1: the first store.appendMessage carrying an audio
+// Loaded only with MADANI_TEST_FAIL_AUDIO_APPEND_ONCE=1: the first store.appendMessage carrying an audio
 // attachment throws, so a test can prove a persistence error leaves the parked voice note retryable.
 import { Store } from "../store.ts";
 
-if (process.env.DUSK_TEST_FAIL_AUDIO_APPEND_ONCE === "1") {
+if (process.env.MADANI_TEST_FAIL_AUDIO_APPEND_ONCE === "1") {
   const original = Store.prototype.appendMessage;
   let armed = true;
   Store.prototype.appendMessage = function (...args) {

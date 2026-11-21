@@ -7,7 +7,7 @@ import localOrigin from "./local-origin.cjs";
 import { createOrganizationEntry, isOrganizationDeepLink, takeOrganizationDeepLink, organizationRestartIntent, withOrganizationRestartIntent, withoutOrganizationRestartIntent } from "./organization-entry.mjs";
 
 const remote = { id: "old", name: "Old cloud", origin: "https://old.example" };
-const companion = { endpoint: "https://c-old.cloud.dusk.bot", serverName: "Old computer", deviceId: "device-a" };
+const companion = { endpoint: "https://c-old.cloud.madani.bot", serverName: "Old computer", deviceId: "device-a" };
 function fixture({ activeId = "old", remoteAccess = null, restartIntent = false, accepted = true } = {}) {
   const state = { environments: { activeId, environments: [remote] }, remoteAccess, restartIntent };
   const calls = [];
@@ -24,8 +24,8 @@ function fixture({ activeId = "old", remoteAccess = null, restartIntent = false,
 }
 
 test("the organisation protocol is a fixed action without URL routing or credentials", () => {
-  assert.equal(isOrganizationDeepLink("duskbot://organization"), true);
-  for (const value of [null, {}, "", "duskbot://organization/", "duskbot://organization?", "duskbot://organization#", "duskbot://organization?url=https://old.example", "duskbot://organization#token=secret", "duskbot://organization/other", "duskbot://user@organization", "duskbot://organization:443", "duskbot://organization.evil", "https://organization", " duskbot://organization", "duskbot://%6frganization"]) {
+  assert.equal(isOrganizationDeepLink("madanibot://organization"), true);
+  for (const value of [null, {}, "", "madanibot://organization/", "madanibot://organization?", "madanibot://organization#", "madanibot://organization?url=https://old.example", "madanibot://organization#token=secret", "madanibot://organization/other", "madanibot://user@organization", "madanibot://organization:443", "madanibot://organization.evil", "https://organization", " madanibot://organization", "madanibot://%6frganization"]) {
     assert.equal(isOrganizationDeepLink(value), false);
   }
 });
@@ -37,8 +37,8 @@ test("local entry opens Settings without enrollment or persistence", async () =>
 });
 
 test("consuming a launch action prevents it replaying on a later restart without changing other arguments", () => {
-  const original = ["/Applications/dusk bot", "--profile=fixture", "duskbot://organization?ignored", "duskbot://install/example"];
-  const argv = [...original, "duskbot://organization", "duskbot://organization"];
+  const original = ["/Applications/madani bot", "--profile=fixture", "madanibot://organization?ignored", "madanibot://install/example"];
+  const argv = [...original, "madanibot://organization", "madanibot://organization"];
   assert.equal(takeOrganizationDeepLink(argv), true);
   assert.deepEqual(argv, original);
   assert.equal(takeOrganizationDeepLink(argv), false, "the action is consumed exactly once");
@@ -49,7 +49,7 @@ test("desktop relaunch accepts every platform once, guards its sender, and prese
   const main = readFileSync(new URL("./main.mjs", import.meta.url), "utf8");
   const source = main.slice(main.indexOf('ipcMain.handle("desktop:relaunch"'), main.indexOf("const talk = installTalk("))
     + main.slice(main.indexOf("function requireMainWindowSender("), main.indexOf('ipcMain.handle("desktop-remote:state"'));
-  const argv = ["/fixture/dusk bot", "--fixture", "duskbot://organization", "duskbot://organization?ignored"];
+  const argv = ["/fixture/madani bot", "--fixture", "madanibot://organization", "madanibot://organization?ignored"];
   takeOrganizationDeepLink(argv);
   const origin = "http://127.0.0.1:48995";
   localOrigin.setLocalOrigin(origin);
@@ -83,7 +83,7 @@ test("desktop relaunch accepts every platform once, guards its sender, and prese
     assert.equal(timers.length, 1, `${platform}: repeated calls schedule only one restart`);
     assert.deepEqual(calls, [], "the IPC response precedes normal shutdown");
     timers[0]();
-    assert.deepEqual(calls, [["--fixture", "duskbot://organization?ignored"], "quit"]);
+    assert.deepEqual(calls, [["--fixture", "madanibot://organization?ignored"], "quit"]);
   }
 });
 

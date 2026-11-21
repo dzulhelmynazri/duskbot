@@ -38,7 +38,7 @@ function cloud({ connections = [], engines = [], commands = ["npx", "node"], rep
       if (sealKey) return sealKey;
       if (method === "GET" && route === "/api/cloud-connections") {
         reads++;
-        return { ok: true, status: 200, body: { computer: { environmentId: "env-cloud", label: "dusk-u-1" }, connections, engines: reads > readyAfter ? engines : [], commands } };
+        return { ok: true, status: 200, body: { computer: { environmentId: "env-cloud", label: "madani-u-1" }, connections, engines: reads > readyAfter ? engines : [], commands } };
       }
       const answer = reply(method, route, body) ?? { status: 200, body: {} };
       return { ok: answer.status >= 200 && answer.status < 300, ...answer };
@@ -193,7 +193,7 @@ test("connected apps: the same account already, the person's own project, a Clou
   assert.deepEqual(keeps.calls[0], ["POST", "/api/cloud-connections/connected-apps", { apiKey: "ck", userId: "u1", apps: ["gmail"] }]);
 });
 
-test("a server of the person's own with no connected-apps service keeps Dusk's connected apps here for good, and still takes their own project", async () => {
+test("a server of the person's own with no connected-apps service keeps Madani's connected apps here for good, and still takes their own project", async () => {
   const here = { id: "composio", kind: "composio", label: "Connected apps", mode: "managed", account: "managed:aaa" };
   const local = computer({ connections: [here], answers: { composio: { connection: { composio: { apiKey: "ck", userId: "u1" } } } }, connected: { gmail: { connected: true } } });
   assert.deepEqual(parseConnections({ computer: COMPUTER, connections: [], managedApps: false }).managedApps, false);

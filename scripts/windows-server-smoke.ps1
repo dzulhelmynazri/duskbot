@@ -1,4 +1,4 @@
-# Installs a dusk bot setup.exe silently, opens it and waits for the background server; exits 1 when it never came up.
+# Installs a madani bot setup.exe silently, opens it and waits for the background server; exits 1 when it never came up.
 # -Variant sets up a home PC condition first: defender (asks for real-time scanning and drops GitHub's exclusions; a
 # hosted runner's Defender may refuse, the summary says), proxy (dead proxy in the environment), ports (the app's ports
 # reserved the way Hyper-V/WSL reserve ranges), engines (engine CLIs installed), busy and heavy (three or six spinning
@@ -34,20 +34,20 @@ switch ($Variant.Split(",")) {
   }
   "upgrade" {
     # 0.2.15 first, opened until its server is up, then the installer under test over it
-    Invoke-WebRequest -Uri "https://dusk.bot/releases/0.2.15/DuskBot-0.2.15-setup.exe" -OutFile "$env:TEMP\old-setup.exe"
+    Invoke-WebRequest -Uri "https://madani.bot/releases/0.2.15/MadaniBot-0.2.15-setup.exe" -OutFile "$env:TEMP\old-setup.exe"
     Start-Process -FilePath "$env:TEMP\old-setup.exe" -ArgumentList "/S" -Wait
     $old = Get-ChildItem -Path "$env:LOCALAPPDATA\Programs" -Recurse -Depth 2 -Filter "*.exe" | Where-Object { Test-Path (Join-Path $_.DirectoryName "resources\app.asar") } | Select-Object -First 1
     Start-Process -FilePath $old.FullName | Out-Null
     $t = Get-Date
     while (((Get-Date) - $t).TotalSeconds -lt 180) {
       Start-Sleep -Seconds 5
-      $l = Join-Path $env:APPDATA "duskbot\logs\server.log"
+      $l = Join-Path $env:APPDATA "madanibot\logs\server.log"
       if ((Test-Path $l) -and ((Get-Content -Raw $l) -match "server ready pid=")) { Note "0.2.15 came up"; break }
     }
     Start-Sleep -Seconds 20
     Get-Process | Where-Object { $_.Path -like "$($old.DirectoryName)*" } | Stop-Process -Force -ErrorAction SilentlyContinue
     Start-Sleep -Seconds 5
-    Copy-Item (Join-Path $env:APPDATA "duskbot\logs\server.log") "$Out\server-0.2.15.log" -ErrorAction SilentlyContinue
+    Copy-Item (Join-Path $env:APPDATA "madanibot\logs\server.log") "$Out\server-0.2.15.log" -ErrorAction SilentlyContinue
   }
   { $_ -in "busy", "heavy" } {
     # a slower PC: spinning processes (three per core, six for heavy) share the CPU with the app while it starts
@@ -84,7 +84,7 @@ while (((Get-Date) - $started).TotalSeconds -lt $WaitSeconds) {
 Start-Sleep -Seconds 10
 Note "verdict $verdict after $([int]((Get-Date) - $started).TotalSeconds)s"
 foreach ($root in @($appData, $localAppData)) {
-  foreach ($name in @("duskbot", "dusk bot", "Dusk Bot")) {
+  foreach ($name in @("madanibot", "madani bot", "Madani Bot")) {
     $dir = Join-Path $root $name
     if (Test-Path $dir) {
       $tag = (Split-Path $root -Leaf) + "_" + ($name -replace ' ', '_')

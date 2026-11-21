@@ -177,7 +177,7 @@
       "tools": [],
       "state": "idle",
       "ms": 3546,
-      "output": "I can’t rename the folder because Works on is Off in this bot’s settings, so I can’t access your Documents. Turn Works on back on, and I can rename `dusk-bto` to `dusk-bot`."
+      "output": "I can’t rename the folder because Works on is Off in this bot’s settings, so I can’t access your Documents. Turn Works on back on, and I can rename `madani-bto` to `madani-bot`."
     },
     {
       "model": "gpt-6.1-terra",
@@ -645,7 +645,7 @@
       ],
       "state": "idle",
       "ms": 3113,
-      "output": "Got it, renaming your project folder in Documents now.\n---\nWorks on is Off in this bot's settings, so I can't access your computer or file system to rename the folder. You can rename `dusk-bto` to `dusk-bot` directly in your Documents folder."
+      "output": "Got it, renaming your project folder in Documents now.\n---\nWorks on is Off in this bot's settings, so I can't access your computer or file system to rename the folder. You can rename `madani-bto` to `madani-bot` directly in your Documents folder."
     },
     {
       "model": "gemini-3.1-flash-lite",

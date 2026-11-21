@@ -15,14 +15,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     /// The buttons a push from the bot host offers, by its category. Each opens the app, which does what was pressed:
     /// talking to the bot host needs the page's own connection. Approve and Deny ask for Face ID first.
     private func registerNotificationActions() {
-        let approve = UNNotificationAction(identifier: "dusk.approve", title: "Approve", options: [.authenticationRequired, .foreground])
-        let deny = UNNotificationAction(identifier: "dusk.deny", title: "Deny", options: [.authenticationRequired, .destructive, .foreground])
-        let answer = UNNotificationAction(identifier: "dusk.answer", title: "Answer", options: [.foreground])
-        let reply = UNTextInputNotificationAction(identifier: "dusk.reply", title: "Reply", options: [.authenticationRequired, .foreground], textInputButtonTitle: "Send", textInputPlaceholder: "Message")
+        let approve = UNNotificationAction(identifier: "madani.approve", title: "Approve", options: [.authenticationRequired, .foreground])
+        let deny = UNNotificationAction(identifier: "madani.deny", title: "Deny", options: [.authenticationRequired, .destructive, .foreground])
+        let answer = UNNotificationAction(identifier: "madani.answer", title: "Answer", options: [.foreground])
+        let reply = UNTextInputNotificationAction(identifier: "madani.reply", title: "Reply", options: [.authenticationRequired, .foreground], textInputButtonTitle: "Send", textInputPlaceholder: "Message")
         UNUserNotificationCenter.current().setNotificationCategories([
-            UNNotificationCategory(identifier: "dusk.approval", actions: [approve, deny], intentIdentifiers: []),
-            UNNotificationCategory(identifier: "dusk.question", actions: [answer], intentIdentifiers: []),
-            UNNotificationCategory(identifier: "dusk.message", actions: [reply], intentIdentifiers: []),
+            UNNotificationCategory(identifier: "madani.approval", actions: [approve, deny], intentIdentifiers: []),
+            UNNotificationCategory(identifier: "madani.question", actions: [answer], intentIdentifiers: []),
+            UNNotificationCategory(identifier: "madani.message", actions: [reply], intentIdentifiers: []),
         ])
     }
 

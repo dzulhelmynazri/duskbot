@@ -61,7 +61,7 @@ describe("subscriber rows", () => {
     });
     expect(rows).toHaveLength(1);
     expect(rows[0]).toMatchObject({ accountId: "a", email: "a@x.test", country: "IN", plan: "starter", bucket: "trial", status: "trial day 2 of 3", messages7d: 4, messages: 10,
-      turns: 12, failed: 2, bots: 3, routines: 3, apps: 1, engines: ["claude", "codex"], platforms: ["mac", "windows"], places: ["dusk cloud", "own server", "this computer"], cloud: "asleep" });
+      turns: 12, failed: 2, bots: 3, routines: 3, apps: 1, engines: ["claude", "codex"], platforms: ["mac", "windows"], places: ["madani cloud", "own server", "this computer"], cloud: "asleep" });
   });
   it("leaves out people with only a pending checkout or an operator's grant", () => {
     const rows = subscriberRows({ now: NOW, accounts: [], sessions: [], billing: { subscriptions: [trial("a", { status: "pending" }), sub({ accountId: "b", review: true })] as never, invoices: [], feedback: [], customers: [] },

@@ -15,14 +15,14 @@ vi.mock("@/state/store", async importOriginal => {
 const { LocalComputerSection } = await import("./LocalComputerSection");
 
 afterEach(() => {
-  delete window.duskDesktop;
+  delete window.madaniDesktop;
   vi.unstubAllGlobals();
   vi.useRealTimers();
 });
 
 it("loads only local and VPS inventories and offers the existing VPS setup flow", async () => {
   vi.useFakeTimers();
-  window.duskDesktop = { localControl: { retry: vi.fn() } } as any;
+  window.madaniDesktop = { localControl: { retry: vi.fn() } } as any;
   const paths: string[] = [];
   vi.stubGlobal("fetch", vi.fn(async (path: string) => {
     paths.push(path);
@@ -40,7 +40,7 @@ it("loads only local and VPS inventories and offers the existing VPS setup flow"
   try {
     await act(async () => { root.render(createElement(LocalComputerSection)); });
     // the server's own description (server-compat), read once for the egress row, and the two inventories
-    expect(paths.sort()).toEqual(["/.well-known/duskbot/environment", "/.well-known/openmausbot/environment", "/api/computer/egress", "/api/computers/vps", "/api/local-computer", "/api/mac"]);
+    expect(paths.sort()).toEqual(["/.well-known/madanibot/environment", "/.well-known/openmausbot/environment", "/api/computer/egress", "/api/computers/vps", "/api/local-computer", "/api/mac"]);
     expect(container.textContent).toContain("Add your own server");
     expect(local.openPlaceSetup).not.toHaveBeenCalled();
     expect(container.textContent).not.toMatch(/\x42oat|credit|cloud desktop/i);

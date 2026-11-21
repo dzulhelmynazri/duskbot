@@ -33,7 +33,7 @@ Control+A, Enter and Backspace reach the guest only after explicit takeover.
 These checks do not use the host clipboard or control its desktop. The fixture
 retains screenshots of the asleep card, live preview and original viewer.
 
-To reuse installed browser tools, set `DUSK_AGENT_BROWSER_PATH` and
+To reuse installed browser tools, set `MADANI_AGENT_BROWSER_PATH` and
 `AGENT_BROWSER_EXECUTABLE_PATH` explicitly. The fixture prints its temporary
 data directory and persistent server log. It launches the standard fake-engine
 server, synthetic Docker/SSH executables restricted to the fixture, and
@@ -46,7 +46,7 @@ recipe does not cover Windows. It is a manual smoke command, not part of
 
 The fixture reuses the shared HTTP and browser helpers. Keyboard and clipboard
 checks wait for received RFB events, with bounded waits. Set
-`DUSK_UI_EVIDENCE_DIR` to retain screenshots in a chosen directory, as in the
+`MADANI_UI_EVIDENCE_DIR` to retain screenshots in a chosen directory, as in the
 other renderer recipes; otherwise they stay beside the printed server log.
 
 The script pairs the browser through the real HTTP API, follows the same

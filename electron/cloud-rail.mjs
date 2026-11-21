@@ -61,7 +61,7 @@ const unlisted = (entry, { clouds, home, mine }) => Array.isArray(clouds) && (en
  * from the list). Fewer than RAIL_MIN_PLACES places in all, This computer counted while it is one: no rail at all, the window
  * as it was, unless the person has a Cloud of their own: then its one circle is the rail, for the ＋ that buys another.
  * `offers(entry)`: a server connected by hand whose menu offers Make … my home (own-home-main.mjs). `cloudMoves(entry)`: a server
- * of the person's own whose menu offers moving it to dusk cloud (vps-cloud-move-main.mjs). `waiting(id)`: inbox lines
+ * of the person's own whose menu offers moving it to madani cloud (vps-cloud-move-main.mjs). `waiting(id)`: inbox lines
  * wait in that place, and the window shows another (place-inbox-watch.mjs). `accounts`: the other accounts signed in on this
  * device, each with its places as they were kept: grouped by account after these (withAccounts).
  * @param {{ saved: { environments: any[], activeId: string }, home?: string | null, mine?: string | null, state?: any, offers?: (entry: any) => boolean, cloudMoves?: (entry: any) => boolean, waiting?: (id: string) => boolean, accounts?: any[] }} input
@@ -143,7 +143,7 @@ const CHOICES = Object.freeze(["cloud", "link", "address"]);
  * page (`lists`) reads the list and opens a place; adding one and ＋'s buying sheet also run on a page `trusted` vouches
  * for (the rail's, or this computer's own). Any other page learns only whether the rail stands beside it (`beside`).
  * `places()` is railPlaces' list now; `open(id)` main's own switch; `add` the ＋ sheet's fixed actions; `account()` the
- * dusk cloud sign-in; `targets()` the pages told when something changed; `makeHome(id)` starts the move to a server
+ * madani cloud sign-in; `targets()` the pages told when something changed; `makeHome(id)` starts the move to a server
  * of the person's own (own-home-main.mjs `start`). `switchAccount(id)`: that account becomes the one in use (cloud-accounts.mjs).
  */
 export function installCloudRail({ ipcMain, guard, trusted, lists = trusted, beside = () => false, places, open, add, account, clipboard, openCloud, targets, makeHome = null, cloudMove = null, forget = null, switchAccount = null }) {
@@ -194,10 +194,10 @@ export function installCloudRail({ ipcMain, guard, trusted, lists = trusted, bes
     if (!place || !makeHome) throw new Error("That server can't be your bots' home now.");
     return makeHome(place.id);
   });
-  // Move to dusk cloud, from a server's menu: only a server main listed with it; main opens it and its move sheet.
+  // Move to madani cloud, from a server's menu: only a server main listed with it; main opens it and its move sheet.
   listed("workspaces:cloud-move", (_event, id) => {
     const place = places().find(entry => entry.id === plain(id) && entry.cloudMove);
-    if (!place || !cloudMove) throw new Error("That server can't move to dusk cloud from here.");
+    if (!place || !cloudMove) throw new Error("That server can't move to madani cloud from here.");
     return cloudMove(place.id);
   });
   // A link pasted on ＋'s sheet goes to main's own Connect dialog, which checks it and names its host before connecting.
@@ -210,7 +210,7 @@ export function installCloudRail({ ipcMain, guard, trusted, lists = trusted, bes
   handle("cloud-add:state", () => view());
   handle("cloud-add:start", async (_event, tier, name, color, source) => {
     const client = account();
-    if (!client) throw new Error("Sign in to dusk cloud first.");
+    if (!client) throw new Error("Sign in to madani cloud first.");
     const plans = (await client.offer().catch(() => null))?.plans ?? [];
     const cleanName = cleanCloudListName(plain(name)), swatch = CLOUD_SWATCHES.includes(color) ? color : null;
     if (!plans.some(plan => plan.tier === plain(tier)) || !cleanName) throw new Error("Choose a plan and a name to continue.");
@@ -219,7 +219,7 @@ export function installCloudRail({ ipcMain, guard, trusted, lists = trusted, bes
   });
   handle("cloud-add:organization", async (_event, name, color) => {
     const client = account();
-    if (!client) throw new Error("Sign in to dusk cloud first.");
+    if (!client) throw new Error("Sign in to madani cloud first.");
     const cleanName = cleanCloudListName(plain(name)), swatch = CLOUD_SWATCHES.includes(color) ? color : null;
     if (!cleanName) throw new Error("Give the organization a name to continue.");
     const result = await client.addOrganization({ name: cleanName, color: swatch });

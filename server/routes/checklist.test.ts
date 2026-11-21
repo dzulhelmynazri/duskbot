@@ -16,7 +16,7 @@ const roots: string[] = [];
 afterEach(async () => { await Promise.all(roots.splice(0).map(removeTempDir)); });
 
 function harness() {
-  const root = mkdtempSync(join(tmpdir(), "dusk-checklist-route-"));
+  const root = mkdtempSync(join(tmpdir(), "madani-checklist-route-"));
   roots.push(root);
   const slept: number[] = [];
   const paused: Array<[string, number]> = [];

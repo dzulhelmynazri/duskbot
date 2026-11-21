@@ -30,7 +30,7 @@ describe("Settings > Voice", () => {
     expect(engineNote({ kind: "system", engine: "apple-speech", fellBack: "not-set-up" }, { engine: "openai" }, mac)).toBeNull();
     expect(engineNote({ kind: "system", engine: "phone-native", fellBack: "not-here" }, { engine: "whisper-cpp" }, iphone)).toContain("can't run on this device");
     expect(engineNote({ kind: "system", engine: "apple-speech", fellBack: "not-here" }, { engine: "openai" }, remoteMac)).toContain("shows another computer");
-    expect(engineNote({ kind: "system", engine: "web-speech" }, { engine: "system" }, browser)).toContain("need the dusk bot desktop or phone app");
+    expect(engineNote({ kind: "system", engine: "web-speech" }, { engine: "system" }, browser)).toContain("need the madani bot desktop or phone app");
     expect(engineNote({ kind: "none", reason: "no-recognizer" }, { engine: "system" }, mac)).toContain("Nothing on this computer can turn speech into text");
     expect(engineNote({ kind: "provider", provider: "openai" }, { engine: "openai" }, mac)).toBeNull();
     expect(engineNote({ kind: "system", engine: "apple-speech" }, { engine: "system" }, mac)).toBeNull();
@@ -57,7 +57,7 @@ describe("Settings > Voice", () => {
   });
 
   it("asks for a key in a labelled password field, and once saved shows only that it is saved", () => {
-    vi.stubGlobal("window", { duskDesktop: undefined });
+    vi.stubGlobal("window", { madaniDesktop: undefined });
     try {
       const empty = renderToStaticMarkup(createElement(VoiceKeyField, { provider: "openai", saved: false }));
       expect(empty).toContain('type="password"');

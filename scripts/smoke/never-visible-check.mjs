@@ -8,13 +8,13 @@ import { app, BrowserWindow, WebContentsView } from "electron";
 const raw = createRequire(import.meta.url)("electron");
 const result = { hooked: BrowserWindow !== raw.BrowserWindow && WebContentsView !== raw.WebContentsView, showIsNoop: false, visible: [], painted: false, viewPainted: false };
 const finish = (code) => { console.log(`never-visible ${JSON.stringify(result)}`); app.exit(code); };
-const events = () => { try { return readFileSync(process.env.DUSK_SMOKE_EVENTS, "utf8").split("\n").filter(Boolean).map((line) => JSON.parse(line)); } catch { return []; } };
+const events = () => { try { return readFileSync(process.env.MADANI_SMOKE_EVENTS, "utf8").split("\n").filter(Boolean).map((line) => JSON.parse(line)); } catch { return []; } };
 setTimeout(() => finish(3), 30_000).unref();
 
 app.whenReady().then(async () => {
   result.showIsNoop = raw.BaseWindow.prototype.show.toString().replace(/\s/g, "") === "function(){}";
   // no window is made unless the shim is in place
-  if (!result.hooked || !result.showIsNoop || !process.env.DUSK_SMOKE_EVENTS) return finish(2);
+  if (!result.hooked || !result.showIsNoop || !process.env.MADANI_SMOKE_EVENTS) return finish(2);
   const win = new BrowserWindow({ show: true, width: 900, height: 700, x: 0, y: 0 });
   const view = new WebContentsView();
   win.contentView.addChildView(view);

@@ -2,7 +2,7 @@ import { existsSync } from "node:fs";
 import { COMPUTER_UNREACHABLE } from "../shared/computer-unreachable.ts";
 
 /** Root's copy of the installer on a server the link service set up; `--repair` brings its units and docker gate back. */
-export const SERVER_REPAIR_SCRIPT = "/usr/local/lib/duskbot/install.sh";
+export const SERVER_REPAIR_SCRIPT = "/usr/local/lib/madanibot/install.sh";
 export const SERVER_REPAIR_COMMAND = `sudo sh ${SERVER_REPAIR_SCRIPT} --repair`;
 
 // a Go docker client reports a connection its daemon (or the docker gate in front of it) closed without an answer as
@@ -41,22 +41,22 @@ export function dockerUnreachableProblem(
   return "The VPS's Docker can't be reached over SSH right now. Check that the VPS is online and Docker is running on it, then try again.";
 }
 
-const GATE_SOCKET = /^unix:\/\/\/run\/(duskbot|openmausbot)-docker\/docker\.sock$/;
+const GATE_SOCKET = /^unix:\/\/\/run\/(madanibot|openmausbot)-docker\/docker\.sock$/;
 
 /**
  * DOCKER_HOST with the docker gate's socket under whichever name this server has: an install from before the rename
- * listens under /run/openmausbot-docker, a newer one under /run/duskbot-docker, and a server unit can carry either.
+ * listens under /run/openmausbot-docker, a newer one under /run/madanibot-docker, and a server unit can carry either.
  */
 export function gateDockerHost(host: string | undefined, socketExists: (path: string) => boolean = existsSync): string | undefined {
   const match = host ? GATE_SOCKET.exec(host.trim()) : null;
   if (!match) return host;
   const path = host!.trim().slice("unix://".length);
   if (socketExists(path)) return host;
-  const other = `/run/${match[1] === "duskbot" ? "openmausbot" : "duskbot"}-docker/docker.sock`;
+  const other = `/run/${match[1] === "madanibot" ? "openmausbot" : "madanibot"}-docker/docker.sock`;
   return socketExists(other) ? `unix://${other}` : host;
 }
 
 /** Whether DOCKER_HOST is a docker gate's socket, under either name. */
 export function isGateSocket(host: string | undefined): boolean {
-  return /\/(?:duskbot|openmausbot)-docker\/docker\.sock$/.test(host?.trim() ?? "");
+  return /\/(?:madanibot|openmausbot)-docker\/docker\.sock$/.test(host?.trim() ?? "");
 }

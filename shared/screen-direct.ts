@@ -17,7 +17,7 @@ export const SCREEN_DIRECT_GATHER_MS = 1_500;
 /** From the answer to an open channel, direct and TURN pairs both tried: past this, the link relay carries the screen. */
 export const SCREEN_DIRECT_CONNECT_MS = 5_000;
 /** The app's link proxy answers this itself with { iceServers } (electron/vps-link-protocol.mjs). */
-export const SCREEN_ICE_PATH = "/__dusk/screen-ice";
+export const SCREEN_ICE_PATH = "/__madani/screen-ice";
 
 /** How a screen reached the app: peer to peer, through Cloudflare's TURN, or over our link relay. */
 export const SCREEN_PATHS = ["direct", "cloudflare-turn", "our-relay"] as const;

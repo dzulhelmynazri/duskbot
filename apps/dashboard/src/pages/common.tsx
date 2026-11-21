@@ -50,14 +50,14 @@ export function WorkspaceGate({ children }: { children: (detail: WorkspaceDetail
   if (!detail.report) {
     return (
       <SkyEmpty title={`waiting for ${workspace.name}`}>
-        it is connected but has not reported yet. keep dusk bot running there; the first report usually lands within a few seconds.
+        it is connected but has not reported yet. keep madani bot running there; the first report usually lands within a few seconds.
       </SkyEmpty>
     );
   }
   return <>{children(detail)}</>;
 }
 
-/** a workspace action: sent as a command, picked up on the workspace's next report, then confirmed. a dusk cloud we put
+/** a workspace action: sent as a command, picked up on the workspace's next report, then confirmed. a madani cloud we put
  *  to sleep takes it too: it wakes first, and the command waits for it */
 export function CommandButton({ kind, target, label, doing, variant = "outline", confirm, disabled }: { kind: CommandKind; target: string; label: string; doing: string; variant?: "outline" | "primary" | "danger" | "ghost"; confirm?: string; disabled?: boolean }) {
   const { command, pendingFor, workspace } = useSession();

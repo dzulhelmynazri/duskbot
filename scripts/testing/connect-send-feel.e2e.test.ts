@@ -1,22 +1,22 @@
 // Headless frames of two feels: Send held grayed until the server has the message, then crossfading to the mic; and
 // Connect an AI opening with nothing running, its panel growing in, each stage crossfading, Cancel folding it away.
-// Frames go to DUSK_MOTION_SHOTS (default ~/Desktop/dusk-motion-shots)/send and /connect.
+// Frames go to MADANI_MOTION_SHOTS (default ~/Desktop/madani-motion-shots)/send and /connect.
 //
-//   DUSK_UI_E2E=1 pnpm exec vitest run scripts/testing/connect-send-feel.e2e.test.ts
+//   MADANI_UI_E2E=1 pnpm exec vitest run scripts/testing/connect-send-feel.e2e.test.ts
 import { spawn, type ChildProcess } from "node:child_process";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { homedir } from "node:os";
 import { join } from "node:path";
 import { expect, it } from "vitest";
-import { launchVerificationServer, type VerificationServer } from "../control-dusk.ts";
+import { launchVerificationServer, type VerificationServer } from "../control-madani.ts";
 import { waitForExit } from "../../server/testing/cleanup.ts";
-import { ensureUiBrowser } from "./control-dusk-ui.ts";
+import { ensureUiBrowser } from "./control-madani-ui.ts";
 import { fixtureApi, mountPreview, type MountedPreview } from "./preview-fixture.ts";
 import { connect } from "./chat-gallery/cdp.ts";
 import { NOTICES } from "../../src/lib/notices.ts";
 
-const enabled = process.env.DUSK_UI_E2E === "1";
-const SHOTS = process.env.DUSK_MOTION_SHOTS || join(homedir(), "Desktop", "dusk-motion-shots");
+const enabled = process.env.MADANI_UI_E2E === "1";
+const SHOTS = process.env.MADANI_MOTION_SHOTS || join(homedir(), "Desktop", "madani-motion-shots");
 const SEND_LAG = 900;
 
 type SendRow = { t: number; send: boolean; disabled: boolean; ghost: boolean; mic: boolean; fill: string | null; arrow: number | null; userRows: number; posted: boolean };

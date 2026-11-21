@@ -6,8 +6,8 @@ import { findCliCandidates } from "./env-path.ts";
 import { trail, trailError } from "./trail.ts";
 
 /** Set by whatever starts the server where OpenCode's free backup should be ready before the first message: the desktop
- * app and a dusk cloud home. */
-export const PREINSTALL_FREE_BACKUP_ENV = "DUSK_PREINSTALL_FREE_BACKUP";
+ * app and a madani cloud home. */
+export const PREINSTALL_FREE_BACKUP_ENV = "MADANI_PREINSTALL_FREE_BACKUP";
 
 export interface FreeBackupPreinstall {
   outcome: "present" | "installed" | "unsupported" | "failed";

@@ -69,7 +69,7 @@ export function lastLine(bot: Bot, visible: Message[], instances: InstanceInfo[]
   if (!newest) return "";
   const last = quotedLine(visible, newest);
   if (last.kind === "options" && last.card) {
-    // Dusk's intro by its first line.
+    // Madani's intro by its first line.
     if (last.helperIntro) return t(bot.chiefOfStaff ? "helperIntro.hello" : "helperIntro.hi.helper", { name: bot.name });
     return (last.card.requestId && last.card.tool && !last.card.questionRequest && approvalCardOutcome(last.card)) || last.card.title;
   }

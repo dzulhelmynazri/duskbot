@@ -53,14 +53,14 @@ describe("providerBaseUrl", () => {
 
 describe("where a connection lives", () => {
   it("reads the place from the server's environment", () => {
-    expect(placeFromEnv({ DUSK_DESKTOP_PARENT: "1" })).toBe("computer");
-    expect(placeFromEnv({ DUSK_DEV_OWN_SERVER: "1" })).toBe("computer");
-    expect(placeFromEnv({ DUSK_CLOUD_ROLE: "home", DUSK_DESKTOP_PARENT: "1" })).toBe("cloud");
-    expect(placeFromEnv({ DUSK_CLOUD_ROLE: "team" })).toBe("cloud");
+    expect(placeFromEnv({ MADANI_DESKTOP_PARENT: "1" })).toBe("computer");
+    expect(placeFromEnv({ MADANI_DEV_OWN_SERVER: "1" })).toBe("computer");
+    expect(placeFromEnv({ MADANI_CLOUD_ROLE: "home", MADANI_DESKTOP_PARENT: "1" })).toBe("cloud");
+    expect(placeFromEnv({ MADANI_CLOUD_ROLE: "team" })).toBe("cloud");
     expect(placeFromEnv({})).toBe("server");
   });
 
-  it("never offers a local model on dusk cloud", () => {
+  it("never offers a local model on madani cloud", () => {
     expect(providerOffer(def("ollama"), "cloud", new Set(["ollama"]))).toEqual({ offered: false, reason: "cloud" });
     expect(providerOffer(def("cliproxyapi"), "cloud", new Set())).toEqual({ offered: false, reason: "cloud" });
   });

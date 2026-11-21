@@ -75,8 +75,8 @@ describe("unknown labels at the edge", () => {
     const send = () => worker.fetch(new Request(`https://${label(7)}.${DOMAIN}/api/events`, { headers: { origin: "capacitor://localhost" } }), env, ctx);
     const first = await send();
     expect(first.status).toBe(410);
-    expect(first.headers.get("x-dusk-cloud-power")).toBe("gone");
-    expect(first.headers.get("access-control-expose-headers")).toContain("x-dusk-cloud-power");
+    expect(first.headers.get("x-madani-cloud-power")).toBe("gone");
+    expect(first.headers.get("access-control-expose-headers")).toContain("x-madani-cloud-power");
     await settle();
     expect([...caches.entries.values()][0]).toEqual({ body: JSON.stringify({ missing: true, gone: true }), maxAge: MISSING_TTL_S });
     expect((await send()).status).toBe(410);

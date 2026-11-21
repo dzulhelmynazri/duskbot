@@ -11,6 +11,6 @@ export function useReportCallPresence(): void {
   const { phase } = useLiveMedia();
   const active = callInProgress(onCall, phase);
   useEffect(() => {
-    void window.duskDesktop?.callActive?.(active);
+    void window.madaniDesktop?.callActive?.(active);
   }, [active]);
 }

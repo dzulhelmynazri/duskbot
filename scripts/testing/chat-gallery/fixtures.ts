@@ -58,21 +58,21 @@ const secret = (overrides: Partial<NonNullable<Message["secret"]>> = {}): NonNul
 /** A real transcript is a chain: each line answers the one before it. Without it every root line reads as an edit of the others. */
 const chained = (list: Message[]): Message[] => list.map((message, index) => ({ ...message, parentId: index ? list[index - 1]!.id : null }));
 
-const dusk = { botId: "gallery-dusk", name: "dusk bot", color: "blue" as const };
+const madani = { botId: "gallery-madani", name: "madani bot", color: "blue" as const };
 const writer = { botId: "gallery-writer", name: "Writer", color: "green" as const };
-const writerRef = { botId: writer.botId, threadId: "gallery-writer-work", title: "@dusk bot · work" };
+const writerRef = { botId: writer.botId, threadId: "gallery-writer-work", title: "@madani bot · work" };
 const askerExchange = (): Message[] => [
   user("Ask Writer what they do and tell me."),
   bot("Asking Writer now."),
-  row("activity", { tool: { name: "Sent to Writer", ok: true }, from: dusk, threadRef: writerRef,
-    handoff: { phase: "sent", from: dusk, to: writer, text: "What do you do? Give me a short answer, then three kinds of work you are best at." } }),
+  row("activity", { tool: { name: "Sent to Writer", ok: true }, from: madani, threadRef: writerRef,
+    handoff: { phase: "sent", from: madani, to: writer, text: "What do you do? Give me a short answer, then three kinds of work you are best at." } }),
   row("activity", { tool: { name: "Writer replied", ok: true, output: "I write. Short answer: I turn rough notes into clear posts.\n\n- Launch posts\n- Release notes\n- Help articles" },
-    roomRequest: { id: "gallery-req", phase: "result" }, from: writer, threadRef: writerRef, handoff: { phase: "result", from: writer, to: dusk } }),
+    roomRequest: { id: "gallery-req", phase: "result" }, from: writer, threadRef: writerRef, handoff: { phase: "result", from: writer, to: madani } }),
   row("activity", { tool: { name: "Resumed with Writer's results, reviewing", ok: true }, peerResume: true }),
   bot("Writer turns rough notes into clear posts: launch posts, release notes and help articles."),
 ];
 const askedExchange = (): Message[] => [
-  bot("@Writer What do you do? Give me a short answer, then three kinds of work you are best at.", { roomRequest: { id: "gallery-req", phase: "request" }, from: dusk, turnTerminal: undefined }),
+  bot("@Writer What do you do? Give me a short answer, then three kinds of work you are best at.", { roomRequest: { id: "gallery-req", phase: "request" }, from: madani, turnTerminal: undefined }),
   bot("I write. Short answer: I turn rough notes into clear posts.\n\n- Launch posts\n- Release notes\n- Help articles"),
 ];
 const appliedCard = (card: Partial<NonNullable<Message["card"]>>): Message => row("options", { card: {

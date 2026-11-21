@@ -241,10 +241,10 @@ export function encodeResponse(
 export interface ServiceInfo {
   /** what a picker on the phone shows */
   name: string;
-  /** e.g. "_duskbot._tcp" */
+  /** e.g. "_madanibot._tcp" */
   type: string;
   port: number;
-  /** the name our A records claim, e.g. "duskbot-1a2b3c4d.local" */
+  /** the name our A records claim, e.g. "madanibot-1a2b3c4d.local" */
   host: string;
   addresses: string[];
   /** DNS-SD key=value pairs */
@@ -327,7 +327,7 @@ export function answersFor(
 
 
 /** No dots, no control characters, at most 63 bytes of UTF-8. */
-export function dnsLabel(text: string, fallback = "dusk bot"): string {
+export function dnsLabel(text: string, fallback = "madani bot"): string {
   let label = text
     // oxlint-disable-next-line no-control-regex -- control characters are not valid in a DNS label
     .replace(/[\u0000-\u001f\u007f]/g, "")

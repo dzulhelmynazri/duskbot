@@ -62,7 +62,7 @@ function PlanCard({ id, catalog, interval, current, onChoose, href, action, disa
       <div className="flex flex-1 flex-col px-4 pt-5 max-sm:px-3">
         <div className="flex min-w-0 items-center gap-2.5">
           <h2 id={`plan-card-${id}`} className="text-24 font-medium tracking-[-0.035em] text-ink">{b?.name ?? id}</h2>
-          {paid && <span className="text-14 text-ink-3">dusk cloud</span>}
+          {paid && <span className="text-14 text-ink-3">madani cloud</span>}
           {current && <Badge>current</Badge>}
         </div>
         <p className="num mt-4 text-[48px] font-medium leading-none tracking-[-0.05em] text-ink"><Digits text={`$${perMonth}`} /></p>
@@ -103,9 +103,9 @@ function OpenApp() {
     <div role="status" data-open-app="" className="surface mb-3 flex flex-wrap items-center justify-between gap-x-6 gap-y-3 rounded-card bg-card px-6 py-4">
       <div className="min-w-0">
         <p className="text-14 text-ink">you're all set</p>
-        <p className="mt-0.5 text-13 text-ink-3">your cloud is getting ready. dusk bot picks it up by itself, so open it now or later.</p>
+        <p className="mt-0.5 text-13 text-ink-3">your cloud is getting ready. madani bot picks it up by itself, so open it now or later.</p>
       </div>
-      <a href={APP_CLOUD_LINK} data-open-app-link="" className="press hover-btn inline-flex h-10 shrink-0 items-center rounded-full bg-btn px-4.5 text-14 font-medium text-ink">open dusk bot</a>
+      <a href={APP_CLOUD_LINK} data-open-app-link="" className="press hover-btn inline-flex h-10 shrink-0 items-center rounded-full bg-btn px-4.5 text-14 font-medium text-ink">open madani bot</a>
     </div>
   );
 }
@@ -117,9 +117,9 @@ function AllSet({ onStay }: { onStay(): void }) {
       <div className="flex justify-center"><span className="peek inline-flex"><Mascot color="blue" size={64} state="happy" track /></span></div>
       <Card className="enter relative -mt-4">
         <h1 className="text-20 font-medium text-ink">you're all set</h1>
-        <p className="mt-1.5 text-14 leading-[1.55] text-ink-3">go back to dusk bot. your cloud is getting ready, and dusk bot picks it up by itself.</p>
+        <p className="mt-1.5 text-14 leading-[1.55] text-ink-3">go back to madani bot. your cloud is getting ready, and madani bot picks it up by itself.</p>
         <div className="mt-6 flex flex-wrap items-center gap-4">
-          <a href={APP_CLOUD_LINK} data-open-app-link="" className="press hover-btn inline-flex h-10 items-center rounded-full bg-ink px-4.5 text-14 font-medium text-bg">open dusk bot</a>
+          <a href={APP_CLOUD_LINK} data-open-app-link="" className="press hover-btn inline-flex h-10 items-center rounded-full bg-ink px-4.5 text-14 font-medium text-bg">open madani bot</a>
           <button type="button" onClick={onStay} className={quiet}>see your plan</button>
         </div>
       </Card>
@@ -144,7 +144,7 @@ function CheckoutBack({ back, onCheck, onRetry }: { back: Back; onCheck(): void;
 }
 
 const FAQ = [
-  { q: "do i need it if i have a mac?", a: "no. free runs everything on your mac; your bots just pause while it sleeps. add dusk cloud when you want them working while your mac sleeps." },
+  { q: "do i need it if i have a mac?", a: "no. free runs everything on your mac; your bots just pause while it sleeps. add madani cloud when you want them working while your mac sleeps." },
   { q: "what counts as work use?", a: "anything you do for a company, for a client or to earn money. personal projects, learning and hobbies are personal use, which is free forever." },
 ];
 
@@ -317,7 +317,7 @@ export function BillingPage() {
     markFromApp(query);
     // buying from the app: the cloud is what comes next, not a workspace to connect
     if (!fromApp()) return;
-    setFlowNote({ title: "no workspace yet", sub: "dusk cloud shows here once it's ready" });
+    setFlowNote({ title: "no workspace yet", sub: "madani cloud shows here once it's ready" });
     return () => setFlowNote(null);
   }, []);
   useEffect(() => { if (query.has("subscription_id") || query.has("payment_id")) navigate("/billing", { replace: true }); }, []);

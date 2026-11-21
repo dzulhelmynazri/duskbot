@@ -64,7 +64,7 @@ function cleanFields(fields: ProviderFields): ProviderFields {
   return Object.fromEntries(Object.entries(fields).map(([id, value]) => [id, value?.trim() ?? ""]).filter(([, value]) => value));
 }
 
-/** "Saved on this computer", "Saved on your dusk cloud", "Saved on this server". */
+/** "Saved on this computer", "Saved on your madani cloud", "Saved on this server". */
 export function placeLine(place: Place): string {
   return t(place === "cloud" ? "models.place.cloud" : place === "server" ? "models.place.server" : "models.place.computer");
 }

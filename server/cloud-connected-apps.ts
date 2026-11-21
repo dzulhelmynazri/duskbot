@@ -1,4 +1,4 @@
-// A Cloud home's own installation on dusk bot's connected-apps service, which its plan includes. The server registers
+// A Cloud home's own installation on madani bot's connected-apps service, which its plan includes. The server registers
 // it the way the desktop app registers itself (electron/managed-composio.mjs), keeps the token in a 0600 file on the
 // volume that no backup carries, and hands it to the one managed path (composio.setManagedBrokerAccess). A Composio
 // project key the owner saves still wins: composio.connectionMode checks it first.
@@ -35,7 +35,7 @@ export interface CloudConnectedAppsOptions {
   brokerUrl: string;
   /** composio.setManagedBrokerAccess, plus anything that tells clients. */
   apply(access: ManagedComposioAccess | null): void;
-  /** DUSK_CLOUD_CONNECTED_APPS_GRANT: the Admin's proof that this is a paid Cloud, which raises its daily app-event limit. */
+  /** MADANI_CLOUD_CONNECTED_APPS_GRANT: the Admin's proof that this is a paid Cloud, which raises its daily app-event limit. */
   cloudGrant?: string;
   fetchImpl?: typeof fetch;
   log?: (line: string) => void;
@@ -189,14 +189,14 @@ export function startCloudConnectedApps(options: CloudConnectedAppsOptions): Clo
 
 let cloudHome: CloudConnectedApps | null = null;
 /** The connected-apps service a Cloud home and a Team Cloud's members register with: only an explicit
- * DUSK_COMPOSIO_BROKER_URL. dusk bot's own service is closed (dusk bot pays nothing per tool call), so "" by default:
+ * MADANI_COMPOSIO_BROKER_URL. madani bot's own service is closed (madani bot pays nothing per tool call), so "" by default:
  * a Cloud connects apps with the person's own accounts and keys, like the desktop app. */
-export const cloudConnectedAppsBrokerUrl = (): string => managedComposioBrokerUrl(process.env.DUSK_COMPOSIO_BROKER_URL, false);
+export const cloudConnectedAppsBrokerUrl = (): string => managedComposioBrokerUrl(process.env.MADANI_COMPOSIO_BROKER_URL, false);
 
 /** A Cloud home's plan includes the connected-apps service, so it registers itself. */
 export function startCloudHomeConnectedApps(input: { cloudHome: boolean; dataDir: string; apply: CloudConnectedAppsOptions["apply"]; cloudGrant?: string }): void {
   if (!input.cloudHome || cloudHome) return;
-  const configured = process.env.DUSK_COMPOSIO_BROKER_URL;
+  const configured = process.env.MADANI_COMPOSIO_BROKER_URL;
   const brokerUrl = cloudConnectedAppsBrokerUrl();
   if (!brokerUrl) {
     if (configured?.trim()) console.warn("cloud home: connected-apps service URL rejected: HTTPS or a loopback HTTP URL is required");

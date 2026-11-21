@@ -11,7 +11,7 @@ release
 *.zip
 *.log
 electron/resources/cloudflared*
-.dusk-scratch
+.madani-scratch
 .env
 **/.env
 **/.env.*

@@ -52,8 +52,8 @@ const fixture = (displayName: string, environment: Record<string, string>) => ({
 });
 
 beforeAll(async () => {
-  home = mkdtempSync(join(tmpdir(), "dusk-room-chat-wait-"));
-  const data = join(home, ".duskbot");
+  home = mkdtempSync(join(tmpdir(), "madani-room-chat-wait-"));
+  const data = join(home, ".madanibot");
   const staticDir = join(home, "static");
   mkdirSync(data, { recursive: true });
   mkdirSync(join(staticDir, "assets"), { recursive: true });
@@ -82,9 +82,9 @@ beforeAll(async () => {
       ...(process.env.SystemRoot ? { SystemRoot: process.env.SystemRoot } : {}),
       HOME: home,
       USERPROFILE: home,
-      DUSK_PORT: String(port),
-      DUSK_WEBHOOK_PORT: String(port + 1),
-      DUSK_STATIC_DIR: staticDir,
+      MADANI_PORT: String(port),
+      MADANI_WEBHOOK_PORT: String(port + 1),
+      MADANI_STATIC_DIR: staticDir,
     },
     stdio: ["ignore", "pipe", "pipe"],
   });

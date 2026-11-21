@@ -10,7 +10,7 @@ const settle = () => new Promise(resolve => setTimeout(resolve, 10));
 describe("admin alerts", () => {
   function setup(kinds: string, time: { now: number }) {
     const mailer = memoryMailer(), sink = memorySink(() => time.now);
-    const alerts = createAlerts({ kinds: parseAlerts(kinds), emails: () => ["owner@example.test"], mailer, sink, now: () => time.now, panelUrl: "https://preview.dusk.bot/app/admin",
+    const alerts = createAlerts({ kinds: parseAlerts(kinds), emails: () => ["owner@example.test"], mailer, sink, now: () => time.now, panelUrl: "https://preview.madani.bot/app/admin",
       totals: () => ({ signups: 3, paid: 1, waitlist: null, accounts: 40 }) });
     return { mailer, sink, alerts };
   }
@@ -45,10 +45,10 @@ describe("admin alerts", () => {
     const { mailer, sink, alerts } = setup("digest,spike", time);
     for (let v = 0; v < 25; v++) await sink.insert({ id: `e${v}`, name: "site_view", at: time.now - 10 * 60_000, accountId: null, props: { path: "/" }, ctx: { visitor: `visitor-${v}`, session: `session-${v}`, pv: `pv-${v}` } });
     await alerts.tick(); await alerts.tick();
-    expect(mailer.outbox.map(mail => mail.subject)).toEqual(["traffic spike: 25 visitors in the last hour", "dusk bot yesterday: 0 visitors, 3 signups"]);
+    expect(mailer.outbox.map(mail => mail.subject)).toEqual(["traffic spike: 25 visitors in the last hour", "madani bot yesterday: 0 visitors, 3 signups"]);
     time.now += DAY + HOUR;
     await alerts.tick();
-    expect(mailer.outbox.filter(mail => mail.subject.startsWith("dusk bot yesterday"))).toHaveLength(2);
+    expect(mailer.outbox.filter(mail => mail.subject.startsWith("madani bot yesterday"))).toHaveLength(2);
     alerts.close();
   });
   it("sends one email per money incident: failures, disputes, refunds, big churn and each MRR milestone once", async () => {
@@ -74,7 +74,7 @@ describe("admin alerts", () => {
   it("puts new paying customers, MRR and money trouble in the digest", async () => {
     const time = { now: Date.parse("2026-11-12T08:05:00Z") };
     const mailer = memoryMailer(), sink = memorySink(() => time.now);
-    const alerts = createAlerts({ kinds: parseAlerts("digest"), emails: () => ["owner@example.test"], mailer, sink, now: () => time.now, panelUrl: "https://preview.dusk.bot/app/admin",
+    const alerts = createAlerts({ kinds: parseAlerts("digest"), emails: () => ["owner@example.test"], mailer, sink, now: () => time.now, panelUrl: "https://preview.madani.bot/app/admin",
       totals: () => ({ signups: 3, paid: 2, waitlist: null, accounts: 40, money: { newCustomers: [{ email: "a@example.test", cents: 2000 }, { email: null, cents: 900 }], mrr: 12_000, netNew: 2900, failed: 1, recovered: 0, churned: 0, refunds: 0 } }) });
     await alerts.tick();
     expect(mailer.outbox[0]!.text).toContain("new paying customers: 2:\n\na@example.test: $20.00\nan account: $9.00");

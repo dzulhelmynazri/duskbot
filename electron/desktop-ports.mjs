@@ -12,7 +12,7 @@ export const COMPANION_PORT = 8810;
 
 /**
  * The phone companion's two ports: the packaged app's on 8810 with its control port from 8811 up, a dev app's from its
- * harness + 11 up, past both of those, so `pnpm dev:app` (DUSK_PORT=8811 too) never takes the packaged app's. Never the
+ * harness + 11 up, past both of those, so `pnpm dev:app` (MADANI_PORT=8811 too) never takes the packaged app's. Never the
  * harness's port, its webhook's next to it, or the hosted connector's origin port.
  */
 export function companionPorts(harnessPort, { packaged = true } = {}) {
@@ -28,7 +28,7 @@ export function companionPorts(harnessPort, { packaged = true } = {}) {
 
 /**
  * The ports a companion launches on: its control port, which only main speaks to, moves on past one another program
- * holds (a dev app's harness on DUSK_PORT=8811 beside the packaged app), so it never keeps the companion from starting.
+ * holds (a dev app's harness on MADANI_PORT=8811 beside the packaged app), so it never keeps the companion from starting.
  */
 export async function companionLaunchPorts(harnessPort, { packaged = true, taken = portTaken } = {}) {
   const ports = companionPorts(harnessPort, { packaged });

@@ -78,8 +78,8 @@ export function AvatarImageGenerator({
   };
 
   const saveCredential = async (key: string) => {
-    const status: ConfigStatus = window.duskDesktop?.setCredential
-      ? await window.duskDesktop.setCredential(providerInfo.credential, key)
+    const status: ConfigStatus = window.madaniDesktop?.setCredential
+      ? await window.madaniDesktop.setCredential(providerInfo.credential, key)
       : await putConfig(provider === "xai"
           ? { xai: { key } }
           : { imageGen: provider === "custom" ? { customApiKey: key } : { key } });

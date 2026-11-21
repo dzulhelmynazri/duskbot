@@ -1,4 +1,4 @@
-// What sites see of a bot's browser: today's engine (agent-browser) drives the Chrome dusk bot resolves, through the same launcher
+// What sites see of a bot's browser: today's engine (agent-browser) drives the Chrome madani bot resolves, through the same launcher
 // and identity connection as the server, on a throwaway profile. It checks the identity on a loopback probe page and, with
 // --public, reads the four public bot-test pages. Read-only: it never signs in or submits a form.
 // Usage: node --experimental-strip-types scripts/verify-browser-identity.ts [--chrome PATH] [--engine PATH] [--public] [--out DIR]
@@ -169,13 +169,13 @@ export async function withBotBrowser<T>(options: BotBrowserOptions, work: (call:
   const profiles = join(scratch, "tmp");
   mkdirSync(profiles);
   // agent-browser's socket path must stay under 104 bytes; temporary folders on macOS are long.
-  const sockets = mkdtempSync(join(process.platform === "win32" ? tmpdir() : "/tmp", "dusk-id-"));
+  const sockets = mkdtempSync(join(process.platform === "win32" ? tmpdir() : "/tmp", "madani-id-"));
   // Chrome on macOS with any other HOME asks for a keychain it cannot find, in a dialog on the person's screen; a test
   // runner's HOME is a temporary folder, so the real one comes from the user database.
   const home = userInfo().homedir;
-  const session = `${options.sessionPrefix ?? "dusk-identity"}-${randomBytes(3).toString("hex")}`;
-  const launcher = new ChromeLauncher({ dataDir: join(scratch, "data"), env: { ...process.env, HOME: home, USERPROFILE: home, DUSK_CHROME_PATH: options.chrome }, log, ...(options.sidecars ? { sidecars: options.sidecars } : {}) });
-  // Where the launcher adds nothing (DUSK_BROWSER_LEGACY_SHELL=1, a headless shell), agent-browser would otherwise look for a
+  const session = `${options.sessionPrefix ?? "madani-identity"}-${randomBytes(3).toString("hex")}`;
+  const launcher = new ChromeLauncher({ dataDir: join(scratch, "data"), env: { ...process.env, HOME: home, USERPROFILE: home, MADANI_CHROME_PATH: options.chrome }, log, ...(options.sidecars ? { sidecars: options.sidecars } : {}) });
+  // Where the launcher adds nothing (MADANI_BROWSER_LEGACY_SHELL=1, a headless shell), agent-browser would otherwise look for a
   // browser of its own, such as an installed Google Chrome, instead of the one named here.
   const launcherEnv = launcher.env();
   // Like every bot browser, this one browses through an egress gate; desktop rules let it reach loopback pages.
@@ -262,11 +262,11 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
     chrome: { type: "string" }, engine: { type: "string" }, out: { type: "string" }, public: { type: "boolean", default: false }, "session-prefix": { type: "string" },
   } });
   const engine = values.engine ?? resolveAgentBrowserBinary({ dataDir: DATA_DIR });
-  if (!engine) throw new Error("No agent-browser found: pass --engine or set DUSK_AGENT_BROWSER_PATH.");
+  if (!engine) throw new Error("No agent-browser found: pass --engine or set MADANI_AGENT_BROWSER_PATH.");
   const plan = new ChromeLauncher({ dataDir: DATA_DIR }).plan();
   const chrome = values.chrome ?? (plan.kind === "chrome" ? plan.chrome.path : null);
-  if (!chrome) throw new Error(`dusk bot would not start its own Chrome here (${plan.kind === "legacy" ? plan.reason : "Chrome for Testing is not downloaded yet"}); pass --chrome.`);
-  const out = resolve(values.out ?? mkdtempSync(join(tmpdir(), "dusk-browser-identity-")));
+  if (!chrome) throw new Error(`madani bot would not start its own Chrome here (${plan.kind === "legacy" ? plan.reason : "Chrome for Testing is not downloaded yet"}); pass --chrome.`);
+  const out = resolve(values.out ?? mkdtempSync(join(tmpdir(), "madani-browser-identity-")));
   const { readout, public: verdicts } = await verifyBrowserIdentity({ engine, chrome, out, publicPages: values.public, sessionPrefix: values["session-prefix"], log: (line) => console.log(line) });
   printReadout(readout, verdicts);
   console.log(`\nresults: ${out}`);

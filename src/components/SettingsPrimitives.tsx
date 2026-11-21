@@ -47,7 +47,7 @@ export function Switch({
       <span
         className={cn(
           "absolute left-[3px] top-[3px] h-[18px] w-[18px] rounded-full bg-white",
-          "[transition:translate_450ms_var(--dusk-ease-thumb),scale_160ms_var(--dusk-ease-out)] group-active/switch:scale-x-[1.11] group-active/switch:scale-y-[0.9] motion-reduce:transition-none motion-reduce:group-active/switch:scale-100",
+          "[transition:translate_450ms_var(--madani-ease-thumb),scale_160ms_var(--madani-ease-out)] group-active/switch:scale-x-[1.11] group-active/switch:scale-y-[0.9] motion-reduce:transition-none motion-reduce:group-active/switch:scale-100",
           "in-data-[settings-look=simple]:left-0.5 in-data-[settings-look=simple]:top-0.5 in-data-[settings-look=simple]:size-4 in-data-[settings-look=simple]:shadow-[0_1px_3px_0_rgb(28_28_28/0.12)]",
           checked ? "origin-right translate-x-[18px] in-data-[settings-look=simple]:translate-x-3" : "origin-left",
         )}

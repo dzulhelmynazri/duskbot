@@ -5,7 +5,7 @@ import { KEEP_DAYS, LEASE_MS, LIVE_MS, ROLLUP_MS, admitTunnel, applyLimits, cost
 
 const opsOf = (env) => env.OPS.get(env.OPS.idFromName("ops"));
 
-/** one dusk account's relay month: bytes, its active tunnels and the rate they share */
+/** one madani account's relay month: bytes, its active tunnels and the rate they share */
 export class AccountUsage extends DurableObject {
   async load() {
     if (this.state === undefined) this.state = (await this.ctx.storage.get("usage")) ?? null;

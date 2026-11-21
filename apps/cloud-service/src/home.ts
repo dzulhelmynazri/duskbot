@@ -21,7 +21,7 @@ export const HOME_SCREEN_DIRECT_PORTS = "30000-30063";
 export const INSTABOX_USER_HOME = "/data/home";
 export const INSTABOX_BOOT_FILE = `${INSTABOX_USER_HOME}/.omb-boot.json`;
 export const INSTABOX_PACKAGE_FILE = `${INSTABOX_USER_HOME}/omb-home.tgz`;
-export const INSTABOX_RESTORE_FILE = `${INSTABOX_USER_HOME}/dusk-restore.tar`;
+export const INSTABOX_RESTORE_FILE = `${INSTABOX_USER_HOME}/madani-restore.tar`;
 export const INSTABOX_SNAPSHOT_FILE = `${INSTABOX_USER_HOME}/.omb-snapshot.tar`;
 export const INSTABOX_SETUP_FILE = `${INSTABOX_USER_HOME}/.omb-setup.sh`;
 export const INSTABOX_SETUP_LOG = `${INSTABOX_USER_HOME}/.omb-setup.log`;
@@ -46,7 +46,7 @@ export const HOME_CONTROL = `${BIN}/omb-home`;
 /** what the bot computers' image is doing on this machine (building, ready, failed); the home's server reads it */
 export const DESKTOP_IMAGE_STATUS = `${CLOUD_HOME.run}/desktop-image`;
 /** The docker gate's runtime folder on a home set up from now on; one set up before keeps its own (the server finds either). */
-export const HOME_GATE_RUN = "duskbot-docker";
+export const HOME_GATE_RUN = "madanibot-docker";
 /** merges cgroup-parent into docker's daemon.json; exits 0 only when it changed the file */
 const DOCKER_SLICE = `const fs = require("node:fs"), p = "/etc/docker/daemon.json";
 let c = {}; try { c = JSON.parse(fs.readFileSync(p, "utf8")); } catch {}
@@ -63,7 +63,7 @@ const excludes = skipped.map(e => `--exclude='data/${e}'`).join(" ");
 
 /** what a machine needs to become this cloud's home: its env (the bootstrap secret among it), its dashboard link, its id */
 export function bootContent(input: HomeBootInput): { v: 1; env: Record<string, string>; link: DashboardLink; machine: string } {
-  const env = { ...homeEnv({ ...input, origin: "https://pending.invalid" }), DUSK_CLOUD_EDGE_HOLD: "30s" };
+  const env = { ...homeEnv({ ...input, origin: "https://pending.invalid" }), MADANI_CLOUD_EDGE_HOLD: "30s" };
   return { v: 1, env, link: input.link, machine: input.cloudId };
 }
 
@@ -110,14 +110,14 @@ export function homeSetupScript(options: { releaseKeys: readonly ReleaseKey[]; r
   const node = `node-v${HOME_NODE.version}-linux-x64`;
   const caddy = `caddy_${HOME_CADDY.version}_linux_amd64.tar.gz`;
   const unit = `[Unit]
-Description=dusk bot My Cloud home
+Description=madani bot My Cloud home
 After=network-online.target omb-docker-gate.service
 Wants=network-online.target
 ConditionPathExists=${APP}/dist-server/cloud-home-start.js
 
 [Service]
 EnvironmentFile=${CLOUD_HOME.etc}/home.env
-Environment=DUSK_PREINSTALL_FREE_BACKUP=1
+Environment=MADANI_PREINSTALL_FREE_BACKUP=1
 ExecStart=${HOME_NODE_BIN} ${APP}/dist-server/cloud-home-start.js
 Restart=always
 RestartSec=3
@@ -134,7 +134,7 @@ OOMPolicy=continue
 WantedBy=multi-user.target
 `;
   const gate = `[Unit]
-Description=dusk bot docker gate for bot computers
+Description=madani bot docker gate for bot computers
 After=docker.service
 Requires=docker.service
 StartLimitIntervalSec=0
@@ -163,7 +163,7 @@ WantedBy=multi-user.target docker.service
   // the bot computers' image, made ready by root beside the gate (which never builds): a failed try is tried again a
   // minute later, at low priority so the home answers while it builds
   const desktopImage = `[Unit]
-Description=dusk bot bot computer image
+Description=madani bot bot computer image
 After=docker.service network-online.target
 Wants=network-online.target
 Requires=docker.service
@@ -192,7 +192,7 @@ echo "$(( $(awk '/MemTotal/ {print $2}' /proc/meminfo) / 2 ))K" > /sys/block/zra
 mkswap /dev/zram0 >/dev/null && swapon -p 100 /dev/zram0
 `;
   const zramUnit = `[Unit]
-Description=dusk bot compressed swap
+Description=madani bot compressed swap
 
 [Service]
 Type=oneshot
@@ -203,7 +203,7 @@ ExecStart=${BIN}/omb-zram
 WantedBy=multi-user.target
 `;
   const botsSlice = `[Unit]
-Description=Dusk bot computers
+Description=Madani bot computers
 
 [Slice]
 MemoryHigh=65%
@@ -212,10 +212,10 @@ MemoryMax=75%
   const moveBoot = `const fs = require("node:fs");
 const boot = JSON.parse(fs.readFileSync(process.argv[1], "utf8"));
 if (boot.v !== 1 || !boot.env || !boot.link || !/^c[0-9a-f]{24}$/.test(boot.machine)) process.exit(1);
-const env = { ...boot.env, HOME: "/data", DUSK_DATA_DIR: "${CLOUD_HOME.data}", NODE_ENV: "production", DUSK_STATIC_DIR: "${APP}/dist",
-  DUSK_CLOUD_EDGE_BIN: "${BIN}/caddy", DUSK_CLOUD_EDGE_CONFIG: "${APP}/cloud/Caddyfile", PATH: "${NODE_DIR}/bin:${BIN}:/usr/local/bin:/usr/bin:/bin",
-  DUSK_VPS_DOCKER: "local", DOCKER_HOST: "unix:///run/${HOME_GATE_RUN}/docker.sock", DUSK_BOT_DESKTOP_HOST_BUILD: "${DESKTOP_IMAGE_STATUS}",
-  DUSK_SCREEN_DIRECT_PORTS: "${HOME_SCREEN_DIRECT_PORTS}" };
+const env = { ...boot.env, HOME: "/data", MADANI_DATA_DIR: "${CLOUD_HOME.data}", NODE_ENV: "production", MADANI_STATIC_DIR: "${APP}/dist",
+  MADANI_CLOUD_EDGE_BIN: "${BIN}/caddy", MADANI_CLOUD_EDGE_CONFIG: "${APP}/cloud/Caddyfile", PATH: "${NODE_DIR}/bin:${BIN}:/usr/local/bin:/usr/bin:/bin",
+  MADANI_VPS_DOCKER: "local", DOCKER_HOST: "unix:///run/${HOME_GATE_RUN}/docker.sock", MADANI_BOT_DESKTOP_HOST_BUILD: "${DESKTOP_IMAGE_STATUS}",
+  MADANI_SCREEN_DIRECT_PORTS: "${HOME_SCREEN_DIRECT_PORTS}" };
 if (Object.entries(env).some(([k, v]) => !/^[A-Z][A-Z0-9_]*$/.test(k) || typeof v !== "string" || /[\\r\\n\\0]/.test(v))) process.exit(1);
 fs.writeFileSync("${CLOUD_HOME.etc}/home.env", Object.entries(env).map(([k, v]) => k + "=" + v).join("\\n") + "\\n", { mode: 0o600 });
 fs.writeFileSync("${CLOUD_HOME.data}/dashboard-link.json", JSON.stringify(boot.link), { mode: 0o600 });
@@ -266,20 +266,20 @@ if [ -f ${INSTABOX_BOOT_FILE} ]; then
   sudo shred -u ${CLOUD_HOME.etc}/boot.json 2>/dev/null || sudo rm -f ${CLOUD_HOME.etc}/boot.json
   shred -u ${INSTABOX_BOOT_FILE} 2>/dev/null || rm -f ${INSTABOX_BOOT_FILE}
 fi
-sudo install -o root -g root -m 0644 /dev/stdin /etc/systemd/system/omb-home.service <<'DUSK_UNIT'
-${unit}DUSK_UNIT
-sudo install -o root -g root -m 0644 /dev/stdin /etc/systemd/system/omb-docker-gate.service <<'DUSK_GATE'
-${gate}DUSK_GATE
-sudo install -o root -g root -m 0644 /dev/stdin /etc/systemd/system/omb-desktop-image.service <<'DUSK_DESKTOP'
-${desktopImage}DUSK_DESKTOP
-sudo install -o root -g root -m 0755 /dev/stdin ${HOME_CONTROL} <<'DUSK_CTL'
-${homeControlScript(options)}DUSK_CTL
-sudo install -o root -g root -m 0755 /dev/stdin ${BIN}/omb-zram <<'DUSK_ZRAM'
-${zram}DUSK_ZRAM
-sudo install -o root -g root -m 0644 /dev/stdin /etc/systemd/system/omb-zram.service <<'DUSK_ZRAMUNIT'
-${zramUnit}DUSK_ZRAMUNIT
-sudo install -o root -g root -m 0644 /dev/stdin /etc/systemd/system/omb-bots.slice <<'DUSK_SLICE'
-${botsSlice}DUSK_SLICE
+sudo install -o root -g root -m 0644 /dev/stdin /etc/systemd/system/omb-home.service <<'MADANI_UNIT'
+${unit}MADANI_UNIT
+sudo install -o root -g root -m 0644 /dev/stdin /etc/systemd/system/omb-docker-gate.service <<'MADANI_GATE'
+${gate}MADANI_GATE
+sudo install -o root -g root -m 0644 /dev/stdin /etc/systemd/system/omb-desktop-image.service <<'MADANI_DESKTOP'
+${desktopImage}MADANI_DESKTOP
+sudo install -o root -g root -m 0755 /dev/stdin ${HOME_CONTROL} <<'MADANI_CTL'
+${homeControlScript(options)}MADANI_CTL
+sudo install -o root -g root -m 0755 /dev/stdin ${BIN}/omb-zram <<'MADANI_ZRAM'
+${zram}MADANI_ZRAM
+sudo install -o root -g root -m 0644 /dev/stdin /etc/systemd/system/omb-zram.service <<'MADANI_ZRAMUNIT'
+${zramUnit}MADANI_ZRAMUNIT
+sudo install -o root -g root -m 0644 /dev/stdin /etc/systemd/system/omb-bots.slice <<'MADANI_SLICE'
+${botsSlice}MADANI_SLICE
 sudo systemctl daemon-reload
 sudo systemctl enable --now omb-zram.service >/dev/null 2>&1 || true
 # bot computers' containers go under omb-bots.slice (merged into any daemon.json there; docker restarts once)
@@ -373,11 +373,11 @@ case "\${1:-}" in
     [[ "$upstream" =~ ^https://[a-z0-9.-]+$ ]] || { echo "bad origin"; exit 2; }
     desktop
     # a resume that kept memory left the home running with this origin: nothing to restart
-    if systemctl is-active --quiet omb-home.service && grep -qxF "DUSK_PUBLIC_URL=$origin" ${CLOUD_HOME.etc}/home.env && grep -qxF "DUSK_CLOUD_UPSTREAM_HOST=\${upstream#https://}" ${CLOUD_HOME.etc}/home.env \\
+    if systemctl is-active --quiet omb-home.service && grep -qxF "MADANI_PUBLIC_URL=$origin" ${CLOUD_HOME.etc}/home.env && grep -qxF "MADANI_CLOUD_UPSTREAM_HOST=\${upstream#https://}" ${CLOUD_HOME.etc}/home.env \\
       && curl -fsS -m 2 http://127.0.0.1:8799/api/health >/dev/null 2>&1; then echo started; exit 0; fi
-    sed -i "/^DUSK_PUBLIC_URL=/d; /^DUSK_CLOUD_UPSTREAM_HOST=/d" ${CLOUD_HOME.etc}/home.env
-    echo "DUSK_PUBLIC_URL=$origin" >> ${CLOUD_HOME.etc}/home.env
-    echo "DUSK_CLOUD_UPSTREAM_HOST=\${upstream#https://}" >> ${CLOUD_HOME.etc}/home.env
+    sed -i "/^MADANI_PUBLIC_URL=/d; /^MADANI_CLOUD_UPSTREAM_HOST=/d" ${CLOUD_HOME.etc}/home.env
+    echo "MADANI_PUBLIC_URL=$origin" >> ${CLOUD_HOME.etc}/home.env
+    echo "MADANI_CLOUD_UPSTREAM_HOST=\${upstream#https://}" >> ${CLOUD_HOME.etc}/home.env
     systemctl enable omb-home.service >/dev/null 2>&1
     if [ -S /var/run/docker.sock ] && [ -f "$app/link/docker-gate.mjs" ]; then systemctl enable --now omb-docker-gate.service >/dev/null 2>&1 || true; fi
     systemctl restart omb-home.service

@@ -4,7 +4,7 @@
   "title": "Shopify AI assistant for stock and fulfilment reviews",
   "nav": "shopify",
   "h1": "a shopify assistant for stock and fulfilment exceptions",
-  "description": "Review Shopify stock, draft orders and fulfilment work with dusk bot. See the custom sign-in requirement and routines that leave store records unchanged.",
+  "description": "Review Shopify stock, draft orders and fulfilment work with madani bot. See the custom sign-in requirement and routines that leave store records unchanged.",
   "answer": "**see the stock shortage before you promise the order.** the bot can read shopify orders, location inventory and draft orders, then bring you a short exception list. start with the specific read actions. connecting shopify takes your own composio project key and sign-in setup; there is no managed sign-in here. add store writes only when the review gives you a reason.",
   "tags": [
     "ecommerce",
@@ -95,7 +95,7 @@
     "**connect through a ready-made shopify sign-in.** prepare your own composio project key and sign-in configuration first.",
     "**use every broad query with read-only access.** general shopify graphql orders, products and inventory actions count as writes here. use the specific highlighted reads.",
     "**fix stock or complete drafts while limited to reading.** a stock warning tells you where to investigate. it does not change the quantity.",
-    "**run the morning review on a sleeping laptop.** local routines need an awake machine and dusk open. dusk cloud can keep them running while you are away."
+    "**run the morning review on a sleeping laptop.** local routines need an awake machine and madani open. madani cloud can keep them running while you are away."
   ],
   "sections": [
     {
@@ -123,15 +123,15 @@
   ],
   "sources": [
     {
-      "label": "dusk bot docs: files and apps",
+      "label": "madani bot docs: files and apps",
       "url": "/docs/files-and-apps"
     },
     {
-      "label": "dusk bot docs: routines",
+      "label": "madani bot docs: routines",
       "url": "/docs/routines"
     },
     {
-      "label": "dusk bot docs: permissions and sends",
+      "label": "madani bot docs: permissions and sends",
       "url": "/docs/computer"
     }
   ],

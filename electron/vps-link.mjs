@@ -19,10 +19,10 @@ import { createMoveBack } from "./move-back.mjs";
  * adds the way after the closing `| sh`. (`sh -c "$(curl …)"` is out: the installer is near Linux's 128 KB limit for
  * one argument; printf is a builtin, so it has no such limit.) */
 export function installLine(base, token) {
-  return `(for f in "" -4 "" -4 ""; do s=$(curl -fsSL $f ${base}/i/${token}) && { printf '%s\\n' "$s"; exit; }; sleep 2; done; echo 'echo "dusk bot could not be downloaded. check the internet and paste the line again." >&2; exit 1') | sh`;
+  return `(for f in "" -4 "" -4 ""; do s=$(curl -fsSL $f ${base}/i/${token}) && { printf '%s\\n' "$s"; exit; }; sleep 2; done; echo 'echo "madani bot could not be downloaded. check the internet and paste the line again." >&2; exit 1') | sh`;
 }
 
-/** a short line's address as the link service gave it (`https://dusk.bot/s/<code>`), or null for anything else */
+/** a short line's address as the link service gave it (`https://madani.bot/s/<code>`), or null for anything else */
 export const SHORT_URL = /^https:\/\/[a-z0-9.-]+(?::\d+)?\/s\/[a-km-np-z2-9]{7}$/;
 /** the short line: the link service serves a tiny script there that runs installLine's loop itself (bootstrapScript in
  * apps/link-service/src/app.mjs), so the retries and the IPv4 fallback stay; PlaceSetup's wayLine adds the way to the
@@ -82,7 +82,7 @@ const plain = (error, fallback) => {
   const message = typeof error?.message === "string" ? error.message.trim() : "";
   if (!message || message.length >= 300 || /^\w*Error\b|ECONN|fetch failed|ENOTFOUND/.test(message)) return fallback;
   // the app reads in sentence case; lower-level messages start lowercase ("the server's ssh key is not the one it said")
-  return /^[a-z][a-z]/.test(message) && !/^dusk (bot|cloud)\b/.test(message) ? message[0].toUpperCase() + message.slice(1) : message;
+  return /^[a-z][a-z]/.test(message) && !/^madani (bot|cloud)\b/.test(message) ? message[0].toUpperCase() + message.slice(1) : message;
 };
 
 /**
@@ -127,8 +127,8 @@ const plain = (error, fallback) => {
  * }} deps
  */
 /** The welcome record a server gets when this Mac moves everything to it, or null when it needs none. The person met
- *  dusk bot here: a finished welcome is kept as it was, and one still under way (they chose their own server from the
- *  welcome itself) counts as met, so the server never starts over at "meet dusk bot" and asks where the bots live. */
+ *  madani bot here: a finished welcome is kept as it was, and one still under way (they chose their own server from the
+ *  welcome itself) counts as met, so the server never starts over at "meet madani bot" and asks where the bots live. */
 export function welcomeForServer(mine, theirs, now) {
   if (theirs?.completedAt) return null;
   const hints = Array.isArray(mine?.hintsSeen) ? { hintsSeen: mine.hintsSeen } : {};
@@ -308,7 +308,7 @@ export function createVpsLink(deps) {
     const keys = newLinkKeys();
     let made;
     try {
-      // the link service opens a setup session only for a signed-in dusk account (apps/link-service/src/grant.mjs)
+      // the link service opens a setup session only for a signed-in madani account (apps/link-service/src/grant.mjs)
       const grant = deps.linkGrant ? await deps.linkGrant().catch(() => null) : null;
       if (deps.linkGrant && !active()) return view();
       made = await relay.create({ verifier: keys.verifier, appPub: keys.pub, label: deps.label().slice(0, 60), ...(grant ? { grant } : {}) }, abort.signal);
@@ -651,7 +651,7 @@ export function createVpsLink(deps) {
 
   const CLOUD_RETRY_MS = 60 * 60_000;
   /**
-   * the cloud relay for this link: registered once with a link grant (which binds the tunnel to this dusk account), again
+   * the cloud relay for this link: registered once with a link grant (which binds the tunnel to this madani account), again
    * when the relay forgot it, at most hourly after a refusal. null where the agent or the account cannot use it
    */
   async function cloudFor(link, proxy) {
@@ -1089,7 +1089,7 @@ export function createVpsLink(deps) {
   async function local(method, route, body) {
     const response = await localRequest(route, { method, ...(body === undefined ? {} : { headers: { "content-type": "application/json" }, body: JSON.stringify(body) }) });
     const parsed = await response.json().catch(() => ({}));
-    if (!response.ok) throw Object.assign(new Error(typeof parsed?.error === "string" ? parsed.error : "dusk bot on this Mac did not answer."), { status: response.status });
+    if (!response.ok) throw Object.assign(new Error(typeof parsed?.error === "string" ? parsed.error : "madani bot on this Mac did not answer."), { status: response.status });
     return parsed;
   }
 
@@ -1139,7 +1139,7 @@ export function createVpsLink(deps) {
     })) : onBytes ? response.body.pipeThrough(new TransformStream({
       transform(chunk, controller) { received += chunk.byteLength; onBytes(received, Number.isFinite(made.bytes) ? made.bytes : null); controller.enqueue(chunk); },
     })) : response.body;
-    const saved = await deps.backups.save(`${at}-${made.id}.duskbackup`, body);
+    const saved = await deps.backups.save(`${at}-${made.id}.madanibackup`, body);
     report(true);
     if (typeof made.bytes === "number" && saved.bytes !== made.bytes) throw new Error("The backup was cut off while saving. Nothing was changed.");
     const entry = {
@@ -1209,7 +1209,7 @@ export function createVpsLink(deps) {
     return view();
   }
 
-  /** the person met dusk bot on this Mac: the server keeps that, so it never opens on the welcome a second time */
+  /** the person met madani bot on this Mac: the server keeps that, so it never opens on the welcome a second time */
   async function carryWelcome(link) {
     try {
       const mine = (await local("GET", "/api/config"))?.onboarding;
@@ -1298,7 +1298,7 @@ export function createVpsLink(deps) {
     return view();
   }
 
-  /** the line that takes dusk bot off the server again (apps/link-service/uninstall.sh), from the service it was linked through */
+  /** the line that takes madani bot off the server again (apps/link-service/uninstall.sh), from the service it was linked through */
   function uninstallLine() { return `curl -fsSL ${currentLink()?.base ?? base}/uninstall | sh`; }
 
   function where() {

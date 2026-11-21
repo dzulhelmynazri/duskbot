@@ -7,7 +7,7 @@ import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { afterEach, expect, it } from "vitest";
 import { LEGACY } from "../electron/legacy-names.mjs";
-import { runControlDusk, verificationServerEnvironment } from "../scripts/control-dusk.ts";
+import { runControlMadani, verificationServerEnvironment } from "../scripts/control-madani.ts";
 import { removeTempDir, waitForExit } from "./testing/cleanup.ts";
 import { freePortBlock } from "./testing/ports.ts";
 
@@ -38,13 +38,13 @@ async function boot(env: NodeJS.ProcessEnv, port: number) {
     expect(response.status).toBe(200);
     return response.json() as Promise<any>;
   };
-  return { base, get, control: (...args: string[]) => runControlDusk([...args, "--url", base]) as Promise<any>, stop: () => waitForExit(child, { signal: "SIGTERM" }) };
+  return { base, get, control: (...args: string[]) => runControlMadani([...args, "--url", base]) as Promise<any>, stop: () => waitForExit(child, { signal: "SIGTERM" }) };
 }
 
 /** the same variables under the names a build from before the rename read */
 function oldNames(env: NodeJS.ProcessEnv): NodeJS.ProcessEnv {
   const out: NodeJS.ProcessEnv = {};
-  for (const [key, value] of Object.entries(env)) out[key.startsWith("DUSK_") ? `${LEGACY.envPrefixes[0]}${key.slice(5)}` : key] = value;
+  for (const [key, value] of Object.entries(env)) out[key.startsWith("MADANI_") ? `${LEGACY.envPrefixes[0]}${key.slice(5)}` : key] = value;
   return out;
 }
 
@@ -72,7 +72,7 @@ it("starts clean beside an old install: its data folder is left as it was and it
   expect(bots.some((bot) => was.includes(bot.id))).toBe(false);
   expect(bots.find((bot) => bot.id === made.id)).toBeUndefined();
 
-  expect(lstatSync(join(home, ".duskbot")).isDirectory()).toBe(true);
+  expect(lstatSync(join(home, ".madanibot")).isDirectory()).toBe(true);
   expect(lstatSync(oldData).isSymbolicLink()).toBe(false);
   expect(existsSync(join(oldData, "config.json"))).toBe(true);
 

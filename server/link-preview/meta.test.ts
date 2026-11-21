@@ -99,9 +99,9 @@ describe("sites with thin pages", () => {
       expect(youtubeId(new URL(href)), href).toBe("dQw4w9WgXcQ");
     }
     expect(youtubeId(new URL("https://notyoutube.com/watch?v=dQw4w9WgXcQ"))).toBeNull();
-    expect(tweetId(new URL("https://x.com/duskbot/status/1790000000000000000?s=20"))).toBe("1790000000000000000");
+    expect(tweetId(new URL("https://x.com/madanibot/status/1790000000000000000?s=20"))).toBe("1790000000000000000");
     expect(tweetId(new URL("https://twitter.com/i/web/status/1790000000000000000"))).toBe("1790000000000000000");
-    expect(tweetId(new URL("https://x.com/duskbot"))).toBeNull();
+    expect(tweetId(new URL("https://x.com/madanibot"))).toBeNull();
     expect(redditPostId(new URL("https://www.reddit.com/r/gardening/comments/1abcde/basil/"))).toBe("1abcde");
     expect(redditPostId(new URL("https://redd.it/1abcde"))).toBe("1abcde");
   });
@@ -112,7 +112,7 @@ describe("sites with thin pages", () => {
 
   it("reads a tweet from the public embed's JSON", () => {
     const meta = readTweet(JSON.parse(fixture("tweet.json")), new URL("https://cdn.syndication.twimg.com/"));
-    expect(meta.title).toBe("dusk bot (@duskbot)");
+    expect(meta.title).toBe("madani bot (@madanibot)");
     expect(meta.description).toBe("Shipping link previews today. Hover any link in chat.");
     expect(meta.image).toEqual({ url: "https://pbs.twimg.com/ext_tw_video_thumb/1/pu/img/poster.jpg", width: 1280, height: 720 });
     expect(meta.video).toBe(true);

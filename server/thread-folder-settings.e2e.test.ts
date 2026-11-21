@@ -2,15 +2,15 @@ import { mkdirSync, mkdtempSync, readFileSync, realpathSync, writeFileSync } fro
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { expect, it } from "vitest";
-import { launchVerificationServer, runControlDusk } from "../scripts/control-dusk.ts";
+import { launchVerificationServer, runControlMadani } from "../scripts/control-madani.ts";
 import { removeTempDir } from "./testing/cleanup.ts";
 
 it("runs every thread of a bot with the bot's settings, and moves its threads to the working folder it is given", async () => {
   // FAKE_CLAUDE_HOOKS: the fake engine runs the Stop hooks of its --settings file, as Claude Code does.
   const fixture = await launchVerificationServer({ FAKE_CLAUDE_HOOKS: "1" });
-  const project = realpathSync(mkdtempSync(join(tmpdir(), "dusk-thread-settings-project-")));
-  const chosen = realpathSync(mkdtempSync(join(tmpdir(), "dusk-thread-settings-chosen-")));
-  const control = (args: string[]) => runControlDusk([...args, "--url", fixture.info.url]) as Promise<any>;
+  const project = realpathSync(mkdtempSync(join(tmpdir(), "madani-thread-settings-project-")));
+  const chosen = realpathSync(mkdtempSync(join(tmpdir(), "madani-thread-settings-chosen-")));
+  const control = (args: string[]) => runControlMadani([...args, "--url", fixture.info.url]) as Promise<any>;
   const api = async (method: string, path: string, body?: unknown) => {
     const response = await fetch(`${fixture.info.url}${path}`, {
       method, headers: { "content-type": "application/json" }, ...(body === undefined ? {} : { body: JSON.stringify(body) }),

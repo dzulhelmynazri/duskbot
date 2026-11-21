@@ -51,7 +51,7 @@ export function DefaultResponderSelect({ group, members }: { group: Group; membe
         ))}
       </optgroup>
       <optgroup label={t("room.responder.groupBehavior")}>
-        <option value="dusk">{t("room.panel.responder.dusk")}</option>
+        <option value="madani">{t("room.panel.responder.madani")}</option>
         <option value="auto">{jevOn ? t("room.responder.autoOption") : t("room.responder.autoOptionOff")}</option>
         <option value="everyone">{t("room.responder.everyoneOption")}</option>
         <option value="mentions">{t("room.responder.mentionsOption")}</option>

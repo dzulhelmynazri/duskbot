@@ -14,7 +14,7 @@ beforeEach(() => { vi.useFakeTimers(); vi.setSystemTime(new Date("2026-11-07T08:
 afterEach(() => { vi.useRealTimers(); for (const folder of folders.splice(0)) rmSync(folder, { recursive: true, force: true }); });
 
 async function fixture(state?: VpsLifecycleState) {
-  const folder = mkdtempSync(join(tmpdir(), "dusk-lifecycle-host-")); folders.push(folder);
+  const folder = mkdtempSync(join(tmpdir(), "madani-lifecycle-host-")); folders.push(folder);
   const file = join(folder, "state.json");
   if (state) createVpsLifecycleStore(file, environment).save(state);
   let reserved = false;

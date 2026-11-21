@@ -78,7 +78,7 @@ describe("remote MCP apps", () => {
 describe("composioProvider against a mocked Composio API", () => {
   let api: Server;
   const seen: Array<{ path: string; key: string | undefined }> = [];
-  const previous = process.env.DUSK_COMPOSIO_TOOLKITS_API;
+  const previous = process.env.MADANI_COMPOSIO_TOOLKITS_API;
 
   beforeAll(async () => {
     api = createServer((req, res) => {
@@ -92,11 +92,11 @@ describe("composioProvider against a mocked Composio API", () => {
       res.end(JSON.stringify({ items, current_page: page, total_pages: 2, total_items: 3, next_cursor: page === 1 ? "p2" : null }));
     });
     await new Promise<void>((resolve) => api.listen(0, "127.0.0.1", resolve));
-    process.env.DUSK_COMPOSIO_TOOLKITS_API = `http://127.0.0.1:${(api.address() as AddressInfo).port}/api/v3`;
+    process.env.MADANI_COMPOSIO_TOOLKITS_API = `http://127.0.0.1:${(api.address() as AddressInfo).port}/api/v3`;
   });
   afterAll(async () => {
-    if (previous === undefined) delete process.env.DUSK_COMPOSIO_TOOLKITS_API;
-    else process.env.DUSK_COMPOSIO_TOOLKITS_API = previous;
+    if (previous === undefined) delete process.env.MADANI_COMPOSIO_TOOLKITS_API;
+    else process.env.MADANI_COMPOSIO_TOOLKITS_API = previous;
     await new Promise((resolve) => api.close(resolve));
   });
 

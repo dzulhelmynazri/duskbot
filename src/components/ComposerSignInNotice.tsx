@@ -9,7 +9,7 @@ import { NOTICE_LINE } from "./ChatErrorBanner";
 import { useDesktopCapabilities } from "./DesktopCapabilities";
 
 export function aiRunsOnServer(config: ConfigStatus | null | undefined, capabilities: ReturnType<typeof useDesktopCapabilities>["capabilities"]): boolean {
-  return window.duskDesktop?.remoteClient?.active === true || config?.cloudHome === true || capabilities.localComputer?.reasonCode === "remote-server";
+  return window.madaniDesktop?.remoteClient?.active === true || config?.cloudHome === true || capabilities.localComputer?.reasonCode === "remote-server";
 }
 
 /** The bot answers with OpenCode's free model: what a newcomer's bots get until an AI of their own is connected. */

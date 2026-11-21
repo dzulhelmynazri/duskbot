@@ -5,7 +5,7 @@ import { existsSync, readFileSync, readdirSync, statSync, writeFileSync } from "
 import { join } from "node:path";
 import { promisify } from "node:util";
 import { expect, it } from "vitest";
-import { launchVerificationServer, runControlDusk } from "../scripts/control-dusk.ts";
+import { launchVerificationServer, runControlMadani } from "../scripts/control-madani.ts";
 import { request } from "../scripts/mcp-server.ts";
 import { listSystemVoices } from "./tts/system-voices.ts";
 
@@ -17,14 +17,14 @@ async function withVoiceFixture(test: (f: any) => Promise<void>, options?: { fai
   const session = await launchVerificationServer(
     {
       ...process.env,
-      ...(options?.failFirstAudioAppend ? { DUSK_TEST_FAIL_AUDIO_APPEND_ONCE: "1" } : {}),
+      ...(options?.failFirstAudioAppend ? { MADANI_TEST_FAIL_AUDIO_APPEND_ONCE: "1" } : {}),
     },
     undefined,
     undefined,
     undefined,
     { scripted: true },
   );
-  const cli = (...args: string[]) => runControlDusk(args, { env: { DUSK_URL: session.info.url } }) as Promise<any>;
+  const cli = (...args: string[]) => runControlMadani(args, { env: { MADANI_URL: session.info.url } }) as Promise<any>;
   const api = (path: string, body?: unknown, method = "POST") =>
     request(path, body === undefined ? {} : { method, body: JSON.stringify(body) }, session.info.url) as Promise<any>;
   let ttsServer: Server | undefined;

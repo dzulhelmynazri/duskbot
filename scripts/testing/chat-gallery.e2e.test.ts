@@ -2,17 +2,17 @@
 // desktop and phone widths and the skins that differ most, then checked by chat-gallery/layout-audit.ts. A row that
 // paints over its neighbour, text cut off or run out of the window, a field that does not look like the others, a
 // native checkbox or a control with no focus look fails the run. Contrast and small touch targets are listed for a
-// person to judge. Screenshots go to DUSK_GALLERY_DIR (default .dusk-scratch/verify-evidence/chat-gallery).
+// person to judge. Screenshots go to MADANI_GALLERY_DIR (default .madani-scratch/verify-evidence/chat-gallery).
 //
-//   DUSK_UI_E2E=1 pnpm exec vitest run scripts/testing/chat-gallery.e2e.test.ts
-//   DUSK_GALLERY_ONLY=cards-pending DUSK_GALLERY_SKINS=grok  narrows the run.
+//   MADANI_UI_E2E=1 pnpm exec vitest run scripts/testing/chat-gallery.e2e.test.ts
+//   MADANI_GALLERY_ONLY=cards-pending MADANI_GALLERY_SKINS=grok  narrows the run.
 import { spawn, type ChildProcess } from "node:child_process";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { expect, it } from "vitest";
-import { launchVerificationServer, runControlDusk, type VerificationServer } from "../control-dusk.ts";
+import { launchVerificationServer, runControlMadani, type VerificationServer } from "../control-madani.ts";
 import { waitForExit } from "../../server/testing/cleanup.ts";
-import { ensureUiBrowser } from "./control-dusk-ui.ts";
+import { ensureUiBrowser } from "./control-madani-ui.ts";
 import { encodePng } from "./png.ts";
 import { fixtureApi, mountPreview, REPO_ROOT, type MountedPreview } from "./preview-fixture.ts";
 import { GALLERY_IMAGE, GALLERY_WIDE_IMAGE, SCENARIOS } from "./chat-gallery/fixtures.ts";
@@ -20,8 +20,8 @@ import type { LayoutIssue } from "./chat-gallery/layout-audit.ts";
 import { connect } from "./chat-gallery/cdp.ts";
 import { NOTICES } from "../../src/lib/notices.ts";
 
-const enabled = process.env.DUSK_UI_E2E === "1";
-if (!enabled) console.log("skipping the chat gallery: set DUSK_UI_E2E=1 for isolated browser qualification");
+const enabled = process.env.MADANI_UI_E2E === "1";
+if (!enabled) console.log("skipping the chat gallery: set MADANI_UI_E2E=1 for isolated browser qualification");
 
 // "min" is the desktop window's smallest size (electron/window-state.cjs MIN_BOUNDS)
 const ALL_VIEWPORTS = [
@@ -29,13 +29,13 @@ const ALL_VIEWPORTS = [
   { id: "min", width: 768, height: 520, touch: false },
   { id: "phone", width: 390, height: 844, touch: true },
 ] as const;
-const VIEWPORT_IDS = (process.env.DUSK_GALLERY_VIEWPORTS ?? "desktop,phone").split(",");
+const VIEWPORT_IDS = (process.env.MADANI_GALLERY_VIEWPORTS ?? "desktop,phone").split(",");
 const VIEWPORTS = ALL_VIEWPORTS.filter((one) => VIEWPORT_IDS.includes(one.id));
-const SKINS = (process.env.DUSK_GALLERY_SKINS ?? "grok,grok-dark,midnight,atelier,pop").split(",");
-const ONLY = process.env.DUSK_GALLERY_ONLY?.split(",");
+const SKINS = (process.env.MADANI_GALLERY_SKINS ?? "grok,grok-dark,midnight,atelier,pop").split(",");
+const ONLY = process.env.MADANI_GALLERY_ONLY?.split(",");
 // "still": the transcript as a reopened chat shows it; "arrive": its rows landing one by one while the chat follows;
 // "churn": the same rows handed over again under new ids, so every row mounts afresh at once
-const MODES = (process.env.DUSK_GALLERY_MODES ?? "still,arrive,churn").split(",");
+const MODES = (process.env.MADANI_GALLERY_MODES ?? "still,arrive,churn").split(",");
 
 const photo = encodePng(240, 160, (x, y) => [80 + (x % 120), 120 + (y % 80), 200]);
 const wide = encodePng(480, 120, (x, y) => [200, 100 + (x % 100), 80 + (y % 40)]);
@@ -45,7 +45,7 @@ const wide = encodePng(480, 120, (x, y) => [200, 100 + (x % 100), 80 + (y % 40)]
   let preview: MountedPreview | undefined;
   let chrome: ChildProcess | undefined;
   let cdp: Awaited<ReturnType<typeof connect>> | undefined;
-  const evidence = process.env.DUSK_GALLERY_DIR || join(process.env.DUSK_UI_EVIDENCE_DIR || join(REPO_ROOT, ".dusk-scratch", "verify-evidence"), "chat-gallery");
+  const evidence = process.env.MADANI_GALLERY_DIR || join(process.env.MADANI_UI_EVIDENCE_DIR || join(REPO_ROOT, ".madani-scratch", "verify-evidence"), "chat-gallery");
   mkdirSync(evidence, { recursive: true });
   const report: Array<{ shot: string; probe?: unknown; caught?: unknown[]; issues: LayoutIssue[] }> = [];
   try {
@@ -56,7 +56,7 @@ const wide = encodePng(480, 120, (x, y) => [200, 100 + (x % 100), 80 + (y % 40)]
     await api("PATCH", "/api/config", { language: "en" });
     const { bots } = await api("GET", "/api/bots");
     for (const bot of bots.filter((bot: { defaultBot?: unknown }) => bot.defaultBot)) await api("PATCH", `/api/bots/${bot.id}`, { welcomed: true });
-    await runControlDusk(["new-bot", "--name", "Pepper", "--url", fixture.info.url]);
+    await runControlMadani(["new-bot", "--name", "Pepper", "--url", fixture.info.url]);
     // one colour every run, so screenshots compare (scripts/testing/visual-baseline.ts); a new bot's colour is picked at random
     for (const one of (await api("GET", "/api/bots")).bots) await api("PATCH", `/api/bots/${one.id}`, { color: one.name === "Pepper" ? "orange" : "silver" });
     preview = await mountPreview(fixture, {
@@ -90,9 +90,9 @@ const wide = encodePng(480, 120, (x, y) => [200, 100 + (x % 100), 80 + (y % 40)]
     await request("Runtime.enable");
     await request("Page.addScriptToEvaluateOnNewDocument", { source: `try { for (const notice of ${JSON.stringify(NOTICES)}) localStorage.setItem(notice, "1"); } catch {}` });
     await request("Emulation.setEmulatedMedia", { features: [{ name: "prefers-reduced-motion", value: "reduce" }] });
-    // DUSK_GALLERY_STEADY=1 (the visual baseline): code blocks settle their highlighting and scroll at different moments
+    // MADANI_GALLERY_STEADY=1 (the visual baseline): code blocks settle their highlighting and scroll at different moments
     // run to run, so their text is left out of the picture; the block itself still shows
-    if (process.env.DUSK_GALLERY_STEADY === "1") await request("Page.addScriptToEvaluateOnNewDocument", { source: `addEventListener("DOMContentLoaded", () => { const style = document.createElement("style"); style.textContent = "pre, pre * { color: transparent !important; }"; document.head.append(style); });` });
+    if (process.env.MADANI_GALLERY_STEADY === "1") await request("Page.addScriptToEvaluateOnNewDocument", { source: `addEventListener("DOMContentLoaded", () => { const style = document.createElement("style"); style.textContent = "pre, pre * { color: transparent !important; }"; document.head.append(style); });` });
     const errors: string[] = [];
     let current = "";
     // a card that throws falls back to plain text inside MessageBoundary: React's error log is how the run sees it
@@ -122,9 +122,9 @@ const wide = encodePng(480, 120, (x, y) => [200, 100 + (x % 100), 80 + (y % 40)]
             if (mode === "arrive") {
               const found = await evaluate(`window.__galleryAudit({ touch: false, scopeSelector: "[data-none]" })`) as LayoutIssue[];
               during.push(...found);
-              // DUSK_GALLERY_CATCH=1: a picture of the first frame an arrival check flags
-              if (found.length && process.env.DUSK_GALLERY_CATCH === "1" && !caught.length) writeFileSync(join(evidence, `${shot}-caught.png`), Buffer.from((await request("Page.captureScreenshot", { format: "png" })).data, "base64"));
-              if (found.length && process.env.DUSK_GALLERY_PROBE) caught.push(await evaluate(process.env.DUSK_GALLERY_PROBE));
+              // MADANI_GALLERY_CATCH=1: a picture of the first frame an arrival check flags
+              if (found.length && process.env.MADANI_GALLERY_CATCH === "1" && !caught.length) writeFileSync(join(evidence, `${shot}-caught.png`), Buffer.from((await request("Page.captureScreenshot", { format: "png" })).data, "base64"));
+              if (found.length && process.env.MADANI_GALLERY_PROBE) caught.push(await evaluate(process.env.MADANI_GALLERY_PROBE));
             }
             return evaluate(`Boolean(document.querySelector('[data-gallery-ready="${scenario.id}"] [data-simple-rows]'))`);
           }, { timeout: 120_000, interval: 300 }).toBe(true);
@@ -146,8 +146,8 @@ const wide = encodePng(480, 120, (x, y) => [200, 100 + (x % 100), 80 + (y % 40)]
               await request("Input.dispatchMouseEvent", { type: "mouseMoved", x: 1, y: 1 });
             }
           }
-          // DUSK_GALLERY_PROBE: an expression to read in each shot while chasing a finding (saved beside its issues)
-          const probe = process.env.DUSK_GALLERY_PROBE ? await evaluate(process.env.DUSK_GALLERY_PROBE) : undefined;
+          // MADANI_GALLERY_PROBE: an expression to read in each shot while chasing a finding (saved beside its issues)
+          const probe = process.env.MADANI_GALLERY_PROBE ? await evaluate(process.env.MADANI_GALLERY_PROBE) : undefined;
           report.push({ shot, ...(probe === undefined ? {} : { probe }), ...(caught.length ? { caught } : {}), issues: [...issues, ...during.map((issue) => ({ ...issue, detail: `while arriving: ${issue.detail}` }))] });
         }
       }

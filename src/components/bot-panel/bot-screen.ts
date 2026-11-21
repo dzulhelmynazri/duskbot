@@ -58,7 +58,7 @@ export function useBotScreen(bot: Bot, { visible = true }: { visible?: boolean }
   }, [chosen, autoKey, bot.id, bot.threadId, flushBotPatches]);
 
   const platform = capabilities.host.platform;
-  const capturesHere = place === "local" && typeof window !== "undefined" && Boolean(window.duskDesktop?.screenFrame)
+  const capturesHere = place === "local" && typeof window !== "undefined" && Boolean(window.madaniDesktop?.screenFrame)
     && (platform === "darwin" || platform === "win32");
   const showing = capturesHere && pageVisible && visible;
   const live = useLiveScreen(showing, LIVE_FPS.preview);
@@ -72,7 +72,7 @@ export function useBotScreen(bot: Bot, { visible = true }: { visible?: boolean }
     const shoot = async () => {
       if (inFlight) return;
       inFlight = true;
-      const url = await window.duskDesktop!.screenFrame().catch(() => null);
+      const url = await window.madaniDesktop!.screenFrame().catch(() => null);
       inFlight = false;
       if (!alive) return;
       setLocal((previous) => {

@@ -3,7 +3,7 @@ import { closeSync, existsSync, openSync, readFileSync, writeFileSync } from "no
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { expect, it } from "vitest";
-import { launchVerificationServer, runControlDusk, verificationServerEnvironment } from "../scripts/control-dusk.ts";
+import { launchVerificationServer, runControlMadani, verificationServerEnvironment } from "../scripts/control-madani.ts";
 import { request } from "../scripts/mcp-server.ts";
 import { waitForExit } from "./testing/cleanup.ts";
 
@@ -25,7 +25,7 @@ async function setup(hang: boolean, fakeEnv: NodeJS.ProcessEnv) {
       return result;
     };
     const cli = async (...args: string[]) => {
-      const result = await runControlDusk(args, { env: { DUSK_URL: session.info.url } }) as any;
+      const result = await runControlMadani(args, { env: { MADANI_URL: session.info.url } }) as any;
       evidence.push({ command: args, result });
       return result;
     };
@@ -165,7 +165,7 @@ it.each([
     await f.restart(() => {
       const path = join(f.session.info.dataDir, "config.json");
       const config = JSON.parse(readFileSync(path, "utf8"));
-      config.instances.claude.environment.DUSK_CLAUDE_AUTOCOMPACT = native;
+      config.instances.claude.environment.MADANI_CLAUDE_AUTOCOMPACT = native;
       writeFileSync(path, JSON.stringify(config));
     });
   }

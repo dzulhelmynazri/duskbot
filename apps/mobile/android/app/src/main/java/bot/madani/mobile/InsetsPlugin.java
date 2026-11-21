@@ -1,4 +1,4 @@
-package bot.dusk.mobile;
+package bot.madani.mobile;
 
 import android.graphics.Color;
 import android.view.View;
@@ -32,7 +32,7 @@ import java.util.Locale;
  * - "resize", any other field: the window ends at the keyboard (at once on the way up, when it has gone on the way
  *   down), so Chromium keeps the focused field in view as adjustResize did.
  */
-@CapacitorPlugin(name = "DuskInsets")
+@CapacitorPlugin(name = "MadaniInsets")
 public class InsetsPlugin extends Plugin {
 
     private boolean ride = false;

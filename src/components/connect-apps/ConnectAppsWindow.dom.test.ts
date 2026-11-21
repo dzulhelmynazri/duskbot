@@ -469,7 +469,7 @@ describe("the Connect Apps window", () => {
       await remountAt(5);
       expect(fixture.api).not.toHaveBeenCalledWith("/api/connectors/composio-connect/apps/attio", expect.objectContaining({ method: "POST" }));
       expect(fixture.opened).toEqual([]);
-      expect(JSON.parse(kept.get("dusk.composioConnect.apps") ?? "{}")).toEqual({ attio: true });
+      expect(JSON.parse(kept.get("madani.composioConnect.apps") ?? "{}")).toEqual({ attio: true });
       expect(primary(), "Connected: nothing left to click").toBeNull();
       expect(fixture.api).toHaveBeenCalledWith("/api/mcp/servers/composio-connect", { method: "PATCH", body: JSON.stringify({ enabled: true }) });
     });
@@ -506,8 +506,8 @@ describe("the Connect Apps window", () => {
 
     it("the first time, the one-time Composio step runs inline and goes straight on to the app's own sign-in on the desktop app", async () => {
       const opened: string[] = [];
-      vi.stubGlobal("duskDesktop", { openExternal: async (url: string) => { opened.push(url); } });
-      (window as unknown as { duskDesktop?: unknown }).duskDesktop = { openExternal: async (url: string) => { opened.push(url); } };
+      vi.stubGlobal("madaniDesktop", { openExternal: async (url: string) => { opened.push(url); } });
+      (window as unknown as { madaniDesktop?: unknown }).madaniDesktop = { openExternal: async (url: string) => { opened.push(url); } };
       try {
         keep();
         await remount({ kind: "detail", id: "attio" }, "unavailable");
@@ -520,7 +520,7 @@ describe("the Connect Apps window", () => {
         expect(fixture.api, "one click: Composio, then the app").toHaveBeenCalledWith("/api/connectors/composio-connect/apps/attio", expect.objectContaining({ method: "POST" }));
         expect([...opened, ...fixture.opened], "the app's sign-in opens with no second click").toContain("https://connect.composio.dev/link/ln_attio");
       } finally {
-        delete (window as unknown as { duskDesktop?: unknown }).duskDesktop;
+        delete (window as unknown as { madaniDesktop?: unknown }).madaniDesktop;
       }
     });
 
@@ -566,7 +566,7 @@ describe("the Connect Apps window", () => {
         expect(keyCard(), "back to the one-time card").not.toBeNull();
       });
 
-      it("Dusk restarting or the network down: says so and keeps trying, then connects", async () => {
+      it("Madani restarting or the network down: says so and keeps trying, then connects", async () => {
         let down = true;
         await waitingThen(() => { if (down) throw new TypeError("Failed to fetch"); return { status: "connected" }; }, 2_100);
         expect(line()).toBe("Can't reach Composio right now. Trying again…");
@@ -658,7 +658,7 @@ describe("the Connect Apps window", () => {
 
       it("a reload mid sign-in picks the wait up again", async () => {
         const kept = keep();
-        kept.set("dusk.composioConnect.pending", JSON.stringify({ attio: { url: "https://connect.composio.dev/link/ln_attio", since: Date.now() - 60_000 } }));
+        kept.set("madani.composioConnect.pending", JSON.stringify({ attio: { url: "https://connect.composio.dev/link/ln_attio", since: Date.now() - 60_000 } }));
         await remount({ kind: "detail", id: "attio" }, "unavailable");
         viaApi({ signedIn: true }, () => ({ status: "waiting" }));
         await remountAt(8);
@@ -668,7 +668,7 @@ describe("the Connect Apps window", () => {
 
       it("a saved wait is checked before it shows: one Composio no longer has, or one past its deadline, is dropped", async () => {
         const kept = keep();
-        kept.set("dusk.composioConnect.pending", JSON.stringify({
+        kept.set("madani.composioConnect.pending", JSON.stringify({
           attio: { url: "https://connect.composio.dev/link/ln_attio", since: Date.now() - 60_000 },
           asana: { url: "https://connect.composio.dev/link/ln_asana", since: Date.now() - 11 * 60_000 },
         }));
@@ -680,7 +680,7 @@ describe("the Connect Apps window", () => {
         expect(fixture.api, "past its deadline: not even asked").not.toHaveBeenCalledWith("/api/connectors/composio-connect/apps/asana", expect.anything());
         expect(shownLabel()).toBe("Connect Attio");
         expect(line()).toBeUndefined();
-        expect(JSON.parse(kept.get("dusk.composioConnect.pending") ?? "{}")).toEqual({});
+        expect(JSON.parse(kept.get("madani.composioConnect.pending") ?? "{}")).toEqual({});
       });
 
       it("Cancel stops the wait at once and says Connect again", async () => {

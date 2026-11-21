@@ -1,5 +1,5 @@
 // draws the hero demo's content in the real app and keeps what the app renders, so the demo is the app's own markup.
-// needs `pnpm demo` running (its ui on DUSK_DEMO_UI_PORT, default 5299) and playwright:
+// needs `pnpm demo` running (its ui on MADANI_DEMO_UI_PORT, default 5299) and playwright:
 //   PLAYWRIGHT=/path/to/node_modules/playwright DEMO_UI=http://127.0.0.1:5299 node apps/site/demo-src/capture/capture.mjs
 // writes apps/site/demo-src/captured.json. the app's own state is only changed in the page (no server writes).
 import { createRequire } from 'node:module';
@@ -22,7 +22,7 @@ const NOW = Date.now();
 // the chats happened this morning; every suggestion is answered a minute after the last line, so no time divider shows
 const START = new Date(NOW).setHours(9, 12, 0, 0);
 
-const ROLE = { dusk: 'Your main bot', researcher: 'Finds things out', writer: 'Writes and edits', inbox: 'Email', maya: 'Home and meals', books: 'Money and receipts', coder: 'Builds the website', leo: 'Trips and errands' };
+const ROLE = { madani: 'Your main bot', researcher: 'Finds things out', writer: 'Writes and edits', inbox: 'Email', maya: 'Home and meals', books: 'Money and receipts', coder: 'Builds the website', leo: 'Trips and errands' };
 
 // the demo's chats as the app's messages
 function messages(bot, extra = []) {
@@ -178,7 +178,7 @@ for (const bot of BOTS) {
   }
   await page.click('#bot-panel [data-panel-tab]:nth-child(1)');
   await page.waitForTimeout(400);
-  if (bot.key === 'dusk') {
+  if (bot.key === 'madani') {
     // the model picker, open
     await page.click('#bot-panel [data-panel-row] button:has-text("Claude Sonnet 5")').catch(async () => page.click('#bot-panel button:has-text("Claude Sonnet 5")'));
     await page.waitForTimeout(700);
@@ -196,7 +196,7 @@ for (const bot of BOTS) {
   }
 }
 
-// the whole window: dusk bot's chat with its panel open, the demo's first frame
+// the whole window: madani bot's chat with its panel open, the demo's first frame
 for (const bot of BOTS.slice(1)) await show(page, bot, messages(bot), { select: false, unread: Boolean(bot.unread) });
 await show(page, BOTS[0], messages(BOTS[0]), { unread: false });
 await page.waitForTimeout(500);

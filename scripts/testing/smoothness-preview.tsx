@@ -40,7 +40,7 @@ new PerformanceObserver((list) => {
 
 let timer: ReturnType<typeof setInterval> | null = null;
 const levels = new Set<(level: number) => void>();
-window.duskDesktop = {
+window.madaniDesktop = {
   platform: "darwin",
   getCapabilities: async () => initialDesktopCapabilities(),
   speechStart: async () => { timer ??= setInterval(() => levels.forEach((cb) => cb(0.4 + Math.random() * 0.4)), 40); },
@@ -49,7 +49,7 @@ window.duskDesktop = {
   onSpeechTranscript: () => () => undefined,
   onSpeechEnd: () => () => undefined,
   onSpeechLevel: (cb: (level: number) => void) => { levels.add(cb); return () => levels.delete(cb); },
-} as unknown as typeof window.duskDesktop;
+} as unknown as typeof window.madaniDesktop;
 
 /** Every animation frame for `ms`: each selector's box and the styles that animate. */
 function track(spec: Record<string, string>, ms: number) {

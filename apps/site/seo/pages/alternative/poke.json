@@ -4,7 +4,7 @@
   "title": "Poke AI alternatives: texting a contact or your bots",
   "nav": "poke",
   "h1": "poke ai alternatives when you want an app for your bots",
-  "description": "Compare Poke's iMessage assistant and credit tiers with dusk bot's own app, separate AI bill and phone pairing, including the Cognition update.",
+  "description": "Compare Poke's iMessage assistant and credit tiers with madani bot's own app, separate AI bill and phone pairing, including the Cognition update.",
   "keyword": "poke ai alternatives",
   "keywords": [
     "poke ai",
@@ -12,7 +12,7 @@
     "poke ai imessage",
     "poke ai cost"
   ],
-  "answer": "**poke suits an assistant beside your contacts.** it works in imessage and other chat apps without an install. dusk bot suits separate bots in their own app, with an ai you choose per bot. poke bundles models; dusk separates ai and hosting bills. as of 12 november 2026, poke says it is joining cognition. existing users can continue as before.[^1][^2][^3][^4]",
+  "answer": "**poke suits an assistant beside your contacts.** it works in imessage and other chat apps without an install. madani bot suits separate bots in their own app, with an ai you choose per bot. poke bundles models; madani separates ai and hosting bills. as of 12 november 2026, poke says it is joining cognition. existing users can continue as before.[^1][^2][^3][^4]",
   "updated": "2026-11-12",
   "review": {
     "status": "approved",
@@ -51,7 +51,7 @@
       "you want apple messages, telegram, whatsapp or rcs as the conversation's home",
       "you want an always-on hosted assistant with models inside its plan"
     ],
-    "dusk": [
+    "madani": [
       "you want separate jobs, memories and conversations for several bots",
       "you want to choose each bot's ai and the machine holding its chats and files"
     ]
@@ -61,7 +61,7 @@
     "intro": "**nobody can tell you what a poke credit buys.** poke doesn't publish it. prices as of 12 november 2026.",
     "cols": [
       "Poke",
-      "dusk bot"
+      "madani bot"
     ],
     "rows": [
       {
@@ -103,7 +103,7 @@
         "label": "free starting point",
         "cells": [
           "free tier without a card",
-          "free personal use on your computer; no dusk account or card"
+          "free personal use on your computer; no madani account or card"
         ],
         "src": [
           2,
@@ -126,7 +126,7 @@
         "label": "computer off",
         "cells": [
           "always-on agent in poke's cloud",
-          "paired computer must be on, or use dusk cloud"
+          "paired computer must be on, or use madani cloud"
         ],
         "src": [
           4,
@@ -147,19 +147,19 @@
       }
     ]
   },
-  "method": "**we build dusk bot. we haven't sent the same job to both.** prices and company status reflect 12 november 2026.\n\npoke doesn't name its models or publish a usable credit-to-task rate. we cannot price an identical job or rank delivery reliability.",
+  "method": "**we build madani bot. we haven't sent the same job to both.** prices and company status reflect 12 november 2026.\n\npoke doesn't name its models or publish a usable credit-to-task rate. we cannot price an identical job or rank delivery reliability.",
   "sections": [
     {
       "h": "the familiar contact is a good reason to stay",
-      "md": "**another app can be one app too many.** poke works in messaging services you already use, including apple messages.[^1] if texting a familiar contact solves it, stay there. the [texting-assistant comparison](/alternatives/ai-assistant-you-text) covers more choices.\n\ndusk gives each bot a name, job, chats and memory.[^5] keep your personal helper apart from your work bot, and choose the ai for each. that organisation is the reason to switch; we haven't compared reply quality."
+      "md": "**another app can be one app too many.** poke works in messaging services you already use, including apple messages.[^1] if texting a familiar contact solves it, stay there. the [texting-assistant comparison](/alternatives/ai-assistant-you-text) covers more choices.\n\nmadani gives each bot a name, job, chats and memory.[^5] keep your personal helper apart from your work bot, and choose the ai for each. that organisation is the reason to switch; we haven't compared reply quality."
     },
     {
       "h": "the phone works only if its host does",
-      "md": "**text from the couch with the laptop shut.** poke is an always-on cloud agent, according to cognition.[^4]\n\nin dusk, pair your phone to where your bots live:\n\n- your computer: keep it on with dusk running\n- dusk cloud: your computer can be off\n- current phone version: browser and home-screen shortcut, without notifications; store apps are on the way[^6][^7]\n\nread [poke versus dusk bot](/vs/poke) if phone access decides the choice."
+      "md": "**text from the couch with the laptop shut.** poke is an always-on cloud agent, according to cognition.[^4]\n\nin madani, pair your phone to where your bots live:\n\n- your computer: keep it on with madani running\n- madani cloud: your computer can be off\n- current phone version: browser and home-screen shortcut, without notifications; store apps are on the way[^6][^7]\n\nread [poke versus madani bot](/vs/poke) if phone access decides the choice."
     },
     {
       "h": "one bundle or two bills",
-      "md": "**look past the sticker price to the work it buys.** poke bundles models; ultra adds pay-as-you-go usage beyond credits. poke doesn't say which models you get or how far a credit goes.[^2]\n\ndusk separates the machine from the ai. personal local use costs nothing to dusk; your provider still bills ai. a hosted computer adds another charge.[^3][^7]\n\nchoose the [personal agent](/personal-ai-agent) whose bill you can follow as the work grows."
+      "md": "**look past the sticker price to the work it buys.** poke bundles models; ultra adds pay-as-you-go usage beyond credits. poke doesn't say which models you get or how far a credit goes.[^2]\n\nmadani separates the machine from the ai. personal local use costs nothing to madani; your provider still bills ai. a hosted computer adds another charge.[^3][^7]\n\nchoose the [personal agent](/personal-ai-agent) whose bill you can follow as the work grows."
     },
     {
       "h": "what the cognition news actually says",
@@ -173,11 +173,11 @@
     },
     {
       "q": "how are people running agents from their phone?",
-      "a": "**the phone reaches work running elsewhere.** poke uses existing chat apps. dusk pairs its phone browser to your computer or cloud. use cloud if your computer needs to be off.[^1][^6]"
+      "a": "**the phone reaches work running elsewhere.** poke uses existing chat apps. madani pairs its phone browser to your computer or cloud. use cloud if your computer needs to be off.[^1][^6]"
     },
     {
       "q": "can i choose the exact ai in poke?",
-      "a": "**poke doesn't name the exact models.** pro and ultra describe frontier models. dusk lets you pick and change an ai per bot, under that provider's terms and limits.[^2][^5]"
+      "a": "**poke doesn't name the exact models.** pro and ultra describe frontier models. madani lets you pick and change an ai per bot, under that provider's terms and limits.[^2][^5]"
     }
   ],
   "sources": [
@@ -192,7 +192,7 @@
       "checked": "2026-11-12"
     },
     {
-      "label": "dusk ai billing and personal use",
+      "label": "madani ai billing and personal use",
       "url": "/docs/account-and-billing"
     },
     {
@@ -201,16 +201,16 @@
       "checked": "2026-11-12"
     },
     {
-      "label": "dusk getting started",
+      "label": "madani getting started",
       "url": "/docs/getting-started"
     },
     {
-      "label": "dusk phone pairing and current browser limits",
+      "label": "madani phone pairing and current browser limits",
       "url": "/docs/phone"
     },
     {
-      "label": "dusk cloud plans",
-      "url": "/docs/dusk-cloud"
+      "label": "madani cloud plans",
+      "url": "/docs/madani-cloud"
     },
     {
       "label": "poke background tasks",
@@ -218,20 +218,20 @@
       "checked": "2026-11-12"
     },
     {
-      "label": "dusk routines",
+      "label": "madani routines",
       "url": "/docs/routines"
     }
   ],
   "quick": {
     "steps": [
       "write down whether the assistant must live in imessage",
-      "if trying dusk, make one bot with one job",
+      "if trying madani, make one bot with one job",
       "pair your phone and try a message with the laptop shut"
     ]
   },
   "mistakes": [
     {
-      "mistake": "expecting dusk to appear as an imessage contact",
+      "mistake": "expecting madani to appear as an imessage contact",
       "fix": "its phone conversation lives in a paired browser today."
     },
     {
@@ -259,11 +259,11 @@
       ],
       [
         "a different ai and memory for each bot",
-        "dusk bot"
+        "madani bot"
       ],
       [
         "phone access with your computer off",
-        "poke or dusk cloud"
+        "poke or madani cloud"
       ]
     ]
   },

@@ -4,7 +4,7 @@ import { setUsageAnalytics, usageSharingChanged, type SharingPlace } from "@/lib
 
 const ROUTE = "/api/dashboard/usage-signals";
 
-/** The one "help improve dusk bot" switch, on by default: anonymous usage info, the scrubbed notes about how sessions
+/** The one "help improve madani bot" switch, on by default: anonymous usage info, the scrubbed notes about how sessions
  * went, and crash reports. The workspace's server keeps the choice; the app's own analytics and the desktop's crash
  * reports follow it. `on` is null until it is read; `failed` when reading or saving it did not work. */
 export function useHelpImprove(where: SharingPlace) {
@@ -24,7 +24,7 @@ export function useHelpImprove(where: SharingPlace) {
       setOn(answer.enabled);
       if (before !== null && answer.enabled !== before) usageSharingChanged(answer.enabled, where);
       else setUsageAnalytics(answer.enabled);
-      void window.duskDesktop?.desktopAnalytics?.set?.(answer.enabled)?.catch(() => {});
+      void window.madaniDesktop?.desktopAnalytics?.set?.(answer.enabled)?.catch(() => {});
     } catch {
       setOn(before);
       setFailed(true);
@@ -42,6 +42,6 @@ export async function syncHelpImprove(): Promise<void> {
     if (typeof answer.enabled !== "boolean" || answer.enabled === lastSynced) return;
     lastSynced = answer.enabled;
     setUsageAnalytics(answer.enabled);
-    void window.duskDesktop?.desktopAnalytics?.set?.(answer.enabled)?.catch(() => {});
+    void window.madaniDesktop?.desktopAnalytics?.set?.(answer.enabled)?.catch(() => {});
   } catch {}
 }

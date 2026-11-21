@@ -10,7 +10,7 @@ const plan = (snapshot: ConnectInstance["snapshot"]): ConnectInstance => ({
   instanceId: "chatgpt", driverKind: "codex", snapshot, authentication: { method: "browser-pkce" }, install: { server: {} },
 });
 const waking = () => Object.assign(new Error("My Cloud is waking up"), { status: 503, body: { error: "waking" } });
-const refused = () => Object.assign(new Error("Continue with ChatGPT on the computer running dusk bot."), { status: 403, body: {} });
+const refused = () => Object.assign(new Error("Continue with ChatGPT on the computer running madani bot."), { status: 403, body: {} });
 
 function harness(lists: Array<ConnectInstance[] | (() => ConnectInstance[])>, routes: Record<string, Route>, extra: Partial<ConnectDeps> = {}) {
   const calls: string[] = [];

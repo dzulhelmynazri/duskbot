@@ -13,12 +13,12 @@ const recordingGlass: Plugin = {
   },
 };
 
-const port = Number(process.env.DUSK_MOBILE_PORT) || 5320;
+const port = Number(process.env.MADANI_MOBILE_PORT) || 5320;
 export default {
   ...base,
   // android has no native glass: its page draws its own chrome
-  plugins: [...(base.plugins ?? []), ...(process.env.DUSK_STAGE_PLATFORM === "android" ? [] : [recordingGlass])],
-  cacheDir: join(tmpdir(), "dusk-perf-vite"),
-  build: { ...base.build, outDir: process.env.DUSK_PERF_OUT ?? join(tmpdir(), "dusk-perf-build"), minify: false },
+  plugins: [...(base.plugins ?? []), ...(process.env.MADANI_STAGE_PLATFORM === "android" ? [] : [recordingGlass])],
+  cacheDir: join(tmpdir(), "madani-perf-vite"),
+  build: { ...base.build, outDir: process.env.MADANI_PERF_OUT ?? join(tmpdir(), "madani-perf-build"), minify: false },
   preview: { host: "127.0.0.1", port, strictPort: true, proxy: base.server?.proxy },
 };

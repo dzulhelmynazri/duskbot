@@ -106,7 +106,7 @@ it("reads TURN servers only from the app's link proxy", async () => {
   expect(onLinkProxy("home.example.com")).toBe(false);
   const fetcher = vi.fn(async () => Response.json({ iceServers: [{ urls: ["turn:turn.cloudflare.com:3478"], username: "u", credential: "c" }, "junk"] })) as unknown as typeof fetch;
   expect(await linkProxyTurn(fetcher)).toHaveLength(1);
-  expect((fetcher as unknown as ReturnType<typeof vi.fn>).mock.calls[0]![0]).toBe("/__dusk/screen-ice");
+  expect((fetcher as unknown as ReturnType<typeof vi.fn>).mock.calls[0]![0]).toBe("/__madani/screen-ice");
 });
 
 it("makes no second peer when the app's whole link already goes direct", async () => {

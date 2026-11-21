@@ -8,8 +8,8 @@
 //   node --experimental-strip-types scripts/phone-shipped-e2e.ts
 // It never touches the live relay or the person's app: everything listens on 127.0.0.1 and lives in temp folders.
 //   node --experimental-strip-types scripts/phone-shipped-e2e.ts --prod
-// runs the pairing, chat, hub-down fallback and removal through the production link node (https://link.dusk.bot) with a
-// test account on the preview account service (phone-e2e@qa.dusk.test: never mailed, its code read from the preview
+// runs the pairing, chat, hub-down fallback and removal through the production link node (https://link.madani.bot) with a
+// test account on the preview account service (phone-e2e@qa.madani.test: never mailed, its code read from the preview
 // test mailbox), and ends the tunnel it made.
 import { execFile, execFileSync, spawn, type ChildProcess } from "node:child_process";
 import { generateKeyPairSync, randomBytes, randomUUID, sign } from "node:crypto";
@@ -30,7 +30,7 @@ import { smokeAccount } from "./smoke/account.mjs";
 import { cloudPairingSignature, cloudRequestSignature } from "../server/cloud-home.ts";
 import { generateEntitlementSigner, signEntitlement } from "../shared/entitlement.ts";
 import { waitForExit } from "../server/testing/cleanup.ts";
-import { launchVerificationServer, verificationServerArgs, verificationServerEnvironment, type VerificationServer } from "./control-dusk.ts";
+import { launchVerificationServer, verificationServerArgs, verificationServerEnvironment, type VerificationServer } from "./control-madani.ts";
 import { fakePlatform, loadShippedPhone, SHIPPED_PHONES, type FakePlatform, type PhoneRecord, type PhoneTransport, type ShippedPhone } from "./testing/shipped-phone.ts";
 
 const ROOT = fileURLToPath(new URL("..", import.meta.url));
@@ -38,7 +38,7 @@ const LINK = join(ROOT, "apps", "link-service");
 const OWNER = randomBytes(32).toString("base64url");
 const ACCT = "0123456789abcdef0123456789abcdef";
 const PROD = process.argv.includes("--prod");
-const CLOUD_HOST = "dusk-t-0123456789ab.fly.dev";
+const CLOUD_HOST = "madani-t-0123456789ab.fly.dev";
 
 const results: Array<{ step: string; ok: boolean; detail?: string }> = [];
 function check(step: string, ok: boolean, detail?: string) {
@@ -95,10 +95,10 @@ async function linkNode(dataDir: string, keys: Array<{ kid: string; x: string }>
 
 /** the isolated harness, in desktop mode or as a server of your own runs it, restartable on the same folder and port */
 async function harness(desktop = true) {
-  const parentEnv = desktop ? { ...process.env, DUSK_TEST_DESKTOP_OWNER_TOKEN: OWNER } : { ...process.env };
+  const parentEnv = desktop ? { ...process.env, MADANI_TEST_DESKTOP_OWNER_TOKEN: OWNER } : { ...process.env };
   // the launcher's own setup calls go as the desktop app's window would; nothing else runs while it does
   const realFetch = globalThis.fetch;
-  if (desktop) globalThis.fetch = (input, init = {}) => realFetch(input, { ...init, headers: { ...Object.fromEntries(new Headers(init.headers)), "x-dusk-desktop-owner": OWNER } });
+  if (desktop) globalThis.fetch = (input, init = {}) => realFetch(input, { ...init, headers: { ...Object.fromEntries(new Headers(init.headers)), "x-madani-desktop-owner": OWNER } });
   let fixture: VerificationServer;
   try { fixture = await launchVerificationServer(parentEnv); } finally { globalThis.fetch = realFetch; }
   const url = fixture.info.url, port = Number(new URL(url).port), dataDir = fixture.info.dataDir;
@@ -120,7 +120,7 @@ async function harness(desktop = true) {
 /** the owner's own call: as the desktop app on a computer, as its command line (loopback) on a server of your own */
 async function owner(base: string, method: string, path: string, body?: unknown, as: "desktop" | "cli" = "desktop") {
   const response = await fetch(`${base}${path}`, {
-    method, headers: { ...(as === "desktop" ? { "x-dusk-desktop-owner": OWNER } : { "x-dusk-cli": "1" }), ...(body === undefined ? {} : { "content-type": "application/json" }) },
+    method, headers: { ...(as === "desktop" ? { "x-madani-desktop-owner": OWNER } : { "x-madani-cli": "1" }), ...(body === undefined ? {} : { "content-type": "application/json" }) },
     body: body === undefined ? undefined : JSON.stringify(body), signal: AbortSignal.timeout(30_000),
   });
   return { status: response.status, body: await response.json().catch(() => null) as any };
@@ -221,7 +221,7 @@ async function chat(label: string, transport: PhoneTransport, botId: string) {
 /** a Cloud home as its launcher starts it (server/cloud-home-start.ts), on loopback with its edge's headers left out */
 async function cloudPlace(scratch: string, cleanups: Array<() => unknown>, linkBase: string, grant: () => string, phoneBuild: ShippedPhone) {
   if (!phoneBuild.learnRoutes || !phoneBuild.relaySecrets) return;
-  const home = join(scratch, "cloud"), dataDir = join(home, ".duskbot");
+  const home = join(scratch, "cloud"), dataDir = join(home, ".madanibot");
   mkdirSync(dataDir, { recursive: true });
   // the fake engine only: never the person's own Claude sign-in, which the real CLI finds whatever HOME says
   const cli = join(home, "fixture-claude.mjs");
@@ -239,20 +239,20 @@ async function cloudPlace(scratch: string, cleanups: Array<() => unknown>, linkB
   const startHome = async (machineId: string) => {
     child = spawn(process.execPath, [join(ROOT, "server", "index.ts")], {
       cwd: ROOT, stdio: ["ignore", "pipe", "pipe"],
-      env: { PATH: process.env.PATH, HOME: home, DUSK_DATA_DIR: dataDir, DUSK_PORT: String(port), DUSK_WEBHOOK_PORT: String(webhookPort), DUSK_NO_TEST_BOTS: "1",
-        DUSK_CLOUD_ROLE: "home", DUSK_CLOUD_MACHINE_ID: machineId, DUSK_CLOUD_ADMIN_URL: "https://cloud.example.test", DUSK_CLOUD_BOOTSTRAP_SECRET: secret,
-        DUSK_PUBLIC_URL: `https://${CLOUD_HOST}`, DUSK_LINK_BASE: linkBase, DUSK_ENTITLEMENT_DEV_KEYS: `${dev.publicKey.kid}:${dev.publicKey.x}` },
+      env: { PATH: process.env.PATH, HOME: home, MADANI_DATA_DIR: dataDir, MADANI_PORT: String(port), MADANI_WEBHOOK_PORT: String(webhookPort), MADANI_NO_TEST_BOTS: "1",
+        MADANI_CLOUD_ROLE: "home", MADANI_CLOUD_MACHINE_ID: machineId, MADANI_CLOUD_ADMIN_URL: "https://cloud.example.test", MADANI_CLOUD_BOOTSTRAP_SECRET: secret,
+        MADANI_PUBLIC_URL: `https://${CLOUD_HOST}`, MADANI_LINK_BASE: linkBase, MADANI_ENTITLEMENT_DEV_KEYS: `${dev.publicKey.kid}:${dev.publicKey.x}` },
     });
     for (const out of [child.stdout, child.stderr]) out?.on("data", (chunk) => { said = (said + String(chunk)).slice(-4000); });
     return Boolean(await until(() => fetch(`${url}/api/health`).then((res) => res.ok, () => false), 30_000));
   };
   cleanups.push(() => (child ? waitForExit(child, { signal: "SIGTERM" }) : undefined));
   const up = await startHome(`c${"3".repeat(24)}`);
-  if (!check("a dusk cloud home starts", up, up ? undefined : said.slice(-1500))) return;
+  if (!check("a madani cloud home starts", up, up ? undefined : said.slice(-1500))) return;
   const signed = async (path: string, body: unknown, pairing = false) => {
     const text = JSON.stringify(body), timestamp = String(Math.floor(Date.now() / 1000)), nonce = randomBytes(16).toString("base64url");
     const signature = pairing ? cloudPairingSignature(secret, timestamp, nonce, text) : cloudRequestSignature(secret, timestamp, nonce, "POST", path, text);
-    const response = await fetch(`${url}${path}`, { method: "POST", body: text, headers: { "content-type": "application/json", "x-dusk-cloud-timestamp": timestamp, "x-dusk-cloud-nonce": nonce, "x-dusk-cloud-signature": `v1=${signature}` } });
+    const response = await fetch(`${url}${path}`, { method: "POST", body: text, headers: { "content-type": "application/json", "x-madani-cloud-timestamp": timestamp, "x-madani-cloud-nonce": nonce, "x-madani-cloud-signature": `v1=${signature}` } });
     return { status: response.status, body: await response.json().catch(() => null) as any };
   };
   const entitle = (machineId: string) => {
@@ -278,16 +278,16 @@ async function cloudPlace(scratch: string, cleanups: Array<() => unknown>, linkB
     const code = (await signed("/api/cloud/pairing", { label, ttlSeconds: 300 }, true)).body?.code as string;
     return (await fetch(`${url}/api/auth/pair`, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ code }) }).then((res) => res.json())).token as string;
   };
-  const ownerToken = await signIn("dusk bot app (Cloud)");
+  const ownerToken = await signIn("madani bot app (Cloud)");
   const made = await fetch(`${url}/api/bots`, { method: "POST", headers: { authorization: `Bearer ${ownerToken}`, "content-type": "application/json" }, body: JSON.stringify({ name: "Probe", modelSelection: { instanceId: "claude", model: "claude-sonnet-5" } }) }).then((res) => res.json()) as { bot?: { id: string } };
   const botId = made.bot?.id ?? "";
 
-  const platform = fakePlatform("ios", "iPhone next (dusk cloud)");
-  const token = await signIn("iPhone next (dusk cloud)");
+  const platform = fakePlatform("ios", "iPhone next (madani cloud)");
+  const token = await signIn("iPhone next (madani cloud)");
   let record: PhoneRecord = { id: randomUUID(), environmentId: "cloud", label: "My Cloud", transport: "https", via: [{ kind: "https", url: edgeUrl }], sessionRef: "", ...({ origin: edgeUrl } as object) } as PhoneRecord;
-  const phone: Phone = { name: "iPhone next (dusk cloud)", shipped: phoneBuild, platform, record, token };
+  const phone: Phone = { name: "iPhone next (madani cloud)", shipped: phoneBuild, platform, record, token };
   const first = await launch(phone);
-  check("iPhone next (dusk cloud): opens on the cloud's https address first", routeOf(first) === `bearer ${edgeUrl}`, routeOf(first));
+  check("iPhone next (madani cloud): opens on the cloud's https address first", routeOf(first) === `bearer ${edgeUrl}`, routeOf(first));
   if (typeof first === "string") return;
   const ask = (async (path: string, init: RequestInit = {}) => fetch(`${edgeUrl}${path}`, { ...init, headers: { ...Object.fromEntries(new Headers(init.headers)), authorization: `Bearer ${token}` } })) as typeof fetch;
   const opened = await until(async () => {
@@ -295,7 +295,7 @@ async function cloudPlace(scratch: string, cleanups: Array<() => unknown>, linkB
     await phoneBuild.learnRoutes!(record, first, async (_id, via, relay) => { if (relay) healed = { ...record, via, relay, ...(via?.some((one) => one.kind === "relay") ? {} : { relayLate: true as const }) }; }, ask, () => phoneBuild.relaySecrets!(platform, record.id));
     return healed as PhoneRecord | null;
   }, 30_000);
-  if (!check("iPhone next (dusk cloud): opens its own relay channel on the cloud's relay", Boolean(opened?.relay?.agentPub), JSON.stringify(opened?.relay ?? null))) return;
+  if (!check("iPhone next (madani cloud): opens its own relay channel on the cloud's relay", Boolean(opened?.relay?.agentPub), JSON.stringify(opened?.relay ?? null))) return;
   record = opened!;
   await expectCloud({ ...phone, record }, "with its https address answering, still opens on it first", (route) => route === `bearer ${edgeUrl}`);
   const out = await silentAddress();
@@ -309,7 +309,7 @@ async function cloudPlace(scratch: string, cleanups: Array<() => unknown>, linkB
   if (!check("the cloud's home starts on another machine", moved, moved ? undefined : said.slice(-1500))) return;
   check("the next entitlement push reaches the moved home", (await entitle(`c${"4".repeat(24)}`)).status === 200);
   const again = await launch({ ...phone, record });
-  check("iPhone next (dusk cloud): after the move, opens on the https address", routeOf(again) === `bearer ${edgeUrl}`, routeOf(again));
+  check("iPhone next (madani cloud): after the move, opens on the https address", routeOf(again) === `bearer ${edgeUrl}`, routeOf(again));
   if (typeof again === "string") return;
   const repaired = await until(async () => {
     let healed: PhoneRecord | null = null;
@@ -317,7 +317,7 @@ async function cloudPlace(scratch: string, cleanups: Array<() => unknown>, linkB
     return healed as PhoneRecord | null;
   }, 30_000);
   closeRoute(again);
-  check("iPhone next (dusk cloud): learns the moved home's relay key", Boolean(repaired && repaired.relay?.agentPub !== record.relay?.agentPub), JSON.stringify(repaired?.relay ?? null));
+  check("iPhone next (madani cloud): learns the moved home's relay key", Boolean(repaired && repaired.relay?.agentPub !== record.relay?.agentPub), JSON.stringify(repaired?.relay ?? null));
   if (repaired) await expectCloud({ ...phone, record: { ...repaired, via: [{ kind: "https", url: out.url }] } }, "after the move, https address out: reaches the moved cloud through its new tunnel and chats", (route) => route === "relay", botId);
 }
 
@@ -348,7 +348,7 @@ async function main() {
     let linkGrant: () => Promise<string | null>;
     if (PROD) {
       mkdirSync(join(scratch, "account"), { recursive: true });
-      const account = await smokeAccount({ root: ROOT, profile: join(scratch, "account"), email: "phone-e2e@qa.dusk.test" });
+      const account = await smokeAccount({ root: ROOT, profile: join(scratch, "account"), email: "phone-e2e@qa.madani.test" });
       check("a test account signs in on the preview account service", account.state.status === "connected", account.how);
       linkGrant = () => account.client.linkGrant();
       link = { base: () => PHONE_RELAY_BASE, store: () => { throw new Error("production has no local store"); }, stop: async () => {}, start: async () => {} };
@@ -436,7 +436,7 @@ async function main() {
     for (const phone of later) await expectRoute(phone, "opens and chats", connected, true);
 
     if (PROD) {
-      // the computer's hub down (the app quit or asleep) while link.dusk.bot stays up: the phones' frames wait unread
+      // the computer's hub down (the app quit or asleep) while link.madani.bot stays up: the phones' frames wait unread
       relay.stop();
       await expectRoute(iphone, "hub down: falls back to Wi-Fi and is not unpaired", onCompanion, true);
       await expectRoute(android, "hub down: falls back to Wi-Fi and is not unpaired", onCompanion);
@@ -603,17 +603,17 @@ async function main() {
       if (ok && chatWith && typeof outcome !== "string") await chat(phone.name, outcome, vpsBot);
       closeRoute(outcome);
     };
-    // the server's own `duskbot pair`, as its owner runs it over ssh: the phone app's code over the relay, typed in the app
-    const printed = await new Promise<string>((resolve) => execFile(process.execPath, ["--experimental-strip-types", join(ROOT, "server", "duskbot.ts"), "pair", "--port", String(vps.port)],
-      { cwd: ROOT, env: { ...process.env, DUSK_DATA_DIR: vps.dataDir }, timeout: 60_000 }, (_error, stdout) => resolve(String(stdout))));
+    // the server's own `madanibot pair`, as its owner runs it over ssh: the phone app's code over the relay, typed in the app
+    const printed = await new Promise<string>((resolve) => execFile(process.execPath, ["--experimental-strip-types", join(ROOT, "server", "madanibot.ts"), "pair", "--port", String(vps.port)],
+      { cwd: ROOT, env: { ...process.env, MADANI_DATA_DIR: vps.dataDir }, timeout: 60_000 }, (_error, stdout) => resolve(String(stdout))));
     const cliCode = /type this code in the app:\s+([A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4})/.exec(printed)?.[1] ?? null;
-    if (check("`duskbot pair` on the server prints the phone app's code over the relay", Boolean(cliCode), cliCode ? undefined : printed.slice(0, 300))) {
-      const shipped = builds["1.2.4"], platform = fakePlatform("android", "Android 1.2.4 (duskbot pair)", "1.2.4");
+    if (check("`madanibot pair` on the server prints the phone app's code over the relay", Boolean(cliCode), cliCode ? undefined : printed.slice(0, 300))) {
+      const shipped = builds["1.2.4"], platform = fakePlatform("android", "Android 1.2.4 (madanibot pair)", "1.2.4");
       const payload = await shipped.resolveTypedCode(cliCode!, link.base()).catch(() => null);
       const paired = payload ? await shipped.redeemPairing(payload, platform).catch(() => null) : null;
-      if (check("Android 1.2.4: pairs with the code `duskbot pair` printed", paired?.record.transport === "relay", paired?.record.transport ?? "failed")) {
+      if (check("Android 1.2.4: pairs with the code `madanibot pair` printed", paired?.record.transport === "relay", paired?.record.transport ?? "failed")) {
         await shipped.createConnectionStore(platform).save(paired!.record, paired!.token);
-        onServer.push({ name: "Android 1.2.4 (duskbot pair)", shipped, platform, record: paired!.record, token: paired!.token });
+        onServer.push({ name: "Android 1.2.4 (madanibot pair)", shipped, platform, record: paired!.record, token: paired!.token });
       }
     }
     for (const phone of onServer) await serverRoute(phone, "opens on the relay and chats", onRelay, true);
@@ -639,7 +639,7 @@ async function main() {
       await serverRoute(phone, "removed on the server: unpairs", (route) => route === "refused");
     }
 
-    // a dusk cloud: its home makes its own relay tunnel with the link grant the account service sends beside its
+    // a madani cloud: its home makes its own relay tunnel with the link grant the account service sends beside its
     // entitlement; a phone signed in with the account keeps the cloud's https address first and opens a relay channel
     // on its next connect, so with the https address out it still reaches the cloud through the relay
     if (builds.next) await cloudPlace(scratch, cleanups, link.base(), () => signer.grant(), builds.next);

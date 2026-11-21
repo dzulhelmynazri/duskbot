@@ -17,16 +17,16 @@ afterEach(() => {
 
 describe("speechBridge", () => {
   it("is the page's own Fish Audio listener where the engine is fish-audio", () => {
-    vi.stubGlobal("window", { duskDesktop: { speechStart: vi.fn() } });
+    vi.stubGlobal("window", { madaniDesktop: { speechStart: vi.fn() } });
     cacheDesktopCapabilities(withDictation(FISH));
     expect(speechBridge()).toBe(fishSpeech);
   });
 
   it("is the desktop app's helper everywhere else", () => {
-    const duskDesktop = { speechStart: vi.fn() };
-    vi.stubGlobal("window", { duskDesktop });
+    const madaniDesktop = { speechStart: vi.fn() };
+    vi.stubGlobal("window", { madaniDesktop });
     cacheDesktopCapabilities(withDictation(APPLE));
-    expect(speechBridge()).toBe(duskDesktop);
+    expect(speechBridge()).toBe(madaniDesktop);
   });
 
   it("is nothing in a browser", () => {

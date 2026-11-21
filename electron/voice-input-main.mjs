@@ -160,7 +160,7 @@ async function checkWhisper({ binary, model }, fs = { stat, access }) {
 export function whisperRunner({ binary, model, language, spawn = nodeSpawn, tmpdir = nodeTmpdir, fs = { mkdtemp, writeFile, rm } }) {
   const lang = typeof language === "string" ? language.split(/[-_]/)[0].toLowerCase() : "";
   return async (wav, signal) => {
-    const dir = await fs.mkdtemp(path.join(tmpdir(), "dusk-voice-"));
+    const dir = await fs.mkdtemp(path.join(tmpdir(), "madani-voice-"));
     try {
       const file = path.join(dir, "piece.wav");
       await fs.writeFile(file, wav, { mode: 0o600 });

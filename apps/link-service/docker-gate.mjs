@@ -1,6 +1,6 @@
 #!/usr/bin/env node
-// Dusk Bot docker gate. The server user is not in the docker group: it reaches docker only through this socket,
-// which forwards the Engine API requests Dusk Bot sends, on its own labelled containers with fixed safe flags,
+// Madani Bot docker gate. The server user is not in the docker group: it reaches docker only through this socket,
+// which forwards the Engine API requests Madani Bot sends, on its own labelled containers with fixed safe flags,
 // and answers everything else 403. Security invariant: nothing forwarded may give the caller host root.
 import { chmodSync, lstatSync, realpathSync, unlinkSync } from "node:fs";
 import { request } from "node:http";
@@ -8,10 +8,10 @@ import { connect, createServer } from "node:net";
 import { pathToFileURL } from "node:url";
 import { parseArgs } from "node:util";
 
-export const DEFAULT_LISTEN = "/run/duskbot-docker/docker.sock";
+export const DEFAULT_LISTEN = "/run/madanibot-docker/docker.sock";
 export const DEFAULT_UPSTREAM = "/var/run/docker.sock";
 // the bot computer image (BOT_DESKTOP_IMAGE in shared/bot-desktop.ts), and the names earlier builds were tagged with
-export const DEFAULT_PULL = ["ghcr.io/duskbotai/dusk-desktop", "ghcr.io/duskbotai/bot-desktop", "ghcr.io/sidddevz/omb-bot-desktop", "docker.io/trycua/xfce-cua"];
+export const DEFAULT_PULL = ["ghcr.io/madanibotai/madani-desktop", "ghcr.io/madanibotai/bot-desktop", "ghcr.io/sidddevz/omb-bot-desktop", "docker.io/trycua/xfce-cua"];
 
 // docker names from before the rename, kept: the bot computers, volumes and network on a server and the published
 // image carry them (the app's copy is DOCKER_NAMES in electron/legacy-names.mjs; this file stands alone)
@@ -351,7 +351,7 @@ function checkProbe(config, name) {
   return { kind: "probe", image };
 }
 
-/** POST /containers/create: a Dusk Bot computer (label VPS_LABEL=1) or one of the two host probes. */
+/** POST /containers/create: a Madani Bot computer (label VPS_LABEL=1) or one of the two host probes. */
 export function checkCreate(body, { name, runsc = false } = {}) {
   if (!isObject(body)) refuse("the container config must be an object");
   const config = struct(body, "Config", CONFIG_RULES);
@@ -456,7 +456,7 @@ function assertRunsSafely(detail) {
     (Array.isArray(host.MaskedPaths) && host.MaskedPaths.length === 0) ||
     (Array.isArray(host.ReadonlyPaths) && host.ReadonlyPaths.length === 0) ||
     (Array.isArray(detail.Mounts) && detail.Mounts.some((mount) => mount?.Type !== "volume" && mount?.Type !== "tmpfs"));
-  if (unsafe) refuse("this computer was not made with the gate's safe flags; remove it and let dusk bot recreate it");
+  if (unsafe) refuse("this computer was not made with the gate's safe flags; remove it and let madani bot recreate it");
 }
 
 const CONTAINER_OPS = {
@@ -1200,7 +1200,7 @@ function isMain() {
 if (isMain()) {
   try {
     const { values } = parseArgs({ options: { listen: { type: "string", default: DEFAULT_LISTEN }, upstream: { type: "string", default: DEFAULT_UPSTREAM } } });
-    const configured = process.env.DUSK_GATE_PULL?.split(",").map((entry) => entry.trim()).filter(Boolean);
+    const configured = process.env.MADANI_GATE_PULL?.split(",").map((entry) => entry.trim()).filter(Boolean);
     const gate = await startGate({ listen: values.listen, upstream: values.upstream, pull: configured?.length ? configured : DEFAULT_PULL });
     process.stderr.write(`docker gate: listening on ${values.listen}, forwarding to ${values.upstream}\n`);
     const check = new SelfCheck();

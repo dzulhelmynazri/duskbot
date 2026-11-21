@@ -29,7 +29,7 @@ function fixture(): { events: StoredEvent[]; accounts: Array<{ id: string; email
     if (i % 7 === 0) at = Math.floor(at / DAY) * DAY + pick(midnights) + DAY - 90_000;
     if (at >= END - 60_000) continue;
     const session = `${visitor}-s${i}`, base = { visitor, session, source: pick(["google", "ChatGPT", "x.com", "direct"]), channel: pick(["search", "ai", "social", "direct"]), country: pick(["DE", "IN", "US"]),
-      device: pick(["desktop", "mobile"]), os: "mac", browser: "safari", host: "dusk.bot", ...(rand() < 0.3 ? { utm: { campaign: "launch", term: "AI Bot" } } : {}) };
+      device: pick(["desktop", "mobile"]), os: "mac", browser: "safari", host: "madani.bot", ...(rand() < 0.3 ? { utm: { campaign: "launch", term: "AI Bot" } } : {}) };
     for (let p = 0; p < 1 + Math.floor(rand() * 3); p++) {
       const pv = `${session}-pv${p}`, path = pick(["/", "/pricing", "/download", "/blog/a"]);
       add("site_view", at, null, { path }, { ...base, pv, page: path });

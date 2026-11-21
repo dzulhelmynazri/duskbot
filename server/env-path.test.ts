@@ -24,7 +24,7 @@ const posixIt = it.skipIf(process.platform === "win32");
 
 describe("augmentedPath", () => {
   afterEach(() => {
-    delete process.env.DUSK_EXTRA_PATH;
+    delete process.env.MADANI_EXTRA_PATH;
     resetPathCacheForTests();
   });
 
@@ -41,7 +41,7 @@ describe("augmentedPath", () => {
 
     posixIt("reads the PATH the shell prints, from a shell in its own session with no terminal", async () => {
       // its own session: an interactive bash that sees a terminal stops its whole group (the caller too) on SIGTTIN
-      const shell = fakeShell(`[ "$(ps -o pgid= -p $$ | tr -d ' ')" = "$$" ] || exit 3\nif (exec 3</dev/tty) 2>/dev/null; then exit 4; fi\nprintf 'rc noise\\n__DUSK_PATH__/a:/b'`);
+      const shell = fakeShell(`[ "$(ps -o pgid= -p $$ | tr -d ' ')" = "$$" ] || exit 3\nif (exec 3</dev/tty) 2>/dev/null; then exit 4; fi\nprintf 'rc noise\\n__MADANI_PATH__/a:/b'`);
       expect(await readLoginShellPath(shell)).toBe("/a:/b");
     });
 
@@ -61,16 +61,16 @@ describe("augmentedPath", () => {
     resetPathCacheForTests();
     const path = augmentedPath();
     const firstExisting = (process.env.PATH ?? "").split(delimiter).filter(Boolean)[0];
-    // DUSK_EXTRA_PATH is unset here, so the inherited PATH leads
+    // MADANI_EXTRA_PATH is unset here, so the inherited PATH leads
     expect(path.split(delimiter)[0]).toBe(firstExisting);
   });
 
-  it("prepends DUSK_EXTRA_PATH and dedupes", () => {
-    process.env.DUSK_EXTRA_PATH = ["/tmp/dusk-extra", "/tmp/dusk-extra"].join(delimiter);
+  it("prepends MADANI_EXTRA_PATH and dedupes", () => {
+    process.env.MADANI_EXTRA_PATH = ["/tmp/madani-extra", "/tmp/madani-extra"].join(delimiter);
     resetPathCacheForTests();
     const parts = augmentedPath().split(delimiter);
-    expect(parts[0]).toBe("/tmp/dusk-extra");
-    expect(parts.filter((p) => p === "/tmp/dusk-extra")).toHaveLength(1);
+    expect(parts[0]).toBe("/tmp/madani-extra");
+    expect(parts.filter((p) => p === "/tmp/madani-extra")).toHaveLength(1);
   });
 
   posixIt("includes nvm bin dirs from the home dir, newest node first", () => {
@@ -99,14 +99,14 @@ describe("augmentedPath", () => {
   posixIt("makes a CLI in a known install dir spawnable despite a bare PATH", async () => {
     const bin = join(homedir(), ".local", "bin");
     mkdirSync(bin, { recursive: true });
-    const fake = join(bin, "dusk-fake-cli");
+    const fake = join(bin, "madani-fake-cli");
     writeFileSync(fake, "#!/bin/sh\necho found-me\n");
     chmodSync(fake, 0o755);
     resetPathCacheForTests();
 
     const stdout = await new Promise<string>((resolve, reject) => {
       execFile(
-        "dusk-fake-cli",
+        "madani-fake-cli",
         [],
         // bare GUI-style PATH + our augmentation, the augmentation must win
         { env: { PATH: augmentedPath() } },
@@ -119,7 +119,7 @@ describe("augmentedPath", () => {
   posixIt("keeps the last login-shell PATH available during a rescan", async () => {
     const shell = join(homedir(), "fake-login-shell");
     const rcOnlyBin = join(homedir(), "rc-only", "bin");
-    writeFileSync(shell, `#!/bin/sh\nprintf '__DUSK_PATH__%s' '${rcOnlyBin}'\n`);
+    writeFileSync(shell, `#!/bin/sh\nprintf '__MADANI_PATH__%s' '${rcOnlyBin}'\n`);
     chmodSync(shell, 0o755);
 
     const previousShell = process.env.SHELL;
@@ -151,7 +151,7 @@ describe("augmentedPath", () => {
     const shell = join(homedir(), "fake-login-shell");
     const ran = join(homedir(), "login-shell-ran");
     const rcOnlyBin = join(homedir(), "rc-only", "bin");
-    writeFileSync(shell, `#!/bin/sh\n: > '${ran}'\nprintf '__DUSK_PATH__%s' '${rcOnlyBin}'\n`);
+    writeFileSync(shell, `#!/bin/sh\n: > '${ran}'\nprintf '__MADANI_PATH__%s' '${rcOnlyBin}'\n`);
     chmodSync(shell, 0o755);
 
     const saved = { PATH: process.env.PATH, SHELL: process.env.SHELL, VITEST: process.env.VITEST };
@@ -166,13 +166,13 @@ describe("augmentedPath", () => {
       delete process.env.VITEST;
 
       // Control: unsealed, the product scans both dirs; that is the leak.
-      delete process.env.DUSK_TEST_SEALED_PATH;
+      delete process.env.MADANI_TEST_SEALED_PATH;
       resetPathCacheForTests();
       expect(augmentedPath().split(delimiter)).toEqual(expect.arrayContaining(machineDirs));
       await vi.waitFor(() => expect(augmentedPath().split(delimiter)).toContain(rcOnlyBin));
       rmSync(ran);
 
-      process.env.DUSK_TEST_SEALED_PATH = "1";
+      process.env.MADANI_TEST_SEALED_PATH = "1";
       resetPathCacheForTests();
       const sealed = augmentedPath().split(delimiter);
       for (const dir of machineDirs) expect(sealed).not.toContain(dir);
@@ -182,7 +182,7 @@ describe("augmentedPath", () => {
       expect(existsSync(ran)).toBe(false);
       expect(augmentedPath().split(delimiter)).not.toContain(rcOnlyBin);
     } finally {
-      delete process.env.DUSK_TEST_SEALED_PATH;
+      delete process.env.MADANI_TEST_SEALED_PATH;
       restore("PATH");
       restore("SHELL");
       restore("VITEST");
@@ -199,7 +199,7 @@ describe("augmentedPath", () => {
 
   it.skipIf(process.platform !== "win32")("finds Antigravity installed after launch", () => {
     const previous = process.env.LOCALAPPDATA;
-    const localAppData = mkdtempSync(join(tmpdir(), "dusk-localappdata-"));
+    const localAppData = mkdtempSync(join(tmpdir(), "madani-localappdata-"));
     try {
       process.env.LOCALAPPDATA = localAppData;
       const agyBin = join(localAppData, "agy", "bin");
@@ -216,7 +216,7 @@ describe("augmentedPath", () => {
 
   it.skipIf(process.platform !== "win32")("finds Docker Desktop's bin dir (#2117)", () => {
     const previous = process.env.ProgramFiles;
-    const programFiles = mkdtempSync(join(tmpdir(), "dusk-programfiles-"));
+    const programFiles = mkdtempSync(join(tmpdir(), "madani-programfiles-"));
     try {
       process.env.ProgramFiles = programFiles;
       const dockerBin = join(programFiles, "Docker", "Docker", "resources", "bin");
@@ -258,7 +258,7 @@ describe("augmentedPath", () => {
   it("finds Cursor installed after launch on Windows", () => {
     const realPlatform = process.platform;
     const previous = { LOCALAPPDATA: process.env.LOCALAPPDATA, PATHEXT: process.env.PATHEXT };
-    const localAppData = mkdtempSync(join(tmpdir(), "dusk-localappdata-"));
+    const localAppData = mkdtempSync(join(tmpdir(), "madani-localappdata-"));
     try {
       Object.defineProperty(process, "platform", { value: "win32" });
       process.env.LOCALAPPDATA = localAppData;
@@ -285,7 +285,7 @@ describe("augmentedPath", () => {
   it("finds Podman installed after launch on Windows", () => {
     const realPlatform = process.platform;
     const previous = { ProgramFiles: process.env.ProgramFiles, PATHEXT: process.env.PATHEXT };
-    const programFiles = mkdtempSync(join(tmpdir(), "dusk-programfiles-"));
+    const programFiles = mkdtempSync(join(tmpdir(), "madani-programfiles-"));
     try {
       Object.defineProperty(process, "platform", { value: "win32" });
       process.env.ProgramFiles = programFiles;
@@ -352,7 +352,7 @@ EXIT /b
 :start
 SETLOCAL
 CALL :find_dp0
-"%dp0%\\node_modules\\pkg\\bin\\duskfake.exe"   %*
+"%dp0%\\node_modules\\pkg\\bin\\madanifake.exe"   %*
 `;
 
 // ...and for one whose bin is a node script (the "_prog" dance)
@@ -372,7 +372,7 @@ IF EXIST "%dp0%\\node.exe" (
   SET PATHEXT=%PATHEXT:;.JS;=;%
 )
 
-endLocal & goto #_undefined_# 2>NUL || title %COMSPEC% & "%_prog%"  "%dp0%\\node_modules\\pkg\\bin\\duskfake.js" %*
+endLocal & goto #_undefined_# 2>NUL || title %COMSPEC% & "%_prog%"  "%dp0%\\node_modules\\pkg\\bin\\madanifake.js" %*
 `;
 
 // ...and for one whose bin is an extensionless `#!/usr/bin/env node` script, cmd-shim keeps the
@@ -393,7 +393,7 @@ IF EXIST "%dp0%\\node.exe" (
   SET PATHEXT=%PATHEXT:;.JS;=;%
 )
 
-endLocal & goto #_undefined_# 2>NUL || title %COMSPEC% & "%_prog%"  "%dp0%\\node_modules\\pkg\\bin\\duskfake" %*
+endLocal & goto #_undefined_# 2>NUL || title %COMSPEC% & "%_prog%"  "%dp0%\\node_modules\\pkg\\bin\\madanifake" %*
 `;
 
 // ...and npm's own npm.cmd / npx.cmd, which Node's installer puts beside
@@ -433,7 +433,7 @@ describe("resolveCli", () => {
 winOnly("resolveCli (Windows)", () => {
   let dir: string;
   const onPath = () => {
-    process.env.DUSK_EXTRA_PATH = dir;
+    process.env.MADANI_EXTRA_PATH = dir;
     resetPathCacheForTests();
   };
   const shimWith = (name: string, body: string, target: string, targetBody: string) => {
@@ -443,10 +443,10 @@ winOnly("resolveCli (Windows)", () => {
   };
 
   beforeEach(() => {
-    dir = mkdtempSync(join(tmpdir(), "dusk-shim-"));
+    dir = mkdtempSync(join(tmpdir(), "madani-shim-"));
   });
   afterEach(async () => {
-    delete process.env.DUSK_EXTRA_PATH;
+    delete process.env.MADANI_EXTRA_PATH;
     resetPathCacheForTests();
     // These tests spawn the shims out of this directory; a just-exited one can
     // still be holding it for a beat after the call returns.
@@ -454,29 +454,29 @@ winOnly("resolveCli (Windows)", () => {
   });
 
   it("parses an npm .cmd shim down to the .exe it wraps", () => {
-    shimWith("duskfake.cmd", EXE_SHIM, "duskfake.exe", "MZ-not-really");
+    shimWith("madanifake.cmd", EXE_SHIM, "madanifake.exe", "MZ-not-really");
     onPath();
-    expect(resolveCli("duskfake", ["-p", "hi"])).toEqual({
-      command: join(dir, "node_modules", "pkg", "bin", "duskfake.exe"),
+    expect(resolveCli("madanifake", ["-p", "hi"])).toEqual({
+      command: join(dir, "node_modules", "pkg", "bin", "madanifake.exe"),
       args: ["-p", "hi"],
     });
   });
 
   it("uses the supplied PATH and PATHEXT without depending on the app environment", () => {
-    shimWith("duskfake.cmd", EXE_SHIM, "duskfake.exe", "MZ-not-really");
-    expect(resolveCli("duskfake", ["acp"], { Path: dir, PATHEXT: ".CMD" })).toEqual({
-      command: join(dir, "node_modules", "pkg", "bin", "duskfake.exe"),
+    shimWith("madanifake.cmd", EXE_SHIM, "madanifake.exe", "MZ-not-really");
+    expect(resolveCli("madanifake", ["acp"], { Path: dir, PATHEXT: ".CMD" })).toEqual({
+      command: join(dir, "node_modules", "pkg", "bin", "madanifake.exe"),
       args: ["acp"],
     });
     onPath();
-    expect(resolveCli("duskfake", [], { PATH: "", PATHEXT: ".CMD" })).toEqual({ command: "duskfake", args: [] });
+    expect(resolveCli("madanifake", [], { PATH: "", PATHEXT: ".CMD" })).toEqual({ command: "madanifake", args: [] });
   });
 
   it("parses an npm .cmd shim down to `node <cli.js>`, never the shim's own node.exe", async () => {
-    shimWith("duskfake.cmd", JS_SHIM, "duskfake.js", "console.log('js target ' + process.argv.slice(2).join(','));\n");
+    shimWith("madanifake.cmd", JS_SHIM, "madanifake.js", "console.log('js target ' + process.argv.slice(2).join(','));\n");
     onPath();
-    const r = resolveCli("duskfake", ["-p", "hi"]);
-    expect(r.args).toEqual([join(dir, "node_modules", "pkg", "bin", "duskfake.js"), "-p", "hi"]);
+    const r = resolveCli("madanifake", ["-p", "hi"]);
+    expect(r.args).toEqual([join(dir, "node_modules", "pkg", "bin", "madanifake.js"), "-p", "hi"]);
     expect(r.command.toLowerCase()).toMatch(/node\.exe$/);
     const stdout = await new Promise<string>((resolve, reject) =>
       execFile(r.command, r.args, (err, out) => (err ? reject(err) : resolve(out))),
@@ -485,11 +485,11 @@ winOnly("resolveCli (Windows)", () => {
   });
 
   it("parses an npm .cmd shim down to the extensionless node script it wraps (#3594)", async () => {
-    shimWith("duskfake.cmd", EXTENSIONLESS_SHIM, "duskfake", "#!/usr/bin/env node\nconsole.log('shim target ' + process.argv.slice(2).join(','));\n");
+    shimWith("madanifake.cmd", EXTENSIONLESS_SHIM, "madanifake", "#!/usr/bin/env node\nconsole.log('shim target ' + process.argv.slice(2).join(','));\n");
     onPath();
-    const r = resolveCli("duskfake", ["-p", "hi"]);
+    const r = resolveCli("madanifake", ["-p", "hi"]);
     expect(r.command.toLowerCase()).toMatch(/node(\.exe)?$/);
-    expect(r.args).toEqual([join(dir, "node_modules", "pkg", "bin", "duskfake"), "-p", "hi"]);
+    expect(r.args).toEqual([join(dir, "node_modules", "pkg", "bin", "madanifake"), "-p", "hi"]);
     const stdout = await new Promise<string>((resolve, reject) =>
       execFile(r.command, r.args, (err, out) => (err ? reject(err) : resolve(out))),
     );
@@ -513,14 +513,14 @@ winOnly("resolveCli (Windows)", () => {
   });
 
   it("prefers the PATHEXT hit over the extensionless sibling npm installs beside it", () => {
-    shimWith("duskfake.cmd", EXE_SHIM, "duskfake.exe", "MZ-not-really");
-    writeFileSync(join(dir, "duskfake"), "#!/bin/sh\n# the POSIX shim — unrunnable here\n");
+    shimWith("madanifake.cmd", EXE_SHIM, "madanifake.exe", "MZ-not-really");
+    writeFileSync(join(dir, "madanifake"), "#!/bin/sh\n# the POSIX shim — unrunnable here\n");
     onPath();
-    expect(resolveCli("duskfake", []).command).toBe(join(dir, "node_modules", "pkg", "bin", "duskfake.exe"));
+    expect(resolveCli("madanifake", []).command).toBe(join(dir, "node_modules", "pkg", "bin", "madanifake.exe"));
   });
 
   it("runs a #!node script through node: Windows has no shebang support", async () => {
-    const script = join(dir, "duskfake-cli.ts");
+    const script = join(dir, "madanifake-cli.ts");
     writeFileSync(script, "#!/usr/bin/env node\nconsole.log('shebang ' + process.argv.slice(2).join(','));\n");
     const r = resolveCli(script, ["a", "b"]);
     expect(r.command.toLowerCase()).toMatch(/node(\.exe)?$/);
@@ -565,11 +565,11 @@ winOnly("resolveCli (Windows)", () => {
   });
 
   it("leaves a non-sibling or -Command PowerShell launcher as the .cmd", () => {
-    const outside = join(dir, "..", "dusk-outside.ps1");
+    const outside = join(dir, "..", "madani-outside.ps1");
     const escaped = join(dir, "escaped.cmd");
     const commanded = join(dir, "commanded.cmd");
     writeFileSync(outside, "Write-Output no\r\n");
-    writeFileSync(escaped, '%SystemRoot%\\System32\\WindowsPowerShell\\v1.0\\powershell.exe -File "%SCRIPT_DIR%\\..\\dusk-outside.ps1" %*\r\n');
+    writeFileSync(escaped, '%SystemRoot%\\System32\\WindowsPowerShell\\v1.0\\powershell.exe -File "%SCRIPT_DIR%\\..\\madani-outside.ps1" %*\r\n');
     writeFileSync(commanded, 'powershell.exe -Command "Write-Output hi"\r\n');
     writeFileSync(join(dir, "ok.ps1"), "Write-Output ok\r\n");
     const mixedCommand = join(dir, "mixed-command.cmd");
@@ -588,19 +588,19 @@ winOnly("resolveCli (Windows)", () => {
   });
 
   it("never crosses the no-shell boundary for an unparseable shim", () => {
-    const shim = join(dir, "duskfake.cmd");
+    const shim = join(dir, "madanifake.cmd");
     writeFileSync(shim, "@ECHO OFF\ncustom-launcher %*\n");
     onPath();
     const payload = JSON.stringify({
       mcpServers: {
-        dusk: {
+        madani: {
           command: "C:\\Program Files\\nodejs\\node.exe",
           args: ["a b", "%PATH%", "x&y|z", "q^r", "<in>out"],
           env: { TOK: 'he said "hi"' },
         },
       },
     });
-    const resolved = resolveCli("duskfake", ["--mcp-config", payload]);
+    const resolved = resolveCli("madanifake", ["--mcp-config", payload]);
     expect(resolved.command.toLowerCase()).toBe(shim.toLowerCase());
     expect(resolved.args).toEqual(["--mcp-config", payload]);
   });
@@ -648,7 +648,7 @@ describe("resolveCli with wrapper commands", () => {
     const bin = join(homedir(), ".local", "bin");
     mkdirSync(bin, { recursive: true });
     // simulate "/Applications/My Tools/claude": a real file at a spaced path
-    const spacedDir = join(bin, "dusk space dir");
+    const spacedDir = join(bin, "madani space dir");
     mkdirSync(spacedDir, { recursive: true });
     const spaced = join(spacedDir, "myclaude");
     writeFileSync(spaced, "#!/bin/sh\n");
@@ -658,7 +658,7 @@ describe("resolveCli with wrapper commands", () => {
     });
     // a NONEXISTENT spaced string still splits (wrapper interpretation)
     expect(resolveCli(join(spacedDir, "nope two words"), ["--version"])).toEqual({
-      command: join(bin, "dusk"),
+      command: join(bin, "madani"),
       args: ["space", "dir/nope", "two", "words", "--version"],
     });
   });
@@ -668,7 +668,7 @@ describe("registerPathDir", () => {
   afterEach(() => resetPathCacheForTests());
 
   it("puts an app-managed directory ahead of PATH once it exists, and survives a rescan", () => {
-    const dir = mkdtempSync(join(tmpdir(), "dusk-registered-path-"));
+    const dir = mkdtempSync(join(tmpdir(), "madani-registered-path-"));
     const missing = join(dir, "not-yet");
     try {
       registerPathDir(missing);
@@ -692,7 +692,7 @@ describe("registerFallbackPathDir", () => {
   });
 
   posixIt("keeps an app-installed directory last even when the inherited PATH already lists it first", () => {
-    const dir = mkdtempSync(join(tmpdir(), "dusk-fallback-path-"));
+    const dir = mkdtempSync(join(tmpdir(), "madani-fallback-path-"));
     originalPath = process.env.PATH;
     try {
       const own = join(dir, "own-bin");
@@ -712,7 +712,7 @@ describe("registerFallbackPathDir", () => {
   });
 
   posixIt("puts an app-installed directory after PATH and the vendors' own folders, so a person's copy wins", () => {
-    const dir = mkdtempSync(join(tmpdir(), "dusk-fallback-path-"));
+    const dir = mkdtempSync(join(tmpdir(), "madani-fallback-path-"));
     originalPath = process.env.PATH;
     try {
       const own = join(dir, "own-bin");
@@ -742,13 +742,13 @@ describe("registerFallbackPathDir", () => {
 
 describe("a throwaway workspace", () => {
   it("is one inside the system temp folder, even with no TMPDIR, never one in the account's own home", () => {
-    const temp = mkdtempSync(join(tmpdir(), "dusk-throwaway-"));
+    const temp = mkdtempSync(join(tmpdir(), "madani-throwaway-"));
     try {
-      expect(throwawayWorkspace(join(temp, "home", ".duskbot"), temp)).toBe(true);
-      expect(throwawayWorkspace(join("/tmp", "dusk-fixture", ".duskbot"), temp)).toBe(process.platform !== "win32");
+      expect(throwawayWorkspace(join(temp, "home", ".madanibot"), temp)).toBe(true);
+      expect(throwawayWorkspace(join("/tmp", "madani-fixture", ".madanibot"), temp)).toBe(process.platform !== "win32");
       // setup.ts points HOME at a temp dir; the account's own home is the real one
-      expect(throwawayWorkspace(join(userInfo().homedir, ".duskbot"), temp)).toBe(false);
-      expect(throwawayWorkspace(join(userInfo().homedir, "Library", "Application Support", "dusk bot"), temp)).toBe(false);
+      expect(throwawayWorkspace(join(userInfo().homedir, ".madanibot"), temp)).toBe(false);
+      expect(throwawayWorkspace(join(userInfo().homedir, "Library", "Application Support", "madani bot"), temp)).toBe(false);
     } finally {
       rmSync(temp, { recursive: true, force: true });
     }

@@ -116,7 +116,7 @@ export interface CloudSendPageBridge {
   moveOfferAccept?(from: "prompt" | "banner" | "settings"): Promise<CloudSendNotice>;
   /** The offer's sheet or line closed. */
   moveOfferDismiss?(which: "prompt" | "banner"): Promise<CloudSendNotice>;
-  /** All moved: Open dusk cloud, which the window otherwise does by itself a little later. */
+  /** All moved: Open madani cloud, which the window otherwise does by itself a little later. */
   moveOpen?(): Promise<CloudSendNotice>;
   /** The switch "Keep this computer's bots on this computer"; absent from an older desktop. */
   keepHere?(): Promise<KeepHereState>;

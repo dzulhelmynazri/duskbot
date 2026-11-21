@@ -49,7 +49,7 @@ whose `{"ifSteered": "..."}` step says its text only once a steer arrived.
 
 ```sh
 FAKE_CLAUDE_TEXT_ROUTES=$PWD/routes.json \
-  node --experimental-strip-types scripts/control-dusk.ts ui launch --script "$(cat script.json)"
+  node --experimental-strip-types scripts/control-madani.ts ui launch --script "$(cat script.json)"
 ```
 
 `routes.json`:

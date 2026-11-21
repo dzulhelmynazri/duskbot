@@ -16,8 +16,8 @@ export const phonePairingSettingsAction = (): Extract<Action, { type: "toggleApp
 });
 
 export function currentPhonePairingTarget(cloudHome: boolean): PhonePairingTarget {
-  const duskDesktop = typeof window === "undefined" ? undefined : (window.duskDesktop as { companion?: unknown; remoteClient?: { active?: boolean } } | undefined);
-  return phonePairingTarget({ companion: Boolean(duskDesktop?.companion), remoteClient: duskDesktop?.remoteClient?.active === true, cloudHome });
+  const madaniDesktop = typeof window === "undefined" ? undefined : (window.madaniDesktop as { companion?: unknown; remoteClient?: { active?: boolean } } | undefined);
+  return phonePairingTarget({ companion: Boolean(madaniDesktop?.companion), remoteClient: madaniDesktop?.remoteClient?.active === true, cloudHome });
 }
 
 export function phonePairingTarget(input: { companion: boolean; remoteClient: boolean; cloudHome: boolean }): PhonePairingTarget {

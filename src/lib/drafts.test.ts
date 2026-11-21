@@ -87,9 +87,9 @@ describe("channel draft delivery mode", () => {
     expect(restoredRequestText(draftId)).toBe(requestText);
     const changedView = 'Fix this\n<attached-file path="/tmp/people.csv" name="people.csv" />';
     expect(restoredRequestText(draftId) ?? changedView).toBe(requestText);
-    const persisted = JSON.parse(store.getItem("dusk-draft-send-ids")!)[draftId];
+    const persisted = JSON.parse(store.getItem("madani-draft-send-ids")!)[draftId];
     expect(persisted).toEqual({ sendId: sent.sendId, requestText });
-    store.setItem("dusk-draft-send-ids", JSON.stringify({ "bot:restarted:task": persisted, "bot:legacy:task": "legacy-id" }));
+    store.setItem("madani-draft-send-ids", JSON.stringify({ "bot:restarted:task": persisted, "bot:legacy:task": "legacy-id" }));
     expect(restoredRequestText("bot:restarted:task")).toBe(requestText);
     expect(restoredSendId("bot:legacy:task")).toBe("legacy-id");
     expect(restoredRequestText("bot:legacy:task")).toBeUndefined();
@@ -128,8 +128,8 @@ describe("channel draft delivery mode", () => {
   it("keeps legacy drafts intact and defaults missing or invalid modes to chat", () => {
     const store = memoryStorage();
     const draftId = "group:legacy:task";
-    store.setItem("dusk-drafts", JSON.stringify({ [draftId]: "/goal existing typed goal" }));
-    store.setItem("dusk-draft-channel-modes", JSON.stringify({ "group:invalid:task": "unexpected" }));
+    store.setItem("madani-drafts", JSON.stringify({ [draftId]: "/goal existing typed goal" }));
+    store.setItem("madani-draft-channel-modes", JSON.stringify({ "group:invalid:task": "unexpected" }));
     expect(getDraftChannelMode(store, draftId)).toBe("chat");
     expect(getDraftChannelMode(store, "group:invalid:task")).toBe("chat");
     expect(getDraft(store, draftId)).toBe("/goal existing typed goal");
@@ -257,7 +257,7 @@ describe("durable attachment completion", () => {
     ]);
 
     expect(getDraftAttachments(store, draftId)).toHaveLength(2);
-    expect(JSON.parse(store.getItem("dusk-draft-attachments") ?? "{}")[draftId]).toEqual([
+    expect(JSON.parse(store.getItem("madani-draft-attachments") ?? "{}")[draftId]).toEqual([
       {
         kind: "image",
         id: "ready",
@@ -365,7 +365,7 @@ describe("durable attachment completion", () => {
 });
 
 describe("appendComposerDraft", () => {
-  const prompt = "Create a verification skill from the run below.\n\n✓ doctor: pnpm control:dusk doctor\n\n";
+  const prompt = "Create a verification skill from the run below.\n\n✓ doctor: pnpm control:madani doctor\n\n";
 
   it("puts the text into an empty draft exactly as given", () => {
     const store = memoryStorage();
@@ -375,7 +375,7 @@ describe("appendComposerDraft", () => {
     appendComposerDraft(draftId, prompt);
     expect(getDraft(store, draftId)).toBe(prompt);
     leavePage();
-    expect(JSON.parse(store.getItem("dusk-drafts") ?? "{}")[draftId]).toBe(prompt);
+    expect(JSON.parse(store.getItem("madani-drafts") ?? "{}")[draftId]).toBe(prompt);
     expect(draftRevision(draftId)).toBe(revision + 1);
   });
 
@@ -488,7 +488,7 @@ describe("saving typed drafts", () => {
       key: store.key,
       get length() { return store.length; },
       setItem: (key, value) => {
-        if (key === "dusk-drafts") writes.push(value);
+        if (key === "madani-drafts") writes.push(value);
         store.setItem(key, value);
       },
     };
@@ -584,7 +584,7 @@ describe("saving typed drafts", () => {
 
   it("keeps drafts another window saved and drops an emptied one", () => {
     const { store, writes } = countedStorage();
-    store.setItem("dusk-drafts", JSON.stringify({ "bot:other-window:thread": "theirs", "bot:sent:thread": "old" }));
+    store.setItem("madani-drafts", JSON.stringify({ "bot:other-window:thread": "theirs", "bot:sent:thread": "old" }));
     writes.length = 0;
     setDraft(store, "bot:sent:thread", "");
     leavePage();

@@ -13,16 +13,16 @@ import { waitForExit } from "../procs.ts";
 const bridge = { socat: "/usr/bin/socat", bridgeScript: "/app/dist-server/bot-box/box-bridge.js", node: "/usr/local/bin/node" };
 
 describe("BoxRunner.wrap", () => {
-  const setup = { dataDir: "/data/.duskbot", home: "/data", codeRoots: ["/app"], engineRoots: engineInstallRoots("/data/.duskbot"), bridges: [{ name: "egress", port: BOX_EGRESS_PORT, socket: "/data/.duskbot/box/egress.sock" }, { name: "harness", port: 8799, socket: "/data/.duskbot/box/harness.sock" }] };
+  const setup = { dataDir: "/data/.madanibot", home: "/data", codeRoots: ["/app"], engineRoots: engineInstallRoots("/data/.madanibot"), bridges: [{ name: "egress", port: BOX_EGRESS_PORT, socket: "/data/.madanibot/box/egress.sock" }, { name: "harness", port: 8799, socket: "/data/.madanibot/box/harness.sock" }] };
 
   // An engine installed in the app's npm prefix: the absolute path the driver resolved, or the bare name looked up on the
   // PATH it was handed (the prefix's bin first), both read through the bin link's relative target.
-  it.skipIf(process.platform === "win32")("an engine dusk bot installed runs inside: its path, the bin folder on PATH and the package the link points at are there, read-only", () => {
+  it.skipIf(process.platform === "win32")("an engine madani bot installed runs inside: its path, the bin folder on PATH and the package the link points at are there, read-only", () => {
     const runner = new BoxRunner({ bwrap: "/usr/bin/bwrap", bridge, setup, denyEnv: new Set() });
     const bin = join(npmEnginesPrefix(setup.dataDir), "bin");
     const target = join(bin, "..", "lib", "node_modules", "opencode-ai", "bin", "opencode.exe");
     for (const command of [join(bin, "opencode"), "opencode"]) {
-      const wrapped = runner.wrap({ command, args: ["acp"], cwd: "/data/.duskbot/task-workspaces/b1/t1", env: { PATH: `${bin}:/usr/local/bin:/usr/bin`, HOME: "/data" } });
+      const wrapped = runner.wrap({ command, args: ["acp"], cwd: "/data/.madanibot/task-workspaces/b1/t1", env: { PATH: `${bin}:/usr/local/bin:/usr/bin`, HOME: "/data" } });
       const inner = wrapped.args.slice(wrapped.args.indexOf("--") + 1);
       expect(inner.slice(-2)).toEqual([command, "acp"]);
       expect(wrapped.env.PATH!.split(":")[0]).toBe(bin);
@@ -36,8 +36,8 @@ describe("BoxRunner.wrap", () => {
   it("runs the engine under bwrap with the plan, the allow-listed environment and the proxy pointed at the gate", () => {
     const runner = new BoxRunner({ bwrap: "/usr/bin/bwrap", bridge, setup, denyEnv: new Set(["COMPOSIO_API_KEY"]) });
     const wrapped = runner.wrap({
-      command: "/usr/local/bin/claude", args: ["-p", "--output-format", "stream-json"], cwd: "/data/.duskbot/task-workspaces/b1/t1",
-      env: { PATH: "/usr/bin", HOME: "/data", ANTHROPIC_API_KEY: "k", COMPOSIO_API_KEY: "c", DUSK_CLOUD_BOOTSTRAP_SECRET: "s", RANDOM_SECRET: "r" },
+      command: "/usr/local/bin/claude", args: ["-p", "--output-format", "stream-json"], cwd: "/data/.madanibot/task-workspaces/b1/t1",
+      env: { PATH: "/usr/bin", HOME: "/data", ANTHROPIC_API_KEY: "k", COMPOSIO_API_KEY: "c", MADANI_CLOUD_BOOTSTRAP_SECRET: "s", RANDOM_SECRET: "r" },
     });
     expect(wrapped.command).toBe("/usr/bin/bwrap");
     expect(wrapped.args.slice(0, 3)).toEqual(["--ro-bind", "/usr", "/usr"]);
@@ -61,16 +61,16 @@ describe("BoxRunner.wrap", () => {
 
   it("the env-all mutation hands over the whole environment (so the self-check can prove the allow-list)", () => {
     const runner = new BoxRunner({ bwrap: "/usr/bin/bwrap", bridge, setup: { ...setup, mutate: new Set(["env-all" as const]) }, denyEnv: new Set() });
-    expect(runner.wrap({ command: "x", args: [], env: { DUSK_CLOUD_BOOTSTRAP_SECRET: "s", EMPTY: undefined } }).env).toMatchObject({ DUSK_CLOUD_BOOTSTRAP_SECRET: "s" });
+    expect(runner.wrap({ command: "x", args: [], env: { MADANI_CLOUD_BOOTSTRAP_SECRET: "s", EMPTY: undefined } }).env).toMatchObject({ MADANI_CLOUD_BOOTSTRAP_SECRET: "s" });
   });
 });
 
 describe("the box's hardening (T0c)", () => {
   it("hands each box the seccomp filter on descriptor 3, and the no-seccomp mutation leaves it out", () => {
-    const dir = mkdtempSync(join(tmpdir(), "dusk-seccomp-"));
+    const dir = mkdtempSync(join(tmpdir(), "madani-seccomp-"));
     const file = join(dir, "seccomp.bpf");
     writeFileSync(file, seccompBytes());
-    const setup = { dataDir: "/data/.duskbot", home: "/data", codeRoots: ["/app"], engineRoots: [], bridges: [] };
+    const setup = { dataDir: "/data/.madanibot", home: "/data", codeRoots: ["/app"], engineRoots: [], bridges: [] };
     const runner = new BoxRunner({ bwrap: "/usr/bin/bwrap", bridge, setup, denyEnv: new Set(), seccompFile: file });
     const wrapped = runner.wrap({ command: "/usr/bin/x", args: [], env: {} });
     expect(wrapped.args).toContain("--seccomp");
@@ -107,7 +107,7 @@ describe("BotBox", () => {
     for (const box of boxes.splice(0)) await box.stop();
     for (const dir of dirs.splice(0)) rmSync(dir, { recursive: true, force: true });
   });
-  const temp = () => { const dir = mkdtempSync(join(tmpdir(), "dusk-box-")); dirs.push(dir); return dir; };
+  const temp = () => { const dir = mkdtempSync(join(tmpdir(), "madani-box-")); dirs.push(dir); return dir; };
 
   it("off: wraps nothing and reports why", async () => {
     const box = new BotBox();
@@ -144,7 +144,7 @@ describe("BotBox", () => {
     expect(box.report()).toMatchObject({ box: "bwrap", bridge: "node", boxed: 1, checks: null, broker: { on: true, tokens: 0 } });
     // A key becomes a token bound to this process; releasing it (the process exit) revokes it.
     const keyed = box.wrap({ command: "/usr/local/bin/claude", args: [], cwd: join(dataDir, "task-workspaces", "b1", "t1"), env: { PATH: "/usr/bin", ANTHROPIC_API_KEY: "sk-ant-real", XAI_API_KEY: "xai-real" } })!;
-    expect(keyed.token).toMatch(/^dusk_t0_[a-f0-9]{48}$/);
+    expect(keyed.token).toMatch(/^madani_t0_[a-f0-9]{48}$/);
     expect(keyed.env.ANTHROPIC_API_KEY).toBe(keyed.token);
     expect(keyed.env.ANTHROPIC_BASE_URL).toBe(`http://127.0.0.1:18080/b/${keyed.token}/anthropic`);
     expect(JSON.stringify(keyed.env)).not.toContain("sk-ant-real");
@@ -166,7 +166,7 @@ describe("the box a bot's Chrome runs in", () => {
     for (const box of boxes.splice(0)) await box.stop();
     for (const dir of dirs.splice(0)) rmSync(dir, { recursive: true, force: true });
   });
-  const temp = () => { const dir = mkdtempSync(join(tmpdir(), "dusk-box-")); dirs.push(dir); return dir; };
+  const temp = () => { const dir = mkdtempSync(join(tmpdir(), "madani-box-")); dirs.push(dir); return dir; };
 
   it("is no box off a Cloud home, which is what Windows gets", () => {
     expect(new BotBox().browserBox(9, []), "no box off a Cloud home").toBeNull();
@@ -177,7 +177,7 @@ describe("the box a bot's Chrome runs in", () => {
   it.skipIf(process.platform === "win32")("has the host's network and the read-only paths asked for, and none of HOME or the data folder", async () => {
     const box = new BotBox();
     boxes.push(box);
-    const dataDir = join(temp(), "home", ".duskbot"), home = dirname(dataDir);
+    const dataDir = join(temp(), "home", ".madanibot"), home = dirname(dataDir);
     mkdirSync(dataDir, { recursive: true });
     await box.start({ dataDir, home, port: 8799, denyEnv: new Set(), env: {}, log: () => {}, detect: () => ({ box: "bwrap", reason: null, tools: { bwrap: "/usr/bin/bwrap", socat: null } }) });
     const uploads = join(dataDir, "browser-uploads");
@@ -205,7 +205,7 @@ describe("spawnCli goes through the box", () => {
 
   it.skipIf(process.platform === "win32")("a bot spawn runs under the box's command; other spawns and box: false do not", async () => {
     const { botBox } = await import("./box.ts");
-    const dir = mkdtempSync(join(tmpdir(), "dusk-spawn-"));
+    const dir = mkdtempSync(join(tmpdir(), "madani-spawn-"));
     dirs.push(dir);
     // A stand-in for bwrap: records its argv, then runs what follows `--`.
     const fakeBwrap = join(dir, "fake-bwrap.sh"), record = join(dir, "argv.txt");
@@ -216,7 +216,7 @@ describe("spawnCli goes through the box", () => {
       // /usr/bin/true stands in for socat: the shell init starts it, waits once, and execs the engine.
       detect: () => ({ box: "bwrap", reason: null, tools: { bwrap: fakeBwrap, socat: "/usr/bin/true" } }),
     });
-    const run = async (owner: "bot" | "duskbot", box?: false) => {
+    const run = async (owner: "bot" | "madanibot", box?: false) => {
       rmSync(record, { force: true });
       const child = spawnCli("/bin/sh", ["-c", "echo ran"], { stdio: ["pipe", "pipe", "pipe"], env: { PATH: "/usr/bin:/bin", HOME: dir, SECRET_THING: "x" }, box }, owner);
       let out = "";
@@ -230,8 +230,8 @@ describe("spawnCli goes through the box", () => {
     expect(boxed.argv).toContain("--unshare-net");
     expect(boxed.argv).toContain("/run/omb/egress.sock");
     const engines = npmEnginesPrefix(join(dir, "data"));
-    expect(boxed.argv, "the engines dusk bot installed, read-only").toContain(`--ro-bind-try\n${engines}\n${engines}\n`);
-    expect((await run("duskbot")).boxed).toBe(false);
+    expect(boxed.argv, "the engines madani bot installed, read-only").toContain(`--ro-bind-try\n${engines}\n${engines}\n`);
+    expect((await run("madanibot")).boxed).toBe(false);
     expect((await run("bot", false)).boxed).toBe(false);
     expect(botBox.report().boxed).toBe(1);
   });
@@ -239,7 +239,7 @@ describe("spawnCli goes through the box", () => {
 
 describe("BoxRunner.lend", () => {
   it.skipIf(process.platform === "win32")("mounts only this conversation's assigned skill folders read-only and drops revoked grants", () => {
-    const dataDir = "/data/.duskbot";
+    const dataDir = "/data/.madanibot";
     const setup = { dataDir, home: "/data", codeRoots: ["/app"], engineRoots: [], bridges: [] };
     const runner = new BoxRunner({ bwrap: "/usr/bin/bwrap", bridge, setup, denyEnv: new Set() });
     const assigned = `${dataDir}/skills-library/skills/invoice-review`;
@@ -257,7 +257,7 @@ describe("BoxRunner.lend", () => {
   });
   // A plan over the Linux box's POSIX paths, which Windows' path module would join with backslashes.
   it.skipIf(process.platform === "win32")("puts a conversation's lent folders (a memory layer) back read-write in its boxes only, until they are taken back", () => {
-    const dataDir = "/data/.duskbot";
+    const dataDir = "/data/.madanibot";
     const setup = { dataDir, home: "/data", codeRoots: ["/app"], engineRoots: [], bridges: [{ name: "egress", port: BOX_EGRESS_PORT, socket: `${dataDir}/box/egress.sock` }, { name: "harness", port: 8799, socket: `${dataDir}/box/harness.sock` }] };
     const runner = new BoxRunner({ bwrap: "/usr/bin/bwrap", bridge, setup, denyEnv: new Set() });
     const layer = join(dataDir, "workspaces", "bot-a--member-p_ada");

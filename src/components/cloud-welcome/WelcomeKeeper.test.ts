@@ -75,7 +75,7 @@ beforeEach(() => {
     if (patch.onboarding) server = { ...server, onboarding: { ...server.onboarding, ...patch.onboarding } };
     return Promise.resolve().then(() => structuredClone(server));
   });
-  window.duskDesktop = { platform: "darwin", workspaces: { state: vi.fn().mockResolvedValue({ local: false, name: "Studio Cloud" }), menu: vi.fn() } } as unknown as typeof window.duskDesktop;
+  window.madaniDesktop = { platform: "darwin", workspaces: { state: vi.fn().mockResolvedValue({ local: false, name: "Studio Cloud" }), menu: vi.fn() } } as unknown as typeof window.madaniDesktop;
   host = document.createElement("div");
   document.body.append(host);
   root = createRoot(host);
@@ -83,18 +83,18 @@ beforeEach(() => {
 afterEach(() => {
   flushSync(() => root.unmount());
   host.remove();
-  delete window.duskDesktop;
+  delete window.madaniDesktop;
   vi.unstubAllGlobals();
 });
 
 describe("an end of the welcome kept on this device", () => {
   it("keeps the welcome away, reaches the Cloud's record when it can, and is then let go", async () => {
-    localStorage.setItem("dusk.cloudWelcome.done", "1");
+    localStorage.setItem("madani.cloudWelcome.done", "1");
     resetCloudWelcome();
     flushSync(() => root.render(createElement(Harness)));
     expect(document.body.textContent).not.toContain("What should Studio Cloud start with?");
     await vi.waitFor(() => expect(server.onboarding.hintsSeen).toContain("cloud-welcome-done"));
-    await vi.waitFor(() => expect(localStorage.getItem("dusk.cloudWelcome.done")).toBeNull());
+    await vi.waitFor(() => expect(localStorage.getItem("madani.cloudWelcome.done")).toBeNull());
     expect(welcomeNow().doneHere).toBe(false);
   });
 });

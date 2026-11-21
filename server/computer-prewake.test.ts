@@ -56,7 +56,7 @@ describe("computer prewake", () => {
   });
 
   it("tells the turn being set up, once, whether its bot will likely use the computer", () => {
-    shouldPrewakeComputer({ ...input, botId: "likely", message: "open dusk.bot" });
+    shouldPrewakeComputer({ ...input, botId: "likely", message: "open madani.bot" });
     shouldPrewakeComputer({ ...input, botId: "unlikely", message: "what is 2 + 2" });
     expect([takeComputerLikely("likely"), takeComputerLikely("likely"), takeComputerLikely("unlikely"), takeComputerLikely("never")]).toEqual([true, false, false, false]);
   });

@@ -26,17 +26,17 @@ describe("ElevenLabs redirects", () => {
     res.end();
   });
   let api = "";
-  const savedApi = process.env.DUSK_ELEVENLABS_API;
+  const savedApi = process.env.MADANI_ELEVENLABS_API;
 
   beforeAll(async () => {
     elsewhereBase = await listen(elsewhere);
     api = `${await listen(redirector)}/v1`;
-    process.env.DUSK_ELEVENLABS_API = api;
+    process.env.MADANI_ELEVENLABS_API = api;
   });
 
   afterAll(async () => {
-    if (savedApi === undefined) delete process.env.DUSK_ELEVENLABS_API;
-    else process.env.DUSK_ELEVENLABS_API = savedApi;
+    if (savedApi === undefined) delete process.env.MADANI_ELEVENLABS_API;
+    else process.env.MADANI_ELEVENLABS_API = savedApi;
     await Promise.all([elsewhere, redirector].map((s) => new Promise((r) => s.close(r))));
   });
 

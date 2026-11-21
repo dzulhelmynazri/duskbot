@@ -11,11 +11,11 @@
     "chatgpt list events across calendars",
     "claude combine google calendar events"
   ],
-  "answer": "**put your gallery visits, travel and classes on one list.** a bot can gather events across selected google calendars and remove duplicates. give it start and end times with your time zone. ask it to put calendar errors before the appointments. this action only looks, but dusk counts it as a write, so allow it by name.",
+  "answer": "**put your gallery visits, travel and classes on one list.** a bot can gather events across selected google calendars and remove duplicates. give it start and end times with your time zone. ask it to put calendar errors before the appointments. this action only looks, but madani counts it as a write, so allow it by name.",
   "updated": "2026-11-12",
   "review": {
     "status": "approved",
-    "by": "lead agent, after two independent reviewer passes, against dusk bot docs and the composio catalog",
+    "by": "lead agent, after two independent reviewer passes, against madani bot docs and the composio catalog",
     "at": "2026-11-12"
   },
   "tags": [
@@ -58,7 +58,7 @@
     "output": "mossglass gallery: next fortnight\n- tuesday, 10:00: lighting visit, gallery calendar\n- thursday, 14:00: courier appointment, travel calendar\n\ncoverage: both selected calendars returned results."
   },
   "steps": [
-    "**connect narrowly.** this listing needs read and write in dusk. allow only the listing actions it needs.",
+    "**connect narrowly.** this listing needs read and write in madani. allow only the listing actions it needs.",
     "**choose calendars.** ask which it can see, then name the two you want.",
     "**set the window.** include your time zone. ask it to fetch the remaining results and report errors.",
     "**compare once.** compare one appointment from each selected calendar with google calendar before scheduling it. edit the routine card if needed."
@@ -71,8 +71,8 @@
   "rules": "**allow the list, without allowing calendar edits.** an exact action list can keep event creation and deletion out of reach.",
   "faq": [
     {
-      "q": "why does a calendar listing need write access in dusk?",
-      "a": "**dusk counts this action as a write.** allow it by name rather than enabling every calendar change."
+      "q": "why does a calendar listing need write access in madani?",
+      "a": "**madani counts this action as a write.** allow it by name rather than enabling every calendar change."
     },
     {
       "q": "does an empty combined list mean i am free?",
@@ -81,15 +81,15 @@
   ],
   "sources": [
     {
-      "label": "dusk bot docs: files and apps",
+      "label": "madani bot docs: files and apps",
       "url": "/docs/files-and-apps"
     },
     {
-      "label": "dusk bot docs: routines",
+      "label": "madani bot docs: routines",
       "url": "/docs/routines"
     },
     {
-      "label": "dusk bot docs: computer permissions",
+      "label": "madani bot docs: computer permissions",
       "url": "/docs/computer"
     }
   ],

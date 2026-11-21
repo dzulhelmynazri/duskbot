@@ -4,7 +4,7 @@
   "title": "AI assistants you text: iMessage, WhatsApp or their own app",
   "nav": "ai you text",
   "h1": "ai assistants you text: choose the channel and the computer",
-  "description": "Compare Poke, OpenClaw, Hermes Agent, Genspark Claw and dusk bot by messaging channel, setup and what stays running when your laptop is off.",
+  "description": "Compare Poke, OpenClaw, Hermes Agent, Genspark Claw and madani bot by messaging channel, setup and what stays running when your laptop is off.",
   "keyword": "ai assistant that texts you",
   "keywords": [
     "ai agent imessage",
@@ -12,7 +12,7 @@
     "ai assistant whatsapp",
     "personal ai assistant whatsapp"
   ],
-  "answer": "**texting your assistant from the couch should start with the chat app you already open.** poke feels like a contact; it's joining cognition, announced 23 july 2026.[^3] openclaw and hermes connect chat apps to agents you can run. genspark claw offers cloud or local work. dusk has its own app. choose where to text, then which computer stays awake.",
+  "answer": "**texting your assistant from the couch should start with the chat app you already open.** poke feels like a contact; it's joining cognition, announced 23 july 2026.[^3] openclaw and hermes connect chat apps to agents you can run. genspark claw offers cloud or local work. madani has its own app. choose where to text, then which computer stays awake.",
   "updated": "2026-11-12",
   "review": {
     "status": "approved",
@@ -34,7 +34,7 @@
   "competitor": {
     "key": "ai-assistant-you-text",
     "name": "AI you text",
-    "url": "https://dusk.bot/alternatives/ai-assistant-you-text"
+    "url": "https://madani.bot/alternatives/ai-assistant-you-text"
   },
   "art": {
     "props": [
@@ -52,10 +52,10 @@
       "**use the channel you already open.** pick a tool whose hosting and setup you are willing to keep running.",
       "**keep one place to talk.** a familiar messaging app matters more to you than a dedicated bot team."
     ],
-    "dusk": [
+    "madani": [
       "**give each bot a job.** you want separate names, memories and conversations.",
       "**choose the ai per bot.** switch models while keeping its chats.",
-      "**pair to your own machine.** use your computer, server or dusk cloud through the dusk phone browser."
+      "**pair to your own machine.** use your computer, server or madani cloud through the madani phone browser."
     ]
   },
   "compare": {
@@ -66,7 +66,7 @@
       "openclaw",
       "hermes agent",
       "genspark claw",
-      "dusk bot"
+      "madani bot"
     ],
     "rows": [
       {
@@ -76,7 +76,7 @@
           "whatsapp, telegram, imessage, discord, slack, signal and other channels",
           "telegram, whatsapp, discord, slack, signal, email, desktop or terminal",
           "whatsapp, slack, teams, telegram and others; also its own email address",
-          "dusk desktop app or paired phone browser; store apps on the way"
+          "madani desktop app or paired phone browser; store apps on the way"
         ],
         "src": [
           1,
@@ -93,7 +93,7 @@
           "onboard a gateway through terminal or desktop installers",
           "desktop download or terminal installer, then connect a model provider",
           "choose a cloud plan and connect apps in channels; local desktop mode also offered",
-          "download dusk, sign in to your ai, then pair the phone"
+          "download madani, sign in to your ai, then pair the phone"
         ],
         "src": [
           1,
@@ -111,7 +111,7 @@
           "your machine or server; no official hosted tier",
           "your machine or server; optional cloud agent on paid nous plans",
           "dedicated cloud computer or local mode in its desktop app",
-          "your computer, your own server or dusk cloud"
+          "your computer, your own server or madani cloud"
         ],
         "src": [
           3,
@@ -163,7 +163,7 @@
           "run the agent on your server instead of the laptop",
           "use a server or the optional hosted cloud agent",
           "use the cloud computer rather than local mode",
-          "pair to dusk cloud; pairing to your computer needs it on with dusk running"
+          "pair to madani cloud; pairing to your computer needs it on with madani running"
         ],
         "src": [
           3,
@@ -176,11 +176,11 @@
       }
     ]
   },
-  "method": "**choose how you want to talk and who keeps it running.** we make dusk bot. we read the product pages and docs on 12 november 2026.\n\nwe didn't run identical tasks, time message delivery or test every channel ourselves. use the channel and hosting rows to choose your first trial.",
+  "method": "**choose how you want to talk and who keeps it running.** we make madani bot. we read the product pages and docs on 12 november 2026.\n\nwe didn't run identical tasks, time message delivery or test every channel ourselves. use the channel and hosting rows to choose your first trial.",
   "sections": [
     {
       "h": "if imessage is the requirement, start there",
-      "md": "**want a contact in imessage? start with poke or openclaw.** poke lists apple messages, whatsapp, telegram and rcs.[^1] openclaw also lists imessage.[^4] compare their setup and hosting before choosing.\n\ndusk uses its own app. pair its browser version on iphone or android and add it to your home screen. store apps are on the way. the browser version sends no notifications.[^12]\n\nif imessage decides it for you, read the [poke comparison](/alternatives/poke)."
+      "md": "**want a contact in imessage? start with poke or openclaw.** poke lists apple messages, whatsapp, telegram and rcs.[^1] openclaw also lists imessage.[^4] compare their setup and hosting before choosing.\n\nmadani uses its own app. pair its browser version on iphone or android and add it to your home screen. store apps are on the way. the browser version sends no notifications.[^12]\n\nif imessage decides it for you, read the [poke comparison](/alternatives/poke)."
     },
     {
       "h": "whatsapp and telegram leave you another decision",
@@ -188,7 +188,7 @@
     },
     {
       "h": "give the first text a clear boundary",
-      "md": "**start with a job you can inspect.** try: \"help me plan a weekly review of this project folder. show the schedule first. ask before changing anything.\"\n\nin dusk, a routine returns a card with next runs, **edit**, **pause** and **undo**.[^15] read it before relying on the timing.\n\nlocal routines stop when the app closes or the computer sleeps. a miss under 12 hours runs once when you return; older runs skip.[^15]"
+      "md": "**start with a job you can inspect.** try: \"help me plan a weekly review of this project folder. show the schedule first. ask before changing anything.\"\n\nin madani, a routine returns a card with next runs, **edit**, **pause** and **undo**.[^15] read it before relying on the timing.\n\nlocal routines stop when the app closes or the computer sleeps. a miss under 12 hours runs once when you return; older runs skip.[^15]"
     }
   ],
   "faq": [
@@ -205,8 +205,8 @@
       "a": "**poke describes proactive messages, reminders and background automations.[^11]** try the trigger and channel you need before relying on that first nudge."
     },
     {
-      "q": "does dusk bot work in whatsapp?",
-      "a": "**you talk to dusk bots in their own app.** phone access uses a paired browser version today. store apps are on their way.[^12][^13]"
+      "q": "does madani bot work in whatsapp?",
+      "a": "**you talk to madani bots in their own app.** phone access uses a paired browser version today. store apps are on their way.[^12][^13]"
     }
   ],
   "sources": [
@@ -266,19 +266,19 @@
       "checked": "2026-11-12"
     },
     {
-      "label": "dusk bot: phone",
+      "label": "madani bot: phone",
       "url": "/docs/phone"
     },
     {
-      "label": "dusk bot: getting started",
+      "label": "madani bot: getting started",
       "url": "/docs/getting-started"
     },
     {
-      "label": "dusk bot: dusk cloud",
-      "url": "/docs/dusk-cloud"
+      "label": "madani bot: madani cloud",
+      "url": "/docs/madani-cloud"
     },
     {
-      "label": "dusk bot: routines",
+      "label": "madani bot: routines",
       "url": "/docs/routines"
     },
     {
@@ -287,7 +287,7 @@
       "checked": "2026-11-12"
     },
     {
-      "label": "dusk bot: bots",
+      "label": "madani bot: bots",
       "url": "/docs/bots"
     },
     {
@@ -324,7 +324,7 @@
       ],
       [
         "separate bots on different ai models",
-        "dusk bot"
+        "madani bot"
       ]
     ]
   },
@@ -334,7 +334,7 @@
       "fix": "find which machine does the work. a chat bubble can hide a sleeping laptop."
     },
     {
-      "mistake": "expecting browser notifications from dusk",
+      "mistake": "expecting browser notifications from madani",
       "fix": "the current paired phone browser sends none. choose with that limit in mind."
     }
   ],

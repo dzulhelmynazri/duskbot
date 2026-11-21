@@ -14,7 +14,7 @@ const homes: string[] = [];
 
 async function boot(home: string): Promise<ChildProcess> {
   let stderr = "";
-  const env: NodeJS.ProcessEnv = { HOME: home, USERPROFILE: home, DUSK_PORT: String(PORT), DUSK_VPS_DOCKER: "ssh" };
+  const env: NodeJS.ProcessEnv = { HOME: home, USERPROFILE: home, MADANI_PORT: String(PORT), MADANI_VPS_DOCKER: "ssh" };
   if (process.env.PATH) env.PATH = process.env.PATH;
   if (process.env.SystemRoot) env.SystemRoot = process.env.SystemRoot;
   const child = spawn(process.execPath, [join(SERVER_DIR, "index.ts")], { cwd: join(SERVER_DIR, ".."), env, stdio: ["ignore", "ignore", "pipe"] });
@@ -31,10 +31,10 @@ async function boot(home: string): Promise<ChildProcess> {
 }
 
 function freshHome(config: object): { home: string; configFile: string } {
-  const home = mkdtempSync(join(tmpdir(), "dusk-vps-mode-"));
+  const home = mkdtempSync(join(tmpdir(), "madani-vps-mode-"));
   homes.push(home);
-  mkdirSync(join(home, ".duskbot"), { recursive: true });
-  const configFile = join(home, ".duskbot", "config.json");
+  mkdirSync(join(home, ".madanibot"), { recursive: true });
+  const configFile = join(home, ".madanibot", "config.json");
   writeFileSync(configFile, JSON.stringify(config));
   return { home, configFile };
 }

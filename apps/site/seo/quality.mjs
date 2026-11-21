@@ -9,7 +9,7 @@ import path from 'node:path';
 import { sceneId } from './art/scene.mjs';
 import { HUBS } from './records.mjs';
 
-// claims no page may make, whatever else it says: that an ai vendor endorses, approves or partners with dusk bot, or that
+// claims no page may make, whatever else it says: that an ai vendor endorses, approves or partners with madani bot, or that
 // its ai is free or unlimited. (the owner cleared plain wording about using the ai subscription you already have on
 // 2026-11-12; statements about vendor terms must still be factual, dated and sourced)
 export const SUBSCRIPTION = [
@@ -52,7 +52,7 @@ export function jaccard(a, b) { let inter = 0; for (const x of a) if (b.has(x)) 
 
 const NEEDS = {
   integration: (r) => [r.routines?.length >= 3 || 'needs at least 3 routines', r.cannot?.length >= 3 || 'needs at least 3 things it cannot do', (r.app?.toolkit ? r.app.highlight?.length >= 6 : r.app?.intro?.length > 300) || 'needs 6 highlighted actions (or, with no toolkit, a long intro)'],
-  compare: (r) => [r.compare?.rows?.length >= 6 || 'needs at least 6 comparison rows', r.compare?.rows?.every((row) => row.src?.length && row.cells?.length === r.compare.cols.length) || 'every comparison row needs a source and one cell per column', r.verdict?.them?.length >= 2 && r.verdict?.dusk?.length >= 2 || 'the verdict needs 2 reasons each way', r.sources?.length >= 3 || 'needs at least 3 sources'],
+  compare: (r) => [r.compare?.rows?.length >= 6 || 'needs at least 6 comparison rows', r.compare?.rows?.every((row) => row.src?.length && row.cells?.length === r.compare.cols.length) || 'every comparison row needs a source and one cell per column', r.verdict?.them?.length >= 2 && r.verdict?.madani?.length >= 2 || 'the verdict needs 2 reasons each way', r.sources?.length >= 3 || 'needs at least 3 sources'],
   usecase: (r) => [r.safeguards?.length >= 3 || 'needs at least 3 guard rails', r.routine?.message?.length > 60 || 'the routine message is too short'],
   role: (r) => [r.day?.length >= 4 || 'needs at least 4 moments in the day', r.pack?.length >= 3 || 'needs at least 3 routines'],
   routine: (r) => [r.knobs?.length >= 3 || 'needs at least 3 ways to make it yours', r.fails?.length >= 2 || 'needs at least 2 ways it goes wrong'],

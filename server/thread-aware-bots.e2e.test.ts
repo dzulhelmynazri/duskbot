@@ -56,8 +56,8 @@ const promptsOf = (threadId: string): any[] => {
   }
 };
 const liveToken = async (threadId: string): Promise<Record<string, string>> => {
-  await expect.poll(() => dumpOf(threadId)?.mcpConfig?.mcpServers?.agents?.env?.DUSK_COMMS_TOKEN, { timeout: 15_000 }).toBeTruthy();
-  return { authorization: `Bearer ${dumpOf(threadId)!.mcpConfig.mcpServers.agents.env.DUSK_COMMS_TOKEN}` };
+  await expect.poll(() => dumpOf(threadId)?.mcpConfig?.mcpServers?.agents?.env?.MADANI_COMMS_TOKEN, { timeout: 15_000 }).toBeTruthy();
+  return { authorization: `Bearer ${dumpOf(threadId)!.mcpConfig.mcpServers.agents.env.MADANI_COMMS_TOKEN}` };
 };
 /** A wake on that thread cannot start while this turn runs, so the token stays valid while the test holds the gate. */
 const heldTurn = async (bot: { id: string; threadId: string }, text: string): Promise<Record<string, string>> => {
@@ -108,7 +108,7 @@ const mintedToken = async (botId: string, threadId: string, depth = 0): Promise<
     "POST",
     "/api/testing/internal-capability",
     { botId, threadId, kind: "agents", depth },
-    { "x-dusk-test-capability": TEST_CAPABILITY_KEY },
+    { "x-madani-test-capability": TEST_CAPABILITY_KEY },
   );
   expect(minted.status).toBe(201);
   return { authorization: `Bearer ${minted.body.token}` };
@@ -118,7 +118,7 @@ const bots = async () => (await api("GET", "/api/bots?messages=0")).body.bots as
 const botState = async (botId: string) => (await bots()).find((bot) => bot.id === botId);
 const taskOf = async (botId: string, threadId: string) => (await botState(botId))?.tasks.find((task: any) => task.threadId === threadId);
 const messages = async (threadId: string) => (await api("GET", `/api/threads/${threadId}/messages?limit=100`)).body.messages as any[];
-const handoffs = (): any[] => readHandoffs(join(home, ".duskbot"));
+const handoffs = (): any[] => readHandoffs(join(home, ".madanibot"));
 const coordinated = async (headers: Record<string, string>, botId: string, message: string) => {
   const response = await api("POST", "/api/internal/coordinate-bots", { botIds: [botId], message }, headers);
   expect(response.status, JSON.stringify(response.body)).toBe(200);
@@ -141,9 +141,9 @@ const cleanup = async (botIds: string[]) => {
 beforeAll(async () => {
   chmodSync(FAKE_CLAUDE, 0o755);
   chmodSync(FAKE_ACP, 0o755);
-  home = mkdtempSync(join(tmpdir(), "dusk-thread-aware-"));
+  home = mkdtempSync(join(tmpdir(), "madani-thread-aware-"));
   gates = join(home, "gates");
-  const data = join(home, ".duskbot");
+  const data = join(home, ".madanibot");
   mkdirSync(data, { recursive: true });
   mkdirSync(gates, { recursive: true });
   // Every turn holds until its gate exists and dumps argv/env/prompt under its key: a [[gate:NAME]] marker, else the agents thread id (depth 0), else "peer".
@@ -158,7 +158,7 @@ beforeAll(async () => {
     "if (at >= 0) {",
     "  try {",
     '    const servers = JSON.parse(readFileSync(process.argv[at + 1], "utf8")).mcpServers ?? {};',
-    "    for (const server of Object.values(servers)) thread ??= server?.env?.DUSK_THREAD_ID ?? null;",
+    "    for (const server of Object.values(servers)) thread ??= server?.env?.MADANI_THREAD_ID ?? null;",
     "  } catch {}",
     "}",
     "const relay = new PassThrough();",
@@ -211,9 +211,9 @@ beforeAll(async () => {
       ...(process.env.SystemRoot ? { SystemRoot: process.env.SystemRoot } : {}),
       HOME: home,
       USERPROFILE: home,
-      DUSK_PORT: String(port),
-      DUSK_WEBHOOK_PORT: String(port + 1),
-      DUSK_TEST_INTERNAL_CAPABILITY_KEY: TEST_CAPABILITY_KEY,
+      MADANI_PORT: String(port),
+      MADANI_WEBHOOK_PORT: String(port + 1),
+      MADANI_TEST_INTERNAL_CAPABILITY_KEY: TEST_CAPABILITY_KEY,
     },
     stdio: ["ignore", "pipe", "pipe"],
   });
@@ -269,7 +269,7 @@ describe("start_thread on yourself", () => {
       expect(opening.text).toContain("Review the login fix.");
       await liveToken(first.body.threadId);
       const self = dumpOf(first.body.threadId)!.mcpConfig.mcpServers.agents;
-      expect(self.env.DUSK_THREAD_ID).toBe(first.body.threadId);
+      expect(self.env.MADANI_THREAD_ID).toBe(first.body.threadId);
 
       release(first.body.threadId);
       await expect.poll(async () => (await taskOf(pm.id, second.body.threadId))?.busy, { timeout: 15_000 }).toBe(true);

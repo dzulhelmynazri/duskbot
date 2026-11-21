@@ -4,7 +4,7 @@ import { dirname } from "node:path";
 
 import { writeFileAtomic } from "./state.ts";
 
-const TOKEN = /^(?:dusk|omb)_sess_[A-Za-z0-9_-]{20,200}$/;
+const TOKEN = /^(?:madani|omb)_sess_[A-Za-z0-9_-]{20,200}$/;
 const hashOf = (token: string): string => createHash("sha256").update(token).digest("hex");
 
 interface MobileSession {

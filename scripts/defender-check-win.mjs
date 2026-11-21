@@ -7,7 +7,7 @@
 // runs and whether Start screen control worked; the run fails when any of those went wrong. It changes Defender's
 // settings and installs the app, so it runs only on a GitHub Windows runner.
 //
-//   node scripts/defender-check-win.mjs --installer release/DuskBot-<version>-setup.exe --out <folder> [--wait 120]
+//   node scripts/defender-check-win.mjs --installer release/MadaniBot-<version>-setup.exe --out <folder> [--wait 120]
 import { execFile, execFileSync, spawn } from "node:child_process";
 import { appendFileSync, copyFileSync, existsSync, mkdirSync, openSync, readFileSync, readdirSync, statSync, writeFileSync } from "node:fs";
 import path from "node:path";
@@ -21,7 +21,7 @@ if (process.platform !== "win32" || process.env.GITHUB_ACTIONS !== "true") {
   process.exit(2);
 }
 if (!options.installer || !existsSync(options.installer) || !options.out) {
-  console.error("usage: node scripts/defender-check-win.mjs --installer <DuskBot-<version>-setup.exe> --out <folder> [--wait 120]");
+  console.error("usage: node scripts/defender-check-win.mjs --installer <MadaniBot-<version>-setup.exe> --out <folder> [--wait 120]");
   process.exit(2);
 }
 
@@ -31,12 +31,12 @@ mkdirSync(SCRIPTS, { recursive: true });
 const WAIT_SECONDS = Math.max(10, Number(options.wait) || 120);
 const DEVTOOLS_PORT = 9339;
 const STARTED = new Date();
-const APP = "Dusk Bot.exe";
+const APP = "Madani Bot.exe";
 const DRIVER = "cua-driver-background.exe";
 const DEFENDER_EVENTS = [1006, 1007, 1008, 1015, 1116, 1117];
 const MPCMDRUN = path.join(process.env.ProgramFiles ?? "C:\\Program Files", "Windows Defender", "MpCmdRun.exe");
 /** The app's own files: a detection naming one of these is about us, anything else is the machine's. */
-const OURS = /duskbot|cua-driver|cua_driver|cua-sdk/i;
+const OURS = /madanibot|cua-driver|cua_driver|cua-sdk/i;
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 const quote = (value) => `'${String(value).replaceAll("'", "''")}'`;
@@ -217,7 +217,7 @@ $downloads = Join-Path $env:USERPROFILE 'Downloads'
 New-Item -ItemType Directory -Force -Path $downloads | Out-Null
 $target = Join-Path $downloads ${quote(path.basename(installer))}
 Copy-Item -LiteralPath ${quote(installer)} -Destination $target -Force
-Set-Content -LiteralPath $target -Stream Zone.Identifier -Value @('[ZoneTransfer]', 'ZoneId=3', 'ReferrerUrl=https://dusk.bot/download', 'HostUrl=https://github.com/DuskBotAI/duskbot/releases/latest/download/DuskBot-setup.exe')
+Set-Content -LiteralPath $target -Stream Zone.Identifier -Value @('[ZoneTransfer]', 'ZoneId=3', 'ReferrerUrl=https://madani.bot/download', 'HostUrl=https://github.com/dzulhelmynazri/madani-bot/releases/latest/download/MadaniBot-setup.exe')
 [pscustomobject]@{
   path = $target; bytes = (Get-Item -LiteralPath $target).Length; sha256 = (Get-FileHash -LiteralPath $target -Algorithm SHA256).Hash
   zone = @(Get-Content -LiteralPath $target -Stream Zone.Identifier) -join ' | '
@@ -287,7 +287,7 @@ if (-not $exited) { Stop-Process -Id $process.Id -Force -ErrorAction SilentlyCon
 
 const installedFiles = (folder) => ps(String.raw`
 $root = ${quote(folder)}
-$names = @('Dusk Bot.exe', 'resources\cua-driver-background.exe', 'resources\cua-driver.exe')
+$names = @('Madani Bot.exe', 'resources\cua-driver-background.exe', 'resources\cua-driver.exe')
 $sdk = Join-Path $root 'resources\cua-sdk'
 if (Test-Path -LiteralPath $sdk) {
   $names += @(Get-ChildItem -LiteralPath $sdk -Recurse -File | Where-Object { $_.Extension -in '.exe', '.node', '.dll' } | ForEach-Object { $_.FullName.Substring($root.Length + 1) })
@@ -388,7 +388,7 @@ async function appPage(ms) {
       for (const page of pages.filter((entry) => entry.type === "page" && /^http:\/\/(?:127\.0\.0\.1|localhost):\d+\//.test(entry.url))) {
         const tab = await devtools(page.webSocketDebuggerUrl);
         try {
-          if (await tab.evaluate("typeof window.duskDesktop?.localControl?.retry === 'function'")) return page;
+          if (await tab.evaluate("typeof window.madaniDesktop?.localControl?.retry === 'function'")) return page;
         } finally {
           tab.close();
         }
@@ -401,7 +401,7 @@ async function appPage(ms) {
   return null;
 }
 
-const SHOWN = "window.duskDesktop.getCapabilities().then(({ localComputer }) => localComputer)";
+const SHOWN = "window.madaniDesktop.getCapabilities().then(({ localComputer }) => localComputer)";
 
 /** The call the Start screen control button makes. */
 async function pressStart() {
@@ -412,7 +412,7 @@ async function pressStart() {
     const shown = await tab.evaluate(SHOWN);
     const before = (await processes()).driver;
     const began = Date.now();
-    const answer = await tab.evaluate("window.duskDesktop.localControl.retry()", 180_000);
+    const answer = await tab.evaluate("window.madaniDesktop.localControl.retry()", 180_000);
     const seconds = Math.round((Date.now() - began) / 1000);
     await sleep(3000);
     const after = (await processes()).driver;
@@ -424,7 +424,7 @@ async function pressStart() {
 }
 
 function appLog() {
-  const folder = path.join(process.env.APPDATA ?? "", "Dusk Bot", "logs");
+  const folder = path.join(process.env.APPDATA ?? "", "Madani Bot", "logs");
   const file = path.join(folder, "server.log");
   if (!existsSync(file)) return { file, present: false, lines: [] };
   for (const name of readdirSync(folder)) {
@@ -515,9 +515,9 @@ function judge(r) {
   const ourEvents = (r.findings?.events ?? []).filter((event) => OURS.test(`${event.path} ${event.process}`));
   const ourDetections = (r.findings?.detections ?? []).filter((detection) => detection.resources.some((resource) => OURS.test(resource)));
   for (const event of ourEvents) {
-    problems.push(`Windows Security flagged ${event.path || "a dusk bot file"}: ${event.threat || `event ${event.id}`}${event.action ? ` (${event.action})` : ""}`);
+    problems.push(`Windows Security flagged ${event.path || "a madani bot file"}: ${event.threat || `event ${event.id}`}${event.action ? ` (${event.action})` : ""}`);
   }
-  if (!ourEvents.length && ourDetections.length) problems.push(`Windows Security recorded ${ourDetections.length} detection(s) in dusk bot's files`);
+  if (!ourEvents.length && ourDetections.length) problems.push(`Windows Security recorded ${ourDetections.length} detection(s) in madani bot's files`);
   if (r.download?.error) problems.push(`the installer couldn't be saved to Downloads: ${r.download.error}`);
   else if (r.download && !r.download.stillThere) problems.push("the installer was gone 15 s after it was saved to Downloads");
   if (r.installerScan?.ran && !r.installerScan.clean) problems.push(`Defender's scan of the installer found ${r.installerScan.threats.join(", ") || "a threat"}`);
@@ -555,9 +555,9 @@ function render(r, verdict) {
   const before = r.asFound ?? {};
   const after = r.protection ?? {};
 
-  add("## Windows Security and the dusk bot installer");
+  add("## Windows Security and the madani bot installer");
   add();
-  add(`dusk bot ${r.version}, commit \`${String(r.commit).slice(0, 12)}\`, on ${r.machine?.os ?? "Windows"} ${r.machine?.version ?? ""} (GitHub's ${r.machine?.image || "windows-latest"}).`);
+  add(`madani bot ${r.version}, commit \`${String(r.commit).slice(0, 12)}\`, on ${r.machine?.os ?? "Windows"} ${r.machine?.version ?? ""} (GitHub's ${r.machine?.image || "windows-latest"}).`);
   add();
   if (verdict.problems.length) {
     add("**Verdict: something went wrong for a person installing the app.**");
@@ -654,7 +654,7 @@ function render(r, verdict) {
     else {
       const answer = r.startScreen.answer ?? {};
       add(`- Before pressing it, the app showed: ${shownLine(r.startScreen.shown)}.`);
-      add(`- Start screen control (the button's own call, \`window.duskDesktop.localControl.retry()\`): ${answer.status === "ready" ? "**worked**" : "**didn't work**"} in ${r.startScreen.seconds} s, answer \`${JSON.stringify(answer)}\`; ${DRIVER} ${r.startScreen.after?.length ? `running afterwards (pid ${r.startScreen.after.map((entry) => entry.pid).join(", ")}; before: ${r.startScreen.before?.map((entry) => entry.pid).join(", ") || "none"})` : "**not running afterwards**"}.`);
+      add(`- Start screen control (the button's own call, \`window.madaniDesktop.localControl.retry()\`): ${answer.status === "ready" ? "**worked**" : "**didn't work**"} in ${r.startScreen.seconds} s, answer \`${JSON.stringify(answer)}\`; ${DRIVER} ${r.startScreen.after?.length ? `running afterwards (pid ${r.startScreen.after.map((entry) => entry.pid).join(", ")}; before: ${r.startScreen.before?.map((entry) => entry.pid).join(", ") || "none"})` : "**not running afterwards**"}.`);
       add(`- Afterwards the app showed: ${shownLine(r.startScreen.shownAfter)}.`);
     }
   }
@@ -670,7 +670,7 @@ function render(r, verdict) {
     }
     add(`- Defender Operational events ${DEFENDER_EVENTS.join(", ")}: ${findings.events.length ? "" : "none."}`);
     for (const event of findings.events) {
-      add(`  - ${event.time}, event ${event.id}: ${event.threat || "(no name)"}${event.path ? ` in ${event.path}` : ""}${event.source ? `, by ${event.source}` : ""}${event.action ? `, action ${event.action}` : ""}${OURS.test(`${event.path} ${event.process}`) ? "" : " (not dusk bot's)"}.`);
+      add(`  - ${event.time}, event ${event.id}: ${event.threat || "(no name)"}${event.path ? ` in ${event.path}` : ""}${event.source ? `, by ${event.source}` : ""}${event.action ? `, action ${event.action}` : ""}${OURS.test(`${event.path} ${event.process}`) ? "" : " (not madani bot's)"}.`);
     }
   }
   add();

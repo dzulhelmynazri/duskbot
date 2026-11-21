@@ -6,7 +6,7 @@ import { afterAll, describe, expect, it } from "vitest";
 
 import { botSettingsFor, withBotSettings } from "./claude-bot-settings.ts";
 
-const root = mkdtempSync(join(tmpdir(), "dusk-bot-settings-"));
+const root = mkdtempSync(join(tmpdir(), "madani-bot-settings-"));
 afterAll(() => rmSync(root, { recursive: true, force: true }));
 
 let count = 0;
@@ -35,7 +35,7 @@ describe("botSettingsFor", () => {
     expect(botSettingsFor(file, thread, {})).toEqual(settings);
   });
 
-  it("leaves behind every other field, and each entry Claude Code would refuse, so dusk bot's own settings still load", () => {
+  it("leaves behind every other field, and each entry Claude Code would refuse, so madani bot's own settings still load", () => {
     const { file, thread } = folders({
       model: 123, statusLine: "x", outputStyle: 5, apiKeyHelper: "echo key", cleanupPeriodDays: "30", disableAllHooks: true,
       hooks: { PreToolUse: [guard, { matcher: 5, hooks: "x" }, { hooks: [{ command: "no type" }] }], Stop: "nope" },
@@ -88,14 +88,14 @@ describe("botSettingsFor", () => {
 });
 
 describe("withBotSettings", () => {
-  it("merges as Claude Code merges a project's settings under --settings: lists join, dusk bot's own values win", () => {
-    const duskStop = { matcher: "", hooks: [{ type: "command", command: "dusk-hook", timeout: 5 }] };
+  it("merges as Claude Code merges a project's settings under --settings: lists join, madani bot's own values win", () => {
+    const madaniStop = { matcher: "", hooks: [{ type: "command", command: "madani-hook", timeout: 5 }] };
     const botStop = { hooks: [{ type: "command", command: "/opt/notify.sh" }] };
     expect(withBotSettings(
       { hooks: { PreToolUse: [guard], Stop: [botStop] }, env: { GUARD_LEVEL: "strict", ENABLE_TOOL_SEARCH: "false" }, enabledPlugins: { "guard@team": true } },
-      { hooks: { Stop: [duskStop], PostToolUse: [duskStop] }, env: { ENABLE_TOOL_SEARCH: "true" }, claudeMdExcludes: ["/home/ada/.claude/CLAUDE.md"] },
+      { hooks: { Stop: [madaniStop], PostToolUse: [madaniStop] }, env: { ENABLE_TOOL_SEARCH: "true" }, claudeMdExcludes: ["/home/ada/.claude/CLAUDE.md"] },
     )).toEqual({
-      hooks: { PreToolUse: [guard], Stop: [botStop, duskStop], PostToolUse: [duskStop] },
+      hooks: { PreToolUse: [guard], Stop: [botStop, madaniStop], PostToolUse: [madaniStop] },
       env: { GUARD_LEVEL: "strict", ENABLE_TOOL_SEARCH: "true" },
       enabledPlugins: { "guard@team": true },
       claudeMdExcludes: ["/home/ada/.claude/CLAUDE.md"],

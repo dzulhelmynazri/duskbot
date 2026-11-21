@@ -1,4 +1,4 @@
-// Jev, the small model that picks who answers in a group chat: set up right where "Let Dusk choose" is picked.
+// Jev, the small model that picks who answers in a group chat: set up right where "Let Madani choose" is picked.
 // Security: keys are write-only; the server reports configured-or-not and the model, never a key.
 import { useEffect, useState } from "react";
 import { ArrowUpRight } from "../../icons";
@@ -186,9 +186,9 @@ function JevForm({ onDone }: { onDone?: () => void }) {
       const slot = KEY_SLOT[provider];
       const put = (decision: Record<string, unknown>) => api<ConfigStatus>("/api/config", { method: "PUT", body: JSON.stringify({ decider: decision }) });
       let status: ConfigStatus;
-      if (draft && window.duskDesktop?.setCredential) {
+      if (draft && window.madaniDesktop?.setCredential) {
         await put({ provider, ...choice });
-        status = await window.duskDesktop.setCredential(slot.credential, draft);
+        status = await window.madaniDesktop.setCredential(slot.credential, draft);
       } else {
         status = await put({ provider, ...choice, ...(draft ? { [slot.field]: draft } : { enabled: true, jobs: { roomRouting: true } }) });
       }

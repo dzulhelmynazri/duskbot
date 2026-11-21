@@ -22,8 +22,8 @@ export function linkKeys(): { publicKey: string; privateKey: string } {
 
 export function homeEnv(input: HomeInput): Record<string, string> {
   // this service pushes a signed entitlement to every home it makes, so each one refuses clients without it
-  const env: Record<string, string> = { DUSK_CLOUD_ROLE: "home", DUSK_CLOUD_MACHINE_ID: input.cloudId, DUSK_CLOUD_ADMIN_URL: input.adminOrigin, DUSK_CLOUD_BOOTSTRAP_SECRET: input.secret, DUSK_PUBLIC_URL: input.origin, DUSK_DASHBOARD_URL: input.dashboardUrl, DUSK_CLOUD_ENTITLEMENT: "required" };
-  if (input.team) Object.assign(env, { DUSK_CLOUD_ROLE: "team", DUSK_CLOUD_TEAM_ID: input.team.id, DUSK_CLOUD_TEAM_NAME: input.team.name });
+  const env: Record<string, string> = { MADANI_CLOUD_ROLE: "home", MADANI_CLOUD_MACHINE_ID: input.cloudId, MADANI_CLOUD_ADMIN_URL: input.adminOrigin, MADANI_CLOUD_BOOTSTRAP_SECRET: input.secret, MADANI_PUBLIC_URL: input.origin, MADANI_DASHBOARD_URL: input.dashboardUrl, MADANI_CLOUD_ENTITLEMENT: "required" };
+  if (input.team) Object.assign(env, { MADANI_CLOUD_ROLE: "team", MADANI_CLOUD_TEAM_ID: input.team.id, MADANI_CLOUD_TEAM_NAME: input.team.name });
   if (Object.values(env).some(value => /[\r\n\0]/.test(value))) throw new Error("Invalid cloud environment value.");
   return env;
 }
@@ -39,7 +39,7 @@ export function originFor(template: string | undefined, input: { ipv4: string; c
 }
 
 export function poolBootstrap(input: BootstrapInput & { origin: string }): string {
-  return JSON.stringify({ env: { ...homeEnv(input), HOME: "/data", DUSK_DATA_DIR: CLOUD_HOME.data, DUSK_PORT: "8799" }, files: [{ path: `${CLOUD_HOME.data}/dashboard-link.json`, mode: 0o600, content: JSON.stringify(input.link) }, { path: `/data/${CLOUD_HOME_MARKER_FILE}`, mode: 0o600, content: JSON.stringify({ version: 1, machine: input.cloudId }) }] });
+  return JSON.stringify({ env: { ...homeEnv(input), HOME: "/data", MADANI_DATA_DIR: CLOUD_HOME.data, MADANI_PORT: "8799" }, files: [{ path: `${CLOUD_HOME.data}/dashboard-link.json`, mode: 0o600, content: JSON.stringify(input.link) }, { path: `/data/${CLOUD_HOME_MARKER_FILE}`, mode: 0o600, content: JSON.stringify({ version: 1, machine: input.cloudId }) }] });
 }
 
 export function shellQuote(value: string): string { return `'${value.replaceAll("'", `'"'"'`)}'`; }
@@ -54,11 +54,11 @@ if (!/^(?:\\d{1,3}\\.){3}\\d{1,3}$/.test(ipv4) || ipv4.split(".").some(v => Numb
 const origin = input.template.replaceAll("{ip-dashed}", ipv4.replaceAll(".", "-")).replaceAll("{id}", input.cloudId);
 const url = new URL(origin);
 if (origin !== url.origin || url.protocol !== "https:" || !url.hostname.includes(".") || url.username || url.password) process.exit(1);
-const env = { ...input.env, DUSK_PUBLIC_URL: origin };
+const env = { ...input.env, MADANI_PUBLIC_URL: origin };
 if (Object.values(env).some(v => /[\\r\\n\\0]/.test(v))) process.exit(1);
 fs.writeFileSync("/root/omb-home.env", Object.entries(env).map(([k,v]) => k + "=" + v).join("\\n") + "\\n", { mode: 0o600 });
-fs.writeFileSync("/srv/dusk-data/${CLOUD_HOME.dataName}/dashboard-link.json", JSON.stringify(input.link), { mode: 0o600 });
-fs.writeFileSync("/srv/dusk-data/${CLOUD_HOME_MARKER_FILE}", JSON.stringify({ version: 1, machine: input.cloudId }), { mode: 0o600 });
+fs.writeFileSync("/srv/madani-data/${CLOUD_HOME.dataName}/dashboard-link.json", JSON.stringify(input.link), { mode: 0o600 });
+fs.writeFileSync("/srv/madani-data/${CLOUD_HOME_MARKER_FILE}", JSON.stringify({ version: 1, machine: input.cloudId }), { mode: 0o600 });
 fs.writeFileSync("/etc/caddy/Caddyfile", url.host + " {\\n reverse_proxy 127.0.0.1:8080\\n}\\n");`;
   const payload = { cloudId: input.cloudId, template: input.originTemplate ?? "https://{ip-dashed}.sslip.io", env: homeEnv({ ...input, origin: "" }), link: input.link };
   const image = shellQuote(input.image);
@@ -71,8 +71,8 @@ for attempt in {1..30}; do
   sleep 1
 done
 if [ "\${#devices[@]}" -ne 1 ] || [ ! -b "\${devices[0]}" ]; then exit 1; fi
-install -d -m 700 /srv/dusk-data
-mountpoint -q /srv/dusk-data || mount -o discard,defaults "\${devices[0]}" /srv/dusk-data
+install -d -m 700 /srv/madani-data
+mountpoint -q /srv/madani-data || mount -o discard,defaults "\${devices[0]}" /srv/madani-data
 resize2fs "\${devices[0]}"
 `;
   const storageUnit = `[Unit]
@@ -92,25 +92,25 @@ apt-get update
 apt-get install -y ca-certificates curl caddy nodejs
 apt-get install -y docker.io e2fsprogs
 install -d -m 755 /etc/systemd/system/docker.service.d
-install -m 700 /dev/stdin /usr/local/sbin/omb-storage <<'DUSK_STORAGE'
-${storage}DUSK_STORAGE
-install -m 644 /dev/stdin /etc/systemd/system/omb-storage.service <<'DUSK_STORAGE_UNIT'
-${storageUnit}DUSK_STORAGE_UNIT
-install -m 644 /dev/stdin /etc/systemd/system/docker.service.d/omb-storage.conf <<'DUSK_DOCKER_UNIT'
+install -m 700 /dev/stdin /usr/local/sbin/omb-storage <<'MADANI_STORAGE'
+${storage}MADANI_STORAGE
+install -m 644 /dev/stdin /etc/systemd/system/omb-storage.service <<'MADANI_STORAGE_UNIT'
+${storageUnit}MADANI_STORAGE_UNIT
+install -m 644 /dev/stdin /etc/systemd/system/docker.service.d/omb-storage.conf <<'MADANI_DOCKER_UNIT'
 [Unit]
 Requires=omb-storage.service
 After=omb-storage.service
-DUSK_DOCKER_UNIT
+MADANI_DOCKER_UNIT
 systemctl daemon-reload
 systemctl enable --now omb-storage
 systemctl enable --now docker
-install -d -m 700 /srv/dusk-data /srv/dusk-data/${CLOUD_HOME.dataName}
+install -d -m 700 /srv/madani-data /srv/madani-data/${CLOUD_HOME.dataName}
 ipv4="$(curl -fsS --max-time 10 http://169.254.169.254/hetzner/v1/metadata/public-ipv4)"
 node -e ${shellQuote(setup)} ${shellQuote(JSON.stringify(payload))} "$ipv4"
 maus_uid="$(docker run --rm --entrypoint id ${image} -u maus)"
 maus_gid="$(docker run --rm --entrypoint id ${image} -g maus)"
-chown -R "$maus_uid:$maus_gid" /srv/dusk-data
-docker run -d --name omb-home --restart unless-stopped --env-file /root/omb-home.env -v /srv/dusk-data:/data -p 127.0.0.1:8080:8080 ${image}
+chown -R "$maus_uid:$maus_gid" /srv/madani-data
+docker run -d --name omb-home --restart unless-stopped --env-file /root/omb-home.env -v /srv/madani-data:/data -p 127.0.0.1:8080:8080 ${image}
 chmod 644 /etc/caddy/Caddyfile
 systemctl enable caddy
 systemctl restart caddy

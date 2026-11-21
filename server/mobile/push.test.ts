@@ -19,7 +19,7 @@ let fcmEnv: NodeJS.ProcessEnv;
 const timestamp = 1_800_000_000_000;
 
 beforeAll(() => {
-  directory = mkdtempSync(join(tmpdir(), "dusk-push-"));
+  directory = mkdtempSync(join(tmpdir(), "madani-push-"));
   const apnsFile = join(directory, "apns.p8");
   const accountFile = join(directory, "account.json");
   writeFileSync(apnsFile, ec.privateKey.export({ format: "pem", type: "pkcs8" }));
@@ -27,8 +27,8 @@ beforeAll(() => {
     project_id: "fixture-project", client_email: "push@fixture.example", token_uri: "https://oauth.example/token",
     private_key: rsa.privateKey.export({ format: "pem", type: "pkcs8" }).toString(),
   }));
-  apnsEnv = { DUSK_APNS_KEY_FILE: apnsFile, DUSK_APNS_KEY_ID: "key-id", DUSK_APNS_TEAM_ID: "team-id", DUSK_APNS_TOPIC: "com.example.dusk" };
-  fcmEnv = { DUSK_FCM_SERVICE_ACCOUNT_FILE: accountFile, DUSK_FCM_HOST: "https://fcm.example" };
+  apnsEnv = { MADANI_APNS_KEY_FILE: apnsFile, MADANI_APNS_KEY_ID: "key-id", MADANI_APNS_TEAM_ID: "team-id", MADANI_APNS_TOPIC: "com.example.madani" };
+  fcmEnv = { MADANI_FCM_SERVICE_ACCOUNT_FILE: accountFile, MADANI_FCM_HOST: "https://fcm.example" };
 });
 afterAll(() => { rmSync(directory, { recursive: true, force: true }); });
 
@@ -89,7 +89,7 @@ describe("APNs push", () => {
   });
 
   function sender() {
-    return createPushSender({ ...apnsEnv, DUSK_APNS_HOST: origin }, {
+    return createPushSender({ ...apnsEnv, MADANI_APNS_HOST: origin }, {
       now: () => clock,
       http2Connect: ((...args: Parameters<typeof connect>) => {
         const client = connect(...args);
@@ -107,7 +107,7 @@ describe("APNs push", () => {
     expect(clients).toHaveLength(1);
     const { headers, body } = received[0];
     expect(headers).toMatchObject({
-      ":method": "POST", ":path": "/3/device/fixture-device", "apns-topic": "com.example.dusk",
+      ":method": "POST", ":path": "/3/device/fixture-device", "apns-topic": "com.example.madani",
       "apns-push-type": "alert", "apns-priority": "10", "apns-collapse-id": "thread-1",
     });
     const authorization = String(headers.authorization);
@@ -118,21 +118,21 @@ describe("APNs push", () => {
     expect(received[1].headers.authorization === headers.authorization).toBe(true);
     expect(body.includes("body text")).toBe(false);
     expect(JSON.parse(body)).toEqual({
-      aps: { alert: { title: "Maus", body: "New message" }, sound: "default", "thread-id": "thread-1" }, dusk: data,
+      aps: { alert: { title: "Maus", body: "New message" }, sound: "default", "thread-id": "thread-1" }, madani: data,
     });
   });
 
   it("gives an approval its buttons and its ask id", async () => {
     expect(await sender().send(target, { ...message, kind: "approval", requestId: "req-1", groupId: undefined })).toBe("sent");
     const body = JSON.parse(received[0].body);
-    expect(body.aps.category).toBe("dusk.approval");
-    expect(body.dusk.requestId).toBe("req-1");
+    expect(body.aps.category).toBe("madani.approval");
+    expect(body.madani.requestId).toBe("req-1");
   });
 
   it("sends a Live Activity push on the liveactivity topic", async () => {
     const state = { phase: "working" as const, steps: 1, startedAt: 1_799_999_000, step: "web" as const };
     expect(await sender().sendActivity!(target, { event: "update", state, timestamp: 1_800_000_000, priority: 5 })).toBe("sent");
-    expect(received[0].headers).toMatchObject({ "apns-topic": "com.example.dusk.push-type.liveactivity", "apns-push-type": "liveactivity", "apns-priority": "5" });
+    expect(received[0].headers).toMatchObject({ "apns-topic": "com.example.madani.push-type.liveactivity", "apns-push-type": "liveactivity", "apns-priority": "5" });
     expect(received[0].headers["apns-collapse-id"]).toBeUndefined();
     expect(JSON.parse(received[0].body)).toEqual({ aps: { timestamp: 1_800_000_000, event: "update", "content-state": state } });
   });
@@ -164,7 +164,7 @@ describe("APNs push", () => {
     expect(await sender().send(target, { ...message, threadId, groupId: undefined })).toBe("sent");
     expect(received[0].headers["apns-collapse-id"]).toBe("a".repeat(61));
     expect(JSON.parse(received[0].body).aps["thread-id"]).toBe(threadId);
-    expect(JSON.parse(received[0].body).dusk).not.toHaveProperty("groupId");
+    expect(JSON.parse(received[0].body).madani).not.toHaveProperty("groupId");
   });
 
   it("reconnects after goaway", async () => {
@@ -321,7 +321,7 @@ describe("FCM push", () => {
   });
 
   it("uses the default origin and omits an absent group id", async () => {
-    const push = createPushSender({ DUSK_FCM_SERVICE_ACCOUNT_FILE: fcmEnv.DUSK_FCM_SERVICE_ACCOUNT_FILE }, { fetch });
+    const push = createPushSender({ MADANI_FCM_SERVICE_ACCOUNT_FILE: fcmEnv.MADANI_FCM_SERVICE_ACCOUNT_FILE }, { fetch });
     expect(await push.send(target, { ...message, groupId: undefined })).toBe("sent");
     expect(requests[1].url).toBe("https://fcm.googleapis.com/v1/projects/fixture-project/messages:send");
     expect(JSON.parse(String(requests[1].init.body)).message.data).not.toHaveProperty("groupId");
@@ -343,7 +343,7 @@ describe("push configuration", () => {
     const log = vi.fn();
     const push = createPushSender({ ...apnsEnv, ...fcmEnv }, {
       log, readFile: (path) => {
-        if (path === apnsEnv.DUSK_APNS_KEY_FILE) throw new Error("sensitive fixture details");
+        if (path === apnsEnv.MADANI_APNS_KEY_FILE) throw new Error("sensitive fixture details");
         return JSON.stringify({ private_key: "sensitive fixture details" });
       },
     });
@@ -366,7 +366,7 @@ describe("push configuration", () => {
 
   it("rejects incomplete APNs credentials", () => {
     const log = vi.fn();
-    expect(createPushSender({ DUSK_APNS_KEY_ID: "key-id" }, { log }).configured).toEqual([]);
+    expect(createPushSender({ MADANI_APNS_KEY_ID: "key-id" }, { log }).configured).toEqual([]);
     expect(log).toHaveBeenCalledTimes(1);
   });
 });
@@ -412,10 +412,10 @@ describe("push relay", () => {
     expect(await send(429, { code: "rate_limited" })).toBe("failed");
   });
 
-  it("reads DUSK_PUSH_RELAY", () => {
+  it("reads MADANI_PUSH_RELAY", () => {
     expect(pushRelayBase({}, "https://link.example")).toBe("https://link.example");
-    expect(pushRelayBase({ DUSK_PUSH_RELAY: "off" }, "https://link.example")).toBeNull();
-    expect(pushRelayBase({ DUSK_PUSH_RELAY: "https://push.example/" }, null)).toBe("https://push.example");
-    expect(pushRelayBase({ DUSK_PUSH_RELAY: "not a url" }, "https://link.example")).toBeNull();
+    expect(pushRelayBase({ MADANI_PUSH_RELAY: "off" }, "https://link.example")).toBeNull();
+    expect(pushRelayBase({ MADANI_PUSH_RELAY: "https://push.example/" }, null)).toBe("https://push.example");
+    expect(pushRelayBase({ MADANI_PUSH_RELAY: "not a url" }, "https://link.example")).toBeNull();
   });
 });

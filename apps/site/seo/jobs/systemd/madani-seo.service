@@ -1,9 +1,9 @@
 # the seo system's daily run, as a systemd user service (see omb-ref/SEO-SYSTEM.md "run it every day")
 [Unit]
-Description=dusk.bot seo: release gate, build, indexnow
+Description=madani.bot seo: release gate, build, indexnow
 After=network-online.target
 
 [Service]
 Type=oneshot
-EnvironmentFile=%h/.config/dusk-seo.env
-ExecStart=/bin/bash -lc '"$DUSK_SEO_REPO/sites/dusk/seo/jobs/daily.sh"'
+EnvironmentFile=%h/.config/madani-seo.env
+ExecStart=/bin/bash -lc '"$MADANI_SEO_REPO/sites/madani/seo/jobs/daily.sh"'

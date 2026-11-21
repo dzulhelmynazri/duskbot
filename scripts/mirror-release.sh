@@ -1,29 +1,29 @@
 #!/usr/bin/env bash
-# puts a published release's installers and mac update zips on dusk.bot (https://dusk.bot/releases/<version>/<name>,
+# puts a published release's installers and mac update zips on madani.bot (https://madani.bot/releases/<version>/<name>,
 # served by apps/site/release-mirror.js), so updates and downloads never depend on GitHub alone. run on the Mac after
 # publish-downloads.sh; the server fetches each file from the public downloads release itself, keeps it only when its
 # sha256 is in that release's SHA256SUMS (itself checked against the signed latest.json when it is the latest), names
 # it as SHA256SUMS does, and keeps the newest MIRROR_KEEP versions. the mac browser parts are not in SHA256SUMS (the app
 # pins their digest in parts.json and checks it itself), so each is kept only when its sha256 is GitHub's digest of it.
 #   scripts/mirror-release.sh v0.2.15
-# env: MIRROR_HOST (ssh host, default contabo), MIRROR_ROOT (default /var/lib/dusk-releases), MIRROR_KEEP (default 3),
-# MIRROR_SPARE_GB (free space left after the copy, default 10), DUSK_DOWNLOADS_REPO.
+# env: MIRROR_HOST (ssh host, default contabo), MIRROR_ROOT (default /var/lib/madani-releases), MIRROR_KEEP (default 3),
+# MIRROR_SPARE_GB (free space left after the copy, default 10), MADANI_DOWNLOADS_REPO.
 set -euo pipefail
 
 TAG="${1:?usage: mirror-release.sh v<version>}"
 VERSION="${TAG#v}"
 [[ "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]] || { echo "not a release tag: $TAG" >&2; exit 2; }
 
-ssh "${MIRROR_HOST:-contabo}" env VERSION="$VERSION" ROOT="${MIRROR_ROOT:-/var/lib/dusk-releases}" KEEP="${MIRROR_KEEP:-3}" SPARE_GB="${MIRROR_SPARE_GB:-10}" \
-  REPO="${DUSK_DOWNLOADS_REPO:-DuskBotAI/duskbot-releases}" bash -s <<'REMOTE'
+ssh "${MIRROR_HOST:-contabo}" env VERSION="$VERSION" ROOT="${MIRROR_ROOT:-/var/lib/madani-releases}" KEEP="${MIRROR_KEEP:-3}" SPARE_GB="${MIRROR_SPARE_GB:-10}" \
+  REPO="${MADANI_DOWNLOADS_REPO:-dzulhelmynazri/madani-bot-releases}" bash -s <<'REMOTE'
 set -euo pipefail
 mkdir -p "$ROOT"
 incoming="$ROOT/.incoming-$VERSION"
 rm -rf "$incoming"; mkdir -p "$incoming/files"
 trap 'rm -rf "$incoming"' EXIT
 
-curl -fsSL --retry 3 "https://dusk.bot/releases/$VERSION/SHA256SUMS" -o "$incoming/SHA256SUMS"
-curl -fsSL --retry 3 "https://dusk.bot/releases/latest.json" -o "$incoming/latest.json"
+curl -fsSL --retry 3 "https://madani.bot/releases/$VERSION/SHA256SUMS" -o "$incoming/SHA256SUMS"
+curl -fsSL --retry 3 "https://madani.bot/releases/latest.json" -o "$incoming/latest.json"
 python3 - "$incoming" "$VERSION" <<'PY'
 import hashlib, json, sys
 d, v = sys.argv[1], sys.argv[2]
@@ -70,7 +70,7 @@ echo "mirrored $VERSION: $(ls "$ROOT/$VERSION" | tr '\n' ' ')"
 df -h "$ROOT" | tail -1
 REMOTE
 
-for name in $(ssh "${MIRROR_HOST:-contabo}" ls "${MIRROR_ROOT:-/var/lib/dusk-releases}/$VERSION"); do
-  code=$(curl -s -o /dev/null -w '%{http_code}' -I "https://dusk.bot/releases/$VERSION/$name")
-  echo "https://dusk.bot/releases/$VERSION/$name -> $code"
+for name in $(ssh "${MIRROR_HOST:-contabo}" ls "${MIRROR_ROOT:-/var/lib/madani-releases}/$VERSION"); do
+  code=$(curl -s -o /dev/null -w '%{http_code}' -I "https://madani.bot/releases/$VERSION/$name")
+  echo "https://madani.bot/releases/$VERSION/$name -> $code"
 done

@@ -42,6 +42,6 @@ describe("full screen viewers keep their controls out of the status bar and the 
   });
 
   it("keeps every sheet clear of the side insets in landscape", () => {
-    expect(source("./viewers.css")).toContain(".dusk-mobile .mobile-sheet { padding-inline: var(--m-safe-left) var(--m-safe-right); }");
+    expect(source("./viewers.css")).toContain(".madani-mobile .mobile-sheet { padding-inline: var(--m-safe-left) var(--m-safe-right); }");
   });
 });

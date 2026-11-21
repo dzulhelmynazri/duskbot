@@ -7,8 +7,8 @@ const RETRIES = [30_000, 120_000, 600_000];
 const WORKSPACE = /^ws_[A-Za-z0-9_-]{1,64}$/;
 const record = (value) => value !== null && typeof value === "object" && !Array.isArray(value);
 
-/** duskbot://cloud-move/<workspace id>: the dashboard's "move to dusk cloud" for a server. An id, never an address. */
-export const CLOUD_MOVE_LINK = "duskbot://cloud-move/";
+/** madanibot://cloud-move/<workspace id>: the dashboard's "move to madani cloud" for a server. An id, never an address. */
+export const CLOUD_MOVE_LINK = "madanibot://cloud-move/";
 export function cloudMoveLinkWorkspace(value) {
   if (typeof value !== "string" || !value.startsWith(CLOUD_MOVE_LINK)) return null;
   const id = value.slice(CLOUD_MOVE_LINK.length).replace(/\/+$/, "");

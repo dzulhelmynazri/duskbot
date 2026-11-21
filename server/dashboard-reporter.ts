@@ -21,7 +21,7 @@ export interface DashboardReporterDeps {
   collect: ReturnType<typeof createDashboardCollector>;
   /** usage signals waiting for the next report (usage-signals.ts) */
   usage?: { take(): UsageReport | null; requeue(report: UsageReport): void };
-  /** the "help improve dusk bot" switch, which is the account's switch too (usage-signals-switch.ts) */
+  /** the "help improve madani bot" switch, which is the account's switch too (usage-signals-switch.ts) */
   choice?: { pending(): boolean | null; pushed(value: boolean): void; fromAccount(optOut: boolean): unknown };
   /** recent cpu and memory samples; only those not yet sent ride a report, and only while someone watches */
   pulse?: { since(after: number): PulseSample[] };
@@ -36,7 +36,7 @@ export interface DashboardReporterDeps {
 }
 let sequence = Date.now();
 const REMOVED = "This workspace was removed from the dashboard. Connect it again from the app.";
-/** a wall clock this far past the tick means the machine was suspended (a dusk cloud sleeps when idle): requests open
+/** a wall clock this far past the tick means the machine was suspended (a madani cloud sleeps when idle): requests open
  *  across a suspend never answer, so they are dropped and sent again at once */
 const RESUME_JUMP_MS = 15_000;
 /** "unknown workspace" can be a dashboard mid-restart; only after this long is it checked by enrolling again */
@@ -261,7 +261,7 @@ export function createDashboardReporter(deps: DashboardReporterDeps) {
       const error = await response.json().catch(() => ({})) as { code?: unknown; error?: unknown };
       // the service's own words for its limits (too many computers on the account, too many joining at once)
       if ((error.code === "too_many_workspaces" || error.code === "busy") && typeof error.error === "string") throw new EnrollRefusedError(error.error.slice(0, 200));
-      if (response.status === 409) throw new EnrollRefusedError("This workspace belongs to another dusk bot account. Remove it from that account's dashboard first.");
+      if (response.status === 409) throw new EnrollRefusedError("This workspace belongs to another madani bot account. Remove it from that account's dashboard first.");
       throw new Error(`Dashboard enrollment failed (${response.status}).`);
     }
     const answer = await response.json() as EnrollAnswer;

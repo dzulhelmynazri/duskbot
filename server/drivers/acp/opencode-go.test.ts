@@ -20,7 +20,7 @@ import {
   openCodeOwnedDirectories,
   OpenCodeDriver,
   openCodeProviderKeysAllowed,
-  duskOwnsWorkingFolder,
+  madaniOwnsWorkingFolder,
   parseOpenCodeModelsOutput,
   preferredOpenCodeModel,
   resetOpenCodeModelCache,
@@ -167,7 +167,7 @@ describe("OpenCode catalog", () => {
   });
 
   it("recognizes an OpenCode Go login stored by the CLI", async () => {
-    const scratch = mkdtempSync(join(tmpdir(), "dusk-opencode-auth-"));
+    const scratch = mkdtempSync(join(tmpdir(), "madani-opencode-auth-"));
     const authDir = join(scratch, "opencode");
     mkdirSync(authDir, { recursive: true });
     writeFileSync(join(authDir, "auth.json"), JSON.stringify({
@@ -191,7 +191,7 @@ describe("OpenCode catalog", () => {
 
   it("finds the CLI's login at ~/.local/share on every platform, macOS included", async () => {
     // No XDG override on purpose: `opencode auth list` on macOS prints ~/.local/share/opencode/auth.json.
-    const scratch = mkdtempSync(join(tmpdir(), "dusk-opencode-home-"));
+    const scratch = mkdtempSync(join(tmpdir(), "madani-opencode-home-"));
     const authDir = join(scratch, ".local", "share", "opencode");
     mkdirSync(authDir, { recursive: true });
     writeFileSync(join(authDir, "auth.json"), JSON.stringify({
@@ -214,7 +214,7 @@ describe("OpenCode catalog", () => {
   });
 
   it("recognizes an existing OpenCode Zen login", async () => {
-    const scratch = mkdtempSync(join(tmpdir(), "dusk-opencode-oauth-"));
+    const scratch = mkdtempSync(join(tmpdir(), "madani-opencode-oauth-"));
     const authDir = join(scratch, "opencode");
     mkdirSync(authDir, { recursive: true });
     writeFileSync(join(authDir, "auth.json"), JSON.stringify({
@@ -237,7 +237,7 @@ describe("OpenCode catalog", () => {
   });
 
   it("treats OpenCode's anonymous free catalog as runnable without a saved key", async () => {
-    const scratch = mkdtempSync(join(tmpdir(), "dusk-opencode-free-"));
+    const scratch = mkdtempSync(join(tmpdir(), "madani-opencode-free-"));
     const driver = createOpenCodeDriver(async () => catalog("opencode/big-pickle"));
     const instance = await driver.create({
       instanceId: "opencode-free",
@@ -260,7 +260,7 @@ describe("OpenCode catalog", () => {
   });
 
   it("runs a Zen model through ACP using the exact discovered id", async () => {
-    const scratch = mkdtempSync(join(tmpdir(), "dusk-opencode-zen-only-"));
+    const scratch = mkdtempSync(join(tmpdir(), "madani-opencode-zen-only-"));
     const authDir = join(scratch, "opencode");
     mkdirSync(authDir, { recursive: true });
     writeFileSync(join(authDir, "auth.json"), JSON.stringify({
@@ -351,7 +351,7 @@ describe("OpenCode catalog", () => {
     },
   );
 
-  it("points a rejected Zen key at the key dusk bot saves", () => {
+  it("points a rejected Zen key at the key madani bot saves", () => {
     expect(describeOpenCodeAccountError("invalid_credentials", "opencode/big-pickle")).toContain("Settings → API keys");
     for (const model of [undefined, "opencode/big-pickle", "opencode-go/minimax-m3"]) {
       expect(describeOpenCodeAccountError("invalid_credentials", model)).not.toContain("opencode auth login");
@@ -371,7 +371,7 @@ describe("OpenCode catalog", () => {
   });
 
   it("passes the person's provider keys through, as the CLI would see them", async () => {
-    const scratch = mkdtempSync(join(tmpdir(), "dusk-opencode-go-"));
+    const scratch = mkdtempSync(join(tmpdir(), "madani-opencode-go-"));
     try {
       const dump = join(scratch, "env.json");
       const driver = createOpenCodeDriver(async () => catalog("opencode-go/minimax-m3"));
@@ -386,7 +386,7 @@ describe("OpenCode catalog", () => {
           CLINE_API_KEY: "cline-provider-key",
           XAI_API_KEY: "saved-for-grok",
           MISTRAL_API_KEY: "saved-for-mistral",
-          DUSK_ANTHROPIC_API_KEY: "workspace-anthropic",
+          MADANI_ANTHROPIC_API_KEY: "workspace-anthropic",
           FAKE_ACP_DUMP: dump,
         },
         enabled: true,
@@ -401,7 +401,7 @@ describe("OpenCode catalog", () => {
       expect(child.env.CLINE_API_KEY).toBe("cline-provider-key");
       expect(child.env.XAI_API_KEY).toBeUndefined();
       expect(child.env.MISTRAL_API_KEY).toBeUndefined();
-      expect(child.env.DUSK_ANTHROPIC_API_KEY).toBeUndefined();
+      expect(child.env.MADANI_ANTHROPIC_API_KEY).toBeUndefined();
       await instance.dispose();
     } finally {
       await removeTempDir(scratch);
@@ -431,7 +431,7 @@ describe("OpenCode catalog", () => {
   });
 
   it("keeps the server's own provider keys out on a Cloud home or a managed desktop", async () => {
-    const scratch = mkdtempSync(join(tmpdir(), "dusk-opencode-managed-"));
+    const scratch = mkdtempSync(join(tmpdir(), "madani-opencode-managed-"));
     setOpenCodeProviderKeyPolicy(() => false);
     for (const key of OPENCODE_PROVIDER_ENV) vi.stubEnv(key, `operator-${key}`);
     try {
@@ -457,7 +457,7 @@ describe("OpenCode catalog", () => {
   });
 
   it("lets the owner's saved provider keys through on a Cloud home, and only those", async () => {
-    const scratch = mkdtempSync(join(tmpdir(), "dusk-opencode-own-keys-"));
+    const scratch = mkdtempSync(join(tmpdir(), "madani-opencode-own-keys-"));
     setOpenCodeProviderKeyPolicy(() => false);
     for (const key of OPENCODE_PROVIDER_ENV) vi.stubEnv(key, `operator-${key}`);
     try {
@@ -541,7 +541,7 @@ describe("OpenCode catalog discovery from the ACP session", () => {
   });
 
   it("builds the catalog from ACP and adds OpenCode 1's metadata", async () => {
-    const scratch = mkdtempSync(join(tmpdir(), "dusk-opencode-discover-"));
+    const scratch = mkdtempSync(join(tmpdir(), "madani-opencode-discover-"));
     try {
       const found = await discoverOpenCodeModels({
         ...process.env, HOME: scratch, FAKE_ACP_MODELS: "opencode/big-pickle,opencode-go/minimax-m3",
@@ -554,7 +554,7 @@ describe("OpenCode catalog discovery from the ACP session", () => {
   });
 
   it("reads OpenCode 1's metadata again when a first run in a new home loses the database race", async () => {
-    const scratch = mkdtempSync(join(tmpdir(), "dusk-opencode-discover-race-"));
+    const scratch = mkdtempSync(join(tmpdir(), "madani-opencode-discover-race-"));
     try {
       const found = await discoverOpenCodeModels({
         ...process.env, HOME: scratch, FAKE_ACP_MODELS: "opencode/big-pickle",
@@ -568,7 +568,7 @@ describe("OpenCode catalog discovery from the ACP session", () => {
   });
 
   it("still lists every model on OpenCode 2, where models --verbose fails", async () => {
-    const scratch = mkdtempSync(join(tmpdir(), "dusk-opencode-discover-v2-"));
+    const scratch = mkdtempSync(join(tmpdir(), "madani-opencode-discover-v2-"));
     try {
       const found = await discoverOpenCodeModels({
         ...process.env, HOME: scratch, FAKE_ACP_MODELS_LIST: "v2",
@@ -584,7 +584,7 @@ describe("OpenCode catalog discovery from the ACP session", () => {
   const efforts = (ids: string[]) => ({ currentValue: "default", options: ids.map((value) => ({ value, name: value === "xhigh" ? "Xhigh" : value })) });
 
   it("offers each model's efforts on OpenCode 2, where only its ACP session names them", async () => {
-    const scratch = mkdtempSync(join(tmpdir(), "dusk-opencode-discover-v2-efforts-"));
+    const scratch = mkdtempSync(join(tmpdir(), "madani-opencode-discover-v2-efforts-"));
     try {
       const found = await discoverOpenCodeModels({
         ...process.env, HOME: scratch, FAKE_ACP_MODELS_LIST: "v2",
@@ -608,7 +608,7 @@ describe("OpenCode catalog discovery from the ACP session", () => {
   });
 
   it("keeps the model list when OpenCode stops while its efforts are being read", async () => {
-    const scratch = mkdtempSync(join(tmpdir(), "dusk-opencode-discover-v2-exit-"));
+    const scratch = mkdtempSync(join(tmpdir(), "madani-opencode-discover-v2-exit-"));
     try {
       const found = await discoverOpenCodeModels({
         ...process.env, HOME: scratch, FAKE_ACP_MODELS_LIST: "v2",
@@ -624,7 +624,7 @@ describe("OpenCode catalog discovery from the ACP session", () => {
   });
 
   it("keeps OpenCode 1's metadata beside the efforts its session names", async () => {
-    const scratch = mkdtempSync(join(tmpdir(), "dusk-opencode-discover-v1-efforts-"));
+    const scratch = mkdtempSync(join(tmpdir(), "madani-opencode-discover-v1-efforts-"));
     try {
       const found = await discoverOpenCodeModels({
         ...process.env, HOME: scratch, FAKE_ACP_MODELS: "opencode/big-pickle,github-copilot/gpt-5.3-codex",
@@ -736,7 +736,7 @@ describe("OpenCode turns without a sign-in gate", () => {
     resetOpenCodeModelCache();
   });
   const open = async (instanceId: string, environmentFor: (scratch: string) => Record<string, string>) => {
-    const scratch = mkdtempSync(join(tmpdir(), "dusk-opencode-gate-"));
+    const scratch = mkdtempSync(join(tmpdir(), "madani-opencode-gate-"));
     const environment = environmentFor(scratch);
     const driver = createOpenCodeDriver(async () => ({ default: "", options: [] }));
     const instance = await driver.create({
@@ -787,8 +787,8 @@ describe("OpenCode turns without a sign-in gate", () => {
 
   it("names a rate limit OpenCode logged for this turn's main request while the turn stays quiet", async () => {
     vi.spyOn(quietStatus, "sampleProcessTree").mockResolvedValue({ cpuMs: 0, connections: 1 });
-    vi.stubEnv("DUSK_ACP_QUIET_NOTICE_MS", "300");
-    vi.stubEnv("DUSK_ACP_QUIET_TICK_MS", "50");
+    vi.stubEnv("MADANI_ACP_QUIET_NOTICE_MS", "300");
+    vi.stubEnv("MADANI_ACP_QUIET_TICK_MS", "50");
     // The row format of a real opencode log, with a synthetic run and model.
     const row = (session: string, small: boolean, error: string) =>
       `timestamp=2026-10-01T00:00:03.000Z level=ERROR run=fixture_run message="stream error" providerID=opencode modelID=mimo-v2.6-flash-free session.id=${session} small=${small} agent=build mode=primary error.error="${error}"`;
@@ -816,9 +816,9 @@ describe("OpenCode turns without a sign-in gate", () => {
   // error" row in its log, then nothing over ACP while it sleeps the whole retry-after, uncapped, five times over.
   it("ends a turn that waits out a usage limit as that limit, so another AI can carry on", async () => {
     vi.spyOn(quietStatus, "sampleProcessTree").mockResolvedValue({ cpuMs: 0, connections: 0 });
-    vi.stubEnv("DUSK_ACP_QUIET_NOTICE_MS", "300");
-    vi.stubEnv("DUSK_ACP_QUIET_TICK_MS", "50");
-    vi.stubEnv("DUSK_ACP_LIMIT_QUIET_MS", "400");
+    vi.stubEnv("MADANI_ACP_QUIET_NOTICE_MS", "300");
+    vi.stubEnv("MADANI_ACP_QUIET_TICK_MS", "50");
+    vi.stubEnv("MADANI_ACP_LIMIT_QUIET_MS", "400");
     const row = `timestamp=2026-10-28T22:11:15.919Z level=ERROR run=fixture_run message="stream error" providerID=opencode-go modelID=kimi-k3 session.id={session} small=false agent=build mode=primary error.error="AI_APICallError: Usage limit reached"`;
     const f = await open("opencode-go-limit", () => ({
       FAKE_ACP_MODE: "quiet-then-answer", FAKE_ACP_QUIET_MS: "30000", FAKE_ACP_MODELS: "opencode/big-pickle",
@@ -846,9 +846,9 @@ describe("OpenCode turns without a sign-in gate", () => {
 
   it("stops an engine with no open request, no CPU use and nothing logged after a few minutes, not the full silence guard", async () => {
     vi.spyOn(quietStatus, "sampleProcessTree").mockResolvedValue({ cpuMs: 0, connections: 0 });
-    vi.stubEnv("DUSK_ACP_QUIET_NOTICE_MS", "200");
-    vi.stubEnv("DUSK_ACP_QUIET_TICK_MS", "50");
-    vi.stubEnv("DUSK_ACP_NO_SIGNS_STOP_MS", "500");
+    vi.stubEnv("MADANI_ACP_QUIET_NOTICE_MS", "200");
+    vi.stubEnv("MADANI_ACP_QUIET_TICK_MS", "50");
+    vi.stubEnv("MADANI_ACP_NO_SIGNS_STOP_MS", "500");
     const f = await open("opencode-lifeless", () => ({ FAKE_ACP_MODE: "quiet-then-answer", FAKE_ACP_QUIET_MS: "30000", FAKE_ACP_MODELS: "opencode/big-pickle" }));
     try {
       const { done, events } = await f.run("t-lifeless", "opencode/big-pickle");
@@ -874,7 +874,7 @@ describe("OpenCode after a login added since its process started", () => {
     resetOpenCodeModelCache();
   });
   const open = async () => {
-    const scratch = mkdtempSync(join(tmpdir(), "dusk-opencode-login-"));
+    const scratch = mkdtempSync(join(tmpdir(), "madani-opencode-login-"));
     const modelsFile = join(scratch, "models");
     writeFileSync(modelsFile, "opencode/big-pickle");
     const driver = createOpenCodeDriver(async () => catalog("opencode/big-pickle", added));
@@ -940,7 +940,7 @@ describe("OpenCode catalog probes", () => {
     } catch {
       return;
     }
-    const scratch = mkdtempSync(join(tmpdir(), "dusk-opencode-probe-folder-"));
+    const scratch = mkdtempSync(join(tmpdir(), "madani-opencode-probe-folder-"));
     try {
       const rpc = join(scratch, "rpc.jsonl");
       await discoverOpenCodeModels({ ...process.env, HOME: scratch, FAKE_ACP_MODELS: "opencode/big-pickle", FAKE_ACP_RPC_APPEND_FILE: rpc }, FAKE_CLI);
@@ -960,7 +960,7 @@ describe("OpenCode catalog probes", () => {
   });
 });
 
-describe("OpenCode access to folders dusk bot owns", () => {
+describe("OpenCode access to folders madani bot owns", () => {
   it("names the attachments folder and only this bot's shared folder", () => {
     expect(openCodeOwnedDirectories("bot-7")).toEqual([ATTACHMENTS_DIR, workspaceDir("bot-7")]);
     expect(openCodeOwnedDirectories("..")).toEqual([ATTACHMENTS_DIR]);
@@ -973,7 +973,7 @@ describe("OpenCode access to folders dusk bot owns", () => {
     ["the bot's shared folder (a room's)", workspaceDir("bot-7")],
     ["a folder inside the shared one", join(workspaceDir("bot-7"), "memory")],
     ["the attachments folder", ATTACHMENTS_DIR],
-    ["dusk bot's data folder", dirname(ATTACHMENTS_DIR)],
+    ["madani bot's data folder", dirname(ATTACHMENTS_DIR)],
     ["a project folder", join(tmpdir(), "project")],
   ])("never allows the working folder or a folder above it: %s", (_label, cwd) => {
     const inside = (path: string, folder: string) => {
@@ -985,16 +985,16 @@ describe("OpenCode access to folders dusk bot owns", () => {
     expect(allowed).not.toContain(join(TASK_WORKSPACES_DIR, "bot-7"));
   });
 
-  it("switches off project config only in dusk bot's own working folders", () => {
-    expect(duskOwnsWorkingFolder(join(TASK_WORKSPACES_DIR, "bot-7", "thread-1"))).toBe(true);
-    expect(duskOwnsWorkingFolder(workspaceDir("bot-7"))).toBe(true);
-    expect(duskOwnsWorkingFolder(TASK_WORKSPACES_DIR)).toBe(false);
-    expect(duskOwnsWorkingFolder(join(tmpdir(), "project"))).toBe(false);
-    expect(duskOwnsWorkingFolder(`${TASK_WORKSPACES_DIR}-elsewhere`)).toBe(false);
+  it("switches off project config only in madani bot's own working folders", () => {
+    expect(madaniOwnsWorkingFolder(join(TASK_WORKSPACES_DIR, "bot-7", "thread-1"))).toBe(true);
+    expect(madaniOwnsWorkingFolder(workspaceDir("bot-7"))).toBe(true);
+    expect(madaniOwnsWorkingFolder(TASK_WORKSPACES_DIR)).toBe(false);
+    expect(madaniOwnsWorkingFolder(join(tmpdir(), "project"))).toBe(false);
+    expect(madaniOwnsWorkingFolder(`${TASK_WORKSPACES_DIR}-elsewhere`)).toBe(false);
   });
 
-  it("keeps the person's single folder rule ahead of dusk bot's folders", () => {
-    const scratch = mkdtempSync(join(tmpdir(), "dusk-opencode-folder-rule-"));
+  it("keeps the person's single folder rule ahead of madani bot's folders", () => {
+    const scratch = mkdtempSync(join(tmpdir(), "madani-opencode-folder-rule-"));
     try {
       const configDir = join(scratch, "config", "opencode");
       mkdirSync(configDir, { recursive: true });
@@ -1018,7 +1018,7 @@ describe("OpenCode access to folders dusk bot owns", () => {
   });
 
   it("carries the person's deny into a turn's folder policy", async () => {
-    const scratch = mkdtempSync(join(tmpdir(), "dusk-opencode-deny-"));
+    const scratch = mkdtempSync(join(tmpdir(), "madani-opencode-deny-"));
     const dump = join(scratch, "env.json");
     mkdirSync(join(scratch, "opencode"), { recursive: true });
     writeFileSync(join(scratch, "opencode", "opencode.json"), JSON.stringify({ permission: { external_directory: "deny" } }));
@@ -1049,7 +1049,7 @@ describe("OpenCode access to folders dusk bot owns", () => {
   });
 
   it.each([["ask", false], ["full", true]] as const)("sets OpenCode's folder policy for %s turns", async (approvalMode, full) => {
-    const scratch = mkdtempSync(join(tmpdir(), "dusk-opencode-permission-"));
+    const scratch = mkdtempSync(join(tmpdir(), "madani-opencode-permission-"));
     const dump = join(scratch, "env.json");
     const driver = createOpenCodeDriver(async () => catalog("opencode/big-pickle"));
     const instance = await driver.create({
@@ -1097,7 +1097,7 @@ describe("OpenCode session variants", () => {
   ];
   const fixtures: Array<{ scratch: string; instance: ProviderInstance; recorder: EventRecorder }> = [];
   const fixture = async (variants: Record<string, unknown>, environment: Record<string, string> = {}) => {
-    const scratch = mkdtempSync(join(tmpdir(), "dusk-opencode-variants-"));
+    const scratch = mkdtempSync(join(tmpdir(), "madani-opencode-variants-"));
     const dump = join(scratch, "rpc");
     const driver = createOpenCodeDriver(async () => catalog(model, secondModel, plainModel));
     const instance = await driver.create({
@@ -1313,7 +1313,7 @@ describe("OpenCode model choice without a saved model", () => {
   });
 
   it("runs a free model, not OpenCode's own paid default", async () => {
-    const scratch = mkdtempSync(join(tmpdir(), "dusk-opencode-paid-default-"));
+    const scratch = mkdtempSync(join(tmpdir(), "madani-opencode-paid-default-"));
     const dump = join(scratch, "rpc");
     const driver = createOpenCodeDriver(async () => ({ default: "", options: [] }));
     const instance = await driver.create({
@@ -1342,7 +1342,7 @@ describe("OpenCode model choice without a saved model", () => {
 describe("OpenCode ready only through its free models", () => {
   const noKeys = { OPENCODE_API_KEY: "", OPENCODE_AUTH_CONTENT: "", ...Object.fromEntries(OPENCODE_PROVIDER_ENV.map((key) => [key, ""])) };
   async function snapshotWith(models: ModelCatalog, environment: Record<string, string> = {}, login?: Record<string, unknown>) {
-    const scratch = mkdtempSync(join(tmpdir(), "dusk-opencode-fallback-"));
+    const scratch = mkdtempSync(join(tmpdir(), "madani-opencode-fallback-"));
     if (login) {
       mkdirSync(join(scratch, "data", "opencode"), { recursive: true });
       writeFileSync(join(scratch, "data", "opencode", "auth.json"), JSON.stringify(login));
@@ -1397,7 +1397,7 @@ describe("OpenCode ready only through its free models", () => {
   });
 
   it("loads the free models when a status read finds it ready after the list read empty (installed after start)", async () => {
-    const scratch = mkdtempSync(join(tmpdir(), "dusk-opencode-late-"));
+    const scratch = mkdtempSync(join(tmpdir(), "madani-opencode-late-"));
     resetOpenCodeModelCache();
     let installed = false;
     const loader = vi.fn(async () => (installed ? catalog("opencode/big-pickle", "opencode/grok-code") : { default: "", options: [] }));
@@ -1438,13 +1438,13 @@ describe("OpenCode free model that never answers, or answers nothing", () => {
     trailed.length = 0;
     configureTrail({ src: "test", writer: { write: (event: Record<string, unknown>) => { if (String(event.ev).startsWith("free_model.")) trailed.push(event); }, flush: async () => {}, flushSync: () => {}, close: async () => {} } });
   });
-  afterEach(() => { delete process.env.DUSK_ACP_FIRST_REPLY_MS; delete process.env.DUSK_ACP_FREE_TURN_MS; resetFreeLadder(); });
+  afterEach(() => { delete process.env.MADANI_ACP_FIRST_REPLY_MS; delete process.env.MADANI_ACP_FREE_TURN_MS; resetFreeLadder(); });
 
   // `login`: OpenCode's stored auth.json, as on a Mac where the person once signed OpenCode in to something
   async function firstMessage(hang: string, extra: Record<string, string> = {}, replyMs = "600", login?: Record<string, unknown>,
     models: ModelCatalog = catalog("opencode/big-pickle", "opencode/grok-code", "opencode/minimax")) {
-    process.env.DUSK_ACP_FIRST_REPLY_MS = replyMs;
-    const scratch = mkdtempSync(join(tmpdir(), "dusk-opencode-hang-"));
+    process.env.MADANI_ACP_FIRST_REPLY_MS = replyMs;
+    const scratch = mkdtempSync(join(tmpdir(), "madani-opencode-hang-"));
     if (login) {
       mkdirSync(join(scratch, "data", "opencode"), { recursive: true });
       writeFileSync(join(scratch, "data", "opencode", "auth.json"), JSON.stringify(login));
@@ -1604,7 +1604,7 @@ describe("OpenCode free model that never answers, or answers nothing", () => {
 
   it("ends a turn no free model answers inside the turn's free budget, not after every model's full wait", async () => {
     // three models at 600 ms each would take 1.8 s; the budget stops it after the second
-    process.env.DUSK_ACP_FREE_TURN_MS = "1000";
+    process.env.MADANI_ACP_FREE_TURN_MS = "1000";
     const { done, events, tried } = await firstMessage("opencode/big-pickle,opencode/grok-code,opencode/minimax");
     expect(tried.length).toBeLessThan(3);
     expect(done).toMatchObject({ ok: false, stopReason: "no_reply" });
@@ -1630,8 +1630,8 @@ describe("OpenCode free model that never answers, or answers nothing", () => {
 });
 
 describe("OpenCode one-off calls (connection checks, memory upkeep)", () => {
-  it("file their session under dusk bot's own OpenCode project, never the global one the person's other folders share", async () => {
-    const scratch = mkdtempSync(join(tmpdir(), "dusk-opencode-oneshot-"));
+  it("file their session under madani bot's own OpenCode project, never the global one the person's other folders share", async () => {
+    const scratch = mkdtempSync(join(tmpdir(), "madani-opencode-oneshot-"));
     const requests = join(scratch, "requests.jsonl");
     const driver = createOpenCodeDriver(async () => catalog("opencode/big-pickle"));
     const instance = await driver.create({
@@ -1682,7 +1682,7 @@ describe("OpenCode without Node.js", () => {
     ["the app's own copy with OpenCode's self-updater off", true],
     ["a copy the person installed with its updater left alone", false],
   ])("runs %s", async (_label, appCopy) => {
-    const scratch = mkdtempSync(join(tmpdir(), "dusk-opencode-autoupdate-"));
+    const scratch = mkdtempSync(join(tmpdir(), "madani-opencode-autoupdate-"));
     const dump = join(scratch, "env.json");
     let cli = FAKE_CLI;
     if (appCopy) {
@@ -1714,7 +1714,7 @@ describe("OpenCode without Node.js", () => {
 
 describe.skipIf(process.platform === "win32")("which OpenCode runs", () => {
   async function runTurn(scratch: string, log: string, withOwnCopy: boolean) {
-    const original = process.env.PATH, sealed = process.env.DUSK_TEST_SEALED_PATH;
+    const original = process.env.PATH, sealed = process.env.MADANI_TEST_SEALED_PATH;
     const dump = join(scratch, "env.json");
     const copy = (folder: string, label: string) => {
       mkdirSync(folder, { recursive: true });
@@ -1726,7 +1726,7 @@ describe.skipIf(process.platform === "win32")("which OpenCode runs", () => {
     copy(enginesBinDir(), "npm");
     copy(join(standaloneEngineDir("opencode"), "bin"), "standalone");
     // Only these copies and node: a real OpenCode on this computer (Homebrew, npm) must never answer the test's turn.
-    process.env.DUSK_TEST_SEALED_PATH = "1";
+    process.env.MADANI_TEST_SEALED_PATH = "1";
     process.env.PATH = withOwnCopy ? `${own}${delimiter}${dirname(process.execPath)}` : dirname(process.execPath);
     resetPathCacheForTests();
     registerPathDir(enginesBinDir());
@@ -1746,8 +1746,8 @@ describe.skipIf(process.platform === "win32")("which OpenCode runs", () => {
       recorder.stop();
       await instance.dispose();
       process.env.PATH = original;
-      if (sealed === undefined) delete process.env.DUSK_TEST_SEALED_PATH;
-      else process.env.DUSK_TEST_SEALED_PATH = sealed;
+      if (sealed === undefined) delete process.env.MADANI_TEST_SEALED_PATH;
+      else process.env.MADANI_TEST_SEALED_PATH = sealed;
       resetPathCacheForTests();
     }
   }
@@ -1761,7 +1761,7 @@ describe.skipIf(process.platform === "win32")("which OpenCode runs", () => {
   });
 
   it("runs the person's own copy ahead of the one npm put in the app's folder, with its updater left alone", async () => {
-    scratch = mkdtempSync(join(tmpdir(), "dusk-opencode-which-"));
+    scratch = mkdtempSync(join(tmpdir(), "madani-opencode-which-"));
     const log = join(scratch, "runs.log");
     const env = await runTurn(scratch, log, true);
     expect(readFileSync(log, "utf8").trim().split("\n")).toEqual(["own"]);
@@ -1770,7 +1770,7 @@ describe.skipIf(process.platform === "win32")("which OpenCode runs", () => {
   });
 
   it("runs the app's own build ahead of the npm copy, with OpenCode's self-updater off", async () => {
-    scratch = mkdtempSync(join(tmpdir(), "dusk-opencode-which-"));
+    scratch = mkdtempSync(join(tmpdir(), "madani-opencode-which-"));
     const log = join(scratch, "runs.log");
     const env = await runTurn(scratch, log, false);
     expect(readFileSync(log, "utf8").trim().split("\n")).toEqual(["standalone"]);

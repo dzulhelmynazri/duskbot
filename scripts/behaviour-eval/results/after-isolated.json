@@ -173,7 +173,7 @@
       "tools": [],
       "state": "idle",
       "ms": 3931,
-      "output": "I can’t rename the folder because Works on is Off in this bot’s settings. Turn it on, and I can rename `dusk-bto` to `dusk-bot` in your Documents."
+      "output": "I can’t rename the folder because Works on is Off in this bot’s settings. Turn it on, and I can rename `madani-bto` to `madani-bot` in your Documents."
     },
     {
       "model": "gpt-6.1-terra",
@@ -379,7 +379,7 @@
       "tools": [],
       "state": "idle",
       "ms": 4917,
-      "output": "Renaming project folder dusk-bto to dusk-bot in Documents.\n---\nI can’t rename the folder because this bot’s “Works on” setting is Off, so I don’t have computer access."
+      "output": "Renaming project folder madani-bto to madani-bot in Documents.\n---\nI can’t rename the folder because this bot’s “Works on” setting is Off, so I don’t have computer access."
     },
     {
       "model": "gpt-oss-120b-medium",
@@ -616,7 +616,7 @@
       ],
       "state": "idle",
       "ms": 5759,
-      "output": "Got it, renaming your project folder in Documents right now.\n---\nThis bot's \"Works on\" setting is Off, so I don't have access to a computer or terminal to rename the folder directly in your Documents. You can quickly rename it in Finder by selecting the `dusk-bto` folder in Documents and pressing Return to change the name to `dusk-bot`."
+      "output": "Got it, renaming your project folder in Documents right now.\n---\nThis bot's \"Works on\" setting is Off, so I don't have access to a computer or terminal to rename the folder directly in your Documents. You can quickly rename it in Finder by selecting the `madani-bto` folder in Documents and pressing Return to change the name to `madani-bot`."
     },
     {
       "model": "gemini-3.1-flash-lite",

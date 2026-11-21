@@ -69,17 +69,17 @@ download UI; verify those separately in a renderer connected to a fixture.
 ### Template sidebar UI
 
 ```sh
-DUSK_UI_E2E=1 pnpm exec vitest run scripts/testing/team-template-ui.e2e.test.ts --silent=false
+MADANI_UI_E2E=1 pnpm exec vitest run scripts/testing/team-template-ui.e2e.test.ts --silent=false
 ```
 
-This owns a disposable `control-dusk ui` app. It sends a fixture conversation,
+This owns a disposable `control-madani ui` app. It sends a fixture conversation,
 creates two existing sections, imports a catalog template, then imports the
 same template through the file input. It checks the preview copy, distinct
 new sections, and preservation of existing bots and their conversation.
 The catalog download is simulated; the renderer, import API and persistence
 are real. The file-input change handler is exercised, not the OS file picker.
 The output includes the fixture log path and a sidebar screenshot saved at
-`.dusk-scratch/verify-evidence/template-import-sections.png`.
+`.madani-scratch/verify-evidence/template-import-sections.png`.
 
 ## Explicit skills in setup packages
 

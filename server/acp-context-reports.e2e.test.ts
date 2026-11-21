@@ -3,7 +3,7 @@ import { closeSync, openSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { expect, it } from "vitest";
-import { launchVerificationServer, runControlDusk, verificationServerEnvironment } from "../scripts/control-dusk.ts";
+import { launchVerificationServer, runControlMadani, verificationServerEnvironment } from "../scripts/control-madani.ts";
 import { waitForExit } from "./testing/cleanup.ts";
 
 const MODEL = "fixture/context";
@@ -16,7 +16,7 @@ let url = "";
 let usageFile = "";
 let updatesFile = "";
 
-const control = (...args: string[]) => runControlDusk([...args, "--url", url]) as Promise<any>;
+const control = (...args: string[]) => runControlMadani([...args, "--url", url]) as Promise<any>;
 const api = async (method: string, path: string, body?: unknown) => {
   const response = await fetch(url + path, {
     method, headers: { "content-type": "application/json", origin: url },

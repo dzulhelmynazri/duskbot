@@ -3,20 +3,20 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { expect, it } from "vitest";
 
-import { launchVerificationServer, runControlDusk } from "../scripts/control-dusk.ts";
+import { launchVerificationServer, runControlMadani } from "../scripts/control-madani.ts";
 import { removeTempDir } from "./testing/cleanup.ts";
 
 it("a bot's turn reads its accounts' usage limits through its own capability, and nothing else may", async () => {
-  const folder = mkdtempSync(join(tmpdir(), "dusk-engine-limits-"));
+  const folder = mkdtempSync(join(tmpdir(), "madani-engine-limits-"));
   const gate = join(folder, "finish");
   const fixture = await launchVerificationServer({ FAKE_CLAUDE_MODE: "slow", FAKE_CLAUDE_SLOW_FINISH_GATE: gate });
   try {
     const request = (path: string, init: RequestInit = {}) => fetch(fixture.info.url + path, { ...init, headers: { "content-type": "application/json", origin: fixture.info.url, ...init.headers } });
     const { bot } = await (await request("/api/bots", { method: "POST", body: JSON.stringify({ name: "Scout" }) })).json() as { bot: { id: string; threadId: string } };
-    await runControlDusk(["send", "--bot", bot.id, "--task", bot.threadId, "--text", "How much Claude is left?", "--url", fixture.info.url]);
+    await runControlMadani(["send", "--bot", bot.id, "--task", bot.threadId, "--text", "How much Claude is left?", "--url", fixture.info.url]);
     let token = "";
     await expect.poll(() => {
-      try { token = JSON.parse(readFileSync(fixture.fixtureDumpPath, "utf8")).mcpConfig.mcpServers.agents.env.DUSK_COMMS_TOKEN; } catch { return false; }
+      try { token = JSON.parse(readFileSync(fixture.fixtureDumpPath, "utf8")).mcpConfig.mcpServers.agents.env.MADANI_COMMS_TOKEN; } catch { return false; }
       return Boolean(token);
     }, { timeout: 15_000 }).toBe(true);
 

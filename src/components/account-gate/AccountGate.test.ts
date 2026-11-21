@@ -45,13 +45,13 @@ afterEach(async () => { await act(async () => root?.unmount()); host.remove(); v
 
 it("renders the title, providers and email step, and focuses the email field", async () => {
   const html = renderToStaticMarkup(createElement(AccountGate, { bridge }));
-  expect(html).toContain("Sign in to dusk bot");
+  expect(html).toContain("Sign in to madani bot");
   expect(html).toContain(`One account for your bots, your ${deviceWord()} and your cloud desktop.`);
   for (const name of ["Google", "Apple"]) expect(html).toContain(`Continue with ${name}`);
   expect(html).not.toContain("Continue with X");
   expect(html).toContain('type="email"'); expect(html).toContain("Send code");
   await mount();
-  expect(host.querySelector("h1")?.textContent).toBe("Sign in to dusk bot");
+  expect(host.querySelector("h1")?.textContent).toBe("Sign in to madani bot");
   expect(document.activeElement).toBe(email());
 });
 
@@ -78,7 +78,7 @@ it("says so when there is no keyring, and keeps the code when the sign-in can't 
   await type(email(), "person@example.com"); await submit();
   await paste(digit(1), "12345678");
   expect(host.querySelector("[role=alert]")?.textContent).toBe("This computer can't save your sign-in right now. Restart the app and try again.");
-  expect(host.textContent).not.toContain("Couldn't reach dusk cloud");
+  expect(host.textContent).not.toContain("Couldn't reach madani cloud");
 });
 
 it("goes back to the sign-in when the person signs out in the app, but not for a moment's switch of accounts", async () => {
@@ -150,7 +150,7 @@ it("Can't sign in? sends a recovery code, says what comes, and gives plain help 
   expect(host.querySelector("h1")?.textContent).toBe("Can't sign in?");
   expect(button("Continue with Google")).toBeUndefined();
   expect(host.querySelector("h2")?.textContent).toBe("Lost access to that email?");
-  expect(host.textContent).toContain("write to hello@dusk.bot from any email with your receipt");
+  expect(host.textContent).toContain("write to hello@madani.bot from any email with your receipt");
   await type(email(), "person@example.com"); await submit();
   expect(bridge.signInStart).toHaveBeenCalledExactlyOnceWith("person@example.com", { recover: true });
   expect(host.textContent).toContain("If an account uses this email, the code is on its way");
@@ -163,7 +163,7 @@ it("back to sign in returns to the providers and a plain code", async () => {
   await mount();
   await act(async () => button("Can't sign in?").click());
   await act(async () => button("Back to sign in").click());
-  expect(host.querySelector("h1")?.textContent).toBe("Sign in to dusk bot");
+  expect(host.querySelector("h1")?.textContent).toBe("Sign in to madani bot");
   await type(email(), "person@example.com"); await submit();
   expect(bridge.signInStart).toHaveBeenCalledExactlyOnceWith("person@example.com");
 });

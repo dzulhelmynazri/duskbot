@@ -63,7 +63,7 @@ document.addEventListener('mousedown', (e) => { if (e.detail > 1 && e.target.clo
 // which desktop build fits this computer: mac-arm64, mac-x64, windows or linux-deb, or phone. chromium names the mac's
 // chip; other browsers only through the gpu's name, and with neither it guesses apple silicon, what most macs are now.
 // pages call it once on load, so the download links are already right when you click
-window.duskBuild = async () => {
+window.madaniBuild = async () => {
   const ua = navigator.userAgent;
   if (/android|iphone|ipad/i.test(ua) || (/mac/i.test(ua) && navigator.maxTouchPoints > 1)) return 'phone';
   if (/windows/i.test(ua)) return 'windows';
@@ -79,7 +79,7 @@ window.duskBuild = async () => {
   return 'mac-arm64';
 };
 
-// plus and pro start free while the account service runs a trial (DUSK_TRIAL_DAYS); without one the cards stay as built
+// plus and pro start free while the account service runs a trial (MADANI_TRIAL_DAYS); without one the cards stay as built
 {
   const buys = [...document.querySelectorAll('.plan a[href*="/signup?plan="]')];
   if (buys.length) fetch('/api/public/config').then((r) => (r.ok ? r.json() : null)).then((config) => {

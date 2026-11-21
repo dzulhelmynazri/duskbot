@@ -62,7 +62,7 @@ const faceOf = (status: Shown) => (status === "celebrate" ? "celebrate" : markSt
 
 /** The island's own prefs, read once; null until known, false where there is no island (not a Mac, not the desktop app). */
 export function useIslandAvailable(): boolean | null {
-  const bridge = window.duskDesktop?.ambient as AmbientAppBridge | undefined;
+  const bridge = window.madaniDesktop?.ambient as AmbientAppBridge | undefined;
   const [available, setAvailable] = useState<boolean | null>(bridge ? null : false);
   useEffect(() => {
     if (!bridge) return;
@@ -75,7 +75,7 @@ export function useIslandAvailable(): boolean | null {
 
 /** Turns the real island on once `armed`, and back off if the step closes with no choice made. */
 function useLiveIsland(armed: boolean) {
-  const bridge = window.duskDesktop?.ambient as AmbientAppBridge | undefined;
+  const bridge = window.madaniDesktop?.ambient as AmbientAppBridge | undefined;
   const [live, setLive] = useState(false);
   const was = useRef<boolean | null>(null);
   const turnedOn = useRef(false);
@@ -303,7 +303,7 @@ export function IslandIntro({ onDone, titleId = "welcome-title" }: { onDone: (ch
             </motion.span>
           )}
 
-          {/* Dusk drops out of the notch, says hello, and flies home into the island */}
+          {/* Madani drops out of the notch, says hello, and flies home into the island */}
           {!reduced && (phase === "bloom" || phase === "hero" || phase === "home") && (
             <motion.span aria-hidden className="pointer-events-none absolute left-0 top-0 flex" style={{ width: HERO, height: HERO, zIndex: heroStage === "in" ? 0 : 2 }}
               initial={{ x: MID - HERO / 2, y: -HERO / 2, scale: 0.4, opacity: 0 }}

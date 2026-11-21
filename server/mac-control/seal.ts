@@ -1,6 +1,6 @@
 // Sealing for "cloud bots use this Mac" (docs/cloud-uses-mac.md): the hosting provider's proxy ends TLS before this
 // machine, so jobs are sealed to the Mac's key and signed with this cloud's link key, whose public half the Mac gets
-// from dusk.bot.
+// from madani.bot.
 import { createCipheriv, createDecipheriv, createPrivateKey, createPublicKey, diffieHellman, generateKeyPairSync, hkdfSync, randomBytes, sign, type KeyObject } from "node:crypto";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";

@@ -52,9 +52,9 @@ export function createVpsCapacityHost(deps: {
 let host: VpsCapacityHost | null = null;
 export function setVpsCapacityHost(next: VpsCapacityHost | null): void { host = next; }
 
-/** DUSK_VPS_MAX_DESKTOPS overrides the memory rule for a host whose desktops are lighter or heavier than usual. */
+/** MADANI_VPS_MAX_DESKTOPS overrides the memory rule for a host whose desktops are lighter or heavier than usual. */
 export function desktopCapacity(memoryBytes: number, env: NodeJS.ProcessEnv = process.env): number {
-  const forced = Number(env.DUSK_VPS_MAX_DESKTOPS);
+  const forced = Number(env.MADANI_VPS_MAX_DESKTOPS);
   if (Number.isInteger(forced) && forced >= 1) return Math.min(MAX_DESKTOPS, forced);
   return Math.max(1, Math.min(MAX_DESKTOPS, Math.floor((memoryBytes - HOST_RESERVE_BYTES) / DESKTOP_BYTES)));
 }

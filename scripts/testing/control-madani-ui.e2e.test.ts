@@ -1,6 +1,6 @@
-// Drives the real <App/> through `control-dusk ui` and reads outcomes from the
+// Drives the real <App/> through `control-madani ui` and reads outcomes from the
 // accessibility tree. Needs the pinned agent-browser binary: runs when one
-// resolves (tools directory, DUSK_AGENT_BROWSER_PATH or PATH) or DUSK_UI_E2E=1
+// resolves (tools directory, MADANI_AGENT_BROWSER_PATH or PATH) or MADANI_UI_E2E=1
 // asks for the verified download; otherwise skipped.
 import { spawn } from "node:child_process";
 import { existsSync, mkdirSync, mkdtempSync, readFileSync } from "node:fs";
@@ -11,18 +11,18 @@ import { afterAll, describe, expect, it } from "vitest";
 
 import { resolveAgentBrowserBinary } from "../../server/browser-engine.ts";
 import { removeTempDir, waitForExit } from "../../server/testing/cleanup.ts";
-import { runControlDusk } from "../control-dusk.ts";
-import { UI_TOOLS_DIR } from "./control-dusk-ui.ts";
+import { runControlMadani } from "../control-madani.ts";
+import { UI_TOOLS_DIR } from "./control-madani-ui.ts";
 import { clickByName, openSettings } from "./grok-nav.ts";
 import { fixtureApi } from "./preview-fixture.ts";
 
 const ROOT = fileURLToPath(new URL("../..", import.meta.url));
-const CLI = join(ROOT, "scripts", "control-dusk.ts");
-const forced = process.env.DUSK_UI_E2E === "1";
+const CLI = join(ROOT, "scripts", "control-madani.ts");
+const forced = process.env.MADANI_UI_E2E === "1";
 const binary = resolveAgentBrowserBinary({ dataDir: UI_TOOLS_DIR, env: process.env });
 const enabled = forced || Boolean(binary);
 if (!enabled) {
-  console.log(`skipping control-dusk ui e2e: no agent-browser binary resolves (looked in ${UI_TOOLS_DIR}, DUSK_AGENT_BROWSER_PATH and PATH); set DUSK_UI_E2E=1 to install the pinned release`);
+  console.log(`skipping control-madani ui e2e: no agent-browser binary resolves (looked in ${UI_TOOLS_DIR}, MADANI_AGENT_BROWSER_PATH and PATH); set MADANI_UI_E2E=1 to install the pinned release`);
 }
 const run = enabled ? it : it.skip;
 // A forced run may still have Chrome for Testing to download even when
@@ -31,15 +31,15 @@ const LAUNCH_TIMEOUT_MS = forced ? 600_000 : 180_000;
 
 // Synthetic provider outcomes exercise the UI, not the commands themselves.
 const TOOL_CALLS = JSON.stringify([
-  { name: "Bash", input: { command: "pnpm control:dusk doctor" }, ok: true },
-  { name: "Bash", input: { command: "pnpm control:dusk ui click --name Missing" }, ok: false },
-  { name: "Bash", input: { command: "pnpm control:dusk ui flag --set features.showToolCalls=true --dry-run" }, ok: true },
+  { name: "Bash", input: { command: "pnpm control:madani doctor" }, ok: true },
+  { name: "Bash", input: { command: "pnpm control:madani ui click --name Missing" }, ok: false },
+  { name: "Bash", input: { command: "pnpm control:madani ui flag --set features.showToolCalls=true --dry-run" }, ok: true },
 ]);
 const REPLY = "hello from fake claude"; // the fake engine's default reply text
 const COMPOSER = `document.querySelector('textarea[aria-label="Message Pepper"]')`;
-// DUSK_UI_EVIDENCE_DIR keeps the screenshot (CI uploads it); otherwise it is temporary.
-const evidenceDir = process.env.DUSK_UI_EVIDENCE_DIR ? resolve(ROOT, process.env.DUSK_UI_EVIDENCE_DIR) : mkdtempSync(join(tmpdir(), "dusk-ui-evidence-"));
-const ownsEvidenceDir = !process.env.DUSK_UI_EVIDENCE_DIR;
+// MADANI_UI_EVIDENCE_DIR keeps the screenshot (CI uploads it); otherwise it is temporary.
+const evidenceDir = process.env.MADANI_UI_EVIDENCE_DIR ? resolve(ROOT, process.env.MADANI_UI_EVIDENCE_DIR) : mkdtempSync(join(tmpdir(), "madani-ui-evidence-"));
+const ownsEvidenceDir = !process.env.MADANI_UI_EVIDENCE_DIR;
 
 interface Launched {
   child: ReturnType<typeof spawn>;
@@ -95,7 +95,7 @@ function launch(args: string[]): Promise<Launched> {
 }
 
 const ui = (verb: string, handle: string, ...args: string[]) =>
-  runControlDusk(["ui", verb, "--ui", handle, ...args]) as Promise<Record<string, any>>;
+  runControlMadani(["ui", verb, "--ui", handle, ...args]) as Promise<Record<string, any>>;
 
 /** Interactive refs by accessible name, from a snapshot's `refs` table. */
 const refsNamed = (snapshot: Record<string, any>, name: string, role?: string) =>
@@ -103,7 +103,7 @@ const refsNamed = (snapshot: Record<string, any>, name: string, role?: string) =
     .filter(([, element]) => element.name === name && (!role || element.role === role))
     .map(([id]) => `@${id}`);
 
-describe("control-dusk ui drives the real renderer", () => {
+describe("control-madani ui drives the real renderer", () => {
   let launched: Launched | undefined;
 
   afterAll(async () => {
@@ -261,7 +261,7 @@ describe("control-dusk ui drives the real renderer", () => {
     expect(info.ui).toBe(join(info.dataDir, "ui.json"));
     expect(existsSync(info.ui)).toBe(true);
     const handle = JSON.parse(readFileSync(info.ui, "utf8"));
-    expect(handle).toMatchObject({ url: info.url, previewUrl: info.previewUrl, botId: info.botId, home: info.dataDir, session: `dusk-ui-${new URL(info.url).port}` });
+    expect(handle).toMatchObject({ url: info.url, previewUrl: info.previewUrl, botId: info.botId, home: info.dataDir, session: `madani-ui-${new URL(info.url).port}` });
     expect(existsSync(handle.binary)).toBe(true);
 
     const dry = await ui("flag", info.ui, "--set", "features.showToolCalls=true", "--dry-run");
@@ -273,7 +273,7 @@ describe("control-dusk ui drives the real renderer", () => {
     const savedBot = async () => (await fetch(`${info.url}/api/bots`).then((response) => response.json())).bots.find((bot: any) => bot.id === info.botId);
     const originalBot = await savedBot();
     const originalModel = originalBot.modelSelection.model;
-    const models = await runControlDusk(["models", "--url", info.url]) as any;
+    const models = await runControlMadani(["models", "--url", info.url]) as any;
     const options = models.instances.find((instance: any) => instance.instanceId === originalBot.modelSelection.instanceId).models.options;
     const originalLabel = options.find((option: any) => option.id === originalModel).label;
     const nextModel = options.find((option: any) => option.id !== originalModel);
@@ -341,7 +341,7 @@ describe("control-dusk ui drives the real renderer", () => {
     })()`);
     expect(composerHit).toMatchObject({ result: true });
 
-    expect(await runControlDusk(["doctor", "--url", info.url])).toMatchObject({ ok: true });
+    expect(await runControlMadani(["doctor", "--url", info.url])).toMatchObject({ ok: true });
     await expect(ui("click", info.ui, "--name", "Deliberately missing QA control")).rejects.toThrow("no element is named");
 
     // Planted with the same delay the real control has: a --name lookup that
@@ -372,7 +372,7 @@ describe("control-dusk ui drives the real renderer", () => {
     expect(logs.ok).toBe(true);
     expect((logs.messages as Array<{ type: string; text: string }>).filter((message) => message.type === "error")).toEqual([]);
     const title = await ui("eval", info.ui, "--js", "document.title");
-    expect(title).toMatchObject({ ok: true, result: "Isolated dusk bot Chat" });
+    expect(title).toMatchObject({ ok: true, result: "Isolated madani bot Chat" });
 
     await waitForExit(launched.child, { signal: "SIGINT", graceMs: 30_000 });
     expect(launched.child.exitCode).toBe(0);

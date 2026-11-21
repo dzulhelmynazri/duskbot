@@ -30,7 +30,7 @@ import { createCloudAccountClient } from "../../../electron/cloud-account.mjs";
 import { createCloudSend } from "../../../electron/cloud-send.mjs";
 import { openOwnerSession } from "../../../electron/cloud-send-main.mjs";
 import { createHomeAgain } from "../../../electron/one-home-again.mjs";
-import { launchVerificationServer } from "../../../scripts/control-dusk.ts";
+import { launchVerificationServer } from "../../../scripts/control-madani.ts";
 import { readFrame } from "../../../server/routes/rfb-handshake.ts";
 import { vncAuthResponse } from "../../../server/routes/vnc-des.ts";
 import { applyPendingWorkspaceRestore } from "../../../server/workspace-backup.ts";
@@ -78,15 +78,15 @@ const save = () => writeFileSync(out, JSON.stringify({ ...results, marks }, null
 // ---- the account service
 let offset = 0;
 const now = () => Date.now() + offset;
-const dataDir = mkdtempSync(join(tmpdir(), "dusk-ibx-live-"));
+const dataDir = mkdtempSync(join(tmpdir(), "madani-ibx-live-"));
 const port = Number(option("--port") ?? 0);
-const PUBLIC_DOMAIN = "desktops.dusk-staging.test";
+const PUBLIC_DOMAIN = "desktops.madani-staging.test";
 const edgeToken = randomBytes(32).toString("base64url");
-const env: NodeJS.ProcessEnv = { ...process.env, DUSK_BILLING_PROVIDER: "fake", DUSK_POOL_DRIVER: "fake", DUSK_CLOUD_SEAL_KEY: randomBytes(32).toString("base64url"), DUSK_MANAGED: "1",
-  DUSK_MANAGED_EDGE_TOKEN: edgeToken, DUSK_MANAGED_SCOPE: scope, DUSK_MANAGED_HOME_PACKAGE_FILE: packageFile, DUSK_MANAGED_HOME_PACKAGE_SHA256: sha256,
-  DUSK_MANAGED_HOME_PACKAGE_SIGNATURE: signature, DUSK_RELEASE_PUBLIC_KEYS: releasePublic, DUSK_ENTITLEMENT_SIGNING_KEY: entitlementKey,
-  DUSK_MANAGED_LEASE_HOURS: "1", DUSK_MANAGED_IDLE_MINUTES: "3", DUSK_MANAGED_LOST_AFTER_MINUTES: "2",
-  DUSK_MANAGED_PUBLIC_DOMAIN: PUBLIC_DOMAIN };
+const env: NodeJS.ProcessEnv = { ...process.env, MADANI_BILLING_PROVIDER: "fake", MADANI_POOL_DRIVER: "fake", MADANI_CLOUD_SEAL_KEY: randomBytes(32).toString("base64url"), MADANI_MANAGED: "1",
+  MADANI_MANAGED_EDGE_TOKEN: edgeToken, MADANI_MANAGED_SCOPE: scope, MADANI_MANAGED_HOME_PACKAGE_FILE: packageFile, MADANI_MANAGED_HOME_PACKAGE_SHA256: sha256,
+  MADANI_MANAGED_HOME_PACKAGE_SIGNATURE: signature, MADANI_RELEASE_PUBLIC_KEYS: releasePublic, MADANI_ENTITLEMENT_SIGNING_KEY: entitlementKey,
+  MADANI_MANAGED_LEASE_HOURS: "1", MADANI_MANAGED_IDLE_MINUTES: "3", MADANI_MANAGED_LOST_AFTER_MINUTES: "2",
+  MADANI_MANAGED_PUBLIC_DOMAIN: PUBLIC_DOMAIN };
 for (const [k, v] of Object.entries(env)) if (v !== undefined) process.env[k] = v;
 
 const mailer = memoryMailer();
@@ -231,18 +231,18 @@ const PROFILE = String.raw`
 import json, os, re, shutil, subprocess, sys
 chrome = "/usr/lib/chromium/chromium" if os.path.exists("/usr/lib/chromium/chromium") else shutil.which("chromium")
 mode, profile = sys.argv[1], sys.argv[2]
-pages = os.path.join(os.path.expanduser("~"), ".dusk-live-pages"); os.makedirs(pages, exist_ok=True)
-with open(os.path.join(pages, "set.html"), "w") as f: f.write("<title>x</title><script>localStorage.setItem('dusk_login','kept');document.title='set:'+localStorage.getItem('dusk_login')</script>")
-with open(os.path.join(pages, "get.html"), "w") as f: f.write("<title>x</title><script>document.title='ls:'+localStorage.getItem('dusk_login')</script>")
+pages = os.path.join(os.path.expanduser("~"), ".madani-live-pages"); os.makedirs(pages, exist_ok=True)
+with open(os.path.join(pages, "set.html"), "w") as f: f.write("<title>x</title><script>localStorage.setItem('madani_login','kept');document.title='set:'+localStorage.getItem('madani_login')</script>")
+with open(os.path.join(pages, "get.html"), "w") as f: f.write("<title>x</title><script>document.title='ls:'+localStorage.getItem('madani_login')</script>")
 def dump(url):
     p = subprocess.run([chrome, "--headless=new", "--no-sandbox", "--disable-gpu", "--use-mock-keychain", "--password-store=basic", "--user-data-dir=" + profile, "--allow-file-access-from-files", "--virtual-time-budget=5000", "--dump-dom", url], capture_output=True, timeout=60)
     return p.stdout.decode("utf-8", "replace")
 if mode == "set":
-    dump("https://httpbin.org/response-headers?Set-Cookie=dusk_persist%3Dkept%3B%20Max-Age%3D86400%3B%20Path%3D%2F")
+    dump("https://httpbin.org/response-headers?Set-Cookie=madani_persist%3Dkept%3B%20Max-Age%3D86400%3B%20Path%3D%2F")
     dump("file://" + os.path.join(pages, "set.html"))
 cookies = dump("https://httpbin.org/cookies")
 title = re.search(r"<title>(.*?)</title>", dump("file://" + os.path.join(pages, "get.html")))
-print(json.dumps({"cookie": "dusk_persist" in cookies, "localStorage": bool(title) and title.group(1) == "ls:kept", "title": title.group(1) if title else None}))
+print(json.dumps({"cookie": "madani_persist" in cookies, "localStorage": bool(title) and title.group(1) == "ls:kept", "title": title.group(1) if title else None}))
 `;
 
 let failed: string | null = null;
@@ -275,7 +275,7 @@ try {
     if ((await client.emailVerify(code!)).outcome !== "signed-in") throw new Error("app sign-in failed");
     return webSignIn(origin, email);
   }, true);
-  let cookies = { cookie: web!.cookie, "x-dusk-csrf": web!.csrf, origin };
+  let cookies = { cookie: web!.cookie, "x-madani-csrf": web!.csrf, origin };
   const dashboardCall = async (method: string, route: string, body?: unknown) => {
     const r = await realFetch(`${origin}${route}`, { method, headers: { ...cookies, ...(body === undefined ? {} : { "content-type": "application/json" }) }, ...(body === undefined ? {} : { body: JSON.stringify(body) }) });
     const text = await r.text(); let data: any = null; try { data = JSON.parse(text); } catch { data = text; }
@@ -351,15 +351,15 @@ try {
 
   // test tooling: the synthetic engine, so bots answer
   await step("engine: synthetic engine installed (test tooling)", async () => {
-    const dir = mkdtempSync(join(tmpdir(), "dusk-engine-")), file = join(dir, "fake-claude.mjs");
+    const dir = mkdtempSync(join(tmpdir(), "madani-engine-")), file = join(dir, "fake-claude.mjs");
     execFileSync(resolve("node_modules/.bin/esbuild"), ["server/testing/fake-claude-cli.ts", "--bundle", "--platform=node", "--format=esm", `--outfile=${file}`, "--log-level=error",
       "--banner:js=import { createRequire as __cr } from 'node:module'; const require = __cr(import.meta.url);"], { stdio: "inherit" });
     const id = await machineOf(cloudId);
-    const wrapper = `#!/bin/sh\nif [ "$1" = auth ]; then echo '{"loggedIn":true,"email":"person@example.test"}'; exit 0; fi\nexport FAKE_CLAUDE_VERSION=2.1.284\nexec ${CLOUD_HOME.root}/node/bin/node /opt/dusk-test/fake-claude.mjs "$@"\n`;
+    const wrapper = `#!/bin/sh\nif [ "$1" = auth ]; then echo '{"loggedIn":true,"email":"person@example.test"}'; exit 0; fi\nexport FAKE_CLAUDE_VERSION=2.1.284\nexec ${CLOUD_HOME.root}/node/bin/node /opt/madani-test/fake-claude.mjs "$@"\n`;
     await ibx.upload(id, "/data/home/fake-claude.mjs", readFileSync(file));
     await ibx.upload(id, "/data/home/claude-wrapper.sh", Buffer.from(wrapper));
     rmSync(dir, { recursive: true, force: true });
-    const done = await onMachine(cloudId, "sudo install -d -m 0755 /opt/dusk-test && sudo install -m 0755 /data/home/fake-claude.mjs /opt/dusk-test/fake-claude.mjs && sudo install -m 0755 /data/home/claude-wrapper.sh /usr/local/bin/claude && sudo systemctl restart omb-home && for i in $(seq 1 60); do curl -fsS -m 2 http://127.0.0.1:8799/api/health >/dev/null && break; sleep 1; done && echo ok", 180);
+    const done = await onMachine(cloudId, "sudo install -d -m 0755 /opt/madani-test && sudo install -m 0755 /data/home/fake-claude.mjs /opt/madani-test/fake-claude.mjs && sudo install -m 0755 /data/home/claude-wrapper.sh /usr/local/bin/claude && sudo systemctl restart omb-home && for i in $(seq 1 60); do curl -fsS -m 2 http://127.0.0.1:8799/api/health >/dev/null && break; sleep 1; done && echo ok", 180);
     if (!done.stdout.includes("ok")) throw new Error(`engine install: ${done.stdout.slice(-200)}`);
   });
 
@@ -437,19 +437,19 @@ try {
   });
 
   // 5. inside the bot's computer: everyday sites, a download, files, a kept sign-in
-  const container = async () => (await onMachine(cloudId, "sudo docker ps --format '{{.ID}} {{.Names}}' | grep -i -m1 -E 'dusk|bot|desktop' | cut -d' ' -f1")).stdout.trim();
+  const container = async () => (await onMachine(cloudId, "sudo docker ps --format '{{.ID}} {{.Names}}' | grep -i -m1 -E 'madani|bot|desktop' | cut -d' ' -f1")).stdout.trim();
   if (!args.includes("--skip-browse")) await step("browser: everyday websites from a bot's computer", async () => {
     const id = await container(), machine = await machineOf(cloudId);
     await ibx.upload(machine, "/data/home/omb-browse.py", Buffer.from(BROWSE));
-    await onMachine(cloudId, `rm -f /data/home/omb-browse.out; setsid nohup bash -c "sudo docker exec -i -u 1000 ${id} python3 - '${JSON.stringify(SITES).replace(/'/g, "").replace(/"/g, '\\"')}' < /data/home/omb-browse.py > /data/home/omb-browse.out 2>&1; echo dusk-done >> /data/home/omb-browse.out" > /dev/null 2>&1 < /dev/null & echo started`, 60);
+    await onMachine(cloudId, `rm -f /data/home/omb-browse.out; setsid nohup bash -c "sudo docker exec -i -u 1000 ${id} python3 - '${JSON.stringify(SITES).replace(/'/g, "").replace(/"/g, '\\"')}' < /data/home/omb-browse.py > /data/home/omb-browse.out 2>&1; echo madani-done >> /data/home/omb-browse.out" > /dev/null 2>&1 < /dev/null & echo started`, 60);
     let text = "";
-    for (let n = 0; n < 80 && !text.includes("dusk-done"); n++) { await sleep(15_000); text = (await onMachine(cloudId, "tail -c 20000 /data/home/omb-browse.out 2>/dev/null", 60)).stdout; }
+    for (let n = 0; n < 80 && !text.includes("madani-done"); n++) { await sleep(15_000); text = (await onMachine(cloudId, "tail -c 20000 /data/home/omb-browse.out 2>/dev/null", 60)).stdout; }
     const line = text.trim().split("\n").filter(l => l.startsWith("[")).at(-1) ?? "";
     if (!line) throw new Error(`browse: ${text.slice(-300)}`);
     results.browse = JSON.parse(line);
     for (const r of results.browse as Array<Record<string, unknown>>) note(`${String(r.id).padEnd(14)} ${String(r.ms).padStart(6)} ms ${r.error ? `ERROR ${r.error}` : `${r.bytes} bytes${r.wall ? " WALL" : ""}${r.expected ? "" : " unexpected"} ${r.title}`}`);
   });
-  const PROFILE_DIR = "/home/cua/.dusk-live-profile";
+  const PROFILE_DIR = "/home/cua/.madani-live-profile";
   const profileRun = async (mode: "set" | "get") => {
     const id = await container();
     await ibx.upload(await machineOf(cloudId), "/data/home/omb-profile.py", Buffer.from(PROFILE));
@@ -464,8 +464,8 @@ try {
   });
   await step("files: a file on the bot's desktop and a note in the home's data", async () => {
     const id = await container();
-    const file = await onMachine(cloudId, `sudo docker exec -u 1000 ${id} sh -c 'mkdir -p ~/Desktop && echo dusk-file-kept > ~/Desktop/dusk-note.txt && cat ~/Desktop/dusk-note.txt'`);
-    const data = await onMachine(cloudId, `sudo -u maus sh -c 'mkdir -p ${CLOUD_HOME.data}/workspaces/${first.id} && echo "kept across everything" > ${CLOUD_HOME.data}/workspaces/${first.id}/dusk-live-note.md' && sudo cat ${CLOUD_HOME.data}/workspaces/${first.id}/dusk-live-note.md`);
+    const file = await onMachine(cloudId, `sudo docker exec -u 1000 ${id} sh -c 'mkdir -p ~/Desktop && echo madani-file-kept > ~/Desktop/madani-note.txt && cat ~/Desktop/madani-note.txt'`);
+    const data = await onMachine(cloudId, `sudo -u maus sh -c 'mkdir -p ${CLOUD_HOME.data}/workspaces/${first.id} && echo "kept across everything" > ${CLOUD_HOME.data}/workspaces/${first.id}/madani-live-note.md' && sudo cat ${CLOUD_HOME.data}/workspaces/${first.id}/madani-live-note.md`);
     results.files = { desktop: file.stdout.trim(), data: data.stdout.trim() };
   });
 
@@ -537,12 +537,12 @@ try {
     const woke = await api.call("POST", `/api/bots/${first.id}/computer/provision`, {});
     results.computerAfterReboot = { status: woke.status, ready: woke.body?.ready === true };
     results.profileAfterReboot = await profileCheck();
-    const file = await onMachine(cloudId, `id=$(sudo docker ps -q | head -1); sudo docker exec -u 1000 $id cat /home/cua/Desktop/dusk-note.txt`);
+    const file = await onMachine(cloudId, `id=$(sudo docker ps -q | head -1); sudo docker exec -u 1000 $id cat /home/cua/Desktop/madani-note.txt`);
     results.desktopFileAfterReboot = file.stdout.trim();
   });
 
   // 9. a bot moved in from a local fixture with the app's own send, then this home brought back to the fixture
-  const localServer = await launchVerificationServer({ ...process.env, DUSK_TEST_PORTS: "19975-19999", FAKE_CLAUDE_VERSION: "2.1.284", DUSK_VERIFY_HOME_OUTSIDE: "1" });
+  const localServer = await launchVerificationServer({ ...process.env, MADANI_TEST_PORTS: "19975-19999", FAKE_CLAUDE_VERSION: "2.1.284", MADANI_VERIFY_HOME_OUTSIDE: "1" });
   try {
     const localApi = (route: string, init?: RequestInit) => realFetch(`${localServer.info.url}${route}`, init);
     await step("move in: a bot from the Mac arrives with its chat", async () => {
@@ -574,7 +574,7 @@ try {
           json: async (method: string, route: string, body?: unknown) => { const r = await localApi(route, { method, headers: { "content-type": "application/json" }, ...(body === undefined ? {} : { body: JSON.stringify(body) }) }); const text = await r.text(); let parsed: unknown = null; try { parsed = JSON.parse(text); } catch {} return { ok: r.ok, status: r.status, body: parsed }; },
           upload: async (file: string, bytes: number) => { const r = await localApi("/api/workspace-backup/upload", { method: "POST", headers: { "content-type": "application/octet-stream", "content-length": String(bytes) }, body: Readable.toWeb(createReadStream(file)) as never, duplex: "half" } as RequestInit); const text = await r.text(); let parsed: unknown = null; try { parsed = JSON.parse(text); } catch {} return { ok: r.ok, status: r.status, body: parsed }; },
         },
-        tempRoot: mkdtempSync(join(tmpdir(), "dusk-home-again-")),
+        tempRoot: mkdtempSync(join(tmpdir(), "madani-home-again-")),
       });
       let brought: Record<string, unknown> = {};
       for (let n = 0; n < 30; n++) { brought = await again.bring() as Record<string, unknown>; if ("restored" in brought || "deleted" in brought) break; await sleep(Number(brought.later ?? 5000)); }
@@ -600,7 +600,7 @@ try {
     await service.cancel(cloudId);
     offset += 32 * 86_400_000;
     // a month later the owner signs in again; deleting data asks for a sign-in from the last 10 minutes anyway
-    const again = await webSignIn(origin, email); cookies = { cookie: again.cookie, "x-dusk-csrf": again.csrf, origin };
+    const again = await webSignIn(origin, email); cookies = { cookie: again.cookie, "x-madani-csrf": again.csrf, origin };
     await until(v => v.status === "stopped", 10 * 60_000, "plan ended", 3000);
     await service.deleteData(cloudId);
     const link = mailer.outbox.map(m => m.text).reverse().find(t => /\/delete#/.test(t)) ?? "";

@@ -26,15 +26,15 @@ const MAX_TOKENS = 128;
 const MIN_FREE_BYTES = 1024 ** 3;
 const RETRY_AFTER_MS = 6 * 60 * 60_000;
 
-/** `DUSK_MEMORY_EMBED=0` turns local embeddings off; under a test runner they are off unless set to 1. */
+/** `MADANI_MEMORY_EMBED=0` turns local embeddings off; under a test runner they are off unless set to 1. */
 export function embeddingsWanted(env: NodeJS.ProcessEnv = process.env): boolean {
-  if (env.DUSK_MEMORY_EMBED === "0") return false;
-  if (env.DUSK_MEMORY_EMBED === "1") return true;
+  if (env.MADANI_MEMORY_EMBED === "0") return false;
+  if (env.MADANI_MEMORY_EMBED === "1") return true;
   return !env.VITEST && env.NODE_ENV !== "test";
 }
 
 export function modelDir(env: NodeJS.ProcessEnv = process.env): string {
-  return env.DUSK_MODEL_DIR?.trim() || join(DATA_DIR, "models", EMBED_MODEL);
+  return env.MADANI_MODEL_DIR?.trim() || join(DATA_DIR, "models", EMBED_MODEL);
 }
 
 type Ort = {

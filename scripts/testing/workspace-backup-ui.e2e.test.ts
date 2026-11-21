@@ -7,16 +7,16 @@ import { fileURLToPath } from "node:url";
 import { afterAll, describe, expect, it } from "vitest";
 import { resolveAgentBrowserBinary } from "../../server/browser-engine.ts";
 import { waitForExit } from "../../server/testing/cleanup.ts";
-import { runControlDusk } from "../control-dusk.ts";
-import { UI_TOOLS_DIR } from "./control-dusk-ui.ts";
+import { runControlMadani } from "../control-madani.ts";
+import { UI_TOOLS_DIR } from "./control-madani-ui.ts";
 import { clickByName, openAdvancedSettings } from "./grok-nav.ts";
 import { openTemplatesWhenFree } from "./grok-templates.ts";
 
 const ROOT = fileURLToPath(new URL("../..", import.meta.url));
 const binary = resolveAgentBrowserBinary({ dataDir: UI_TOOLS_DIR, env: process.env });
-const forced = process.env.DUSK_UI_E2E === "1";
+const forced = process.env.MADANI_UI_E2E === "1";
 const enabled = forced || Boolean(binary);
-if (!enabled) console.log("skipping workspace backup UI e2e: no agent-browser; set DUSK_UI_E2E=1 to install the pinned release");
+if (!enabled) console.log("skipping workspace backup UI e2e: no agent-browser; set MADANI_UI_E2E=1 to install the pinned release");
 const LAUNCH_TIMEOUT_MS = forced && !binary ? 600_000 : 180_000;
 interface FixtureInfo { ui: string; url: string; dataDir: string; logPath: string }
 
@@ -28,7 +28,7 @@ describe("full backup Settings in the real renderer", () => {
   (enabled ? it : it.skip)("uses passwords, a file preview and explicit replacement without leaking secrets", async () => {
     let stdout = "";
     let stderr = "";
-    child = spawn(process.execPath, ["--experimental-strip-types", join(ROOT, "scripts/control-dusk.ts"), "ui", "launch"], {
+    child = spawn(process.execPath, ["--experimental-strip-types", join(ROOT, "scripts/control-madani.ts"), "ui", "launch"], {
       cwd: ROOT, env: process.env, stdio: ["ignore", "pipe", "pipe"],
     });
     child.stdout!.on("data", (chunk: Buffer) => { stdout += String(chunk); });
@@ -38,7 +38,7 @@ describe("full backup Settings in the real renderer", () => {
       if (child!.exitCode !== null || child!.signalCode !== null) throw new Error(`UI launcher exited: ${stderr}`);
       try { info = JSON.parse(stdout); return Boolean(info.ui); } catch { return false; }
     }, { timeout: LAUNCH_TIMEOUT_MS, interval: 250 }).toBe(true);
-    const ui = (verb: string, ...args: string[]) => runControlDusk(["ui", verb, "--ui", info.ui, ...args]) as Promise<Record<string, any>>;
+    const ui = (verb: string, ...args: string[]) => runControlMadani(["ui", verb, "--ui", info.ui, ...args]) as Promise<Record<string, any>>;
     const evaluate = async (js: string) => (await ui("eval", "--js", js)).result;
     const click = (name: string) => ui("click", "--name", name);
     const type = async (name: string, text: string) => {
@@ -65,11 +65,11 @@ describe("full backup Settings in the real renderer", () => {
         fixture.calls.push({ path, body, rawFile: init.body instanceof File, type: init.headers?.['content-type'] });
         const reply = (value, status = 200) => Promise.resolve(new Response(JSON.stringify(value), { status, headers: { 'content-type': 'application/json' } }));
         if (path.endsWith('/status')) return reply({ busy: false, pendingRestore: fixture.pending });
-        if (path.endsWith('/export')) return reply({ id: 'download-stage', filename: 'fixture.duskbackup' });
+        if (path.endsWith('/export')) return reply({ id: 'download-stage', filename: 'fixture.madanibackup' });
         if (path.endsWith('/upload')) return reply({ id: 'uploaded-file' });
         if (path.endsWith('/preview')) {
           if (body.password !== 'fixture password 123') return reply({ error: 'Fixture password rejected' }, 400);
-          return reply({ id: 'validated-stage', summary: { format: 'dusk.workspace-backup', version: 1, id: 'archive-id', createdAt: '2026-09-11T00:00:00Z', appVersion: '0.1.71', files: 12, directories: 4, bytes: 4321, bots: 3, groups: 2, threads: 7, messages: 21, warnings: ['Fixture warning: routines will be paused'], exclusions: ['Saved account credentials and connections', 'External CLI sign-ins', 'Remote VM disks'] } });
+          return reply({ id: 'validated-stage', summary: { format: 'madani.workspace-backup', version: 1, id: 'archive-id', createdAt: '2026-09-11T00:00:00Z', appVersion: '0.1.71', files: 12, directories: 4, bytes: 4321, bots: 3, groups: 2, threads: 7, messages: 21, warnings: ['Fixture warning: routines will be paused'], exclusions: ['Saved account credentials and connections', 'External CLI sign-ins', 'Remote VM disks'] } });
         }
         if (path.endsWith('/restore')) { fixture.pending = true; return reply({ restartRequired: true, restoreId: 'validated-stage' }); }
         return reply({ error: 'Unexpected fixture route' }, 404);
@@ -78,9 +78,9 @@ describe("full backup Settings in the real renderer", () => {
         if (this.getAttribute('href')?.startsWith('/api/workspace-backup/download/')) { window.backupFixture.download = { href: this.getAttribute('href'), filename: this.download }; return; }
         return originalClick.call(this);
       };
-      localStorage.setItem('dusk-drafts', JSON.stringify({fixture: 'private fixture draft'}));
+      localStorage.setItem('madani-drafts', JSON.stringify({fixture: 'private fixture draft'}));
       localStorage.setItem('fixture-auth-token', 'must not export');
-      localStorage.setItem('dusk-webhook-credentials', 'fixture private URL must not export');
+      localStorage.setItem('madani-webhook-credentials', 'fixture private URL must not export');
       return true;
     })()`);
     await expect.poll(snapshot, { timeout: 10_000 }).toContain('button "You"');
@@ -93,20 +93,20 @@ describe("full backup Settings in the real renderer", () => {
     await clickByName(ui, "Backups", "button");
     await expect.poll(snapshot, { timeout: 10_000 }).toContain("Export full backup");
     expect(await snapshot()).toContain("Sign-ins and keys are left out. The password can't be recovered.");
-    await ui("screenshot", "--out", join(ROOT, ".dusk-scratch", "verify-evidence", "workspace-backup-settings.png"));
+    await ui("screenshot", "--out", join(ROOT, ".madani-scratch", "verify-evidence", "workspace-backup-settings.png"));
     // the passwords live in Export's own small dialog; Enter in its last field exports
     await click("Export full backup");
     await type("Backup password", "fixture password 123");
     await type("Confirm backup password", "fixture password 123");
     await ui("press", "--keys", "Enter");
-    await expect.poll(() => evaluate("window.backupFixture.download"), { timeout: 10_000 }).toEqual({ href: "/api/workspace-backup/download/download-stage", filename: "fixture.duskbackup" });
+    await expect.poll(() => evaluate("window.backupFixture.download"), { timeout: 10_000 }).toEqual({ href: "/api/workspace-backup/download/download-stage", filename: "fixture.madanibackup" });
     expect(await evaluate("window.backupFixture.calls.find(call => call.path.endsWith('/export')).body.clientState['fixture-auth-token'] ?? null")).toBeNull();
-    expect(await evaluate("window.backupFixture.calls.find(call => call.path.endsWith('/export')).body.clientState['dusk-webhook-credentials'] ?? null")).toBeNull();
+    expect(await evaluate("window.backupFixture.calls.find(call => call.path.endsWith('/export')).body.clientState['madani-webhook-credentials'] ?? null")).toBeNull();
     expect(await evaluate("Object.values(localStorage).some(value => value.includes('fixture password 123'))")).toBe(false);
 
     // A File is delivered through the native input's change event. This
     // does not claim to automate the OS file-picker dialog.
-    await evaluate(`(() => { const input = document.querySelector('[role=dialog] input[type=file]'); const transfer = new DataTransfer(); transfer.items.add(new File(['encrypted fixture bytes'], 'fixture.duskbackup', { type: 'application/octet-stream' })); input.files = transfer.files; input.dispatchEvent(new Event('change', { bubbles: true })); return true; })()`);
+    await evaluate(`(() => { const input = document.querySelector('[role=dialog] input[type=file]'); const transfer = new DataTransfer(); transfer.items.add(new File(['encrypted fixture bytes'], 'fixture.madanibackup', { type: 'application/octet-stream' })); input.files = transfer.files; input.dispatchEvent(new Event('change', { bubbles: true })); return true; })()`);
     await expect.poll(() => evaluate("document.querySelector('[role=dialog] input[autocomplete=off][type=password]')?.disabled")).toBe(false);
     await type("Password for this backup", "wrong password");
     await click("Validate backup");
@@ -122,13 +122,13 @@ describe("full backup Settings in the real renderer", () => {
     expect(await replaceDisabled()).toBe(true);
     await type("Type REPLACE to confirm", "REPLACE");
     expect(await replaceDisabled()).toBe(false);
-    const evidence = join(ROOT, ".dusk-scratch", "verify-evidence", "workspace-backup-preview.png");
+    const evidence = join(ROOT, ".madani-scratch", "verify-evidence", "workspace-backup-preview.png");
     await ui("screenshot", "--out", evidence);
     await click("Replace installation");
-    await expect.poll(snapshot, { timeout: 10_000 }).toContain("Fully quit dusk bot");
+    await expect.poll(snapshot, { timeout: 10_000 }).toContain("Fully quit madani bot");
     expect(await evaluate("window.backupFixture.calls.find(call => call.path.endsWith('/restore')).body")).toEqual({ id: "validated-stage", confirmation: "REPLACE" });
     expect(await evaluate("window.backupFixture.calls.find(call => call.path.endsWith('/upload')).rawFile")).toBe(true);
-    expect(await evaluate("localStorage.getItem('dusk-pending-workspace-restore')")).toBe("validated-stage");
+    expect(await evaluate("localStorage.getItem('madani-pending-workspace-restore')")).toBe("validated-stage");
     console.log(JSON.stringify({ fixture: info, screenshot: evidence, archiveApi: "simulated; renderer controls real" }));
     await waitForExit(child, { signal: "SIGINT", graceMs: 30_000 });
     expect(child.exitCode).toBe(0);

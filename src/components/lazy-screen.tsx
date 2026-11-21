@@ -46,7 +46,7 @@ export function lazyScreen<Props>(
   return Object.assign(Screen, { preload });
 }
 
-const RELOADED_KEY = "duskbot.screenReload";
+const RELOADED_KEY = "madanibot.screenReload";
 
 // a failed chunk is usually a stale build or a file caught mid-edit; one quiet reload fetches it fresh, and only a
 // second failure within a minute shows the notice

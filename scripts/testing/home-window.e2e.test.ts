@@ -2,7 +2,7 @@
 // (apps/site/server.js), opened in Chrome with JavaScript turned off, must show the window's bot list, chat and panel.
 // A browser that blocks or never runs the demo's script (a content blocker, an old engine) still sees the app.
 //
-//   DUSK_UI_E2E=1 pnpm exec vitest run scripts/testing/home-window.e2e.test.ts
+//   MADANI_UI_E2E=1 pnpm exec vitest run scripts/testing/home-window.e2e.test.ts
 import { spawn, type ChildProcess } from "node:child_process";
 import { existsSync, mkdtempSync, readFileSync, rmSync } from "node:fs";
 import { createServer } from "node:net";
@@ -11,11 +11,11 @@ import { join } from "node:path";
 import { expect, it } from "vitest";
 import { waitForExit } from "../../server/testing/cleanup.ts";
 import { connect } from "./chat-gallery/cdp.ts";
-import { ensureUiBrowser } from "./control-dusk-ui.ts";
+import { ensureUiBrowser } from "./control-madani-ui.ts";
 import { REPO_ROOT } from "./preview-fixture.ts";
 
-const enabled = process.env.DUSK_UI_E2E === "1";
-if (!enabled) console.log("skipping the home window check: set DUSK_UI_E2E=1 for isolated browser qualification");
+const enabled = process.env.MADANI_UI_E2E === "1";
+if (!enabled) console.log("skipping the home window check: set MADANI_UI_E2E=1 for isolated browser qualification");
 
 const freePort = () => new Promise<number>((resolve, reject) => {
   const probe = createServer();
@@ -26,7 +26,7 @@ const freePort = () => new Promise<number>((resolve, reject) => {
 (enabled ? it : it.skip)("shows the home page's app window with JavaScript turned off, on desktop and phone widths", async () => {
   const site = join(REPO_ROOT, "apps", "site");
   const port = await freePort();
-  const profile = mkdtempSync(join(tmpdir(), "dusk-home-window-"));
+  const profile = mkdtempSync(join(tmpdir(), "madani-home-window-"));
   let server: ChildProcess | undefined;
   let chrome: ChildProcess | undefined;
   let cdp: Awaited<ReturnType<typeof connect>> | undefined;
@@ -71,7 +71,7 @@ const freePort = () => new Promise<number>((resolve, reject) => {
       })()`);
       expect(seen.shadow, `${viewport.width}px: the window's markup is in place`).toBe(true);
       expect(seen.sheet, `${viewport.width}px: the app's styles applied`).toBe(true);
-      expect(seen.pill).toBe("dusk bot");
+      expect(seen.pill).toBe("madani bot");
       for (const part of ["win", "host", "pillBox", "bubble", "composer"] as const) {
         expect(seen[part]?.shown, `${viewport.width}px: ${part} is shown`).toBe(true);
         expect(seen[part]?.w, `${viewport.width}px: ${part} has width`).toBeGreaterThan(20);

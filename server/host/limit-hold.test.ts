@@ -140,7 +140,7 @@ describe("holding a turn at a usage limit", () => {
   });
 
   it("survives a restart: the saved turn is armed again and resumes", async () => {
-    const dir = mkdtempSync(join(tmpdir(), "dusk-limit-hold-"));
+    const dir = mkdtempSync(join(tmpdir(), "madani-limit-hold-"));
     dirs.push(dir);
     const file = join(dir, "held.json");
     const time = fakeTime();
@@ -156,7 +156,7 @@ describe("holding a turn at a usage limit", () => {
   });
 
   it("a wait that fell due while the app was closed starts a little after the app does", async () => {
-    const dir = mkdtempSync(join(tmpdir(), "dusk-limit-hold-"));
+    const dir = mkdtempSync(join(tmpdir(), "madani-limit-hold-"));
     dirs.push(dir);
     const file = join(dir, "held.json");
     const time = fakeTime();

@@ -1,9 +1,9 @@
 import { writeFileSync } from "node:fs";
 import type { ServerResponse } from "node:http";
 import { expect, it } from "vitest";
-import { launchVerificationServer, runControlDusk } from "../control-dusk.ts";
+import { launchVerificationServer, runControlMadani } from "../control-madani.ts";
 import { closeBrowserSession } from "../../server/browser-engine.ts";
-import { agentBrowser, ensureUiBrowser, sessionEnv } from "./control-dusk-ui.ts";
+import { agentBrowser, ensureUiBrowser, sessionEnv } from "./control-madani-ui.ts";
 import { mountPreview } from "./preview-fixture.ts";
 
 it("paints the saved panel mascot with the first chat while engine and computer status remain pending", async () => {
@@ -14,7 +14,7 @@ it("paints the saved panel mascot with the first chat while engine and computer 
   let preview: Awaited<ReturnType<typeof mountPreview>> | undefined;
   let env: ReturnType<typeof sessionEnv> | undefined;
   try {
-    await runControlDusk(["new-bot", "--name", "Pepper", "--url", fixture.info.url]);
+    await runControlMadani(["new-bot", "--name", "Pepper", "--url", fixture.info.url]);
     preview = await mountPreview(fixture, { entry: "/scripts/testing/panel-startup-preview.tsx", route: "/__panel-startup.html", title: "Isolated panel startup", logLevel: "error", hmr: false, extraRoutes: [
       { path: "/api/instances", method: "GET", handler: (_req, res) => { engineReads++; held.add(res); res.once("close", () => held.delete(res)); } },
       { path: /^\/api\/bots\/[^/]+\/computer$/, method: "GET", handler: (_req, res) => { computerReads++; held.add(res); res.once("close", () => held.delete(res)); } },

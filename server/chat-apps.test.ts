@@ -55,7 +55,7 @@ function fakeStore(rooms: string[] = []) {
 
 function setup(rooms: string[] = [], maxBytes?: number) {
   const fake = fakeStore(rooms);
-  const docs = new AppDocs(join(mkdtempSync(join(homedir(), "dusk-chat-apps-")), "app-docs"), maxBytes ? { maxBytes } : {});
+  const docs = new AppDocs(join(mkdtempSync(join(homedir(), "madani-chat-apps-")), "app-docs"), maxBytes ? { maxBytes } : {});
   const call = (input: Record<string, unknown>, thread = THREAD, authored?: (id: string) => void) =>
     createAppCard({ store: fake.store, docs, bot: SCOUT, threadId: thread, input, ...(authored ? { authored } : {}) });
   const row = (id: string, thread = THREAD) => fake.rows(thread).find((message) => message.id === id)!;
@@ -209,7 +209,7 @@ describe("a jsx page", () => {
 
 describe("a folder page", () => {
   function folders() {
-    const base = mkdtempSync(join(homedir(), "dusk-folder-pages-"));
+    const base = mkdtempSync(join(homedir(), "madani-folder-pages-"));
     const mine = join(base, "scout"), theirs = join(base, "other");
     for (const [dir, files] of [[join(mine, "dash"), { "index.html": "<h1>Dash</h1><script src=\"app.js\"></script>", "app.js": "draw()", "data.parquet": "PAR1 PAR1" }],
       [join(theirs, "secret"), { "index.html": "<h1>Theirs</h1>" }]] as const) {
@@ -305,10 +305,10 @@ describe("a folder page", () => {
 });
 
 describe("publish_page in the chat", () => {
-  const LIVE = { state: "live" as const, title: "Dash", pageId: "page000000000000000000001", url: "https://page000000000000000000001.page.dusk.bot/", usage: { pages: 1, limit: 5 } };
+  const LIVE = { state: "live" as const, title: "Dash", pageId: "page000000000000000000001", url: "https://page000000000000000000001.page.madani.bot/", usage: { pages: 1, limit: 5 } };
 
   async function folder() {
-    const base = realpathSync(mkdtempSync(join(homedir(), "dusk-published-")));
+    const base = realpathSync(mkdtempSync(join(homedir(), "madani-published-")));
     mkdirSync(join(base, "dash"));
     writeFileSync(join(base, "dash", "index.html"), "<h1>Dash</h1>");
     writeFileSync(join(base, "dash", "data.csv"), "a\n1");
@@ -389,7 +389,7 @@ describe("versions", () => {
 });
 
 describe("publishablePage", () => {
-  it("serves an HTML page with the theme colours and a quiet dusk, and a jsx page as static HTML with its transpiled code", () => {
+  it("serves an HTML page with the theme colours and a quiet madani, and a jsx page as static HTML with its transpiled code", () => {
     const { call, store, docs } = setup();
     call({ tool: "show_html", html: PAGE, title: "Sales" });
     call({ tool: "show_html", jsx: JSX_PAGE, title: "Pricing" });
@@ -399,16 +399,16 @@ describe("publishablePage", () => {
     expect(html.files.map((file) => file.path)).toEqual(["index.html"]);
     const page = html.files[0]!.data.toString();
     expect(page).toMatch(/^<!DOCTYPE html><style>:root\{color-scheme:light dark;/);
-    expect(page).toContain("window.dusk={theme:");
+    expect(page).toContain("window.madani={theme:");
     expect(page).not.toContain("Content-Security-Policy");
     expect(page.endsWith("<h1>Sales</h1><p>Up 12%</p><script>draw()</script></body></html>")).toBe(true);
     const jsx = publishablePage({ store, docs, threadId: THREAD, messageId: "m2" });
     if (!jsx.ok) throw new Error("not publishable");
     const shell = jsx.files[0]!.data.toString();
-    expect(shell).toContain("window.__duskPage=function(require,module,exports){");
+    expect(shell).toContain("window.__madaniPage=function(require,module,exports){");
     expect(shell).toContain("_react.useState.call(void 0, \"Pro\")");
     expect(shell).not.toContain("useState(\"Pro\")");
-    expect(shell).toContain("page: window.__duskPage })");
+    expect(shell).toContain("page: window.__madaniPage })");
     expect(shell).not.toContain(", source: ");
   });
 
@@ -469,7 +469,7 @@ describe("appDocument", () => {
     const doc = appDocument({ store, docs, threadId: THREAD, messageId: "m1" })!;
     expect(doc.csp).toContain("script-src 'unsafe-inline' 'unsafe-eval' 'wasm-unsafe-eval' https://esm.sh;");
     expect(doc.csp).toContain("connect-src 'none'");
-    expect(doc.srcdoc).not.toContain("dusk");
+    expect(doc.srcdoc).not.toContain("madani");
     expect(doc).toMatchObject({ tool: { name: "get-time" }, toolResult: { content: [{ type: "text", text: "12:00" }] }, network: { connect: [], resources: ["https://esm.sh"] } });
     expect(doc.can).toMatchObject({ serverTools: false, serverResources: false });
     expect(doc.blocked).toEqual({ reason: "server-removed", text: "Basic is no longer connected" });
@@ -579,7 +579,7 @@ describe("createChatApps", () => {
     try {
       const fake = fakeStore();
       const refs = vi.fn((): string[] => []);
-      const apps = createChatApps({ store: fake.store, dataDir: mkdtempSync(join(homedir(), "dusk-chat-apps-")), references: refs });
+      const apps = createChatApps({ store: fake.store, dataDir: mkdtempSync(join(homedir(), "madani-chat-apps-")), references: refs });
       opened.push(apps);
       expect(apps.createAppCard({ bot: SCOUT, threadId: THREAD, input: { tool: "show_html", html: PAGE, title: "Sales" } })).toEqual({ ok: true, messageId: "m1" });
       expect(apps.appDocument(THREAD, "m1")?.csp).toBe(BOT_HTML_CSP);

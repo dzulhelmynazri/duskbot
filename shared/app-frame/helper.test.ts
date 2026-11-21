@@ -56,7 +56,7 @@ function boot(engaged = true) {
   // The helper's free names, bound to this fake frame: it runs exactly as written.
   const run = new Function("window", "document", "ResizeObserver", "requestAnimationFrame", APP_HELPER_SOURCE);
   run(frame, page.document, undefined, (callback: () => void) => setTimeout(callback, 0));
-  return { bridge, seen, frame, root: page.document.documentElement, dusk: () => frame.dusk as {
+  return { bridge, seen, frame, root: page.document.documentElement, madani: () => frame.madani as {
     send(text: string): Promise<void>; open(url: string): Promise<void>; setContext(text: string): Promise<void>; theme: string;
   } };
 }
@@ -65,31 +65,31 @@ describe("the bot-page helper", () => {
   it("initializes, applies the theme and variables, and reports its size", async () => {
     const page = boot();
     await expect.poll(() => page.bridge.initialized).toBe(true);
-    expect(page.dusk().theme).toBe("dark");
+    expect(page.madani().theme).toBe("dark");
     expect(page.root.getAttribute("data-theme")).toBe("dark");
     expect(page.root.style.getPropertyValue("--color-text-primary")).toBe("#fafafa");
     expect(page.root.style.getPropertyValue("not-a-variable")).toBe("");
     await expect.poll(() => page.seen.heights.length).toBeGreaterThan(0);
     page.bridge.contextChanged({ theme: "light" });
-    await expect.poll(() => page.dusk().theme).toBe("light");
+    await expect.poll(() => page.madani().theme).toBe("light");
     expect(page.root.style.colorScheme).toBe("light");
   });
 
   it("sends, opens and sets context through the bridge", async () => {
     const page = boot();
-    await page.dusk().send("Book the 3pm slot");
+    await page.madani().send("Book the 3pm slot");
     expect(page.seen.messages).toEqual(["Book the 3pm slot"]);
-    await page.dusk().open("https://example.com/docs");
+    await page.madani().open("https://example.com/docs");
     expect(page.seen.links).toEqual(["https://example.com/docs"]);
-    await page.dusk().setContext("Looking at March");
+    await page.madani().setContext("Looking at March");
     await expect.poll(() => page.seen.contexts.length).toBe(1);
     expect(page.seen.contexts[0]).toEqual({ content: [{ type: "text", text: "Looking at March" }] });
   });
 
   it("rejects when the host refuses, as it does without a click in the page", async () => {
     const page = boot(false);
-    await expect(page.dusk().send("hi")).rejects.toThrow(/click/);
-    await expect(page.dusk().open("https://example.com")).rejects.toThrow(/click/);
+    await expect(page.madani().send("hi")).rejects.toThrow(/click/);
+    await expect(page.madani().open("https://example.com")).rejects.toThrow(/click/);
     expect(page.seen.messages).toEqual([]);
   });
 
@@ -99,8 +99,8 @@ describe("the bot-page helper", () => {
     const started = Date.now();
     await page.bridge.teardown();
     expect(Date.now() - started).toBeLessThan(900);
-    const original = page.dusk();
-    expect(() => { "use strict"; (page.frame as { dusk: unknown }).dusk = {}; }).toThrow();
-    expect(page.dusk()).toBe(original);
+    const original = page.madani();
+    expect(() => { "use strict"; (page.frame as { madani: unknown }).madani = {}; }).toThrow();
+    expect(page.madani()).toBe(original);
   });
 });

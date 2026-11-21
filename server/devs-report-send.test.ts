@@ -5,7 +5,7 @@ import { askReportStatus, bugReportEndpoint, bugReportsHomeSignature, bugReportS
 
 const PAYLOAD: DevsReportPayload = {
   installId: "4b7c1f2e-0a9d-4c2b-9f1e-6d5a4b3c2d1e", source: "bot", description: "it broke", appVersion: "0.1.128", platform: "darwin arm64, desktop app",
-  diagnostics: "dusk bot @devs report", contactEmail: "ada@example.com", contact: "ada@example.com",
+  diagnostics: "madani bot @devs report", contactEmail: "ada@example.com", contact: "ada@example.com",
 };
 
 function endpoint(...answers: Array<Response | Error>) {
@@ -59,12 +59,12 @@ describe("sending a @devs report", () => {
 
 describe("where reports go", () => {
   it("is a fixture's loopback or https address, else a Cloud home's own origin, else the staging or production Cloud", () => {
-    expect(bugReportEndpoint({ DUSK_BUG_REPORT_URL: "http://127.0.0.1:4400/api/bug-reports" })).toBe("http://127.0.0.1:4400/api/bug-reports");
-    expect(bugReportEndpoint({ DUSK_BUG_REPORT_URL: "http://192.0.2.1/api/bug-reports" })).toBe("https://dusk.bot/api/bug-reports");
-    expect(bugReportEndpoint({ DUSK_BUG_REPORT_URL: "https://user:pw@evil.example/x" })).toBe("https://dusk.bot/api/bug-reports");
-    expect(bugReportEndpoint({}, "https://dusk.bot")).toBe("https://dusk.bot/api/bug-reports");
-    expect(bugReportEndpoint({ DUSK_CLOUD_STAGING: "1" })).toBe("https://preview.dusk.bot/api/bug-reports");
-    expect(bugReportEndpoint({})).toBe("https://dusk.bot/api/bug-reports");
+    expect(bugReportEndpoint({ MADANI_BUG_REPORT_URL: "http://127.0.0.1:4400/api/bug-reports" })).toBe("http://127.0.0.1:4400/api/bug-reports");
+    expect(bugReportEndpoint({ MADANI_BUG_REPORT_URL: "http://192.0.2.1/api/bug-reports" })).toBe("https://madani.bot/api/bug-reports");
+    expect(bugReportEndpoint({ MADANI_BUG_REPORT_URL: "https://user:pw@evil.example/x" })).toBe("https://madani.bot/api/bug-reports");
+    expect(bugReportEndpoint({}, "https://madani.bot")).toBe("https://madani.bot/api/bug-reports");
+    expect(bugReportEndpoint({ MADANI_CLOUD_STAGING: "1" })).toBe("https://preview.madani.bot/api/bug-reports");
+    expect(bugReportEndpoint({})).toBe("https://madani.bot/api/bug-reports");
   });
 });
 
@@ -73,25 +73,25 @@ describe("asking what became of the reports this app sent", () => {
   const ANSWER = { reports: [{ id: QUESTION.ids[0], status: "fixed", fixedIn: "0.1.135" }], notify: true };
 
   it("asks the report endpoint's origin, unsigned from the desktop and signed by a Cloud home with the secret it shares with the Admin", async () => {
-    expect(bugReportStatusEndpoint("https://dusk.bot/api/bug-reports")).toBe("https://dusk.bot/api/bug-reports/status");
+    expect(bugReportStatusEndpoint("https://madani.bot/api/bug-reports")).toBe("https://madani.bot/api/bug-reports/status");
     expect(bugReportStatusEndpoint("http://127.0.0.1:4400/api/bug-reports")).toBe("http://127.0.0.1:4400/api/bug-reports/status");
     const desktop = endpoint(answer(200, ANSWER));
     expect(await devsStatusAsker("https://cloud.example/api/bug-reports", null, desktop.fetcher)(QUESTION)).toEqual(ANSWER);
     expect(desktop.sent[0]!.url).toBe("https://cloud.example/api/bug-reports/status");
     expect(desktop.sent[0]!.init).toMatchObject({ method: "POST", redirect: "error" });
     expect(desktop.sent[0]!.body).toEqual(QUESTION);
-    expect(Object.keys(desktop.sent[0]!.init.headers as Record<string, string>).filter((name) => name.startsWith("x-dusk-cloud"))).toEqual([]);
+    expect(Object.keys(desktop.sent[0]!.init.headers as Record<string, string>).filter((name) => name.startsWith("x-madani-cloud"))).toEqual([]);
 
     const home = { machineId: "cm-test-home", bootstrapSecret: "s".repeat(43) }, cloud = endpoint(answer(200, ANSWER));
     expect(await askReportStatus("https://cloud.example/api/bug-reports/status", QUESTION, home, cloud.fetcher, () => 1_792_670_400_000)).toEqual(ANSWER);
     const headers = cloud.sent[0]!.init.headers as Record<string, string>, raw = String(cloud.sent[0]!.init.body);
-    expect(headers).toMatchObject({ "x-dusk-cloud-machine": "cm-test-home", "x-dusk-cloud-timestamp": "1792670400" });
-    expect(headers["x-dusk-cloud-signature"]).toBe(`v1=${bugReportsHomeSignature(home.bootstrapSecret, home.machineId, "1792670400", headers["x-dusk-cloud-nonce"]!, raw)}`);
+    expect(headers).toMatchObject({ "x-madani-cloud-machine": "cm-test-home", "x-madani-cloud-timestamp": "1792670400" });
+    expect(headers["x-madani-cloud-signature"]).toBe(`v1=${bugReportsHomeSignature(home.bootstrapSecret, home.machineId, "1792670400", headers["x-madani-cloud-nonce"]!, raw)}`);
     expect(JSON.stringify(cloud.sent)).not.toContain(home.bootstrapSecret);
   });
 
   it("signs exactly as the Admin checks it", () => {
-    // The same vector is pinned in dusk-cloud tests/bug-report-fixes.test.ts.
+    // The same vector is pinned in madani-cloud tests/bug-report-fixes.test.ts.
     expect(bugReportsHomeSignature("s".repeat(43), "cm-test-home", "1792670400", "nonce-nonce-nonce-1", '{"installId":"install_0001","ids":[]}')).toBe("yk4dl82CpryMBfCaT18e_sJ6uihfo3dPHVP4prToXL8");
   });
 

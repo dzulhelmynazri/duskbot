@@ -1,6 +1,6 @@
 // A move to the person's own Cloud carries this computer's connections, end to end: this computer's server and a Cloud
 // home (scripts/testing/cloud-send-fixture.ts), main's own functions between them (electron/cloud-connections.mjs) over
-// the private port and the owner session, dusk bot's connected-apps service with a fake Composio behind it, a fake
+// the private port and the owner session, madani bot's connected-apps service with a fake Composio behind it, a fake
 // sign-in server for an MCP server's own account. Disposable homes; no network.
 import { openMcpOAuthFile } from "./mcp-oauth-store.ts";
 import { createHash, randomBytes } from "node:crypto";
@@ -92,7 +92,7 @@ it("moves the MCP servers with their secrets and sign-ins, the keys and the conn
   for (const server of [
     { name: "dodo", command: "node", args: ["-e", DODO_SERVER], env: { DODO_PAYMENTS_API_KEY: DODO_KEY, DODO_PAYMENTS_ENVIRONMENT: "test_mode" } },
     { name: "docs", type: "http", url: "https://mcp.docs.example.test/mcp", headers: { Authorization: `Bearer ${DOCS_TOKEN}` } },
-    { name: "linear", type: "http", url: LINEAR_URL, oauth: { clientId: "dusk-fixture-client", clientSecret: CLIENT_SECRET } },
+    { name: "linear", type: "http", url: LINEAR_URL, oauth: { clientId: "madani-fixture-client", clientSecret: CLIENT_SECRET } },
     { name: "notes", type: "http", url: "http://127.0.0.1:9/mcp" },
     { name: "easy", command: "uvx", args: ["mcp-email-server", "stdio"] },
   ]) {
@@ -100,8 +100,8 @@ it("moves the MCP servers with their secrets and sign-ins, the keys and the conn
     expect((await local("PATCH", `/api/mcp/servers/${server.name}`, { enabled: true })).status).toBe(200);
   }
   // Signed in to linear with its own account here, its access token already expired: My Cloud must refresh it itself.
-  const desktopSignIns = join(fx.root, "desktop", ".duskbot", "mcp-oauth.json");
-  writeFileSync(desktopSignIns, JSON.stringify({ servers: { linear: { url: LINEAR_URL, state: "signed-in", clientId: "dusk-fixture-client", tokenAuth: "client_secret_post",
+  const desktopSignIns = join(fx.root, "desktop", ".madanibot", "mcp-oauth.json");
+  writeFileSync(desktopSignIns, JSON.stringify({ servers: { linear: { url: LINEAR_URL, state: "signed-in", clientId: "madani-fixture-client", tokenAuth: "client_secret_post",
     tokenEndpoint, tokens: { access: ACCESS, refresh: REFRESH, expiresAt: Date.now() - 60_000 } } } }));
   expect((await local("PATCH", "/api/config", { openrouter: { key: OPENROUTER_KEY } })).status).toBe(200);
 
@@ -125,7 +125,7 @@ it("moves the MCP servers with their secrets and sign-ins, the keys and the conn
   expect(servers.map((server) => server.name).sort()).toEqual(["docs", "dodo", "easy", "linear", "notes"]);
   expect(servers.find((server) => server.name === "dodo")).toMatchObject({ enabled: true, envKeys: ["DODO_PAYMENTS_API_KEY", "DODO_PAYMENTS_ENVIRONMENT"] });
   expect(servers.find((server) => server.name === "docs")).toMatchObject({ enabled: true, headerKeys: ["Authorization"] });
-  expect(servers.find((server) => server.name === "linear")).toMatchObject({ auth: "signed-in", oauth: { clientId: "dusk-fixture-client", clientSecretConfigured: true } });
+  expect(servers.find((server) => server.name === "linear")).toMatchObject({ auth: "signed-in", oauth: { clientId: "madani-fixture-client", clientSecretConfigured: true } });
   expect((await onCloud("POST", "/api/mcp/servers/dodo/test")).body).toMatchObject({ ok: true, tools: [expect.objectContaining({ name: "list_payments" })] });
 
   // The server that needs this computer is kept there, marked as running here, and never started there.
@@ -136,7 +136,7 @@ it("moves the MCP servers with their secrets and sign-ins, the keys and the conn
 
   // The sign-in moved: My Cloud refreshes it with the refresh token and the app's secret that came over...
   await onCloud("POST", "/api/mcp/servers/linear/test");
-  expect(refreshes).toEqual([{ refresh: REFRESH, client: "dusk-fixture-client", secret: CLIENT_SECRET }]);
+  expect(refreshes).toEqual([{ refresh: REFRESH, client: "madani-fixture-client", secret: CLIENT_SECRET }]);
   expect((await onCloud("GET", "/api/mcp/servers")).body.servers.find((server: { name: string }) => server.name === "linear")).toMatchObject({ auth: "signed-in" });
   // ...and this computer let go of its refresh token, without signing it out, so it never spends it too; it keeps the
   // access token, lent, which connector sync tops up from My Cloud.

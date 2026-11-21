@@ -7,7 +7,7 @@ import { fakeDesktopFrame } from "./fake-desktop-frame.ts";
 import { fakeVnc } from "./fake-vnc.ts";
 
 export async function createTeamVpsFixture(options: { frames?: boolean; missingInitially?: boolean; hold?: string; screens?: boolean; holdScreenshots?: boolean } = {}) {
-  const directory = mkdtempSync(join(tmpdir(), "dusk-team-vps-fixture-"));
+  const directory = mkdtempSync(join(tmpdir(), "madani-team-vps-fixture-"));
   const binDir = join(directory, "bin");
   const records = join(directory, "computers");
   const screenRecords = join(directory, "screens");
@@ -105,7 +105,7 @@ else if (['start','stop','rm'].includes(args[0])) {
     } else process.exit(64);
   } else out = args.includes('base64') || args.some(arg=>arg.includes('base64 <')) ? screenshot()
     : args.includes('--version') ? 'cua-driver ${CUA_DRIVER_VERSION}'
-    : args.includes('dusk-desktop-probe') || args.includes('health_report') ? {schema_version:'1',overall:'ok',checks:[]} : {};
+    : args.includes('madani-desktop-probe') || args.includes('health_report') ? {schema_version:'1',overall:'ok',checks:[]} : {};
 } else if (args[0] === 'info') out='fixture';
 else if (args[0] === 'ps') out='';
 else {process.stderr.write('unsupported fixture command');process.exit(64);}

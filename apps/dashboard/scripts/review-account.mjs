@@ -1,11 +1,11 @@
 #!/usr/bin/env node
-// App Review's demo account on preview.dusk.bot or dusk.bot: creates or repairs it, its dusk cloud, the cloud's review
+// App Review's demo account on preview.madani.bot or madani.bot: creates or repairs it, its madani cloud, the cloud's review
 // flag (never billed, never reclaimed, never revenue) and one friendly demo bot, then checks the bot replies. Idempotent:
 // run it again any time (after a reviewer deleted the account, say) and it only fills in what is missing.
 //
 //   node apps/dashboard/scripts/review-account.mjs preview|production [--no-reply] [--measure-wake]
 //
-// Reads DUSK_REVIEW_EMAIL, DUSK_REVIEW_CODE and DUSK_OPS_TOKEN_<TARGET> from ~/.config/duskbot/dusk.env (DUSK_ENV
+// Reads MADANI_REVIEW_EMAIL, MADANI_REVIEW_CODE and MADANI_OPS_TOKEN_<TARGET> from ~/.config/madanibot/madani.env (MADANI_ENV
 // overrides) and never prints them. It signs in the way the phone does (the fixed review code, no email), pairs with the
 // cloud the way the phone does (waking it if asleep), and signs both sessions out at the end. The cloud comes from the
 // review grant (POST /v1/billing/ops/review), which never goes through the payment provider, so it works with billing off,
@@ -17,7 +17,7 @@ import { join } from "node:path";
 import { randomUUID } from "node:crypto";
 import { pickReviewAi, REVIEW_AI_PROVIDERS, wireDemoAi } from "./review-ai.mjs";
 
-const TARGETS = { preview: "https://preview.dusk.bot", production: "https://dusk.bot" };
+const TARGETS = { preview: "https://preview.madani.bot", production: "https://madani.bot" };
 const CLOUD_NAME = "Demo Cloud";
 const BOT = {
   name: "Sunny",
@@ -34,7 +34,7 @@ const log = (line) => console.log(`[review ${target}] ${line}`);
 const sleep = (ms) => new Promise((done) => setTimeout(done, ms));
 
 function secrets() {
-  const file = process.env.DUSK_ENV || join(homedir(), ".config", "duskbot", "dusk.env");
+  const file = process.env.MADANI_ENV || join(homedir(), ".config", "madanibot", "madani.env");
   if ((statSync(file).mode & 0o777) !== 0o600) throw new Error(`${file} must be mode 600`);
   const values = new Map();
   for (const line of readFileSync(file, "utf8").split(/\r?\n/)) {
@@ -42,7 +42,7 @@ function secrets() {
     if (m) values.set(m[1], m[2].replace(/^(["'])(.*)\1$/, "$2"));
   }
   const need = (name) => { const v = values.get(name); if (!v) throw new Error(`${name} is not set in ${file}`); return v; };
-  return { email: need("DUSK_REVIEW_EMAIL").trim().toLowerCase(), code: need("DUSK_REVIEW_CODE").trim(), ai: pickReviewAi({ ...Object.fromEntries(REVIEW_AI_PROVIDERS.map((item) => [item.env, values.get(item.env)])), DUSK_REVIEW_AI_MODEL: process.env.DUSK_REVIEW_AI_MODEL || values.get("DUSK_REVIEW_AI_MODEL") }), ops: values.get(`DUSK_OPS_TOKEN_${target.toUpperCase()}`) || null };
+  return { email: need("MADANI_REVIEW_EMAIL").trim().toLowerCase(), code: need("MADANI_REVIEW_CODE").trim(), ai: pickReviewAi({ ...Object.fromEntries(REVIEW_AI_PROVIDERS.map((item) => [item.env, values.get(item.env)])), MADANI_REVIEW_AI_MODEL: process.env.MADANI_REVIEW_AI_MODEL || values.get("MADANI_REVIEW_AI_MODEL") }), ops: values.get(`MADANI_OPS_TOKEN_${target.toUpperCase()}`) || null };
 }
 
 async function call(base, path, { method = "GET", body, token, timeoutMs = 30_000, headers = {} } = {}) {
@@ -56,7 +56,7 @@ async function call(base, path, { method = "GET", body, token, timeoutMs = 30_00
 const must = (answer, what) => { if (!answer.ok) throw new Error(`${what} answered ${answer.status} (${answer.data?.code ?? answer.data?.error ?? "no detail"})`); return answer.data; };
 
 const { email, code, ai, ops } = secrets();
-const device = { deviceName: "dusk review setup", platform: "ios", appVersion: "1.0.0" };
+const device = { deviceName: "madani review setup", platform: "ios", appVersion: "1.0.0" };
 let appToken = null, home = null;
 
 async function signIn() {
@@ -69,10 +69,10 @@ async function signIn() {
 const session = async () => must(await call(origin, "/api/cloud/desktop/session", { token: appToken }), "the app session");
 const ownCloud = (s) => (s.clouds ?? []).find((c) => c.status !== "ended" && c.status !== "checkout") ?? null;
 
-const opsToken = () => { if (!ops) throw new Error(`DUSK_OPS_TOKEN_${target.toUpperCase()} is not set, so ${target} has no operator routes for the grant and the review flag`); return ops; };
+const opsToken = () => { if (!ops) throw new Error(`MADANI_OPS_TOKEN_${target.toUpperCase()} is not set, so ${target} has no operator routes for the grant and the review flag`); return ops; };
 async function grant() {
   const answer = await call(origin, "/v1/billing/ops/review", { method: "POST", token: opsToken(), body: { email, grant: true, name: CLOUD_NAME }, timeoutMs: 60_000 });
-  if (answer.status === 404) throw new Error(`${target} has no review grant (the service needs DUSK_OPS_TOKEN and DUSK_REVIEW_EMAIL)`);
+  if (answer.status === 404) throw new Error(`${target} has no review grant (the service needs MADANI_OPS_TOKEN and MADANI_REVIEW_EMAIL)`);
   const data = must(answer, "the review grant");
   log(`granted cloud ${data.granted?.cloudId} (${data.granted?.created ? "new" : "already there"}), never through the payment provider`);
 }
@@ -199,7 +199,7 @@ try {
   const homeCall = (path, init = {}) => call(home.origin, path, { ...init, token: home.token });
   const wired = await wireDemoAi(homeCall, { botId, ai });
   log(wired.wired ? `the demo bot answers through ${wired.model} on ${wired.provider}${wired.added ? " (engine added)" : ""}${wired.pointed ? " (bot switched to it)" : ""}` : `warning: ${wired.reason}`);
-  // every other bot on the cloud (its own pinned dusk bot) answers through the same AI, so any chat the reviewer opens replies
+  // every other bot on the cloud (its own pinned madani bot) answers through the same AI, so any chat the reviewer opens replies
   if (wired.wired) {
     for (const other of must(await homeCall("/api/bots?messages=0"), "the bot list").bots ?? []) {
       if (other.id === botId) continue;

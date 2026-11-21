@@ -14,7 +14,7 @@ import { hasActiveConnection } from "@/lib/connector-status";
 import { skillsLibraryEnabled } from "@/lib/feature-flags";
 import type { SkillsLibrarySkillWire } from "../../../shared/wire";
 import { Icon } from "../Icon";
-import { DuskMark } from "../mascot-view";
+import { MadaniMark } from "../mascot-view";
 import { AppsSection } from "../AppsSection";
 import { McpServersPanel } from "../McpServersPanel";
 import { XCard } from "../XCard";
@@ -160,7 +160,7 @@ export function ConnectAppsWindow({ page: requested, nonce, onClose, onTemplates
   const tokens = useTokenApps();
   const [gmailConnected, setGmailConnected] = useState<boolean | null>(null);
   const remote = useRemoteApps({
-    needsPanel: () => window.duskDesktop?.remoteClient?.active === true,
+    needsPanel: () => window.madaniDesktop?.remoteClient?.active === true,
     openPanel: () => go({ kind: "detail", id: MCP_PAGE }),
   });
   const [page, setPage] = useState<ConnectAppsPage>(requested);
@@ -383,7 +383,7 @@ export function ConnectAppsWindow({ page: requested, nonce, onClose, onTemplates
     const vendor = vendorOf(entry);
     if (vendor) return void remote.connect(vendor);
     const ready = composioReady;
-    const remoteClient = window.duskDesktop?.remoteClient?.active === true;
+    const remoteClient = window.madaniDesktop?.remoteClient?.active === true;
     // clicked before Composio Connect was read: read it now rather than take a signed-in person to the app's page
     if (entry.kind === "composio" && !ready && connectors.via === null && !remoteClient) {
       void connectors.connectIfSignedIn(entry.id).then((started) => {
@@ -647,7 +647,7 @@ export function ConnectAppsWindow({ page: requested, nonce, onClose, onTemplates
           action: phase?.kind === "connecting" ? { ...connect, busy: true, onCancel: () => connectors.cancel(slug) }
             : phase?.kind === "continue" ? { ...connect, label: t("connectApps.via.openAgain"), pending: true, title: t("connectors.finishSetup"), onClick: () => connectors.resume(slug), onCancel: () => connectors.cancel(slug) }
               : phase?.kind === "unavailable" ? { ...connect, disabled: true, title: phase.reason }
-                : { ...connect, disabled: !composioReady && window.duskDesktop?.remoteClient?.active === true } });
+                : { ...connect, disabled: !composioReady && window.madaniDesktop?.remoteClient?.active === true } });
       }
       const model: AppPageModel = {
         entry: detailEntry,
@@ -661,7 +661,7 @@ export function ConnectAppsWindow({ page: requested, nonce, onClose, onTemplates
         usedBy: card && connection(detailEntry.id) === "connected" ? botsUsingService(state.bots, state.instances, card.slug).map((bot) => bot.name) : [],
         appBots: card ? botsUsingService(state.bots, state.instances, card.slug).map((bot) => ({ id: bot.id, name: bot.name })) : [],
         ...(detailEntry.kind === "composio" ? { toolkit: snapshotToolkit(detailEntry.id) } : {}),
-        remoteClient: window.duskDesktop?.remoteClient?.active === true,
+        remoteClient: window.madaniDesktop?.remoteClient?.active === true,
         onOpenLogins: () => leaveFor(SETTINGS("logins")),
         onOpenKeys: () => leaveFor(openKeySettings("composio")),
         ...(vendor ? { remote: {
@@ -832,7 +832,7 @@ export function ConnectAppsWindow({ page: requested, nonce, onClose, onTemplates
                           )}
                         </div>
                         <button type="button" className="ca-templates" data-bot-templates-link="" onClick={onTemplates}>
-                          <DuskMark body="kit" colour="var(--ca-mark)" size={18} animated={false} />
+                          <MadaniMark body="kit" colour="var(--ca-mark)" size={18} animated={false} />
                           {t("connectApps.templates")}
                           <span data-arrow="" aria-hidden="true"><Icon name="arrow-right-up" size={12} /></span>
                         </button>

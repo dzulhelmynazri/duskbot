@@ -4,7 +4,7 @@ import { describe, expect, it, vi } from "vitest";
 
 import { StoreProvider, type Group, type Message } from "@/state/store";
 
-// Replaced whole: its context default reads window.duskDesktop at import time.
+// Replaced whole: its context default reads window.madaniDesktop at import time.
 vi.mock("./DesktopCapabilities", () => ({
   useDesktopCapabilities: () => ({ capabilities: { dictation: { available: false } } }),
   useCaptionChrome: () => ({}),
@@ -71,7 +71,7 @@ describe("room header", () => {
   };
 
   it("wraps into a name line and a control line when the column is narrow on a remote client", () => {
-    vi.stubGlobal("window", { duskDesktop: { remoteClient: { active: true } } });
+    vi.stubGlobal("window", { madaniDesktop: { remoteClient: { active: true } } });
     let markup: string;
     try {
       markup = renderToStaticMarkup(createElement(StoreProvider, null, createElement(GroupView, { group: room })));

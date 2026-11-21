@@ -1,11 +1,11 @@
-export const PRODUCTION_ORIGIN = "https://dusk.bot";
-export const PREVIEW_ORIGIN = "https://preview.dusk.bot";
-const KEY = "dusk.mobile.environment";
+export const PRODUCTION_ORIGIN = "https://madani.bot";
+export const PREVIEW_ORIGIN = "https://preview.madani.bot";
+const KEY = "madani.mobile.environment";
 
 type Store = Pick<Storage, "getItem" | "setItem" | "removeItem">;
 const storage = (): Store | null => { try { return globalThis.localStorage ?? null; } catch { return null; } };
 
-/** The account service a store build signs in to: dusk.bot, or the preview stack when someone testing chose it. */
+/** The account service a store build signs in to: madani.bot, or the preview stack when someone testing chose it. */
 export function chosenAccountOrigin(store: Store | null = storage()): string {
   return store?.getItem(KEY) === "preview" ? PREVIEW_ORIGIN : PRODUCTION_ORIGIN;
 }
@@ -15,14 +15,14 @@ export function chooseAccountOrigin(origin: string, store: Store | null = storag
   else store?.removeItem(KEY);
 }
 
-/** A short name for any account service but dusk.bot itself, so a phone on another stack always says so. */
+/** A short name for any account service but madani.bot itself, so a phone on another stack always says so. */
 export function environmentName(origin: string): string | null {
   if (origin === PRODUCTION_ORIGIN) return null;
   if (origin === PREVIEW_ORIGIN) return "Preview";
   try { return new URL(origin).host; } catch { return origin; }
 }
 
-const PENDING_SIGN_IN = "dusk.mobile.pending-sign-in";
+const PENDING_SIGN_IN = "madani.mobile.pending-sign-in";
 const SERVICE_ORIGINS = { production: PRODUCTION_ORIGIN, preview: PREVIEW_ORIGIN } as const;
 
 /** The account service a desktop's sign-in link was made on, when it is not the one this phone signs in to (its code means

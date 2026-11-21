@@ -20,7 +20,7 @@ import { TransferSettings } from "./TransferSettings";
 import { SignInScreen } from "./SignInStage";
 import { InstallScreen } from "./CommandStage";
 
-const COMMAND = "curl -fsSL https://link.dusk.bot/i/ab3d7fgh2k-q4mxw7e2r5t6y7u8i9o2p3a4s5 | sh";
+const COMMAND = "curl -fsSL https://link.madani.bot/i/ab3d7fgh2k-q4mxw7e2r5t6y7u8i9o2p3a4s5 | sh";
 const SERVER = { id: "vps-1", name: "My VPS", origin: "http://vps-ab3d7fgh2k.localhost:47811" };
 const steps = (done: number, failed?: { at: number; log: string }) => VPS_STEP_IDS.map((id, index) => ({
   id, status: index < done ? "done" as const : failed && index === failed.at ? "failed" as const : "waiting" as const,
@@ -93,7 +93,7 @@ describe("add your VPS", () => {
   it("shares one state read and subscription through the app's strict-mode mount probe", async () => {
     const fake = fakeBridge();
     fake.bridge.state.mockResolvedValue({ ...EMPTY_VIEW, stage: "linked", server: SERVER });
-    vi.stubGlobal("duskDesktop", { platform: "darwin", vpsLink: fake.bridge });
+    vi.stubGlobal("madaniDesktop", { platform: "darwin", vpsLink: fake.bridge });
     await act(async () => { root.render(createElement(StrictMode, null, createElement(StateProbe))); });
     await settle();
     expect(fake.bridge.state).toHaveBeenCalledTimes(1);
@@ -104,7 +104,7 @@ describe("add your VPS", () => {
   it("keeps one live subscription while setup reopens the same journey", async () => {
     const fake = fakeBridge();
     fake.bridge.state.mockResolvedValue({ ...EMPTY_VIEW, stage: "linked", server: SERVER });
-    vi.stubGlobal("duskDesktop", { platform: "darwin", vpsLink: fake.bridge });
+    vi.stubGlobal("madaniDesktop", { platform: "darwin", vpsLink: fake.bridge });
     function Host() {
       const open = useAddVpsOpen();
       return createElement(Fragment, null, createElement(StateProbe), open && createElement(AddVpsFlow, { onClose: closeAddVps }));
@@ -131,7 +131,7 @@ describe("add your VPS", () => {
     const fake = fakeBridge();
     let snapshot!: (view: VpsLinkView) => void;
     fake.bridge.state.mockImplementation(() => new Promise((resolve) => { snapshot = resolve; }));
-    vi.stubGlobal("duskDesktop", { platform: "darwin", vpsLink: fake.bridge });
+    vi.stubGlobal("madaniDesktop", { platform: "darwin", vpsLink: fake.bridge });
     await act(async () => { root.render(createElement(AddVpsFlow, { onClose: () => {} })); });
     expect(fake.bridge.state).toHaveBeenCalledTimes(1);
     await fake.emit({ ...EMPTY_VIEW, stage: "linked", server: SERVER });
@@ -146,7 +146,7 @@ describe("add your VPS", () => {
     fake.bridge.state.mockResolvedValue({ ...EMPTY_VIEW, stage: "linked", server: SERVER });
     let finish!: (value: Awaited<ReturnType<VpsLinkBridge["preview"]>>) => void;
     fake.bridge.preview.mockImplementation(() => new Promise((resolve) => { finish = resolve; }));
-    vi.stubGlobal("duskDesktop", { platform: "darwin", vpsLink: fake.bridge });
+    vi.stubGlobal("madaniDesktop", { platform: "darwin", vpsLink: fake.bridge });
     await act(async () => { root.render(createElement(AddVpsFlow, { onClose: () => {} })); });
     await settle();
     expect(document.querySelector("[data-vps-screen]")?.getAttribute("data-vps-screen")).toBe("signin");
@@ -163,7 +163,7 @@ describe("add your VPS", () => {
     const now = Date.now();
     const clock = vi.spyOn(Date, "now").mockReturnValue(now);
     fake.bridge.state.mockResolvedValue({ ...EMPTY_VIEW, stage: "linked", server: SERVER });
-    vi.stubGlobal("duskDesktop", { platform: "darwin", vpsLink: fake.bridge });
+    vi.stubGlobal("madaniDesktop", { platform: "darwin", vpsLink: fake.bridge });
     await act(async () => { root.render(createElement(AddVpsFlow, { onClose: () => {} })); });
     await settle();
     expect(fake.bridge.preview).toHaveBeenCalledTimes(1);
@@ -183,7 +183,7 @@ describe("add your VPS", () => {
     fake.bridge.state.mockResolvedValue({ ...EMPTY_VIEW, stage: "linked", server: SERVER });
     let oldPreview!: (value: Awaited<ReturnType<VpsLinkBridge["preview"]>>) => void;
     fake.bridge.preview.mockImplementationOnce(() => new Promise((resolve) => { oldPreview = resolve; }));
-    vi.stubGlobal("duskDesktop", { platform: "darwin", vpsLink: fake.bridge });
+    vi.stubGlobal("madaniDesktop", { platform: "darwin", vpsLink: fake.bridge });
     await act(async () => { root.render(createElement(AddVpsFlow, { onClose: () => {} })); });
     await settle();
     await fake.emit({ ...EMPTY_VIEW, stage: "linked", server: { id: "vps-2", name: "New VPS", origin: "http://vps-2.localhost:47811" } });
@@ -200,13 +200,13 @@ describe("add your VPS", () => {
     first.bridge.state.mockResolvedValue({ ...EMPTY_VIEW, stage: "linked", server: SERVER });
     let finishOld!: (value: Awaited<ReturnType<VpsLinkBridge["preview"]>>) => void;
     first.bridge.preview.mockImplementationOnce(() => new Promise((resolve) => { finishOld = resolve; }));
-    vi.stubGlobal("duskDesktop", { platform: "darwin", vpsLink: first.bridge });
+    vi.stubGlobal("madaniDesktop", { platform: "darwin", vpsLink: first.bridge });
     await act(async () => { root.render(createElement(AddVpsFlow, { onClose: () => {} })); });
     await settle();
     await act(async () => { root.render(null); });
     const second = fakeBridge();
     second.bridge.state.mockResolvedValue({ ...EMPTY_VIEW, stage: "linked", server: SERVER });
-    vi.stubGlobal("duskDesktop", { platform: "darwin", vpsLink: second.bridge });
+    vi.stubGlobal("madaniDesktop", { platform: "darwin", vpsLink: second.bridge });
     await act(async () => { root.render(createElement(AddVpsFlow, { onClose: () => {} })); });
     await settle();
     await act(async () => { finishOld({ bots: [], chats: 999, messages: 999, skills: 0, memories: 0, routines: 0, apps: 0, bytes: 0 }); });
@@ -221,7 +221,7 @@ describe("add your VPS", () => {
     fake.bridge.state.mockResolvedValue({ ...EMPTY_VIEW, stage: "linked", server: SERVER });
     let finish!: (view: VpsLinkView) => void;
     fake.bridge.move.mockImplementationOnce(() => new Promise((resolve) => { finish = resolve; }));
-    vi.stubGlobal("duskDesktop", { platform: "darwin", vpsLink: fake.bridge });
+    vi.stubGlobal("madaniDesktop", { platform: "darwin", vpsLink: fake.bridge });
     await act(async () => { root.render(createElement(AddVpsFlow, { onClose: () => {} })); });
     await settle();
     await click(button("Skip for now"));
@@ -233,7 +233,7 @@ describe("add your VPS", () => {
 
   it("goes from the one line to paste, through the install and a failed step, sign-in and the move, to done", async () => {
     const fake = fakeBridge();
-    vi.stubGlobal("duskDesktop", { platform: "darwin", vpsLink: fake.bridge });
+    vi.stubGlobal("madaniDesktop", { platform: "darwin", vpsLink: fake.bridge });
     await act(async () => { root.render(createElement(AddVpsFlow, { onClose: () => {} })); });
     await settle();
 
@@ -309,7 +309,7 @@ describe("add your VPS", () => {
     await fake.bridge.start();
     fake.bridge.start.mockClear();
     await fake.emit({ ...fake.view(), stage: "installing", steps: steps(4) });
-    vi.stubGlobal("duskDesktop", { platform: "linux", vpsLink: fake.bridge });
+    vi.stubGlobal("madaniDesktop", { platform: "linux", vpsLink: fake.bridge });
     await act(async () => { root.render(createElement(AddVpsFlow, { onClose: () => {} })); });
     await stageShown(2);
     expect(fake.bridge.start).not.toHaveBeenCalled();
@@ -380,8 +380,8 @@ describe("VPS install output", () => {
     const view: VpsLinkView = { ...EMPTY_VIEW, stage: "installing", steps: [{ id: "app", status: "running" }] };
     await act(async () => { root.render(createElement(InstallScreen, { view, onRetry: () => {} })); });
     await act(async () => { await vi.advanceTimersByTimeAsync(10_000); });
-    expect(document.querySelector("[data-vps-term]")?.textContent).toBe("Installing dusk bot · Working…");
-    expect(text()).not.toContain("duskbot@latest");
+    expect(document.querySelector("[data-vps-term]")?.textContent).toBe("Installing madani bot · Working…");
+    expect(text()).not.toContain("madanibot@latest");
     expect(text()).not.toContain("reading package lists");
   });
 
@@ -396,7 +396,7 @@ describe("VPS install output", () => {
     await act(async () => { root.render(createElement(InstallScreen, { view: older, onRetry: () => {} })); });
     expect(document.querySelector("[data-vps-term]")?.textContent).toContain("$ install /tmp/verified-build");
     expect(document.querySelector("[data-vps-term]")?.textContent).toContain("SHA256 verified");
-    expect(document.querySelector("[data-vps-term]")?.textContent).toContain("Installing dusk bot · Done");
+    expect(document.querySelector("[data-vps-term]")?.textContent).toContain("Installing madani bot · Done");
   });
 
   // since e35ca4cf3 the install is one percentage of the whole, never bytes; the move keeps an indeterminate bar
@@ -419,7 +419,7 @@ describe("VPS install output", () => {
 describe("Settings > Transfer", () => {
   it("does not reread location and backup files for every installer log line", async () => {
     const fake = fakeBridge();
-    vi.stubGlobal("duskDesktop", { platform: "darwin", vpsLink: fake.bridge });
+    vi.stubGlobal("madaniDesktop", { platform: "darwin", vpsLink: fake.bridge });
     await act(async () => { root.render(createElement(TransferSettings)); });
     await settle();
     for (let index = 0; index < 20; index++) {
@@ -434,7 +434,7 @@ describe("Settings > Transfer", () => {
 
   it("says where the bots live, moves them back after a confirm and lists the backups", async () => {
     const fake = fakeBridge();
-    vi.stubGlobal("duskDesktop", { platform: "darwin", vpsLink: fake.bridge });
+    vi.stubGlobal("madaniDesktop", { platform: "darwin", vpsLink: fake.bridge });
     await act(async () => { root.render(createElement(TransferSettings)); });
     await settle();
     expect(text()).toContain("My VPS");
@@ -452,7 +452,7 @@ describe("Settings > Transfer", () => {
 
   it("on the server's own page in the app, opens this computer to bring the bots back instead of saying it needs the app", async () => {
     const open = vi.fn(async () => ({}));
-    vi.stubGlobal("duskDesktop", { platform: "darwin", app: { ownPage: false }, workspaces: { open } });
+    vi.stubGlobal("madaniDesktop", { platform: "darwin", app: { ownPage: false }, workspaces: { open } });
     await act(async () => { root.render(createElement(TransferSettings)); });
     await settle();
     expect(text()).not.toContain("works in the desktop app");
@@ -460,11 +460,11 @@ describe("Settings > Transfer", () => {
     expect(open).toHaveBeenCalledWith("local");
   });
 
-  it("shows the line that takes dusk bot off the server, only when asked", async () => {
+  it("shows the line that takes madani bot off the server, only when asked", async () => {
     const fake = fakeBridge();
-    const UNINSTALL = "curl -fsSL https://link.dusk.bot/uninstall | sh";
+    const UNINSTALL = "curl -fsSL https://link.madani.bot/uninstall | sh";
     fake.bridge.where.mockImplementation(async () => ({ place: "vps" as const, server: SERVER, uninstall: UNINSTALL }));
-    vi.stubGlobal("duskDesktop", { platform: "darwin", vpsLink: fake.bridge, confirm: vi.fn(async () => true) });
+    vi.stubGlobal("madaniDesktop", { platform: "darwin", vpsLink: fake.bridge, confirm: vi.fn(async () => true) });
     await act(async () => { root.render(createElement(TransferSettings)); });
     await settle();
     expect(text()).not.toContain(UNINSTALL);

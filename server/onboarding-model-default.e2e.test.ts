@@ -4,7 +4,7 @@ import { closeSync, existsSync, openSync, readFileSync, writeFileSync } from "no
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { expect, it } from "vitest";
-import { launchVerificationServer, runControlDusk, verificationServerEnvironment } from "../scripts/control-dusk.ts";
+import { launchVerificationServer, runControlMadani, verificationServerEnvironment } from "../scripts/control-madani.ts";
 import { waitForExit } from "./testing/cleanup.ts";
 
 const EMPTY = { instanceId: "", model: "" };
@@ -69,7 +69,7 @@ async function withUnselectedStarter(check: (fixture: Fixture) => Promise<void>)
   };
   try {
     await check({ api, request, saved, restart,
-      control: (...args) => runControlDusk([...args, "--url", url]) as Promise<any>,
+      control: (...args) => runControlMadani([...args, "--url", url]) as Promise<any>,
       connect: async () => { await api("PATCH", "/api/instances/claude", { cli: FAKE_CLI }); },
       makeCliAvailable: (holdProbe = false) => {
         const gate = join(dataDir, "probe-release");
@@ -233,8 +233,8 @@ it("a genuine first install stays unset until its provider account becomes ready
     await api("PATCH", "/api/instances/claude", { cli: signedInCli });
     expect((await api("GET", "/api/bots")).bots[0].modelSelection).toEqual(DEFAULT);
     const target = ["--bot", starter.id, "--task", starter.threadId, "--url", url];
-    await runControlDusk(["send", ...target, "--text", "FIRST_INSTALL_PROVIDER_READY_1R"]);
-    expect((await runControlDusk(["wait", ...target, "--timeout", "30"]) as any).status).toBe("settled");
+    await runControlMadani(["send", ...target, "--text", "FIRST_INSTALL_PROVIDER_READY_1R"]);
+    expect((await runControlMadani(["wait", ...target, "--timeout", "30"]) as any).status).toBe("settled");
     expect((await api("GET", `/api/threads/${starter.threadId}/messages?limit=20`)).messages
       .findLast((message: any) => message.role === "bot" && message.kind === "text")).toMatchObject({ turnSucceeded: true });
   } finally {

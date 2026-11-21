@@ -24,7 +24,7 @@ beforeEach(() => {
   setLocale("en");
   fixture.windowChrome = "mac-inset";
   fixture.windowFrame = undefined;
-  Object.assign(window, { duskDesktop: {
+  Object.assign(window, { madaniDesktop: {
     workspaces: { places: async () => rail, onChanged: () => () => {} },
     rail: { expand: async () => {}, onSkin: () => () => {}, onFramed: (callback: (framed: boolean) => void) => { tell = callback; return () => {}; } },
   } });

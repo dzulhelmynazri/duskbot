@@ -1,4 +1,4 @@
-# dusk bot connected-apps broker
+# madani bot connected-apps broker
 
 This Worker keeps the shared Composio project key out of desktop builds. Each
 installation receives a random bearer token stored only as a SHA-256 hash in
@@ -8,22 +8,22 @@ MCP traffic, and returns short-lived Connect Links to the local app.
 The desktop never receives the project key. Authorization links are returned
 only on demand and are never persisted in chat messages.
 
-Deployment for this repository: it runs on dusk bot's own Cloudflare account at
-`https://composio.dusk.bot`, with dusk bot's own Composio project. Put
-`DUSK_COMPOSIO_API_KEY`, `CLOUDFLARE_API_TOKEN` (Workers Scripts, D1 and the
-dusk.bot zone's Workers routes, all edit) and `CLOUDFLARE_ACCOUNT_ID` in
-`~/.config/duskbot/dusk.env`, then run `scripts/deploy-composio-broker.sh`. It
+Deployment for this repository: it runs on madani bot's own Cloudflare account at
+`https://composio.madani.bot`, with madani bot's own Composio project. Put
+`MADANI_COMPOSIO_API_KEY`, `CLOUDFLARE_API_TOKEN` (Workers Scripts, D1 and the
+madani.bot zone's Workers routes, all edit) and `CLOUDFLARE_ACCOUNT_ID` in
+`~/.config/madanibot/madani.env`, then run `scripts/deploy-composio-broker.sh`. It
 creates the D1 database when missing and writes its id into `wrangler.jsonc`
 (commit that), applies every migration, makes the Composio webhook
-subscription, keeps the generated secrets in `dusk.env` and deploys with them.
+subscription, keeps the generated secrets in `madani.env` and deploys with them.
 Run it again for every later deploy.
 
 Forks should create their own D1 database and rate-limit namespaces, replace
 the IDs in `wrangler.jsonc`, deploy under their own Worker name, and set
-`DUSK_COMPOSIO_BROKER_URL` in their packaged build. Running only the local
+`MADANI_COMPOSIO_BROKER_URL` in their packaged build. Running only the local
 server with a Composio project key remains the no-Cloudflare self-host path.
 
-`REGISTRATION_MODE` is `closed` (since 2026-11-13: dusk bot pays nothing per
+`REGISTRATION_MODE` is `closed` (since 2026-11-13: madani bot pays nothing per
 tool call) and `GLOBAL_DAILY_TOOL_CALLS` is 500, so the existing test
 installations stay inside Composio's free allowance. No build registers here by
 default.
@@ -49,7 +49,7 @@ Worker logs `usage budgets are off`, so apply it before deploying.
 ## App events (Composio triggers)
 
 The broker also receives Composio trigger events for every installation and
-queues them until the installation's dusk bot server collects them. A desktop
+queues them until the installation's madani bot server collects them. A desktop
 needs no public URL: Composio posts to the broker, the server long-polls it.
 
 ```
@@ -67,8 +67,8 @@ Composio --signed POST--> /v1/composio/webhook --> D1 queue per installation <--
 | `PATCH /v1/triggers/:triggerId` `{enabled}` | installation token | Enables or disables the instance at Composio (only disabled once no other binding wants it). A config change is a new `POST` plus a `DELETE` of the old instance. |
 | `DELETE /v1/triggers/:triggerId` | installation token | Removes the binding, its queued events and drop counts, and the Composio instance once nothing else binds it. Also deletes an unbound instance of this installation's Composio user. |
 | `GET /v1/triggers` | installation token | Bindings beside Composio's view (`remote.state`: `enabled`, `disabled` or `missing`), `unbound` instances, drop counts per trigger, limits and today's usage: everything the server's reconciliation needs. |
-| `GET /v1/events?after=<seq>&wait=<0-25>&limit=<1-50>` + header `x-dusk-poller` | installation token | Acks every event at or below `after`, then returns the next events in arrival order, holding up to `wait` seconds. One poller at a time per installation: another `x-dusk-poller` gets 409 until the 90 s lease runs out. |
-| `POST /v1/events/test` `{triggerId, data}` | installation token | Queues a synthetic event (`type: "dusk.test"`) through the same queue and limits. |
+| `GET /v1/events?after=<seq>&wait=<0-25>&limit=<1-50>` + header `x-madani-poller` | installation token | Acks every event at or below `after`, then returns the next events in arrival order, holding up to `wait` seconds. One poller at a time per installation: another `x-madani-poller` gets 409 until the 90 s lease runs out. |
+| `POST /v1/events/test` `{triggerId, data}` | installation token | Queues a synthetic event (`type: "madani.test"`) through the same queue and limits. |
 | `PUT /v1/installation/cloud` `{grant}` | installation token | Marks the installation as a paid Cloud's from an Admin-signed grant. |
 | `POST /v1/installation/share` `{for}` | installation token | A one-time code (10 minutes, only its hash kept) that lets the installation `for` act as this installation's Composio user. |
 | `POST /v1/installation/adopt` `{code}` | installation token | Redeems a code minted for this installation: from then on it acts as that Composio user (`shared_user_id`). Refused with 409 `has_connections` while it has active connected accounts of its own, which stay reachable. The code is spent either way. |
@@ -119,7 +119,7 @@ import { createHmac } from "node:crypto";
 const grant = `v1.${machineId}.${createHmac("sha256", CLOUD_GRANT_SECRET).update(`omb-connected-apps-cloud:v1\n${machineId}`).digest("base64url")}`;
 ```
 
-The Admin sets it as the machine's `DUSK_CLOUD_CONNECTED_APPS_GRANT` secret
+The Admin sets it as the machine's `MADANI_CLOUD_CONNECTED_APPS_GRANT` secret
 for paid plans only. The Cloud's server presents it after registering
 (`server/cloud-connected-apps.ts`). One machine id holds the Cloud limit on one
 installation at a time: presenting the grant again moves it.
@@ -135,8 +135,8 @@ machine, at most once a minute per installation (`wake_requested_at`):
 ```
 POST <CLOUD_ADMIN_URL>/api/cloud/machines/wake
 content-type: application/json
-x-dusk-wake-timestamp: <unix seconds>
-x-dusk-wake-signature: v1=<base64url(HMAC-SHA256(CLOUD_GRANT_SECRET, "omb-cloud-wake:v1\n" + timestamp + "\n" + machineId))>
+x-madani-wake-timestamp: <unix seconds>
+x-madani-wake-signature: v1=<base64url(HMAC-SHA256(CLOUD_GRANT_SECRET, "omb-cloud-wake:v1\n" + timestamp + "\n" + machineId))>
 
 {"machineId":"<machine id>"}
 ```
@@ -152,7 +152,7 @@ changes nothing.
 
 1. Apply the migration before deploying the code (the old code ignores the
    new tables and columns):
-   `pnpm exec wrangler d1 migrations apply duskbot-composio --remote --config apps/cloudflare/composio-broker/wrangler.jsonc`
+   `pnpm exec wrangler d1 migrations apply madanibot-composio --remote --config apps/cloudflare/composio-broker/wrangler.jsonc`
 2. Deploy as usual (`wrangler versions upload --preview-alias <name>`, check,
    then `wrangler versions deploy`). Until step 4 the webhook route answers
    503 and no client calls the new routes.
@@ -164,7 +164,7 @@ changes nothing.
    curl -sS https://backend.composio.dev/api/v3.1/webhook_subscriptions -H "x-api-key: $COMPOSIO_API_KEY"
    curl -sS -X POST https://backend.composio.dev/api/v3.1/webhook_subscriptions \
      -H "x-api-key: $COMPOSIO_API_KEY" -H "content-type: application/json" \
-     -d '{"webhook_url":"https://composio.dusk.bot/v1/composio/webhook","enabled_events":["composio.trigger.message","composio.trigger.disabled","composio.connected_account.expired"],"version":"V3"}'
+     -d '{"webhook_url":"https://composio.madani.bot/v1/composio/webhook","enabled_events":["composio.trigger.message","composio.trigger.disabled","composio.connected_account.expired"],"version":"V3"}'
    ```
 
    If Composio refuses `composio.trigger.disabled`, leave it out: the server's
@@ -179,7 +179,7 @@ changes nothing.
 6. Waking sleeping Clouds (at launch of a plan that sleeps): apply migration
    `0003_cloud_wake.sql` (step 1) before deploying the code that uses it, then
    set `CLOUD_ADMIN_URL` to the Cloud Admin's origin
-   (`https://dusk.bot`). Either add it to `vars` in
+   (`https://madani.bot`). Either add it to `vars` in
    `wrangler.jsonc` in a PR, or `wrangler secret put CLOUD_ADMIN_URL`: a
    deploy replaces variables set in the dashboard, but keeps secrets. Without
    it (or without `CLOUD_GRANT_SECRET`) the broker never asks the Admin to wake

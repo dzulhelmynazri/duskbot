@@ -17,7 +17,7 @@ import { rowSurface } from "./SidebarRowMarkers";
 import { SidebarSectionHeader } from "./SidebarSectionHeader";
 import { SIMPLE_ROW_FOCUS } from "./SidebarSimpleTop";
 
-export const ARCHIVED_OPEN_KEY = "duskbot.sidebarArchivedOpen";
+export const ARCHIVED_OPEN_KEY = "madanibot.sidebarArchivedOpen";
 
 function loadOpen(): boolean {
   try {

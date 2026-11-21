@@ -19,7 +19,7 @@ import { build } from "esbuild";
 import { createMobileSessions } from "../apps/companion/src/mobile.ts";
 import { createProxyHandler } from "../apps/companion/src/proxy.ts";
 import { universalPairLink, type MobilePairingResponse } from "../shared/mobile-link.ts";
-import { launchVerificationServer } from "./control-dusk.ts";
+import { launchVerificationServer } from "./control-madani.ts";
 import { fakePlatform, loadShippedPhone, SHIPPED_PHONES, type PhoneRecord, type ShippedPhone } from "./testing/shipped-phone.ts";
 
 const ROOT = fileURLToPath(new URL("..", import.meta.url));
@@ -73,7 +73,7 @@ async function silentRoute(): Promise<{ port: number; close(): void }> {
 
 async function owner(base: string, method: string, path: string, body?: unknown) {
   const response = await fetch(`${base}${path}`, {
-    method, headers: { "x-dusk-desktop-owner": OWNER, ...(body === undefined ? {} : { "content-type": "application/json" }) },
+    method, headers: { "x-madani-desktop-owner": OWNER, ...(body === undefined ? {} : { "content-type": "application/json" }) },
     body: body === undefined ? undefined : JSON.stringify(body), signal: AbortSignal.timeout(30_000),
   });
   return { status: response.status, body: await response.json().catch(() => null) as any };
@@ -146,9 +146,9 @@ async function main() {
   try {
     const phones = { "iPhone 1.2": await loadShippedPhone(ROOT, SHIPPED_PHONES.ios, join(scratch, "phones")), "this tree": await loadThisTree(scratch) };
     const realFetch = globalThis.fetch;
-    globalThis.fetch = (input, init = {}) => realFetch(input, { ...init, headers: { ...Object.fromEntries(new Headers(init.headers)), "x-dusk-desktop-owner": OWNER } });
+    globalThis.fetch = (input, init = {}) => realFetch(input, { ...init, headers: { ...Object.fromEntries(new Headers(init.headers)), "x-madani-desktop-owner": OWNER } });
     let fixture: Awaited<ReturnType<typeof launchVerificationServer>>;
-    try { fixture = await launchVerificationServer({ ...process.env, DUSK_TEST_DESKTOP_OWNER_TOKEN: OWNER }); } finally { globalThis.fetch = realFetch; }
+    try { fixture = await launchVerificationServer({ ...process.env, MADANI_TEST_DESKTOP_OWNER_TOKEN: OWNER }); } finally { globalThis.fetch = realFetch; }
     cleanups.push(() => fixture.close());
     const desk = fixture.info.url, harnessPort = Number(new URL(desk).port);
     const bot = await owner(desk, "POST", "/api/bots", { name: "Probe" });

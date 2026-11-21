@@ -40,7 +40,7 @@
 :root {
   --link-pill-wash: 14%;
 }
-:root:is([data-skin="grok-dark"], [data-skin="midnight"], [data-skin="dusk"], [data-skin="foundry"], [data-skin="graphite"], [data-skin="halloween"]) {
+:root:is([data-skin="grok-dark"], [data-skin="midnight"], [data-skin="madani"], [data-skin="foundry"], [data-skin="graphite"], [data-skin="halloween"]) {
   --link-pill-wash: 22%;
 }
 .link-pill {
@@ -704,11 +704,11 @@ a.link-pill:focus-visible {
   --identity-chrome: #626d7e;
 }
 
-/* ── Dusk ─────────────────────────────────────────────────────────────────
+/* ── Madani ─────────────────────────────────────────────────────────────────
    A restrained plum-dark alternative. The violet lives in the neutrals as
    much as the accent, so the skin feels cohesive rather than neon or themed.
    ───────────────────────────────────────────────────────────────────────── */
-[data-skin="dusk"] {
+[data-skin="madani"] {
   --code-color-scheme: dark;
   --color-app: #121014;
   --color-panel: #19161c;
@@ -997,7 +997,7 @@ a.link-pill:focus-visible {
 }
 
 /* ── Meadow ───────────────────────────────────────────────────────────────
-   The Dusk brand look: a white page, a sidebar washed in the faintest
+   The Madani brand look: a white page, a sidebar washed in the faintest
    green, mint for the selected row and a calm green accent. The brand
    green #1f8a52 carries white at only 4.3:1, so the filled accent is one
    step deeper; the brand green stays as the accent border.
@@ -1280,12 +1280,12 @@ a.link-pill:focus-visible {
    the machine has one. Geist and the UI stack do not carry those glyphs,
    and a generic family listed later would otherwise win. */
 @font-face {
-  font-family: "dusk-chat";
+  font-family: "madani-chat";
   src: local("Noto Naskh Arabic"), local("Noto Sans Arabic"), local("Geeza Pro"), local("SF Arabic");
   unicode-range: U+0600-06FF, U+0750-077F, U+08A0-08FF, U+FB50-FDFF, U+FE70-FEFF;
 }
 @font-face {
-  font-family: "dusk-chat";
+  font-family: "madani-chat";
   src: local("Noto Sans Hebrew"), local("Arial Hebrew"), local("SF Hebrew");
   unicode-range: U+0590-05FF, U+FB1D-FB4F;
 }
@@ -1296,7 +1296,7 @@ a.link-pill:focus-visible {
 .chat-text,
 .chat-md {
   line-height: 1.75;
-  font-family: "dusk-chat", var(--font-sans);
+  font-family: "madani-chat", var(--font-sans);
 }
 .chat-md :is(strong, b) {
   font-weight: 600;
@@ -3171,7 +3171,7 @@ button:disabled.bg-danger {
     --color-danger: color(display-p3 0.6315 0.2423 0.2772);
     --color-warning: color(display-p3 0.4543 0.3583 0.1717);
   }
-  :is([data-skin="dusk"]) {
+  :is([data-skin="madani"]) {
     --color-accent: color(display-p3 0.4495 0.3350 0.5154);
     --color-accent-border: color(display-p3 0.5725 0.4369 0.6409);
     --color-accent-text: color(display-p3 0.7511 0.6056 0.8251);
@@ -3223,7 +3223,7 @@ button:disabled.bg-danger {
   outline-offset: -1.5px;
 }
 :root,
-:is([data-skin="midnight"], [data-skin="grok-dark"], [data-skin="foundry"], [data-skin="graphite"], [data-skin="dusk"], [data-skin="halloween"]) {
+:is([data-skin="midnight"], [data-skin="grok-dark"], [data-skin="foundry"], [data-skin="graphite"], [data-skin="madani"], [data-skin="halloween"]) {
   --radius-menu: 12px;
   --menu-shadow: 0 0 #0000;
 }
@@ -3350,7 +3350,7 @@ button:disabled.bg-danger {
   color: var(--bubble-selection-ink, #ffffff);
 }
 
-/* dusk cloud's plans: the landing's pricing cards, a pastel underlip on the picked one, the pixel art dimmed after dark. */
+/* madani cloud's plans: the landing's pricing cards, a pastel underlip on the picked one, the pixel art dimmed after dark. */
 .cloud-plans {
   color-scheme: var(--code-color-scheme);
   --cloud-plan-dim: light-dark(transparent, rgb(0 0 0 / 0.26));

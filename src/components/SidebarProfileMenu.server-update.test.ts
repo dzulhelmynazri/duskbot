@@ -15,7 +15,7 @@ import { useServerUpdateItem } from "./SidebarProfileMenu";
 
 // The server the window shows, on 0.1.116 from npm, while 0.1.127 is out.
 const npmServer: ServerUpdateCheck = {
-  current: "0.1.116", install: "npm", latest: "0.1.127", available: true, command: "npm install -g duskbot@latest", restart: true,
+  current: "0.1.116", install: "npm", latest: "0.1.127", available: true, command: "npm install -g madanibot@latest", restart: true,
 };
 let entry: ReturnType<typeof useServerUpdateItem>;
 function render() {
@@ -41,25 +41,25 @@ afterEach(() => vi.unstubAllGlobals());
 
 it("in the app on another server, says the update is that server's, for whoever runs it", async () => {
   const workspaces = { state: vi.fn(async () => ({ local: false, name: "Office Mac", origin: "https://bots.example.test" })) };
-  expect(await checkedRow({ duskDesktop: { app: { version: "0.1.127", ownPage: false }, workspaces }, location: { host: "bots.example.test" } })).toEqual({
+  expect(await checkedRow({ madaniDesktop: { app: { version: "0.1.127", ownPage: false }, workspaces }, location: { host: "bots.example.test" } })).toEqual({
     label: "Office Mac can update to 0.1.127",
-    subtitle: "Whoever runs that server updates it with: npm install -g duskbot@latest, then restarts it",
+    subtitle: "Whoever runs that server updates it with: npm install -g madanibot@latest, then restarts it",
     attention: true,
   });
 });
 
 it("names the server by its address until the app says its saved name", async () => {
   const workspaces = { state: vi.fn(() => new Promise(() => {})) };
-  expect((await checkedRow({ duskDesktop: { app: { version: "0.1.127", ownPage: false }, workspaces }, location: { host: "bots.example.test" } })).label)
+  expect((await checkedRow({ madaniDesktop: { app: { version: "0.1.127", ownPage: false }, workspaces }, location: { host: "bots.example.test" } })).label)
     .toBe("bots.example.test can update to 0.1.127");
 });
 
 it("keeps today's row in a browser on that server and in the app on this computer", async () => {
   const today = {
     label: "Version 0.1.127 available (release notes)",
-    subtitle: "Update with: npm install -g duskbot@latest, then restart the app",
+    subtitle: "Update with: npm install -g madanibot@latest, then restart the app",
     attention: true,
   };
   expect(await checkedRow({ location: { host: "bots.example.test" } })).toEqual(today);
-  expect(await checkedRow({ duskDesktop: { app: { version: "0.1.127", ownPage: true } }, location: { host: "127.0.0.1:8799" } })).toEqual(today);
+  expect(await checkedRow({ madaniDesktop: { app: { version: "0.1.127", ownPage: true } }, location: { host: "127.0.0.1:8799" } })).toEqual(today);
 });

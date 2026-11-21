@@ -8,7 +8,7 @@ import { billingSteps, firstSourceOf, SESSION_GAP_MS, sessionsOf, spendOf, stepO
 const T = Date.parse("2026-11-12T17:58:00Z"), MIN = 60_000, DAY = 86_400_000;
 let n = 0;
 const ev = (name: string, at: number, props: Props = {}, ctx?: EventContext, accountId: string | null = null): StoredEvent => ({ id: `ev_${n++}`, name, at, accountId, props, ...(ctx ? { ctx } : {}) });
-const site = (session: string, extra: EventContext = {}): EventContext => ({ visitor: "v1", session, host: "dusk.bot", ...extra });
+const site = (session: string, extra: EventContext = {}): EventContext => ({ visitor: "v1", session, host: "madani.bot", ...extra });
 
 describe("person profile", () => {
   it("maps each event kind to a readable step and hides bookkeeping", () => {
@@ -22,7 +22,7 @@ describe("person profile", () => {
       [ev("site_goal", T, { goal: "demo_play" }, site("s", { page: "/" })), { kind: "goal", name: "demo_play", path: "/" }],
       [ev("site_goal", T, { goal: "js_error", label: "error" }, site("s", { page: "/" })), { kind: "error", name: "page error" }],
       [ev("page_action", T, { action: "upsell_shown", label: "dash_sidebar", path: "/" }), { kind: "upsell", name: "upsell_shown", detail: "dash_sidebar" }],
-      [ev("page_action", T, { action: "download", label: "download_dusk_bot", value: "mac", path: "/welcome" }), { kind: "goal", name: "download_click", path: "/dashboard/welcome", detail: "mac" }],
+      [ev("page_action", T, { action: "download", label: "download_madani_bot", value: "mac", path: "/welcome" }), { kind: "goal", name: "download_click", path: "/dashboard/welcome", detail: "mac" }],
       [ev("page_action", T, { action: "js_error", label: "rejection", path: "/" }), { kind: "error" }],
       [ev("download_click", T, { platform: "windows", detected_os: "windows" }), { kind: "goal", name: "download_click", detail: "windows" }],
       [ev("signup", T, { method: "google" }), { kind: "signup", name: "signed up", detail: "google" }],

@@ -4,7 +4,7 @@ import { createInterface } from "node:readline";
 import { expect, it } from "vitest";
 import { z } from "zod";
 
-import { launchVerificationServer, runControlDusk } from "../scripts/control-dusk.ts";
+import { launchVerificationServer, runControlMadani } from "../scripts/control-madani.ts";
 import { waitForExit } from "./testing/cleanup.ts";
 
 type Bot = { id: string; threadId: string; name: string };
@@ -19,7 +19,7 @@ it("creates and manages an own-section room through the mounted Chief MCP proxy"
   const evidence: unknown[] = [{ fixture: fixture.info }];
   const proxies: ChildProcess[] = [];
   const control = async (args: string[]) => {
-    const result = await runControlDusk([...args, "--url", fixture.info.url]);
+    const result = await runControlMadani([...args, "--url", fixture.info.url]);
     evidence.push({ command: args, result });
     return result;
   };
@@ -48,8 +48,8 @@ it("creates and manages an own-section room through the mounted Chief MCP proxy"
         agents: z.object({ command: z.string(), args: z.array(z.string()), env: z.record(z.string(), z.string()) }),
       }) }) }).parse(JSON.parse(readFileSync(fixture.fixtureDumpPath, "utf8")));
       const mounted = mcpConfig.mcpServers.agents;
-      expect(mounted.env.DUSK_BOT_ID).toBe(bot.id);
-      expect(mounted.env.DUSK_HARNESS_URL).toBe(fixture.info.url);
+      expect(mounted.env.MADANI_BOT_ID).toBe(bot.id);
+      expect(mounted.env.MADANI_HARNESS_URL).toBe(fixture.info.url);
       return mounted;
     };
     const connect = (mounted: Mounted) => {
@@ -76,7 +76,7 @@ it("creates and manages an own-section room through the mounted Chief MCP proxy"
       (await rpc<{ tools: Array<{ name: string }> }>("tools/list")).tools.map((entry) => entry.name);
 
     const peerMount = await mount(peer, "Say hello.");
-    expect(peerMount.env.DUSK_CHIEF_OF_STAFF).toBe("0");
+    expect(peerMount.env.MADANI_CHIEF_OF_STAFF).toBe("0");
     const peerTools = await toolNames(connect(peerMount));
     expect(peerTools).toContain("list_rooms");
     expect(CHIEF_ONLY_TOOLS.filter((name) => peerTools.includes(name))).toEqual([]);
@@ -84,7 +84,7 @@ it("creates and manages an own-section room through the mounted Chief MCP proxy"
     await control(["interrupt", "--bot", peer.id]);
 
     const mounted = await mount(chief, "Set up a small room for the team.");
-    expect(mounted.env.DUSK_CHIEF_OF_STAFF).toBe("1");
+    expect(mounted.env.MADANI_CHIEF_OF_STAFF).toBe("1");
     const rpc = connect(mounted);
     expect(await toolNames(rpc)).toEqual(expect.arrayContaining(CHIEF_ONLY_TOOLS));
     const tool = async (name: string, args: Record<string, unknown>, denied = false) => {
@@ -125,7 +125,7 @@ it("creates and manages an own-section room through the mounted Chief MCP proxy"
     await expect.poll(() => existsSync(fixture.fixtureDumpPath), { timeout: 15_000 }).toBe(true);
     const inRoom = z.object({ mcpConfig: z.object({ mcpServers: z.object({ agents: z.object({ command: z.string(), args: z.array(z.string()), env: z.record(z.string(), z.string()) }) }) }) })
       .parse(JSON.parse(readFileSync(fixture.fixtureDumpPath, "utf8"))).mcpConfig.mcpServers.agents;
-    expect(inRoom.env.DUSK_BOT_ID).toBe(chief.id);
+    expect(inRoom.env.MADANI_BOT_ID).toBe(chief.id);
     const roomRpc = connect(inRoom);
     const roomTool = async (args: Record<string, unknown>) => {
       const result = await roomRpc("tools/call", { name: "manage_room", arguments: args });

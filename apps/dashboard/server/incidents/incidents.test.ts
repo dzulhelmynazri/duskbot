@@ -22,8 +22,8 @@ const stackAt = (line: number, file = "/srv/omb/apps/dashboard/server/billing/ro
 function setup(options: { mailers?: Mailer[]; time?: { now: number } } = {}) {
   const time = options.time ?? { now: Date.parse("2026-11-12T12:00:00Z") };
   const mailer = memoryMailer(), store = memoryIncidentStore(), lines: string[] = [];
-  const incidents = createIncidents({ env: "production", store, to: () => [OWNER], mailers: options.mailers ?? [mailer], email: emailConfig({}, { publicUrl: "https://dusk.bot" }),
-    panelUrl: "https://dusk.bot/admin/health", mail: true, now: () => time.now, timers: false, log: line => lines.push(line) });
+  const incidents = createIncidents({ env: "production", store, to: () => [OWNER], mailers: options.mailers ?? [mailer], email: emailConfig({}, { publicUrl: "https://madani.bot" }),
+    panelUrl: "https://madani.bot/admin/health", mail: true, now: () => time.now, timers: false, log: line => lines.push(line) });
   return { time, mailer, store, incidents, lines };
 }
 
@@ -33,7 +33,7 @@ describe("incident fingerprints", () => {
     expect(at(stackAt(10))).toBe(at(stackAt(99)));
     expect(at(stackAt(10))).not.toBe(at(stackAt(10), "/v1/billing/portal"));
     expect(at(stackAt(10))).not.toBe(at(stackAt(10), undefined, "RangeError"));
-    const bundle = (hash: string) => topFrame(stackFrames(`Error: x\n    at Ab (https://dusk.bot/assets/index-${hash}.js:1:2)`));
+    const bundle = (hash: string) => topFrame(stackFrames(`Error: x\n    at Ab (https://madani.bot/assets/index-${hash}.js:1:2)`));
     expect(bundle("Bx81kQ2a")).toBe(bundle("Zz09PqLm"));
     expect(topFrame(stackFrames(stackAt(3)))).toBe("charge (apps/dashboard/server/billing/routes.ts)");
   });
@@ -48,13 +48,13 @@ describe("incident fingerprints", () => {
 
 describe("masking", () => {
   it("masks secrets, codes, query strings, connection strings and email addresses in service text", () => {
-    const text = maskText("mail to siddz.dev@gmail.com failed: Bearer abc.def token=s3cr3t xkeysib-0123456789abcdef code 12345678 https://dusk.bot/v1/auth/link?token=zzz mongodb://u:p@db:27017/dusk");
+    const text = maskText("mail to siddz.dev@gmail.com failed: Bearer abc.def token=s3cr3t xkeysib-0123456789abcdef code 12345678 https://madani.bot/v1/auth/link?token=zzz mongodb://u:p@db:27017/madani");
     expect(text).toContain("si***@gmail.com");
     for (const leak of ["siddz.dev", "abc.def", "s3cr3t", "0123456789abcdef", "12345678", "zzz", "u:p@db"]) expect(text).not.toContain(leak);
   });
   it("scrubs client text harder: no quoted words, urls, long ids or addresses", () => {
-    const text = clientText(`Cannot read "my secret plan" at https://dusk.bot/x for a@b.co id 9f8e7d6c5b4a39281706f5e4d3c2b1a0`);
-    for (const leak of ["my secret plan", "https://dusk.bot", "a@b.co", "9f8e7d6c5b4a39281706f5e4d3c2b1a0"]) expect(text).not.toContain(leak);
+    const text = clientText(`Cannot read "my secret plan" at https://madani.bot/x for a@b.co id 9f8e7d6c5b4a39281706f5e4d3c2b1a0`);
+    for (const leak of ["my secret plan", "https://madani.bot", "a@b.co", "9f8e7d6c5b4a39281706f5e4d3c2b1a0"]) expect(text).not.toContain(leak);
   });
 });
 
@@ -81,7 +81,7 @@ describe("alert throttling", () => {
     expect(first.text).toContain("req_1234");
     expect(first.text).toContain("si***@gmail.com");
     expect(first.text).not.toContain("siddz.dev@gmail.com is");
-    expect(first.text).toContain("https://dusk.bot/admin/health");
+    expect(first.text).toContain("https://madani.bot/admin/health");
     expect(first.html + first.text).not.toContain("—");
 
     for (let hour = 0; hour < 6 * 24; hour++) {
@@ -106,14 +106,14 @@ describe("alert throttling", () => {
     time.now = Date.parse("2026-11-13T08:01:00Z"); await incidents.tick(); await incidents.tick();
     const daily = mailer.outbox.slice(RULES.mailsPerDay);
     expect(daily).toHaveLength(1);
-    expect(daily[0]!.subject).toBe("5 problems not emailed yet on dusk bot");
+    expect(daily[0]!.subject).toBe("5 problems not emailed yet on madani bot");
     expect(daily[0]!.text).toContain("more issues than the daily email limit");
     time.now = Date.parse("2026-11-14T08:01:00Z"); await incidents.tick();
     expect(mailer.outbox).toHaveLength(RULES.mailsPerDay + 1);
 
     const client = setup();
     for (let n = 0; n < 6; n++) {
-      client.incidents.report({ source: "web", name: "TypeError", message: "boom", stack: `TypeError: boom\n    at f${n} (https://dusk.bot/assets/a.js:1:1)` });
+      client.incidents.report({ source: "web", name: "TypeError", message: "boom", stack: `TypeError: boom\n    at f${n} (https://madani.bot/assets/a.js:1:1)` });
       await client.incidents.flushNew();
     }
     // page and app errors stay in the admin panel: only the server failing emails, and new problem groups never do
@@ -126,7 +126,7 @@ describe("alert throttling", () => {
 
   it("folds a client flood into one incident", async () => {
     const { mailer, incidents } = setup();
-    for (let n = 0; n < RULES.newClientPerHour + 50; n++) incidents.report({ source: "web", name: "TypeError", message: "boom", stack: `TypeError: boom\n    at f${n} (https://dusk.bot/assets/a.js:1:1)` });
+    for (let n = 0; n < RULES.newClientPerHour + 50; n++) incidents.report({ source: "web", name: "TypeError", message: "boom", stack: `TypeError: boom\n    at f${n} (https://madani.bot/assets/a.js:1:1)` });
     await incidents.flushNew();
     expect(mailer.outbox).toHaveLength(0);
     const listed = await incidents.list({ limit: 200 });
@@ -137,7 +137,7 @@ describe("alert throttling", () => {
   it("a save that fails says why, masked, and keeps the counts for the next try", async () => {
     const { incidents, store, lines } = setup();
     const record = store.record;
-    store.record = async () => { throw Object.assign(new Error("connection to mongodb://dusk:hunter2@127.0.0.1:27017 timed out"), { name: "MongoNetworkError" }); };
+    store.record = async () => { throw Object.assign(new Error("connection to mongodb://madani:hunter2@127.0.0.1:27017 timed out"), { name: "MongoNetworkError" }); };
     incidents.report({ source: "server", name: "TypeError", message: "x", stack: stackAt(1) });
     await incidents.flushNew();
     const said = lines.find(line => line.startsWith("incidents could not be saved"));
@@ -160,7 +160,7 @@ describe("alert throttling", () => {
     expect(mailer.outbox).toHaveLength(1);
     await incidents.tick();
 
-    const again = createIncidents({ env: "production", store, to: () => [OWNER], mailers: [mailer], email: emailConfig({}, { publicUrl: "https://dusk.bot" }), panelUrl: "x", mail: true, now: () => time.now, timers: false });
+    const again = createIncidents({ env: "production", store, to: () => [OWNER], mailers: [mailer], email: emailConfig({}, { publicUrl: "https://madani.bot" }), panelUrl: "x", mail: true, now: () => time.now, timers: false });
     await again.load();
     time.now += 2 * 24 * HOUR;
     again.report({ source: "server", name: "TypeError", message: "x", stack: stackAt(1) });
@@ -208,7 +208,7 @@ describe("error endpoints", () => {
   let alerts: ReturnType<typeof setup>, mailer: ReturnType<typeof memoryMailer>;
   const csrf = new Map<string, string>();
   beforeEach(async () => {
-    dataDir = mkdtempSync(join(tmpdir(), "dusk-incidents-test-"));
+    dataDir = mkdtempSync(join(tmpdir(), "madani-incidents-test-"));
     mailer = memoryMailer();
     alerts = setup();
     app = createDashboardApp({ dataDir, publicUrl: origin, mailer, staticDir: null, incidents: alerts.incidents, admin: { emails: [OWNER], env: {} } });

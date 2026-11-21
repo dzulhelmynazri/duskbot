@@ -48,7 +48,7 @@ export function failureText(error: unknown): string {
   return line ? t("files.failedWith", { reason: line }) : t("files.failed");
 }
 
-/** The folders this computer shares with My Cloud and where Cloud bots' work lands, as Settings > dusk cloud shows
+/** The folders this computer shares with My Cloud and where Cloud bots' work lands, as Settings > madani cloud shows
  * them. Security: main decides every path; this shows main's state and passes the person's choices (tokens, folder ids). */
 export function CloudFilesSettings() {
   const bridge = cloudFilesBridge();

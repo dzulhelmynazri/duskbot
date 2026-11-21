@@ -64,7 +64,7 @@ export function installDeadClickProbe(): void {
   if (navigator.clipboard) { wrap(navigator.clipboard, "writeText", "copied"); wrap(navigator.clipboard, "write", "copied"); }
   wrap(document, "execCommand" as never, "copied");
   // the desktop app's bridge: every call is a message to the main process
-  const bridge = w.duskDesktop as Record<string, unknown> | undefined;
+  const bridge = w.madaniDesktop as Record<string, unknown> | undefined;
   const watchBridge = (node: Record<string, unknown> | undefined, depth: number) => {
     if (!node || depth > 2) return;
     for (const key of Object.keys(node)) {

@@ -153,7 +153,7 @@ export function openStartupModelCatalog(input: {
 }
 
 /** Reads again, one engine at a time, each list last read over STARTUP_MODEL_CACHE_FRESH_MS ago: a server that runs for
- * days (dusk cloud) otherwise keeps the list it started with. */
+ * days (madani cloud) otherwise keeps the list it started with. */
 export async function refreshStaleModelLists(
   instances: ReadonlyArray<Pick<ProviderInstance, "instanceId" | "refreshModels">>,
   now = Date.now(),

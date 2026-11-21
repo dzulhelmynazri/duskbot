@@ -31,7 +31,7 @@ import { CloudWelcome, sentHere } from "./CloudWelcome";
 import { CLOUD_SETUP_MOVE_SKIPPED, CLOUD_WELCOME_DONE, CLOUD_WELCOME_SHOWN as SHOWN, welcomeStepHint } from "@/lib/cloud-setup";
 import { resetCloudWelcome, returnToWelcome, useCloudWelcome } from "@/lib/cloud-welcome";
 
-const CLOUD = { name: "Studio Cloud", origin: "https://dusk-u-1a2b3c4d5e6f.fly.dev" };
+const CLOUD = { name: "Studio Cloud", origin: "https://madani-u-1a2b3c4d5e6f.fly.dev" };
 const quiet: CloudSendNotice = { ready: true, bots: [], updatedBots: [], skills: 0, logins: 0, onePassword: false, settings: 0, signature: "", dismissed: false, running: false, last: null, whole: null };
 const claude = { instanceId: "claude", driverKind: "claudeAgent", displayName: "Claude", access: "subscription", authentication: { method: "paste-code" }, snapshot: { state: "available", authenticated: false }, models: { default: "", options: [] } };
 const codex = { ...claude, instanceId: "codex", driverKind: "codex", displayName: "Codex" };
@@ -74,11 +74,11 @@ beforeEach(() => {
     if (patch.onboarding) return { ...fixture.state.config, onboarding: { ...fixture.state.config.onboarding, ...patch.onboarding } };
     throw new Error(`unexpected ${path}`);
   });
-  window.duskDesktop = {
+  window.madaniDesktop = {
     platform: "darwin", cloudPlan: { state: vi.fn() },
     cloudSendPage: { notice: vi.fn().mockResolvedValue(quiet), dismiss: vi.fn(), onNotice: vi.fn(() => () => {}) },
     workspaces: { state: vi.fn().mockResolvedValue({ local: false, name: "Studio Cloud", origin: CLOUD.origin }), menu: vi.fn() },
-  } as unknown as typeof window.duskDesktop;
+  } as unknown as typeof window.madaniDesktop;
   host = document.createElement("div");
   document.body.append(host);
   root = createRoot(host);
@@ -86,7 +86,7 @@ beforeEach(() => {
 afterEach(() => {
   flushSync(() => root.unmount());
   host.remove();
-  delete window.duskDesktop;
+  delete window.madaniDesktop;
   vi.unstubAllGlobals();
   vi.unstubAllEnvs();
 });
@@ -98,16 +98,16 @@ const sentLast = { at: 1, reason: "move", failed: 0, seen: false, sent: { bots: 
 let pushNotice: (value: CloudSendNotice) => void = () => {};
 const withSend = (value: CloudSendNotice | null, more: Record<string, unknown> = {}) => {
   const page = { notice: vi.fn().mockResolvedValue(value), dismiss: vi.fn(), onNotice: vi.fn((listener: (next: CloudSendNotice) => void) => { pushNotice = listener; return () => {}; }), ...more };
-  window.duskDesktop = { ...window.duskDesktop!, cloudSendPage: page } as unknown as typeof window.duskDesktop;
+  window.madaniDesktop = { ...window.madaniDesktop!, cloudSendPage: page } as unknown as typeof window.madaniDesktop;
   return page;
 };
 
 describe("CloudWelcome", () => {
   it("is one screen: the bots landing on the cloud, what is different now, and one thing to do, with no steps to go through", () => {
-    vi.stubEnv("VITE_DUSK_PHONE_APP", "0");
+    vi.stubEnv("VITE_MADANI_PHONE_APP", "0");
     render();
     expect(host.querySelector("[data-cloud-move-scene]")).not.toBeNull();
-    expect(host.querySelector("h1")?.textContent).toBe("Welcome to dusk cloud");
+    expect(host.querySelector("h1")?.textContent).toBe("Welcome to madani cloud");
     expect([...host.querySelectorAll("li")].map((item) => item.textContent)).toEqual([
       "Your bots keep working, even while your computer sleeps", "Routines run on time, every time"]);
     expect(host.querySelector("[data-welcome-rail]")).toBeNull();
@@ -124,7 +124,7 @@ describe("CloudWelcome", () => {
       root = createRoot(host);
       fixture.state.config = { ...fixture.state.config, ...(team ? { team: { id: "team-acme", name: "Acme" } } : { team: undefined }) };
       if (desktop) withSend(quiet, { teamBring: vi.fn(async () => ({ team: { id: "team-acme", name: "Acme", ready: true }, bots: [{ id: "atlas", name: "Atlas" }] })), teamBringMove: vi.fn() });
-      else window.duskDesktop = { ...window.duskDesktop!, cloudSendPage: undefined } as unknown as typeof window.duskDesktop;
+      else window.madaniDesktop = { ...window.madaniDesktop!, cloudSendPage: undefined } as unknown as typeof window.madaniDesktop;
       render();
       await vi.waitFor(() => expect(host.querySelector("h1")).not.toBeNull());
       await new Promise((resolve) => setTimeout(resolve, 0));

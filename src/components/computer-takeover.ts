@@ -15,11 +15,11 @@ const RELEASE_SETTLE_MS = 1_500;
 /** `crypto.randomUUID` exists only in secure contexts, and a phone may reach the app over plain LAN http. */
 const newLeaseId = () => Array.from(crypto.getRandomValues(new Uint8Array(18)), (byte) => byte.toString(16).padStart(2, "0")).join("");
 
-/** `cid` names this take-over in the trail on both ends (sent as x-dusk-trail) */
+/** `cid` names this take-over in the trail on both ends (sent as x-madani-trail) */
 type Request = (action: "take" | "release", controlLeaseId?: string, cid?: string) => Promise<TakeoverSnapshot>;
 
 function post(path: string, body: unknown, cid?: string): void {
-  void fetch(path, { method: "POST", headers: { "content-type": "application/json", ...(cid ? { "x-dusk-trail": cid } : {}) }, body: JSON.stringify(body), keepalive: true })
+  void fetch(path, { method: "POST", headers: { "content-type": "application/json", ...(cid ? { "x-madani-trail": cid } : {}) }, body: JSON.stringify(body), keepalive: true })
     .catch(() => {});
 }
 

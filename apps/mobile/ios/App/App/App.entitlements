@@ -10,12 +10,12 @@
 	</array>
 	<key>com.apple.developer.associated-domains</key>
 	<array>
-		<string>applinks:dusk.bot</string>
+		<string>applinks:madani.bot</string>
 	</array>
 	<key>keychain-access-groups</key>
 	<array>
-		<string>$(AppIdentifierPrefix)bot.dusk.mobile</string>
-		<string>$(AppIdentifierPrefix)bot.dusk.shared</string>
+		<string>$(AppIdentifierPrefix)bot.madani.mobile</string>
+		<string>$(AppIdentifierPrefix)bot.madani.shared</string>
 	</array>
 </dict>
 </plist>

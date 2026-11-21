@@ -41,7 +41,7 @@ export function publicKeyObject(key: EntitlementPublicKey): KeyObject {
   return createPublicKey({ key: { kty: "OKP", crv: "Ed25519", x: key.x }, format: "jwk" });
 }
 
-/** `kid:<base64url pkcs8 der>`, as the account service's DUSK_ENTITLEMENT_SIGNING_KEY holds it */
+/** `kid:<base64url pkcs8 der>`, as the account service's MADANI_ENTITLEMENT_SIGNING_KEY holds it */
 export function parseEntitlementSigner(value: string): EntitlementSigner {
   const at = value.indexOf(":");
   const kid = value.slice(0, at), der = value.slice(at + 1).trim();

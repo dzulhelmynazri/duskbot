@@ -30,7 +30,7 @@ export interface IntroFacts {
   template?: { category: string; title: string; tryAsking: readonly string[]; apps: readonly string[]; routines: readonly string[] };
   /** Connected apps this bot may use, by name; null when the app could not tell. */
   apps: readonly string[] | null;
-  /** Where its work runs, in words: "this Mac", "dusk cloud", "a server". */
+  /** Where its work runs, in words: "this Mac", "madani cloud", "a server". */
   place: string;
   /** Its own desktop or browser, if it has one, in words. */
   computer?: string;

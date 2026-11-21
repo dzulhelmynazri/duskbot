@@ -60,7 +60,7 @@ const FILL_BUDGET_MS = 25_000;
 const POLL_MS = 250;
 const MAX_STEPS = 3;
 
-const MARK = "data-dusk-login";
+const MARK = "data-madani-login";
 
 // Shared by every page script: what a person could see, which fields this fill marked, a site's error line, a CAPTCHA.
 const PAGE_HELPERS = `
@@ -154,8 +154,8 @@ const FOCUS_FIELD = `((nonce, key, mode, keep) => {
   const el = document.querySelector("[" + MARK + "=\\"" + key + "\\"]");
   if (!(el instanceof HTMLInputElement)) return JSON.stringify({ href: location.href, focused: false, same: false });
   if (mode === "type" && typeof keep === "string" && el.value === keep) return JSON.stringify({ href: location.href, focused: true, same: true });
-  if (mode === "submit" && !window["__duskLogin" + nonce]) {
-    const sent = window["__duskLogin" + nonce] = { submitted: false, leaving: false };
+  if (mode === "submit" && !window["__madaniLogin" + nonce]) {
+    const sent = window["__madaniLogin" + nonce] = { submitted: false, leaving: false };
     addEventListener("submit", () => { sent.submitted = true; }, true);
     addEventListener("beforeunload", () => { sent.leaving = true; }, true);
   }
@@ -198,7 +198,7 @@ const MARK_SUBMIT = `((key) => {
 const PAGE_STATE = `((nonce) => {
   ${PAGE_HELPERS}
   const ours = marked(nonce + ":").filter((el) => el instanceof HTMLInputElement);
-  const sent = window["__duskLogin" + nonce] || {};
+  const sent = window["__madaniLogin" + nonce] || {};
   return JSON.stringify({
     href: location.href, title: document.title, present: ours.some(visible), busy: sending(ours),
     submitted: sent.submitted === true, leaving: sent.leaving === true, alert: alertText(), human: humanCheck(),
@@ -222,7 +222,7 @@ const CLEAR_SECRETS = `((nonce) => {
 const UNMARK = `((nonce) => {
   ${PAGE_HELPERS}
   for (const el of marked(nonce + ":")) el.removeAttribute(MARK);
-  try { delete window["__duskLogin" + nonce]; } catch {}
+  try { delete window["__madaniLogin" + nonce]; } catch {}
   return JSON.stringify({ href: location.href });
 })`;
 

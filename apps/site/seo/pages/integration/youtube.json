@@ -4,8 +4,8 @@
   "title": "YouTube AI assistant for comments and channel reviews",
   "nav": "youtube",
   "h1": "a youtube assistant for the work around your videos",
-  "description": "Review YouTube comments, playlists and channel data with dusk bot. See available caption actions, three routines and the limits on video summaries.",
-  "answer": "**your next video idea may already be sitting in the comments.** a dusk bot can collect viewer questions, group recurring topics and bring you the comments behind them. it also reads video details and playlists with the ai you choose. spoken-content summaries need downloadable captions; that action requires video ownership, so a link alone is not enough.",
+  "description": "Review YouTube comments, playlists and channel data with madani bot. See available caption actions, three routines and the limits on video summaries.",
+  "answer": "**your next video idea may already be sitting in the comments.** a madani bot can collect viewer questions, group recurring topics and bring you the comments behind them. it also reads video details and playlists with the ai you choose. spoken-content summaries need downloadable captions; that action requires video ownership, so a link alone is not enough.",
   "tags": [
     "video",
     "comments",
@@ -66,7 +66,7 @@
         "use": "**answer a viewer.** send a reviewed reply under the sending rule."
       }
     ],
-    "setup": "**start with the questions under one video.**\n\nconnect youtube with read access and name the channel or videos. leave replies and moderation out of that first job.\n\nfor captions, allow the download action separately: dusk counts it as a change, so read only blocks it. your account must still own the video; extra app access does not bypass that requirement."
+    "setup": "**start with the questions under one video.**\n\nconnect youtube with read access and name the channel or videos. leave replies and moderation out of that first job.\n\nfor captions, allow the download action separately: madani counts it as a change, so read only blocks it. your account must still own the video; extra app access does not bypass that requirement."
   },
   "routines_intro": "**have the useful bits ready for the next recording.** keep video links, lesson lists and current contact details in project files. these routines bring the review to chat without publishing or moderating.",
   "routines": [
@@ -93,8 +93,8 @@
   "cannot": [
     "**summaries need caption text.** downloading it requires video ownership and a track the connection can access.",
     "**use titles and comments for a details review.** they cannot tell you what the speaker said.",
-    "**allow caption download separately.** dusk counts it as a change, which read-only access blocks.",
-    "**a sleeping laptop misses scheduled reviews.** local jobs need dusk running on an awake computer. dusk cloud provides a host that stays on."
+    "**allow caption download separately.** madani counts it as a change, which read-only access blocks.",
+    "**a sleeping laptop misses scheduled reviews.** local jobs need madani running on an awake computer. madani cloud provides a host that stays on."
   ],
   "sections": [
     {
@@ -122,15 +122,15 @@
   ],
   "sources": [
     {
-      "label": "dusk bot docs: files and apps",
+      "label": "madani bot docs: files and apps",
       "url": "/docs/files-and-apps"
     },
     {
-      "label": "dusk bot docs: routines",
+      "label": "madani bot docs: routines",
       "url": "/docs/routines"
     },
     {
-      "label": "dusk bot docs: approval and sending",
+      "label": "madani bot docs: approval and sending",
       "url": "/docs/computer"
     }
   ],

@@ -132,7 +132,7 @@ time or the health of a real server.
 ## Sleeping and waking an idle VPS computer
 
 ```sh
-pnpm exec vitest run server/vps-idle.test.ts server/vps-idle.e2e.test.ts scripts/control-dusk.test.ts
+pnpm exec vitest run server/vps-idle.test.ts server/vps-idle.e2e.test.ts scripts/control-madani.test.ts
 ```
 
 The default idle window is ten minutes. Settings may select five, ten or thirty
@@ -148,7 +148,7 @@ configuration changes, shutdown and bounded retries after an unreachable
 daemon. Three failed stop attempts wait for new activity before trying again.
 
 The standard isolated launcher runs the real server with owned Docker/SSH
-fixtures. Its explicit `DUSK_TEST_VPS_IDLE_CLOCK=1` hook shortens nonzero windows
+fixtures. Its explicit `MADANI_TEST_VPS_IDLE_CLOCK=1` hook shortens nonzero windows
 to 750 ms only in a disposable home. The API fixture proves read-only status
 and screenshot traffic cannot keep a computer awake, a person's hold protects
 it until handback, Stop ends an active GUI lease, and a later bot turn or manual

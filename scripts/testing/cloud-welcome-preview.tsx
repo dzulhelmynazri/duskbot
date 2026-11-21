@@ -25,7 +25,7 @@ function installCloudPage(move: string | null, offer: boolean) {
   let current = notice;
   const listeners = new Set<(next: CloudSendNotice) => void>();
   const answer = async () => { current = { ...notice, offer: { stage: "settings" as const, bots: 6 } }; listeners.forEach((listener) => listener(current)); return current; };
-  window.duskDesktop = {
+  window.madaniDesktop = {
     platform: "darwin",
     getCapabilities: async () => initialDesktopCapabilities(),
     onCapabilitiesChanged: () => () => {},
@@ -37,7 +37,7 @@ function installCloudPage(move: string | null, offer: boolean) {
       state: async () => ({ status: "paid", tier: "pro", credit: { grantedUsd: 5, remainingUsd: 5, state: "active" } }),
       manage: async () => {},
     },
-  } as unknown as typeof window.duskDesktop;
+  } as unknown as typeof window.madaniDesktop;
 }
 
 if (params.get("desktop") === "1") installCloudPage(params.get("move"), params.get("offer") === "1");

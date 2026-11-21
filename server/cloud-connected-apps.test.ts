@@ -42,7 +42,7 @@ let lines: string[];
 let applied: ({ url: string; token: string } | null)[];
 
 beforeEach(() => {
-  dataDir = mkdtempSync(join(tmpdir(), "dusk-cloud-connected-apps-"));
+  dataDir = mkdtempSync(join(tmpdir(), "madani-cloud-connected-apps-"));
   timers = [];
   lines = [];
   applied = [];
@@ -269,7 +269,7 @@ describe("a Cloud home's connected-apps installation", () => {
 });
 
 describe("a paid Cloud's grant", () => {
-  const GRANT = `v1.dusk-machine-1.${"g".repeat(43)}`;
+  const GRANT = `v1.madani-machine-1.${"g".repeat(43)}`;
   const grantCalls = (calls: Call[]) => calls.filter((call) => call.path === "/v1/installation/cloud");
 
   it("presents the Admin's grant with the installation's token, once", async () => {

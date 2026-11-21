@@ -36,7 +36,7 @@ export { applyManagedBrokerMessage, brokerAccess, setManagedBrokerAccess, type B
 export { prepareProjectSession, trustedSessionMcpUrl } from "./composio-session.ts";
 
 function toolkitBase() {
-  return (process.env.DUSK_COMPOSIO_TOOLKITS_API ?? `${DEFAULT_BACKEND_ORIGIN}/api/v3`).replace(/\/$/, "");
+  return (process.env.MADANI_COMPOSIO_TOOLKITS_API ?? `${DEFAULT_BACKEND_ORIGIN}/api/v3`).replace(/\/$/, "");
 }
 
 export interface ConnectedAccountSummary {
@@ -172,18 +172,18 @@ export function configured(cfg: AppConfig): boolean {
   return connectionMode(cfg) !== "unavailable";
 }
 
-/** "unreadable": the desktop shell set DUSK_CREDENTIAL_STORE=unavailable, so the UI keeps its list instead of wiping it. */
+/** "unreadable": the desktop shell set MADANI_CREDENTIAL_STORE=unavailable, so the UI keeps its list instead of wiping it. */
 export type ConnectorAvailability = "configured" | "unconfigured" | "unreadable";
 
 export function connectorAvailability(
   cfg: AppConfig,
-  storeState: string | undefined = process.env.DUSK_CREDENTIAL_STORE,
+  storeState: string | undefined = process.env.MADANI_CREDENTIAL_STORE,
 ): ConnectorAvailability {
   if (configured(cfg)) return "configured";
   return storeState === "unavailable" ? "unreadable" : "unconfigured";
 }
 
-/** Only a host that was given a managed service on purpose (a Cloud home with DUSK_COMPOSIO_BROKER_URL) calls a missing one an
+/** Only a host that was given a managed service on purpose (a Cloud home with MADANI_COMPOSIO_BROKER_URL) calls a missing one an
  * outage. Everywhere else connected apps start with the person's own accounts: no setup is an outage. */
 export type ConnectorSetup = "ready" | "needs-setup" | "service-unavailable";
 
@@ -269,13 +269,13 @@ export async function mcpIntegration(
     env: {
       ELECTRON_RUN_AS_NODE: "1",
       // The bridge gets only this boot's loopback token; project and broker credentials never leave the harness.
-      DUSK_CONNECTOR_UPSTREAM_URL: `${context.harnessUrl}/api/internal/connectors/mcp`,
-      DUSK_CONNECTOR_UPSTREAM_HEADERS: JSON.stringify({ authorization: `Bearer ${context.commsToken}` }),
-      DUSK_HARNESS_URL: context.harnessUrl,
+      MADANI_CONNECTOR_UPSTREAM_URL: `${context.harnessUrl}/api/internal/connectors/mcp`,
+      MADANI_CONNECTOR_UPSTREAM_HEADERS: JSON.stringify({ authorization: `Bearer ${context.commsToken}` }),
+      MADANI_HARNESS_URL: context.harnessUrl,
       // A name apart from the agents proxy token: Codex flattens all mounted MCP env into one environment.
-      DUSK_CONNECTOR_TOKEN: context.commsToken,
-      DUSK_BOT_ID: context.botId,
-      DUSK_THREAD_ID: context.threadId,
+      MADANI_CONNECTOR_TOKEN: context.commsToken,
+      MADANI_BOT_ID: context.botId,
+      MADANI_THREAD_ID: context.threadId,
       ...(allowlist?.env ? { [CONNECTOR_ALLOWED_TOOLS_ENV]: allowlist.env } : {}),
       ...(serviceSlugs?.env ? { [CONNECTOR_SERVICE_SLUGS_ENV]: serviceSlugs.env } : {}),
       ...(Object.keys(chosenAccounts).length ? { [CONNECTOR_ACCOUNTS_ENV]: JSON.stringify(chosenAccounts) } : {}),
@@ -635,12 +635,12 @@ async function collectConnectorTools(cfg: AppConfig): Promise<Record<string, Con
   const candidates = connected ? Object.keys(connected) : [];
   const initialize = await relayMcp(cfg, {
     jsonrpc: "2.0",
-    id: "dusk-grants-initialize",
+    id: "madani-grants-initialize",
     method: "initialize",
     params: {
       protocolVersion: "2025-03-26",
       capabilities: {},
-      clientInfo: { name: "duskbot-grant-editor", version: "1" },
+      clientInfo: { name: "madanibot-grant-editor", version: "1" },
     },
   });
   if (initialize.status !== 200) {
@@ -657,14 +657,14 @@ async function collectConnectorTools(cfg: AppConfig): Promise<Record<string, Con
   for (let page = 0; page < TOOLS_LIST_PAGES_MAX; page += 1) {
     const list = await relayMcp(cfg, {
       jsonrpc: "2.0",
-      id: "dusk-grants-tools",
+      id: "madani-grants-tools",
       method: "tools/list",
       params: cursor ? { cursor } : {},
     }, transportSessionId);
     if (list.status !== 200) {
       throw new Error(await responseErrorFromBytes(list.status, list.bytes));
     }
-    const frame = parseMcpResponse(new TextDecoder().decode(list.bytes), "dusk-grants-tools");
+    const frame = parseMcpResponse(new TextDecoder().decode(list.bytes), "madani-grants-tools");
     const error = frame && typeof frame.error === "object" && frame.error !== null
       ? (frame.error as { message?: unknown }).message
       : undefined;
@@ -840,8 +840,8 @@ export async function prepareConnectionAuthConfigs(
 }
 
 /** connecting an app from the dashboard on a computer with no Composio project key and no managed service: its own app
- *  connects it (Composio Connect, a sign-in in the browser on that computer); a dusk cloud uses cloud-composio-connect.ts */
-export const NO_APPS_SERVICE = "Connect this app from the dusk bot app on this computer, under apps. It signs in to your own Composio there.";
+ *  connects it (Composio Connect, a sign-in in the browser on that computer); a madani cloud uses cloud-composio-connect.ts */
+export const NO_APPS_SERVICE = "Connect this app from the madani bot app on this computer, under apps. It signs in to your own Composio there.";
 
 /** `callbackUrl`: where Composio sends the browser once the sign-in ends (status=success|failed appended); the answer says
  *  `returnsHere` only when the way used honours it */
@@ -872,7 +872,7 @@ export async function authorizeService(cfg: AppConfig, slug: string, requestedAl
   const serviceAccounts = accounts.filter((account) =>
     account.toolkit?.slug !== undefined && canonicalToolkitSlug(account.toolkit.slug) === toolkit
   );
-  const plan = planAccountLink(toolkit, serviceAccounts, alias, MULTI_ACCOUNT_CONFIG.max_accounts_per_toolkit, () => `dusk-retry-${randomUUID()}`);
+  const plan = planAccountLink(toolkit, serviceAccounts, alias, MULTI_ACCOUNT_CONFIG.max_accounts_per_toolkit, () => `madani-retry-${randomUUID()}`);
   if (!plan.ok) throw inputError(plan.error, plan.status);
   for (const id of plan.replace) await deleteConnectedAccount(apiKey, id);
   const linkRequest: AccountLinkRequest = { toolkit };

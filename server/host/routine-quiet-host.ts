@@ -41,7 +41,7 @@ export interface RoutineHostDeps {
   model(botId: string): { driverKind: string; model: string } | undefined;
   tell(botId: string, threadId: string | undefined, text: string): void;
   language(threadId: string | undefined): string | undefined;
-  /** Only a verification fixture sets this (control-dusk): one loopback origin its probes may read. */
+  /** Only a verification fixture sets this (control-madani): one loopback origin its probes may read. */
   probeLoopbackOrigin?: string;
 }
 

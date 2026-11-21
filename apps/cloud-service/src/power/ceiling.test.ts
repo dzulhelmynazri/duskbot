@@ -130,7 +130,7 @@ describe("the spend ledger", () => {
     expect([b?.month, b?.startCents]).toEqual(["2027-02", 7]);
   });
   it("persists to an append-only file that survives a torn last line", () => {
-    const dir = mkdtempSync(join(tmpdir(), "dusk-spend-"));
+    const dir = mkdtempSync(join(tmpdir(), "madani-spend-"));
     let t = NOV + HOUR;
     const alerts: string[] = [];
     const a = createSpendLedger({ dataDir: dir, profile, reserveStarts: N, now: () => t });

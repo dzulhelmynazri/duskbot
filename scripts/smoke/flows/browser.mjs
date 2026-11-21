@@ -7,7 +7,7 @@ import { until } from "../app.mjs";
 import { BROWSER_SIZE, typedWords, walkthrough } from "./recorder.mjs";
 
 const CANDIDATES = [
-  process.env.DUSK_SMOKE_CHROME,
+  process.env.MADANI_SMOKE_CHROME,
   "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
   "/Applications/Chromium.app/Contents/MacOS/Chromium",
   "/usr/bin/google-chrome", "/usr/bin/chromium", "/usr/bin/chromium-browser",
@@ -15,7 +15,7 @@ const CANDIDATES = [
 
 export function chromeBinary() {
   const found = CANDIDATES.find((file) => existsSync(file));
-  if (!found) throw new Error("no Chrome or Chromium found (set DUSK_SMOKE_CHROME)");
+  if (!found) throw new Error("no Chrome or Chromium found (set MADANI_SMOKE_CHROME)");
   return found;
 }
 
@@ -39,7 +39,7 @@ function connect(url) {
 
 /** dir: where the profile lives (kept between runs only when given). Returns { goto, evaluate, text, click, screenshot, url, close }. */
 export async function launchBrowser({ dir = null, width = BROWSER_SIZE.width, height = BROWSER_SIZE.height } = {}) {
-  const profile = dir ?? mkdtempSync(join(process.env.TMPDIR || "/tmp", "dusk-flow-chrome-"));
+  const profile = dir ?? mkdtempSync(join(process.env.TMPDIR || "/tmp", "madani-flow-chrome-"));
   mkdirSync(profile, { recursive: true });
   const child = spawn(chromeBinary(), [
     "--headless=new", `--user-data-dir=${profile}`, "--remote-debugging-port=0", "--use-mock-keychain", "--password-store=basic",
@@ -85,7 +85,7 @@ export async function launchBrowser({ dir = null, width = BROWSER_SIZE.width, he
     async frame(part, timeout = 30_000) {
       const find = (node) => { if (node.frame.parentId && new URL(node.frame.url).host.includes(part)) return node.frame; for (const child of node.childFrames ?? []) { const hit = find(child); if (hit) return hit; } return null; };
       const frame = await until(async () => find((await cdp.send("Page.getFrameTree")).frameTree), { timeout, what: `a frame from ${part}` });
-      const { executionContextId } = await cdp.send("Page.createIsolatedWorld", { frameId: frame.id, worldName: "dusk-smoke" });
+      const { executionContextId } = await cdp.send("Page.createIsolatedWorld", { frameId: frame.id, worldName: "madani-smoke" });
       return {
         send: cdp.send, close: () => {},
         async evaluate(expression) {

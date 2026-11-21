@@ -41,7 +41,7 @@ export const HEALTH_WORD: Record<Health, "settings.docs.ws.online" | "settings.d
 };
 
 export function kindWord(kind: RailPlace["kind"]): string {
-  if (kind === "computer") return window.duskDesktop?.platform === "darwin" ? t("settings.docs.ws.thisMac") : t("settings.docs.ws.thisComputer");
+  if (kind === "computer") return window.madaniDesktop?.platform === "darwin" ? t("settings.docs.ws.thisMac") : t("settings.docs.ws.thisComputer");
   if (kind === "cloud") return t("settings.docs.ws.cloud");
   if (kind === "team") return t("settings.docs.ws.team");
   return t("settings.docs.ws.server");
@@ -99,8 +99,8 @@ function WorkspaceRow({ place, onOpen, onRemove, busy }: { place: RailPlace; onO
 }
 
 /** Settings → Computer's first group: every workspace the bots can live in, with the current one marked and one click to
- * switch, then moving to dusk cloud (or getting one) and adding another (only on this computer's own page, never in a
- * dusk cloud or server window). */
+ * switch, then moving to madani cloud (or getting one) and adding another (only on this computer's own page, never in a
+ * madani cloud or server window). */
 export function WorkspacesGroup({ onAdd }: { onAdd: () => void }) {
   const { state, dispatch } = useStore();
   const rail = usePlaces();
@@ -114,13 +114,13 @@ export function WorkspacesGroup({ onAdd }: { onAdd: () => void }) {
     kind: currentKind(here.current),
   }];
   const hasCloud = places.some((place) => place.kind === "cloud" || place.kind === "team");
-  const canBuy = Boolean(window.duskDesktop?.cloudAccount) && window.duskDesktop?.remoteClient?.active !== true;
+  const canBuy = Boolean(window.madaniDesktop?.cloudAccount) && window.madaniDesktop?.remoteClient?.active !== true;
   // a server of the person's own on screen: main answers the move's view only there, so an answer means it can move
   const serverMove = useVpsCloudMove(desktopShowsOtherServer() && state.config?.cloudHome !== true).view;
   const moveServer = () => { dispatch({ type: "toggleSettings", open: false }); openCloudMove("cloud"); };
 
   const open = (place: RailPlace) => {
-    const bridge = window.duskDesktop?.workspaces;
+    const bridge = window.madaniDesktop?.workspaces;
     if (!bridge?.open || busy) return;
     setBusy(true); setError("");
     void bridge.open(place.id).catch(() => setError(t("connectedWorkspaces.switchError"))).finally(() => setBusy(false));
@@ -152,7 +152,7 @@ export function WorkspacesGroup({ onAdd }: { onAdd: () => void }) {
   );
 }
 
-/** Installing dusk on a server of one's own, in three short steps; the line itself comes from the add-a-VPS flow, which
+/** Installing madani on a server of one's own, in three short steps; the line itself comes from the add-a-VPS flow, which
  * makes a fresh one each time and watches for the server to answer. */
 export function InstallOnVpsGroup({ onStart }: { onStart: () => void }) {
   if (!vpsLinkAvailable()) return null;

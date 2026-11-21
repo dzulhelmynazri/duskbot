@@ -29,7 +29,7 @@ const HARNESS = `http://127.0.0.1:${HARNESS_PORT}`;
 const SIDECAR = `http://127.0.0.1:${COMPANION_PORT}`;
 const CONTROL = `http://127.0.0.1:${CONTROL_PORT}`;
 const CONTROL_TOKEN = randomBytes(32).toString("base64url");
-const controlHeaders = { "x-dusk-control-token": CONTROL_TOKEN };
+const controlHeaders = { "x-madani-control-token": CONTROL_TOKEN };
 
 const PROFILE = { name: "Ada Lovelace", email: "ada@example.com" };
 
@@ -127,8 +127,8 @@ async function captureFrames(wanted, during) {
 async function main() {
   mkdirSync(OUT, { recursive: true });
   home = mkdtempSync(join(tmpdir(), "companion-fixtures-"));
-  mkdirSync(join(home, ".duskbot"), { recursive: true });
-  writeFileSync(join(home, ".duskbot", "config.json"), JSON.stringify({
+  mkdirSync(join(home, ".madanibot"), { recursive: true });
+  writeFileSync(join(home, ".madanibot", "config.json"), JSON.stringify({
     profile: PROFILE,
     instances: {
       claude: {
@@ -143,9 +143,9 @@ async function main() {
   const harness = start("harness", [join(ROOT, "server", "index.ts")], {
     HOME: home,
     USERPROFILE: home,
-    DUSK_PORT: String(HARNESS_PORT),
+    MADANI_PORT: String(HARNESS_PORT),
     FAKE_CLAUDE_MODE: "happy",
-    DUSK_WEBHOOK_PORT: String(base + 1),
+    MADANI_WEBHOOK_PORT: String(base + 1),
   });
   await waitFor(`${HARNESS}/api/health`, "harness", harness);
 
@@ -154,12 +154,12 @@ async function main() {
   const sidecar = start("companion", [join(ROOT, "apps", "companion", "src", "index.ts")], {
     HOME: home,
     USERPROFILE: home,
-    DUSK_PORT: String(HARNESS_PORT),
-    DUSK_WEBHOOK_PORT: String(base + 1),
-    DUSK_COMPANION_PORT: String(COMPANION_PORT),
-    DUSK_CONTROL_PORT: String(CONTROL_PORT),
-    DUSK_CONTROL_TOKEN: CONTROL_TOKEN,
-    DUSK_COMPANION_DIR: join(home, "companion"),
+    MADANI_PORT: String(HARNESS_PORT),
+    MADANI_WEBHOOK_PORT: String(base + 1),
+    MADANI_COMPANION_PORT: String(COMPANION_PORT),
+    MADANI_CONTROL_PORT: String(CONTROL_PORT),
+    MADANI_CONTROL_TOKEN: CONTROL_TOKEN,
+    MADANI_COMPANION_DIR: join(home, "companion"),
   });
   await waitFor(`${CONTROL}/state`, "companion", sidecar, controlHeaders);
 
@@ -180,7 +180,7 @@ async function main() {
   if (!paired.body.token) throw new Error(`pairing failed: ${JSON.stringify(paired.body)}`);
   deviceToken = paired.body.token;
   // A fixture is a file people copy, so the live token is never written.
-  write("pair-response", { ...paired.body, token: "dusk_REDACTED" });
+  write("pair-response", { ...paired.body, token: "madani_REDACTED" });
 
   // Left unfiled: DecodingTests pins bots-full's first bot as section-less.
   const created = await json(`${SIDECAR}/api/bots`, asDevice({ method: "POST" }));

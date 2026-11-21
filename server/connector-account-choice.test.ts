@@ -8,7 +8,7 @@ import { parseConnectorAccountsEnv, withChosenAccounts } from "./connector-accou
 import { PASS } from "./routes/table.ts";
 
 const dirs: string[] = [];
-const fresh = () => { const dir = mkdtempSync(join(tmpdir(), "dusk-accounts-")); dirs.push(dir); return dir; };
+const fresh = () => { const dir = mkdtempSync(join(tmpdir(), "madani-accounts-")); dirs.push(dir); return dir; };
 afterEach(() => { for (const dir of dirs.splice(0)) rmSync(dir, { recursive: true, force: true }); });
 
 describe("account choices", () => {

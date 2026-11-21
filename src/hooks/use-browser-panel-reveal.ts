@@ -31,7 +31,7 @@ export function useBrowserPanelReveal({ bot, active, panel, dispatch }: {
       const start = browserCallStart(frame as BrowserStart);
       if (!start) return;
       const { bot: selected, active: chatShown, panel: tab } = current.current;
-      const desktop = Boolean(window.duskDesktop) && window.duskDesktop?.remoteClient?.active !== true;
+      const desktop = Boolean(window.madaniDesktop) && window.madaniDesktop?.remoteClient?.active !== true;
       if (!desktop || !chatShown || !selected || selected.browser === false || selected.threadId !== start.threadId) return;
       const turn = `${start.threadId}\n${start.turnId}`;
       if (revealed.current.has(turn)) return;

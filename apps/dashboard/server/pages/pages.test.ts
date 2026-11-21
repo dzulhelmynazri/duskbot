@@ -16,7 +16,7 @@ import { createPagesService } from "./service.ts";
 
 type Grant = { pageId: string; token: string; [key: string]: unknown };
 
-const machineId = "c012345678901234567890123", secret = "fixture-bootstrap-secret", domain = "page.dusk.bot";
+const machineId = "c012345678901234567890123", secret = "fixture-bootstrap-secret", domain = "page.madani.bot";
 const files = (html = "<h1>hello</h1>") => [{ path: "index.html", data: Buffer.from(html) }, { path: "style.css", data: Buffer.from("body{color:red}") }];
 const security = {
   "x-content-type-options": "nosniff", "referrer-policy": "no-referrer",
@@ -57,7 +57,7 @@ describe("account pages HTTP fixture", () => {
     req.on("error", reject); req.end();
   });
   beforeEach(async () => {
-    dir = await mkdtemp(join(tmpdir(), "dusk-account-pages-")); time = Date.now(); store = createMemoryObjectStore();
+    dir = await mkdtemp(join(tmpdir(), "madani-account-pages-")); time = Date.now(); store = createMemoryObjectStore();
     cloud = fixtureCloud(time, sealer);
     server = createServer((req, res) => {
       void routes.handle(req, res, new URL(req.url!, base)).then(handled => { if (!handled) { res.writeHead(404); res.end("fixture fallback"); } });
@@ -108,12 +108,12 @@ describe("account pages HTTP fixture", () => {
   it("rejects wrong signatures, replayed nonces, stale signatures and desktop bearer tokens", async () => {
     const body = JSON.stringify({ action: "create" }), headers = { "content-type": "application/json", ...pagesAuthHeaders(access(), body, time) };
     const send = (extra = {}) => fetch(`${base}/api/cloud/pages/token`, { method: "POST", body, headers: { ...headers, ...extra } });
-    expect((await send({ "x-dusk-cloud-signature": "v1=wrong" })).status).toBe(401);
+    expect((await send({ "x-madani-cloud-signature": "v1=wrong" })).status).toBe(401);
     expect((await send()).status).toBe(200);
     const replay = await send(); expect(replay.status).toBe(401); expect(await replay.json()).toMatchObject({ error: "invalid_token" });
     expect((await send(pagesAuthHeaders(access(), body, time - 301_000))).status).toBe(401);
-    expect((await send({ authorization: `Bearer dusk_pd_${"a".repeat(43)}` })).status).toBe(401);
-    expect((await send({ ...pagesAuthHeaders(access(), body, time), "x-dusk-cloud-machine": "missing" })).status).toBe(401);
+    expect((await send({ authorization: `Bearer madani_pd_${"a".repeat(43)}` })).status).toBe(401);
+    expect((await send({ ...pagesAuthHeaders(access(), body, time), "x-madani-cloud-machine": "missing" })).status).toBe(401);
   });
 
   it.each(["destroyed", "suspended", "ended"])("rejects a %s cloud", async state => {
@@ -211,14 +211,14 @@ describe("account pages HTTP fixture", () => {
     const config = { dataDir: dir, publicUrl: base, clouds: { get: () => cloud }, env: {} };
     expect(pagesRoutesFromEnv(config)).toHaveProperty("handle");
     expect(pagesRoutesFromEnv({ ...config, publicUrl: "https://account.test" })).toHaveProperty("handle");
-    expect(() => pagesRoutesFromEnv({ ...config, env: { DUSK_PAGES_STORE: "unknown" } })).toThrow("DUSK_PAGES_STORE");
-    expect(() => pagesRoutesFromEnv({ ...config, env: { DUSK_PAGES_STORE: "s3", DUSK_PAGES_S3_ENDPOINT: "http://s3.test" } })).toThrow("DUSK_PAGES_S3_ENDPOINT");
-    expect(() => pagesRoutesFromEnv({ ...config, env: { DUSK_PAGES_STORE: "s3", DUSK_PAGES_S3_ENDPOINT: "https://s3.test" } })).toThrow("DUSK_PAGES_S3_REGION");
+    expect(() => pagesRoutesFromEnv({ ...config, env: { MADANI_PAGES_STORE: "unknown" } })).toThrow("MADANI_PAGES_STORE");
+    expect(() => pagesRoutesFromEnv({ ...config, env: { MADANI_PAGES_STORE: "s3", MADANI_PAGES_S3_ENDPOINT: "http://s3.test" } })).toThrow("MADANI_PAGES_S3_ENDPOINT");
+    expect(() => pagesRoutesFromEnv({ ...config, env: { MADANI_PAGES_STORE: "s3", MADANI_PAGES_S3_ENDPOINT: "https://s3.test" } })).toThrow("MADANI_PAGES_S3_REGION");
   });
 });
 
 it("exercises the real client and durable service contract without a network transport", async () => {
-  const dir = await mkdtemp(join(tmpdir(), "dusk-pages-contract-")), sealer = createSealer(randomBytes(32)), time = Date.now(), cloud = fixtureCloud(time, sealer), store = createMemoryObjectStore();
+  const dir = await mkdtemp(join(tmpdir(), "madani-pages-contract-")), sealer = createSealer(randomBytes(32)), time = Date.now(), cloud = fixtureCloud(time, sealer), store = createMemoryObjectStore();
   const access = { kind: "home" as const, url: "https://account.test/api/cloud/pages/token", machineId, secret };
   const options = { dataDir: dir, store, clouds: { get: (id: string) => id === machineId ? cloud : null }, unseal: sealer.unseal, publicUrl: "https://account.test", now: () => time, limits: { pagesPerAccount: 1 } };
   let service = createPagesService(options);
@@ -254,7 +254,7 @@ it("exercises the real client and durable service contract without a network tra
 });
 
 it("rejects invalid credentials, replays, token reuse and unsafe files without a network transport", async () => {
-  const dir = await mkdtemp(join(tmpdir(), "dusk-pages-validation-")), sealer = createSealer(null), time = Date.now(), cloud = fixtureCloud(time, sealer), store = createMemoryObjectStore();
+  const dir = await mkdtemp(join(tmpdir(), "madani-pages-validation-")), sealer = createSealer(null), time = Date.now(), cloud = fixtureCloud(time, sealer), store = createMemoryObjectStore();
   const service = createPagesService({ dataDir: dir, store, clouds: { get: id => id === machineId ? cloud : null }, unseal: sealer.unseal, publicUrl: "http://localhost", now: () => time });
   const access = { kind: "home" as const, url: "http://localhost/api/cloud/pages/token", machineId, secret }, body = JSON.stringify({ action: "create" });
   const headers = pagesAuthHeaders(access, body, time);
@@ -265,11 +265,11 @@ it("rejects invalid credentials, replays, token reuse and unsafe files without a
     return service.upload(grant.pageId, `Bearer ${grant.token}`, Buffer.from(await request.arrayBuffer()), request.headers.get("content-type")!);
   };
   try {
-    expect(service.mint({ ...headers, "x-dusk-cloud-signature": "v1=bad" }, Buffer.from(body)).status).toBe(401);
+    expect(service.mint({ ...headers, "x-madani-cloud-signature": "v1=bad" }, Buffer.from(body)).status).toBe(401);
     expect(service.mint(headers, Buffer.from(body)).status).toBe(200);
     expect(service.mint(headers, Buffer.from(body)).status).toBe(401);
     expect(service.mint(pagesAuthHeaders(access, body, time - 301_000), Buffer.from(body)).status).toBe(401);
-    expect(service.mint({ authorization: "Bearer dusk_pd_unsupported" }, Buffer.from(body)).status).toBe(401);
+    expect(service.mint({ authorization: "Bearer madani_pd_unsupported" }, Buffer.from(body)).status).toBe(401);
     const grant = (await mint().json() as Grant);
     expect((await upload(grant, "index.html")).status).toBe(200);
     expect((await upload(grant, "index.html")).status).toBe(401);
@@ -280,7 +280,7 @@ it("rejects invalid credentials, replays, token reuse and unsafe files without a
 });
 
 it("dispatches page hosts before API routes and caps raw streams without a network transport", async () => {
-  const dir = await mkdtemp(join(tmpdir(), "dusk-pages-routes-")), time = Date.now(), sealer = createSealer(null), cloud = fixtureCloud(time, sealer);
+  const dir = await mkdtemp(join(tmpdir(), "madani-pages-routes-")), time = Date.now(), sealer = createSealer(null), cloud = fixtureCloud(time, sealer);
   const options = { dataDir: dir, publicUrl: "http://localhost", clouds: { get: () => cloud }, env: {} };
   const service = createPagesService({ ...options, store: createMemoryObjectStore(), unseal: sealer.unseal });
   const routes = createPagesRoutes(service);

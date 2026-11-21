@@ -43,10 +43,10 @@ describe("turn activity state", () => {
 
 describe("push categories", () => {
   it("offers approve and deny only for an approval with its ask, reply only in a direct chat", () => {
-    expect(pushCategory({ kind: "approval", requestId: "r" })).toBe("dusk.approval");
+    expect(pushCategory({ kind: "approval", requestId: "r" })).toBe("madani.approval");
     expect(pushCategory({ kind: "approval" })).toBeUndefined();
-    expect(pushCategory({ kind: "question" })).toBe("dusk.question");
-    expect(pushCategory({ kind: "done" })).toBe("dusk.message");
+    expect(pushCategory({ kind: "question" })).toBe("madani.question");
+    expect(pushCategory({ kind: "done" })).toBe("madani.message");
     expect(pushCategory({ kind: "mention", groupId: "g" })).toBeUndefined();
     expect(pushCategory({ kind: "spend" })).toBeUndefined();
   });

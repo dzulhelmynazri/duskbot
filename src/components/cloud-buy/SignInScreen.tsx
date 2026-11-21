@@ -30,7 +30,7 @@ const clock = (ms: number) => { const seconds = Math.max(0, Math.ceil(ms / 1000)
 
 export function SignInScreen({ phase, email, code, profileEmail, busy, now, onBack, onEmail, onSend, onChangeEmail, onCode, onResend, onBrowser, heading, backLabel }: {
   phase: CloudSignInPhase; email: string; code: string; profileEmail: string | null; busy: boolean; now: number;
-  /** A sign-in that isn't about dusk cloud or a plan: its own title and way back. */
+  /** A sign-in that isn't about madani cloud or a plan: its own title and way back. */
   heading?: string; backLabel?: string;
   onBack: () => void; onEmail: (email: string) => void; onSend: () => void; onChangeEmail: () => void;
   onCode: (code: string) => void; onResend: () => void; onBrowser: () => void;

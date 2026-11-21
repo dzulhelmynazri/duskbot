@@ -1,15 +1,15 @@
 #!/usr/bin/env node
-// Offline UI fixture: explicit opt-in and a disposable HOME; approve by creating HOME/.dusk-fake-codex-login-approved.
+// Offline UI fixture: explicit opt-in and a disposable HOME; approve by creating HOME/.madani-fake-codex-login-approved.
 import { existsSync, writeFileSync } from "node:fs";
 import { isAbsolute, join } from "node:path";
 
 const home = process.env.HOME;
-if (process.env.DUSK_DEVICE_AUTH_FIXTURE !== "1" || !home || !isAbsolute(home)) {
-  process.stderr.write("This fake CLI requires DUSK_DEVICE_AUTH_FIXTURE=1 and an isolated HOME.\n");
+if (process.env.MADANI_DEVICE_AUTH_FIXTURE !== "1" || !home || !isAbsolute(home)) {
+  process.stderr.write("This fake CLI requires MADANI_DEVICE_AUTH_FIXTURE=1 and an isolated HOME.\n");
   process.exit(2);
 }
-const authenticated = join(home, ".dusk-fake-codex-authenticated");
-const approved = join(home, ".dusk-fake-codex-login-approved");
+const authenticated = join(home, ".madani-fake-codex-authenticated");
+const approved = join(home, ".madani-fake-codex-login-approved");
 const args = process.argv.slice(2).join(" ");
 
 if (args === "--version") {
@@ -19,8 +19,8 @@ if (args === "--version") {
   process.stderr.write(signedIn ? "Logged in using ChatGPT\n" : "Not logged in\n");
   process.exitCode = signedIn ? 0 : 1;
 } else if (args === "login --device-auth") {
-  writeFileSync(join(home, ".dusk-fake-codex-device.pid"), String(process.pid), { mode: 0o600 });
-  process.stderr.write("Offline dusk bot verification fixture: do not enter this code at OpenAI.\n");
+  writeFileSync(join(home, ".madani-fake-codex-device.pid"), String(process.pid), { mode: 0o600 });
+  process.stderr.write("Offline madani bot verification fixture: do not enter this code at OpenAI.\n");
   process.stderr.write("https://auth.openai.com/codex/device\nTEST-12345\n");
   const timer = setInterval(() => {
     if (!existsSync(approved)) return;

@@ -3,7 +3,7 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { afterEach, expect, it } from "vitest";
 
-import { launchVerificationServer, runControlDusk, type VerificationServer } from "../scripts/control-dusk.ts";
+import { launchVerificationServer, runControlMadani, type VerificationServer } from "../scripts/control-madani.ts";
 import { waitForExit } from "./testing/cleanup.ts";
 import { hostTimeout } from "./testing/host-timeout.ts";
 
@@ -23,7 +23,7 @@ const json = (path: string) => {
 it.each(["SIGKILL", "SIGTERM"] as const)("a turn and a routine run cut by %s keep everything saved so far", async (signal) => {
   fixture = await launchVerificationServer({ ...process.env, FAKE_CLAUDE_MODE: "hang" });
   const { url, dataDir } = fixture.info;
-  const cli = (...args: string[]) => runControlDusk([...args, "--url", url]) as Promise<any>;
+  const cli = (...args: string[]) => runControlMadani([...args, "--url", url]) as Promise<any>;
   const api = async (method: string, path: string, body?: unknown) => {
     const response = await fetch(`${url}${path}`, { method, headers: { "content-type": "application/json", origin: url }, ...(body === undefined ? {} : { body: JSON.stringify(body) }) });
     expect(response.status, path).toBeLessThan(300);

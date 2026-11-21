@@ -64,7 +64,7 @@ const card = (id: string, fields: NonNullable<Message["card"]>): Message => ({ i
 
 describe("a settled card in a simple chat", () => {
   // the server dismisses the intro's card on the first typed message (dismissOnboardingCard); its bubbles must stay
-  it("keeps Dusk's intro after the person has written, with only its chips gone", async () => {
+  it("keeps Madani's intro after the person has written, with only its chips gone", async () => {
     const intro: Message = { id: "i1", parentId: null, role: "bot", kind: "options", helperIntro: true, text: "Hey!", at: at(0),
       card: { title: "Hey!", subtitle: "", options: ["What are my bots up to?"], dismissed: true } };
     await draw([intro, { ...transcript([])[0]!, parentId: "i1" }, transcript([])[1]!]);

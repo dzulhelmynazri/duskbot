@@ -3,7 +3,7 @@
 // checkout's built UI at that server's origin in a hidden Electron window (electron/local-ui.mjs) and drives the core
 // flows: list bots, open a chat, attach a file, send, see the streamed reply.
 //
-//   node --experimental-strip-types scripts/testing/local-ui-old-server.mjs --old /tmp/dusk-old --old-ui /tmp/old-dist --ui dist
+//   node --experimental-strip-types scripts/testing/local-ui-old-server.mjs --old /tmp/madani-old --old-ui /tmp/old-dist --ui dist
 //
 // The old checkout needs its own node_modules; both UIs are prebuilt (`vite build --outDir ...`).
 import { spawn } from "node:child_process";
@@ -31,7 +31,7 @@ function filesUnder(dir, out = []) {
   return out;
 }
 
-const launcherFile = ["scripts/control-dusk.ts", "scripts/control-omb.ts"].map((file) => path.join(oldRoot, file)).find(existsSync);
+const launcherFile = ["scripts/control-madani.ts", "scripts/control-omb.ts"].map((file) => path.join(oldRoot, file)).find(existsSync);
 if (!launcherFile) throw new Error("the old checkout has no fixture launcher");
 const launcher = await import(launcherFile);
 const reply = "Local UI reply from the older server, streamed in small pieces so the page shows it arriving.";
@@ -43,7 +43,7 @@ const args = params.map((name) => (name === "parentEnv" ? env : name === "static
 if (!params.includes("staticDir")) throw new Error("the old launcher cannot serve a built UI");
 const fixture = await launcher.launchVerificationServer(...args);
 const server = fixture.info.url;
-const described = await Promise.any(["duskbot", "openmausbot"].map(async (name) => { const response = await fetch(`${server}/.well-known/${name}/environment`); if (!response.ok) throw new Error(); return response.json(); })).catch(() => ({}));
+const described = await Promise.any(["madanibot", "openmausbot"].map(async (name) => { const response = await fetch(`${server}/.well-known/${name}/environment`); if (!response.ok) throw new Error(); return response.json(); })).catch(() => ({}));
 console.log(`old server ${server} version ${described.version} data ${fixture.info.dataDir}`);
 const api = async (method, route, body) => {
   const response = await fetch(`${server}${route}`, { method, headers: { "content-type": "application/json" }, ...(body === undefined ? {} : { body: JSON.stringify(body) }) });

@@ -5,7 +5,7 @@ import { webPlatform } from "@/mobile/platform";
 import { nativePlatform } from "./native-platform";
 import { createErrorReporter } from "../../../electron/error-report.mjs";
 
-const errors = createErrorReporter({ dsn: __DUSK_ERROR_DSN__, component: "mobile", release: __APP_VERSION__ });
+const errors = createErrorReporter({ dsn: __MADANI_ERROR_DSN__, component: "mobile", release: __APP_VERSION__ });
 if (errors.enabled) {
   addEventListener("error", (event) => errors.capture(event.error ?? event.message));
   addEventListener("unhandledrejection", (event) => errors.capture(event.reason));

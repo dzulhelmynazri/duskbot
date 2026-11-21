@@ -4,14 +4,14 @@
   "title": "AI executive assistant: get the prep, keep the decisions",
   "nav": "ai executive assistant",
   "h1": "an ai executive assistant for inbox and calendar work",
-  "description": "Try five inbox and calendar routines in dusk bot. Get agendas, meeting context and reply drafts while keeping commitments and sensitive replies with you.",
+  "description": "Try five inbox and calendar routines in madani bot. Get agendas, meeting context and reply drafts while keeping commitments and sensitive replies with you.",
   "keyword": "ai executive assistant",
   "keywords": [
     "ai executive assistant free",
     "ai executive assistant reddit",
     "ai virtual assistant for small business"
   ],
-  "answer": "**walk into the call knowing what you promised last time.** a dusk bot reads your gmail threads and google calendar, brings you meeting context and drafts replies. it can also find possible times for your next catch-up.\n\nstart with reading. get the agenda and open questions in your chat, then choose what deserves your time.",
+  "answer": "**walk into the call knowing what you promised last time.** a madani bot reads your gmail threads and google calendar, brings you meeting context and drafts replies. it can also find possible times for your next catch-up.\n\nstart with reading. get the agenda and open questions in your chat, then choose what deserves your time.",
   "updated": "2026-11-12",
   "review": {
     "status": "approved",
@@ -52,7 +52,7 @@
     ],
     "rows": [
       {
-        "label": "dusk on your own computer",
+        "label": "madani on your own computer",
         "cells": [
           "free personal use, with ai billed separately",
           "work use needs a license; local routines need an awake computer"
@@ -63,7 +63,7 @@
         ]
       },
       {
-        "label": "dusk cloud pro",
+        "label": "madani cloud pro",
         "cells": [
           "$50 monthly or $500 yearly, plus ai usage",
           "includes a work license for one person"
@@ -88,7 +88,7 @@
   "sections": [
     {
       "h": "give it the accounts it actually needs",
-      "md": "**give it the inbox and calendar behind your day.** make a bot with this job: \"help me prepare for meetings and correspondence. use only named accounts. flag uncertainty. ask before changing anything.\"\n\nconnect gmail and google calendar in **connected apps**. label work and personal accounts clearly; dusk supports up to five usable accounts per app.\n\nstart read only. **find event** and **find free slots** read your calendar; gmail fetches mail and threads.[^1][^2] the first three routines need no meeting edits. see [gmail](/integrations/gmail) and [google calendar](/integrations/google-calendar) for setup."
+      "md": "**give it the inbox and calendar behind your day.** make a bot with this job: \"help me prepare for meetings and correspondence. use only named accounts. flag uncertainty. ask before changing anything.\"\n\nconnect gmail and google calendar in **connected apps**. label work and personal accounts clearly; madani supports up to five usable accounts per app.\n\nstart read only. **find event** and **find free slots** read your calendar; gmail fetches mail and threads.[^1][^2] the first three routines need no meeting edits. see [gmail](/integrations/gmail) and [google calendar](/integrations/google-calendar) for setup."
     },
     {
       "h": "routine one: the day before it starts",
@@ -112,7 +112,7 @@
     },
     {
       "h": "what stays with you",
-      "md": "**let it carry the context so you can handle the conversation.** keep disputes, hiring conversations and important negotiations with a person. the bot can prepare the thread and open questions. you own the relationship.\n\ncalendar edits and inbox labels don't automatically wait for approval. keep access read only where possible. for writes, retain \"ask me before you change anything\".\n\nlocal work stops during sleep or when dusk closes. runs under 12 hours late run once on return; older runs skip. **automations** shows schedules and history. pause routines that no longer help.[^5]"
+      "md": "**let it carry the context so you can handle the conversation.** keep disputes, hiring conversations and important negotiations with a person. the bot can prepare the thread and open questions. you own the relationship.\n\ncalendar edits and inbox labels don't automatically wait for approval. keep access read only where possible. for writes, retain \"ask me before you change anything\".\n\nlocal work stops during sleep or when madani closes. runs under 12 hours late run once on return; older runs skip. **automations** shows schedules and history. pause routines that no longer help.[^5]"
     }
   ],
   "faq": [
@@ -126,7 +126,7 @@
     },
     {
       "q": "can i connect separate work and personal gmail accounts?",
-      "a": "**yes, with separate labels.** dusk supports up to five usable accounts per app. name the account in each routine."
+      "a": "**yes, with separate labels.** madani supports up to five usable accounts per app. name the account in each routine."
     },
     {
       "q": "is an ai executive assistant free?",
@@ -145,19 +145,19 @@
       "checked": "2026-11-12"
     },
     {
-      "label": "dusk bot docs: connected apps and send approvals",
+      "label": "madani bot docs: connected apps and send approvals",
       "url": "/docs/files-and-apps"
     },
     {
-      "label": "dusk bot docs: personal use, work licenses and ai billing",
+      "label": "madani bot docs: personal use, work licenses and ai billing",
       "url": "/docs/account-and-billing"
     },
     {
-      "label": "dusk bot docs: routine schedules and run history",
+      "label": "madani bot docs: routine schedules and run history",
       "url": "/docs/routines"
     },
     {
-      "label": "dusk bot pricing",
+      "label": "madani bot pricing",
       "url": "/pricing"
     },
     {
@@ -166,7 +166,7 @@
       "checked": "2026-11-12"
     },
     {
-      "label": "dusk bot docs: shared time zone preferences",
+      "label": "madani bot docs: shared time zone preferences",
       "url": "/docs/memory"
     }
   ],

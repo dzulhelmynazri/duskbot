@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 import { createDesktopIncludedPages } from "./included-pages.mjs";
 
-const access = { url: "https://dusk.bot/api/cloud/pages/token", token: `dusk_pd_${"a".repeat(43)}` };
+const access = { url: "https://madani.bot/api/cloud/pages/token", token: `madani_pd_${"a".repeat(43)}` };
 const signedIn = (deviceId = "device-1", plan = "free") =>
   ({ status: "connected", deviceId, entitlement: plan === "free" ? { plan: "free", status: "inactive", tier: null } : { plan: "pro", status: "active", tier: plan } });
 
@@ -18,7 +18,7 @@ describe("published pages' access on the desktop", () => {
       const { pages, posted, pagesAccess } = desktop();
       await pages.onState(signedIn("device-1", plan));
       expect(pagesAccess, plan).toHaveBeenCalledTimes(1);
-      expect(posted, plan).toEqual([{ type: "duskbot:included-pages", access }]);
+      expect(posted, plan).toEqual([{ type: "madanibot:included-pages", access }]);
     }
   });
 
@@ -29,7 +29,7 @@ describe("published pages' access on the desktop", () => {
     await pages.onState({ ...signedIn(), checking: true });
     expect(pagesAccess).toHaveBeenCalledTimes(1);
     pages.serverStarted();
-    expect(posted).toEqual([{ type: "duskbot:included-pages", access }, { type: "duskbot:included-pages", access }]);
+    expect(posted).toEqual([{ type: "madanibot:included-pages", access }, { type: "madanibot:included-pages", access }]);
   });
 
   it("clears the server's token on sign-out or a sign-in to redo, and asks again for a new sign-in", async () => {
@@ -37,7 +37,7 @@ describe("published pages' access on the desktop", () => {
       const { pages, posted } = desktop();
       await pages.onState(signedIn());
       await pages.onState(next);
-      expect(posted.at(-1), JSON.stringify(next)).toEqual({ type: "duskbot:included-pages", access: null });
+      expect(posted.at(-1), JSON.stringify(next)).toEqual({ type: "madanibot:included-pages", access: null });
     }
     const { pages, pagesAccess } = desktop();
     await pages.onState(signedIn("device-1"));
@@ -46,10 +46,10 @@ describe("published pages' access on the desktop", () => {
   });
 
   it("tells the server when the Admin has no pages for this sign-in yet, so a bot never asks a signed-in person to sign in", async () => {
-    // Seen in the real app on Oct 22 against an Admin without pages: the bot was told "Publishing a page needs a Dusk
-    // account. Sign in to Dusk in the app's Settings", while this computer was signed in.
+    // Seen in the real app on Oct 22 against an Admin without pages: the bot was told "Publishing a page needs a Madani
+    // account. Sign in to Madani in the app's Settings", while this computer was signed in.
     const { pages, posted } = desktop(vi.fn(async () => null));
     await pages.onState(signedIn());
-    expect(posted).toEqual([{ type: "duskbot:included-pages", access: null, offered: false }]);
+    expect(posted).toEqual([{ type: "madanibot:included-pages", access: null, offered: false }]);
   });
 });

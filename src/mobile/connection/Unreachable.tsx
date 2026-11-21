@@ -12,7 +12,7 @@ export const RETRY_SECONDS = [5, 10, 20, 40, 60];
 
 /** A saved computer that did not answer at launch: the link is kept, so this is never the pairing screen. It retries
  * on its own, on demand, when the phone comes back online or to the front, and lets the person open another saved one.
- * `gone`: a dusk cloud that was deleted, which never answers again: no retries, only Remove and the other places. */
+ * `gone`: a madani cloud that was deleted, which never answers again: no retries, only Remove and the other places. */
 export function Unreachable({ record, others, attempts, trying, gone = false, onRetry, onSwitch, onRemove }: {
   record: MobileConnectionRecord;
   others: MobileConnectionRecord[];
@@ -45,7 +45,7 @@ export function Unreachable({ record, others, attempts, trying, gone = false, on
   }, [trying, gone, onRetry, platform]);
 
   return (
-    <main className="dusk-mobile relative flex size-full flex-col overflow-hidden bg-app text-ink" aria-busy={trying}>
+    <main className="madani-mobile relative flex size-full flex-col overflow-hidden bg-app text-ink" aria-busy={trying}>
       <Screen art={<PixelArt name={gone ? "cloud" : "computer"} size={84} />} actions={gone
         ? <button type="button" data-testid="mobile-gone-remove" className={PRIMARY} onClick={onRemove}>{t("mobile.gone.remove")}</button>
         : <button type="button" disabled={trying} className={PRIMARY} onClick={onRetry}>{trying ? <WorkingDots /> : <><RotateCw size={18} />{t("mobile.onboarding.retry")}</>}</button>

@@ -5,7 +5,7 @@ import { tmpdir } from "node:os";
 import { delimiter, dirname, join } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
-import { runControlDusk } from "../scripts/control-dusk.ts";
+import { runControlMadani } from "../scripts/control-madani.ts";
 import { createTeamVpsFixture } from "../scripts/testing/team-vps-fixture.ts";
 import { SNAPSHOT_REUSE_MS } from "./harness/registry.ts";
 import { freePortBlock } from "./testing/ports.ts";
@@ -40,7 +40,7 @@ function install(home: string, vm: LocalVm) {
     expect(response.status, `${method} ${path}: ${JSON.stringify(result)}`).toBeLessThan(400);
     return result;
   };
-  const control = (args: string[]) => runControlDusk([...args, "--url", base]) as Promise<any>;
+  const control = (args: string[]) => runControlMadani([...args, "--url", base]) as Promise<any>;
   const send = (botId: string, threadId: string, text: string) => fetch(`${base}/api/bots/${botId}/messages`, {
     method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ text, threadId }),
   }).then(response => response.status);
@@ -84,12 +84,12 @@ function install(home: string, vm: LocalVm) {
     const proc = spawn(process.execPath, [join(ROOT, "server/index.ts")], {
       cwd: ROOT, env: {
         PATH: dirname(process.execPath), ...(process.env.SystemRoot ? { SystemRoot: process.env.SystemRoot } : {}),
-        HOME: home, USERPROFILE: home, DUSK_DATA_DIR: data,
+        HOME: home, USERPROFILE: home, MADANI_DATA_DIR: data,
         APPDATA: join(home, "appdata"), LOCALAPPDATA: join(home, "localappdata"),
         TEMP: home, TMP: home, TMPDIR: home,
-        DUSK_PORT: String(port), DUSK_WEBHOOK_PORT: String(port + 1), DUSK_STATIC_DIR: join(home, "static"),
-        DUSK_USER_DATA: join(home, "user-data"),
-        DUSK_EXTRA_PATH: [vm.binDir].join(delimiter), CONTAINER_HOST: vm.host, CONTAINER_SSHKEY: vm.sshKey,
+        MADANI_PORT: String(port), MADANI_WEBHOOK_PORT: String(port + 1), MADANI_STATIC_DIR: join(home, "static"),
+        MADANI_USER_DATA: join(home, "user-data"),
+        MADANI_EXTRA_PATH: [vm.binDir].join(delimiter), CONTAINER_HOST: vm.host, CONTAINER_SSHKEY: vm.sshKey,
       }, stdio: ["ignore", "pipe", "pipe"],
     });
     child = proc;
@@ -124,7 +124,7 @@ describe("removing the Computer engine", () => {
   const running: Array<{ stop: () => Promise<void> }> = [];
   let vps: Awaited<ReturnType<typeof createTeamVpsFixture>>;
   const fresh = () => {
-    const home = mkdtempSync(join(tmpdir(), "dusk-computer-engine-"));
+    const home = mkdtempSync(join(tmpdir(), "madani-computer-engine-"));
     homes.push(home);
     const server = install(home, vps.localVm);
     running.push(server);
@@ -237,12 +237,12 @@ describe("removing the Computer engine", () => {
 
     const cloudTurn = await server.turn(starter.id, main, "Take a screenshot of the cloud computer.");
     expect(cloudTurn.argv[cloudTurn.argv.indexOf("--model") + 1]).toBe(replacement.model);
-    expect(cloudTurn.mcpConfig.mcpServers.computer.env.DUSK_CONTROL_URL).toBeTruthy();
+    expect(cloudTurn.mcpConfig.mcpServers.computer.env.MADANI_CONTROL_URL).toBeTruthy();
     expect(madeFor(starter.id)).toBe(1);
 
     const { task: atlasNew } = await server.api("POST", `/api/bots/${auto.id}/tasks`, {});
     const autoMovedTurn = await server.turn(auto.id, atlasNew.threadId, "Take a screenshot of the cloud computer.");
-    expect(autoMovedTurn.mcpConfig.mcpServers.computer.env.DUSK_CONTROL_URL).toBeTruthy();
+    expect(autoMovedTurn.mcpConfig.mcpServers.computer.env.MADANI_CONTROL_URL).toBeTruthy();
     expect(madeFor(auto.id)).toBe(1);
 
     // back on Auto, a plain question makes no new desktop

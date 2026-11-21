@@ -6,7 +6,7 @@ import {
   routeOrder, routeTimeout, type RouteOutcome,
 } from "./route-order";
 
-const relay: MobileTransport = { kind: "relay", base: "https://link.dusk.bot", channel: "abcdefghij", token: "t", key: "k".repeat(43) };
+const relay: MobileTransport = { kind: "relay", base: "https://link.madani.bot", channel: "abcdefghij", token: "t", key: "k".repeat(43) };
 const lan: MobileTransport = { kind: "companion", url: "http://192.168.1.20:8810", net: "lan", priority: 200 };
 const tailnet: MobileTransport = { kind: "companion", url: "http://mac.tail.ts.net:8810", net: "tailnet", priority: 100 };
 const https: MobileTransport = { kind: "https", url: "https://box.example.com" };
@@ -84,7 +84,7 @@ describe("racing routes", () => {
 describe("on Android", () => {
   it("tries the relay first and keeps the computer's own network as the fallback, with its full time", () => {
     const lan = { kind: "companion", url: "http://192.168.1.4:8810", net: "lan", priority: 0 } as const;
-    const relay = { kind: "relay", url: "wss://link.dusk.bot", channel: "c", agentPub: "k" } as unknown as MobileTransport;
+    const relay = { kind: "relay", url: "wss://link.madani.bot", channel: "c", agentPub: "k" } as unknown as MobileTransport;
     expect(routeOrder([lan, relay], "android")).toEqual([relay, lan]);
     expect(routeOrder([lan, relay], "ios")).toEqual([lan, relay]);
     expect(routeTimeout(lan, [lan, relay], 15_000, "android")).toBe(15_000);

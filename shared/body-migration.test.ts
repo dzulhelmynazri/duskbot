@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import { PIXEL_BODIES } from "./pixel-bodies.ts";
-import { BODY_MIGRATION, DEFAULT_BOT_BODY, DUSK_BODY_IDS, DUSK_BODY_NAMES, LEGACY_BODY_IDS, duskBody, migrateBodyId } from "./body-migration.ts";
+import { BODY_MIGRATION, DEFAULT_BOT_BODY, MADANI_BODY_IDS, MADANI_BODY_NAMES, LEGACY_BODY_IDS, madaniBody, migrateBodyId } from "./body-migration.ts";
 
 // every body id the app stored or shipped before our own bodies, as its settings schema listed them, and the names the
 // website used for bodies it has since renamed
@@ -16,13 +16,13 @@ const SMOOTH = { circle: "pip", squircle: "loaf", pill: "mochi", hex: "boxo", st
 
 describe("body migration", () => {
   it("names exactly the bodies the engine draws", () => {
-    expect([...DUSK_BODY_IDS].sort()).toEqual(Object.keys(PIXEL_BODIES).sort());
-    expect(DUSK_BODY_IDS).toHaveLength(20);
-    expect(Object.keys(DUSK_BODY_NAMES).sort()).toEqual([...DUSK_BODY_IDS].sort());
+    expect([...MADANI_BODY_IDS].sort()).toEqual(Object.keys(PIXEL_BODIES).sort());
+    expect(MADANI_BODY_IDS).toHaveLength(20);
+    expect(Object.keys(MADANI_BODY_NAMES).sort()).toEqual([...MADANI_BODY_IDS].sort());
   });
 
   it("draws every id saved before as one of our bodies", () => {
-    for (const id of SAVED_BEFORE) expect(DUSK_BODY_IDS, id).toContain(migrateBodyId(id));
+    for (const id of SAVED_BEFORE) expect(MADANI_BODY_IDS, id).toContain(migrateBodyId(id));
   });
 
   it("moves the smooth bodies and the website's renames onto their pixel bodies", () => {
@@ -30,19 +30,19 @@ describe("body migration", () => {
   });
 
   it("keeps our own ids as they are", () => {
-    for (const id of DUSK_BODY_IDS) expect(migrateBodyId(id)).toBe(id);
+    for (const id of MADANI_BODY_IDS) expect(migrateBodyId(id)).toBe(id);
   });
 
   it("maps only to our bodies and never shadows one", () => {
-    for (const to of Object.values(BODY_MIGRATION)) expect(DUSK_BODY_IDS).toContain(to);
-    for (const id of LEGACY_BODY_IDS) expect(DUSK_BODY_IDS as readonly string[]).not.toContain(id);
+    for (const to of Object.values(BODY_MIGRATION)) expect(MADANI_BODY_IDS).toContain(to);
+    for (const id of LEGACY_BODY_IDS) expect(MADANI_BODY_IDS as readonly string[]).not.toContain(id);
   });
 
   it("falls back to the default for unknown, missing and inherited names", () => {
     for (const value of ["hexagram", "", "constructor", "__proto__", "toString", undefined, null, 42, {}]) {
       expect(migrateBodyId(value)).toBeNull();
-      expect(duskBody(value)).toBe(DEFAULT_BOT_BODY);
+      expect(madaniBody(value)).toBe(DEFAULT_BOT_BODY);
     }
-    expect(DUSK_BODY_IDS).toContain(DEFAULT_BOT_BODY);
+    expect(MADANI_BODY_IDS).toContain(DEFAULT_BOT_BODY);
   });
 });

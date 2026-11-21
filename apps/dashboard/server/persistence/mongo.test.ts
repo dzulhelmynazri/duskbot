@@ -2,8 +2,8 @@ import { MongoClient } from "mongodb";
 import { afterAll, describe, expect, it } from "vitest";
 import { holderGone, openMongoBackend } from "./mongo.ts";
 
-// needs a replica set; DUSK_TEST_MONGODB_URI names a server whose user may drop DUSK_TEST_MONGODB_DB (default dusk_test)
-const uri = process.env.DUSK_TEST_MONGODB_URI, dbName = process.env.DUSK_TEST_MONGODB_DB || "dusk_test";
+// needs a replica set; MADANI_TEST_MONGODB_URI names a server whose user may drop MADANI_TEST_MONGODB_DB (default madani_test)
+const uri = process.env.MADANI_TEST_MONGODB_URI, dbName = process.env.MADANI_TEST_MONGODB_DB || "madani_test";
 const layouts = { auth: { accounts: { collection: "accounts", key: (row: Record<string, unknown>) => row.id as string, indexes: [{ keys: { email: 1 as const }, unique: true }] } } };
 type Auth = { accounts: Array<{ id: string; email: string }>; v: number };
 const valid = (value: unknown): value is Auth => !!value && Array.isArray((value as Auth).accounts);

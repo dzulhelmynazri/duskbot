@@ -8,7 +8,7 @@ import { DiagnosticsRow } from "./DiagnosticsRow";
 (globalThis as { IS_REACT_ACT_ENVIRONMENT?: boolean }).IS_REACT_ACT_ENVIRONMENT = true;
 let host: HTMLDivElement;
 let root: Root;
-const FOLDER = "C:\\Users\\Ash\\AppData\\Roaming\\Dusk Bot\\logs";
+const FOLDER = "C:\\Users\\Ash\\AppData\\Roaming\\Madani Bot\\logs";
 
 beforeEach(() => {
   setLocale("en");
@@ -19,7 +19,7 @@ beforeEach(() => {
 afterEach(() => {
   act(() => root.unmount());
   host.remove();
-  delete (window as { duskDesktop?: unknown }).duskDesktop;
+  delete (window as { madaniDesktop?: unknown }).madaniDesktop;
 });
 async function render() { await act(async () => root.render(createElement(DiagnosticsRow))); }
 const button = (label: string) => [...host.querySelectorAll("button")].find((candidate) => candidate.textContent === label);
@@ -30,7 +30,7 @@ async function click(label: string) {
 
 it("opens this computer's logs folder and says where it is; export still removes secrets", async () => {
   const openLogsFolder = vi.fn().mockResolvedValue({ folder: FOLDER, opened: true });
-  (window as { duskDesktop?: unknown }).duskDesktop = { openLogsFolder, exportDiagnostics: vi.fn() };
+  (window as { madaniDesktop?: unknown }).madaniDesktop = { openLogsFolder, exportDiagnostics: vi.fn() };
   await render();
   expect(host.querySelector("[data-logs-help]")!.textContent).toBe("Logs stay on this computer. Export diagnostics saves their most recent part with keys, passwords and sign-ins removed, ready to send to support.");
   await click("Open logs folder");
@@ -40,15 +40,15 @@ it("opens this computer's logs folder and says where it is; export still removes
 });
 
 it("when the folder cannot be opened, says where it is instead", async () => {
-  (window as { duskDesktop?: unknown }).duskDesktop = { openLogsFolder: vi.fn().mockResolvedValue({ folder: FOLDER, opened: false, error: "Failed to open path" }), exportDiagnostics: vi.fn() };
+  (window as { madaniDesktop?: unknown }).madaniDesktop = { openLogsFolder: vi.fn().mockResolvedValue({ folder: FOLDER, opened: false, error: "Failed to open path" }), exportDiagnostics: vi.fn() };
   await render();
   await click("Open logs folder");
   expect(host.querySelector("[role=alert]")!.textContent).toBe(`Could not open the logs folder. It is ${FOLDER}.`);
 });
 
 it("on My Cloud's page (no desktop bridge) offers no buttons that do nothing, and says where logs are kept", async () => {
-  (window as { duskDesktop?: unknown }).duskDesktop = { platform: "win32" };
+  (window as { madaniDesktop?: unknown }).madaniDesktop = { platform: "win32" };
   await render();
   expect(host.querySelectorAll("button")).toHaveLength(0);
-  expect(host.querySelector("[data-logs-help]")!.textContent).toContain("dusk cloud support can read the cloud's.");
+  expect(host.querySelector("[data-logs-help]")!.textContent).toContain("madani cloud support can read the cloud's.");
 });

@@ -1,14 +1,14 @@
 # Changelog
 
-Notable changes to dusk bot, newest first. Installers and checksums for each version are on the
-[releases page](https://github.com/DuskBotAI/duskbot/releases) and at [dusk.bot/download](https://dusk.bot/download).
+Notable changes to madani bot, newest first. Installers and checksums for each version are on the
+[releases page](https://github.com/dzulhelmynazri/madani-bot/releases) and at [madani.bot/download](https://madani.bot/download).
 
 ## 0.2.15
 
 - The free model stays first in the model picker, with OpenCode's free models listed by name, and a bot's model badge names the model that is really answering.
 - Link your iPhone from Settings > Phone: one QR code and a short letters-only code, and every linked phone shows where it is connected.
 - When a reply fails, it says why in plain words: a missing model, a refused request, a chat that got too long, an outage or a stopped AI.
-- dusk cloud starts with 3 days free, and the first chat is ready to type in with jobs to tap.
+- madani cloud starts with 3 days free, and the first chat is ready to type in with jobs to tap.
 - The account menu leads with your name, then your address and plan; give feedback and updates share one slim line in the sidebar.
 - Codex signs in through your browser on this computer instead of a device code.
 - Fixed: local memory search on Windows, Grok sign-in errors and rate limits, the Computer tab showing the right screen, and many smaller fixes.
@@ -17,7 +17,7 @@ Notable changes to dusk bot, newest first. Installers and checksums for each ver
 
 - A fresh install starts clean: nothing from other apps is copied in, and no keychain prompt asks for another app's key.
 - An AI is never signed in to without you pressing its button: an old Grok login no longer opens the browser on first launch.
-- dusk cloud says what moves before you pay, a cloud bot's screen is labelled its cloud computer, and smaller fixes.
+- madani cloud says what moves before you pay, a cloud bot's screen is labelled its cloud computer, and smaller fixes.
 
 ## 0.2.13
 
@@ -26,8 +26,8 @@ Notable changes to dusk bot, newest first. Installers and checksums for each ver
 - Give feedback from the sidebar, with pictures; the same spot turns into the update button when a new version is ready.
 - A short, skippable step asks for the Mac permissions bots need, and nothing is asked at launch any more.
 - Voice typing shows your words as you speak.
-- A clearer dusk cloud plans sheet, more AI providers, and a simpler way to bring what your AI knows about you.
-- Opening dusk bot outside Applications offers to move it there.
+- A clearer madani cloud plans sheet, more AI providers, and a simpler way to bring what your AI knows about you.
+- Opening madani bot outside Applications offers to move it there.
 - Warmer replies, and many fixes.
 
 ## 0.2.12
@@ -36,7 +36,7 @@ Notable changes to dusk bot, newest first. Installers and checksums for each ver
 - Setup brings in what you already use, starting with the app that already knows you, memory included.
 - Connecting an AI shows real install progress, and signing in to one says what to do in the browser.
 - Local bots browse in their own browser, where you can watch and use it with them.
-- Moving to dusk cloud takes your whole Vault, sealed, and backs it up as soon as the move checks out.
+- Moving to madani cloud takes your whole Vault, sealed, and backs it up as soon as the move checks out.
 - Smoother motion across dialogs, menus, tooltips, the sidebar and the dock.
 - Mac updates install cleanly for every user; sign in with X is gone.
 
@@ -61,9 +61,9 @@ Notable changes to dusk bot, newest first. Installers and checksums for each ver
 - Sign up in the browser and come straight back to the app, signed in.
 - Signing in to an AI no longer asks you to paste a code.
 - Connected apps stay in sync.
-- Moving to dusk cloud or your own server works again where it stalled.
+- Moving to madani cloud or your own server works again where it stalled.
 - The dashboard opens faster.
-- First run offers a dusk bot account, with a quiet Skip for now.
+- First run offers a madani bot account, with a quiet Skip for now.
 
 ## 0.2.8
 
@@ -77,9 +77,9 @@ Notable changes to dusk bot, newest first. Installers and checksums for each ver
 
 ## 0.2.7
 
-dusk bot for Windows and Linux, beside the Mac.
+madani bot for Windows and Linux, beside the Mac.
 
-- Windows x64: a one-click installer (DuskBot-setup.exe) and a portable zip. Not code-signed yet, so SmartScreen asks
+- Windows x64: a one-click installer (MadaniBot-setup.exe) and a portable zip. Not code-signed yet, so SmartScreen asks
   before it runs (More info, then Run anyway).
 - Linux x64: an AppImage and a .deb for Ubuntu and Debian.
 - First run asks less: an AI that already answers is used without asking, and Connect an AI shows clear stages.
@@ -88,9 +88,9 @@ dusk bot for Windows and Linux, beside the Mac.
 
 ## 0.2.6
 
-Both packages (your own server and dusk cloud) built from one commit again.
+Both packages (your own server and madani cloud) built from one commit again.
 
-- A server's bots move to a new dusk cloud by themselves once it is ready (the cloud now says it takes moves).
+- A server's bots move to a new madani cloud by themselves once it is ready (the cloud now says it takes moves).
 - The install line retries its own download five times, every other try over IPv4, and stops with a plain message if
   none arrives.
 - Menus, dialogs and status lines read in sentence case on the desktop and the phone.
@@ -101,7 +101,7 @@ Both packages (your own server and dusk cloud) built from one commit again.
   to it as soon as it is ready.
 - With no AI connected, a reply the free backup model couldn't give is a "Connect your AI to start" card with one button
   to connect one, instead of an error.
-- A new bot's first message on dusk cloud no longer fails at once with "Invalid path" when another bot's turn is running.
+- A new bot's first message on madani cloud no longer fails at once with "Invalid path" when another bot's turn is running.
 
 ## 0.2.4
 
@@ -118,14 +118,14 @@ Both packages (your own server and dusk cloud) built from one commit again.
   message to the next free model, and if none answers, the chat says so plainly and what to do.
 - Every account step goes to your browser for its context: sign in or make your account there, then land on your plan's
   checkout, billing or home, and the app signs itself in and goes on by itself (coming back to the app is optional).
-- Moving a server's bots to dusk cloud while signed out no longer stops at "sign in on this Mac's own page first".
+- Moving a server's bots to madani cloud while signed out no longer stops at "sign in on this Mac's own page first".
 - Linking your own server while signed out signs you in in the browser, then shows the install line by itself.
 - The install line stops with a plain message when a download fails, and every download retries, falling back to IPv4.
 - A sleeping cloud says it is asleep instead of "waking up".
 
 ## 0.2.0, first light
 
-The first public release. dusk bot is your own crew of AI helpers: each bot gets a job, a chat and a computer of its own,
+The first public release. madani bot is your own crew of AI helpers: each bot gets a job, a chat and a computer of its own,
 and works on the Claude, ChatGPT, Gemini or Grok you already use. Free for personal use, with no account and no card.
 
 ### Bots
@@ -154,9 +154,9 @@ and works on the Claude, ChatGPT, Gemini or Grok you already use. Free for perso
 - Plug bots into 60+ apps, including GitHub, Google Drive, Notion, Linear, Airtable, Todoist, ClickUp, Trello and Dropbox.
 - One-click sign-in for the apps that support it.
 
-### dusk cloud
+### madani cloud
 
-- Free keeps your bots on your own computer. dusk cloud (Plus and Pro) runs them on a machine we host, so they keep
+- Free keeps your bots on your own computer. madani cloud (Plus and Pro) runs them on a machine we host, so they keep
   working with your laptop shut.
 - Or run the server on your own VPS with one line.
 

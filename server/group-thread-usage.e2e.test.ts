@@ -1,12 +1,12 @@
 import { expect, it } from "vitest";
-import { launchVerificationServer, runControlDusk } from "../scripts/control-dusk.ts";
+import { launchVerificationServer, runControlMadani } from "../scripts/control-madani.ts";
 import { appendUsage, flushUsageLedger } from "./usage-ledger.ts";
 import type { WireBot, WireGroup } from "../shared/wire.ts";
 
 it("projects historical usage, clears it on thread switch, and refreshes after a real fixture turn", async () => {
   const fixture = await launchVerificationServer();
   const { url, dataDir } = fixture.info;
-  const control = (...args: string[]) => runControlDusk([...args, "--url", url]);
+  const control = (...args: string[]) => runControlMadani([...args, "--url", url]);
   const post = async (path: string, body = {}) => {
     const response = await fetch(url + path, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(body) });
     const result = await response.json() as { group: WireGroup };

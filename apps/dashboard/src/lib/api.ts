@@ -16,9 +16,9 @@ function fixtureMode(): Scenario | null {
   const valid = (value: string | null): value is Scenario => value !== null && ["signedout", "new", "mac", "cloud", "provisioning", "managed"].includes(value);
   const value = new URLSearchParams(location.search).get("fixture");
   try {
-    if (value === "off") { sessionStorage.removeItem("dusk-dash-fixture"); return null; }
-    if (valid(value)) { sessionStorage.setItem("dusk-dash-fixture", value); return value; }
-    const saved = sessionStorage.getItem("dusk-dash-fixture");
+    if (value === "off") { sessionStorage.removeItem("madani-dash-fixture"); return null; }
+    if (valid(value)) { sessionStorage.setItem("madani-dash-fixture", value); return value; }
+    const saved = sessionStorage.getItem("madani-dash-fixture");
     return valid(saved) ? saved : null;
   } catch { return valid(value) ? value : null; }
 }
@@ -78,7 +78,7 @@ async function call<T>(path: string, init?: { method?: string; body?: unknown; s
     });
   } catch (error) {
     if ((error as Error).name === "AbortError") throw error;
-    throw new ApiError("can't reach dusk bot. check your connection.", 0, "offline");
+    throw new ApiError("can't reach madani bot. check your connection.", 0, "offline");
   }
   let unread: unknown = null;
   const data = (await res.json().catch((error: unknown) => { unread = error; return null; })) as (T & { error?: string; code?: string; blockers?: DeletionBlocker[] }) | null;
@@ -138,7 +138,7 @@ export const api = {
     if (FIXTURE) return send("/v1/auth/verify", "POST", { attempt, code });
     const answer = await send<WebSignInAnswer>("/v1/auth/verify", "POST", { attempt, code });
     const account = rememberAccount(answer.account, answer.csrfToken);
-    if (answer.created) localStorage.removeItem(`dusk-dash-onboarded:${account.id}`);
+    if (answer.created) localStorage.removeItem(`madani-dash-onboarded:${account.id}`);
     return { account, created: answer.created, ...(answer.redirect ? { redirect: answer.redirect } : {}) };
   },
   oauthUrl: (provider: IdentityProvider, intent: "signin" | "signup", opts?: { link?: boolean; next?: string }) => FIXTURE ? `/v1/auth/oauth/${provider}/start?intent=${intent}` : `/v1/auth/oauth/${provider}/start?next=${encodeURIComponent(opts?.next ?? (opts?.link ? "/account" : "/"))}${opts?.link ? "&link=1" : ""}`,
@@ -148,7 +148,7 @@ export const api = {
     let res: Response;
     try {
       res = await fetch("/v1/auth/handoff", { method: "POST", credentials: "same-origin", headers: { accept: "application/json", "content-type": "application/json" }, body: JSON.stringify({ token, ...(confirm ? { confirm } : {}), ...(replace ? { replace } : {}) }) });
-    } catch { throw new ApiError("can't reach dusk bot. check your connection.", 0, "offline"); }
+    } catch { throw new ApiError("can't reach madani bot. check your connection.", 0, "offline"); }
     const data = (await res.json().catch(() => null)) as (HandoffAnswer & { error?: string; code?: string; email?: string }) | null;
     if (res.status === 409 && (data?.code === "confirm" || data?.code === "other_account") && typeof data.email === "string") return { ask: data.code, email: data.email };
     if (!res.ok || !data) throw new ApiError(lowercase(data?.error) ?? "something went wrong on our side. try again.", res.status, data?.code ?? null);
@@ -160,7 +160,7 @@ export const api = {
     const answer = await call<AccountAnswer>("/v1/account");
     rememberAccount(answer.account);
     const data = accountFromWire(answer);
-    const key = `dusk-dash-onboarded:${answer.account.id}`;
+    const key = `madani-dash-onboarded:${answer.account.id}`;
     try {
       if (answer.onboarded) localStorage.setItem(key, "1");
       else if (data.profile.onboarded && localStorage.getItem(key) === "1") void send("/v1/account/onboarded", "POST").catch(() => {});
@@ -176,7 +176,7 @@ export const api = {
     const body = home ? { home } : {};
     if (FIXTURE) return send("/v1/account/onboarded", "POST", body);
     if (!accountId) await api.me();
-    try { localStorage.setItem(`dusk-dash-onboarded:${accountId}`, "1"); } catch {}
+    try { localStorage.setItem(`madani-dash-onboarded:${accountId}`, "1"); } catch {}
     await send("/v1/account/onboarded", "POST", body).catch(() => {});
     trackOnboardingDone();
   },
@@ -206,7 +206,7 @@ export const api = {
     const answer = await send<WireCheckoutAnswer>("/v1/billing/checkout", "POST", { kind: "cart", source: req.source, cart: cartFromSelection(req.selection, await catalog()) });
     return { url: answer.checkoutUrl, id: answer.checkoutId };
   },
-  /** a card-only page for the plan's payment method; dusk bot never opens the provider's customer portal */
+  /** a card-only page for the plan's payment method; madani bot never opens the provider's customer portal */
   updateCard: () => send<{ url: string }>(`${subscriptionPath()}/card`, "POST"),
   /** what a plan change does, before anything is applied: today's charge, the next one and when */
   changeCharge: async (selection: Selection): Promise<ChangeOffer> => {

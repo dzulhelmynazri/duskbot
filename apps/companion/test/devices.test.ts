@@ -93,7 +93,7 @@ describe("DeviceRegistry", () => {
 
     expect(registry.authenticate(undefined)).toBeNull();
     expect(registry.authenticate("")).toBeNull();
-    expect(registry.authenticate("dusk_nope")).toBeNull();
+    expect(registry.authenticate("madani_nope")).toBeNull();
     expect(registry.authenticate(token.slice(0, -1))).toBeNull();
     expect(registry.authenticate(`${token}x`)).toBeNull();
   });
@@ -370,21 +370,21 @@ describe("cleanDeviceName", () => {
 
 describe("bearerToken", () => {
   it("reads only a well-formed Bearer header", () => {
-    expect(bearerToken("Bearer dusk_abc")).toBe("dusk_abc");
-    expect(bearerToken("  Bearer dusk_abc  ")).toBe("dusk_abc");
-    expect(bearerToken("dusk_abc")).toBeUndefined();
-    expect(bearerToken("Basic dusk_abc")).toBeUndefined();
+    expect(bearerToken("Bearer madani_abc")).toBe("madani_abc");
+    expect(bearerToken("  Bearer madani_abc  ")).toBe("madani_abc");
+    expect(bearerToken("madani_abc")).toBeUndefined();
+    expect(bearerToken("Basic madani_abc")).toBeUndefined();
     expect(bearerToken(undefined)).toBeUndefined();
   });
 
   it("matches the scheme however it is cased", () => {
-    expect(bearerToken("bearer dusk_abc")).toBe("dusk_abc");
-    expect(bearerToken("BEARER dusk_abc")).toBe("dusk_abc");
-    expect(bearerToken("BeArEr dusk_abc")).toBe("dusk_abc");
-    expect(bearerToken("BeArEr\tdusk_abc")).toBe("dusk_abc");
+    expect(bearerToken("bearer madani_abc")).toBe("madani_abc");
+    expect(bearerToken("BEARER madani_abc")).toBe("madani_abc");
+    expect(bearerToken("BeArEr madani_abc")).toBe("madani_abc");
+    expect(bearerToken("BeArEr\tmadani_abc")).toBe("madani_abc");
     expect(bearerToken("Bearer ")).toBeUndefined();
     expect(bearerToken("Bearer   ")).toBeUndefined();
-    expect(bearerToken("Bearerdusk_abc")).toBeUndefined();
+    expect(bearerToken("Bearermadani_abc")).toBeUndefined();
   });
 });
 

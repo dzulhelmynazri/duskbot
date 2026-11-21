@@ -1,5 +1,5 @@
 // pi's MCP client: pi core ships none ("does not include built-in MCP"), so this extension, loaded with
-// `-e`, mounts every server in the DUSK_MCP_CONFIG file as pi tools. dusk bot's proxies speak raw
+// `-e`, mounts every server in the MADANI_MCP_CONFIG file as pi tools. madani bot's proxies speak raw
 // JSON-RPC 2.0 over stdio, one frame per line, without Content-Length framing.
 import { Type, type TObjectOptions, type TSchema, type TSchemaOptions } from "typebox";
 import { spawn, type ChildProcessWithoutNullStreams } from "node:child_process";
@@ -227,7 +227,7 @@ export class StdioMcp {
       {
         protocolVersion: "2024-11-05",
         capabilities: {},
-        clientInfo: { name: "duskbot-pi", version: "1" },
+        clientInfo: { name: "madanibot-pi", version: "1" },
       },
       budget,
     );
@@ -572,16 +572,16 @@ function askUserTool(allowed: () => boolean): PiToolDefinition {
 }
 
 export default async function (pi: PiExtensionApi): Promise<void> {
-  const configPath = process.env.DUSK_MCP_CONFIG;
+  const configPath = process.env.MADANI_MCP_CONFIG;
   if (!configPath) return;
 
   let config: McpConfig;
   try {
     config = JSON.parse(readFileSync(configPath, "utf8")) as McpConfig;
   } catch {
-    throw new Error("dusk bot Pi MCP configuration could not be read");
+    throw new Error("madani bot Pi MCP configuration could not be read");
   }
-  if (!config || typeof config !== "object" || Array.isArray(config)) throw new Error("dusk bot Pi MCP configuration is invalid");
+  if (!config || typeof config !== "object" || Array.isArray(config)) throw new Error("madani bot Pi MCP configuration is invalid");
   const parsed = parseToolScope(config.toolScope);
   if (!parsed.ok) throw new Error(parsed.error);
   const scope = parsed.scope;
@@ -663,7 +663,7 @@ export default async function (pi: PiExtensionApi): Promise<void> {
         return { serverName, def, client, tools: await client.listTools() };
       } catch (err) {
         const message = err instanceof Error ? err.message : String(err);
-        process.stderr.write(`[duskbot-pi-mcp] ${serverName}: ${message}\n`);
+        process.stderr.write(`[madanibot-pi-mcp] ${serverName}: ${message}\n`);
         client?.dispose();
         return { serverName };
       }
@@ -678,7 +678,7 @@ export default async function (pi: PiExtensionApi): Promise<void> {
 
     for (const tool of tools) {
       if (!tool || typeof tool.name !== "string" || !tool.name.trim()) {
-        process.stderr.write(`[duskbot-pi-mcp] ${serverName}: skipped a tool with no valid name\n`);
+        process.stderr.write(`[madanibot-pi-mcp] ${serverName}: skipped a tool with no valid name\n`);
         continue;
       }
       const toolName = tool.name;
@@ -730,7 +730,7 @@ export default async function (pi: PiExtensionApi): Promise<void> {
         registered += 1;
       } catch (err) {
         const message = err instanceof Error ? err.message : String(err);
-        process.stderr.write(`[duskbot-pi-mcp] ${serverName}:${toolName}: ${message}\n`);
+        process.stderr.write(`[madanibot-pi-mcp] ${serverName}:${toolName}: ${message}\n`);
       }
     }
 

@@ -37,7 +37,7 @@ describe("verifyLinkGrant (webcrypto)", () => {
     expect((await verifyLinkGrant(grant(good), { now })).error).toBe("unknown_key");
   });
 
-  it("reads GRANT_KEYS like DUSK_LINK_GRANT_KEYS", () => {
+  it("reads GRANT_KEYS like MADANI_LINK_GRANT_KEYS", () => {
     expect(parseGrantKeys(`test-1:${x}`)).toEqual(keys);
     expect(parseGrantKeys("")).toBeNull();
     expect(() => parseGrantKeys("bad")).toThrow();

@@ -29,13 +29,13 @@ describe("the API level a server says", () => {
 
 describe("a page on an older server", () => {
   it("a server at this level has everything and is not behind", async () => {
-    const fetch = server({ "/.well-known/duskbot/environment": { version: "9.9.9", capabilities: { api: SERVER_API_LEVEL } } });
+    const fetch = server({ "/.well-known/madanibot/environment": { version: "9.9.9", capabilities: { api: SERVER_API_LEVEL } } });
     expect(await serverHas("connectorDirectory", fetch)).toBe(true);
     expect(serverBehind(currentServerCompat())).toBe(false);
   });
 
   it("a server that says a lower level hides the newer parts without asking for them", async () => {
-    const fetch = server({ "/.well-known/duskbot/environment": { version: "1.0.0", capabilities: { api: 0 } } });
+    const fetch = server({ "/.well-known/madanibot/environment": { version: "1.0.0", capabilities: { api: 0 } } });
     await readServerCompat(fetch);
     const read = vi.fn(async () => ({ apps: [] }));
     expect(await whenServerHas("connectorDirectory", read)).toBeNull();
@@ -73,7 +73,7 @@ describe("a page on an older server", () => {
 });
 
 describe("the update hint", () => {
-  it("offers the server's own update command, and says nothing where dusk or the app updates it", () => {
+  it("offers the server's own update command, and says nothing where madani or the app updates it", () => {
     const copy = vi.fn();
     const hint = serverBehindHint({ current: "0.1.141", install: "docker", available: true, command: "docker compose pull && docker compose up -d" }, copy);
     hint!.action!.onClick();

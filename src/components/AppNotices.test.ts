@@ -24,10 +24,10 @@ vi.mock("react", async original => ({ ...await original<typeof import("react")>(
 vi.mock("@/state/store", () => ({ useStore: () => ({ state: f.state, dispatch: f.dispatch }), api: vi.fn().mockResolvedValue({}),
   CLOUD_LINK_SETTINGS: { type: "toggleAppSettings", open: true, section: "cloudAccount", cloudLink: true } }));
 vi.mock("@/lib/analytics", () => ({ emailGateDone: () => false, track: vi.fn() }));
-// Who Dusk belongs to: unknown (as before the session answers) unless a test says otherwise.
+// Who Madani belongs to: unknown (as before the session answers) unless a test says otherwise.
 vi.mock("@/lib/default-bot", async original => ({ ...await original<typeof import("@/lib/default-bot")>(), useViewerEmail: () => f.viewerEmail }));
-vi.mock("@/lib/brand", () => ({ productName: () => "dusk bot" }));
-vi.mock("./mascot-view", () => ({ DuskMark: () => null }));
+vi.mock("@/lib/brand", () => ({ productName: () => "madani bot" }));
+vi.mock("./mascot-view", () => ({ MadaniMark: () => null }));
 vi.mock("./Avatar", async original => ({ ...await original<typeof import("./Avatar")>(), MausAvatar: () => null }));
 vi.mock("@/components/EngineLibrary", () => ({ engineReady: (instance: { snapshot: { state: string; authenticated?: boolean } }) =>
   instance.snapshot.state === "available" && instance.snapshot.authenticated !== false }));
@@ -49,7 +49,7 @@ const plans = [
 const TRIAL_OFFER: CloudOffer = { plans, recommended: "pro", refundDays: 14 };
 const PLAIN_OFFER: CloudOffer = { plans: plans.map(({ trialDays: _days, ...plan }) => plan), recommended: "pro", refundDays: 14 };
 const INTRO = "Keep your bots working when this computer is off";
-const STAR = "Enjoying dusk bot?";
+const STAR = "Enjoying madani bot?";
 const signedOut: CloudAccountState = { status: "signed-out" };
 const free: CloudAccountState = { status: "connected", account: { id: "a", email: "person@example.test" }, entitlement: { plan: "free", status: "inactive", expiresAt: null, version: 1 } };
 const paid = (extra: Partial<CloudAccountState> = {}): CloudAccountState => ({ ...free, entitlement: { plan: "pro", tier: "pro", status: "active", expiresAt: NOW + 30 * DAY, version: 2 }, ...extra });
@@ -66,7 +66,7 @@ let accountListeners: Set<(next: CloudAccountState) => void>;
 let now: number;
 
 const PRELOAD = readFileSync(join(process.cwd(), "electron", "preload.cjs"), "utf8").replace(/\r\n/g, "\n");
-const LOCAL_ORIGIN = "http://127.0.0.1:8799", MY_CLOUD = "https://dusk-u-1.fly.dev", VPS = "https://bots.example.test";
+const LOCAL_ORIGIN = "http://127.0.0.1:8799", MY_CLOUD = "https://madani-u-1.fly.dev", VPS = "https://bots.example.test";
 type Page = "local" | "cloud" | "server";
 type Handler = (event: { page: Page; returnValue?: unknown }, ...args: unknown[]) => unknown;
 interface Desktop {
@@ -91,20 +91,20 @@ function desktopMachine(): Desktop {
 // The real preload, as this desktop's window loads it for a page; the Cloud account and plan answer from this file's fakes.
 function windowOn(origin: string, { click = true } = {}) {
   const page: Page = origin === LOCAL_ORIGIN ? "local" : origin === MY_CLOUD ? "cloud" : "server";
-  let duskDesktop: Record<string, unknown> = {};
+  let madaniDesktop: Record<string, unknown> = {};
   vm.runInNewContext(PRELOAD, {
-    process: { platform: "darwin", argv: [`--dusk-local-origin=${LOCAL_ORIGIN}`, "--dusk-company-desktop=1"] },
+    process: { platform: "darwin", argv: [`--madani-local-origin=${LOCAL_ORIGIN}`, "--madani-company-desktop=1"] },
     location: { origin }, navigator: { userActivation: { isActive: click } }, TextEncoder,
-    require: () => ({ webUtils: {}, contextBridge: { exposeInMainWorld: (_name: string, value: Record<string, unknown>) => { duskDesktop = value; } },
+    require: () => ({ webUtils: {}, contextBridge: { exposeInMainWorld: (_name: string, value: Record<string, unknown>) => { madaniDesktop = value; } },
       ipcRenderer: { on() {}, removeListener() {}, send() {},
         sendSync: (channel: string) => { const event = { page, returnValue: undefined as unknown }; desk.listeners.get(channel)?.(event); return event.returnValue; },
         invoke: async (channel: string, ...args: unknown[]) => desk.handlers.get(channel)?.({ page }, ...args) } }),
   });
   const fakes: Record<string, unknown> = { cloudAccount: bridges.cloud, cloudPlan: bridges.plan, openExternal: vi.fn(async () => true), organization: undefined };
-  return { ...duskDesktop, ...Object.fromEntries(Object.entries(fakes).filter(([key]) => key in duskDesktop)) };
+  return { ...madaniDesktop, ...Object.fromEntries(Object.entries(fakes).filter(([key]) => key in madaniDesktop)) };
 }
 const showWindow = (origin: string, options?: { click?: boolean }) => {
-  vi.stubGlobal("window", { duskDesktop: windowOn(origin, options), addEventListener: vi.fn(), removeEventListener: vi.fn() });
+  vi.stubGlobal("window", { madaniDesktop: windowOn(origin, options), addEventListener: vi.fn(), removeEventListener: vi.fn() });
 };
 
 const flush = async () => { for (let i = 0; i < 10; i++) await Promise.resolve(); };
@@ -162,10 +162,10 @@ afterEach(() => { vi.unstubAllGlobals(); vi.useRealTimers(); setLocale("en"); })
 
 describe("the card after the update", () => {
   it("offers the free trial to someone signed out who has used the app before, in the Admin's numbers, with Start free trial and Show me how", async () => {
-    vi.stubEnv("VITE_DUSK_PHONE_APP", "0");
+    vi.stubEnv("VITE_MADANI_PHONE_APP", "0");
     returning();
     const html = await launch();
-    const words = [INTRO, "Free for 7 days", "dusk cloud runs your bots for you in the cloud, always available.", "Routines run on time, day and night",
+    const words = [INTRO, "Free for 7 days", "madani cloud runs your bots for you in the cloud, always available.", "Routines run on time, day and night",
       "Then from $15/month + tax where applicable. Cancel any time.",
       "14-day money-back on every plan.", "Start free trial", "Show me how", "Sign in to your cloud plan", "Not now"];
     for (const text of words) expect(html).toContain(text);
@@ -203,7 +203,7 @@ describe("the card after the update", () => {
     offer = null; expect(await relaunch()).not.toContain(INTRO);
     offer = { ...TRIAL_OFFER, refundDays: undefined };
     html = await relaunch();
-    expect(html).toContain(INTRO); expect(html).toContain("dusk cloud runs your bots for you in the cloud, always available.");
+    expect(html).toContain(INTRO); expect(html).toContain("madani cloud runs your bots for you in the cloud, always available.");
     expect(html).not.toContain("money-back"); expect(html).not.toContain("Claude credit");
   });
 
@@ -216,17 +216,17 @@ describe("the card after the update", () => {
     }
     account = signedOut;
 
-    (window.duskDesktop as Record<string, unknown>).organization = { state: async () => ({ status: "connected", organization: { id: "o", name: "Acme" } }), onState: () => () => {} };
+    (window.madaniDesktop as Record<string, unknown>).organization = { state: async () => ({ status: "connected", organization: { id: "o", name: "Acme" } }), onState: () => () => {} };
     const org = await launch();
     expect(org).not.toContain(INTRO); expect(org).not.toContain(STAR);
   });
 
-  it("a bot working when this computer slept: dusk cloud offered once, counted as its own upsell", async () => {
+  it("a bot working when this computer slept: madani cloud offered once, counted as its own upsell", async () => {
     sleep.found = { botId: "q", name: "Quill", wokeAt: NOW };
     launchCardsSeen();
     expect(await launch()).toContain("Quill paused while this Mac slept");
     expect(track).toHaveBeenCalledWith("upsell_shown", { source: "app_asleep" });
-    press("Get dusk cloud"); await flush();
+    press("Get madani cloud"); await flush();
     expect(f.dispatch).toHaveBeenCalledWith(expect.objectContaining({ type: "openCloudAdd", source: "app_asleep" }));
     expect(track).toHaveBeenCalledWith("upsell_click", expect.objectContaining({ source: "app_asleep" }));
     expect(hints()).toContain(ASLEEP_NOTICE);
@@ -382,7 +382,7 @@ describe("upstream promotional campaigns", () => {
   it("does not advertise retired desktop provider credits, upstream mobile apps or community promotions to returning users", async () => {
     account = { ...free }; offer = { ...PLAIN_OFFER }; returning();
     const html = await launch();
-    for (const campaign of ["Enjoying dusk bot?", "live on Product Hunt", "$50 of \x42oat credit", "\x62oat.dev", "Get dusk bot updates?"]) expect(html).not.toContain(campaign);
+    for (const campaign of ["Enjoying madani bot?", "live on Product Hunt", "$50 of \x42oat credit", "\x62oat.dev", "Get madani bot updates?"]) expect(html).not.toContain(campaign);
   });
 
   it("keeps an expired account's sign-in recovery", async () => {
@@ -501,7 +501,7 @@ describe("bots in two places", () => {
     expect(windowOn(LOCAL_ORIGIN).twoPlaces).toBeDefined();
     for (const origin of [MY_CLOUD, VPS]) expect(windowOn(origin).twoPlaces, origin).toBeUndefined();
     const ask = vi.fn(async () => ({ suggest: GARAGE }));
-    vi.stubGlobal("window", { duskDesktop: { ...windowOn(MY_CLOUD), twoPlaces: { state: ask, accept: ask, dismiss: ask, onChanged: () => () => {} } }, addEventListener: vi.fn(), removeEventListener: vi.fn() });
+    vi.stubGlobal("window", { madaniDesktop: { ...windowOn(MY_CLOUD), twoPlaces: { state: ask, accept: ask, dismiss: ask, onChanged: () => () => {} } }, addEventListener: vi.fn(), removeEventListener: vi.fn() });
     expect(await launch(), "a Cloud's page handed the bridge anyway").not.toContain('data-notice="two-places"');
   });
 });

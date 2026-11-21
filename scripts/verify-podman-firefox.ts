@@ -5,17 +5,17 @@ import { randomUUID } from "node:crypto";
 import { mkdirSync, mkdtempSync, readFileSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
 
-const podman = process.env.DUSK_VERIFY_PODMAN;
-const machine = process.env.DUSK_VERIFY_MACHINE;
-if (!podman || !machine) throw new Error("Set DUSK_VERIFY_PODMAN and DUSK_VERIFY_MACHINE to an explicit test engine");
-const output = resolve(process.env.DUSK_VERIFY_OUTPUT || ".dusk-scratch/firefox");
+const podman = process.env.MADANI_VERIFY_PODMAN;
+const machine = process.env.MADANI_VERIFY_MACHINE;
+if (!podman || !machine) throw new Error("Set MADANI_VERIFY_PODMAN and MADANI_VERIFY_MACHINE to an explicit test engine");
+const output = resolve(process.env.MADANI_VERIFY_OUTPUT || ".madani-scratch/firefox");
 mkdirSync(output, { recursive: true });
 // Keep Podman's connection/config lookup intact while isolating app imports.
 const engineEnv = { ...process.env };
 const fixtureHome = mkdtempSync(resolve(output, "home-"));
 process.env.HOME = fixtureHome;
 process.env.USERPROFILE = fixtureHome;
-process.env.DUSK_DATA_DIR = resolve(fixtureHome, "app-data");
+process.env.MADANI_DATA_DIR = resolve(fixtureHome, "app-data");
 const { containerRunArgs, perBotLocalVmTarget, IMAGE } = await import("../server/container-computer.ts");
 const run = (args: string[]) => execFileSync(podman, ["--connection", machine, ...args], { env: engineEnv, encoding: "utf8", timeout: 90_000 }).trim();
 const sandboxProbe = readFileSync(new URL("./testing/firefox-sandbox.py", import.meta.url), "utf8");
@@ -25,8 +25,8 @@ const assertSandboxEnabled = (report: { effectiveContentSandboxLevel: number }) 
 };
 const receipt = [];
 for (const mode of ["before", "after"] as const) {
-  const workspace = execFileSync(podman, ["machine", "ssh", machine, "mktemp", "-d", "/tmp/dusk-firefox-XXXXXXXX"], { env: engineEnv, encoding: "utf8", timeout: 30_000 }).trim();
-  assert.match(workspace, /^\/tmp\/dusk-firefox-[A-Za-z0-9]+$/);
+  const workspace = execFileSync(podman, ["machine", "ssh", machine, "mktemp", "-d", "/tmp/madani-firefox-XXXXXXXX"], { env: engineEnv, encoding: "utf8", timeout: 30_000 }).trim();
+  assert.match(workspace, /^\/tmp\/madani-firefox-[A-Za-z0-9]+$/);
   const target = { ...perBotLocalVmTarget(randomUUID()), workspaceDir: workspace };
   const args = containerRunArgs("podman", randomUUID(), target);
   if (mode === "before") {

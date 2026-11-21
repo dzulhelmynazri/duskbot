@@ -13,7 +13,7 @@ export function reusableConnectionUrl(page: PendingAuthorization | null | undefi
 }
 
 /** True inside the desktop app, where every page opens in the system browser rather than a tab. */
-export const opensPagesExternally = () => Boolean(window.duskDesktop);
+export const opensPagesExternally = () => Boolean(window.madaniDesktop);
 
 /** Reserve the tab during the click, before an authorization request consumes the browser's user activation. */
 export function reserveConnectionPage() {

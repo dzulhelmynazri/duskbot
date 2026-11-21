@@ -8,7 +8,7 @@
 //
 // What can't go this way: saved logins, 1Password and the keys of connected apps leave a server only over the desktop
 // app's private utility port (server/login-handoff.ts), which a VPS doesn't have. They stay on the VPS, are counted as
-// refused for good (so the move goes on without them), and the done line says to connect them again on dusk cloud.
+// refused for good (so the move goes on without them), and the done line says to connect them again on madani cloud.
 //
 // When the direct path can't run (a VPS too old to be frozen by its owner, or one that keeps failing on its own side)
 // and this computer's bots are the ones that moved to that VPS (`viaMac.available`), the move falls back by itself to
@@ -31,7 +31,7 @@ export const FALLBACK_AFTER = 2;
 const VPS_SIDE = new Set(["local", "freeze"]);
 
 /** What stays on the VPS, in the person's words. */
-export const staysLine = (name) => `Saved logins, 1Password and app keys stay on ${name}. Connect them again on dusk cloud.`;
+export const staysLine = (name) => `Saved logins, 1Password and app keys stay on ${name}. Connect them again on madani cloud.`;
 
 /** The person's choice, read back; null when there is none or it is damaged. */
 export function parseVpsChoice(value) {
@@ -43,7 +43,7 @@ export function parseVpsChoice(value) {
 /** The VPS's own word: this window's sign-in is its one owner's, which server it is, and whether its owner may freeze it. */
 export async function vpsWho(place, fetchImpl) {
   const server = serverRequests(place, fetchImpl);
-  const [who, described] = await Promise.all([server.who(), server.request("GET", "/.well-known/duskbot/environment").then(async (response) => {
+  const [who, described] = await Promise.all([server.who(), server.request("GET", "/.well-known/madanibot/environment").then(async (response) => {
     try { return await response.json(); } catch { return null; }
   })]);
   return { ...who, direct: who.own && Number(described?.capabilities?.moveOut) >= 1 };
@@ -145,7 +145,7 @@ export function installVpsCloudMove({ fetch: fetchImpl, environments, cloud, hom
       json: (route) => vpsSide(chosen(), fetchImpl).json(route),
       freeze: async (origin) => {
         const got = await vpsSide(chosen(), fetchImpl).call("POST", "/api/move/freeze", { cloud: origin });
-        if (got.status === 403 || got.status === 404 || got.status === 405) throw Object.assign(new Error(`Update dusk bot on ${chosen()?.name ?? "your server"} to move its bots straight to My Cloud.`), { code: "local", outdated: true, status: got.status });
+        if (got.status === 403 || got.status === 404 || got.status === 405) throw Object.assign(new Error(`Update madani bot on ${chosen()?.name ?? "your server"} to move its bots straight to My Cloud.`), { code: "local", outdated: true, status: got.status });
         return freezeAnswer(got);
       },
       async unfreeze(options) {
@@ -223,7 +223,7 @@ export function installVpsCloudMove({ fetch: fetchImpl, environments, cloud, hom
       catch (error) { log(`vps to cloud: ${error?.message ?? error}`); }
       // a freeze the VPS refused as outdated is written down, so the fallback is taken once
       const kept = parseJournal(journal.read());
-      if (kept && (kept.error ?? "").startsWith("Update dusk bot on ") && !kept.outdated) journal.write({ ...kept, outdated: true });
+      if (kept && (kept.error ?? "").startsWith("Update madani bot on ") && !kept.outdated) journal.write({ ...kept, outdated: true });
       if (shouldFallBack()) await fallBack(parseJournal(journal.read())?.outdated ? "outdated" : "vps_failing").catch((error) => log(`vps to cloud: the way via this computer did not start (${error?.message ?? error})`));
     })().finally(() => { running = null; });
     return running;
@@ -275,9 +275,9 @@ export function installVpsCloudMove({ fetch: fetchImpl, environments, cloud, hom
         const who = await vpsWho(place, fetchImpl).catch(() => null);
         if (!who?.signedIn) throw new Error(`This app isn't signed in to ${place.name}. Open ${place.name} in this app, then try again.`);
         if (!who.own) throw new Error(`${place.name} has other people on it, so its bots can't move to My Cloud from here.`);
-        if (!who.environmentId) throw new Error(`Update dusk bot on ${place.name} first, then try again.`);
+        if (!who.environmentId) throw new Error(`Update madani bot on ${place.name} first, then try again.`);
         const route = who.direct ? "direct" : viaMac?.available(place) ? "via-mac" : null;
-        if (!route) throw new Error(`Update dusk bot on ${place.name} to move its bots straight to My Cloud.`);
+        if (!route) throw new Error(`Update madani bot on ${place.name} to move its bots straight to My Cloud.`);
         choice.write({ v: 1, id: place.id, origin: place.origin, environmentId: who.environmentId, name: place.name, at: now(), route, ...(route === "via-mac" ? { why: "outdated" } : {}) });
         say(buying ? "buy" : "chosen");
         onChange();

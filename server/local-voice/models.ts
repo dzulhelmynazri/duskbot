@@ -50,11 +50,11 @@ export function groupOf(file: ModelFile): ModelGroup {
   return file.path.startsWith("moonshine/") ? "hear" : "speak";
 }
 
-/** dusk.bot's copy, one folder per hash (scripts/mirror-voice-models.sh); the pinned upstream is the fallback. */
-export const DEFAULT_MIRROR = "https://dusk.bot/voice";
+/** madani.bot's copy, one folder per hash (scripts/mirror-voice-models.sh); the pinned upstream is the fallback. */
+export const DEFAULT_MIRROR = "https://madani.bot/voice";
 
 export function mirrorFromEnv(env: NodeJS.ProcessEnv = process.env): string | null {
-  const value = env.DUSK_VOICE_MIRROR_URL?.trim();
+  const value = env.MADANI_VOICE_MIRROR_URL?.trim();
   if (value === "off") return null;
   return (value || DEFAULT_MIRROR).replace(/\/+$/, "");
 }
@@ -66,11 +66,11 @@ export function sourcesFor(file: ModelFile, mirror: string | null): string[] {
 
 /** Shared by every workspace on the computer, outside any data directory a backup copies. */
 export function defaultModelDir(env: NodeJS.ProcessEnv = process.env, platform: NodeJS.Platform = process.platform): string {
-  if (env.DUSK_VOICE_MODELS_DIR) return env.DUSK_VOICE_MODELS_DIR;
+  if (env.MADANI_VOICE_MODELS_DIR) return env.MADANI_VOICE_MODELS_DIR;
   const home = homedir();
-  if (platform === "darwin") return path.join(home, "Library", "Caches", "bot.dusk.app", "voice");
-  if (platform === "win32") return path.join(env.LOCALAPPDATA || path.join(home, "AppData", "Local"), "duskbot", "voice");
-  return path.join(env.XDG_CACHE_HOME || path.join(home, ".cache"), "duskbot", "voice");
+  if (platform === "darwin") return path.join(home, "Library", "Caches", "bot.madani.app", "voice");
+  if (platform === "win32") return path.join(env.LOCALAPPDATA || path.join(home, "AppData", "Local"), "madanibot", "voice");
+  return path.join(env.XDG_CACHE_HOME || path.join(home, ".cache"), "madanibot", "voice");
 }
 
 export type DownloadState =

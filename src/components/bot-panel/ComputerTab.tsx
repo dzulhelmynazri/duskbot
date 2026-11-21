@@ -216,7 +216,7 @@ function cloudCta({ bots, anchor, step, there, asleep, title, body, action, labe
   );
 }
 
-/** Moving a bot from a server to dusk cloud; in a group chat, one card for all of its bots. A server is always on, so the
+/** Moving a bot from a server to madani cloud; in a group chat, one card for all of its bots. A server is always on, so the
  * offer is no upkeep, never "it never sleeps". */
 function CloudDesktopCta({ bots, stage, label }: { bots: readonly Bot[]; stage: CloudMoveStage | null; label: string }) {
   const there = stage === "moved" || stage === "open";
@@ -234,7 +234,7 @@ function CloudDesktopCta({ bots, stage, label }: { bots: readonly Bot[]; stage: 
 
 export type CloudCtaStep = "get" | "move" | "moving" | "switch";
 
-/** Where a bot on this computer stands with dusk cloud: no cloud yet, a cloud to move to, on its way, or already there. */
+/** Where a bot on this computer stands with madani cloud: no cloud yet, a cloud to move to, on its way, or already there. */
 export function cloudCtaStep(stage: CloudMoveStage | null): CloudCtaStep {
   if (stage === null || stage === "buy" || stage === "elsewhere") return "get";
   if (stage === "moved" || stage === "open") return "switch";
@@ -242,7 +242,7 @@ export function cloudCtaStep(stage: CloudMoveStage | null): CloudCtaStep {
   return "move";
 }
 
-/** dusk cloud for a bot on this computer, and the one next step. `group`: a group chat's bots, one card for all of them. */
+/** madani cloud for a bot on this computer, and the one next step. `group`: a group chat's bots, one card for all of them. */
 export function CloudCtaCard({ bot, group, stage, cloudDesktop }: { bot: Bot; group?: readonly Bot[]; stage: CloudMoveStage | null; cloudDesktop: CloudDesktopRow | null }) {
   const { dispatch } = useStore();
   const [hopping, setHopping] = useState(false);
@@ -256,18 +256,18 @@ export function CloudCtaCard({ bot, group, stage, cloudDesktop }: { bot: Bot; gr
     else if (step === "switch" && cloudDesktop?.openHome) void cloudDesktop.openHome();
     else openCloudMove("cloud");
   };
-  const label = t(step === "get" ? "runsOn.getCloud" : step === "switch" ? "runsOn.switchCloud" : step === "moving" ? "runsOn.movingCloud" : "runsOn.moveDuskCloud");
+  const label = t(step === "get" ? "runsOn.getCloud" : step === "switch" ? "runsOn.switchCloud" : step === "moving" ? "runsOn.movingCloud" : "runsOn.moveMadaniCloud");
   // these bots work on this computer, so the card is always the offer, with the switch once the account has a cloud
   const vars = { name: bot.name, device };
   return cloudCta({
-    bots, anchor: "dusk-cloud", step, there: step === "moving", asleep: step === "get", hopping, setHopping,
+    bots, anchor: "madani-cloud", step, there: step === "moving", asleep: step === "get", hopping, setHopping,
     title: t(many ? "runsOn.cta.groupTitle" : "runsOn.cta.title", vars),
     body: t(many ? "runsOn.cta.groupBody" : "runsOn.cta.body", vars),
     action: act, label, disabled: step === "moving",
   });
 }
 
-export { hasDuskCloud } from "@/lib/cloud-move";
+export { hasMadaniCloud } from "@/lib/cloud-move";
 
 /** One small disclosure for what a person rarely needs: the computer's own words for a problem, and its settings. */
 export function ComputerTab({ bot, derived, cloudFor }: {
@@ -288,13 +288,13 @@ export function ComputerTab({ bot, derived, cloudFor }: {
   const stage = cloudDesktop ? cloudMoveStage(cloudDesktop.view, cloudDesktop.keep) : desktopShowsOtherServer() ? "elsewhere" : null;
   const cloudBots = (cloudFor ?? [bot]).filter((one) => one.yourAccess !== "view");
   const local = isLocalHost(host);
-  // a bot on a server moves to cloud desktop; one on dusk cloud that came from this computer can go back
+  // a bot on a server moves to cloud desktop; one on madani cloud that came from this computer can go back
   const toCloud = cloudBots.length > 0 && !local && host.kind !== "cloud" && stage !== null;
   const cloudLabel = stage === "preparing" || stage === "moving" ? t("runsOn.movingCloud")
     : stage === "moved" || stage === "open" ? t("runsOn.openCloud")
-    : stage === "coming-back" ? t("runsOn.movingBack") : t("runsOn.moveDuskCloud");
+    : stage === "coming-back" ? t("runsOn.movingBack") : t("runsOn.moveMadaniCloud");
   const detail = report?.detail ?? null;
-  // this computer's bot leads with its browser; the dusk cloud card follows it, whatever step the account is at
+  // this computer's bot leads with its browser; the madani cloud card follows it, whatever step the account is at
   const cloudOffer = local && cloudBots.length > 0 && !storeApp() && <CloudCtaCard bot={cloudBots[0]!} group={cloudBots} stage={stage} cloudDesktop={cloudDesktop} />;
   const ownScreen = !local || current === "vm";
   // a bot set to use this Mac asks for the Mac's permissions it lacks when the person starts its browser, never before

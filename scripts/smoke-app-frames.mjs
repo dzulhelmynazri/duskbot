@@ -45,10 +45,10 @@ const PROBE = `<!DOCTYPE html>
     catch (error) { out[name] = { ok: false, error: String((error && (error.name || error.message)) || error) }; }
   };
   const timeout = (ms) => new Promise((_, reject) => setTimeout(() => reject(new Error("timeout")), ms));
-  out.preload = typeof window.duskDesktop;
+  out.preload = typeof window.madaniDesktop;
   out.webkitHandlers = typeof (window.webkit && window.webkit.messageHandlers);
   out.androidAppHost = typeof window.appHost;
-  out.helper = typeof (window.dusk && window.dusk.send);
+  out.helper = typeof (window.madani && window.madani.send);
   await attempt("fetch", () => Promise.race([fetch("SINK/fetch").then((r) => r.status), timeout(3000)]));
   await attempt("xhr", () => new Promise((resolve, reject) => {
     const xhr = new XMLHttpRequest();
@@ -81,7 +81,7 @@ const PROBE = `<!DOCTYPE html>
     navigator.geolocation.getCurrentPosition(() => resolve("position"), (error) => reject(new Error("geolocation " + error.code)), { timeout: 3000 });
   }));
   await attempt("notification", () => Notification.requestPermission());
-  await attempt("sendUnengaged", () => window.dusk.send("hello from a page nobody clicked"));
+  await attempt("sendUnengaged", () => window.madani.send("hello from a page nobody clicked"));
   await new Promise((resolve) => setTimeout(resolve, 1500));
   const img = document.getElementById("img");
   out.imageLoaded = img.complete && img.naturalWidth > 0;
@@ -116,7 +116,7 @@ if (!process.versions.electron) {
   await new Promise((resolve) => sink.listen(0, "127.0.0.1", resolve));
   const sinkOrigin = `http://127.0.0.1:${sink.address().port}`;
 
-  const data = mkdtempSync(join(tmpdir(), "dusk-app-frame-smoke-"));
+  const data = mkdtempSync(join(tmpdir(), "madani-app-frame-smoke-"));
   let code = 1;
   try {
     const rows = new Map();
@@ -240,7 +240,7 @@ async function run() {
   electron.powerSaveBlocker.start("prevent-app-suspension");
   const preload = join(data, "preload.cjs");
   // A stand-in for the app's preload bridge.
-  writeFileSync(preload, `require("electron").contextBridge.exposeInMainWorld("duskDesktop", { openExternal: () => Promise.resolve(true), marker: "preload" });`);
+  writeFileSync(preload, `require("electron").contextBridge.exposeInMainWorld("madaniDesktop", { openExternal: () => Promise.resolve(true), marker: "preload" });`);
   const win = new BrowserWindow({
     show: false, width: 760, height: 900,
     webPreferences: { sandbox: true, contextIsolation: true, nodeIntegration: false, preload },
@@ -275,7 +275,7 @@ async function run() {
   const js = (code) => win.webContents.executeJavaScript(code, true);
 
   // The control: the host page has the preload bridge.
-  assert.equal(await js("typeof window.duskDesktop"), "object");
+  assert.equal(await js("typeof window.madaniDesktop"), "object");
   await js(`window.__mount("probe", ${JSON.stringify(input.probeDoc)})`);
   const attrs = await js(`(() => { const f = document.querySelector("#box-probe iframe"); return { sandbox: f.getAttribute("sandbox"), allow: f.hasAttribute("allow"), srcdoc: f.getAttribute("srcdoc") === ${JSON.stringify(input.probeDoc.srcdoc)} }; })()`);
   assert.deepEqual(attrs, { sandbox: "allow-scripts allow-forms", allow: false, srcdoc: true }, "rule 1: the frame element");
@@ -324,7 +324,7 @@ async function run() {
   for (const name of ["microphone", "camera", "displayMedia", "geolocation"]) assert.equal(probe[name].ok, false, `rule 8: ${name} (${JSON.stringify(probe[name])})`);
   assert.notEqual(probe.notification.value, "granted", "rule 8: notifications");
   assert.deepEqual(permissionAsks.filter((ask) => ask.granted), [], "rule 8: nothing granted");
-  assert.equal(probe.sendUnengaged.ok, false, "an unengaged dusk.send is refused");
+  assert.equal(probe.sendUnengaged.ok, false, "an unengaged madani.send is refused");
   assert.deepEqual(calls.filter((call) => call.op === "message"), [], "no message reached the send route");
 
   await js(`window.__mount("pinned", ${JSON.stringify(input.pinnedDoc)})`);

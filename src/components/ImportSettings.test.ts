@@ -17,7 +17,7 @@ vi.mock("@/lib/default-bot", async (original) => ({ ...(await original<typeof im
 const { ImportSettings } = await import("./ImportSettings");
 
 (globalThis as { IS_REACT_ACT_ENVIRONMENT?: boolean }).IS_REACT_ACT_ENVIRONMENT = true;
-const maus = { id: "maus", name: "Dusk", defaultBot: {}, messages: [] };
+const maus = { id: "maus", name: "Madani", defaultBot: {}, messages: [] };
 const molty = { source: "openclaw", app: "OpenClaw", where: "~/.openclaw", channels: [], unreadable: [], bots: [{
   name: "Molty", title: "", description: "", instructions: "Be helpful.", memories: ["Sam's sister is Ana."], userFacts: [], skills: [], routines: [], apps: [],
 }] };
@@ -32,7 +32,7 @@ const client = (detection: SetupDetection) => ({
   apply: vi.fn(async () => ({ skills: { added: ["pdf"], present: [], skipped: [], filesLeftOut: 0, review: [] }, tools: { added: [], present: [], skipped: [] } })),
 });
 async function show(options: { local?: boolean; detection?: SetupDetection } = {}) {
-  if (options.local !== false) vi.stubGlobal("duskDesktop", { remoteClient: { active: false } });
+  if (options.local !== false) vi.stubGlobal("madaniDesktop", { remoteClient: { active: false } });
   const setup = client(options.detection ?? SETUP);
   await act(async () => root.render(createElement(ImportSettings, { client: setup })));
   await settle();
@@ -131,7 +131,7 @@ describe("Settings → bring in from other apps", () => {
     expect(f.api.mock.calls.filter(([path]) => String(path).startsWith("/api/setup-import"))).toEqual([]);
     expect(host.querySelector("[data-bring-looking]")).toBeNull();
     expect(host.querySelector("[data-bring-find]")).toBeNull();
-    expect(host.querySelector("[data-bring-prompt] pre")?.textContent).toContain("dusk-bot-notes");
+    expect(host.querySelector("[data-bring-prompt] pre")?.textContent).toContain("madani-bot-notes");
     expect(button("Copy the prompt")).toBeTruthy();
     expect(button("Import all")).toBeUndefined();
   });
@@ -139,7 +139,7 @@ describe("Settings → bring in from other apps", () => {
   it("takes the notes another AI wrote when they are pasted on the page, and says so there", async () => {
     await show({ local: false });
     const paste = new Event("paste", { bubbles: true, cancelable: true }) as ClipboardEvent;
-    Object.defineProperty(paste, "clipboardData", { value: { getData: () => JSON.stringify({ format: "dusk-bot-notes", version: 2, from: "ChatGPT", about_me: { basics: ["I live in Pune."] } }) } });
+    Object.defineProperty(paste, "clipboardData", { value: { getData: () => JSON.stringify({ format: "madani-bot-notes", version: 2, from: "ChatGPT", about_me: { basics: ["I live in Pune."] } }) } });
     await act(async () => { host.dispatchEvent(paste); });
     expect(paste.defaultPrevented, "nothing behind gets it").toBe(true);
     await settle();

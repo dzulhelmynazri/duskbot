@@ -47,9 +47,9 @@ export function parseWhen(value, now = Date.now()) {
 }
 
 export function defaultLogDirs(env = process.env, platform = process.platform, home = os.homedir()) {
-  if (env.DUSK_TRAIL_DIR) return [env.DUSK_TRAIL_DIR];
-  if (env.DUSK_LOG_DIR) return [env.DUSK_LOG_DIR];
-  const names = ["duskbot", "dusk bot", "Dusk Bot", "dusk-bot"];
+  if (env.MADANI_TRAIL_DIR) return [env.MADANI_TRAIL_DIR];
+  if (env.MADANI_LOG_DIR) return [env.MADANI_LOG_DIR];
+  const names = ["madanibot", "madani bot", "Madani Bot", "madani-bot"];
   const bases = platform === "darwin" ? [path.join(home, "Library", "Logs")]
     : platform === "win32" ? [path.join(env.APPDATA ?? path.join(home, "AppData", "Roaming"))].flatMap((base) => [base])
       : [path.join(env.XDG_CONFIG_HOME ?? path.join(home, ".config"))];
@@ -59,7 +59,7 @@ export function defaultLogDirs(env = process.env, platform = process.platform, h
     if (fs.existsSync(dir)) found.push(dir);
   }
   // a server with no desktop app writes beside its data
-  const data = path.join(env.DUSK_DATA_DIR ?? path.join(home, ".duskbot"), "logs");
+  const data = path.join(env.MADANI_DATA_DIR ?? path.join(home, ".madanibot"), "logs");
   if (fs.existsSync(data)) found.push(data);
   return found;
 }

@@ -31,17 +31,17 @@
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
-                <data android:scheme="duskbot" />
+                <data android:scheme="madanibot" />
             </intent-filter>
 
-            <!-- the desktop's and a dusk cloud's QR codes; verified by https://dusk.bot/.well-known/assetlinks.json -->
+            <!-- the desktop's and a madani cloud's QR codes; verified by https://madani.bot/.well-known/assetlinks.json -->
             <intent-filter android:autoVerify="true">
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
-                <data android:scheme="https" android:host="dusk.bot" android:pathPrefix="/m/open" />
-                <data android:scheme="https" android:host="dusk.bot" android:pathPrefix="/m/pair" />
-                <data android:scheme="https" android:host="dusk.bot" android:pathPrefix="/m/signin" />
+                <data android:scheme="https" android:host="madani.bot" android:pathPrefix="/m/open" />
+                <data android:scheme="https" android:host="madani.bot" android:pathPrefix="/m/pair" />
+                <data android:scheme="https" android:host="madani.bot" android:pathPrefix="/m/signin" />
             </intent-filter>
 
         </activity>

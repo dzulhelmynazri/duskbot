@@ -5,7 +5,7 @@ export function track(event: string, props?: Record<string, unknown>): void {
   if (event === "team_imported") feature("team_imported");
 }
 
-const GATE_KEY = "dusk-email-gate";
+const GATE_KEY = "madani-email-gate";
 export function emailGateDone(): boolean {
   try {
     return Boolean(localStorage.getItem(GATE_KEY));

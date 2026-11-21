@@ -5,7 +5,7 @@ import { upperFirst } from "@/lib/lower-first";
 import { MAUS_COLOR_LABEL, PICKER_COLORS, colorSwatch, rowsOfFive, type MausState } from "@/lib/mascot";
 import type { Bot } from "@/state/store";
 import { DEFAULT_BOT_BODY, wearsBody, type BotBodyId } from "../../../shared/bot-body";
-import { DUSK_BODY_IDS } from "../../../shared/body-migration";
+import { MADANI_BODY_IDS } from "../../../shared/body-migration";
 import { MausAvatar } from "../Avatar";
 import { BodyRing } from "../mascot-view";
 import { useAvatarImage, type AvatarPatch } from "../avatar-editing";
@@ -13,7 +13,7 @@ import { useAvatarImage, type AvatarPatch } from "../avatar-editing";
 export type AvatarEditorTab = "bot" | "generate" | "upload";
 
 /** Our bodies, in two rows of five. */
-const SHAPE_ROWS = rowsOfFive(DUSK_BODY_IDS);
+const SHAPE_ROWS = rowsOfFive(MADANI_BODY_IDS);
 
 export function AvatarEditorCard({ bot, onPatch, onClose }: {
   bot: Bot;

@@ -41,7 +41,7 @@ beforeEach(() => {
   setLocale("en");
   rail = { places: PLACES, add: { cloud: true, link: true, address: false } };
   organizations = undefined;
-  Object.assign(window, { duskDesktop: { workspaces, cloudAdd } });
+  Object.assign(window, { madaniDesktop: { workspaces, cloudAdd } });
   vi.clearAllMocks();
   host = document.createElement("div"); document.body.append(host);
 });
@@ -132,7 +132,7 @@ const submit = async (form: Element | null) => {
   await act(async () => { (form as HTMLFormElement).requestSubmit(); await Promise.resolve(); await Promise.resolve(); });
 };
 
-it("＋ opens the one add-a-place sheet: dusk cloud, or a server of one's own handed to the app window's guided setup, never a link to paste", async () => {
+it("＋ opens the one add-a-place sheet: madani cloud, or a server of one's own handed to the app window's guided setup, never a link to paste", async () => {
   rail = { places: PLACES, add: { cloud: true, link: true, address: true } };
   await mount(createElement(PlacesRail));
   await click(host.querySelector("[data-rail-add]"));
@@ -303,7 +303,7 @@ it("a server of the person's own on an older release than the newest has a quiet
 
 it("the window's own rail: drawn at every width, 36px wide with small rounded tiles named on hover, and its sheets cover the window while open", async () => {
   const expand = vi.fn(async () => {});
-  Object.assign(window, { duskDesktop: { workspaces, cloudAdd, rail: { expand, onSkin: () => () => {} } } });
+  Object.assign(window, { madaniDesktop: { workspaces, cloudAdd, rail: { expand, onSkin: () => () => {} } } });
   await mount(createElement(PlacesRail, { chrome: true }));
   const nav = host.querySelector("[data-places-rail]")!;
   expect(nav.className).toContain("flex h-full");
@@ -340,7 +340,7 @@ it("a right-click on a circle opens its place's menu: its colour, saved by main 
     place("vps", "Office", { kind: "server", paint: { swatch: null } }),
     place("acme", "Acme", { kind: "team", color: "purple", paint: { swatch: "violet", locked: "member" } }),
   ], add: { cloud: false, link: true, address: false } };
-  Object.assign(window, { duskDesktop: { workspaces: { ...workspaces, recolor }, cloudAdd, rail: { expand, onSkin: () => () => {} } } });
+  Object.assign(window, { madaniDesktop: { workspaces: { ...workspaces, recolor }, cloudAdd, rail: { expand, onSkin: () => () => {} } } });
   await mount(createElement(PlacesRail, { chrome: true }));
   const settle = () => act(async () => { for (let i = 0; i < 6; i++) await Promise.resolve(); });
   const menuOf = async (id: string) => {
@@ -378,7 +378,7 @@ it("a Cloud of the person's own that ended says so on its circle, and its menu o
     place("old", "Old Cloud", { ended: true, removable: true, paint: { swatch: null } }),
     place("a", "Client A", { paint: { swatch: "green" } }),
   ], add: { cloud: false, link: false, address: false } };
-  Object.assign(window, { duskDesktop: { workspaces: { ...workspaces, remove }, cloudAdd, rail: { expand: vi.fn(async () => {}), onSkin: () => () => {} } } });
+  Object.assign(window, { madaniDesktop: { workspaces: { ...workspaces, remove }, cloudAdd, rail: { expand: vi.fn(async () => {}), onSkin: () => () => {} } } });
   await mount(createElement(PlacesRail, { chrome: true }));
   const settle = () => act(async () => { for (let i = 0; i < 6; i++) await Promise.resolve(); });
   const menuOf = async (id: string) => {
@@ -412,7 +412,7 @@ it("a server of the person's own that main offers as home: its menu's one tap st
     place("garage", "Garage server", { kind: "server", makeHome: true, paint: { swatch: null } }),
     place("office", "Office", { kind: "server", paint: { swatch: null } }),
   ], add: { cloud: false, link: true, address: false } };
-  Object.assign(window, { duskDesktop: { workspaces: { ...workspaces, makeHome }, cloudAdd, rail: { expand: vi.fn(async () => {}), onSkin: () => () => {} } } });
+  Object.assign(window, { madaniDesktop: { workspaces: { ...workspaces, makeHome }, cloudAdd, rail: { expand: vi.fn(async () => {}), onSkin: () => () => {} } } });
   await mount(createElement(PlacesRail, { chrome: true }));
   const settle = () => act(async () => { for (let i = 0; i < 6; i++) await Promise.resolve(); });
   const menuOf = async (id: string) => {
@@ -465,7 +465,7 @@ it("several accounts: a thin divider between groups, This computer first, and ea
 
 it("a click on another account's place asks main by its id; a refusal shows the plain line, and nothing else moves", async () => {
   rail = { places: TWO_ACCOUNTS, add: { cloud: true, link: true, address: false } };
-  Object.assign(window, { duskDesktop: { workspaces, cloudAdd, accounts } });
+  Object.assign(window, { madaniDesktop: { workspaces, cloudAdd, accounts } });
   workspaces.open.mockResolvedValueOnce({ outcome: "moving" } as never);
   await mount(createElement(PlacesRail));
   await click(host.querySelector('[data-rail-place="b1"]'));
@@ -478,7 +478,7 @@ it("a click on another account's place asks main by its id; a refusal shows the 
 it("a saved account whose sign-in ended: its tile says so, and a click opens the emailed code for that address", async () => {
   const ended = TWO_ACCOUNTS.map((row) => (row.id === "b1" ? { ...row, signIn: true as const } : row));
   rail = { places: ended, add: { cloud: true, link: true, address: false } };
-  Object.assign(window, { duskDesktop: { workspaces, cloudAdd, accounts } });
+  Object.assign(window, { madaniDesktop: { workspaces, cloudAdd, accounts } });
   workspaces.open.mockResolvedValueOnce({ outcome: "sign-in", email: BOB } as never);
   await mount(createElement(PlacesRail));
   expect(host.querySelector('[data-rail-place="b1"]')?.getAttribute("title")).toBe(`My Cloud · ${BOB} · Sign in again`);
@@ -489,7 +489,7 @@ it("a saved account whose sign-in ended: its tile says so, and a click opens the
 
 it("＋ offers Add another account while someone is signed in, and it opens the sign-in over the window", async () => {
   rail = { places: TWO_ACCOUNTS, add: { cloud: true, link: true, address: false, account: true } };
-  Object.assign(window, { duskDesktop: { workspaces, cloudAdd, accounts } });
+  Object.assign(window, { madaniDesktop: { workspaces, cloudAdd, accounts } });
   await mount(createElement(PlacesRail));
   await click(host.querySelector("[data-rail-add]"));
   await click(host.querySelector('[data-place-add-choice="account"]'));

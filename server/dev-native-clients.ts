@@ -1,4 +1,4 @@
-// a source checkout's server signs in to dusk bot's own OAuth apps (shared/native-connectors.json) with the clients in
+// a source checkout's server signs in to madani bot's own OAuth apps (shared/native-connectors.json) with the clients in
 // the operator's secrets file, as a release bakes them in; without them every one-click sign-in reads as not set up.
 import { readFileSync } from "node:fs";
 import { homedir } from "node:os";
@@ -6,7 +6,7 @@ import { join } from "node:path";
 
 import { NATIVE_CLIENT_ENVS } from "../shared/native-connectors.ts";
 
-/** The native client values `text` (a dusk.env) sets that `env` lacks: only those names, never anything else. */
+/** The native client values `text` (a madani.env) sets that `env` lacks: only those names, never anything else. */
 export function nativeClientsFrom(text: string, env: NodeJS.ProcessEnv, names: readonly string[] = NATIVE_CLIENT_ENVS): Record<string, string> {
   const wanted = new Set(names.filter((name) => !env[name]?.trim()));
   const found: Record<string, string> = {};
@@ -19,11 +19,11 @@ export function nativeClientsFrom(text: string, env: NodeJS.ProcessEnv, names: r
   return found;
 }
 
-/** Fills the missing native client names from DUSK_ENV or ~/.config/duskbot/dusk.env, when that file is there. */
+/** Fills the missing native client names from MADANI_ENV or ~/.config/madanibot/madani.env, when that file is there. */
 export function loadDevNativeClients(env: NodeJS.ProcessEnv = process.env): number {
   let text: string;
   try {
-    text = readFileSync(env.DUSK_ENV || join(homedir(), ".config/duskbot/dusk.env"), "utf8");
+    text = readFileSync(env.MADANI_ENV || join(homedir(), ".config/madanibot/madani.env"), "utf8");
   } catch {
     return 0;
   }

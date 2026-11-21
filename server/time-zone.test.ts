@@ -8,7 +8,7 @@ import { adoptSavedTimeZone, currentTimeZone, knownTimeZone, TIME_ZONE_FILE, use
 
 const dirs: string[] = [];
 const tempDir = () => {
-  const dir = mkdtempSync(join(tmpdir(), "dusk-time-zone-"));
+  const dir = mkdtempSync(join(tmpdir(), "madani-time-zone-"));
   dirs.push(dir);
   return dir;
 };

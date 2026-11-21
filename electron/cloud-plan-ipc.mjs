@@ -26,7 +26,7 @@ export function installCloudPlanIpc({ ipcMain, pageSender, account, client, noti
     }
     return client().phoneSignIn();
   })(event));
-  // whether this computer is signed in to a dusk bot account: the phone panel shows its QR only then
+  // whether this computer is signed in to a madani bot account: the phone panel shows its QR only then
   ipcMain.handle("cloud-plan:signed-in", pageSender("cloud-plan:signed-in", () => client().state()?.status === "connected"));
   ipcMain.handle("cloud-plan:state", event => {
     const other = otherCloud(event);

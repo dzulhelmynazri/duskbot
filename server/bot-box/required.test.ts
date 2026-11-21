@@ -13,7 +13,7 @@ const linuxBox = describe.skipIf(process.platform === "win32");
 const bridge = { socat: "/usr/bin/socat", bridgeScript: "/app/dist-server/bot-box/box-bridge.js", node: "/usr/bin/node" };
 
 const home = "/home/maus";
-const dataDir = "/home/maus/.duskbot";
+const dataDir = "/home/maus/.madanibot";
 const fence = requiredFence(home, dataDir);
 const setup = {
   dataDir, home, codeRoots: ["/app", "/home/maus/.local/bin", "/home/maus/.local/lib"], engineRoots: engineInstallRoots(dataDir), fence,
@@ -21,32 +21,32 @@ const setup = {
 };
 const cwd = join(dataDir, "task-workspaces", "bot-a", "thread-1");
 
-describe("DUSK_BOT_BOX=required", () => {
+describe("MADANI_BOT_BOX=required", () => {
   it("is on, and detection treats it as on", () => {
-    expect(boxWanted({ DUSK_BOT_BOX: "required" })).toBe("required");
-    expect(detectBox({ env: { DUSK_BOT_BOX: "required" }, platform: "linux", probe: () => true, which: (name) => (name === "bwrap" ? "/usr/bin/bwrap" : null) }).box).toBe("bwrap");
+    expect(boxWanted({ MADANI_BOT_BOX: "required" })).toBe("required");
+    expect(detectBox({ env: { MADANI_BOT_BOX: "required" }, platform: "linux", probe: () => true, which: (name) => (name === "bwrap" ? "/usr/bin/bwrap" : null) }).box).toBe("bwrap");
   });
 
   it("refuses a bot's spawn rather than running it unboxed when bubblewrap cannot start", async () => {
     const box = new BotBox();
-    await box.start({ dataDir, home, port: 8799, env: { DUSK_BOT_BOX: "required" }, denyEnv: new Set(), log: () => {}, detect: () => ({ box: "off", reason: "userns-refused", tools: null }) });
+    await box.start({ dataDir, home, port: 8799, env: { MADANI_BOT_BOX: "required" }, denyEnv: new Set(), log: () => {}, detect: () => ({ box: "off", reason: "userns-refused", tools: null }) });
     expect(box.isRequired()).toBe(true);
     expect(() => box.wrap({ command: "/usr/bin/codex", args: [], cwd, env: {} })).toThrow(/cannot start here \(userns-refused\)/);
     const optional = new BotBox();
-    await optional.start({ dataDir, home, port: 8799, env: { DUSK_BOT_BOX: "1" }, denyEnv: new Set(), log: () => {}, detect: () => ({ box: "off", reason: "userns-refused", tools: null }) });
+    await optional.start({ dataDir, home, port: 8799, env: { MADANI_BOT_BOX: "1" }, denyEnv: new Set(), log: () => {}, detect: () => ({ box: "off", reason: "userns-refused", tools: null }) });
     expect(optional.wrap({ command: "/usr/bin/codex", args: [], cwd, env: {} })).toBeNull();
   });
 
-  it("reads more code roots from DUSK_BOX_CODE_ROOTS, absolute ones only", () => {
-    expect(extraCodeRoots({ DUSK_BOX_CODE_ROOTS: "/home/maus/.local/bin:relative::/home/maus/.local/lib" })).toEqual(["/home/maus/.local/bin", "/home/maus/.local/lib"]);
+  it("reads more code roots from MADANI_BOX_CODE_ROOTS, absolute ones only", () => {
+    expect(extraCodeRoots({ MADANI_BOX_CODE_ROOTS: "/home/maus/.local/bin:relative::/home/maus/.local/lib" })).toEqual(["/home/maus/.local/bin", "/home/maus/.local/lib"]);
     expect(extraCodeRoots({})).toEqual([]);
   });
 });
 
 linuxBox("the required box's fence", () => {
   it("never lets a line hold the server's HOME or data folder, or reach HOME's keys, settings or code", () => {
-    for (const path of ["/", "/home", home, dataDir, `${home}/.ssh`, `${home}/.ssh/authorized_keys`, `${home}/.config/duskbot-link/tunnel.json`,
-      `${home}/.local/lib/node_modules/duskbot/cli.js`, `${home}/.npmrc`, `${home}/.gitconfig`]) {
+    for (const path of ["/", "/home", home, dataDir, `${home}/.ssh`, `${home}/.ssh/authorized_keys`, `${home}/.config/madanibot-link/tunnel.json`,
+      `${home}/.local/lib/node_modules/madanibot/cli.js`, `${home}/.npmrc`, `${home}/.gitconfig`]) {
       expect(fencedPath(path, fence, dataDir), path).toBe(true);
     }
     for (const path of [`${home}/projects/site`, "/srv/app", `${dataDir}/workspaces/bot-a`, `${dataDir}/perm-abc.sock`]) expect(fencedPath(path, fence, dataDir), path).toBe(false);
@@ -111,9 +111,9 @@ linuxBox("a required box runs engines in their own home", () => {
   afterEach(() => { for (const dir of dirs.splice(0)) rmSync(dir, { recursive: true, force: true }); });
 
   it("HOME is the engine home; the server's HOME, data folder, keys and link files are not there; sign-ins are, settings read-only", () => {
-    const root = mkdtempSync(join(tmpdir(), "dusk-required-box-"));
+    const root = mkdtempSync(join(tmpdir(), "madani-required-box-"));
     dirs.push(root);
-    const serverHome = join(root, "home"), data = join(serverHome, ".duskbot");
+    const serverHome = join(root, "home"), data = join(serverHome, ".madanibot");
     const runner = new BoxRunner({
       bwrap: "/usr/bin/bwrap", bridge, denyEnv: new Set(), engineHome: engineHomeDir(data),
       setup: { dataDir: data, home: serverHome, codeRoots: ["/app", join(serverHome, ".local", "bin"), join(serverHome, ".local", "lib")], engineRoots: [], fence: requiredFence(serverHome, data), bridges: [] },
@@ -130,9 +130,9 @@ linuxBox("a required box runs engines in their own home", () => {
     expect(visibleInBox(plan, join(engineHome, ".codex", "auth.json")), "the sign-in, refreshed in place").toBe("rw");
     expect(visibleInBox(plan, join(engineHome, ".codex", "config.toml")), "the person's settings, never writable").toBe("ro");
     expect(visibleInBox(plan, join(serverHome, ".local", "bin", "codex"))).toBe("ro");
-    expect(visibleInBox(plan, join(serverHome, ".local", "lib", "node_modules", "duskbot", "cli.js"))).toBe("ro");
-    for (const hidden of [".ssh/authorized_keys", ".config/duskbot-link/tunnel.json", ".config/duskbot/engines.env", ".codex/auth.json", ".bashrc", ".npmrc",
-      ".duskbot/messages.db", ".duskbot/config.json", ".duskbot/logins-key", ".duskbot/workspaces/bot-b/x"]) {
+    expect(visibleInBox(plan, join(serverHome, ".local", "lib", "node_modules", "madanibot", "cli.js"))).toBe("ro");
+    for (const hidden of [".ssh/authorized_keys", ".config/madanibot-link/tunnel.json", ".config/madanibot/engines.env", ".codex/auth.json", ".bashrc", ".npmrc",
+      ".madanibot/messages.db", ".madanibot/config.json", ".madanibot/logins-key", ".madanibot/workspaces/bot-b/x"]) {
       expect(visibleInBox(plan, join(serverHome, hidden)), hidden).toBe("none");
     }
     const mounts = plan.mounts.filter((mount) => mount.kind === "bind" || mount.kind === "ro");
@@ -142,9 +142,9 @@ linuxBox("a required box runs engines in their own home", () => {
   });
 
   it("an Antigravity account's sign-in and model list run in its own profile, and nothing else of the data folder", () => {
-    const root = mkdtempSync(join(tmpdir(), "dusk-required-box-"));
+    const root = mkdtempSync(join(tmpdir(), "madani-required-box-"));
     dirs.push(root);
-    const serverHome = join(root, "home"), data = join(serverHome, ".duskbot");
+    const serverHome = join(root, "home"), data = join(serverHome, ".madanibot");
     const runner = new BoxRunner({
       bwrap: "/usr/bin/bwrap", bridge, denyEnv: new Set(), engineHome: engineHomeDir(data),
       setup: { dataDir: data, home: serverHome, codeRoots: ["/app"], engineRoots: engineInstallRoots(data), fence: requiredFence(serverHome, data), bridges: [] },

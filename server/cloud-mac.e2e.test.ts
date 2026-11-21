@@ -1,4 +1,4 @@
-// "Let my cloud bots use this Mac", two processes: a real server booted as a dusk cloud home (behind a stand-in edge's
+// "Let my cloud bots use this Mac", two processes: a real server booted as a madani cloud home (behind a stand-in edge's
 // headers, its link key in its data folder) and the Mac app's own core (electron/cloud-mac.mjs) signed in with the
 // Admin's pairing, as the app is. A scripted engine calls the device server's mac_ tools from a bot's turn.
 import { generateKeyPairSync, randomBytes } from "node:crypto";
@@ -16,7 +16,7 @@ import { removeTempDir, waitForExit } from "./testing/cleanup.ts";
 import { freePortBlock } from "./testing/ports.ts";
 
 const SERVER_DIR = dirname(fileURLToPath(import.meta.url));
-const HOST = "dusk-t-0123456789ab.fly.dev";
+const HOST = "madani-t-0123456789ab.fly.dev";
 const EDGE = { host: HOST, "x-forwarded-for": "203.0.113.9", "x-forwarded-proto": "https", origin: `https://${HOST}` };
 const secret = randomBytes(32).toString("base64url");
 const link = generateKeyPairSync("ed25519");
@@ -38,9 +38,9 @@ async function until(check: () => boolean | Promise<boolean>, what: string, time
 }
 
 beforeAll(async () => {
-  root = mkdtempSync(join(tmpdir(), "dusk-cloud-mac-e2e-"));
+  root = mkdtempSync(join(tmpdir(), "madani-cloud-mac-e2e-"));
   dataDir = join(root, "cloud");
-  home = realpathSync(mkdtempSync(join(tmpdir(), "dusk-cloud-mac-e2e-home-")));
+  home = realpathSync(mkdtempSync(join(tmpdir(), "madani-cloud-mac-e2e-home-")));
   calls = join(root, "calls.json");
   mkdirSync(dataDir, { recursive: true });
   writeFileSync(calls, "[]");
@@ -54,10 +54,10 @@ beforeAll(async () => {
   const offline = `data:text/javascript,${encodeURIComponent('const real = globalThis.fetch; globalThis.fetch = async (url, init) => String(url).startsWith("http://127.0.0.1:") ? real(url, init) : new Response("offline fixture", { status: 503 });')}`;
   child = spawn(process.execPath, ["--experimental-strip-types", "--import", offline, join(SERVER_DIR, "index.ts")], {
     cwd: join(SERVER_DIR, ".."),
-    env: { PATH: dirname(process.execPath), HOME: root, USERPROFILE: root, TMPDIR: root, DUSK_DATA_DIR: dataDir, DUSK_PORT: String(port), DUSK_WEBHOOK_PORT: String(port + 1),
-      DUSK_TEST_SEALED_PATH: "1", DUSK_NO_TEST_BOTS: "1", FAKE_CLAUDE_MODE: "happy", FAKE_CLAUDE_DUMP: join(root, "dump.json"),
-      DUSK_CLOUD_ROLE: "home", DUSK_CLOUD_MACHINE_ID: "3f9c2a4e-8b1d-4c6e-9a7f-2d5e8c1b0a93", DUSK_CLOUD_ADMIN_URL: "https://cloud.example.test",
-      DUSK_CLOUD_BOOTSTRAP_SECRET: secret, DUSK_PUBLIC_URL: `https://${HOST}` },
+    env: { PATH: dirname(process.execPath), HOME: root, USERPROFILE: root, TMPDIR: root, MADANI_DATA_DIR: dataDir, MADANI_PORT: String(port), MADANI_WEBHOOK_PORT: String(port + 1),
+      MADANI_TEST_SEALED_PATH: "1", MADANI_NO_TEST_BOTS: "1", FAKE_CLAUDE_MODE: "happy", FAKE_CLAUDE_DUMP: join(root, "dump.json"),
+      MADANI_CLOUD_ROLE: "home", MADANI_CLOUD_MACHINE_ID: "3f9c2a4e-8b1d-4c6e-9a7f-2d5e8c1b0a93", MADANI_CLOUD_ADMIN_URL: "https://cloud.example.test",
+      MADANI_CLOUD_BOOTSTRAP_SECRET: secret, MADANI_PUBLIC_URL: `https://${HOST}` },
     stdio: ["ignore", "pipe", "pipe"],
   });
   child.stdout?.on("data", (chunk) => { log += chunk; });
@@ -67,12 +67,12 @@ beforeAll(async () => {
     try { return (await fetch(`${base}/api/health`)).ok; } catch { return false; }
   }, "the cloud to start");
   // the Admin's signed pairing, as the app's pairHome() gets it, then the app's own sign-in
-  const body = JSON.stringify({ label: "dusk bot app (Cloud)", ttlSeconds: 300 });
+  const body = JSON.stringify({ label: "madani bot app (Cloud)", ttlSeconds: 300 });
   const timestamp = String(Math.floor(Date.now() / 1000)), nonce = randomBytes(16).toString("base64url");
   const granted = await (await fetch(`${base}/api/cloud/pairing`, { method: "POST", headers: { ...EDGE, "content-type": "application/json",
-    "x-dusk-cloud-timestamp": timestamp, "x-dusk-cloud-nonce": nonce, "x-dusk-cloud-signature": `v1=${cloudPairingSignature(secret, timestamp, nonce, body)}` }, body })).json() as { code: string };
+    "x-madani-cloud-timestamp": timestamp, "x-madani-cloud-nonce": nonce, "x-madani-cloud-signature": `v1=${cloudPairingSignature(secret, timestamp, nonce, body)}` }, body })).json() as { code: string };
   token = (await (await fetch(`${base}/api/auth/pair`, { method: "POST", headers: { ...EDGE, "content-type": "application/json" }, body: JSON.stringify({ code: granted.code }) })).json() as { token: string }).token;
-  expect(token).toMatch(/^dusk_sess_/);
+  expect(token).toMatch(/^madani_sess_/);
 }, 60_000);
 
 afterAll(async () => {
@@ -82,7 +82,7 @@ afterAll(async () => {
   removeTempDir(home);
 });
 
-it("a dusk cloud's bot works on the person's Mac: ordinary work runs, a risky command waits for Allow, and off is off", async () => {
+it("a madani cloud's bot works on the person's Mac: ordinary work runs, a risky command waits for Allow, and off is off", async () => {
   let prefs: any = { enabled: true, mode: "auto" };
   app = createCloudMac({
     fetch: (input: string, init?: RequestInit) => fetch(input, { ...init, headers: { ...init?.headers as Record<string, string>, ...EDGE, authorization: `Bearer ${token}` } }),

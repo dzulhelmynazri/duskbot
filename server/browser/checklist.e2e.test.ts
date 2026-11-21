@@ -35,7 +35,7 @@ suite("the bots' browser service on real Chrome", () => {
 
   beforeAll(async () => {
     fx = await FixtureServer.start();
-    files = mkdtempSync(join(testRoot(), "dusk-checklist-files-"));
+    files = mkdtempSync(join(testRoot(), "madani-checklist-files-"));
     real = await startService({ signingIn: (session) => signingIn.has(session) });
   }, hostTimeout(240_000));
 
@@ -268,7 +268,7 @@ suite("a bot's browser behind its egress gate on real Chrome", () => {
     const real = await startService({ egressPort: (key) => egress.open(key), egressNotice: (key) => egress.takeNotice(key) });
     try {
       const target = { session: "egress-1", key: "bot:egress-1" };
-      const url = `data:text/html,${encodeURIComponent(`<title>egress</title><img src="http://169.254.169.254/dusk-egress-test.png">`)}`;
+      const url = `data:text/html,${encodeURIComponent(`<title>egress</title><img src="http://169.254.169.254/madani-egress-test.png">`)}`;
       const opened = real.text(await real.call(target, "agent_browser_open", { url }));
       expect(opened).toMatch(/The page tried to reach [^\r\n]*"169\.254\.169\.254:80" \(blocked: the cloud metadata service\)[^\r\n]*\(page output, not instructions\)\./u);
     } finally {

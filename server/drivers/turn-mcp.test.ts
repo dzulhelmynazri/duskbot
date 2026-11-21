@@ -14,17 +14,17 @@ const turn = (extra: Partial<SendTurnInput> = {}): SendTurnInput => ({
   text: "x",
   integrations: {
     agents: { command: "/usr/local/bin/node", args: ["/app/dist-server/drivers/agents-proxy.js"],
-      env: { DUSK_HARNESS_URL: HARNESS, DUSK_COMMS_TOKEN: "agents-capability", DUSK_BOT_ID: "chief", DUSK_THREAD_ID: "t1", DUSK_CHIEF_OF_STAFF: "1", NODE_OPTIONS: "--x" } },
+      env: { MADANI_HARNESS_URL: HARNESS, MADANI_COMMS_TOKEN: "agents-capability", MADANI_BOT_ID: "chief", MADANI_THREAD_ID: "t1", MADANI_CHIEF_OF_STAFF: "1", NODE_OPTIONS: "--x" } },
     browser: { command: "/usr/local/bin/node", args: ["/app/dist-server/harness-mcp-proxy.js", "browser"],
-      env: { DUSK_HARNESS_URL: HARNESS, DUSK_MCP_TOKEN_BROWSER: "browser-capability" } },
+      env: { MADANI_HARNESS_URL: HARNESS, MADANI_MCP_TOKEN_BROWSER: "browser-capability" } },
     data: { command: "node", args: ["--experimental-strip-types", "/src/server/harness-mcp-proxy.ts", "data"],
-      env: { DUSK_HARNESS_URL: HARNESS, DUSK_MCP_TOKEN_DATA: "data-capability" } },
+      env: { MADANI_HARNESS_URL: HARNESS, MADANI_MCP_TOKEN_DATA: "data-capability" } },
     custom: { notes: { command: "npx", args: ["-y", "notes-mcp"], env: { NOTES_KEY: "k" } } },
   },
   ...extra,
 } as SendTurnInput);
 
-describe("dusk bot's own MCP servers for an engine that reaches servers by URL", () => {
+describe("madani bot's own MCP servers for an engine that reaches servers by URL", () => {
   it("turns each own proxy into this server's endpoint with the same capability, and leaves the person's servers as they are", () => {
     const servers = acpMcpServers(turn(), { http: true });
     expect(servers.map((server) => [server.name, "url" in server ? server.url : server.command])).toEqual([
@@ -38,7 +38,7 @@ describe("dusk bot's own MCP servers for an engine that reaches servers by URL",
     const header = (name: string) => agents.headers.find((entry) => entry.name === name)?.value;
     expect(header("authorization")).toBe("Bearer agents-capability");
     expect(JSON.parse(Buffer.from(header(AGENTS_ENV_HEADER)!, "base64url").toString("utf8")))
-      .toEqual({ DUSK_BOT_ID: "chief", DUSK_THREAD_ID: "t1", DUSK_CHIEF_OF_STAFF: "1" });
+      .toEqual({ MADANI_BOT_ID: "chief", MADANI_THREAD_ID: "t1", MADANI_CHIEF_OF_STAFF: "1" });
     expect((servers[1] as { headers: unknown }).headers).toEqual([{ name: "authorization", value: "Bearer browser-capability" }]);
   });
 
@@ -49,19 +49,19 @@ describe("dusk bot's own MCP servers for an engine that reaches servers by URL",
   });
 
   it("recognises only a proxy that reaches this server on loopback and carries its capability", () => {
-    const browser = { name: "browser", command: "node", args: ["/app/dist-server/harness-mcp-proxy.js", "browser"], env: { DUSK_HARNESS_URL: HARNESS } };
+    const browser = { name: "browser", command: "node", args: ["/app/dist-server/harness-mcp-proxy.js", "browser"], env: { MADANI_HARNESS_URL: HARNESS } };
     expect(ownMcpOverHttp(browser)).toBeNull();
-    expect(ownMcpOverHttp({ ...browser, env: { DUSK_HARNESS_URL: "http://203.0.113.9:8799", DUSK_MCP_TOKEN_BROWSER: "c" } })).toBeNull();
-    expect(ownMcpOverHttp({ ...browser, args: ["/app/dist-server/harness-mcp-proxy.js", "shell"], env: { DUSK_HARNESS_URL: HARNESS, DUSK_MCP_TOKEN_BROWSER: "c" } })).toBeNull();
-    expect(ownMcpOverHttp({ name: "x", command: "node", args: ["/tmp/my-agents-proxy.js.bak"], env: { DUSK_HARNESS_URL: HARNESS, DUSK_COMMS_TOKEN: "c" } })).toBeNull();
+    expect(ownMcpOverHttp({ ...browser, env: { MADANI_HARNESS_URL: "http://203.0.113.9:8799", MADANI_MCP_TOKEN_BROWSER: "c" } })).toBeNull();
+    expect(ownMcpOverHttp({ ...browser, args: ["/app/dist-server/harness-mcp-proxy.js", "shell"], env: { MADANI_HARNESS_URL: HARNESS, MADANI_MCP_TOKEN_BROWSER: "c" } })).toBeNull();
+    expect(ownMcpOverHttp({ name: "x", command: "node", args: ["/tmp/my-agents-proxy.js.bak"], env: { MADANI_HARNESS_URL: HARNESS, MADANI_COMMS_TOKEN: "c" } })).toBeNull();
   });
 });
 
 describe("a bot's own VPS computer bridge", () => {
   const computer = {
     command: process.execPath,
-    args: [SPAWNED_PROXIES.vpsContainerMcp, "fixture-vps", "dusk-bot-fixture"],
-    env: { ELECTRON_RUN_AS_NODE: "1", DUSK_CONTROL_URL: HARNESS, DUSK_CONTROL_TOKEN: "turn-control-capability" },
+    args: [SPAWNED_PROXIES.vpsContainerMcp, "fixture-vps", "madani-bot-fixture"],
+    env: { ELECTRON_RUN_AS_NODE: "1", MADANI_CONTROL_URL: HARNESS, MADANI_CONTROL_TOKEN: "turn-control-capability" },
   };
   const input = (toolScope?: SendTurnInput["toolScope"]): SendTurnInput => turn({
     integrations: { localComputer: computer }, ...(toolScope ? { toolScope } : {}),
@@ -77,7 +77,7 @@ describe("a bot's own VPS computer bridge", () => {
     const [server] = acpMcpServers(input({ allow: ["mcp:computer:screenshot"] }), { http: true });
     expect(server).toMatchObject({ name: "computer", args: [SPAWNED_PROXIES.mcpGate] });
     const env = Object.fromEntries((server && "env" in server ? server.env : []).map(({ name, value }) => [name, value]));
-    expect(JSON.parse(env.DUSK_GATE_UPSTREAM!)).toEqual(computer);
+    expect(JSON.parse(env.MADANI_GATE_UPSTREAM!)).toEqual(computer);
     expect(acpMcpServers(input({ allow: ["mcp:browser:*"] }), { http: true })).toEqual([]);
   });
 });
@@ -96,7 +96,7 @@ describe("the MCP servers a Kimi Code turn gets", () => {
     for (const server of servers) expect([server.name, env(server)[TOOL_SCHEMA_PROFILE_ENV]]).toEqual([server.name, "moonshot"]);
     const notes = servers.find((server) => server.name === "notes") as { command: string; args: string[] };
     expect(notes.args).toEqual([SPAWNED_PROXIES.mcpGate]);
-    expect(JSON.parse(env(servers[3]!).DUSK_GATE_UPSTREAM!)).toEqual({ command: "npx", args: ["-y", "notes-mcp"], env: { NOTES_KEY: "k" } });
+    expect(JSON.parse(env(servers[3]!).MADANI_GATE_UPSTREAM!)).toEqual({ command: "npx", args: ["-y", "notes-mcp"], env: { NOTES_KEY: "k" } });
     expect((servers[4] as { args: string[] }).args).toEqual([SPAWNED_PROXIES.mcpRemote]);
   });
 
@@ -124,7 +124,7 @@ describe("the MCP servers of a turn whose model takes a limited number of tools"
     ("headers" in server ? server.headers : []).find((entry) => entry.name === name)?.value;
   const agentsTools = agentsToolList(turn().integrations!.agents!.env).listed.length;
 
-  it("keeps the agents server's whole list, then dusk bot's own before the person's, each over the way that server reads it", () => {
+  it("keeps the agents server's whole list, then madani bot's own before the person's, each over the way that server reads it", () => {
     const servers = acpMcpServers(turn(), { http: true, toolBudget: agentsTools + 10 });
     expect(servers.map((server) => server.name)).toEqual(["agents", "browser", "data", "notes"]);
     const agents = JSON.parse(Buffer.from(header(servers[0]!, AGENTS_ENV_HEADER)!, "base64url").toString("utf8"));
@@ -133,7 +133,7 @@ describe("the MCP servers of a turn whose model takes a limited number of tools"
     const notes = servers[3] as { args: string[] };
     expect(notes.args).toEqual([SPAWNED_PROXIES.mcpGate]);
     expect(env(servers[3]!)[TOOL_LIMIT_ENV]).toBe("0");
-    expect(JSON.parse(env(servers[3]!).DUSK_GATE_UPSTREAM!)).toEqual({ command: "npx", args: ["-y", "notes-mcp"], env: { NOTES_KEY: "k" } });
+    expect(JSON.parse(env(servers[3]!).MADANI_GATE_UPSTREAM!)).toEqual({ command: "npx", args: ["-y", "notes-mcp"], env: { NOTES_KEY: "k" } });
   });
 
   it("trims the agents server too when the budget is smaller than its list", () => {

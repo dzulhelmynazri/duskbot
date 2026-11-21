@@ -8,7 +8,7 @@ export function formatCode(input: string): string {
   return clean(input).slice(0, CODE_LENGTH).replace(/(.{4})(?=.)/g, "$1-");
 }
 
-/** a computer's 12-character code, or a dusk cloud's 8 letters */
+/** a computer's 12-character code, or a madani cloud's 8 letters */
 export function typedCodeComplete(value: string): boolean {
   const raw = clean(value);
   return raw.length === CODE_LENGTH || (raw.length === 8 && /^[A-Z]+$/.test(raw));

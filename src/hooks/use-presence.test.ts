@@ -39,7 +39,7 @@ function rerender(state: AppState, dispatch: (action: Action) => void) {
 const flush = () => new Promise((resolve) => setTimeout(resolve, 0));
 
 type Listener = { scope: "window" | "document"; name: string; fn: () => void; options?: unknown };
-function stubDom(options: { visibilityState?: "visible" | "hidden"; duskDesktop?: unknown } = {}) {
+function stubDom(options: { visibilityState?: "visible" | "hidden"; madaniDesktop?: unknown } = {}) {
   const added: Listener[] = [];
   const removed: Listener[] = [];
   const target = (scope: Listener["scope"]) => ({
@@ -47,7 +47,7 @@ function stubDom(options: { visibilityState?: "visible" | "hidden"; duskDesktop?
     removeEventListener: (name: string, fn: () => void) => { removed.push({ scope, name, fn }); },
   });
   const doc = { ...target("document"), visibilityState: options.visibilityState ?? "visible" };
-  vi.stubGlobal("window", { duskDesktop: options.duskDesktop, ...target("window") });
+  vi.stubGlobal("window", { madaniDesktop: options.madaniDesktop, ...target("window") });
   vi.stubGlobal("document", doc);
   const fire = (name: string) => { for (const listener of added.filter((entry) => entry.name === name)) listener.fn(); };
   return { added, removed, doc, fire };
@@ -215,7 +215,7 @@ describe("usePresence", () => {
   });
 
   it("pings in companion client mode too, where the companion lets the route through", async () => {
-    stubDom({ duskDesktop: { remoteClient: { active: true } } });
+    stubDom({ madaniDesktop: { remoteClient: { active: true } } });
     fixture.api.mockResolvedValue({ ok: true, returned: false });
     render(loaded, vi.fn());
     await flush();

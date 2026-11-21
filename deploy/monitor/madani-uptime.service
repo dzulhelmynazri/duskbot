@@ -1,16 +1,16 @@
 [Unit]
-Description=dusk bot uptime checks
+Description=madani bot uptime checks
 After=network-online.target
 Wants=network-online.target
 
 [Service]
 Type=oneshot
-# DUSK_BREVO_API_KEY (DUSK_RESEND_API_KEY as a fallback), DUSK_ALERT_TO, DUSK_ALERT_FROM; root-owned, mode 0600
-EnvironmentFile=/etc/dusk-uptime.env
-ExecStart=/usr/bin/node /opt/dusk-uptime/uptime-check.mjs
+# MADANI_BREVO_API_KEY (MADANI_RESEND_API_KEY as a fallback), MADANI_ALERT_TO, MADANI_ALERT_FROM; root-owned, mode 0600
+EnvironmentFile=/etc/madani-uptime.env
+ExecStart=/usr/bin/node /opt/madani-uptime/uptime-check.mjs
 TimeoutStartSec=90
 DynamicUser=yes
-StateDirectory=dusk-uptime
+StateDirectory=madani-uptime
 NoNewPrivileges=yes
 ProtectSystem=strict
 ProtectHome=yes

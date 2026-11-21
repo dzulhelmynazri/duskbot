@@ -35,7 +35,7 @@ type NavItem = { to: string; label: string; icon: ReactNode };
 const NAV: Array<{ label?: string; items: NavItem[] }> = [
   { items: [
     { to: "/", label: "home", icon: <House {...ICON} /> },
-    { to: "/cloud", label: "dusk cloud", icon: <Cloud {...ICON} /> },
+    { to: "/cloud", label: "madani cloud", icon: <Cloud {...ICON} /> },
     { to: "/workspaces", label: "workspaces", icon: <Monitor {...ICON} /> },
     { to: "/bots", label: "bots", icon: <Bot {...ICON} /> },
     { to: "/connectors", label: "apps", icon: <LayoutGrid {...ICON} /> },
@@ -48,7 +48,7 @@ const NAV: Array<{ label?: string; items: NavItem[] }> = [
   ] },
 ];
 
-export const KIND_LABEL = (kind: string, cloud: CloudDesktop | null) => (cloud ? "dusk cloud" : kind === "vps" ? "your server" : kind === "mac" ? "mac" : kind === "linux" ? "linux" : "windows");
+export const KIND_LABEL = (kind: string, cloud: CloudDesktop | null) => (cloud ? "madani cloud" : kind === "vps" ? "your server" : kind === "mac" ? "mac" : kind === "linux" ? "linux" : "windows");
 
 const active = (path: string, to: string) => (to === "/" ? path === "/" : path === to || path.startsWith(`${to}/`));
 
@@ -105,7 +105,7 @@ function WorkspaceSwitcher({ onNavigate }: { onNavigate?: () => void }) {
   );
 }
 
-const ADMIN_KEY = "dusk-dash-admin";
+const ADMIN_KEY = "madani-dash-admin";
 let adminAsked: Promise<boolean> | null = null;
 
 /** the server's own admin check, asked once a visit */
@@ -135,7 +135,7 @@ function UserRow() {
   const name = account.name || (account.email.split("@")[0] ?? account.email);
   const sel = billing?.subscription?.selection;
   const license = sel && sel.license !== "personal" ? catalog?.licenses.find((l) => l.id === sel.license)?.name : null;
-  const plan = sel && sel.desktop !== "none" ? catalog?.bundles.find((b) => b.desktop === sel.desktop && b.id !== "team")?.name ?? "dusk cloud" : null;
+  const plan = sel && sel.desktop !== "none" ? catalog?.bundles.find((b) => b.desktop === sel.desktop && b.id !== "team")?.name ?? "madani cloud" : null;
   const label = (plan ? (license && plan !== "pro" ? `${plan} + work license` : plan) : license ? `${license} license` : "free").toLowerCase();
   return (
     <div ref={ref} className="relative">
@@ -170,7 +170,7 @@ function CloudBadge() {
 // the invested copy holds the card for the rest of the visit it first showed in
 let visitInvested: InvestedFacts | null = null;
 
-/** the one nudge toward dusk cloud, always there for anyone without dusk cloud */
+/** the one nudge toward madani cloud, always there for anyone without madani cloud */
 function SideUpsell() {
   const { clouds } = useCloud();
   const { path, query } = useLocation();
@@ -218,16 +218,16 @@ function SideUpsellCard() {
           <span className="shrink-0" aria-hidden><Mascot body="kit" color="blue" size={34} state="celebrate" tappable /></span>
           <div className="min-w-0">
             <h2 className="text-14 font-semibold leading-[1.3] text-ink">{investedLine(invested)}</h2>
-            <p className="mt-0.5 text-13 font-medium leading-[1.4] text-ink-2">dusk cloud keeps them working, even when your mac is off.</p>
+            <p className="mt-0.5 text-13 font-medium leading-[1.4] text-ink-2">madani cloud keeps them working, even when your mac is off.</p>
           </div>
         </div>
       ) : (
         <div className="flex items-center gap-3">
           <Mascot color="purple" body="wisp" size={34} state="sleeping" tappable />
-          <p className="min-w-0 text-13 font-medium leading-[1.4] text-ink-2">dusk cloud keeps your bots working, even when your mac is off.</p>
+          <p className="min-w-0 text-13 font-medium leading-[1.4] text-ink-2">madani cloud keeps your bots working, even when your mac is off.</p>
         </div>
       )}
-      <Button size="sm" variant="primary" className="mt-3.5 w-full" disabled={busy || !catalog} aria-busy={busy} onClick={() => { trackUpsell("click", source); void buy("starter"); }}>{busy ? "opening checkout" : invested ? "get dusk cloud" : "keep them working"}</Button>
+      <Button size="sm" variant="primary" className="mt-3.5 w-full" disabled={busy || !catalog} aria-busy={busy} onClick={() => { trackUpsell("click", source); void buy("starter"); }}>{busy ? "opening checkout" : invested ? "get madani cloud" : "keep them working"}</Button>
       {error && <p role="alert" className="mt-2 text-12 font-medium leading-[1.4] text-bad">{error}</p>}
     </m.div>
   );
@@ -280,9 +280,9 @@ function Nav({ onNavigate }: { onNavigate?: () => void }) {
 
 function Brand() {
   return (
-    <Link to="/" className="flex items-center gap-2 rounded-full px-2.5 py-1" aria-label="dusk bot, home">
+    <Link to="/" className="flex items-center gap-2 rounded-full px-2.5 py-1" aria-label="madani bot, home">
       <img src={mark} alt="" width={26} height={26} className="size-[26px]" />
-      <span className="text-[17px] font-[550] tracking-[-0.02em] text-ink">dusk bot</span>
+      <span className="text-[17px] font-[550] tracking-[-0.02em] text-ink">madani bot</span>
     </Link>
   );
 }
@@ -292,7 +292,7 @@ function Toasts() {
   return <ToastStack items={toasts.map((t) => ({ id: t.id, className: "flex max-w-[440px] items-center gap-2.5 rounded-[22px] bg-primary px-4.5 py-3 text-14 text-primary-ink", content: <>{t.tone === "bad" && <span className="size-2 shrink-0 rounded-[2px] bg-[#ff6f66]" aria-hidden />}{t.text}</> }))} />;
 }
 
-const CLOUD_PICKED = "dusk-dash-cloud-picked";
+const CLOUD_PICKED = "madani-dash-cloud-picked";
 
 /** a cloud someone just got becomes the picked workspace once; picking another one later sticks */
 function usePickNewCloud() {

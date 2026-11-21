@@ -159,7 +159,7 @@ export function DeviceSignInProgress({ auth, browserPkce = false, provider = "co
         </button>
       </div></>}
       <a href={link} target="_blank" rel="noopener noreferrer" onClick={(event) => {
-        if (window.duskDesktop?.openExternal) { event.preventDefault(); void openExternalLink(link); }
+        if (window.madaniDesktop?.openExternal) { event.preventDefault(); void openExternalLink(link); }
       }} className={browserPkce ? chatgptButton : "flex items-center justify-center gap-2 rounded-lg bg-ink px-3 py-2 text-[13px] font-semibold text-app hover:bg-ink/85"}>
         {browserPkce && <CodexMark size={16} className="fill-current" />}
         {t(browserPkce ? "engineSetup.chatgpt.start" : copy.open)} <ExternalLink size={13} />

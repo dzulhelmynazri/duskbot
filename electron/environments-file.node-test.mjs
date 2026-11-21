@@ -6,7 +6,7 @@ import { test } from "node:test";
 import { createEnvironmentsFile } from "./environments-file.mjs";
 
 function setup(text) {
-  const dir = fs.mkdtempSync(path.join(os.tmpdir(), "dusk-envs-"));
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), "madani-envs-"));
   const target = path.join(dir, "environments.json");
   if (text !== undefined) fs.writeFileSync(target, text);
   const store = createEnvironmentsFile({ file: () => target, fs, path, now: () => 42 });

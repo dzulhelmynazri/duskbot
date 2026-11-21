@@ -1,4 +1,4 @@
-// Sign-in to dusk bot's own OAuth apps (shared/native-connectors.json): a device code (RFC 8628) the person types on the
+// Sign-in to madani bot's own OAuth apps (shared/native-connectors.json): a device code (RFC 8628) the person types on the
 // vendor's page, or the vendor's page sending the browser back to this computer's loopback address with PKCE (RFC 8252).
 // Neither needs an app review for the scopes listed there. GitHub App device tokens refresh with the client id alone;
 // Google's installed-app secret is not confidential (Google's OAuth docs), so a release may carry it.
@@ -15,11 +15,11 @@ export interface DeviceClient {
 export type DeviceClients = Record<string, DeviceClient | null>;
 
 /** JSON of the client values, set by scripts/bundle-server.mjs from the release environment; absent from source. */
-declare const DUSK_BUILD_DEVICE_CLIENTS: string | undefined;
+declare const MADANI_BUILD_DEVICE_CLIENTS: string | undefined;
 
 function built(): Record<string, string> {
   try {
-    return typeof DUSK_BUILD_DEVICE_CLIENTS === "string" ? JSON.parse(DUSK_BUILD_DEVICE_CLIENTS) as Record<string, string> : {};
+    return typeof MADANI_BUILD_DEVICE_CLIENTS === "string" ? JSON.parse(MADANI_BUILD_DEVICE_CLIENTS) as Record<string, string> : {};
   } catch {
     return {};
   }
@@ -91,7 +91,7 @@ const scope = (connector: NativeConnector) => connector.scopes.join(connector.sc
 /** Where every vendor's page sends the browser back: one fixed address registered with each OAuth app, whatever port
  * this computer's server is on. It reads the port from the state and sends the browser on to this server's callback
  * (apps/link-service/src/app-token-callback.mjs). */
-export const APP_TOKENS_REDIRECT = "https://link.dusk.bot/oauth/app-tokens";
+export const APP_TOKENS_REDIRECT = "https://link.madani.bot/oauth/app-tokens";
 
 export async function startDevice(connector: NativeConnector, client: DeviceClient, fetchImpl: typeof fetch = fetch): Promise<DeviceCode> {
   if (!connector.deviceUrl) throw new Error(`${connector.label} has no device sign-in.`);

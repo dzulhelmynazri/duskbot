@@ -40,7 +40,7 @@ describe("the ports a companion launches on", () => {
 
 describe("the phone companion's folder", () => {
   it("is the usual one for the packaged app and its own per port for a dev app", () => {
-    expect(companionFolder({ home: "/Users/me", harnessPort: 18799, packaged: true })).toBe("/Users/me/.duskbot-companion");
-    expect(companionFolder({ home: "/Users/me", harnessPort: 8811, packaged: false })).toBe("/Users/me/.duskbot-companion/dev-8811");
+    expect(companionFolder({ home: "/Users/me", harnessPort: 18799, packaged: true })).toBe("/Users/me/.madanibot-companion");
+    expect(companionFolder({ home: "/Users/me", harnessPort: 8811, packaged: false })).toBe("/Users/me/.madanibot-companion/dev-8811");
   });
 });

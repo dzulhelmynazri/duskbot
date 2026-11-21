@@ -32,7 +32,7 @@ describe("statusCallText", () => {
   const status = JSON.stringify({ status: "comparing keyboard reviews" });
 
   it("reads the call under every engine's spelling", () => {
-    for (const title of ["set_status", "mcp__agents__set_status", "agents__set_status", "agents_set_status", "mcp__dusk-agents__set_status"]) {
+    for (const title of ["set_status", "mcp__agents__set_status", "agents__set_status", "agents_set_status", "mcp__madani-agents__set_status"]) {
       expect(statusCallText(title, status)).toBe("comparing keyboard reviews");
       expect(isStatusToolName(title)).toBe(true);
     }

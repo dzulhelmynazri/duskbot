@@ -3,7 +3,7 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it, vi } from "vitest";
 
 import { StoreProvider, type Bot } from "@/state/store";
-import { DUSK_BODY_IDS, DUSK_BODY_NAMES } from "../../shared/body-migration";
+import { MADANI_BODY_IDS, MADANI_BODY_NAMES } from "../../shared/body-migration";
 import { BotProfileAvatarCard } from "./BotProfileAvatarCard";
 
 function makeBot(overrides: Partial<Bot> = {}): Bot {
@@ -42,8 +42,8 @@ describe("BotProfileAvatarCard body picker", () => {
     const markup = renderCard(makeBot());
 
     expect(markup).toContain(">Body<");
-    for (const id of DUSK_BODY_IDS) {
-      expect(markup).toContain(`aria-label="Use the ${DUSK_BODY_NAMES[id]} body"`);
+    for (const id of MADANI_BODY_IDS) {
+      expect(markup).toContain(`aria-label="Use the ${MADANI_BODY_NAMES[id]} body"`);
     }
   });
 
@@ -51,22 +51,22 @@ describe("BotProfileAvatarCard body picker", () => {
     const markup = renderCard(makeBot({ mascotBody: "witch" }));
 
     expect(markup).not.toContain(">Halloween<");
-    expect(markup.match(/aria-label="Use the [^"]+ body"/g)).toHaveLength(DUSK_BODY_IDS.length);
-    expect(markup).toContain(`aria-pressed="true" aria-label="Use the ${DUSK_BODY_NAMES.drip} body"`);
+    expect(markup.match(/aria-label="Use the [^"]+ body"/g)).toHaveLength(MADANI_BODY_IDS.length);
+    expect(markup).toContain(`aria-pressed="true" aria-label="Use the ${MADANI_BODY_NAMES.drip} body"`);
   });
 
   it("marks the current body pressed and the rest unpressed, defaulting to kit", () => {
     const markup = renderCard(makeBot());
 
-    expect(markup).toContain(`aria-pressed="true" aria-label="Use the ${DUSK_BODY_NAMES.kit} body"`);
-    expect(markup).toContain(`aria-pressed="false" aria-label="Use the ${DUSK_BODY_NAMES.starry} body"`);
+    expect(markup).toContain(`aria-pressed="true" aria-label="Use the ${MADANI_BODY_NAMES.kit} body"`);
+    expect(markup).toContain(`aria-pressed="false" aria-label="Use the ${MADANI_BODY_NAMES.starry} body"`);
   });
 
   it("reflects an explicitly chosen body", () => {
     const markup = renderCard(makeBot({ mascotBody: "starry" }));
 
-    expect(markup).toContain(`aria-pressed="true" aria-label="Use the ${DUSK_BODY_NAMES.starry} body"`);
-    expect(markup).toContain(`aria-pressed="false" aria-label="Use the ${DUSK_BODY_NAMES.loaf} body"`);
+    expect(markup).toContain(`aria-pressed="true" aria-label="Use the ${MADANI_BODY_NAMES.starry} body"`);
+    expect(markup).toContain(`aria-pressed="false" aria-label="Use the ${MADANI_BODY_NAMES.loaf} body"`);
   });
 
   it("offers zoom and drag framing for a custom image", () => {
@@ -90,7 +90,7 @@ describe("BotProfileAvatarCard body picker", () => {
     const markup = renderCard(makeBot({ avatarCrop: "circle" }));
 
     expect(markup).not.toContain(">Body<");
-    expect(markup).not.toContain(`aria-label="Use the ${DUSK_BODY_NAMES.loaf} body"`);
+    expect(markup).not.toContain(`aria-label="Use the ${MADANI_BODY_NAMES.loaf} body"`);
   });
 
   it("hides the body picker for every flat crop, not just circle", () => {

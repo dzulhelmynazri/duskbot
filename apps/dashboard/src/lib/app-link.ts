@@ -3,13 +3,13 @@ import { DOWNLOAD_URL } from "./usage";
 
 /** the links the desktop app answers (electron/chat-link.mjs, electron/cloud-entry.mjs); the bare scheme only brings the app forward */
 export const appLink = {
-  app: "duskbot://",
-  bot: (id: string) => `duskbot://bot/${encodeURIComponent(id)}`,
-  cloud: "duskbot://cloud",
+  app: "madanibot://",
+  bot: (id: string) => `madanibot://bot/${encodeURIComponent(id)}`,
+  cloud: "madanibot://cloud",
   /** the app's Connect Apps window on this app's page, in whichever place the app has open */
-  connect: (appId: string) => `duskbot://apps/${encodeURIComponent(appId)}`,
-  /** a server the app linked here opens with its move to dusk cloud (electron/server-enroll.mjs); an id, never an address */
-  serverMove: (workspaceId: string) => `duskbot://cloud-move/${encodeURIComponent(workspaceId)}`,
+  connect: (appId: string) => `madanibot://apps/${encodeURIComponent(appId)}`,
+  /** a server the app linked here opens with its move to madani cloud (electron/server-enroll.mjs); an id, never an address */
+  serverMove: (workspaceId: string) => `madanibot://cloud-move/${encodeURIComponent(workspaceId)}`,
 };
 
 const GIVE_UP_MS = 1600;
@@ -25,6 +25,6 @@ export function openApp(link: string, then?: string) {
   setTimeout(() => {
     window.removeEventListener("blur", leave);
     document.removeEventListener("visibilitychange", leave);
-    if (!left && document.hasFocus()) toast(`dusk bot did not open. get it at ${DOWNLOAD_URL.replace("https://", "")}, then try again.`, "bad");
+    if (!left && document.hasFocus()) toast(`madani bot did not open. get it at ${DOWNLOAD_URL.replace("https://", "")}, then try again.`, "bad");
   }, GIVE_UP_MS);
 }

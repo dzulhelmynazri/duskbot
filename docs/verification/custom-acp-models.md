@@ -22,7 +22,7 @@ cannot pass.
 The test requires catalog refresh to expose the model labels, model-specific
 thinking options and capability without sending a prompt. It saves independent
 defaults on two bots and an explicit override on a sibling thread, then sends
-through `control-dusk send`, `wait` and `messages` with the fixture URL explicitly
+through `control-madani send`, `wait` and `messages` with the fixture URL explicitly
 pinned. The fake ACP process records only model settings, session IDs and
 synthetic request markers. Its reply includes the effective model and thought
 level, so an auxiliary call or merely successful settings save cannot satisfy
@@ -71,7 +71,7 @@ bot still used `agent-default`. All four synthetic provider identities were
 visible in the picker. These screenshots show the implemented feature against
 the offline fixture; they are not screenshots of installed provider accounts.
 
-These checks do not establish a packaged desktop launch. The isolated E2E establishes dusk bot persistence
+These checks do not establish a packaged desktop launch. The isolated E2E establishes madani bot persistence
 and actual ACP transport against a fake agent; acceptance by an installed
 provider must be reported separately, with the exact model ID and supported
 options advertised by that provider. A failing or skipped provider check is

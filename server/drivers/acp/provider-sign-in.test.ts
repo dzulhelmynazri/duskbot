@@ -50,7 +50,7 @@ describe.skipIf(process.platform === "win32")("signing in in the background", ()
   };
 
   beforeEach(() => {
-    home = mkdtempSync(join(tmpdir(), "dusk-provider-sign-in-"));
+    home = mkdtempSync(join(tmpdir(), "madani-provider-sign-in-"));
     controllers = [];
   });
   afterEach(async () => {

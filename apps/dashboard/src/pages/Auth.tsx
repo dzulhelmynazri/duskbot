@@ -21,11 +21,11 @@ const REASON: Record<string, string> = {
   signup_closed: "there's no account for this email, and new accounts aren't open yet.",
   device_limit: "this account is signed in on too many devices. sign out somewhere else and try again.",
   rate_limited: "too many tries. wait a minute, then try again.",
-  offline: "can't reach dusk bot. check your connection and try again.",
+  offline: "can't reach madani bot. check your connection and try again.",
 };
 
 const OAUTH: IdentityProvider[] = ["google", "apple"];
-const SUPPORT = "hello@dusk.bot";
+const SUPPORT = "hello@madani.bot";
 const LINK_ATTEMPT = /^[A-Za-z0-9_-]{43}$/;
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const SLOW_MS = 5000;
@@ -38,7 +38,7 @@ const OAUTH_ERROR: Record<string, string> = {
   oauth_expired: "that sign-in took too long. start again.",
   provider_unavailable: "that sign-in option isn't available right now. use your email instead.",
   signup_closed: "new accounts aren't open yet.",
-  identity_taken: "that account is already linked to another dusk bot account. sign in with it instead.",
+  identity_taken: "that account is already linked to another madani bot account. sign in with it instead.",
 };
 
 type Mode = "signin" | "signup";
@@ -87,7 +87,7 @@ function CodeBoxes({ input, boxes, length, value, onChange, invalid, disabled, o
 
 const CARD_ROWS: Array<[string, "blue" | "pink" | "orange", string, string]> = [
   ["kit", "blue", "see them work", "every bot, live, wherever it runs."],
-  ["hearty", "pink", "keep them on", "dusk cloud runs your routines while you sleep."],
+  ["hearty", "pink", "keep them on", "madani cloud runs your routines while you sleep."],
   ["boxo", "orange", "text them anywhere", "the same bots, from your phone."],
 ];
 
@@ -170,7 +170,7 @@ export function AuthScreen({ mode, note, forApp = false }: { mode: Mode; note?: 
   // the browser's back button on the code step returns to the email, and forward goes back to the code
   useEffect(() => {
     const pop = () => {
-      const marked = (window.history.state as { duskAuth?: string } | null)?.duskAuth === "code";
+      const marked = (window.history.state as { madaniAuth?: string } | null)?.madaniAuth === "code";
       const now = live.current;
       if (marked && now.attempt && now.step !== "done") setStep("code");
       else if (!marked && now.step === "code") { setStep(now.recovering ? "recover" : "start"); setError(null); }
@@ -183,12 +183,12 @@ export function AuthScreen({ mode, note, forApp = false }: { mode: Mode; note?: 
   const fail = (e: unknown) => { setError(reason(e)); setOops((n) => n + 1); };
   const enabled = (p: IdentityProvider) => providers === null ? true : providers.some((x) => x.id === p && x.enabled);
   const toCode = () => {
-    if ((window.history.state as { duskAuth?: string } | null)?.duskAuth !== "code") window.history.pushState({ ...(window.history.state as object | null), duskAuth: "code" }, "");
+    if ((window.history.state as { madaniAuth?: string } | null)?.madaniAuth !== "code") window.history.pushState({ ...(window.history.state as object | null), madaniAuth: "code" }, "");
     setStep("code");
   };
   const leaveCode = () => {
     setStep(recovering ? "recover" : "start"); setError(null);
-    if ((window.history.state as { duskAuth?: string } | null)?.duskAuth === "code") window.history.back();
+    if ((window.history.state as { madaniAuth?: string } | null)?.madaniAuth === "code") window.history.back();
   };
 
   const send = async (recover = recovering, again = false) => {
@@ -210,7 +210,7 @@ export function AuthScreen({ mode, note, forApp = false }: { mode: Mode; note?: 
     try {
       const r = await api.verify(attempt, value.replace(/\D/g, ""));
       // a phone sign-in that needed an email goes back to the app with its one-time code
-      if (r.redirect?.startsWith("duskbot://auth?")) { window.location.assign(r.redirect); return; }
+      if (r.redirect?.startsWith("madanibot://auth?")) { window.location.assign(r.redirect); return; }
       // the desktop app's sign-in that needed an email: the page that opens the app and says so
       if (r.redirect && new URL(r.redirect, window.location.origin).pathname.endsWith(APP_LANDING_PATH)) { window.location.assign(r.redirect); return; }
       // a brand-new account goes straight into onboarding, without the signed-in beat in between
@@ -233,7 +233,7 @@ export function AuthScreen({ mode, note, forApp = false }: { mode: Mode; note?: 
     if (!FIXTURE) { window.location.assign(api.oauthUrl(p, mode, { next: home })); return; }
     // fixtures have no provider page to bounce through: sign the demo account in
     setBusy(p);
-    try { const s = await api.start("sid@duskbot.test", mode); const r = await api.verify(s.attempt, "123456"); enter(r.account, intent ? home : "/"); }
+    try { const s = await api.start("sid@madanibot.test", mode); const r = await api.verify(s.attempt, "123456"); enter(r.account, intent ? home : "/"); }
     catch (e) { fail(e); } finally { setBusy(null); }
   };
   const wait = Math.max(0, Math.ceil((resendAt - Date.now()) / 1000));
@@ -252,7 +252,7 @@ export function AuthScreen({ mode, note, forApp = false }: { mode: Mode; note?: 
       mood={mood}
       scene={scene}
       card={<SceneCard />}
-      aside={<a href={SITE_URL} className="text-link -me-2 inline-flex h-11 items-center gap-1.5 rounded-full px-2 text-14"><ArrowLeft size={15} strokeWidth={1.75} aria-hidden />back to {SITE_NAME === "dusk.bot" ? SITE_NAME : "the site"}</a>}
+      aside={<a href={SITE_URL} className="text-link -me-2 inline-flex h-11 items-center gap-1.5 rounded-full px-2 text-14"><ArrowLeft size={15} strokeWidth={1.75} aria-hidden />back to {SITE_NAME === "madani.bot" ? SITE_NAME : "the site"}</a>}
       foot={signup ? <>by continuing you agree to the <a href={siteUrl("/terms")} className={LINK}>terms</a> and <a href={siteUrl("/privacy")} className={LINK}>privacy policy</a>.</> : "your chats and files stay on your own computers."}
     >
       {step === "done" ? (
@@ -264,7 +264,7 @@ export function AuthScreen({ mode, note, forApp = false }: { mode: Mode; note?: 
         <div key="start" className="step-in">
           {intent && <p className="mb-4 flex items-center gap-2"><span className="tag !bg-lime !text-ink">{intent.plan === "starter" ? "plus" : "pro"} plan{intent.interval ? `, ${intent.interval}ly` : ""}</span><a href={siteUrl("/#pricing")} className={cx(LINK, "text-13")}>change</a></p>}
           <h1 className="t-title">{forApp ? "sign in or make your account." : signup ? "create your account." : "welcome back."}</h1>
-          <p className="mt-3 text-16 text-ink-2">{forApp ? "new or returning, the same email works. the app signs in by itself when you're done." : intent ? "an account first, then checkout. your dusk cloud is ready in about a minute." : signup ? "free on your own computer. one account for the app, your phone and dusk cloud." : "sign in to see your bots, wherever they live."}</p>
+          <p className="mt-3 text-16 text-ink-2">{forApp ? "new or returning, the same email works. the app signs in by itself when you're done." : intent ? "an account first, then checkout. your madani cloud is ready in about a minute." : signup ? "free on your own computer. one account for the app, your phone and madani cloud." : "sign in to see your bots, wherever they live."}</p>
           {note && <div className="mt-4 rounded-[16px] bg-lemon px-4 py-3 text-14 leading-[1.5] text-ink">{note}</div>}
           {pending && <div className="mt-4 rounded-[16px] bg-lemon px-4 py-3 text-14 leading-[1.5] text-ink">one more step: your provider didn't share an email, so enter the one you want to sign in with.</div>}
           <div className="mt-7 flex flex-col gap-2">

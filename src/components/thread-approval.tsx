@@ -16,11 +16,11 @@ export function useThreadApproval(bot: Bot | undefined): { choice: ApprovalChoic
   const { state, dispatch } = useStore();
   const { capabilities } = useDesktopCapabilities();
   const ownerOrAdmin = useOwnerOrAdmin();
-  const remoteClient = window.duskDesktop?.remoteClient?.active === true;
+  const remoteClient = window.madaniDesktop?.remoteClient?.active === true;
   const [warning, setWarning] = useState<{ botId: string; threadId: string } | null>(null);
   const [allowlist, setAllowlist] = useState<{ botId: string; botName: string; threadId: string } | null>(null);
   const engine = bot ? state.instances.find((instance) => instance.instanceId === bot.modelSelection.instanceId) : undefined;
-  const trusted = Boolean(!remoteClient && window.duskDesktop?.approvals && capabilities.host.packaged);
+  const trusted = Boolean(!remoteClient && window.madaniDesktop?.approvals && capabilities.host.packaged);
   const onSelect = (mode: ApprovalMode) => {
     if (!bot || mode === approvalModeFor(bot)) return;
     if (mode === "custom" && !trusted) return;

@@ -122,7 +122,7 @@ export function createAmbientWindow({ BrowserWindow, surface, url, level, platfo
       acceptFirstMouse: true,
       hiddenInMissionControl: true,
       enableLargerThanScreen: true,
-      title: surface === "island" ? "dusk bot island" : "dusk bot dock",
+      title: surface === "island" ? "madani bot island" : "madani bot dock",
       webPreferences: {
         contextIsolation: true,
         sandbox: true,
@@ -131,7 +131,7 @@ export function createAmbientWindow({ BrowserWindow, surface, url, level, platfo
         // its closing and opening play in full even while macOS reorders the panel
         backgroundThrottling: false,
         preload: PRELOAD,
-        additionalArguments: [`--dusk-ambient=${surface}`, ...(trace ? ["--dusk-ambient-trace=1"] : [])],
+        additionalArguments: [`--madani-ambient=${surface}`, ...(trace ? ["--madani-ambient-trace=1"] : [])],
       },
     });
     overlays.add(target);

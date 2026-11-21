@@ -1,10 +1,10 @@
 {
   "path": "/alternatives/openclaw-hosting",
   "type": "alternative",
-  "title": "OpenClaw hosting: managed offers versus dusk cloud",
+  "title": "OpenClaw hosting: managed offers versus madani cloud",
   "nav": "openclaw hosting",
   "h1": "openclaw hosting or a different cloud bot app?",
-  "description": "Compare Hostinger and Elestio managed OpenClaw with dusk cloud: promotional rates, renewal costs, included care and the decisions that remain yours.",
+  "description": "Compare Hostinger and Elestio managed OpenClaw with madani cloud: promotional rates, renewal costs, included care and the decisions that remain yours.",
   "keyword": "openclaw hosting",
   "keywords": [
     "managed openclaw",
@@ -13,7 +13,7 @@
     "openclaw hosted",
     "openclaw mac mini"
   ],
-  "answer": "**get your weekends back without giving up openclaw.** managed hosting keeps the assistant you chose and hands server care to someone else. dusk cloud runs a different product: dusk bots, chats, memory and routines. choose the assistant first, then compare renewal rates and ai charges. the opening rate is only part of what you'll pay.[^1][^2][^3][^4]",
+  "answer": "**get your weekends back without giving up openclaw.** managed hosting keeps the assistant you chose and hands server care to someone else. madani cloud runs a different product: madani bots, chats, memory and routines. choose the assistant first, then compare renewal rates and ai charges. the opening rate is only part of what you'll pay.[^1][^2][^3][^4]",
   "updated": "2026-11-12",
   "review": {
     "status": "approved",
@@ -52,9 +52,9 @@
       "**keep openclaw's channels and skills.** let a host handle server care.",
       "**pay for upkeep rather than a product move.** you already want the open-source project."
     ],
-    "dusk": [
-      "**keep named dusk bots.** each has its own chats on your dedicated hosted computer.",
-      "**move existing dusk work off your laptop.** bring chats, memory and routines to dusk cloud."
+    "madani": [
+      "**keep named madani bots.** each has its own chats on your dedicated hosted computer.",
+      "**move existing madani work off your laptop.** bring chats, memory and routines to madani cloud."
     ]
   },
   "compare": {
@@ -63,7 +63,7 @@
     "cols": [
       "Hostinger managed OpenClaw",
       "Elestio managed OpenClaw",
-      "dusk cloud"
+      "madani cloud"
     ],
     "rows": [
       {
@@ -71,7 +71,7 @@
         "cells": [
           "third-party hosted openclaw",
           "fully managed openclaw instance",
-          "dusk bots on your own hosted machine"
+          "madani bots on your own hosted machine"
         ],
         "src": [
           1,
@@ -111,7 +111,7 @@
         "cells": [
           "one-click install, according to hostinger",
           "fully managed deployment in minutes, according to elestio",
-          "pick a plan and sign in under settings, dusk cloud; docs say about a minute"
+          "pick a plan and sign in under settings, madani cloud; docs say about a minute"
         ],
         "src": [
           1,
@@ -124,7 +124,7 @@
         "cells": [
           "hostinger says it handles security, updates and backups",
           "elestio says it handles encryption, monitoring, os updates and backups",
-          "dusk hosts and looks after the computer, with daily backups"
+          "madani hosts and looks after the computer, with daily backups"
         ],
         "src": [
           1,
@@ -137,7 +137,7 @@
         "cells": [
           "on hostinger's servers",
           "managed instance on a cloud of your choice",
-          "your own computer hosted by dusk, not shared"
+          "your own computer hosted by madani, not shared"
         ],
         "src": [
           1,
@@ -161,19 +161,19 @@
       }
     ]
   },
-  "method": "**compare the bill and the upkeep each host says it handles.** we sell dusk cloud. hostinger and elestio offers were checked on 12 november 2026.\n\nmaintenance descriptions come from the hosts. we didn't test uptime, run matching jobs or benchmark machines. the prices show what you pay for hosting; task costs also depend on ai usage.",
+  "method": "**compare the bill and the upkeep each host says it handles.** we sell madani cloud. hostinger and elestio offers were checked on 12 november 2026.\n\nmaintenance descriptions come from the hosts. we didn't test uptime, run matching jobs or benchmark machines. the prices show what you pay for hosting; task costs also depend on ai usage.",
   "sections": [
     {
       "h": "read the term beside the rate",
-      "md": "**$4.99 monthly asks for $119.76 up front.** hostinger's promotion covers a 24-month term and renews at $11.99 monthly. those terms are from 12 november 2026; region and date can change them.[^1]\n\nelestio starts at $16 monthly, including compute, storage, bandwidth, updates and backups.[^2]\n\ndusk cloud plus costs $20 monthly or $200 yearly. pro costs $50 monthly or $500 yearly and includes one person's work license.[^4] ai usage costs extra.[^5] use the [cost tool](/tools/always-on-cost) with both bills in mind."
+      "md": "**$4.99 monthly asks for $119.76 up front.** hostinger's promotion covers a 24-month term and renews at $11.99 monthly. those terms are from 12 november 2026; region and date can change them.[^1]\n\nelestio starts at $16 monthly, including compute, storage, bandwidth, updates and backups.[^2]\n\nmadani cloud plus costs $20 monthly or $200 yearly. pro costs $50 monthly or $500 yearly and includes one person's work license.[^4] ai usage costs extra.[^5] use the [cost tool](/tools/always-on-cost) with both bills in mind."
     },
     {
       "h": "managed doesn't choose what the agent may touch",
-      "md": "**pay the host to patch the server; choose the agent's reach yourself.** hostinger and elestio describe handling security and backups.[^1][^2] openclaw's skills and plugins still need your judgement.[^6] use the [safety guide](/guides/is-openclaw-safe) before adding them.\n\nin dusk, start a new bot with read only access.[^7] for app edits later, put 'ask me before changing anything' into the routine.[^7]"
+      "md": "**pay the host to patch the server; choose the agent's reach yourself.** hostinger and elestio describe handling security and backups.[^1][^2] openclaw's skills and plugins still need your judgement.[^6] use the [safety guide](/guides/is-openclaw-safe) before adding them.\n\nin madani, start a new bot with read only access.[^7] for app edits later, put 'ask me before changing anything' into the routine.[^7]"
     },
     {
       "h": "choose the assistant before the server",
-      "md": "**if openclaw fits, hosting may be all you need.** its [desktop installers](/alternatives/openclaw-no-setup) also reduce setup work.[^8]\n\ndusk cloud moves existing dusk chats, memory and routines.[^4] moving from openclaw means rebuilding the jobs, instructions and schedules in dusk; there's no importer.\n\nlook at the finished job, even when someone else handles the machine. server backups cover the server; don't count on them to restore every connected service."
+      "md": "**if openclaw fits, hosting may be all you need.** its [desktop installers](/alternatives/openclaw-no-setup) also reduce setup work.[^8]\n\nmadani cloud moves existing madani chats, memory and routines.[^4] moving from openclaw means rebuilding the jobs, instructions and schedules in madani; there's no importer.\n\nlook at the finished job, even when someone else handles the machine. server backups cover the server; don't count on them to restore every connected service."
     }
   ],
   "faq": [
@@ -187,7 +187,7 @@
     },
     {
       "q": "do i need to buy a mac mini to keep an agent running?",
-      "a": "**no, these routes use hosted servers.** dusk cloud keeps bots available with your computer off too. a mac mini has purchase and power costs outside this comparison.[^1][^2][^4]"
+      "a": "**no, these routes use hosted servers.** madani cloud keeps bots available with your computer off too. a mac mini has purchase and power costs outside this comparison.[^1][^2][^4]"
     }
   ],
   "sources": [
@@ -207,11 +207,11 @@
       "checked": "2026-11-12"
     },
     {
-      "label": "dusk cloud plans, care and moving bots",
-      "url": "/docs/dusk-cloud"
+      "label": "madani cloud plans, care and moving bots",
+      "url": "/docs/madani-cloud"
     },
     {
-      "label": "dusk separate ai billing",
+      "label": "madani separate ai billing",
       "url": "/docs/account-and-billing"
     },
     {
@@ -220,7 +220,7 @@
       "checked": "2026-11-12"
     },
     {
-      "label": "dusk connected apps and permissions",
+      "label": "madani connected apps and permissions",
       "url": "/docs/files-and-apps"
     },
     {
@@ -231,7 +231,7 @@
   ],
   "quick": {
     "steps": [
-      "write down whether you need openclaw or dusk bots",
+      "write down whether you need openclaw or madani bots",
       "open the host's full payment terms",
       "note the upfront bill and renewal rate",
       "add ai charges before comparing the monthly totals"
@@ -259,8 +259,8 @@
         "managed openclaw"
       ],
       [
-        "existing dusk bots working with your laptop off",
-        "dusk cloud"
+        "existing madani bots working with your laptop off",
+        "madani cloud"
       ],
       [
         "an easier openclaw installation",

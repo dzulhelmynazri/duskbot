@@ -4,8 +4,8 @@
   "title": "X AI assistant for mentions, source lists and post drafts",
   "nav": "x (twitter)",
   "h1": "an x assistant that brings the conversation to you",
-  "description": "Use dusk bot with X for mention reviews, source lists and post preparation. See the custom connection requirement and what needs approval.",
-  "answer": "**get the product questions buried in your mentions brought to your chat.** dusk's twitter toolkit can collect mentions, read list posts and prepare replies. it needs your own composio project key and sign-in setup; there's no managed sign-in. keep research read only once connected. the bot brings you questions worth answering, and you review public posts before they go out.",
+  "description": "Use madani bot with X for mention reviews, source lists and post preparation. See the custom connection requirement and what needs approval.",
+  "answer": "**get the product questions buried in your mentions brought to your chat.** madani's twitter toolkit can collect mentions, read list posts and prepare replies. it needs your own composio project key and sign-in setup; there's no managed sign-in. keep research read only once connected. the bot brings you questions worth answering, and you review public posts before they go out.",
   "tags": [
     "social",
     "mentions",
@@ -31,7 +31,7 @@
   "app": {
     "name": "X",
     "toolkit": "twitter",
-    "intro": "**choose whose posts matter before asking for a reply.**\n\na focused source list is easier to review than an open-ended feed. say what kind of question deserves your attention. the bot can gather source posts before suggesting a reply in your dusk bot chat.",
+    "intro": "**choose whose posts matter before asking for a reply.**\n\na focused source list is easier to review than an open-ended feed. say what kind of question deserves your attention. the bot can gather source posts before suggesting a reply in your madani bot chat.",
     "highlight": [
       {
         "slug": "TWITTER_GET_USER_BY_ID",
@@ -60,7 +60,7 @@
     ],
     "setup": "**x needs your own composio connection.** as of 12 november 2026, this toolkit has no composio-managed sign-in. add your own project key and auth config under **settings**, **api keys**. then ask the bot which x account it can see before saving a routine."
   },
-  "routines_intro": "**let the bot do the reading before you decide what deserves a reply.** gather mentions, read a specialist list or draft a follow-up in dusk chat. these routines don't publish.",
+  "routines_intro": "**let the bot do the reading before you decide what deserves a reply.** gather mentions, read a specialist list or draft a follow-up in madani chat. these routines don't publish.",
   "routines": [
     {
       "name": "mentions that deserve an answer",
@@ -81,12 +81,12 @@
       "output": "one proposed follow-up for you to review"
     }
   ],
-  "asks": "**you choose which questions get a public answer.** posts and messages ask first by default. a daily sending amount lets them go out within that limit.\n\ncareful with **Full access**: a bot there with no sending rule can send up to 25 a day without asking. give it **Ask every time**.[^3]\n\nlikes, retweets and bookmarks count as sends too. follows, mutes and list changes don't ask first. leave those disabled for research, or add 'ask me before changing anything'.\n\nuse posts returned by mention, account-post and list reads for these routines. search and opening an individual post don't work through read only access. dusk counts opening a post as a send.",
+  "asks": "**you choose which questions get a public answer.** posts and messages ask first by default. a daily sending amount lets them go out within that limit.\n\ncareful with **Full access**: a bot there with no sending rule can send up to 25 a day without asking. give it **Ask every time**.[^3]\n\nlikes, retweets and bookmarks count as sends too. follows, mutes and list changes don't ask first. leave those disabled for research, or add 'ask me before changing anything'.\n\nuse posts returned by mention, account-post and list reads for these routines. search and opening an individual post don't work through read only access. madani counts opening a post as a send.",
   "cannot": [
     "**there's no managed sign-in.** your custom composio connection must work before a routine can use x.",
     "**mention alerts run on your schedule.** there's no x event trigger for instant alerts.",
     "**read only blocks publication and follows.** researching a topic doesn't grant permission to engage.",
-    "**keep the reading going while you're away.** local routines pause when the computer sleeps or the app closes. dusk cloud keeps the schedule running."
+    "**keep the reading going while you're away.** local routines pause when the computer sleeps or the app closes. madani cloud keeps the schedule running."
   ],
   "sections": [
     {
@@ -100,7 +100,7 @@
   ],
   "faq": [
     {
-      "q": "can claude automate twitter through dusk bot?",
+      "q": "can claude automate twitter through madani bot?",
       "a": "**yes, after the custom connection works.** a bot using your chosen ai can call the listed actions. connected apps still calls it twitter. setup comes before scheduling."
     },
     {
@@ -114,15 +114,15 @@
   ],
   "sources": [
     {
-      "label": "dusk bot docs: files and apps",
+      "label": "madani bot docs: files and apps",
       "url": "/docs/files-and-apps"
     },
     {
-      "label": "dusk bot docs: routines",
+      "label": "madani bot docs: routines",
       "url": "/docs/routines"
     },
     {
-      "label": "dusk bot docs: sending and permissions",
+      "label": "madani bot docs: sending and permissions",
       "url": "/docs/computer"
     }
   ],

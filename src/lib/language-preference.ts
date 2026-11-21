@@ -1,7 +1,7 @@
 import { useEffect, useState, useSyncExternalStore } from "react";
 import { loadLocale } from "@/lib/i18n";
 
-export const LANGUAGE_KEY = "dusk-language";
+export const LANGUAGE_KEY = "madani-language";
 
 let sessionChoice: string | null | undefined;
 let storedChoiceOffered = false;
@@ -17,7 +17,7 @@ function storage(): Storage | undefined {
 
 // Storage is per origin: this computer's page on each of its ports, My Cloud, a team and a saved server each have
 // their own, so in the desktop app the choice lives in the app.
-const desktop = () => globalThis.window?.duskDesktop?.desktopLanguage;
+const desktop = () => globalThis.window?.madaniDesktop?.desktopLanguage;
 
 function storedChoice(): string | null {
   try {

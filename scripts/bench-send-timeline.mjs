@@ -3,9 +3,9 @@
 // the owner's server took 6.9 s to answer a "hi" to a bot with no AI chosen; the working row must not wait on it.
 //   node --experimental-strip-types scripts/bench-send-timeline.mjs [--samples 4] [--post-delay 6900]
 import { parseArgs } from "node:util";
-import { launchVerificationServer, runControlDusk } from "./control-dusk.ts";
+import { launchVerificationServer, runControlMadani } from "./control-madani.ts";
 import { fixtureApi, mountPreview } from "./testing/preview-fixture.ts";
-import { agentBrowser, ensureUiBrowser, sessionEnv } from "./testing/control-dusk-ui.ts";
+import { agentBrowser, ensureUiBrowser, sessionEnv } from "./testing/control-madani-ui.ts";
 import { closeBrowserSession } from "../server/browser-engine.ts";
 
 const { values } = parseArgs({ options: { samples: { type: "string", default: "4" }, "post-delay": { type: "string", default: "0" } } });
@@ -26,7 +26,7 @@ const waitUntil = async (ready, ms = 30_000) => {
 };
 const round = (value) => value === null || value === undefined ? null : Math.round(value);
 try {
-  const created = await runControlDusk(["new-bot", "--name", "Pepper", "--url", fixture.info.url]);
+  const created = await runControlMadani(["new-bot", "--name", "Pepper", "--url", fixture.info.url]);
   const { bots } = await api("GET", "/api/bots?messages=0");
   const bot = bots.find((candidate) => candidate.id === created.bot.id);
   if (!bot?.threadId) throw new Error("fixture bot has no thread");
@@ -66,7 +66,7 @@ try {
     await browser(["type", box, `Timeline fixture ${i}`]);
     await browser(["press", "Enter"]);
     await waitUntil(async () => (await browser(["eval", `Boolean(window.__timeline.runs[${i}]?.reply)`])).result);
-    await runControlDusk(["wait", "--bot", bot.id, "--timeout", "30", "--url", fixture.info.url]);
+    await runControlMadani(["wait", "--bot", bot.id, "--timeout", "30", "--url", fixture.info.url]);
     await waitUntil(async () => !(await browser(["eval", `Boolean(document.querySelector('.turn-presence'))`])).result, 10_000);
   }
   const { result } = await browser(["eval", "window.__timeline.runs.map((r) => ({ bubble: r.bubble - r.enter, row: r.row === null ? null : r.row - r.enter, reply: r.reply - r.enter }))"]);

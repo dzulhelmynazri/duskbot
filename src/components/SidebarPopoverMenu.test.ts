@@ -50,7 +50,7 @@ it("lets a sentence wrap instead of cutting it short, with its icon on the first
 
 it("puts what a one-line row leaves out in its tooltip, drawn the same as every other row", () => {
   const html = render([
-    { key: "cloud-move", label: "Try moving to dusk cloud again", title: "My Cloud did not answer.", icon: "!", keepOpen: true, onSelect: () => {} },
+    { key: "cloud-move", label: "Try moving to madani cloud again", title: "My Cloud did not answer.", icon: "!", keepOpen: true, onSelect: () => {} },
     { key: "settings", label: "Settings", icon: "!", onSelect: () => {} },
   ]);
   const row = (key: string) => html.match(new RegExp(`<button[^>]*data-menu-key="${key}"[^>]*>.*?</button>`))?.[0] ?? "";
@@ -59,5 +59,5 @@ it("puts what a one-line row leaves out in its tooltip, drawn the same as every 
   const look = (key: string) => row(key).match(/ class="([^"]*)"/)?.[1];
   expect(look("settings")).toMatch(/\bitems-center\b/);
   expect(look("cloud-move")).toBe(look("settings"));
-  expect(row("cloud-move")).toContain('<span class="flex-1 truncate">Try moving to dusk cloud again</span>');
+  expect(row("cloud-move")).toContain('<span class="flex-1 truncate">Try moving to madani cloud again</span>');
 });

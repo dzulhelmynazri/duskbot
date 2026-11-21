@@ -4,7 +4,7 @@ import { appendFileSync, closeSync, openSync, readFileSync, writeFileSync } from
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { expect, it } from "vitest";
-import { launchVerificationServer, verificationServerEnvironment } from "../scripts/control-dusk.ts";
+import { launchVerificationServer, verificationServerEnvironment } from "../scripts/control-madani.ts";
 import { waitForExit } from "./testing/cleanup.ts";
 
 const PROBE_MS = 1_500;

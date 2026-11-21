@@ -3,7 +3,7 @@ import { existsSync, readFileSync, readdirSync, rmSync, writeFileSync } from "no
 import { dirname, join } from "node:path";
 import { expect, it } from "vitest";
 
-import { launchVerificationServer, type VerificationServer } from "../scripts/control-dusk.ts";
+import { launchVerificationServer, type VerificationServer } from "../scripts/control-madani.ts";
 import { createTeamVpsFixture } from "../scripts/testing/team-vps-fixture.ts";
 import { createControlClient } from "./control-client.ts";
 import { vpsContainerName } from "./vps-computer.ts";
@@ -14,7 +14,7 @@ async function harness(slow = false) {
   const vps = await createTeamVpsFixture();
   let fixture: VerificationServer;
   try {
-    fixture = await launchVerificationServer({ DUSK_TEST_VPS_IDLE_CLOCK: "1", ...(slow ? {
+    fixture = await launchVerificationServer({ MADANI_TEST_VPS_IDLE_CLOCK: "1", ...(slow ? {
       FAKE_CLAUDE_MODE: "slow", FAKE_CLAUDE_SLOW_FINISH_GATE: join(dirname(vps.calls), "engine.finish"),
     } : {}) }, undefined, vps.localVm);
   } catch (error) { await vps.close(); throw error; }
@@ -109,7 +109,7 @@ it.skipIf(process.platform === "win32")("keeps an active GUI turn awake, sleeps 
       try {
         const dump = JSON.parse(readFileSync(dumpFile, "utf8"));
         const env = dump.mcpConfig?.mcpServers?.computer?.env;
-        if (env?.DUSK_CONTROL_URL && env?.DUSK_CONTROL_TOKEN) connection = { url: env.DUSK_CONTROL_URL, token: env.DUSK_CONTROL_TOKEN };
+        if (env?.MADANI_CONTROL_URL && env?.MADANI_CONTROL_TOKEN) connection = { url: env.MADANI_CONTROL_URL, token: env.MADANI_CONTROL_TOKEN };
       } catch {}
       return Boolean(connection);
     }, { timeout: 10_000, interval: 50 }).toBe(true);

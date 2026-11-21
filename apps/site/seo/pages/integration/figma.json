@@ -4,13 +4,13 @@
   "title": "Figma AI assistant for comments, components and handoffs",
   "nav": "figma",
   "h1": "a figma bot that gathers the handoff details",
-  "description": "Connect Figma to dusk bot to review comments, inspect components and gather file context. Three handoff routines with honest limits on design editing.",
+  "description": "Connect Figma to madani bot to review comments, inspect components and gather file context. Three handoff routines with honest limits on design editing.",
   "keyword": "claude figma",
   "keywords": [
     "figma ai agent",
     "figma mcp"
   ],
-  "answer": "**the handoff shouldn't start with a hunt through comments.** a dusk bot can read figma files, comments, components and variables. ask for the decisions still open or a handoff inventory, using the ai you choose. it gathers the context. it can't redraw every screen or turn the design into a finished product for you.",
+  "answer": "**the handoff shouldn't start with a hunt through comments.** a madani bot can read figma files, comments, components and variables. ask for the decisions still open or a handoff inventory, using the ai you choose. it gathers the context. it can't redraw every screen or turn the design into a finished product for you.",
   "updated": "2026-11-12",
   "review": {
     "status": "approved",
@@ -81,7 +81,7 @@
     ],
     "setup": "**start with a file link and read only access.** add figma in **connected apps**, sign in through figma and choose the bot. name the frames you want it to read. that is enough for a review agenda; variable edits can stay disabled."
   },
-  "routines_intro": "**pick the question holding up the handoff.** these routines read figma and return private notes in dusk. they don't post review comments or edit the design.",
+  "routines_intro": "**pick the question holding up the handoff.** these routines read figma and return private notes in madani. they don't post review comments or edit the design.",
   "routines": [
     {
       "name": "review agenda",
@@ -102,7 +102,7 @@
       "output": "a dated design reference tied to the file version"
     }
   ],
-  "asks": "**keep the agenda in dusk until you want to post a comment.** comments count as sends and stop at **allow** or **deny** by default. a daily sending amount lets them go out within that limit.\n\ncareful with **Full access**: a bot there with no sending rule can send up to 25 a day without asking. give it **Ask every time**.\n\nvariable edits don't ask first. leave them disabled for reviews. for an editing job later, add 'ask me before changing anything'.",
+  "asks": "**keep the agenda in madani until you want to post a comment.** comments count as sends and stop at **allow** or **deny** by default. a daily sending amount lets them go out within that limit.\n\ncareful with **Full access**: a bot there with no sending rule can send up to 25 a day without asking. give it **Ask every time**.\n\nvariable edits don't ask first. leave them disabled for reviews. for an editing job later, add 'ask me before changing anything'.",
   "cannot": [
     "**it isn't a general canvas editor.** the action list covers variables and development resources, not drawing or rearranging every layer.",
     "**read only means no comments or variable edits.** gathering a handoff doesn't need permission to maintain the design.",
@@ -121,7 +121,7 @@
   "faq": [
     {
       "q": "can claude read my figma file?",
-      "a": "**yes, through a dusk bot's figma connection.** choose claude or another ai, connect the account and allow that bot. give it the specific file or frame."
+      "a": "**yes, through a madani bot's figma connection.** choose claude or another ai, connect the account and allow that bot. give it the specific file or frame."
     },
     {
       "q": "can it turn my design into a finished app?",
@@ -129,20 +129,20 @@
     },
     {
       "q": "will it post design feedback without telling me?",
-      "a": "**read only access blocks posting.** if you enable comments, use the sending setting described above to review them. private dusk notes need no publication action."
+      "a": "**read only access blocks posting.** if you enable comments, use the sending setting described above to review them. private madani notes need no publication action."
     }
   ],
   "sources": [
     {
-      "label": "dusk bot docs: apps and action limits",
+      "label": "madani bot docs: apps and action limits",
       "url": "/docs/files-and-apps"
     },
     {
-      "label": "dusk bot docs: scheduled reviews",
+      "label": "madani bot docs: scheduled reviews",
       "url": "/docs/routines"
     },
     {
-      "label": "dusk bot docs: comments and approvals",
+      "label": "madani bot docs: comments and approvals",
       "url": "/docs/computer"
     }
   ],

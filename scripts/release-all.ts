@@ -1,6 +1,6 @@
 // publish once, everything updates (docs/releases-auto-update.md). Run on the Mac from a clean checkout of the release
-// tag after Release published v<version>: it stages the desktop rollout, puts the desktop build on dusk.bot, builds and
-// signs the dusk cloud home package and offers it to the canary clouds, watches them and the desktops' error rate, then
+// tag after Release published v<version>: it stages the desktop rollout, puts the desktop build on madani.bot, builds and
+// signs the madani cloud home package and offers it to the canary clouds, watches them and the desktops' error rate, then
 // widens to every cloud and desktop, publishes the own-server build to the link service and ships a changed link agent.
 // Each step is recorded in release/auto/<version>.json, so a rerun goes on where it stopped; --dry-run changes nothing.
 //
@@ -8,9 +8,9 @@
 //   node scripts/release-all.ts status [--canary <cloud id,...>]
 //   node scripts/release-all.ts pause | resume | block <version> [--dry-run]
 //
-// env (names only, never printed): DUSK_RELEASE_SIGNING_KEY (release key), DUSK_OPS_TOKEN (the account service's fleet
-// view), RELEASE_ACCOUNT_URL (https://dusk.bot), RELEASE_SSH (contabo), RELEASE_HOME_DIR (/var/lib/dusk-account-prod/home),
-// RELEASE_LINK_PACKAGES (/root/omb-link-data/packages), RELEASE_LINK_URL (https://link.dusk.bot), DUSK_RELEASE_CANARY_CLOUDS.
+// env (names only, never printed): MADANI_RELEASE_SIGNING_KEY (release key), MADANI_OPS_TOKEN (the account service's fleet
+// view), RELEASE_ACCOUNT_URL (https://madani.bot), RELEASE_SSH (contabo), RELEASE_HOME_DIR (/var/lib/madani-account-prod/home),
+// RELEASE_LINK_PACKAGES (/root/omb-link-data/packages), RELEASE_LINK_URL (https://link.madani.bot), MADANI_RELEASE_CANARY_CLOUDS.
 import { execFileSync } from "node:child_process";
 import { createHash, randomBytes } from "node:crypto";
 import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
@@ -26,13 +26,13 @@ import type { FleetAnswer } from "../apps/dashboard/server/admin/ops/fleet.ts";
 const SEMVER = /^\d+\.\d+\.\d+$/;
 export interface Config {
   account: string; ssh: string; homeDir: string; linkPackages: string; linkUrl: string;
-  /** the account service's DUSK_UPDATE_POLICY_FILE and DUSK_MANAGED_HOME_RELEASE_FILE */
+  /** the account service's MADANI_UPDATE_POLICY_FILE and MADANI_MANAGED_HOME_RELEASE_FILE */
   policyFile: string; releaseFile: string;
 }
 export function configOf(env: Record<string, string | undefined>): Config {
-  const homeDir = env.RELEASE_HOME_DIR || "/var/lib/dusk-account-prod/home";
-  return { account: (env.RELEASE_ACCOUNT_URL || "https://dusk.bot").replace(/\/$/, ""), ssh: env.RELEASE_SSH || "contabo", homeDir,
-    linkPackages: env.RELEASE_LINK_PACKAGES || "/root/omb-link-data/packages", linkUrl: (env.RELEASE_LINK_URL || "https://link.dusk.bot").replace(/\/$/, ""),
+  const homeDir = env.RELEASE_HOME_DIR || "/var/lib/madani-account-prod/home";
+  return { account: (env.RELEASE_ACCOUNT_URL || "https://madani.bot").replace(/\/$/, ""), ssh: env.RELEASE_SSH || "contabo", homeDir,
+    linkPackages: env.RELEASE_LINK_PACKAGES || "/root/omb-link-data/packages", linkUrl: (env.RELEASE_LINK_URL || "https://link.madani.bot").replace(/\/$/, ""),
     policyFile: `${homeDir}/update-policy.json`, releaseFile: `${homeDir}/release.json` };
 }
 
@@ -88,8 +88,8 @@ export function createRelease(o: { cfg: Config; env: Record<string, string | und
   const sh = o.sh ?? realSh;
   /** a command that changes something: only told in a dry run */
   const act = (cmd: string, args: string[], input?: string) => { if (dryRun) { log(`  would run: ${cmd} ${args.join(" ")}`); return ""; } return sh(cmd, args, input); };
-  const keys = [...PINNED_RELEASE_KEYS, ...parseReleaseKeys(env.DUSK_RELEASE_PUBLIC_KEYS)];
-  const signingKey = () => env.DUSK_RELEASE_SIGNING_KEY || (dryRun ? null : (() => { throw new Error("DUSK_RELEASE_SIGNING_KEY is not set"); })());
+  const keys = [...PINNED_RELEASE_KEYS, ...parseReleaseKeys(env.MADANI_RELEASE_PUBLIC_KEYS)];
+  const signingKey = () => env.MADANI_RELEASE_SIGNING_KEY || (dryRun ? null : (() => { throw new Error("MADANI_RELEASE_SIGNING_KEY is not set"); })());
 
   /** a file put on the host by rename, so the service never reads half of it */
   function place(remote: string, text: string) {
@@ -111,7 +111,7 @@ export function createRelease(o: { cfg: Config; env: Record<string, string | und
     return { ...NO_POLICY, blocked: [] };
   }
 
-  /** signs the next policy and puts it where every kind of install reads it: the account service, the link service, dusk.bot */
+  /** signs the next policy and puts it where every kind of install reads it: the account service, the link service, madani.bot */
   async function publishPolicy(state: Pick<State, "serial">, change: Parameters<typeof nextPolicy>[2]) {
     const policy = nextPolicy(await currentPolicy(), state.serial, change);
     const key = signingKey();
@@ -126,8 +126,8 @@ export function createRelease(o: { cfg: Config; env: Record<string, string | und
   }
 
   async function fleet(canary: readonly string[]): Promise<FleetAnswer> {
-    const token = env.DUSK_OPS_TOKEN;
-    if (!token) throw new Error("DUSK_OPS_TOKEN is not set: the fleet view needs it");
+    const token = env.MADANI_OPS_TOKEN;
+    if (!token) throw new Error("MADANI_OPS_TOKEN is not set: the fleet view needs it");
     const answer = await fetchImpl(`${cfg.account}/v1/ops/fleet?days=14${canary.length ? `&canary=${canary.map(encodeURIComponent).join(",")}` : ""}`, { headers: { authorization: `Bearer ${token}` }, signal: AbortSignal.timeout(30_000) });
     if (!answer.ok) throw new Error(`the fleet view answered ${answer.status}`);
     return await answer.json() as FleetAnswer;
@@ -197,13 +197,13 @@ export async function release(r: Release, opt: ReleaseOptions): Promise<"done" |
       if (!dryRun) throw new Error(`${why}: check out ${V} cleanly first`);
       r.log(`  (dry run) ${why}`);
     }
-    if (!r.signingKey()) r.log("  (dry run) DUSK_RELEASE_SIGNING_KEY is not set");
+    if (!r.signingKey()) r.log("  (dry run) MADANI_RELEASE_SIGNING_KEY is not set");
   });
   const first = opt.steps[0]!;
   if (first < 100) await step("desktop-rollout", () => r.publishPolicy(state, { rollout: [version, first] }));
   await step("desktop", async () => {
-    const live = await (await r.fetchImpl("https://dusk.bot/releases/latest.json", { cache: "no-store" })).json().catch(() => null) as { version?: string } | null;
-    if (live?.version === version) { r.log(`  dusk.bot already announces ${version}`); return; }
+    const live = await (await r.fetchImpl("https://madani.bot/releases/latest.json", { cache: "no-store" })).json().catch(() => null) as { version?: string } | null;
+    if (live?.version === version) { r.log(`  madani.bot already announces ${version}`); return; }
     r.act("scripts/publish-downloads.sh", [V]);
   });
   if (!opt.skipBuild) await step("build", () => { r.act("pnpm", ["build:server"]); r.act("pnpm", ["exec", "vite", "build"]); });
@@ -261,7 +261,7 @@ export async function release(r: Release, opt: ReleaseOptions): Promise<"done" |
       if (dryRun || tries >= 30) { r.log(`  agent.mjs.sig on main is not re-signed yet${dryRun ? "" : "; rerun once link-agent-sign.yml passed"}`); if (!dryRun) throw new Error("agent not signed yet"); break; }
       await r.sleep(30_000);
     }
-    const tree = mkdtempSync(join(tmpdir(), "dusk-link-main-"));
+    const tree = mkdtempSync(join(tmpdir(), "madani-link-main-"));
     rmSync(tree, { recursive: true, force: true });
     r.act("git", ["worktree", "add", "--detach", tree, "origin/main"]);
     try { r.act(join(tree, "apps", "link-service", "deploy", "deploy.sh"), []); } finally { r.act("git", ["worktree", "remove", "--force", tree]); }
@@ -273,7 +273,7 @@ export async function release(r: Release, opt: ReleaseOptions): Promise<"done" |
 export function printFleet(f: FleetAnswer, log: (line: string) => void) {
   log(`desktops (opted-in installs, last ${f.desktops.days} days):`);
   for (const row of f.desktops.versions) log(`  ${row.version.padEnd(10)} ${String(row.installs).padStart(6)} installs ${String(row.errors).padStart(6)} errors`);
-  log("dusk clouds:");
+  log("madani clouds:");
   for (const row of f.clouds.versions) log(`  ${row.version.padEnd(10)} ${String(row.clouds).padStart(6)} clouds${row.onTrial ? `, ${row.onTrial} on trial` : ""}`);
   for (const c of f.clouds.canary) log(`  canary ${c.id}: ${c.version ?? "?"}${c.trial ? `, self-test ${c.trial}` : ""}${c.rolledBack ? `, rolled back ${c.rolledBack}` : ""}${c.refused ? `, refused (${c.refused})` : ""}${c.stuck ? ", STUCK" : ""}`);
   log(f.servers ? `own servers (last ${Math.round(f.servers.windowMs / 3_600_000)} h):` : "own servers: the link service could not be read");
@@ -286,7 +286,7 @@ async function main() {
     "dry-run": { type: "boolean" }, now: { type: "boolean" }, canary: { type: "string" }, "desktop-steps": { type: "string" }, watch: { type: "string" }, "skip-build": { type: "boolean" } } });
   const [command, arg] = positionals, dryRun = values["dry-run"] === true;
   const r = createRelease({ cfg: configOf(process.env), env: process.env, dryRun });
-  const canary = (values.canary ?? process.env.DUSK_RELEASE_CANARY_CLOUDS ?? "").split(",").map(s => s.trim()).filter(Boolean);
+  const canary = (values.canary ?? process.env.MADANI_RELEASE_CANARY_CLOUDS ?? "").split(",").map(s => s.trim()).filter(Boolean);
   const holder = { serial: 0 };
   if (command === "status") return printFleet(await r.fleet(canary), r.log);
   if (command === "pause") return r.publishPolicy(holder, { paused: true });

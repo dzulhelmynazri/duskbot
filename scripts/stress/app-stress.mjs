@@ -11,7 +11,7 @@ const root = resolve(import.meta.dirname, "../..");
 const profile = process.env.PROFILE;
 if (!profile) throw new Error("PROFILE is required");
 const only = (process.argv[process.argv.indexOf("--only") + 1] ?? "a,b,c,d").split(",");
-const dataDir = join(profile, "home", ".duskbot");
+const dataDir = join(profile, "home", ".madanibot");
 mkdirSync(dataDir, { recursive: true });
 if (!existsSync(join(dataDir, "config.json"))) writeFileSync(join(dataDir, "config.json"), JSON.stringify({ features: { smartSetupChoices: false },
   instances: { claude: { driver: "claudeAgent", displayName: "Fake", config: { cli: join(root, "server/testing/fake-claude-cli.ts") } } } }));
@@ -25,7 +25,7 @@ const before = snapshot();
 
 async function start(cadence = "10:100") {
   const app = await launchSmokeApp({ root, profile, log: () => {}, env: {
-    DUSK_TEST_SEALED_PATH: "1", FAKE_CLAUDE_REPLY_FILE: replyFile, FAKE_CLAUDE_TOOL_CALLS: "[]", FAKE_CLAUDE_STREAM_CADENCE: cadence,
+    MADANI_TEST_SEALED_PATH: "1", FAKE_CLAUDE_REPLY_FILE: replyFile, FAKE_CLAUDE_TOOL_CALLS: "[]", FAKE_CLAUDE_STREAM_CADENCE: cadence,
   } });
   const base = `http://127.0.0.1:${app.port}`;
   const api = async (method, path, body) => {

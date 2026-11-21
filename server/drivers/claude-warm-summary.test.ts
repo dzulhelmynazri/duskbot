@@ -109,7 +109,7 @@ describe("ClaudeDriver warm summary (fake CLI)", () => {
   beforeEach(async () => {
     ensureDirs();
     chmodSync(FAKE_CLI, 0o755);
-    scratch = mkdtempSync(join(tmpdir(), "dusk-warm-summary-test-"));
+    scratch = mkdtempSync(join(tmpdir(), "madani-warm-summary-test-"));
     process.env.FAKE_CLAUDE_COMPACT_DUMP = join(scratch, "compact.json");
     process.env.FAKE_CLAUDE_DUMP = join(scratch, "turn.json");
     instance = await ClaudeDriver.create({
@@ -147,7 +147,7 @@ describe("ClaudeDriver warm summary (fake CLI)", () => {
     expect(argv[argv.indexOf("--output-format") + 1]).toBe("json");
     expect(argv[argv.indexOf("--model") + 1]).toBe("claude-sonnet-5");
     expect(dump.systemPrompt).toBe("You are Editor.");
-    expect(dump.mcpConfig.mcpServers.dusk.args.at(-1)).toMatch(/no-broker\.sock$/);
+    expect(dump.mcpConfig.mcpServers.madani.args.at(-1)).toMatch(/no-broker\.sock$/);
     expect(dump.settings.hooks).toEqual({ PreToolUse: [expect.objectContaining({ matcher: "*" })] });
     expect(dump.hookEnv).toEqual([]);
 

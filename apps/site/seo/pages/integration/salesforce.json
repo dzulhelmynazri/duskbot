@@ -4,8 +4,8 @@
   "title": "Salesforce AI assistant for deal reviews and lead checks",
   "nav": "salesforce",
   "h1": "a salesforce assistant that checks the record first",
-  "description": "Review Salesforce opportunities, leads and follow-up tasks with dusk bot. Copy bounded routines and see where read-only access stops record changes.",
-  "answer": "**find the deal with no next step on monday, before it slips at quarter end.** a dusk bot can search salesforce opportunities, leads and follow-up tasks with read-only access. get the owner, close date and missing next step together in chat. creating tasks or changing deals needs write access. start with the review; let the owner answer the gap.",
+  "description": "Review Salesforce opportunities, leads and follow-up tasks with madani bot. Copy bounded routines and see where read-only access stops record changes.",
+  "answer": "**find the deal with no next step on monday, before it slips at quarter end.** a madani bot can search salesforce opportunities, leads and follow-up tasks with read-only access. get the owner, close date and missing next step together in chat. creating tasks or changing deals needs write access. start with the review; let the owner answer the gap.",
   "tags": [
     "crm",
     "pipeline",
@@ -93,8 +93,8 @@
   "cannot": [
     "**it cannot change stages, owners or tasks with read-only access.** allow specific writes only if record maintenance becomes part of the job.",
     "**it cannot fill gaps without evidence.** report an empty field as empty and ask its owner.",
-    "dusk classes **query contacts by name** as a write, so a read-only bot can't use it. use the search actions above instead.",
-    "**a sleeping local computer cannot deliver the review.** keep dusk open and the machine awake, or use dusk cloud."
+    "madani classes **query contacts by name** as a write, so a read-only bot can't use it. use the search actions above instead.",
+    "**a sleeping local computer cannot deliver the review.** keep madani open and the machine awake, or use madani cloud."
   ],
   "sections": [
     {
@@ -122,15 +122,15 @@
   ],
   "sources": [
     {
-      "label": "dusk bot docs: files and apps",
+      "label": "madani bot docs: files and apps",
       "url": "/docs/files-and-apps"
     },
     {
-      "label": "dusk bot docs: routines",
+      "label": "madani bot docs: routines",
       "url": "/docs/routines"
     },
     {
-      "label": "dusk bot docs: approval and sending",
+      "label": "madani bot docs: approval and sending",
       "url": "/docs/computer"
     }
   ],

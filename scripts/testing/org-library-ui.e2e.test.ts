@@ -7,19 +7,19 @@ import { afterAll, describe, expect, it } from "vitest";
 import { resolveAgentBrowserBinary } from "../../server/browser-engine.ts";
 import { waitForExit } from "../../server/testing/cleanup.ts";
 import { canonicalJson, parsePackageDocument } from "../../shared/package-format.ts";
-import { runControlDusk } from "../control-dusk.ts";
+import { runControlMadani } from "../control-madani.ts";
 import { request } from "../mcp-server.ts";
-import { UI_TOOLS_DIR } from "./control-dusk-ui.ts";
+import { UI_TOOLS_DIR } from "./control-madani-ui.ts";
 import { clickByName } from "./grok-nav.ts";
 import { openTemplatesWhenFree } from "./grok-templates.ts";
 
 const ROOT = fileURLToPath(new URL("../..", import.meta.url));
 const FIXTURES = join(ROOT, "shared", "package-fixtures");
 const binary = resolveAgentBrowserBinary({ dataDir: UI_TOOLS_DIR, env: process.env });
-const forced = process.env.DUSK_UI_E2E === "1";
+const forced = process.env.MADANI_UI_E2E === "1";
 const enabled = forced || Boolean(binary);
 const launchTimeout = forced && !binary ? 600_000 : 180_000;
-if (!enabled) console.log("skipping org-library UI e2e: set DUSK_UI_E2E=1 to install the pinned browser");
+if (!enabled) console.log("skipping org-library UI e2e: set MADANI_UI_E2E=1 to install the pinned browser");
 
 const sha = (value: string) => createHash("sha256").update(value).digest("hex");
 const ORG = "11111111-1111-4111-8111-111111111111";
@@ -57,8 +57,8 @@ describe("the organization library in the real renderer", () => {
     let stdout = "";
     let stderr = "";
     let info: { ui: string; url: string; botId: string; dataDir: string; logPath: string };
-    child = spawn(process.execPath, ["--experimental-strip-types", join(ROOT, "scripts/control-dusk.ts"), "ui", "launch"], {
-      cwd: ROOT, env: { ...process.env, DUSK_TEST_ORG_LIBRARY_KEY: key }, stdio: ["ignore", "pipe", "pipe"],
+    child = spawn(process.execPath, ["--experimental-strip-types", join(ROOT, "scripts/control-madani.ts"), "ui", "launch"], {
+      cwd: ROOT, env: { ...process.env, MADANI_TEST_ORG_LIBRARY_KEY: key }, stdio: ["ignore", "pipe", "pipe"],
     });
     child.stdout!.on("data", (chunk: Buffer) => { stdout += String(chunk); });
     child.stderr!.on("data", (chunk: Buffer) => { stderr += String(chunk); });
@@ -67,12 +67,12 @@ describe("the organization library in the real renderer", () => {
       if (child!.exitCode !== null || child!.signalCode !== null) throw new Error(`UI launcher exited: ${stderr}`);
       try { info = JSON.parse(stdout); return Boolean(info.ui); } catch { return false; }
     }, { timeout: launchTimeout, interval: 250 }).toBe(true);
-    const ui = (verb: string, ...args: string[]) => runControlDusk(["ui", verb, "--ui", info.ui, ...args]) as Promise<Record<string, any>>;
+    const ui = (verb: string, ...args: string[]) => runControlMadani(["ui", verb, "--ui", info.ui, ...args]) as Promise<Record<string, any>>;
     const click = (name: string) => ui("click", "--name", name);
     const press = (keys: string) => ui("press", "--keys", keys);
     const snapshot = async () => (await ui("snapshot")).snapshot as string;
     const api = (path: string, method = "GET", body?: unknown) => request(path, { method, ...(body === undefined ? {} : { body: JSON.stringify(body) }) }, info.url);
-    const evidence = (name: string) => ui("screenshot", "--out", join(ROOT, ".dusk-scratch", "verify-evidence", name));
+    const evidence = (name: string) => ui("screenshot", "--out", join(ROOT, ".madani-scratch", "verify-evidence", name));
 
     await openTemplatesWhenFree(ui);
     // the library is open on its ready bots (the community list went in 317f92713), with no organization shelf yet
@@ -86,10 +86,10 @@ describe("the organization library in the real renderer", () => {
     const blobs = join(info!.dataDir, "org-library", "blobs");
     mkdirSync(blobs, { recursive: true });
     for (const rel of [team, skills]) writeFileSync(join(blobs, `${rel.sha256}.json`), rel.bytes, { mode: 0o600 });
-    const catalog = JSON.stringify({ format: "dusk.org-library", version: 1, libraryVersion: 1, organization: { id: ORG, name: "Customer Co" },
+    const catalog = JSON.stringify({ format: "madani.org-library", version: 1, libraryVersion: 1, organization: { id: ORG, name: "Customer Co" },
       packages: [team.entry(TEAM_ID), skills.entry(LIBRARY_ID)] });
     const relayed = await fetch(`${info!.url}/api/testing/org-library`, {
-      method: "POST", headers: { "content-type": "application/json", "x-dusk-test-org-library": key },
+      method: "POST", headers: { "content-type": "application/json", "x-madani-test-org-library": key },
       body: JSON.stringify({ library: { adminOrigin: "https://admin.example.com", organizationId: ORG, organizationName: "Customer Co", digest: sha(catalog), catalog } }),
     });
     expect(relayed.status).toBe(200);

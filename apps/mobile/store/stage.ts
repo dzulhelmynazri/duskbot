@@ -1,7 +1,7 @@
 // The phone app on a throwaway fixture, for the store screenshots (capture.ts) and the rendered layout check
 // (layout-check.ts), at 440 x 956 points.
 //
-// It launches a throwaway fixture workspace with the fake engine (scripts/control-dusk.ts launch), seeds the team in
+// It launches a throwaway fixture workspace with the fake engine (scripts/control-madani.ts launch), seeds the team in
 // team.mjs, and serves the phone app through vite. A small proxy sits between vite and the fixture and swaps each chat's
 // history for the scripted one in team.mjs, so the chats read as written. Nothing reaches a real bot or service.
 import { spawn, type ChildProcess } from "node:child_process";
@@ -15,10 +15,10 @@ import { setTimeout as delay } from "node:timers/promises";
 import { openHeadlessChrome, type HeadlessPage } from "../../../scripts/testing/headless-chrome.ts";
 
 const repoRoot = fileURLToPath(new URL("../../../", import.meta.url));
-/** DUSK_STAGE_TEAM names another team module shaped like team.mjs, for screens the store set does not show */
-const { ROOM, ROUTINES, TEAM } = await import(process.env.DUSK_STAGE_TEAM ?? "./team.mjs") as typeof import("./team.mjs");
+/** MADANI_STAGE_TEAM names another team module shaped like team.mjs, for screens the store set does not show */
+const { ROOM, ROUTINES, TEAM } = await import(process.env.MADANI_STAGE_TEAM ?? "./team.mjs") as typeof import("./team.mjs");
 const RESERVED = new Set([5199, 8799, 5299, 8899, 9335, 5320]);
-const work = mkdtempSync(join(tmpdir(), "dusk-store-"));
+const work = mkdtempSync(join(tmpdir(), "madani-store-"));
 const children = new Set<ChildProcess>();
 const MINUTE = 60_000;
 /** the apps the team shows as added */
@@ -45,7 +45,7 @@ async function freePort(): Promise<number> {
 function launchFixture(replies: Record<string, string>): Promise<string> {
   writeFileSync(join(work, "markers.json"), JSON.stringify(replies));
   writeFileSync(join(work, "tools.json"), "[]");
-  const child = spawn(process.execPath, ["--experimental-strip-types", "scripts/control-dusk.ts", "launch"], {
+  const child = spawn(process.execPath, ["--experimental-strip-types", "scripts/control-madani.ts", "launch"], {
     cwd: repoRoot,
     env: { ...process.env, FAKE_CLAUDE_MARKER_REPLIES: join(work, "markers.json"), FAKE_CLAUDE_TOOL_CALLS_FILE: join(work, "tools.json"), FAKE_CLAUDE_TOOL_PROGRESS_MS: "600000" },
     stdio: ["ignore", "pipe", "inherit"],
@@ -232,7 +232,7 @@ const DEV_SERVER: Serve = { args: ["--config", "apps/mobile/store/vite.config.ts
 
 function startVite(apiPort: number, port: number, serve: Serve): Promise<void> {
   const child = spawn(join(repoRoot, "node_modules/.bin/vite"), serve.args, {
-    cwd: repoRoot, env: { ...process.env, DUSK_PORT: String(apiPort), DUSK_MOBILE_PORT: String(port) }, stdio: ["ignore", "pipe", "inherit"],
+    cwd: repoRoot, env: { ...process.env, MADANI_PORT: String(apiPort), MADANI_MOBILE_PORT: String(port) }, stdio: ["ignore", "pipe", "inherit"],
   });
   children.add(child);
   return new Promise((done, fail) => {
@@ -266,20 +266,20 @@ export async function startStage(serve: Serve = DEV_SERVER, replies: Record<stri
   const base = `http://127.0.0.1:${vitePort}`;
   console.log(`phone app ${base}`);
 
-  const profile = mkdtempSync(join(tmpdir(), "dusk-store-chrome-"));
+  const profile = mkdtempSync(join(tmpdir(), "madani-store-chrome-"));
   const page = await openHeadlessChrome(profile);
   // a Pixel 7 for an android run
-  const screen = process.env.DUSK_STAGE_PLATFORM === "android" ? { width: 412, height: 915, deviceScaleFactor: 2.625 } : { width: 440, height: 956, deviceScaleFactor: 3 };
+  const screen = process.env.MADANI_STAGE_PLATFORM === "android" ? { width: 412, height: 915, deviceScaleFactor: 2.625 } : { width: 440, height: 956, deviceScaleFactor: 3 };
   await page.send("Emulation.setDeviceMetricsOverride", { ...screen, mobile: true });
   await page.send("Emulation.setTouchEmulationEnabled", { enabled: true });
   await page.send("Emulation.setFocusEmulationEnabled", { enabled: true });
   // the store build marks <html data-mobile-app="ios"> from the native shell, which hides screen view (4.2.7) and every
   // plan line; the browser preview would say "web", so the mark is pinned before the app renders
   await page.send("Page.enable");
-  const mark = process.env.DUSK_STAGE_PLATFORM === "android" ? "android" : "ios";
+  const mark = process.env.MADANI_STAGE_PLATFORM === "android" ? "android" : "ios";
   await page.send("Page.addScriptToEvaluateOnNewDocument", { source: `new MutationObserver(() => { const root = document.documentElement; if (root && root.dataset.mobileApp && root.dataset.mobileApp !== "${mark}") root.dataset.mobileApp = "${mark}"; }).observe(document, { attributes: true, subtree: true, attributeFilter: ["data-mobile-app"] });` });
 
-  const open = async (scheme: Scheme, query = "", storage: Record<string, string> = { "dusk.mobile.introSeen": "1" }) => {
+  const open = async (scheme: Scheme, query = "", storage: Record<string, string> = { "madani.mobile.introSeen": "1" }) => {
     await page.send("Page.navigate", { url: `${base}/?frame=1&scheme=${scheme}${query}` });
     await delay(1200);
     await page.evaluate(`localStorage.clear(); sessionStorage.clear(); for (const [k, v] of Object.entries(${js(storage)})) localStorage.setItem(k, v); location.reload()`);

@@ -12,7 +12,7 @@ import { profileKey } from "./engines.ts";
 
 const roots: string[] = [];
 afterEach(async () => { await Promise.all(roots.splice(0).map(removeTempDir)); });
-const dataDir = () => { const dir = mkdtempSync(join(tmpdir(), "dusk-profile-stable-")); roots.push(dir); return dir; };
+const dataDir = () => { const dir = mkdtempSync(join(tmpdir(), "madani-profile-stable-")); roots.push(dir); return dir; };
 
 describe("a bot's browser profile", () => {
   it("is the same kept folder on every turn and after a restart, on the Chrome engine", () => {

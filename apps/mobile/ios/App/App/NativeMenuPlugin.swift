@@ -11,7 +11,7 @@ import WebKit
 @objc(NativeMenuPlugin)
 public class NativeMenuPlugin: CAPPlugin, CAPBridgedPlugin, UIContextMenuInteractionDelegate {
     public let identifier = "NativeMenuPlugin"
-    public let jsName = "DuskMenu"
+    public let jsName = "MadaniMenu"
     public let pluginMethods: [CAPPluginMethod] = [
         CAPPluginMethod(name: "supported", returnType: CAPPluginReturnPromise),
         CAPPluginMethod(name: "arm", returnType: CAPPluginReturnNone),

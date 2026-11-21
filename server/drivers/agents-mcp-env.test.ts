@@ -14,7 +14,7 @@ describe("the agents server's settings", () => {
   });
 
   it("defer: only the hot tools stay always loaded for Claude, the rest are marked for tool search", () => {
-    const env = { DUSK_BOT_ID: "b", DUSK_THREAD_ID: "t", DUSK_MEMORY_ENABLED: "1" };
+    const env = { MADANI_BOT_ID: "b", MADANI_THREAD_ID: "t", MADANI_MEMORY_ENABLED: "1" };
     const meta = (tool: object) => (tool as { _meta?: Record<string, unknown> })._meta?.["anthropic/alwaysLoad"];
     const plain = agentsToolList(env).listed;
     expect(plain.some((tool) => meta(tool) !== undefined), "other engines see the catalog unchanged").toBe(false);

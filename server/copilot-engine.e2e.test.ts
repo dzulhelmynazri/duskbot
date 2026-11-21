@@ -1,7 +1,7 @@
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { expect, it } from "vitest";
-import { launchVerificationServer, runControlDusk } from "../scripts/control-dusk.ts";
+import { launchVerificationServer, runControlMadani } from "../scripts/control-madani.ts";
 
 it("moves one bot and one conversation between Claude, GitHub Copilot and a custom ACP agent through the picker's routes", async () => {
   const fixture = await launchVerificationServer({}, undefined, undefined, undefined, undefined, ["copilot", "customAcp"]);
@@ -13,7 +13,7 @@ it("moves one bot and one conversation between Claude, GitHub Copilot and a cust
     expect(response.status, `${method} ${path}: ${JSON.stringify(result)}`).toBe(status);
     return result;
   };
-  const cli = (...args: string[]) => runControlDusk([...args, "--url", url]) as Promise<any>;
+  const cli = (...args: string[]) => runControlMadani([...args, "--url", url]) as Promise<any>;
   const prompts = (file: string) => {
     const path = join(dataDir, `${file}.prompts.jsonl`);
     return existsSync(path) ? readFileSync(path, "utf8").trim().split("\n").filter(Boolean).map((line) => JSON.parse(line)) : [];
@@ -85,7 +85,7 @@ async function createAndUpdateRoutineThroughCopilotTools() {
     return result;
   };
   const cli = async (...args: string[]) => {
-    const result = await runControlDusk([...args, "--url", url]) as any;
+    const result = await runControlMadani([...args, "--url", url]) as any;
     evidence.push({ command: args, result });
     return result;
   };

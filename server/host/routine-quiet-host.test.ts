@@ -12,7 +12,7 @@ const dirs: string[] = [];
 afterEach(() => { for (const dir of dirs.splice(0)) rmSync(dir, { recursive: true, force: true }); });
 
 function harness() {
-  const dataDir = mkdtempSync(join(tmpdir(), "dusk-quiet-host-"));
+  const dataDir = mkdtempSync(join(tmpdir(), "madani-quiet-host-"));
   dirs.push(dataDir);
   let thread = 0;
   const spend = createSpend({ dataDir });

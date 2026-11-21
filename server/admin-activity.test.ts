@@ -27,7 +27,7 @@ import { removeTempDir } from "./testing/cleanup.ts";
 
 const dirs: string[] = [];
 const tempDir = () => {
-  const dir = mkdtempSync(join(tmpdir(), "dusk-admin-activity-"));
+  const dir = mkdtempSync(join(tmpdir(), "madani-admin-activity-"));
   dirs.push(dir);
   return dir;
 };

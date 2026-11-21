@@ -8,7 +8,7 @@ in-process link service and link agent (a VPS without public ingress) and throug
 node --experimental-strip-types scripts/mobile-sync-e2e.ts
 ```
 
-It launches its own isolated fixture (`scripts/control-dusk.ts launch`) and never touches the live relay or the user's
+It launches its own isolated fixture (`scripts/control-madani.ts launch`) and never touches the live relay or the user's
 app. The fixture has no desktop, so the websocket check proves the upgrade reaches the harness's viewer gate with the
 phone's session (409), not a live desktop; the byte-for-byte websocket echo is covered by
 `apps/link-service/test/phone-hub.test.mjs` and `apps/companion/test/mobile.test.ts`.

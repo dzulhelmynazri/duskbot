@@ -1,17 +1,17 @@
 # Welcome flow
 
 The first run is a funnel of calm, single screens with back and a progress
-bar: the welcome (with the "help improve dusk bot" switch, on by default and
-saved the moment it changes), a dusk bot account (Google or an emailed code;
+bar: the welcome (with the "help improve madani bot" switch, on by default and
+saved the moment it changes), a madani bot account (Google or an emailed code;
 only where this window can sign in and isn't yet, and "continue without an
 account" only where the app works without one), where the bots live (this
-Mac, dusk cloud whose sheet opens over the funnel, or your own server), an AI
+Mac, madani cloud whose sheet opens over the funnel, or your own server), an AI
 (a grid of ChatGPT, Claude, Grok, Gemini, Cursor, GitHub Copilot, OpenRouter
 and a local model, more ways, and the free model when it is ready; skipped
 when a Claude account or a ChatGPT plan already answers), bringing bots from
 other apps or connecting email and calendar, and the phone (a QR code). It
-ends in Dusk's chat, where Dusk greets in three bubbles, follows up and offers
-chips for what is still missing. There is no job screen. Dusk becomes Chief
+ends in Madani's chat, where Madani greets in three bubbles, follows up and offers
+chips for what is still missing. There is no job screen. Madani becomes Chief
 only when there is no existing Chief. Where, how far and which step are in
 `src/components/onboarding/funnel.ts`. The packaged app's account gate
 (`src/components/account-gate`) still comes before the app itself, so there the
@@ -37,7 +37,7 @@ For a manual renderer pass, launch the isolated full-app fixture following
 [Chat UI](chat-ui.md):
 
 ```sh
-node --experimental-strip-types scripts/control-dusk.ts ui launch
+node --experimental-strip-types scripts/control-madani.ts ui launch
 ```
 
 Use only its printed handle and preview URL. Add `?onboarding=1` to the
@@ -45,7 +45,7 @@ Use only its printed handle and preview URL. Add `?onboarding=1` to the
 onboarding browser script still names the retired welcome screens; it is not
 current acceptance evidence.
 
-Timed walk (Nov 10 2026, w16/onboarding): a fresh fixture with Dusk renamed
+Timed walk (Nov 10 2026, w16/onboarding): a fresh fixture with Madani renamed
 back from the fixture name, the fake engine scripted to answer a price job in
 about 4 s, and a headless Chrome with every non-loopback request aborted. From
 opening the page to the job's result on screen, with 2 s of reading and 1 s
@@ -80,7 +80,7 @@ What each first-run surface depends on, and how it was checked:
 |---|---|---|
 | Desktop app, own server (full bridge, `remoteClient` present) | The current first run, decided without a new request | `src/components/onboarding/WelcomeGate.test.ts`, `src/components/onboarding/WelcomeFlow.test.ts` |
 | Hosted workspace opened inside the desktop app (reduced bridge, no `remoteClient`) | Treated like a browser: the server is asked | `src/components/onboarding/WelcomeGate.test.ts` |
-| Packaged desktop with the organization bridge | An optional "Using dusk bot at work?" row under Other ways in Connect an AI; a signed-in Company engine counts as ready | `src/components/onboarding/beats/OrganisationRow.test.ts`, `src/components/onboarding/ConnectAi.test.ts` (fake bridge) |
+| Packaged desktop with the organization bridge | An optional "Using madani bot at work?" row under Other ways in Connect an AI; a signed-in Company engine counts as ready | `src/components/onboarding/beats/OrganisationRow.test.ts`, `src/components/onboarding/ConnectAi.test.ts` (fake bridge) |
 | Browser, admin of a hosted workspace | The first screen only, with the shared-workspace line, then the chat | `src/components/onboarding/WelcomeGate.test.ts`, `src/components/onboarding/WelcomeFlow.test.ts`, `src/lib/onboarding.test.ts` |
 | Browser, hosted member (no admin scope) | No welcome flow; one dismissible note kept in browser storage; no first-conversation spotlights | `src/components/onboarding/WelcomeGate.test.ts` |
 | Browser, client-scope session on a server that is not hosted | Nothing new: the flow does not open itself (it could not be saved); Settings replay and spotlights as before | `src/components/onboarding/WelcomeGate.test.ts`, `src/lib/onboarding.test.ts` |
@@ -95,9 +95,9 @@ That run also showed the member note, which review then limited to hosted
 workspaces (the fixture is not hosted). The hosted-only rule is covered by the
 tests above, not by a rerun. In that run, "Got it" made no `/api/config`
 write, and the note stayed away after a reload. Connect an AI was mounted from the Vite preview with a fake
-`window.duskDesktop.organization` injected before mount; it showed the row signed out,
+`window.madaniDesktop.organization` injected before mount; it showed the row signed out,
 then connecting with the code, then connected. `begin` ran once, with the
-default Admin. Screenshots are in `.dusk-scratch/verify-evidence/onboarding/`.
+default Admin. Screenshots are in `.madani-scratch/verify-evidence/onboarding/`.
 
 Not covered here: the real Electron preload bridge and a real Admin enrolment
 (see [organization connection](organization-settings.md), not rerun for this
@@ -137,7 +137,7 @@ desktop's preload bridge are not exercised here; they are covered by
 ## Bring what you already use (Oct 16 2026)
 
 Skills and MCP servers another AI tool keeps on this computer, brought in with
-one button: in Settings → Import, and offered by Dusk's first messages as a
+one button: in Settings → Import, and offered by Madani's first messages as a
 "Bring in your skills" chip when its look around finds some within two seconds.
 Desktop app only.
 
@@ -152,8 +152,8 @@ touches, and checks that none of them was listed or opened and that the
 sentinel reaches no answer, saved server or copied skill. The route test
 refuses a paired device, a service loopback and a hosted or Cloud server; the
 end-to-end test runs the real server from `launchVerificationServer` against a
-planted home, as the desktop app runs it (`DUSK_TEST_DESKTOP_OWNER_TOKEN`), checks
-that a headless server (`duskbot serve`) refuses the step, and checks that the starter bot and a bot made afterwards both
+planted home, as the desktop app runs it (`MADANI_TEST_DESKTOP_OWNER_TOKEN`), checks
+that a headless server (`madanibot serve`) refuses the step, and checks that the starter bot and a bot made afterwards both
 get the skills in their turn's index, task folder links and `/name`, that a
 Claude turn with "Also use my Claude Code skills" on sees a Claude Code skill
 once, and that a bot can switch one off for itself. The rows, working, failed
@@ -170,7 +170,7 @@ pnpm exec vitest run src/lib/onboarding.test.ts src/lib/welcome-draft.test.ts sr
 
 The current flow components cover first-run state and replay. The
 retired Chief selector, app tour, first-conversation spotlight component and Meet
-Dusk popup have no current renderer fixture; their removed tests must not
+Madani popup have no current renderer fixture; their removed tests must not
 be treated as acceptance evidence.
 
 ## Notch and dock step (Nov 9 2026)
@@ -179,7 +179,7 @@ On the desktop app on a Mac (the island bridge reports `available`), the first r
 a demo display where the island cycles every mood, the dock bots can be pointed at, tapped or dragged into the
 notch, and the real island is on while it shows. "Keep the notch on" saves `{ island: true }`, "Just the side dock"
 saves `{ island: false, dock: true }`, and leaving with neither puts the island back as it was. Settings →
-Appearance → "Island and dock tour" plays it again; dev builds also expose `window.duskIslandIntro()`.
+Appearance → "Island and dock tour" plays it again; dev builds also expose `window.madaniIslandIntro()`.
 
 ```sh
 pnpm exec vitest run src/components/onboarding/IslandIntro.test.ts src/components/onboarding/WelcomeFlow.test.ts
@@ -190,7 +190,7 @@ For a look without the app, `pnpm dev` and open `/src/windows/previews/island-in
 
 ## Bring your bots from another app (Nov 12 2026)
 
-On the desktop app's own first run, before the first job, Dusk looks (within 2.5 s) for bots another agent app keeps
+On the desktop app's own first run, before the first job, Madani looks (within 2.5 s) for bots another agent app keeps
 on this computer and, when it finds some, offers them on one screen: each app with its bots as mascots and what comes
 over in counts, "bring them over" and "skip for now". Progress names each bot as it moves; the done screen says what
 moved in one line and what stayed behind in another. Settings → general → bring in from other apps → "look for bots"
@@ -201,7 +201,7 @@ opens the same step later, and says when nothing is found or everything is alrea
 | OpenClaw (and Clawdbot, Moltbot) | `~/.openclaw` (`$OPENCLAW_STATE_DIR`, `~/.openclaw-<profile>`, `~/.clawdbot`, `~/.moltbot`, `~/.moldbot`); `agents.list` (2026.3) or `agents.entries` (2026.11) in the JSON5 config; each workspace | one bot per agent: SOUL.md as its soul, IDENTITY.md's name, creature and vibe; MEMORY.md, USER.md, AGENTS.md, TOOLS.md and the newest 30 daily notes as memory; workspace and shared skills; HEARTBEAT.md as a 30-minute routine; cron jobs from `cron/jobs.json` or the `cron_jobs` table of `state/openclaw.sqlite` |
 | Hermes Agent | `~/.hermes` (`$HERMES_HOME`) and each real `profiles/<name>` | one bot per profile: SOUL.md plus the chosen personality as its soul, `memories/MEMORY.md` and `USER.md` (§ entries) as memory, its own skills (not the bundled ones in `.bundled_manifest`), `cron/jobs.json` |
 | Grok Bot | exports in `~/Downloads`, its roster's names | exports move as before; bots without one are named with a link to the move in Grok bot itself |
-| your earlier dusk bot | a `~/.openmausbot` or `~/.opengrokbot` left beside the data folder in use | each bot but the helper and hidden ones, with its memory, skills and routines |
+| your earlier madani bot | a `~/.openmausbot` or `~/.opengrokbot` left beside the data folder in use | each bot but the helper and hidden ones, with its memory, skills and routines |
 
 Every bot moves as a package (`trust: "file"`): new bots beside any already here (a taken name is numbered), skills
 off until the scan passes them, routines paused, no keys, no connected apps. A bot already moved (its package id is on

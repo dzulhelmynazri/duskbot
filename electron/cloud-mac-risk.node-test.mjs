@@ -9,7 +9,7 @@ const SAFE_COMMANDS = [
   "git status", "git log --oneline -20", "git diff", "git commit -m 'fix typo'", "git push", "git push origin main", "git pull --rebase",
   "ls -la", "cat README.md", "grep -rn TODO src", "rg foo", "pwd", "echo $(date)", "npm install", "pnpm test", "brew install jq",
   "python3 script.py", "node build.mjs", "mkdir -p out", "rm notes.txt", "mv a.txt b.txt", "cp -r src backup", "touch file",
-  "curl -sL https://example.com/data.json -o data.json", "open -a Safari https://dusk.bot", "chmod +x build.sh", "chmod -R u+w ./dist",
+  "curl -sL https://example.com/data.json -o data.json", "open -a Safari https://madani.bot", "chmod +x build.sh", "chmod -R u+w ./dist",
   "defaults read com.apple.dock", "claude -p 'summarize this'", "tar -xzf archive.tgz", "find . -name '*.log'", "du -sh ~/Downloads",
   "/usr/bin/git status", "zip -r site.zip site", "say done",
 ];
@@ -84,7 +84,7 @@ test("files, downloads and opens: safe in the person's own folders, risky at key
     ["mac_write_file", { path: "~/code/site/index.html", content: "x" }], ["mac_write_file", { path: "notes/today.md", content: "x" }],
     ["mac_download", { url: "https://example.com/a.zip" }], ["mac_download", { url: "https://example.com/a.zip", to: "~/Downloads/x/" }],
     ["mac_download", { url: "https://example.com/a.zip", to: "~/Documents/" }],
-    ["mac_open", { target: "https://dusk.bot" }], ["mac_open", { target: "mailto:a@b.c" }], ["mac_open", { target: "Safari" }],
+    ["mac_open", { target: "https://madani.bot" }], ["mac_open", { target: "mailto:a@b.c" }], ["mac_open", { target: "Safari" }],
     ["mac_open", { target: "~/Downloads/report.pdf" }], ["mac_open", { target: "~/code/site", app: "Visual Studio Code" }],
   ];
   for (const [tool, args] of safe) assert.equal(macActionRisk(tool, args, HOME), null, `${tool} ${JSON.stringify(args)}`);

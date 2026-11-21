@@ -83,7 +83,7 @@ export function SecretRequestCardBody({
   const custom = secret.target === CUSTOM_SECRET_TARGET;
   // A page reached through a desktop paired to another computer: a key that computer keeps in its own encrypted store can
   // only be typed there. Anything its server keeps, a custom secret or a provider key, is typed here like on any page.
-  const onlyOnHost = window.duskDesktop?.remoteClient?.active === true && secret.target !== CUSTOM_SECRET_TARGET && desktopCredentialSlot(secret.target) !== null;
+  const onlyOnHost = window.madaniDesktop?.remoteClient?.active === true && secret.target !== CUSTOM_SECRET_TARGET && desktopCredentialSlot(secret.target) !== null;
   const outcome = credentialResumeOutcome(secret);
   const provided = outcome === "provided";
   const declined = outcome === "dismissed";
@@ -176,8 +176,8 @@ export function SecretRequestCardBody({
         const request = credentialSaveRequest(target, next);
         const slot = desktopCredentialSlot(target);
         if (isConfigCredentialTarget(target)) {
-          const status: ConfigStatus = slot && window.duskDesktop?.setCredential
-            ? await window.duskDesktop.setCredential(slot, next)
+          const status: ConfigStatus = slot && window.madaniDesktop?.setCredential
+            ? await window.madaniDesktop.setCredential(slot, next)
             : await api(request.path, { method: request.method, body: JSON.stringify(request.body) });
           dispatch({ type: "configStatus", config: status });
         } else await api(request.path, { method: request.method, body: JSON.stringify(request.body) });

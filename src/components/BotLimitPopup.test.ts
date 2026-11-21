@@ -34,7 +34,7 @@ function bridge(snapshot: Record<string, unknown>) {
   };
 }
 async function open(plan?: ReturnType<typeof bridge>) {
-  (window as unknown as { duskDesktop?: unknown }).duskDesktop = plan ? { cloudPlan: plan } : undefined;
+  (window as unknown as { madaniDesktop?: unknown }).madaniDesktop = plan ? { cloudPlan: plan } : undefined;
   await act(async () => { root.render(createElement(BotLimitPopup)); });
   await act(async () => { showBotLimit(); });
   await act(async () => {});
@@ -50,7 +50,7 @@ beforeEach(() => {
 afterEach(async () => {
   await act(async () => { closeBotLimit(); root.unmount(); });
   host.remove();
-  delete (window as unknown as { duskDesktop?: unknown }).duskDesktop;
+  delete (window as unknown as { madaniDesktop?: unknown }).madaniDesktop;
 });
 
 describe("the bot limit popup", () => {
@@ -111,7 +111,7 @@ describe("the bot limit popup", () => {
     expect(dialog()!.querySelector("p")?.textContent).toBe("To create more, upgrade this cloud on its plan page. Every bot you have stays as it is.");
     expect(buttons()).toEqual(["Open the plan page", "Not now", "Close"]);
     await press("Open the plan page");
-    expect(openExternalLink).toHaveBeenCalledExactlyOnceWith("https://dusk.bot/dashboard/cloud");
+    expect(openExternalLink).toHaveBeenCalledExactlyOnceWith("https://madani.bot/dashboard/cloud");
   });
 
   it("on a person's other Cloud, which only reads its plan, opens its Plan page and closes", async () => {

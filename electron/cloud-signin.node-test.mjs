@@ -9,7 +9,7 @@ import { APP_LINK, cleanCode, cleanEmail, isAppLink, linkFailure, parseAppLink, 
 const accessToken = `omc_${"E".repeat(43)}`, ATTEMPT = "a".repeat(43), CODE = "48201937";
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
 async function until(check) { for (let i = 0; i < 200; i++) { if (check()) return; await sleep(5); } assert.fail("Fixture did not reach the expected state"); }
-/** A fixture Admin with the phone apps' email-code routes (dusk-cloud server/cloud-app-signin.ts) and the desktop session. */
+/** A fixture Admin with the phone apps' email-code routes (madani-cloud server/cloud-app-signin.ts) and the desktop session. */
 async function fixture(t, options = {}) {
   const f = { now: 1_800_000_000_000, requests: [], saved: null, states: [], browsers: [], code: CODE, wrong: 0,
     start: null, verify: null, entitlement: { plan: "free", status: "inactive", expiresAt: null, version: 0 } };
@@ -219,21 +219,21 @@ test("with nowhere to keep a sign-in, the code is never sent, so it still works 
 });
 
 test("the app's sign-in link: PKCE start address, strict link reading, the service's providers", () => {
-  const link = linkSignIn("https://dusk.bot", "google");
+  const link = linkSignIn("https://madani.bot", "google");
   const url = new URL(link.url);
-  assert.equal(`${url.origin}${url.pathname}`, "https://dusk.bot/v1/auth/app/start");
+  assert.equal(`${url.origin}${url.pathname}`, "https://madani.bot/v1/auth/app/start");
   assert.deepEqual(Object.fromEntries(url.searchParams), { provider: "google", code_challenge: createHash("sha256").update(link.verifier).digest("base64url"),
     code_challenge_method: "S256", state: link.state, redirect_uri: APP_LINK, landing: "page" });
   assert.equal(link.url.includes(link.verifier), false, "the verifier never leaves main");
-  assert.equal(linkSignIn("https://dusk.bot", "email"), null);
+  assert.equal(linkSignIn("https://madani.bot", "email"), null);
   const state = "s".repeat(43), code = "c".repeat(43);
-  assert.deepEqual(parseAppLink(`duskbot://auth?code=${code}&state=${state}`), { state, code });
-  assert.deepEqual(parseAppLink(`duskbot://auth?error=oauth_denied&state=${state}`), { state, error: "oauth_denied" });
-  for (const bad of [`duskbot://auth?code=${code}`, `duskbot://auth?code=${code}&state=${state}&state=${state}`, `duskbot://auth?code=short&state=${state}`,
-    `duskbot://auth?code=${code}&error=x&state=${state}`, `duskbot://authx?code=${code}&state=${state}`, `https://dusk.bot/?code=${code}&state=${state}`, `duskbot://thread/x`, 42, null]) {
+  assert.deepEqual(parseAppLink(`madanibot://auth?code=${code}&state=${state}`), { state, code });
+  assert.deepEqual(parseAppLink(`madanibot://auth?error=oauth_denied&state=${state}`), { state, error: "oauth_denied" });
+  for (const bad of [`madanibot://auth?code=${code}`, `madanibot://auth?code=${code}&state=${state}&state=${state}`, `madanibot://auth?code=short&state=${state}`,
+    `madanibot://auth?code=${code}&error=x&state=${state}`, `madanibot://authx?code=${code}&state=${state}`, `https://madani.bot/?code=${code}&state=${state}`, `madanibot://thread/x`, 42, null]) {
     assert.equal(parseAppLink(bad), null, String(bad));
   }
-  assert.equal(isAppLink("duskbot://auth?x=1"), true); assert.equal(isAppLink("duskbot://authorize"), false);
+  assert.equal(isAppLink("madanibot://auth?x=1"), true); assert.equal(isAppLink("madanibot://authorize"), false);
   assert.deepEqual(["oauth_denied", "oauth_expired", "signup_closed", "identity_taken", "oauth_failed", "anything"].map(linkFailure),
     ["signin-cancelled", "enrollment-expired", "signup-closed", "identity-taken", "signin-failed", "signin-failed"]);
   assert.deepEqual(parseProviders({ v: 1, recovery: true, providers: [{ id: "apple", enabled: true }, { id: "google", enabled: true }, { id: "x", enabled: false, comingSoon: true }, { id: "other", enabled: true }] }),
@@ -251,15 +251,15 @@ test("one tap: the browser comes back through the link and this computer is sign
   const opened = new URL(f.browsers.at(-1));
   f.challenge = opened.searchParams.get("code_challenge");
   const state = opened.searchParams.get("state");
-  assert.equal((await f.client.finishLink(`duskbot://auth?code=${"C".repeat(43)}&state=${"x".repeat(43)}`)).outcome, "ignored");
+  assert.equal((await f.client.finishLink(`madanibot://auth?code=${"C".repeat(43)}&state=${"x".repeat(43)}`)).outcome, "ignored");
   await f.client.reopen();
   assert.equal(f.browsers.at(-1), opened.href, "Reopen opens the same sign-in again");
-  const done = await f.client.finishLink(`duskbot://auth?code=${"C".repeat(43)}&state=${state}`);
+  const done = await f.client.finishLink(`madanibot://auth?code=${"C".repeat(43)}&state=${state}`);
   assert.equal(done.outcome, "signed-in"); assert.equal(done.state.status, "connected");
   assert.equal(f.saved.token, accessToken);
   const token = JSON.parse(f.requests.find(row => row.route === "/v1/auth/app/token").body);
   assert.deepEqual({ ...token, codeVerifier: typeof token.codeVerifier }, { code: "C".repeat(43), codeVerifier: "string", deviceName: "Fixture computer", platform: "darwin", appVersion: "0.1.113" });
-  assert.equal((await f.client.finishLink(`duskbot://auth?code=${"C".repeat(43)}&state=${state}`)).outcome, "ignored", "used once");
+  assert.equal((await f.client.finishLink(`madanibot://auth?code=${"C".repeat(43)}&state=${state}`)).outcome, "ignored", "used once");
 });
 
 test("one tap: a link after ten minutes or a refused code ends the sign-in plainly; a service without providers leaves only the code", async t => {
@@ -268,11 +268,11 @@ test("one tap: a link after ten minutes or a refused code ends the sign-in plain
   await f.client.begin(null, { provider: "apple" });
   let state = new URL(f.browsers.at(-1)).searchParams.get("state");
   f.now += 600_001;
-  assert.deepEqual((await f.client.finishLink(`duskbot://auth?code=${"C".repeat(43)}&state=${state}`)).state, { status: "signed-out", message: "enrollment-expired" });
+  assert.deepEqual((await f.client.finishLink(`madanibot://auth?code=${"C".repeat(43)}&state=${state}`)).state, { status: "signed-out", message: "enrollment-expired" });
   await f.client.begin(null, { provider: "apple" });
   state = new URL(f.browsers.at(-1)).searchParams.get("state");
   f.challenge = "not-this-one";
-  const refused = await f.client.finishLink(`duskbot://auth?code=${"C".repeat(43)}&state=${state}`);
+  const refused = await f.client.finishLink(`madanibot://auth?code=${"C".repeat(43)}&state=${state}`);
   assert.equal(refused.outcome, "failed"); assert.equal(refused.state.message, "signin-failed"); assert.equal(f.saved, null);
 });
 

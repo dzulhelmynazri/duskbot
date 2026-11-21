@@ -40,7 +40,7 @@ const links = () => [...host.querySelectorAll("a")].map((link) => link.getAttrib
 
 beforeEach(() => {
   setLocale("en");
-  (window as { duskDesktop?: unknown }).duskDesktop = { openExternal: fixture.openExternal };
+  (window as { madaniDesktop?: unknown }).madaniDesktop = { openExternal: fixture.openExternal };
   fixture.api.mockRejectedValue(new ApiError(SENTENCE, 409, { error: SENTENCE, url: AUTH_URL }));
   host = document.createElement("div");
   document.body.append(host);
@@ -49,7 +49,7 @@ beforeEach(() => {
 afterEach(() => {
   flushSync(() => root.unmount());
   host.remove();
-  delete (window as { duskDesktop?: unknown }).duskDesktop;
+  delete (window as { madaniDesktop?: unknown }).madaniDesktop;
   vi.clearAllMocks();
 });
 

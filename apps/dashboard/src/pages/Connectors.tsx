@@ -22,7 +22,7 @@ const CATALOG_PAGE = 30;
 
 // the app opens on this app's page in whichever place it has open, so the toast names the workspace it is meant for
 const openConnect = (app: { id: string; label: string }, ws?: { name: string } | null) =>
-  openApp(appLink.connect(app.id), `opening ${app.label} in dusk bot. connect it there${ws ? ` with ${ws.name} open` : ""}.`);
+  openApp(appLink.connect(app.id), `opening ${app.label} in madani bot. connect it there${ws ? ` with ${ws.name} open` : ""}.`);
 
 function ConnectAction({ app, flow, onConnect }: { app: DashApp; flow: AppFlow | undefined; onConnect(): void }) {
   if (flow?.phase === "waking") return <Button size="sm" disabled aria-label={`waking ${flow.workspaceName} to connect ${app.label}`}>waking</Button>;
@@ -91,7 +91,7 @@ function Row({ row, flow, onAuth, menu }: { row: ConnectorRow; flow: AppFlow | u
   );
 }
 
-/** every app dusk bot can connect, searchable and by category */
+/** every app madani bot can connect, searchable and by category */
 function Catalog({ apps, connected, query, flowFor, onConnect }: { apps: DashApp[] | null; connected: string[]; query: string; onConnect(app: DashApp): void; flowFor(app: DashApp): AppFlow | undefined }) {
   const [category, setCategory] = useState<Category | null>(null);
   const pill = usePill();
@@ -162,7 +162,7 @@ export function ConnectorsPage() {
 
   const here = useMemo(() => (workspace ? connections?.[workspace.id] ?? [] : []), [connections, workspace]);
   const byId = useMemo(() => new Map((workspaces ?? []).map((w) => [w.id, w])), [workspaces]);
-  // a dusk cloud we put to sleep takes the action and wakes first; only one its owner stopped, or a quiet mac, says why not
+  // a madani cloud we put to sleep takes the action and wakes first; only one its owner stopped, or a quiet mac, says why not
   const reach = (ws: WorkspaceSummary) => {
     const cloud = cloudForWorkspace(clouds, ws.id), state = reachOf(ws.freshness, cloud);
     return { away: state === "away" ? awayLine(ws, cloud) : null, wake: state === "wake" && cloud ? cloud : undefined };
@@ -170,7 +170,7 @@ export function ConnectorsPage() {
   const inApp = (ws: WorkspaceSummary, app: { id: string }, slug: string | null) => connectedInAppOn(appsInApp, ws.id, [app.id, slug]);
   const start = (ws: WorkspaceSummary | null | undefined, app: { id: string; label: string }, slug: string | null) => {
     if (!ws || !slug || inApp(ws, app, slug)) return openConnect(app, ws);
-    // a computer with no Composio of its own connects apps in its own app; a dusk cloud signs in to Composio from here
+    // a computer with no Composio of its own connects apps in its own app; a madani cloud signs in to Composio from here
     if (!cloudForWorkspace(clouds, ws.id) && appsAvailable[ws.id] === false) return openConnect(app, ws);
     const { away, wake } = reach(ws);
     if (away) return toast(away, "bad");
@@ -217,7 +217,7 @@ export function ConnectorsPage() {
   return (
     <div className="min-w-0">
       <ConnectPill flows={flows} onDismiss={dismiss} />
-      <PageHeader title="apps" sub={workspace ? `connect an app and your bots on ${workspace.name} can use it.` : "connect an app in the dusk bot app and your bots can use it."} />
+      <PageHeader title="apps" sub={workspace ? `connect an app and your bots on ${workspace.name} can use it.` : "connect an app in the madani bot app and your bots can use it."} />
       {workspace && reach(workspace).away && <p role="status" className="-mt-4 mb-6 text-14 text-ink-3">{reach(workspace).away}</p>}
 
       <div className="flex flex-wrap items-center justify-end gap-3">

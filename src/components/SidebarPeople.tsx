@@ -13,7 +13,7 @@ import { openInbox } from "@/state/inbox";
 import { useTeamPeople, type TeamPerson } from "@/state/team-people";
 import { PersonFace } from "./TeamOwner";
 
-/** The bot that is this person's inbox: their own Chief, else their own Dusk. */
+/** The bot that is this person's inbox: their own Chief, else their own Madani. */
 export function inboxBotOf(bots: readonly Bot[], email: string | undefined): Bot | undefined {
   if (!email) return undefined;
   const own = (bot: Bot) => !bot.hidden && botOwner(bot) === email;

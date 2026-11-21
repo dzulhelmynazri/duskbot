@@ -9,7 +9,7 @@ import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { expect, it } from "vitest";
 
-import { launchVerificationServer, runControlDusk, verificationServerEnvironment } from "../scripts/control-dusk.ts";
+import { launchVerificationServer, runControlMadani, verificationServerEnvironment } from "../scripts/control-madani.ts";
 import { waitForExit } from "./testing/cleanup.ts";
 
 const codex = { instanceId: "codex", model: "gpt-fake-default" };
@@ -50,7 +50,7 @@ async function withLimitFixture(setup: { recovery?: unknown; secondClaude?: bool
     return result;
   };
   const control = async (...args: string[]) => {
-    const result = await runControlDusk([...args, "--url", url]) as any;
+    const result = await runControlMadani([...args, "--url", url]) as any;
     evidence.push({ command: args, result });
     return result;
   };
@@ -72,7 +72,7 @@ async function withLimitFixture(setup: { recovery?: unknown; secondClaude?: bool
         "--experimental-strip-types", "--import", new URL("./testing/limit-clock-hooks.mjs", import.meta.url).href, fileURLToPath(new URL("./index.ts", import.meta.url)),
       ], {
         cwd: fileURLToPath(new URL("..", import.meta.url)),
-        env: { ...verificationServerEnvironment({}, dataDir, Number(new URL(url).port)), DUSK_TEST_LIMIT_CLOCK: "1", DUSK_TEST_PLAN_USAGE_FILE: usageFile },
+        env: { ...verificationServerEnvironment({}, dataDir, Number(new URL(url).port)), MADANI_TEST_LIMIT_CLOCK: "1", MADANI_TEST_PLAN_USAGE_FILE: usageFile },
         stdio: ["ignore", log, log],
       });
       closeSync(log);

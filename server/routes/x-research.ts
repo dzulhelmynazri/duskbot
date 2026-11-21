@@ -81,7 +81,7 @@ function parse<T>(schema: z.ZodType<T>, body: unknown): T {
 
 function handleFrom(raw: string): string {
   const handle = normalizeHandle(raw);
-  if (!handle) throw new XResearchError("bad_input", "handle must be an X handle such as @duskbot, or an x.com profile link.");
+  if (!handle) throw new XResearchError("bad_input", "handle must be an X handle such as @madanibot, or an x.com profile link.");
   return handle;
 }
 

@@ -1,10 +1,10 @@
 {
   "path": "/run-claude-code-24-7",
   "type": "pillar",
-  "title": "Run Claude Code 24/7: laptop, server or dusk cloud",
+  "title": "Run Claude Code 24/7: laptop, server or madani cloud",
   "nav": "claude code around the clock",
   "h1": "how to run claude code 24/7",
-  "description": "Choose where a Claude Code bot lives, understand overnight limits, and compare your laptop, your own server and dusk cloud.",
+  "description": "Choose where a Claude Code bot lives, understand overnight limits, and compare your laptop, your own server and madani cloud.",
   "keyword": "run claude code 24/7",
   "keywords": [
     "can claude code run 24 7",
@@ -13,7 +13,7 @@
     "claude code vps",
     "claude code background agent"
   ],
-  "answer": "**the 7am brief won't arrive from a laptop that went to sleep at midnight.** a dusk bot using claude code needs an awake computer and open app. your server or dusk cloud keeps it available overnight, within ai limits and any human questions. as of 12 november 2026, anthropic also offers cloud sessions and scheduled tasks. compare those before buying another host.",
+  "answer": "**the 7am brief won't arrive from a laptop that went to sleep at midnight.** a madani bot using claude code needs an awake computer and open app. your server or madani cloud keeps it available overnight, within ai limits and any human questions. as of 12 november 2026, anthropic also offers cloud sessions and scheduled tasks. compare those before buying another host.",
   "updated": "2026-11-12",
   "review": {
     "status": "approved",
@@ -42,8 +42,8 @@
   },
   "og_line": "choose a home for overnight work.",
   "table": {
-    "h": "three homes for a dusk bot",
-    "intro": "**hosting keeps the machine on, not the ai allowance topped up.** these dusk prices reflect 12 november 2026. server rental and ai usage have their own bills.",
+    "h": "three homes for a madani bot",
+    "intro": "**hosting keeps the machine on, not the ai allowance topped up.** these madani prices reflect 12 november 2026. server rental and ai usage have their own bills.",
     "cols": [
       "home",
       "what stays running",
@@ -53,7 +53,7 @@
       {
         "label": "your laptop",
         "cells": [
-          "the computer stays awake and dusk stays open",
+          "the computer stays awake and madani stays open",
           "free personal use; work needs a license; ai costs stay yours"
         ],
         "src": [
@@ -73,9 +73,9 @@
         ]
       },
       {
-        "label": "dusk cloud",
+        "label": "madani cloud",
         "cells": [
-          "dusk maintains the computer and backs it up daily",
+          "madani maintains the computer and backs it up daily",
           "plus $20/month; pro $50/month with a one-person work license; ai costs extra"
         ],
         "src": [
@@ -88,23 +88,23 @@
   "sections": [
     {
       "h": "give overnight work a finish",
-      "md": "**give the overnight job a finish you want to wake up to.** for a one-off: read these files, write the summary, stop. for a routine: name fresh inputs, a time and where the answer goes.\n\ndusk bots keep several threads. steer a working bot with another message. if the ai plan runs out, it tells you. wait for the reset or switch ai; chats, files and memory stay.[^5]\n\n24/7 hosting uses your existing ai allowance. the [laptop-closed guide](/agents-when-laptop-closed) also covers spare computers."
+      "md": "**give the overnight job a finish you want to wake up to.** for a one-off: read these files, write the summary, stop. for a routine: name fresh inputs, a time and where the answer goes.\n\nmadani bots keep several threads. steer a working bot with another message. if the ai plan runs out, it tells you. wait for the reset or switch ai; chats, files and memory stay.[^5]\n\n24/7 hosting uses your existing ai allowance. the [laptop-closed guide](/agents-when-laptop-closed) also covers spare computers."
     },
     {
       "h": "try the laptop while you can watch",
-      "md": "**test the job before trusting it with a deadline.** leave dusk open and the laptop awake. keep this computer awake under settings, remote access helps a paired phone reach it.[^6]\n\nlocal routines miss their start during sleep or while dusk is closed:\n\n- less than 12 hours late: one catch-up run when you return\n- older: skipped[^7]\n\ntry a routine that reads current files: \"each weekday at 7, read this project's planning folder. list open decisions here. change no files.\" watch a run before relying on it."
+      "md": "**test the job before trusting it with a deadline.** leave madani open and the laptop awake. keep this computer awake under settings, remote access helps a paired phone reach it.[^6]\n\nlocal routines miss their start during sleep or while madani is closed:\n\n- less than 12 hours late: one catch-up run when you return\n- older: skipped[^7]\n\ntry a routine that reads current files: \"each weekday at 7, read this project's planning folder. list open decisions here. change no files.\" watch a run before relying on it."
     },
     {
       "h": "rent a server if you want the upkeep",
-      "md": "**cheap hosting still gives you a computer to maintain.** dusk's own-server setup needs:[^3]\n\n- ubuntu 22.04 or 24.04\n- at least 2 gb memory\n- root or sudo access\n\npaste the line the app gives you; setup takes about ten minutes. no domain or open ports. app and server use a relay sealed with a key only they hold.\n\nuse a fresh server. updates, backups and hosting remain your job. compare the quote and your time in the [cost calculator](/tools/always-on-cost)."
+      "md": "**cheap hosting still gives you a computer to maintain.** madani's own-server setup needs:[^3]\n\n- ubuntu 22.04 or 24.04\n- at least 2 gb memory\n- root or sudo access\n\npaste the line the app gives you; setup takes about ten minutes. no domain or open ports. app and server use a relay sealed with a key only they hold.\n\nuse a fresh server. updates, backups and hosting remain your job. compare the quote and your time in the [cost calculator](/tools/always-on-cost)."
     },
     {
-      "h": "use dusk cloud when the laptop needs to sleep",
-      "md": "**let the laptop sleep without taking the morning brief with it.** pick a plan and sign in under settings, dusk cloud. the welcome moves chats, memory and routines with your bots. the machine is yours, not shared; dusk makes daily backups.[^1]\n\nplus keeps a good amount of bot desktops awake; pro is for heavy workloads. pair your phone to that cloud computer and reach the bots with your laptop off.[^6]\n\nthe [phone guide](/claude-code-from-your-phone) separates dusk bot chat from anthropic's remote control. the phone reaches the work running elsewhere."
+      "h": "use madani cloud when the laptop needs to sleep",
+      "md": "**let the laptop sleep without taking the morning brief with it.** pick a plan and sign in under settings, madani cloud. the welcome moves chats, memory and routines with your bots. the machine is yours, not shared; madani makes daily backups.[^1]\n\nplus keeps a good amount of bot desktops awake; pro is for heavy workloads. pair your phone to that cloud computer and reach the bots with your laptop off.[^6]\n\nthe [phone guide](/claude-code-from-your-phone) separates madani bot chat from anthropic's remote control. the phone reaches the work running elsewhere."
     },
     {
       "h": "read anthropic’s current rules too",
-      "md": "**pick the permitted access route before leaving it running overnight.** as of 12 november 2026, anthropic describes personal sign-in to unmodified claude code, including on hosted platforms.[^8]\n\nits conditions include:\n\n- run the app as anthropic publishes it\n- leave its sign-in methods available\n- meet the commercial hosting terms\n- developers cannot offer claude.ai login or handle its sign-ins for others\n\nthose conditions do not rule on dusk or another app.\n\nanthropic's consumer terms restrict automated or non-human access except with an api key or permission.[^11] its login help reserves usage-credit billing for certain third-party tools.[^12] for unattended work, the terms name the api-key route. read the current terms before choosing.\n\nalso compare anthropic's own hosting: cloud sessions continue with the laptop closed, and cloud scheduled tasks repeat saved configurations.[^9][^10] if they fit, you may not need another host. the [scheduler guide](/guides/claude-scheduled-tasks) explains cloud tasks, local tasks and loops in an open session."
+      "md": "**pick the permitted access route before leaving it running overnight.** as of 12 november 2026, anthropic describes personal sign-in to unmodified claude code, including on hosted platforms.[^8]\n\nits conditions include:\n\n- run the app as anthropic publishes it\n- leave its sign-in methods available\n- meet the commercial hosting terms\n- developers cannot offer claude.ai login or handle its sign-ins for others\n\nthose conditions do not rule on madani or another app.\n\nanthropic's consumer terms restrict automated or non-human access except with an api key or permission.[^11] its login help reserves usage-credit billing for certain third-party tools.[^12] for unattended work, the terms name the api-key route. read the current terms before choosing.\n\nalso compare anthropic's own hosting: cloud sessions continue with the laptop closed, and cloud scheduled tasks repeat saved configurations.[^9][^10] if they fit, you may not need another host. the [scheduler guide](/guides/claude-scheduled-tasks) explains cloud tasks, local tasks and loops in an open session."
     }
   ],
   "faq": [
@@ -113,8 +113,8 @@
       "a": "**start with a task that ends and a route for questions.** use ask for approval for commands and file edits, and read-only apps for reading.[^4] anthropic's terms name api keys for automated access unless it permits another route. read the current terms first.[^11]"
     },
     {
-      "q": "will dusk cloud remove claude limits?",
-      "a": "**buy more ai allowance separately.** cloud buys the machine. dusk's docs suggest a bigger ai plan or api key for heavy round-the-clock use.[^1]"
+      "q": "will madani cloud remove claude limits?",
+      "a": "**buy more ai allowance separately.** cloud buys the machine. madani's docs suggest a bigger ai plan or api key for heavy round-the-clock use.[^1]"
     },
     {
       "q": "can i answer an overnight approval from my phone?",
@@ -123,31 +123,31 @@
   ],
   "sources": [
     {
-      "label": "dusk bot: dusk cloud",
-      "url": "/docs/dusk-cloud"
+      "label": "madani bot: madani cloud",
+      "url": "/docs/madani-cloud"
     },
     {
-      "label": "dusk bot: billing",
+      "label": "madani bot: billing",
       "url": "/docs/account-and-billing"
     },
     {
-      "label": "dusk bot: your own server",
+      "label": "madani bot: your own server",
       "url": "/docs/your-own-server"
     },
     {
-      "label": "dusk bot: computer and approvals",
+      "label": "madani bot: computer and approvals",
       "url": "/docs/computer"
     },
     {
-      "label": "dusk bot: bots",
+      "label": "madani bot: bots",
       "url": "/docs/bots"
     },
     {
-      "label": "dusk bot: phone",
+      "label": "madani bot: phone",
       "url": "/docs/phone"
     },
     {
-      "label": "dusk bot: routines",
+      "label": "madani bot: routines",
       "url": "/docs/routines"
     },
     {

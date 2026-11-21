@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef } from "react";
 
 import type { AppState, Bot } from "@/state/store";
 import { onAnyTurnLive, turnLive } from "@/state/turn-status";
-import { duskBody } from "../../shared/body-migration";
+import { madaniBody } from "../../shared/body-migration";
 import { turnActivityEnded, turnActivityStart, type TurnActivityRegistration, type TurnActivityState } from "../../shared/phone-activity";
 import { liveActivityEnabled, subscribeLiveActivity } from "./live-activity-setting";
 import type { MobilePlatform } from "./platform";
@@ -97,7 +97,7 @@ export function useTurnActivities(platform: MobilePlatform, state: AppState): (b
     if (!bridge || !liveActivityEnabled() || Array.from(tracked.current.values()).some((one) => one.threadId === bot.threadId)) return;
     const startedAt = Math.floor(Date.now() / 1000);
     const initial = turnActivityStart(startedAt);
-    void bridge.start({ botId: bot.id, botName: bot.name, threadId: bot.threadId, color: bot.color, body: duskBody(bot.mascotBody) }, initial).then((id) => {
+    void bridge.start({ botId: bot.id, botName: bot.name, threadId: bot.threadId, color: bot.color, body: madaniBody(bot.mascotBody) }, initial).then((id) => {
       if (id) tracked.current.set(id, { id, botId: bot.id, threadId: bot.threadId, state: initial, underway: false, createdAt: Date.now() });
     }).catch(() => {});
   }, [bridge]);

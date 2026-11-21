@@ -1,5 +1,5 @@
-// Buying dusk cloud as a new person, for real in Dodo's TEST mode (nothing is charged): a fresh account at the app's gate,
-// the welcome's dusk cloud, a plan, the checkout the app opens in the browser paid with the test card in a headless
+// Buying madani cloud as a new person, for real in Dodo's TEST mode (nothing is charged): a fresh account at the app's gate,
+// the welcome's madani cloud, a plan, the checkout the app opens in the browser paid with the test card in a headless
 // Chrome (../dodo-test-pay.mjs), then the app by itself: payment seen, the cloud set up, the bots moved, the bots
 // working on it. Leaves the account and its cloud in place unless --delete is given (the stress account is kept).
 //
@@ -10,24 +10,24 @@ import { payDodoTestCheckout } from "../dodo-test-pay.mjs";
 
 const { root, out, profile, email } = flowArgs("buy");
 // the app works signed out now; this flow starts from a signed-in account, at the sign-in an install can still require
-const flow = createFlow({ name: "buy-cloud", title: "buy dusk cloud (test mode)", root, out, profile, email, env: { DUSK_REQUIRE_ACCOUNT: "1" } });
+const flow = createFlow({ name: "buy-cloud", title: "buy madani cloud (test mode)", root, out, profile, email, env: { MADANI_REQUIRE_ACCOUNT: "1" } });
 const headings = () => flow.evaluate(`[...document.querySelectorAll("h1,h2,[role=dialog] h2,[data-add-cloud-flow],[data-cloud-move]")].filter((e) => e.getClientRects().length)
   .map((e) => e.getAttribute("data-add-cloud-flow") ? "flow:" + e.getAttribute("data-add-cloud-flow") : e.getAttribute("data-cloud-move") ? "move:" + e.getAttribute("data-cloud-move") : e.innerText.trim()).join(" / ")`);
-const myCloud = () => flow.evaluate(`window.duskDesktop.cloudAccount.state().then((s) => (s.clouds ?? [])[0] ?? null)`);
+const myCloud = () => flow.evaluate(`window.madaniDesktop.cloudAccount.state().then((s) => (s.clouds ?? [])[0] ?? null)`);
 
 await runFlow(flow, async () => {
   await flow.step("launch", "a fresh app starts at the account gate", async () => {
     await flow.launch();
-    await flow.waitText(/sign in to dusk bot/i, "the account gate", { timeout: 120_000 });
+    await flow.waitText(/sign in to madani bot/i, "the account gate", { timeout: 120_000 });
   }, { critical: true });
 
   await flow.step("sign-in", "signs in with an emailed code", () => flow.signInAtGate(), { critical: true });
 
-  await flow.step("plans", "dusk cloud opens the plans", async () => {
-    await flow.waitText(/meet dusk bot|where should your bots live/i, "the welcome", { timeout: 60_000 });
+  await flow.step("plans", "madani cloud opens the plans", async () => {
+    await flow.waitText(/meet madani bot|where should your bots live/i, "the welcome", { timeout: 60_000 });
     await flow.click("get started", { timeout: 10_000 }).catch(() => {});
     await flow.waitText(/where should your bots live/i, "where should your bots live");
-    await flow.click("dusk cloud", { contains: true });
+    await flow.click("madani cloud", { contains: true });
     await flow.waitFor(`Boolean(document.querySelector("[data-plan-buy]"))`, "a plan to buy", 30_000);
     flow.facts.plans = await flow.evaluate(`[...document.querySelectorAll("[data-plan]")].map((p) => p.getAttribute("data-plan") + ": " + p.innerText.replace(/\\s+/g, " ").slice(0, 80))`);
     return flow.facts.plans.join(" | ").slice(0, 300);
@@ -57,7 +57,7 @@ await runFlow(flow, async () => {
 
   await flow.step("payment-seen", "the app sees the payment by itself", async () => {
     const started = Date.now();
-    await flow.waitFor(`window.duskDesktop.cloudAccount.state().then((s) => (s.clouds ?? []).length > 0 || (s.entitlement?.plan && s.entitlement.plan !== "free"))`, "the payment in the app", 5 * 60_000);
+    await flow.waitFor(`window.madaniDesktop.cloudAccount.state().then((s) => (s.clouds ?? []).length > 0 || (s.entitlement?.plan && s.entitlement.plan !== "free"))`, "the payment in the app", 5 * 60_000);
     flow.facts.paymentSeenSeconds = Math.round((Date.now() - started) / 1000);
     if (flow.facts.paymentSeenSeconds > 30) flow.friction("slow", "after paying", `the app took ${flow.facts.paymentSeenSeconds}s to notice the payment`);
     return `${flow.facts.paymentSeenSeconds}s; screen: ${await headings()}`;
@@ -93,19 +93,19 @@ await runFlow(flow, async () => {
       if (!seen.has(screen)) { seen.add(screen); flow.log(`screen: ${screen}`); }
       const where = await flow.evaluate(`location.host`);
       const chat = await flow.evaluate(`Boolean(document.querySelector('textarea[aria-label^="Message"]'))`);
-      const welcome = await flow.evaluate(`/welcome to dusk cloud/i.test(document.body.innerText)`).catch(() => false);
+      const welcome = await flow.evaluate(`/welcome to madani cloud/i.test(document.body.innerText)`).catch(() => false);
       if (welcome && !flow.facts.cloudWelcome) {
         flow.facts.cloudWelcome = true;
-        flow.friction("extra-click", "on the new cloud", "a second welcome (\"welcome to dusk cloud\", start chatting / not now) covers the chat right after the first-run welcome ended");
+        flow.friction("extra-click", "on the new cloud", "a second welcome (\"welcome to madani cloud\", start chatting / not now) covers the chat right after the first-run welcome ended");
       }
       // the window is on the cloud, its chat is there and nothing covers it
-      if (where === host && chat && !welcome) { await sleep(3000); if (!(await flow.evaluate(`/welcome to dusk cloud/i.test(document.body.innerText)`))) break; }
+      if (where === host && chat && !welcome) { await sleep(3000); if (!(await flow.evaluate(`/welcome to madani cloud/i.test(document.body.innerText)`))) break; }
       // what a person presses to go on: a move offer, then the welcome's ways forward (never "not now")
       const pressed = await flow.evaluate(`(() => {
         const shown = (sel) => [...document.querySelectorAll(sel)].filter((e) => e.getClientRects().length && !e.disabled);
         const move = shown("[data-cloud-move-accept]")[0];
         if (move) { move.click(); return "move"; }
-        const words = ["start chatting", "open dusk cloud", "start with the free model", "skip for now", "skip", "continue"];
+        const words = ["start chatting", "open madani cloud", "start with the free model", "skip for now", "skip", "continue"];
         for (const word of words) { const b = shown("button").find((e) => e.innerText.trim().toLowerCase() === word); if (b) { b.click(); return word; } }
         return null;
       })()`).catch(() => null);

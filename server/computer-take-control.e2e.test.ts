@@ -1,7 +1,7 @@
 import { randomUUID } from "node:crypto";
 import { existsSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
-import { launchVerificationServer, type VerificationServer } from "../scripts/control-dusk.ts";
+import { launchVerificationServer, type VerificationServer } from "../scripts/control-madani.ts";
 import { createTeamVpsFixture } from "../scripts/testing/team-vps-fixture.ts";
 import { fakeDesktopFrame } from "../scripts/testing/fake-desktop-frame.ts";
 import { vpsContainerName } from "./vps-computer.ts";

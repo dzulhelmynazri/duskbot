@@ -65,7 +65,7 @@ export function departmentOwner(bots: ReadonlyArray<{ createdBy?: string; report
   return first && owners.every((owner) => owner?.email === first.email) ? first : null;
 }
 
-/** A teammate's Dusk named for its person ("Dusk · Ada"); any other bot, and the viewer's own Dusk, by its name. */
+/** A teammate's Madani named for its person ("Madani · Ada"); any other bot, and the viewer's own Madani, by its name. */
 export function teamBotName(bot: { name: string; defaultBot?: { person?: string } }, team: Pick<TeamPeople, "people" | "me"> | null): string {
   const person = bot.defaultBot?.person?.trim().toLowerCase();
   if (!person || !team || team.me?.email.toLowerCase() === person) return bot.name;

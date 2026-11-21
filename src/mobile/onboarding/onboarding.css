@@ -1,14 +1,14 @@
 /* the onboarding sky: slow ambient loops only (a twinkle, a float, a drift), all stopped under reduced motion */
-@keyframes dusk-twinkle { 0%, 100% { opacity: var(--twinkle-low, .2); } 50% { opacity: 1; } }
-@keyframes dusk-float { 0%, 100% { translate: 0 -4px; } 50% { translate: 0 5px; } }
-@keyframes dusk-cloud { from { translate: -6% 0; } to { translate: 6% 0; } }
-@keyframes dusk-scanline { from { translate: 0 0; } to { translate: 0 var(--scan-travel, 220px); } }
-@keyframes dusk-pulse { 0%, 100% { opacity: .35; } 50% { opacity: 1; } }
-.dusk-twinkle { animation: dusk-twinkle 4s ease-in-out infinite; }
-.dusk-float { animation: dusk-float 6s ease-in-out infinite; }
-.dusk-cloud { animation: dusk-cloud 50s ease-in-out infinite alternate; }
-.dusk-scanline { animation: dusk-scanline 2.2s cubic-bezier(.45,0,.55,1) infinite alternate; }
-.dusk-pulse { animation: dusk-pulse 1.6s ease-in-out infinite; }
+@keyframes madani-twinkle { 0%, 100% { opacity: var(--twinkle-low, .2); } 50% { opacity: 1; } }
+@keyframes madani-float { 0%, 100% { translate: 0 -4px; } 50% { translate: 0 5px; } }
+@keyframes madani-cloud { from { translate: -6% 0; } to { translate: 6% 0; } }
+@keyframes madani-scanline { from { translate: 0 0; } to { translate: 0 var(--scan-travel, 220px); } }
+@keyframes madani-pulse { 0%, 100% { opacity: .35; } 50% { opacity: 1; } }
+.madani-twinkle { animation: madani-twinkle 4s ease-in-out infinite; }
+.madani-float { animation: madani-float 6s ease-in-out infinite; }
+.madani-cloud { animation: madani-cloud 50s ease-in-out infinite alternate; }
+.madani-scanline { animation: madani-scanline 2.2s cubic-bezier(.45,0,.55,1) infinite alternate; }
+.madani-pulse { animation: madani-pulse 1.6s ease-in-out infinite; }
 @media (prefers-reduced-motion: reduce) {
-  .dusk-twinkle, .dusk-float, .dusk-cloud, .dusk-scanline, .dusk-pulse { animation: none; }
+  .madani-twinkle, .madani-float, .madani-cloud, .madani-scanline, .madani-pulse { animation: none; }
 }

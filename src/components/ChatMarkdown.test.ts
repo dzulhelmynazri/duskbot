@@ -554,37 +554,37 @@ describe("#Title thread links in markdown", () => {
   });
 
   it("renders a sent canonical link as a chip that opens the thread", () => {
-    const markup = render("done in [QA PR 245](duskbot://thread/qa-245?bot=scout) today");
+    const markup = render("done in [QA PR 245](madanibot://thread/qa-245?bot=scout) today");
     expect(markup).toContain('<button type="button" data-thread-link="qa-245"');
     expect(markup).toContain(">QA PR 245</button>");
-    expect(markup).not.toContain('href="duskbot://');
+    expect(markup).not.toContain('href="madanibot://');
   });
 
   it("keeps a dead thread link as plain text, never an external anchor", () => {
-    const markup = render("see [Gone](duskbot://thread/dead?bot=scout)");
+    const markup = render("see [Gone](madanibot://thread/dead?bot=scout)");
     expect(markup).toContain(">Gone<");
     expect(markup).not.toContain("data-thread-link");
-    expect(markup).not.toContain('href="duskbot://');
+    expect(markup).not.toContain('href="madanibot://');
     expect(markup).not.toContain('target="_blank"');
   });
 });
 
 describe("a Use my Mac link in an older bot message", () => {
-  const text = "To let me use your apps, press [Use my Mac](duskbot://use-my-computer).";
+  const text = "To let me use your apps, press [Use my Mac](madanibot://use-my-computer).";
 
   it("is plain text everywhere, even in this app with an older Cloud's bridge: this computer is lent by itself", () => {
     const offer = vi.fn(async () => {});
-    window.duskDesktop = { platform: "darwin", cloudLending: { open: async () => {}, offer } } as unknown as typeof window.duskDesktop;
+    window.madaniDesktop = { platform: "darwin", cloudLending: { open: async () => {}, offer } } as unknown as typeof window.madaniDesktop;
     try {
       const markup = renderToStaticMarkup(createElement(ChatMarkdown, { text }));
       expect(markup).toContain(">Use my Mac<");
       expect(markup).not.toContain("<button");
-      expect(markup).not.toContain('href="duskbot://');
+      expect(markup).not.toContain('href="madanibot://');
       expect(offer).not.toHaveBeenCalled();
     } finally {
-      delete window.duskDesktop;
+      delete window.madaniDesktop;
     }
-    expect(chatUrlTransform("duskbot://use-my-computer")).toBe("duskbot://use-my-computer");
+    expect(chatUrlTransform("madanibot://use-my-computer")).toBe("madanibot://use-my-computer");
   });
 });
 
@@ -639,7 +639,7 @@ describe("application and rejected Markdown links", () => {
 });
 
 describe("a bot's link to a page it published", () => {
-  const PAGE = "https://abcdefghijklmnopqrstuvwxyz.page.dusk.bot/";
+  const PAGE = "https://abcdefghijklmnopqrstuvwxyz.page.madani.bot/";
   const text = `Here is your dashboard: [Sales dashboard](${PAGE})`;
   async function clickPage(store?: Parameters<typeof BotEditorStore>[0]["value"]) {
     const host = document.createElement("div");
@@ -661,7 +661,7 @@ describe("a bot's link to a page it published", () => {
 
   it("in the desktop app, opens like the card's Open: in the bot's browser panel, never as a message", async () => {
     const openExternal = vi.fn(async () => {});
-    window.duskDesktop = { platform: "darwin", openExternal } as unknown as typeof window.duskDesktop;
+    window.madaniDesktop = { platform: "darwin", openExternal } as unknown as typeof window.madaniDesktop;
     const dispatch = vi.fn();
     try {
       const state = { ...initialState, selectedId: "pepper", bots: [{ id: "pepper" }], config: { features: { browser: true }, browserEngine: { kind: "engine" } } };
@@ -670,7 +670,7 @@ describe("a bot's link to a page it published", () => {
       expect(dispatch.mock.calls).toEqual([[{ type: "toggleComputer", open: true }]]);
       expect(openExternal).not.toHaveBeenCalled();
     } finally {
-      delete window.duskDesktop;
+      delete window.madaniDesktop;
     }
   });
 
@@ -796,14 +796,14 @@ describe("ChatMarkdown attachments", () => {
     const preview = vi.spyOn(AttachmentPreview, "MarkdownImagePreview");
     try {
       const html = renderToStaticMarkup(createElement(ChatMarkdown, {
-        text: "[Report](C:\\Users\\Maus\\.duskbot\\report.md)\n\n![Chart](C:\\Users\\Maus\\.duskbot\\chart.png)",
+        text: "[Report](C:\\Users\\Maus\\.madanibot\\report.md)\n\n![Chart](C:\\Users\\Maus\\.madanibot\\chart.png)",
         message: { threadId: "thread-1", messageId: "message-1" },
       }));
       expect(html).toContain('title="Preview file: report.md"');
       expect(html).not.toContain('href=""');
       expect(html).not.toContain("Image unavailable");
-      expect(save.mock.calls[0]?.[0]).toBe("C:\\Users\\Maus\\.duskbot\\report.md");
-      expect(preview.mock.calls[0]?.[0].filePath).toBe("C:\\Users\\Maus\\.duskbot\\chart.png");
+      expect(save.mock.calls[0]?.[0]).toBe("C:\\Users\\Maus\\.madanibot\\report.md");
+      expect(preview.mock.calls[0]?.[0].filePath).toBe("C:\\Users\\Maus\\.madanibot\\chart.png");
     } finally {
       save.mockRestore();
       preview.mockRestore();
@@ -881,7 +881,7 @@ describe("ChatMarkdown attachments", () => {
     const revealInFolder = vi.fn(async () => "shown" as const);
 
     it("offers Show in folder in the local desktop app, without printing the path", () => {
-      vi.stubGlobal("window", { duskDesktop: { revealInFolder, remoteClient: { active: false } } });
+      vi.stubGlobal("window", { madaniDesktop: { revealInFolder, remoteClient: { active: false } } });
       try {
         const html = render(true);
         expect(html).toContain("This file is outside this chat&#x27;s working folder, so it can&#x27;t be saved from here");
@@ -894,7 +894,7 @@ describe("ChatMarkdown attachments", () => {
     });
 
     it("shows the full path as selectable text to a remote client instead", () => {
-      vi.stubGlobal("window", { duskDesktop: { revealInFolder, remoteClient: { active: true } } });
+      vi.stubGlobal("window", { madaniDesktop: { revealInFolder, remoteClient: { active: true } } });
       try {
         const html = render(true);
         expect(html).not.toContain("Show in folder");
@@ -915,7 +915,7 @@ describe("ChatMarkdown attachments", () => {
     });
 
     it("leaves other failures alone", () => {
-      vi.stubGlobal("window", { duskDesktop: { revealInFolder, remoteClient: { active: false } } });
+      vi.stubGlobal("window", { madaniDesktop: { revealInFolder, remoteClient: { active: false } } });
       try {
         const html = render(false);
         expect(html).toContain("the linked file is outside this conversation&#x27;s workspace");

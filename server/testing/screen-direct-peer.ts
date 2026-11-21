@@ -51,7 +51,7 @@ desktop.on("upgrade", (req, socket) => {
 await new Promise<void>((resolve) => desktop.listen(0, "127.0.0.1", resolve));
 const desktopPort = (desktop.address() as { port: number }).port;
 
-const sessions = new SessionRegistry({ file: join(mkdtempSync(join(tmpdir(), "dusk-direct-peer-")), "sessions.json") });
+const sessions = new SessionRegistry({ file: join(mkdtempSync(join(tmpdir(), "madani-direct-peer-")), "sessions.json") });
 const admin = sessions.issue({ label: "Mac", scopes: ["admin", "client"] });
 const direct = createScreenDirect({ iceServers: [] });
 let appPort = 0;

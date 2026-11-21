@@ -163,7 +163,7 @@ describe("the scheduler", () => {
   let dir: string;
   let statePath: string;
   beforeEach(() => {
-    dir = mkdtempSync(join(tmpdir(), "dusk-skill-review-"));
+    dir = mkdtempSync(join(tmpdir(), "madani-skill-review-"));
     statePath = join(dir, "skill-review.json");
   });
   afterEach(() => rmSync(dir, { recursive: true, force: true }));

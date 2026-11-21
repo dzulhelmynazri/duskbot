@@ -63,8 +63,8 @@ export function xResearchAction(view: CloudPlanView | null): "connecting" | "sig
 export function cloudPlanLine(view: CloudPlanView): string | null {
   switch (view.kind) {
     case "paid": return t(view.trial ? "cloudAccount.trialPlan" : "cloudAccount.pro", { plan: view.label });
-    case "attention": return t("cloudAccount.inactive", { plan: view.label ?? "dusk cloud" });
-    case "purchase": return t("cloudAccount.purchaseReceived", { plan: view.label ?? "dusk cloud" });
+    case "attention": return t("cloudAccount.inactive", { plan: view.label ?? "madani cloud" });
+    case "purchase": return t("cloudAccount.purchaseReceived", { plan: view.label ?? "madani cloud" });
     case "unverified": return view.label ? t("cloudAccount.lastPlan", { plan: view.label }) : null;
     case "reauth": return view.label ? t("cloudAccount.planName", { plan: view.label }) : null;
     case "free": return t("cloudAccount.free");
@@ -287,7 +287,7 @@ export function cloudIntroView(offer: CloudOffer | null | undefined): { badge: s
 export const CHECKOUT_WAIT_MS = 30 * 60_000;
 
 /** The checkout the sheet waits on by itself: one this app run opened (or reopened) in the last 30 minutes, not yet paid.
- * Anything else still pending (older, or only found open at the Admin after a restart) counts as abandoned: a Get dusk
+ * Anything else still pending (older, or only found open at the Admin after a restart) counts as abandoned: a Get madani
  * cloud click shows the plans, never a payment screen for it. */
 export function freshCheckout(account: CloudAccountState | null | undefined, now: number): NonNullable<CloudAccountState["checkout"]> | null {
   const opened = account?.checkout;

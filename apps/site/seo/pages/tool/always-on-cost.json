@@ -5,10 +5,10 @@
   "title": "Always-on AI agent cost calculator: laptop, server or cloud",
   "nav": "always-on cost calculator",
   "h1": "what does it really cost to keep an ai agent running?",
-  "description": "A free calculator: what a month of keeping AI bots running costs on a spare computer, a rented server or dusk cloud, once your own time counts.",
+  "description": "A free calculator: what a month of keeping AI bots running costs on a spare computer, a rented server or madani cloud, once your own time counts.",
   "keyword": "always on ai agent cost",
   "keywords": ["cost to run ai agent 24/7", "ai agent hosting cost", "vps vs cloud for ai agents"],
-  "answer": "the server is rarely the expensive part. your time is. a spare computer costs a few dollars of power a month, a small server costs whatever your host charges, and both cost you every evening spent on updates and restarts. dusk cloud is a flat $20 or $50 a month and we do the upkeep. put your own numbers in below and see which one wins for you.",
+  "answer": "the server is rarely the expensive part. your time is. a spare computer costs a few dollars of power a month, a small server costs whatever your host charges, and both cost you every evening spent on updates and restarts. madani cloud is a flat $20 or $50 a month and we do the upkeep. put your own numbers in below and see which one wins for you.",
   "updated": "2026-11-12",
   "review": { "status": "approved", "by": "lead agent, rewritten by hand in the new voice; arithmetic checked", "at": "2026-11-12" },
   "tags": ["always-on", "cloud", "server", "cost", "calculator"],
@@ -17,7 +17,7 @@
   "art": { "props": ["s-coins", "p-chart"], "bubble": "about $3 of power" },
   "og_line": "laptop, spare computer, server or cloud.",
   "tool": "always-on-cost",
-  "method": "**electricity is cheap. it's almost never the deciding number.**\n\na spare computer idling all month:\n\n```text\nwatts / 1,000 = kilowatts\nx hours on per day\nx 30.4 days in an average month\nx your price per kwh\n= your monthly power bill for it\n\n20 w, 24 h, $0.20: 0.02 x 24 x 30.4 x 0.20 = about $2.92\n```\n\n**your time is the big one.** updates, a restart after a power cut, a backup you forgot to check. one hour a month at $40 an hour already costs more than the power and most small servers.\n\n**a rented server is its bill plus that same time.** dusk bot is free to run on [your own server](/docs/your-own-server). it needs ubuntu 22.04 or 24.04 and 2 gb of memory or more.\n\n**dusk cloud is flat.** plus is $20 a month or $200 a year. pro is $50 a month or $500 a year. we keep the machine running and back it up every day ([pricing](/pricing)).\n\nleft out on purpose:\n\n- buying the spare computer in the first place\n- your internet bill\n- your ai plan, which every option uses and your ai provider bills",
+  "method": "**electricity is cheap. it's almost never the deciding number.**\n\na spare computer idling all month:\n\n```text\nwatts / 1,000 = kilowatts\nx hours on per day\nx 30.4 days in an average month\nx your price per kwh\n= your monthly power bill for it\n\n20 w, 24 h, $0.20: 0.02 x 24 x 30.4 x 0.20 = about $2.92\n```\n\n**your time is the big one.** updates, a restart after a power cut, a backup you forgot to check. one hour a month at $40 an hour already costs more than the power and most small servers.\n\n**a rented server is its bill plus that same time.** madani bot is free to run on [your own server](/docs/your-own-server). it needs ubuntu 22.04 or 24.04 and 2 gb of memory or more.\n\n**madani cloud is flat.** plus is $20 a month or $200 a year. pro is $50 a month or $500 a year. we keep the machine running and back it up every day ([pricing](/pricing)).\n\nleft out on purpose:\n\n- buying the spare computer in the first place\n- your internet bill\n- your ai plan, which every option uses and your ai provider bills",
   "sections": [
     { "h": "reading the result", "md": "**if you only use bots at your desk, the free row wins.** stay on your laptop. no shame in it.\n\n**the other rows only matter when you want things to happen without you.** the morning brief at 7, a reply from your phone at midnight, a long job that finishes while you sleep.\n\n**then compare with your time switched on.** a $5 server that eats an evening a month isn't a $5 server. most people who run their own box underprice their evenings.\n\nwant the full picture of each option, not just the money? read [where ai agents run when your laptop is closed](/agents-when-laptop-closed)." }
   ],
@@ -33,8 +33,8 @@
     { "q": "does the calculator send my numbers anywhere?", "a": "no. it runs in your browser and sends nothing." }
   ],
   "sources": [
-    { "label": "dusk bot pricing", "url": "/pricing" },
-    { "label": "dusk bot docs: dusk cloud", "url": "/docs/dusk-cloud" },
-    { "label": "dusk bot docs: your own server", "url": "/docs/your-own-server" }
+    { "label": "madani bot pricing", "url": "/pricing" },
+    { "label": "madani bot docs: madani cloud", "url": "/docs/madani-cloud" },
+    { "label": "madani bot docs: your own server", "url": "/docs/your-own-server" }
   ]
 }

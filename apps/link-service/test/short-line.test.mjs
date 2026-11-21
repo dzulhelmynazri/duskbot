@@ -51,7 +51,7 @@ describe("short line", () => {
   it("runs the installer with its way through curl | sh, exactly as the app shows it", async () => {
     const t = await fixture();
     const { url } = await t.relay.short(t.made.id, t.made.watch, t.keys.secret);
-    expect(SHORT_URL.test(url.replace(/^http:\/\/127\.0\.0\.1:\d+/, "https://dusk.bot"))).toBe(true);
+    expect(SHORT_URL.test(url.replace(/^http:\/\/127\.0\.0\.1:\d+/, "https://madani.bot"))).toBe(true);
     const ran = await run(`curl -fsSL ${url}/cloudflare | sh`);
     expect(ran).toMatchObject({ code: 0, stdout: `ran ${t.token} --cloudflare\n` });
     expect((await run(shortInstallLine(url))).stdout).toBe(`ran ${t.token} \n`);
@@ -83,7 +83,7 @@ describe("short line", () => {
     const script = bootstrapScript("http://127.0.0.1:9", "abcdefghij-abcdefghijklmnopqrstuvwxyz", "cloudflare");
     const ran = await run(`printf '%s' '${script.replaceAll("'", "'\\''")}' | sh`);
     expect(ran.code).toBe(1);
-    expect(ran.stderr).toContain("dusk bot could not be downloaded");
+    expect(ran.stderr).toContain("madani bot could not be downloaded");
   }, 30_000);
 
   it("a download that stalls is given up on, never waited on forever", () => {

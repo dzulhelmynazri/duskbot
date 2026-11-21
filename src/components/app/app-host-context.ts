@@ -104,7 +104,7 @@ function matches(query: string): boolean {
 
 /** "desktop" in the Electron app, "web" in a browser reaching a server remotely. */
 export function appPlatform(): "desktop" | "web" {
-  return typeof window !== "undefined" && window.duskDesktop ? "desktop" : "web";
+  return typeof window !== "undefined" && window.madaniDesktop ? "desktop" : "web";
 }
 
 export function appThemeContext(scheme: ColorScheme = readColorScheme()): Pick<AppHostContext, "theme" | "styles"> {
@@ -123,6 +123,6 @@ export function appHostContext(args: { width: number; maxHeight: number }): AppH
     ...(timeZone ? { timeZone } : {}),
     platform: appPlatform(),
     deviceCapabilities: { touch: matches("(pointer: coarse)") || (typeof navigator !== "undefined" && navigator.maxTouchPoints > 0), hover: matches("(hover: hover)") },
-    userAgent: `Dusk/${appVersion()}`,
+    userAgent: `Madani/${appVersion()}`,
   };
 }

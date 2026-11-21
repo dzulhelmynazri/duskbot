@@ -1,4 +1,4 @@
-// App sign-ins handed out and not finished yet (a Composio link the person is signing in through). A dusk cloud that
+// App sign-ins handed out and not finished yet (a Composio link the person is signing in through). A madani cloud that
 // sleeps when idle stays up while one is open (cloud power's `maintenance`), so the sign-in it handed back is not cut
 // off by an idle sleep a few minutes in, and the dashboard sees the app land once it is connected.
 import { appSlug } from "../shared/dashboard-protocol.ts";

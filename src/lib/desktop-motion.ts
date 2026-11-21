@@ -80,13 +80,13 @@ export const DESKTOP_MOTIONS: Record<DesktopMotionPick, DesktopMotion> = {
 /** The desktop's motion. At A every surface keeps the motion it ships with. */
 export const DESKTOP_MOTION: DesktopMotion = DESKTOP_MOTIONS.b;
 
-const SOFT = "var(--dusk-spring-soft)";
+const SOFT = "var(--madani-spring-soft)";
 
 /** A curve as CSS: a bezier, the global ease-out (null), a spring as linear(), or the app's soft spring. */
 export function cssCurve(curve: Curve | null | "soft" | "ease" | "release", speed: MotionSpeed = MOTION): string {
   if (curve === "soft") return SOFT;
   if (curve === "ease") return "ease";
-  if (curve === "release") return "var(--dusk-ease-release)";
+  if (curve === "release") return "var(--madani-ease-release)";
   if (curve === null) return cssBezier(pacedOut([0.22, 1, 0.36, 1], speed));
   if ("stiffness" in curve) return springTiming(curve.stiffness, curve.damping).easing;
   return cssBezier(curve);

@@ -29,7 +29,7 @@ export function PublishedPageCard({ message }: { message: Message }) {
   const [failed, setFailed] = useState(false);
   const openPage = usePageOpener();
   if (!card) return null;
-  const bridge = window.duskDesktop?.remoteClient?.active ? undefined : window.duskDesktop?.cloudAccount;
+  const bridge = window.madaniDesktop?.remoteClient?.active ? undefined : window.madaniDesktop?.cloudAccount;
   const unpublish = async () => {
     if (!card.pageId) return;
     setBusy(true);

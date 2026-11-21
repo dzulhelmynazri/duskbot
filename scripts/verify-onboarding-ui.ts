@@ -1,15 +1,15 @@
-// Assert the first-run workflow against a handle from `control-dusk ui launch`.
+// Assert the first-run workflow against a handle from `control-madani ui launch`.
 // The handle gate refuses live-app URLs and stopped fixtures. All profile,
 // bot and onboarding writes below stay inside that launch's disposable home.
 import assert from "node:assert/strict";
 import { mkdirSync } from "node:fs";
 import { resolve } from "node:path";
 import { setTimeout as delay } from "node:timers/promises";
-import { runControlDusk } from "./control-dusk.ts";
+import { runControlMadani } from "./control-madani.ts";
 
 const handle = process.argv[2];
 if (!handle) throw new Error("Usage: node --experimental-strip-types scripts/verify-onboarding-ui.ts /path/to/fixture/ui.json");
-const ui = (verb: string, ...args: string[]) => runControlDusk(["ui", verb, "--ui", handle, ...args]) as Promise<Record<string, any>>;
+const ui = (verb: string, ...args: string[]) => runControlMadani(["ui", verb, "--ui", handle, ...args]) as Promise<Record<string, any>>;
 const evaluate = async (js: string) => (await ui("eval", "--js", js)).result;
 const click = async (name: string) => {
   // Let the 320ms spotlight transition land before sending a real pointer
@@ -31,7 +31,7 @@ const poll = async (read: () => Promise<unknown>, expected: unknown, label: stri
   assert.deepEqual(result, expected, label);
 };
 const textVisible = (text: string) => poll(async () => (await snapshot()).includes(text), true, text);
-const evidence = resolve(".dusk-scratch/verify-evidence/onboarding");
+const evidence = resolve(".madani-scratch/verify-evidence/onboarding");
 mkdirSync(evidence, { recursive: true });
 const screenshot = (name: string) => ui("screenshot", "--out", resolve(evidence, `${name}.png`));
 const openSettings = async () => {
@@ -60,11 +60,11 @@ const holdConfigWrite = () => evaluate(`(() => {
 // suppression; only this fixture browser's localStorage is cleared. The name
 // is the one the person already gave (the welcome no longer asks for it).
 await evaluate("fetch('/api/config', {method:'PUT', headers:{'Content-Type':'application/json'}, body:JSON.stringify({profile:{name:'Onboarding fixture'}})}).then(r => r.ok)");
-// The standard fixture has Dusk met already (no first-launch card); a new install's has met nobody yet.
+// The standard fixture has Madani met already (no first-launch card); a new install's has met nobody yet.
 await evaluate("fetch('/api/bots').then(r => r.json()).then(data => Promise.all(data.bots.filter(bot => bot.defaultBot).map(bot => fetch('/api/bots/' + bot.id, {method:'PATCH', headers:{'Content-Type':'application/json'}, body:JSON.stringify({welcomed:false})}).then(r => r.ok)))).then(oks => oks.length > 0 && oks.every(Boolean))");
 // A new install opens in Simple mode; this page's own writes after the clear would otherwise read as an earlier run.
-await evaluate("localStorage.clear(); sessionStorage.clear(); localStorage.setItem('dusk-advanced-mode', '0'); setTimeout(() => { location.search = '?onboarding=1'; }, 0); true");
-await textVisible("Meet dusk bot");
+await evaluate("localStorage.clear(); sessionStorage.clear(); localStorage.setItem('madani-advanced-mode', '0'); setTimeout(() => { location.search = '?onboarding=1'; }, 0); true");
+await textVisible("Meet madani bot");
 await evaluate("document.documentElement.dataset.reducedMotion = 'true'; true");
 await screenshot("welcome");
 // Grok Bot's three screens, no form: the first asks nothing and shows no steps, Back or Skip.
@@ -94,7 +94,7 @@ await poll(() => evaluate("document.querySelectorAll('[data-welcome]').length"),
 // The welcome lands in the chat with the Chief (the server's first bot): its first messages, no AI asked.
 const first = await evaluate("fetch('/api/bots').then(r => r.json()).then(data => data.bots.find(bot => bot.chiefOfStaff && !bot.hidden))");
 assert.ok(first?.name, "the Chief");
-assert.equal(first.welcomed, true, "Dusk is introduced, so its old first-launch card never comes");
+assert.equal(first.welcomed, true, "Madani is introduced, so its old first-launch card never comes");
 const composer = `Message ${first.name}`;
 await textVisible(composer);
 await textVisible(`Hey! I'm ${first.name}. I'm new here.`);
@@ -113,9 +113,9 @@ assert.notEqual(selected?.snapshot.authenticated, false, "starter uses a connect
 assert.equal(starter.modelSelection.model, selected.models.default);
 // The failed save left the server's record empty: a browser without this one's local mark shows the welcome again,
 // and this time it is saved.
-// Dusk has met the person by now, so the Chief step is not shown again: Next lands in the Chief's chat.
-await evaluate("localStorage.removeItem('dusk-email-gate'); setTimeout(() => location.reload(), 0); true");
-await textVisible("Meet dusk bot");
+// Madani has met the person by now, so the Chief step is not shown again: Next lands in the Chief's chat.
+await evaluate("localStorage.removeItem('madani-email-gate'); setTimeout(() => location.reload(), 0); true");
+await textVisible("Meet madani bot");
 await click("Next");
 await poll(() => evaluate("document.querySelectorAll('[data-welcome]').length"), 0, "Next lands in the chat");
 await textVisible(composer);
@@ -138,7 +138,7 @@ console.log("PASS connected default selected automatically; first message succee
 
 await openSettings();
 await click("Replay welcome tour");
-await textVisible("Meet dusk bot");
+await textVisible("Meet madani bot");
 await holdConfigWrite();
 await click("Next");
 await poll(() => evaluate("document.querySelectorAll('[data-welcome]').length"), 0, "slow completion cannot trap welcome");

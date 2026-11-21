@@ -51,9 +51,9 @@ existing operator resource settings.
 ## By hand, against a real Local VM
 
 Use Docker on macOS or Linux and a server from source in a temporary home:
-`HOME` and `DUSK_DATA_DIR` in a new temporary folder, the fake engine in its
-`config.json` with `localVm: { mode: "per-bot" }`, `DUSK_STATIC_DIR` set to a
-`pnpm exec vite build` output and `DUSK_DEV_TRUST_LOCAL_BROWSER=1`. Give a bot
+`HOME` and `MADANI_DATA_DIR` in a new temporary folder, the fake engine in its
+`config.json` with `localVm: { mode: "per-bot" }`, `MADANI_STATIC_DIR` set to a
+`pnpm exec vite build` output and `MADANI_DEV_TRUST_LOCAL_BROWSER=1`. Give a bot
 the Local VM, create its VM from the panel and send it a message so it works.
 
 1. Press **Take control**. Within a fraction of a second the panel's picture

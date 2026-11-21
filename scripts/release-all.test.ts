@@ -58,10 +58,10 @@ describe("a release run", () => {
   afterEach(() => { for (const dir of dirs.splice(0)) rmSync(dir, { recursive: true, force: true }); });
 
   function world(o: { fleet: () => FleetAnswer; served?: { serial: number; floor: string | null; blocked: string[] } }) {
-    const stateDir = mkdtempSync(join(tmpdir(), "dusk-release-all-")); dirs.push(stateDir);
+    const stateDir = mkdtempSync(join(tmpdir(), "madani-release-all-")); dirs.push(stateDir);
     const ran: string[] = [], placed: Array<{ to: string; text: string }> = [];
     let policyDoc: string | null = o.served ? JSON.stringify(signPolicy(o.served, signing)) : null, clock = 1_000_000;
-    const env = { DUSK_RELEASE_SIGNING_KEY: signing, DUSK_RELEASE_PUBLIC_KEYS: publicKeys, DUSK_OPS_TOKEN: "o".repeat(32) };
+    const env = { MADANI_RELEASE_SIGNING_KEY: signing, MADANI_RELEASE_PUBLIC_KEYS: publicKeys, MADANI_OPS_TOKEN: "o".repeat(32) };
     const fetchImpl = (async (url: string) => {
       if (url.endsWith("/v1/updates/policy")) return policyDoc ? new Response(policyDoc) : new Response("{}", { status: 404 });
       if (url.includes("/v1/ops/fleet")) return new Response(JSON.stringify(o.fleet()));
@@ -97,8 +97,8 @@ describe("a release run", () => {
       expect(w.policy()).toMatchObject({ blocked: ["0.2.26"] });
       expect(w.policy().rollout).toBeUndefined();
       const releaseFile = w.placed.find(p => p.to.endsWith("home/release.json"))!;
-      expect(JSON.parse(releaseFile.text)).toMatchObject({ version: "0.2.26", clouds: ["c1"], file: "/var/lib/dusk-account-prod/home/omb-home-0.2.26.tgz" });
-      expect(w.placed.filter(p => p.to.endsWith("update-policy.json")).map(p => p.to)).toEqual(expect.arrayContaining(["/var/lib/dusk-account-prod/home/update-policy.json", "/root/omb-link-data/packages/update-policy.json"]));
+      expect(JSON.parse(releaseFile.text)).toMatchObject({ version: "0.2.26", clouds: ["c1"], file: "/var/lib/madani-account-prod/home/omb-home-0.2.26.tgz" });
+      expect(w.placed.filter(p => p.to.endsWith("update-policy.json")).map(p => p.to)).toEqual(expect.arrayContaining(["/var/lib/madani-account-prod/home/update-policy.json", "/root/omb-link-data/packages/update-policy.json"]));
       expect(w.ran.some(line => line.includes("build-vps-package"))).toBe(false);
       const state = JSON.parse(readFileSync(w.r.stateFile("0.2.26"), "utf8"));
       expect(state.halted).toMatch(/rolled 0.2.26 back/);

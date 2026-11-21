@@ -120,7 +120,7 @@ describe("SignInRequestCard while it waits", () => {
 
   it("says the host computer, not this one, where this computer is somewhere else", () => {
     here.value = false;
-    expect(view({ place: "local" })).toContain("the computer dusk bot runs on");
+    expect(view({ place: "local" })).toContain("the computer madani bot runs on");
   });
 
   it("Take over goes to the place the bot works", () => {
@@ -206,7 +206,7 @@ describe("SignInRequestCard while it waits", () => {
   });
 
   it("does not offer to save a login from a desktop paired to another computer", () => {
-    vi.stubGlobal("window", { duskDesktop: { remoteClient: { active: true } } });
+    vi.stubGlobal("window", { madaniDesktop: { remoteClient: { active: true } } });
     expect(view()).not.toContain("Save a login");
   });
 

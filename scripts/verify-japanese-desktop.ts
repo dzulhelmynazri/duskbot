@@ -5,18 +5,18 @@ import { randomUUID } from "node:crypto";
 import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
 
-const podman = process.env.DUSK_VERIFY_PODMAN;
-const machine = process.env.DUSK_VERIFY_MACHINE;
-const image = process.env.DUSK_VERIFY_IMAGE;
-if (!podman || !machine || !image) throw new Error("Set explicit DUSK_VERIFY_PODMAN, DUSK_VERIFY_MACHINE and DUSK_VERIFY_IMAGE");
-const output = resolve(process.env.DUSK_VERIFY_OUTPUT || ".dusk-scratch/japanese");
+const podman = process.env.MADANI_VERIFY_PODMAN;
+const machine = process.env.MADANI_VERIFY_MACHINE;
+const image = process.env.MADANI_VERIFY_IMAGE;
+if (!podman || !machine || !image) throw new Error("Set explicit MADANI_VERIFY_PODMAN, MADANI_VERIFY_MACHINE and MADANI_VERIFY_IMAGE");
+const output = resolve(process.env.MADANI_VERIFY_OUTPUT || ".madani-scratch/japanese");
 mkdirSync(output, { recursive: true });
 writeFileSync(resolve(output, "receipt.json"), JSON.stringify({ capturesComplete: false, visualReview: "pending" }, null, 2));
 // Keep Podman's existing connection/SSH configuration, but isolate app imports.
 const podmanEnv = { ...process.env };
 const runtime = mkdtempSync(resolve(output, "runtime-"));
 process.env.HOME = process.env.USERPROFILE = resolve(runtime, "home");
-process.env.DUSK_DATA_DIR = resolve(runtime, "app-data");
+process.env.MADANI_DATA_DIR = resolve(runtime, "app-data");
 mkdirSync(process.env.HOME, { recursive: true });
 try {
   await capture();
@@ -36,9 +36,9 @@ async function capture() {
   writeFileSync(localHtml, '<!doctype html><meta charset="utf-8"><title>日本語の表示確認</title><h1>日本語の表示確認</h1><p>会社紹介・製品一覧・検証結果</p>');
   const records = [];
   for (const attempt of [1, 2]) {
-    const workspace = machineRun(["mktemp", "-d", "/tmp/dusk-font-XXXXXXXX"]);
-    assert.match(workspace, /^\/tmp\/dusk-font-[A-Za-z0-9]+$/);
-    const target = { ...perBotLocalVmTarget(randomUUID()), containerName: `dusk-font-fixture-${randomUUID()}`, workspaceDir: workspace };
+    const workspace = machineRun(["mktemp", "-d", "/tmp/madani-font-XXXXXXXX"]);
+    assert.match(workspace, /^\/tmp\/madani-font-[A-Za-z0-9]+$/);
+    const target = { ...perBotLocalVmTarget(randomUUID()), containerName: `madani-font-fixture-${randomUUID()}`, workspaceDir: workspace };
     const args = containerRunArgs("podman", randomUUID(), target);
     // Podman's default seccomp gates Firefox's sandbox chroot on SYS_CHROOT, a
     // problem apart from this font patch: supplied in this fixture only.

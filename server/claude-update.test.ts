@@ -51,7 +51,7 @@ describe("updateClaudeCli", () => {
     };
 
     await expect(updateClaudeCli("claude", {}, execute, noAppCopy)).rejects.toThrow(
-      "Claude finished updating, but dusk bot could not verify",
+      "Claude finished updating, but madani bot could not verify",
     );
   });
 
@@ -86,7 +86,7 @@ describe("updateClaudeCli", () => {
 
 describe("isAppInstalledClaude", () => {
   it("is true only when the claude a turn runs is the one in the app's engines folder", () => {
-    const root = mkdtempSync(join(tmpdir(), "dusk-claude-update-"));
+    const root = mkdtempSync(join(tmpdir(), "madani-claude-update-"));
     try {
       const engines = join(root, "tools", "npm", "bin");
       const other = join(root, "elsewhere");

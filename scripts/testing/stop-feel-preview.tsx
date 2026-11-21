@@ -25,10 +25,10 @@ if (lag) {
   window.fetch = (input, init) => String(input instanceof Request ? input.url : input).endsWith("/interrupt")
     ? new Promise((done) => setTimeout(done, lag)).then(() => send(input, init)) : send(input, init);
 }
-window.duskDesktop = {
+window.madaniDesktop = {
   platform: "darwin",
   getCapabilities: async () => initialDesktopCapabilities(),
-} as unknown as typeof window.duskDesktop;
+} as unknown as typeof window.madaniDesktop;
 
 /** Every animation frame for `ms`: each selector's presence, box, opacity and the text of `text` selectors. */
 function track(spec: Record<string, string>, ms: number) {

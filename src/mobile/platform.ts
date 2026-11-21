@@ -118,7 +118,7 @@ export interface MobilePlatform {
   /** The back gesture's start, its progress (0 to 1 of the way the system lets it go), a cancel, and its commit. A
    * listener returns true for a commit it plays itself; a commit nobody takes (a back button) goes to `onBack`. */
   onBackGesture?(listener: (event: BackGestureEvent) => boolean): () => void;
-  /** Links the OS hands the app: duskbot://pair, duskbot://open, the desktop's thread links. A listener returns
+  /** Links the OS hands the app: madanibot://pair, madanibot://open, the desktop's thread links. A listener returns
    * true when the link was its kind; the link that launched the app waits for the first listener that takes it. */
   onAppUrl?(listener: (url: string) => boolean): () => void;
   onResume?(listener: () => void): () => void;

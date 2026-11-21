@@ -1,4 +1,4 @@
-package bot.dusk.mobile;
+package bot.madani.mobile;
 
 import com.getcapacitor.JSObject;
 import com.getcapacitor.Plugin;
@@ -11,7 +11,7 @@ import com.getcapacitor.annotation.CapacitorPlugin;
  * google-services.json; without it @capacitor/push-notifications' register() throws inside the bridge, which crashes the
  * app (Capacitor 8.6 rethrows plugin exceptions as RuntimeException).
  */
-@CapacitorPlugin(name = "DuskPushSetup")
+@CapacitorPlugin(name = "MadaniPushSetup")
 public class PushSetupPlugin extends Plugin {
 
     @PluginMethod

@@ -6,10 +6,10 @@ import { collectVpsOpsStatus, localDockerHost, parseVpsOpsArgs, redactOpsLogs, r
 const defaults = { port: 8799, dataDir: "/fixture/data" };
 const options: VpsOpsOptions = { ...defaults, action: "status", service: "server", lines: 100, json: false };
 const host = async () => ({ uptimeSeconds: 120, loadAverage: [0.1, 0.2, 0.3], memoryBytes: { free: 4 * 1024 ** 3, total: 8 * 1024 ** 3 }, diskBytes: { free: 12 * 1024 ** 3, total: 40 * 1024 ** 3 } });
-const healthyFetch = vi.fn<typeof fetch>(async () => new Response(JSON.stringify({ app: "duskbot" })));
+const healthyFetch = vi.fn<typeof fetch>(async () => new Response(JSON.stringify({ app: "madanibot" })));
 const healthyCommand = vi.fn(async (command: string, args: string[]): Promise<OpsCommandResult> => command === "docker"
   ? { ok: true, stdout: "running\nexited\nrunning\n" }
-  : { ok: true, stdout: `LoadState=loaded\nActiveState=active\nMainPID=${args[1] === "duskbot.service" ? 123 : 124}\nNRestarts=2\n` });
+  : { ok: true, stdout: `LoadState=loaded\nActiveState=active\nMainPID=${args[1] === "madanibot.service" ? 123 : 124}\nNRestarts=2\n` });
 
 afterEach(() => vi.clearAllMocks());
 
@@ -34,7 +34,7 @@ describe("VPS status", () => {
     let release!: () => void;
     const gate = new Promise<void>((resolve) => { release = resolve; });
     const command = vi.fn(async () => { await gate; return { ok: true, stdout: "LoadState=not-found\n" }; });
-    const request = vi.fn<typeof fetch>(async () => { await gate; return new Response('{"app":"duskbot"}'); });
+    const request = vi.fn<typeof fetch>(async () => { await gate; return new Response('{"app":"madanibot"}'); });
     const collected = collectVpsOpsStatus(options, { command, fetch: request, host });
     expect(command).toHaveBeenCalledTimes(4);
     expect(request).toHaveBeenCalledTimes(1);
@@ -45,11 +45,11 @@ describe("VPS status", () => {
   it("checks independent health, services and computers together and returns only selected properties", async () => {
     const report = await collectVpsOpsStatus(options, { command: healthyCommand, fetch: healthyFetch, host });
     expect(report.healthy).toBe(true);
-    expect(report.services.server).toEqual({ unit: "duskbot.service", state: "active", pid: 123, restarts: 2 });
+    expect(report.services.server).toEqual({ unit: "madanibot.service", state: "active", pid: 123, restarts: 2 });
     expect(report.computers).toEqual({ available: true, count: 3, running: 2, states: { running: 2, exited: 1 } });
     expect(healthyFetch).toHaveBeenCalledWith("http://127.0.0.1:8799/api/health", expect.objectContaining({ signal: expect.any(AbortSignal), redirect: "error" }));
     expect(healthyCommand.mock.calls).toEqual(expect.arrayContaining([
-      ["systemctl", ["show", "duskbot.service", "--no-pager", "--property=LoadState,ActiveState,MainPID,NRestarts"]],
+      ["systemctl", ["show", "madanibot.service", "--no-pager", "--property=LoadState,ActiveState,MainPID,NRestarts"]],
       ["docker", ["--host", "unix:///var/run/docker.sock", "ps", "--all", "--filter", `label=${DOCKER_NAMES.label("vps")}=1`, "--format", "{{.State}}"]],
     ]));
   });
@@ -57,7 +57,7 @@ describe("VPS status", () => {
   it("still diagnoses stopped services when HTTP and Docker are unavailable", async () => {
     const command = vi.fn(async (name: string, args: string[]): Promise<OpsCommandResult> => name === "docker"
       ? { ok: false, stdout: "", error: "command failed or access denied" }
-      : { ok: true, stdout: `LoadState=loaded\nActiveState=${args[1] === "duskbot.service" ? "failed" : "inactive"}\nNRestarts=7\nEnvironment=SECRET=value\n` });
+      : { ok: true, stdout: `LoadState=loaded\nActiveState=${args[1] === "madanibot.service" ? "failed" : "inactive"}\nNRestarts=7\nEnvironment=SECRET=value\n` });
     const report = await collectVpsOpsStatus(options, { command, fetch: async () => { throw new Error("fixture offline"); }, host });
     expect(report.healthy).toBe(false);
     expect(report.services.server.state).toBe("failed");
@@ -80,7 +80,7 @@ describe("VPS status", () => {
 
   it("allows optional uninstalled link and fence while reporting a healthy server", async () => {
     const report = await collectVpsOpsStatus(options, {
-      command: async (command, args) => args[1] === "duskbot.service" || command === "docker" ? healthyCommand(command, args) : { ok: true, stdout: "LoadState=not-found\nActiveState=inactive\n" },
+      command: async (command, args) => args[1] === "madanibot.service" || command === "docker" ? healthyCommand(command, args) : { ok: true, stdout: "LoadState=not-found\nActiveState=inactive\n" },
       fetch: healthyFetch, host,
     });
     expect(report.healthy).toBe(true);
@@ -117,8 +117,8 @@ describe("VPS operations output", () => {
     const io = { log: vi.fn(), error: vi.fn() };
     const command = vi.fn(async () => ({ ok: true, stdout: "secret=fake-secret\nconnected\n" }));
     expect(await runVpsOps({ ...options, action: "logs", service: "link", lines: 10, json: true }, io, { platform: "linux", command })).toBe(0);
-    expect(command).toHaveBeenCalledWith("journalctl", ["--unit", "duskbot-link.service", "--lines", "10", "--no-pager", "--output=cat", "--quiet"]);
-    expect(JSON.parse(io.log.mock.calls[0]![0])).toEqual({ unit: "duskbot-link.service", text: "secret=[redacted]\nconnected" });
+    expect(command).toHaveBeenCalledWith("journalctl", ["--unit", "madanibot-link.service", "--lines", "10", "--no-pager", "--output=cat", "--quiet"]);
+    expect(JSON.parse(io.log.mock.calls[0]![0])).toEqual({ unit: "madanibot-link.service", text: "secret=[redacted]\nconnected" });
   });
 
   it("does not turn missing journal permissions into a successful empty log", async () => {
@@ -162,14 +162,14 @@ describe("bounded operations process runner", () => {
     const tooLarge = await runOpsCommand(process.execPath, ["-e", "process.stdout.write('x'.repeat(300000))"]);
     expect(tooLarge.ok).toBe(false);
     expect(tooLarge.stdout).toBe("");
-    expect(await runOpsCommand("duskbot-fixture-command-does-not-exist", [])).toMatchObject({ ok: false, error: "command not installed" });
+    expect(await runOpsCommand("madanibot-fixture-command-does-not-exist", [])).toMatchObject({ ok: false, error: "command not installed" });
   });
 });
 
 describe("the local docker socket", () => {
   it("is the gate's when DOCKER_HOST names a local socket, never a remote host", () => {
     expect(localDockerHost({})).toBe("unix:///var/run/docker.sock");
-    expect(localDockerHost({ DOCKER_HOST: "unix:///run/duskbot-docker/docker.sock" })).toBe("unix:///run/duskbot-docker/docker.sock");
+    expect(localDockerHost({ DOCKER_HOST: "unix:///run/madanibot-docker/docker.sock" })).toBe("unix:///run/madanibot-docker/docker.sock");
     expect(localDockerHost({ DOCKER_HOST: "tcp://10.0.0.5:2375" })).toBe("unix:///var/run/docker.sock");
     expect(localDockerHost({ DOCKER_HOST: "ssh://vps" })).toBe("unix:///var/run/docker.sock");
   });

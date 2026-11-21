@@ -1273,7 +1273,7 @@ describe("a view that opens again while the bot works", () => {
     const { mkdtempSync, writeFileSync, rmSync } = await import("node:fs");
     const { join } = await import("node:path");
     const { tmpdir } = await import("node:os");
-    const dir = mkdtempSync(join(tmpdir(), "dusk-stream-"));
+    const dir = mkdtempSync(join(tmpdir(), "madani-stream-"));
     const file = join(dir, "profile-a.stream");
     daemonFile.mockImplementation((_env: unknown, suffix: string) => join(dir, `profile-a${suffix}`));
     try {

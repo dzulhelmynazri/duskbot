@@ -14,10 +14,10 @@ describe("mobile workspace pairing", () => {
     const cloudPlan = { phoneSignIn: async () => null, signIn: async () => null, signedIn: async () => true };
     const page = globalThis as { window?: unknown };
     try {
-      page.window = { duskDesktop: { app: { ownPage: false }, cloudPlan } };
+      page.window = { madaniDesktop: { app: { ownPage: false }, cloudPlan } };
       expect(desktopAccountBridge(false, false)).toBeNull();
       expect(await noRouteFix(false)).toBe("server");
-      page.window = { duskDesktop: { app: { ownPage: true }, cloudPlan } };
+      page.window = { madaniDesktop: { app: { ownPage: true }, cloudPlan } };
       expect(desktopAccountBridge(false, false)).not.toBeNull();
     } finally { delete page.window; }
   });
@@ -58,7 +58,7 @@ describe("mobile workspace pairing", () => {
   it("tells a server with no way in for phones the command that turns phone access on, with no steps for a code it can't make", () => {
     const source = readFileSync(new URL("./MobilePairingCard.tsx", import.meta.url), "utf8");
     expect(source).toContain('cause instanceof ApiError && cause.body?.code === "unreachable"');
-    expect(source).toContain('const PHONE_ACCESS_COMMAND = "npx duskbot setup";');
+    expect(source).toContain('const PHONE_ACCESS_COMMAND = "npx madanibot setup";');
     expect(source).toContain("(failed && unreachable) ? null");
     expect((en as Record<string, string>)["settings.phone.unreachable"]).toMatch(/run this and pick phone access/);
   });
@@ -76,7 +76,7 @@ describe("mobile workspace pairing", () => {
   });
 
   it("sends an iPhone to the App Store app, never to a Home Screen page the qr cannot open", () => {
-    // the qr is a duskbot://pair link only the app opens: a phone without it gets nothing from the camera
+    // the qr is a madanibot://pair link only the app opens: a phone without it gets nothing from the camera
     const words = en as Record<string, string>;
     for (const key of ["settings.mobile.scanSteps", "mobile.desktop.noStoreApp", "mobile.desktop.appStore"]) {
       expect(words[key]).toContain("App Store");

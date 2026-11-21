@@ -1,7 +1,7 @@
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { expect, it } from "vitest";
-import { launchVerificationServer, runControlDusk } from "../scripts/control-dusk.ts";
+import { launchVerificationServer, runControlMadani } from "../scripts/control-madani.ts";
 import { nextCronRuns } from "../shared/routine-schedule.ts";
 
 it("takes cron through the real routine tools, applying the bot's own routine at once, preserving its zone and rejecting invalid API input", async () => {
@@ -21,7 +21,7 @@ it("takes cron through the real routine tools, applying the bot's own routine at
     if (method !== "GET") evidence.push({ method, path, body, status: response.status, result: value });
     return value;
   };
-  const cli = (...args: string[]) => runControlDusk([...args, "--url", fixture.info.url]) as Promise<any>;
+  const cli = (...args: string[]) => runControlMadani([...args, "--url", fixture.info.url]) as Promise<any>;
   try {
     expect((await cli("doctor")).ok).toBe(true);
     const { bot } = await cli("new-bot", "--name", "Cron fixture");
@@ -59,7 +59,7 @@ it("takes cron through the real routine tools, applying the bot's own routine at
     const current = async () => (await api("GET", "/api/routines")).routines.find((routine: any) => routine.id === routineId);
     expect(await current()).toMatchObject({ schedule, enabled: true, runOn: "maus", overlap: "queue", runOnStartup: true });
     expect(create.subtitle).toContain("Queue one scheduled run");
-    expect(create.subtitle).toContain("On startup: Also runs once each time dusk bot starts");
+    expect(create.subtitle).toContain("On startup: Also runs once each time madani bot starts");
     expect((await current()).nextRunAt).toBe(nextCronRuns(schedule, create.routineRequest.createdAt, 1)[0]);
 
     const cardCount = (await messages()).filter(message => message.card?.routineRequest).length;

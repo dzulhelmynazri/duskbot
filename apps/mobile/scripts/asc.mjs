@@ -13,20 +13,20 @@
 //   node apps/mobile/scripts/asc.mjs submit [--yes]          check everything App Review needs; --yes attaches the newest
 //                                                            valid build to the version and submits it
 //
-// Reads APPLE_API_KEY_ID, APPLE_API_ISSUER, APPLE_API_KEY_PATH from the environment, else ~/.config/duskbot/dusk.env.
+// Reads APPLE_API_KEY_ID, APPLE_API_ISSUER, APPLE_API_KEY_PATH from the environment, else ~/.config/madanibot/madani.env.
 // Never prints the key or the token.
 import { createHash, createPrivateKey, sign } from "node:crypto";
 import { existsSync, readdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
 import { homedir } from "node:os";
 import { basename, join } from "node:path";
 
-const BUNDLE_ID = "bot.dusk.mobile";
-const GROUP = "dusk team";
+const BUNDLE_ID = "bot.madani.mobile";
+const GROUP = "madani team";
 const API = "https://api.appstoreconnect.apple.com";
 
 function env(name) {
   if (process.env[name]) return process.env[name];
-  const file = process.env.DUSK_ENV_FILE ?? join(homedir(), ".config/duskbot/dusk.env");
+  const file = process.env.MADANI_ENV_FILE ?? join(homedir(), ".config/madanibot/madani.env");
   if (!existsSync(file)) return "";
   const line = readFileSync(file, "utf8").split("\n").find((l) => l.startsWith(`${name}=`));
   return line ? line.slice(name.length + 1).trim().replace(/^(["'])(.*)\1$/, "$2") : "";
@@ -99,7 +99,7 @@ async function bundleIdRecord(identifier = BUNDLE_ID, register = false) {
   const one = data.find((b) => b.attributes.identifier === identifier);
   if (one) return one;
   if (!register) throw new Error(`no App ID ${identifier} in the developer account`);
-  const { data: made } = await call("POST", "/v1/bundleIds", { data: { type: "bundleIds", attributes: { identifier, name: "dusk bot Live Activity", platform: "IOS" } } });
+  const { data: made } = await call("POST", "/v1/bundleIds", { data: { type: "bundleIds", attributes: { identifier, name: "madani bot Live Activity", platform: "IOS" } } });
   console.log(`registered the App ID ${identifier}`);
   return made;
 }
@@ -113,7 +113,7 @@ async function distCert(csrPath, outPath) {
 }
 
 /** makes (or remakes) the App Store profile for the app with one certificate and writes it */
-async function storeProfile(certId, outPath, name = "dusk bot App Store", identifier = BUNDLE_ID) {
+async function storeProfile(certId, outPath, name = "madani bot App Store", identifier = BUNDLE_ID) {
   const bundle = await bundleIdRecord(identifier, identifier !== BUNDLE_ID);
   const { data: existing } = await call("GET", `/v1/profiles?filter[name]=${encodeURIComponent(name)}&limit=10`);
   for (const old of existing) await call("DELETE", `/v1/profiles/${old.id}`).then(() => console.log(`removed the old profile ${old.id}`));
@@ -170,9 +170,9 @@ async function metadata(file) {
   await call("PATCH", `/v1/appStoreVersions/${version.id}`, { data: { type: "appStoreVersions", id: version.id, attributes: { copyright } } });
   await call("PATCH", `/v1/appStoreVersionLocalizations/${local.id}`, { data: { type: "appStoreVersionLocalizations", id: local.id, attributes: text } });
   console.log(`version ${version.attributes.versionString}: copyright, description, keywords, promotional text, support and marketing URLs`);
-  // the notes, the demo account and the contact; the demo values and the phone come from dusk.env, never the repo
+  // the notes, the demo account and the contact; the demo values and the phone come from madani.env, never the repo
   const review = reviewDetail(want.reviewNotes);
-  if (review.missing.length) { console.log(`review details skipped: add ${review.missing.join(", ")} to dusk.env (App Store Connect refuses the notes without a contact)`); return false; }
+  if (review.missing.length) { console.log(`review details skipped: add ${review.missing.join(", ")} to madani.env (App Store Connect refuses the notes without a contact)`); return false; }
   const detail = await call("GET", `/v1/appStoreVersions/${version.id}/appStoreReviewDetail`).catch(() => ({ data: null }));
   if (detail.data) await call("PATCH", `/v1/appStoreReviewDetails/${detail.data.id}`, { data: { type: "appStoreReviewDetails", id: detail.data.id, attributes: review.attributes } });
   else await call("POST", "/v1/appStoreReviewDetails", { data: { type: "appStoreReviewDetails", attributes: review.attributes, relationships: { appStoreVersion: { data: { type: "appStoreVersions", id: version.id } } } } });
@@ -180,16 +180,16 @@ async function metadata(file) {
   return true;
 }
 
-/** App Review's section: the notes with the demo account filled in, and the contact. Reports what dusk.env still lacks. */
+/** App Review's section: the notes with the demo account filled in, and the contact. Reports what madani.env still lacks. */
 function reviewDetail(notes) {
-  const email = env("DUSK_REVIEW_EMAIL"), code = env("DUSK_REVIEW_CODE"), phone = env("APP_REVIEW_CONTACT_PHONE");
-  const missing = [["DUSK_REVIEW_EMAIL", email], ["DUSK_REVIEW_CODE", code], ["APP_REVIEW_CONTACT_PHONE (like +91 98765 43210)", phone]].filter(([, v]) => !v).map(([k]) => k);
+  const email = env("MADANI_REVIEW_EMAIL"), code = env("MADANI_REVIEW_CODE"), phone = env("APP_REVIEW_CONTACT_PHONE");
+  const missing = [["MADANI_REVIEW_EMAIL", email], ["MADANI_REVIEW_CODE", code], ["APP_REVIEW_CONTACT_PHONE (like +91 98765 43210)", phone]].filter(([, v]) => !v).map(([k]) => k);
   if (phone && !/^\+\d[\d ()-]{6,}$/.test(phone)) missing.push("APP_REVIEW_CONTACT_PHONE must start with + and the country code");
   const filled = notes.replace("[REVIEW EMAIL]", email).replace(/\[REVIEW CODE[^\]]*\]/, `${code} (fixed for this account; no email is sent)`);
   return { missing, attributes: {
     notes: filled, demoAccountRequired: true, demoAccountName: email, demoAccountPassword: code,
     contactFirstName: env("APP_REVIEW_CONTACT_FIRST_NAME") || "Siddharth", contactLastName: env("APP_REVIEW_CONTACT_LAST_NAME") || "Meena",
-    contactEmail: env("APP_REVIEW_CONTACT_EMAIL") || "hello@dusk.bot", contactPhone: phone } };
+    contactEmail: env("APP_REVIEW_CONTACT_EMAIL") || "hello@madani.bot", contactPhone: phone } };
 }
 
 /** the app is free: price USD 0 (Free) and available everywhere except mainland China, where AI chat apps need a
@@ -232,14 +232,14 @@ async function submit(yes) {
   if (!shots) problems.push("no finished screenshots: node apps/mobile/scripts/asc.mjs screenshots docs/store/ios/6.9");
   else ok(`${shots} screenshots`);
   const review = reviewDetail(JSON.parse(readFileSync(new URL("../store/app-store.json", import.meta.url), "utf8")).reviewNotes);
-  if (review.missing.length) problems.push(`review details: add ${review.missing.join(", ")} to dusk.env, then run metadata`);
+  if (review.missing.length) problems.push(`review details: add ${review.missing.join(", ")} to madani.env, then run metadata`);
   else {
     const detail = await call("GET", `/v1/appStoreVersions/${version.id}/appStoreReviewDetail`).catch(() => ({ data: null }));
     const a = detail.data?.attributes ?? {};
     if (a.contactPhone !== review.attributes.contactPhone || a.demoAccountName !== review.attributes.demoAccountName || a.notes !== review.attributes.notes) problems.push("review details on App Store Connect are not the current ones: run node apps/mobile/scripts/asc.mjs metadata");
     else ok(`review details: demo account ${a.demoAccountName}, contact phone set`);
   }
-  if (!env("DUSK_REVIEW_AI_OPENROUTER_KEY")) problems.push("DUSK_REVIEW_AI_OPENROUTER_KEY is empty: the demo bot has no working AI (then node apps/dashboard/scripts/review-ai.mjs production)");
+  if (!env("MADANI_REVIEW_AI_OPENROUTER_KEY")) problems.push("MADANI_REVIEW_AI_OPENROUTER_KEY is empty: the demo bot has no working AI (then node apps/dashboard/scripts/review-ai.mjs production)");
   else ok("demo bot AI key present");
   const price = await call("GET", `/v1/apps/${one.id}/appPriceSchedule?include=manualPrices`).catch(() => null);
   if (!price?.included?.some((p) => p.type === "appPrices")) problems.push("no price set: App Store Connect, Pricing and Availability, Free (USD 0), all territories");
@@ -288,7 +288,7 @@ async function publicTestflight(limit) {
   const one = await app();
   const want = JSON.parse(readFileSync(new URL("../store/app-store.json", import.meta.url), "utf8"));
   const review = reviewDetail(want.reviewNotes);
-  if (review.missing.length) throw new Error(`add ${review.missing.join(", ")} to dusk.env first`);
+  if (review.missing.length) throw new Error(`add ${review.missing.join(", ")} to madani.env first`);
   // the beta listing: what testers read, and where their feedback goes
   const { data: locs } = await call("GET", `/v1/apps/${one.id}/betaAppLocalizations?limit=50`);
   const listing = { feedbackEmail: review.attributes.contactEmail, description: want.version.description.slice(0, 3900),
@@ -328,7 +328,7 @@ const run = {
   get: async () => console.log(JSON.stringify(await call("GET", rest[0]), null, 1)),
   "dist-cert": () => distCert(rest[0], rest[1]),
   "store-profile": () => storeProfile(rest[0], rest[1], rest[2]),
-  "widget-profile": () => storeProfile(rest[0], rest[1], rest[2] ?? "dusk bot Live Activity App Store", `${BUNDLE_ID}.activity`),
+  "widget-profile": () => storeProfile(rest[0], rest[1], rest[2] ?? "madani bot Live Activity App Store", `${BUNDLE_ID}.activity`),
   metadata: () => metadata(rest[0] ?? new URL("../store/app-store.json", import.meta.url).pathname),
   screenshots: () => screenshots(rest[0], rest[1] ?? "APP_IPHONE_67"),
   submit: () => submit(rest.includes("--yes")),

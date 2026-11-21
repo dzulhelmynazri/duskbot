@@ -1,12 +1,12 @@
 import { basename } from "node:path";
 import { readFileSync } from "node:fs";
 import { expect, it } from "vitest";
-import { launchVerificationServer } from "../../scripts/control-dusk.ts";
+import { launchVerificationServer } from "../../scripts/control-madani.ts";
 import type { MobilePairingResponse, MobileRedeemResponse } from "../../shared/mobile-link.ts";
 import { sessionCookieName } from "../request-auth.ts";
 
 it("serves a redeemed phone's JSON, upload, download and SSE with bearer-only CORS", async () => {
-  const fixture = await launchVerificationServer({ DUSK_DEV_TRUST_LOCAL_BROWSER: "0" });
+  const fixture = await launchVerificationServer({ MADANI_DEV_TRUST_LOCAL_BROWSER: "0" });
   const base = fixture.info.url;
   const origin = "capacitor://localhost";
   const jsonHeaders = { "content-type": "application/json" };
@@ -27,10 +27,10 @@ it("serves a redeemed phone's JSON, upload, download and SSE with bearer-only CO
 
     for (const [path, method] of [["/api/bots", "GET"], ["/api/attachments", "POST"], ["/api/events", "GET"]]) {
       const preflight = await fetch(`${base}${path}`, { method: "OPTIONS", headers: { origin,
-        "access-control-request-method": method, "access-control-request-headers": "authorization, content-type, last-event-id, x-dusk-background" } });
+        "access-control-request-method": method, "access-control-request-headers": "authorization, content-type, last-event-id, x-madani-background" } });
       expect(preflight.status).toBe(204);
       checkCors(preflight);
-      expect(preflight.headers.get("access-control-allow-headers")).toBe("Authorization, Content-Type, Last-Event-ID, X-Dusk-Background");
+      expect(preflight.headers.get("access-control-allow-headers")).toBe("Authorization, Content-Type, Last-Event-ID, X-Madani-Background");
     }
     const bots = await fetch(`${base}/api/bots`, { headers });
     expect(bots.status).toBe(200);

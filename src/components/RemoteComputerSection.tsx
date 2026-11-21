@@ -29,7 +29,7 @@ export function isServerPairingLink(input: string): boolean {
  * address and six-digit code, or, once paired, the computer it is on and Disconnect. A server is connected from Your
  * servers on the same page. */
 export function RemoteComputerSection({ hideWhenUnavailable = false, simple = false }: { hideWhenUnavailable?: boolean; /** one unlabelled row named for what it does */ simple?: boolean }) {
-  const bridge = window.duskDesktop?.remoteClient;
+  const bridge = window.madaniDesktop?.remoteClient;
   const [state, setState] = useState<DesktopRemoteClientState>({ active: bridge?.active === true });
   const [open, setOpen] = useState(false);
   const [endpoint, setEndpoint] = useState("");

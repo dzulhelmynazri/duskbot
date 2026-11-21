@@ -109,7 +109,7 @@ async function fixture({ serverPort = 9, viaProcess = false } = {}) {
     connect: () => connect({ host: "127.0.0.1", port: sitePort }),
   });
   const links = [];
-  const sockDir = viaProcess ? mkdtempSync(join(tmpdir(), "dusk-direct-")) : null;
+  const sockDir = viaProcess ? mkdtempSync(join(tmpdir(), "madani-direct-")) : null;
   const sockFile = sockDir ? join(sockDir, "direct.sock") : null;
   const listening = viaProcess ? await listenDirectSocket(agent.direct, sockFile, () => {}) : null;
   const directConnect = viaProcess ? async () => {
@@ -181,7 +181,7 @@ test("a lost direct path ends its egress streams, and the next dial takes the re
 });
 
 test("the direct command hands its connection to the tunnel's process, which serves it in the hub", { timeout: 10_000 }, async () => {
-  const dir = mkdtempSync(join(tmpdir(), "dusk-direct-sock-"));
+  const dir = mkdtempSync(join(tmpdir(), "madani-direct-sock-"));
   const file = join(dir, "direct.sock");
   const accepted = [];
   const hub = { accept: (input) => { accepted.push(input); input.on("data", (chunk) => input.write(Buffer.concat([Buffer.from("echo:"), chunk]))); } };

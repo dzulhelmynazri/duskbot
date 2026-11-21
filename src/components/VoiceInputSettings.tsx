@@ -100,7 +100,7 @@ function useMicPermission(): { state: MicState | null; refresh: () => void } {
   useEffect(() => {
     let live = true;
     let status: PermissionStatus | null = null;
-    const desktop = typeof window === "undefined" ? undefined : window.duskDesktop;
+    const desktop = typeof window === "undefined" ? undefined : window.madaniDesktop;
     if (!phoneVoice() && typeof desktop?.permStatus === "function") {
       desktop.permStatus().then((found) => { if (live) setState(micStateFrom(found.mic)); }, () => { if (live) setState("unknown"); });
     } else if (typeof navigator !== "undefined" && navigator.permissions?.query) {
@@ -303,7 +303,7 @@ function ServiceFields({ provider, prefs, keys, changingKey, onKeyDone }: {
   const setModel = (model: string) => setVoicePrefs((current) => ({ models: { ...current.models, [provider]: model } }));
 
   if (provider === "whisper-cpp") {
-    const find = window.duskDesktop?.voiceInput?.findWhisperCpp;
+    const find = window.madaniDesktop?.voiceInput?.findWhisperCpp;
     const runFind = async () => {
       if (!find || finding) return;
       setFinding(true);
@@ -383,7 +383,7 @@ function MicrophoneRow({ device }: { device: VoiceDevice }) {
   const { state, refresh } = useMicPermission();
   // an allowed (or unreadable) microphone needs nothing from the person, so it takes no row
   if (state !== "denied" && state !== "prompt") return null;
-  const desktop = device.kind === "desktop" ? window.duskDesktop : undefined;
+  const desktop = device.kind === "desktop" ? window.madaniDesktop : undefined;
   const phoneSettings = device.kind === "phone" ? phoneVoice()?.openSettings : undefined;
   const action = state === "prompt" && typeof desktop?.permRequestMic === "function"
     ? <button type="button" className="ui-button" onClick={() => void desktop.permRequestMic().catch(() => false).then(refresh)}>{t("settings.voice.mic.allow")}</button>

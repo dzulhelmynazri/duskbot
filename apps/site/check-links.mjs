@@ -10,8 +10,8 @@ const root = path.join(here, 'public', 'landing');
 const redirects = JSON.parse(fs.readFileSync(path.join(root, '_redirects.json'), 'utf8'));
 // files that deploy.sh and publish-downloads.sh put on the site, so they are not in the repo
 const AT_DEPLOY = [/^\/install\.sh(\.sha256)?$/, /^\/releases\//];
-// the account app (DUSK_APP_URL, the same default as build-pages.mjs) and its api are served beside the site on the same origin
-const APP_PATH = (process.env.DUSK_APP_URL || '/dashboard').replace(/\/+$/, '');
+// the account app (MADANI_APP_URL, the same default as build-pages.mjs) and its api are served beside the site on the same origin
+const APP_PATH = (process.env.MADANI_APP_URL || '/dashboard').replace(/\/+$/, '');
 const ELSEWHERE = APP_PATH.startsWith('/') ? [APP_PATH, '/v1'] : ['/v1'];
 const servedElsewhere = (p) => ELSEWHERE.some((pre) => p === pre || p.startsWith(`${pre}/`));
 // the app's own interface is built elsewhere and checked there
@@ -44,7 +44,7 @@ for (const file of pages) {
       : [...src.matchAll(/"src":\s*"([^"]+)"/g)].map((m) => m[1]);
   for (const raw of refs) {
     const ref = raw.replace(/&amp;/g, '&');
-    if (/^(https?:|mailto:|data:|tel:|duskbot:)/.test(ref)) continue;
+    if (/^(https?:|mailto:|data:|tel:|madanibot:)/.test(ref)) continue;
     checked++;
     const [beforeHash, hash] = ref.split('#');
     const urlPath = beforeHash.split('?')[0];

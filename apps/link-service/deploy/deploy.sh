@@ -26,10 +26,10 @@ else
   echo "contabo: shipped"
 fi
 
-if same oracle /opt/dusk-link-node; then echo "oracle-in: nothing it runs changed, not restarted"
+if same oracle /opt/madani-link-node; then echo "oracle-in: nothing it runs changed, not restarted"
 else
   tgz="$(mktemp -t link-node).tgz"
   (cd "$src" && COPYFILE_DISABLE=1 tar --no-xattrs -czf "$tgz" --exclude=test --exclude=chaos --exclude=deploy --exclude=data --exclude=README.md --exclude=.env.example --exclude=node_modules .)
   scp -q "$tgz" oracle:/tmp/link-node.tgz && rm -f "$tgz"
-  ssh oracle 'sudo tar -xzf /tmp/link-node.tgz -C /opt/dusk-link-node && sudo systemctl restart dusk-link-node && sleep 2 && echo "oracle-in: shipped, $(systemctl is-active dusk-link-node)"'
+  ssh oracle 'sudo tar -xzf /tmp/link-node.tgz -C /opt/madani-link-node && sudo systemctl restart madani-link-node && sleep 2 && echo "oracle-in: shipped, $(systemctl is-active madani-link-node)"'
 fi

@@ -47,7 +47,7 @@ const posixShell = existsSync("/bin/sh") ? false : "needs /bin/sh";
 
 // The path lives under $HOME, so it can carry whatever a directory name can.
 test("the quoted path survives a shell round-trip", { skip: posixShell }, () => {
-  const workspace = mkdtempSync(join(tmpdir(), "dusk-quote-"));
+  const workspace = mkdtempSync(join(tmpdir(), "madani-quote-"));
   try {
     for (const name of ["plain.deb", "with space.deb", "o'brien.deb", "a;b&c.deb", "$(echo bad).deb"]) {
       const file = join(workspace, name);
@@ -64,7 +64,7 @@ test("the quoted path survives a shell round-trip", { skip: posixShell }, () => 
 });
 
 test("the whole command parses into the arguments apt-get would receive", { skip: posixShell }, () => {
-  const file = "/home/o'brien/Downloads/DuskBot-0.1.44-amd64.deb";
+  const file = "/home/o'brien/Downloads/MadaniBot-0.1.44-amd64.deb";
   const command = packageInstallCommand("deb", file);
 
   // The privileged verb is replaced with a printer, so the shell shows exactly the flags and the one path it would pass.

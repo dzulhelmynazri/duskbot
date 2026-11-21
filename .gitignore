@@ -11,9 +11,9 @@ dist-server
 .DS_Store
 *.tsbuildinfo
 electron/resources/speech-helper
-electron/resources/Dusk Bot Speech.app
+electron/resources/Madani Bot Speech.app
 # stale helper from the removed Teach a skill recorder
-electron/resources/Dusk Bot Recorder.app
+electron/resources/Madani Bot Recorder.app
 release
 .omb-scratch
 .wrangler/
@@ -42,7 +42,7 @@ deploy/.env
 *.key
 id_rsa
 id_ed25519
-.dusk-scratch
+.madani-scratch
 
 # junk output from a script run with an unset output dir
 /undefined/

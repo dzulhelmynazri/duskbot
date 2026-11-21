@@ -11,11 +11,11 @@
     "claude google calendar free busy",
     "ai compare busy calendars"
   ],
-  "answer": "**find a room without reading everyone's meeting titles.** name the calendars, dates and time zone. the bot returns busy intervals, which you can compare before booking. use **find free slots** for calculated openings.\n\ndusk classes this query as a write. allow this action alone, or use **find free slots** to keep the bot read only.",
+  "answer": "**find a room without reading everyone's meeting titles.** name the calendars, dates and time zone. the bot returns busy intervals, which you can compare before booking. use **find free slots** for calculated openings.\n\nmadani classes this query as a write. allow this action alone, or use **find free slots** to keep the bot read only.",
   "updated": "2026-11-12",
   "review": {
     "status": "approved",
-    "by": "lead agent, after two independent reviewer passes, against dusk bot docs and the composio catalog",
+    "by": "lead agent, after two independent reviewer passes, against madani bot docs and the composio catalog",
     "at": "2026-11-12"
   },
   "tags": [
@@ -76,21 +76,21 @@
       "a": "**no, this returns times alone.** reading titles needs an event-listing action and access to those details."
     },
     {
-      "q": "why does an availability check need write access in dusk?",
-      "a": "**dusk classifies this query as a write.** restrict access to this action. you can leave event creation and editing off."
+      "q": "why does an availability check need write access in madani?",
+      "a": "**madani classifies this query as a write.** restrict access to this action. you can leave event creation and editing off."
     }
   ],
   "sources": [
     {
-      "label": "dusk bot docs: files and apps",
+      "label": "madani bot docs: files and apps",
       "url": "/docs/files-and-apps"
     },
     {
-      "label": "dusk bot docs: routines",
+      "label": "madani bot docs: routines",
       "url": "/docs/routines"
     },
     {
-      "label": "dusk bot docs: a bot's computer",
+      "label": "madani bot docs: a bot's computer",
       "url": "/docs/computer"
     }
   ],

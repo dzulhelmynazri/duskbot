@@ -57,9 +57,9 @@ describe("addressProblem", () => {
     expect(addressProblem("http://api.example.com/v1", "computer")).toMatch(/https/);
   });
 
-  it("keeps dusk cloud off its own network and everyone off link-local metadata", () => {
-    expect(addressProblem("http://127.0.0.1:8317/v1", "cloud")).toMatch(/dusk cloud/);
-    expect(addressProblem("https://10.0.0.5/v1", "cloud")).toMatch(/dusk cloud/);
+  it("keeps madani cloud off its own network and everyone off link-local metadata", () => {
+    expect(addressProblem("http://127.0.0.1:8317/v1", "cloud")).toMatch(/madani cloud/);
+    expect(addressProblem("https://10.0.0.5/v1", "cloud")).toMatch(/madani cloud/);
     expect(addressProblem("http://169.254.169.254/latest", "computer")).toBeTruthy();
     expect(addressProblem("https://user:pass@example.com/v1", "computer")).toBeTruthy();
   });
@@ -78,7 +78,7 @@ describe("buildConnection", () => {
       .toMatchObject({ entry: { config: { url: "https://acme.openai.azure.com/openai/v1", managedModels: ["gpt-4o-prod"] } } });
   });
 
-  it("needs no key for a local server, and refuses one on dusk cloud", () => {
+  it("needs no key for a local server, and refuses one on madani cloud", () => {
     expect(buildConnection(def("ollama"), {}, "computer")).toMatchObject({ entry: { access: "custom", config: { url: "http://127.0.0.1:11434/v1", key: "local" } } });
     expect(buildConnection(def("ollama"), {}, "cloud")).toHaveProperty("error");
     expect(buildConnection(def("groq"), {}, "computer")).toEqual({ error: "Paste your Groq key." });
@@ -142,7 +142,7 @@ describe("listProviderModels", () => {
 });
 
 describe("probeLocalProviders", () => {
-  it("finds the local servers that answer, a key refusal included, and probes nothing on dusk cloud", async () => {
+  it("finds the local servers that answer, a key refusal included, and probes nothing on madani cloud", async () => {
     const fetch = vi.fn(async (url: string | URL | Request) => {
       const text = String(url);
       if (text.includes(":11434")) return new Response("{}", { status: 200 });

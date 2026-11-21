@@ -60,8 +60,8 @@ async function activeAccounts(apiKey: string, userId?: string): Promise<Array<{ 
   return page.success ? page.data.items.filter((account) => !account.status || /^active$/i.test(account.status)) : [];
 }
 
-/** dusk bot names the Composio users it makes this way, this installation's and each teammate's shared one alike. */
-const OWN_USER = /^duskbot_/;
+/** madani bot names the Composio users it makes this way, this installation's and each teammate's shared one alike. */
+const OWN_USER = /^madanibot_/;
 
 /**
  * The Composio user a key's Session should run as so apps already connected in that project show up without connecting
@@ -69,7 +69,7 @@ const OWN_USER = /^duskbot_/;
  * must match the connected-account user"), and accounts made in Composio's dashboard belong to whatever user id was
  * typed there, often "default". So: keep `prior` when it owns an active account; otherwise the user owning the most
  * active accounts, as the account list names them (Composio marks that field deprecated, so "default" is asked
- * directly when it is missing). A user dusk bot made is never taken over: it may be a teammate's.
+ * directly when it is missing). A user madani bot made is never taken over: it may be a teammate's.
  */
 export async function connectionOwner(apiKey: string, prior: string | undefined): Promise<string | undefined> {
   try {
@@ -92,7 +92,7 @@ export function projectApiKey(cfg: AppConfig): string | null {
   return cfg.composio?.apiKey?.trim() || null;
 }
 
-/** Composio's own hosts, or the origin of an explicit DUSK_COMPOSIO_API backend; any other host is refused. */
+/** Composio's own hosts, or the origin of an explicit MADANI_COMPOSIO_API backend; any other host is refused. */
 export function trustedSessionMcpUrl(value: string): boolean {
   let mcp: URL;
   try {
@@ -102,7 +102,7 @@ export function trustedSessionMcpUrl(value: string): boolean {
   }
   if (mcp.protocol === "https:" && (mcp.hostname === "composio.dev" || mcp.hostname.endsWith(".composio.dev"))) return true;
   if (mcp.protocol !== "https:" && !(mcp.protocol === "http:" && ["localhost", "127.0.0.1", "[::1]"].includes(mcp.hostname))) return false;
-  const override = process.env.DUSK_COMPOSIO_API;
+  const override = process.env.MADANI_COMPOSIO_API;
   if (!override) return false;
   try {
     return new URL(override).origin === mcp.origin;
@@ -216,7 +216,7 @@ export async function prepareProjectSession(
     if (existing && supportsMultiAccount(existing) && authConfigsReady(existing, authConfigs)) {
       return {
         apiKey: trimmed,
-        userId: existing.config?.user_id ?? current.userId ?? `duskbot_${randomUUID()}`,
+        userId: existing.config?.user_id ?? current.userId ?? `madanibot_${randomUUID()}`,
         sessionId: existing.session_id,
       };
     }
@@ -224,7 +224,7 @@ export async function prepareProjectSession(
     priorUserId = existing?.config?.user_id ?? priorUserId;
   }
 
-  const userId = (owner !== current?.userId ? owner : priorUserId) ?? `duskbot_${randomUUID()}`;
+  const userId = (owner !== current?.userId ? owner : priorUserId) ?? `madanibot_${randomUUID()}`;
   const sessionId = await createProjectSession(trimmed, userId, authConfigs);
   return { apiKey: trimmed, userId, sessionId };
 }

@@ -44,7 +44,7 @@ describe("billing pricing", () => {
     expect(result.lines).toEqual([
       { kind: "license", label: `${license.label}, ${license.includedMembers} members`, amountCents: license.monthlyCents * 12 },
       { kind: "members", label: `${extraMembers} extra members`, amountCents: extraMembers * license.extraMemberCents! * 12 },
-      { kind: "desktop", label: `dusk cloud ${desktop.label.toLowerCase()}`, amountCents: desktop.monthlyCents! * 12 },
+      { kind: "desktop", label: `madani cloud ${desktop.label.toLowerCase()}`, amountCents: desktop.monthlyCents! * 12 },
       { kind: "discount", label: "Yearly, 2 months free", amountCents: -discount },
     ]);
     expect(result).toMatchObject({ totalCents: subtotal - discount, monthlyEquivalentCents: Math.round((subtotal - discount) / 12), members: 5, bundle: null, botComputers: 5, machine: { vcpu: 4, ramGb: 8, diskGb: 60 } });
@@ -93,7 +93,7 @@ describe("billing pricing", () => {
     expect(dodoCart(minimum, products)![0].addons).not.toContainEqual(expect.objectContaining({ addonId: "addon_disk_20gb_month" }));
     expect(dodoCart(preset(1), {})).toBeNull(); expect(dodoCart({ ...preset(1), license: { kind: "solo" } }, { "license_solo:month": "solo" })).toBeNull();
     expect(dodoCartKeys(minimum).map(({ key }) => key)).toEqual(["license_team:month", "addon_dedicated:month", "addon_vcpu:month", "addon_ram_gb:month"]);
-    // every key any cart can ask for is one the config documents, so a complete DUSK_DODO_PRODUCTS never answers 503
+    // every key any cart can ask for is one the config documents, so a complete MADANI_DODO_PRODUCTS never answers 503
     for (const interval of ["month", "year"] as const) for (const license of [{ kind: "none" as const }, { kind: "solo" as const }, { kind: "team" as const, members: 3 }])
       for (const desktop of [{ kind: "none" as const }, { kind: "shared_s" as const, region: "fsn1" }, { kind: "shared_m" as const, region: "fsn1" }, { kind: "dedicated" as const, region: "fsn1", spec: { vcpu: 8, ramGb: 16, diskGb: 160 } }])
         for (const { key } of dodoCartKeys({ interval, license, desktop })) expect(DODO_PRODUCT_KEYS).toContain(key);
@@ -114,7 +114,7 @@ describe("billing pricing", () => {
     expect(changeTiming(year(pro!), pro!, false)).toEqual({ timing: "scheduled", mode: "scheduled" });
     expect(changeTiming(year(plus!), pro!, false)).toEqual({ timing: "now", mode: "new_cycle" });
     expect(changeTiming(pro!, year(plus!), false)).toEqual({ timing: "scheduled", mode: "scheduled" });
-    expect(dodoProducts({ DUSK_DODO_PRODUCTS: '{"license_solo:month":"p1"}' })).toEqual({ "license_solo:month": "p1" });
-    expect(() => dodoProducts({ DUSK_DODO_PRODUCTS: '{"bad":1}' })).toThrow();
+    expect(dodoProducts({ MADANI_DODO_PRODUCTS: '{"license_solo:month":"p1"}' })).toEqual({ "license_solo:month": "p1" });
+    expect(() => dodoProducts({ MADANI_DODO_PRODUCTS: '{"bad":1}' })).toThrow();
   });
 });

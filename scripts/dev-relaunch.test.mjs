@@ -4,7 +4,7 @@ import path from "node:path";
 import { describe, expect, it } from "vitest";
 import { takeRelaunchRequest } from "./dev-relaunch.mjs";
 
-const file = () => path.join(fs.mkdtempSync(path.join(os.tmpdir(), "dusk-relaunch-")), "relaunch.json");
+const file = () => path.join(fs.mkdtempSync(path.join(os.tmpdir(), "madani-relaunch-")), "relaunch.json");
 
 describe("dev relaunch request", () => {
   it("returns the requested args once and clears the file", () => {

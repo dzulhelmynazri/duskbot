@@ -21,7 +21,7 @@ export interface VoiceProcess {
 
 /** ONNX Runtime 1.31.1 has taken down the whole harness on Windows and Linux while loading the voice's models, so it
  * runs in a child of its own; a crash there ends only the voice. */
-export function createVoiceProcess({ modelDir, entry = resolveProxy("local-voice/voice-worker"), version = process.env.DUSK_APP_VERSION || "dev", log = () => {} }: {
+export function createVoiceProcess({ modelDir, entry = resolveProxy("local-voice/voice-worker"), version = process.env.MADANI_APP_VERSION || "dev", log = () => {} }: {
   modelDir: string;
   entry?: string;
   version?: string;
@@ -49,7 +49,7 @@ export function createVoiceProcess({ modelDir, entry = resolveProxy("local-voice
     const proc = fork(entry, [], {
       execPath: process.execPath,
       execArgv: [],
-      env: { ...process.env, ELECTRON_RUN_AS_NODE: "1", DUSK_VOICE_MODELS_DIR: modelDir },
+      env: { ...process.env, ELECTRON_RUN_AS_NODE: "1", MADANI_VOICE_MODELS_DIR: modelDir },
       serialization: "advanced",
       stdio: ["ignore", "inherit", "inherit", "ipc"],
     });

@@ -9,13 +9,13 @@ import WebSocket from "ws";
 import { connectMcp, driver, eventually, httpFixture, sleep, socket } from "./testing/bot-desktop-fixture.mjs";
 
 const run = promisify(execFile);
-const image = process.env.DUSK_VERIFY_DESKTOP_IMAGE;
+const image = process.env.MADANI_VERIFY_DESKTOP_IMAGE;
 const installedDefaults = process.argv.includes("--installed-defaults");
-assert.ok(image, "set DUSK_VERIFY_DESKTOP_IMAGE to an isolated fixture image");
+assert.ok(image, "set MADANI_VERIFY_DESKTOP_IMAGE to an isolated fixture image");
 const imageId = (await run("docker", ["image", "inspect", image, "--format", "{{.Id}}"])).stdout.trim();
 assert.match(imageId, /^sha256:[a-f0-9]{64}$/);
-const evidence = await mkdtemp("/tmp/dusk-browser-policy-");
-process.env.DUSK_DATA_DIR = join(evidence, "server-data");
+const evidence = await mkdtemp("/tmp/madani-browser-policy-");
+process.env.MADANI_DATA_DIR = join(evidence, "server-data");
 const { boxChromeRelay } = await import("../server/vps-local.ts");
 const policies = { HighEfficiencyModeEnabled: true, MemorySaverModeSavings: 1, NetworkPredictionOptions: 2 };
 const sentinel = "owned-mv3-persistence-fixture";
@@ -105,7 +105,7 @@ async function extensionState(cdp, session) {
 }
 
 async function measure(trial) {
-  const mode = installedDefaults ? "installed" : trial ? "trial" : "baseline", name = `dusk-browser-policy-${process.pid}-${mode}`, volume = `${name}-home`;
+  const mode = installedDefaults ? "installed" : trial ? "trial" : "baseline", name = `madani-browser-policy-${process.pid}-${mode}`, volume = `${name}-home`;
   const recommended = join(evidence, mode);
   await mkdir(recommended);
   if (trial) await writeFile(join(recommended, "trial.json"), JSON.stringify(policies));
@@ -113,8 +113,8 @@ async function measure(trial) {
   receipt.results.push(result);
   let container, madeVolume = false, transport, cdp;
   try {
-    await docker(["volume", "create", "--label", "bot.dusk.verification=browser-policy", volume]); madeVolume = true;
-    container = (await docker(["run", "-d", "--name", name, "--label", "bot.dusk.verification=browser-policy", "--network", "none", "--read-only", "--user", "1000:1000", "--cap-drop", "ALL", "--security-opt", "no-new-privileges", "--memory", "4g", "--memory-swap", "4g", "--cpus", "2", "--pids-limit", "4096", "--shm-size", "512m", "--mount", `type=volume,source=${volume},target=/home/cua`, "--mount", `type=bind,source=${extension},target=/fixture-extension,readonly`, ...(installedDefaults ? [] : ["--mount", `type=bind,source=${recommended},target=/etc/chromium/policies/recommended,readonly`]), "--tmpfs", "/tmp:rw,nosuid,nodev,size=512m", "--tmpfs", "/run:rw,nosuid,nodev,size=64m,uid=1000,gid=1000,mode=0755", "-e", "DUSK_BROWSER_AT_START=off", imageId])).stdout.trim();
+    await docker(["volume", "create", "--label", "bot.madani.verification=browser-policy", volume]); madeVolume = true;
+    container = (await docker(["run", "-d", "--name", name, "--label", "bot.madani.verification=browser-policy", "--network", "none", "--read-only", "--user", "1000:1000", "--cap-drop", "ALL", "--security-opt", "no-new-privileges", "--memory", "4g", "--memory-swap", "4g", "--cpus", "2", "--pids-limit", "4096", "--shm-size", "512m", "--mount", `type=volume,source=${volume},target=/home/cua`, "--mount", `type=bind,source=${extension},target=/fixture-extension,readonly`, ...(installedDefaults ? [] : ["--mount", `type=bind,source=${recommended},target=/etc/chromium/policies/recommended,readonly`]), "--tmpfs", "/tmp:rw,nosuid,nodev,size=512m", "--tmpfs", "/run:rw,nosuid,nodev,size=64m,uid=1000,gid=1000,mode=0755", "-e", "MADANI_BROWSER_AT_START=off", imageId])).stdout.trim();
     const exec = args => docker(["exec", "-u", "1000:1000", container, ...args]);
     const detail = JSON.parse((await docker(["inspect", container])).stdout)[0];
     assert.equal(detail.HostConfig.NetworkMode, "none"); assert.deepEqual(detail.HostConfig.PortBindings, {});

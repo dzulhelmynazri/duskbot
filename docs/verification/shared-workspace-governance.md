@@ -35,7 +35,7 @@ prompt or dialog: visibility is access control and the log is a record.
   change is diffed around its request (config.json, the bot's audited
   fields, the bot and webhook lists, sessions, pairing codes, engine actions)
   and written to `<data>/admin-activity/YYYY-MM.ndjson` (0600) with the
-  actor and redacted before/after values; `duskbot access` writes the
+  actor and redacted before/after values; `madanibot access` writes the
   same row as the command line. Months are pruned by the decision log's
   retention window. The packaged desktop app records nothing.
 - **Activity view.** `GET /api/admin-activity?from=&to=&who=&what=&limit=`
@@ -76,7 +76,7 @@ pnpm exec vitest run server/bot-visibility.test.ts server/bot-visibility.e2e.tes
   with each filter and the CSV. It checks who is named, that display-only
   and refused changes leave no row, that neither secret reaches the file or
   the CSV, that the file is 0600, and that a member gets 403.
-- `server/cli.test.ts` ("duskbot access") checks the command line's rows.
+- `server/cli.test.ts` ("madanibot access") checks the command line's rows.
 
 ## Not proven here
 
@@ -90,7 +90,7 @@ pnpm exec vitest run server/bot-visibility.test.ts server/bot-visibility.e2e.tes
 
 ## Observed local result — 2026-09-23
 
-On a disposable worktree stacked on #1708 and rebased onto dusk bot main
+On a disposable worktree stacked on #1708 and rebased onto madani bot main
 `0b132aec`: `pnpm typecheck`, `pnpm lint`, `pnpm i18n:check` and the files
 above passed. Before that rebase (main `0bb37982` plus #1708),
 `pnpm test:packaged-server` and `server/index.test.ts`,
@@ -153,7 +153,7 @@ A review of #1717 reproduced eight problems; each is now covered.
   of a frame kept from clients (`memberFrame` returns nothing for a withheld
   frame).
 
-Observed on a disposable worktree on dusk bot main `3eb90469`:
+Observed on a disposable worktree on madani bot main `3eb90469`:
 `pnpm typecheck`, `pnpm lint`, `pnpm i18n:check`, the files above and their
 neighbours (`server/index.test.ts`, card answerers, CLI, recent work, room
 and team suites) passed on macOS. Mutation checks, each restored afterwards,

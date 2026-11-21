@@ -89,9 +89,9 @@ async function scenario(spec, dir) {
   const keys = newLinkKeys();
   const made = await relayClient.create({ verifier: keys.verifier, appPub: keys.pub });
   const home = mkdtempSync(join(tmpdir(), "natlab-srv-"));
-  const agentEnv = { ...env, HOME: "/root", LINK_SERVER_PORT: "8799", DUSK_LINK_DIRECT: "on", DUSK_LINK_DIRECT_HOST: net.server, DUSK_LINK_STUN: "stun:198.51.100.20:3478",
-    DUSK_LINK_NDC_DIR: repoRoot, DUSK_LINK_RTC_FETCH: "off", DUSK_RELAY_URL: "off", DUSK_LINK_SERVER_UPDATES: "off", DUSK_LINK_UPDATES: "off", DUSK_LINK_PHONES: "off", DUSK_LINK_NODES: "off" };
-  sh("rm -rf /root/.config/duskbot-link");
+  const agentEnv = { ...env, HOME: "/root", LINK_SERVER_PORT: "8799", MADANI_LINK_DIRECT: "on", MADANI_LINK_DIRECT_HOST: net.server, MADANI_LINK_STUN: "stun:198.51.100.20:3478",
+    MADANI_LINK_NDC_DIR: repoRoot, MADANI_LINK_RTC_FETCH: "off", MADANI_RELAY_URL: "off", MADANI_LINK_SERVER_UPDATES: "off", MADANI_LINK_UPDATES: "off", MADANI_LINK_PHONES: "off", MADANI_LINK_NODES: "off" };
+  sh("rm -rf /root/.config/madanibot-link");
   execFileSync("ip", ["netns", "exec", "srv", process.execPath, join(linkRoot, "agent.mjs"), "link"], { env: { ...process.env, ...agentEnv, LINK_BASE: base, LINK_ID: made.id, LINK_TOKEN: vpsTokenOf(keys.secret), LINK_NAME: "lab" }, stdio: "ignore" });
   const done = await relayClient.watch(made.id, made.watch, 0);
   const result = openResult({ id: made.id, priv: keys.priv, pub: keys.pub, vpsPub: done.vpsPub, sealed: done.sealed });

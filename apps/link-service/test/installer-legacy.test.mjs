@@ -46,11 +46,11 @@ async function oldServer() {
 ROOT=$1
 CALLS=$ROOT/calls; export CALLS
 UNITS=$ROOT/units TMP=$ROOT/tmp
-SVC_USER=maus SVC_HOME=$ROOT/home/maus; DATA=$SVC_HOME/.duskbot
+SVC_USER=maus SVC_HOME=$ROOT/home/maus; DATA=$SVC_HOME/.madanibot
 LINK_HOME=$ROOT/var/lib/omb-link
-STATE=$ROOT/var/lib/duskbot-link LOGS=$ROOT/var/log/duskbot-link MANIFEST=$ROOT/var/lib/duskbot/install-manifest
-AGENT=$ROOT/opt/duskbot-link/agent.mjs LIB=$ROOT/usr/local/lib/duskbot ETC=$ROOT/etc/duskbot
-CADDY_SITE=$ROOT/etc/caddy/duskbot.caddy CADDY_MAIN=$ROOT/etc/caddy/Caddyfile
+STATE=$ROOT/var/lib/madanibot-link LOGS=$ROOT/var/log/madanibot-link MANIFEST=$ROOT/var/lib/madanibot/install-manifest
+AGENT=$ROOT/opt/madanibot-link/agent.mjs LIB=$ROOT/usr/local/lib/madanibot ETC=$ROOT/etc/madanibot
+CADDY_SITE=$ROOT/etc/caddy/madanibot.caddy CADDY_MAIN=$ROOT/etc/caddy/Caddyfile
 OLD_STATE=$ROOT/var/lib/$OLD-link OLD_LOGS=$ROOT/var/log/$OLD-link OLD_MANIFEST=$ROOT/var/lib/$OLD/install-manifest
 OLD_AGENT_DIR=$ROOT/opt/$OLD-link OLD_LIB=$ROOT/usr/local/lib/$OLD OLD_ETC=$ROOT/etc/$OLD
 OLD_BWRAP_PROFILE=$ROOT/etc/apparmor.d/$OLD-bwrap OLD_CADDY_SITE=$ROOT/etc/caddy/$OLD.caddy
@@ -76,28 +76,28 @@ it("moves an install from before the rename to the new names, keeping its bots, 
   expect(existsSync(at("units/ssh.service.d", `10-${OLD}-oom.conf`))).toBe(false);
 
   // the bots, under the new folder name, still found through the old one
-  expect(JSON.parse(await readFile(at("home/maus/.duskbot/bots.json"), "utf8"))[0].name).toBe("Kept helper");
+  expect(JSON.parse(await readFile(at("home/maus/.madanibot/bots.json"), "utf8"))[0].name).toBe("Kept helper");
   expect((await lstat(at("home/maus", `.${OLD}`))).isSymbolicLink()).toBe(true);
   expect(await readFile(at("home/maus", `.${OLD}`, "config.json"), "utf8")).toBe("{}");
 
-  expect(await readFile(at("var/lib/duskbot-link/id"), "utf8")).toBe("abcdefghij\n");
-  expect(await readFile(at("var/log/duskbot-link/link.log"), "utf8")).toBe("old log\n");
-  expect(await readFile(at("etc/duskbot/engines.env"), "utf8")).toContain("CLAUDE_CODE_OAUTH_TOKEN");
-  expect(await readFile(at("usr/local/lib/duskbot/docker-gate.mjs"), "utf8")).toBe("// gate\n");
-  expect(await readFile(at("var/lib/omb-link/.config/duskbot-link/tunnel.json"), "utf8")).toContain("abcdefghij");
+  expect(await readFile(at("var/lib/madanibot-link/id"), "utf8")).toBe("abcdefghij\n");
+  expect(await readFile(at("var/log/madanibot-link/link.log"), "utf8")).toBe("old log\n");
+  expect(await readFile(at("etc/madanibot/engines.env"), "utf8")).toContain("CLAUDE_CODE_OAUTH_TOKEN");
+  expect(await readFile(at("usr/local/lib/madanibot/docker-gate.mjs"), "utf8")).toBe("// gate\n");
+  expect(await readFile(at("var/lib/omb-link/.config/madanibot-link/tunnel.json"), "utf8")).toContain("abcdefghij");
 
   // the agent: moved, its old folder a link, and the app's direct key runs it from the new place
-  expect(await readFile(at("opt/duskbot-link/agent.mjs"), "utf8")).toBe("// agent\n");
-  expect(await readlink(at("opt", `${OLD}-link`))).toBe(at("opt/duskbot-link"));
+  expect(await readFile(at("opt/madanibot-link/agent.mjs"), "utf8")).toBe("// agent\n");
+  expect(await readlink(at("opt", `${OLD}-link`))).toBe(at("opt/madanibot-link"));
   const keys = await readFile(at("var/lib/omb-link/.ssh/authorized_keys"), "utf8");
-  expect(keys).toContain(`${at("opt/duskbot-link")}/agent.mjs direct`);
+  expect(keys).toContain(`${at("opt/madanibot-link")}/agent.mjs direct`);
   expect(keys).not.toContain(OLD);
 
   expect(calls).toContain(`apparmor_parser -R ${at("etc/apparmor.d", `${OLD}-bwrap`)}`);
   expect(existsSync(at("etc/apparmor.d", `${OLD}-bwrap`))).toBe(false);
-  expect(await readFile(at("etc/caddy/duskbot.caddy"), "utf8")).toBe("example.test {\n}\n");
-  expect(await readFile(at("etc/caddy/Caddyfile"), "utf8")).toBe(`# managed by duskbot-link\nimport ${at("etc/caddy/duskbot.caddy")}\n`);
-  expect(await readFile(at("var/lib/duskbot/install-manifest"), "utf8")).not.toContain(OLD);
+  expect(await readFile(at("etc/caddy/madanibot.caddy"), "utf8")).toBe("example.test {\n}\n");
+  expect(await readFile(at("etc/caddy/Caddyfile"), "utf8")).toBe(`# managed by madanibot-link\nimport ${at("etc/caddy/madanibot.caddy")}\n`);
+  expect(await readFile(at("var/lib/madanibot/install-manifest"), "utf8")).not.toContain(OLD);
 
   expect(await readFile(at("out"), "utf8")).toContain("moving an install from before the rename");
   expect(await readFile(at("again"), "utf8")).toBe("");

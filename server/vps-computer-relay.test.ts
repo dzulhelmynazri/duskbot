@@ -5,7 +5,7 @@ import { afterAll, describe, expect, it } from "vitest";
 import { removeTempDir } from "./testing/cleanup.ts";
 import { ComputerToolLists, createComputerRelay, relayedComputerSpec, vpsToolsKey, type RelayBridge } from "./vps-computer-relay.ts";
 
-const home = mkdtempSync(join(tmpdir(), "dusk-computer-relay-"));
+const home = mkdtempSync(join(tmpdir(), "madani-computer-relay-"));
 const driver = join(home, "driver.mjs");
 // a stdio mcp server standing in for the cua driver inside the desktop
 writeFileSync(driver, `
@@ -70,7 +70,7 @@ describe("the relayed VPS computer", () => {
     expect(wakes).toHaveLength(0);
 
     const [first, second] = await Promise.all([
-      relay.request(owner, { method: "tools/call", params: { name: "launch_app", arguments: { url: "https://dusk.bot" } } }),
+      relay.request(owner, { method: "tools/call", params: { name: "launch_app", arguments: { url: "https://madani.bot" } } }),
       relay.request(owner, { method: "tools/call", params: { name: "screenshot", arguments: {} } }),
     ]);
     expect(first).toEqual({ result: { content: [{ type: "text", text: "did launch_app" }] } });
@@ -155,15 +155,15 @@ describe("the relayed VPS computer", () => {
     const call = (who: typeof owner) => relay.request(who, { method: "tools/call", params: { name: "screenshot", arguments: {} } });
     const turns = ["gen-1", "gen-2", "gen-3"].map((generation) => ({ threadId: "thread-park", generation }));
 
-    relay.open(turns[0]!, awake({ DUSK_CONTROL_TOKEN: "thread-bearer", DESKTOP: "a" }));
+    relay.open(turns[0]!, awake({ MADANI_CONTROL_TOKEN: "thread-bearer", DESKTOP: "a" }));
     await call(turns[0]!);
     relay.close(turns[0]!);
-    relay.open(turns[1]!, awake({ DESKTOP: "a", DUSK_CONTROL_TOKEN: "thread-bearer" }));
+    relay.open(turns[1]!, awake({ DESKTOP: "a", MADANI_CONTROL_TOKEN: "thread-bearer" }));
     await call(turns[1]!);
     expect(opened).toHaveLength(1);
     relay.close(turns[1]!);
     // a new container (or a new bearer) is a new bridge
-    relay.open(turns[2]!, awake({ DUSK_CONTROL_TOKEN: "thread-bearer", DESKTOP: "b" }));
+    relay.open(turns[2]!, awake({ MADANI_CONTROL_TOKEN: "thread-bearer", DESKTOP: "b" }));
     await call(turns[2]!);
     expect(opened).toHaveLength(2);
   });
@@ -178,7 +178,7 @@ describe("the relayed VPS computer", () => {
   it("mounts the harness proxy, holding only the turn's capability", () => {
     const spec = relayedComputerSpec("cap-token", 8799);
     expect(spec.args.at(-1)).toBe("computer");
-    expect(spec.env).toMatchObject({ DUSK_MCP_TOKEN_COMPUTER: "cap-token", DUSK_HARNESS_URL: "http://127.0.0.1:8799" });
-    expect(Object.keys(spec.env)).not.toContain("DUSK_CONTROL_TOKEN");
+    expect(spec.env).toMatchObject({ MADANI_MCP_TOKEN_COMPUTER: "cap-token", MADANI_HARNESS_URL: "http://127.0.0.1:8799" });
+    expect(Object.keys(spec.env)).not.toContain("MADANI_CONTROL_TOKEN");
   });
 });

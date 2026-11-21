@@ -1,5 +1,5 @@
-// the mac app installs its own updates. dusk.bot's signed latest.json names the version and the sha256 of that
-// release's SHA256SUMS; the zip for this mac's arch is downloaded from the public downloads repo (or dusk.bot's copy,
+// the mac app installs its own updates. madani.bot's signed latest.json names the version and the sha256 of that
+// release's SHA256SUMS; the zip for this mac's arch is downloaded from the public downloads repo (or madani.bot's copy,
 // app-update-download.mjs), checked against those sums, and handed to Electron's autoUpdater (Squirrel.Mac) through a
 // feed on 127.0.0.1 that only this process knows.
 // Squirrel.Mac installs only an app signed with the same Developer ID as the running one (its designated requirement),
@@ -19,12 +19,12 @@ import { pipeline } from "node:stream/promises";
 
 import { failReason, resumableDownload, UpdateError } from "./app-update-download.mjs";
 
-export const DESKTOP_MANIFEST_URL = "https://dusk.bot/releases/latest.json";
-export const sumsUrl = (version) => `https://dusk.bot/releases/${version}/SHA256SUMS`;
-export const zipUrl = (version, name) => `https://github.com/DuskBotAI/duskbot-releases/releases/download/v${version}/${name}`;
-/** where the signed manifest can come from, in the order they are tried: dusk.bot, then the downloads repo's latest
+export const DESKTOP_MANIFEST_URL = "https://madani.bot/releases/latest.json";
+export const sumsUrl = (version) => `https://madani.bot/releases/${version}/SHA256SUMS`;
+export const zipUrl = (version, name) => `https://github.com/dzulhelmynazri/madani-bot-releases/releases/download/v${version}/${name}`;
+/** where the signed manifest can come from, in the order they are tried: madani.bot, then the downloads repo's latest
  * release (scripts/publish-downloads.sh uploads the same signed file there) */
-export const MANIFEST_SOURCES = Object.freeze([DESKTOP_MANIFEST_URL, "https://github.com/DuskBotAI/duskbot-releases/releases/latest/download/latest.json"]);
+export const MANIFEST_SOURCES = Object.freeze([DESKTOP_MANIFEST_URL, "https://github.com/dzulhelmynazri/madani-bot-releases/releases/latest/download/latest.json"]);
 /** where a release's SHA256SUMS can come from; either copy must hash to the signed manifest's sha256 */
 export const sumsSources = (version) => [sumsUrl(version), zipUrl(version, "SHA256SUMS")];
 /** a lookup tries every source once per round, waiting this long before each next round */
@@ -38,10 +38,10 @@ export const OFFLINE_CHECKS_BEFORE_FAILED = 6;
 /** CI's release keys (apps/cloud-service/src/release-signing.ts pins the same ones; a test keeps them equal) */
 export const RELEASE_KEYS = Object.freeze([{ kid: "rel-2026-11", x: "wtwZypDwVPBXZ25XsZOVpd0PZPBbVMhugheUj5_NLIM" }]);
 const CHECK_EVERY_MS = 30 * 60_000;
-/** each check lands somewhere in this much more, so every app does not ask dusk.bot in the same minute */
+/** each check lands somewhere in this much more, so every app does not ask madani.bot in the same minute */
 const JITTER_MS = 10 * 60_000;
-/** the signed update policy (shared/update-guard.ts), first answer that verifies wins: the account service, then dusk.bot's copy */
-export const POLICY_SOURCES = Object.freeze(["https://dusk.bot/v1/updates/policy", "https://dusk.bot/releases/update-policy.json"]);
+/** the signed update policy (shared/update-guard.ts), first answer that verifies wins: the account service, then madani.bot's copy */
+export const POLICY_SOURCES = Object.freeze(["https://madani.bot/v1/updates/policy", "https://madani.bot/releases/update-policy.json"]);
 const SEMVER = /^\d+\.\d+\.\d+$/;
 
 /** `{ serial, floor, blocked, paused, rollout }` from a `{ body, signature }` policy a pinned key signed, or null */
@@ -111,9 +111,9 @@ export function newer(a, b) {
 }
 
 /** this arch's zip in a SHA256SUMS text: `{ name, sha256 }`, or null */
-export const zipIn = (sums, version, arch) => assetIn(sums, `DuskBot-${version}-${arch}.zip`);
+export const zipIn = (sums, version, arch) => assetIn(sums, `MadaniBot-${version}-${arch}.zip`);
 /** the windows installer in a SHA256SUMS text: `{ name, sha256 }`, or null */
-export const setupIn = (sums, version) => assetIn(sums, `DuskBot-${version}-setup.exe`);
+export const setupIn = (sums, version) => assetIn(sums, `MadaniBot-${version}-setup.exe`);
 
 /** `name` in a SHA256SUMS text: `{ name, sha256 }`, or null */
 export function assetIn(sums, name) {
@@ -211,34 +211,34 @@ export function justUpdated(memory, current, installedHere = () => false) {
   return typeof before === "string" ? newer(current, before) : installedHere();
 }
 
-export const DOWNLOAD_PAGE = "https://dusk.bot/download";
-/** dusk.bot's own copy of a release file, next to its SHA256SUMS (scripts/mirror-release.sh puts it there) */
-export const mirrorUrl = (version, name) => `https://dusk.bot/releases/${version}/${name}`;
+export const DOWNLOAD_PAGE = "https://madani.bot/download";
+/** madani.bot's own copy of a release file, next to its SHA256SUMS (scripts/mirror-release.sh puts it there) */
+export const mirrorUrl = (version, name) => `https://madani.bot/releases/${version}/${name}`;
 /** where a release's update zip can come from, in the order they are tried */
 export const zipSources = (version, name) => [zipUrl(version, name), mirrorUrl(version, name)];
-/** where a release's windows installer can come from: dusk.bot's copy, then the downloads repo's stable name (the same
+/** where a release's windows installer can come from: madani.bot's copy, then the downloads repo's stable name (the same
  * bytes, checked against the same sha256) */
-export const setupSources = (version, name) => [mirrorUrl(version, name), zipUrl(version, "DuskBot-setup.exe")];
+export const setupSources = (version, name) => [mirrorUrl(version, name), zipUrl(version, "MadaniBot-setup.exe")];
 
-// the downloads repo keeps the installers under the stable names dusk.bot/download links to
-const STABLE = { "setup.exe": "DuskBot-setup.exe", "x86_64.AppImage": "DuskBot.AppImage", "amd64.deb": "DuskBot-amd64.deb" };
+// the downloads repo keeps the installers under the stable names madani.bot/download links to
+const STABLE = { "setup.exe": "MadaniBot-setup.exe", "x86_64.AppImage": "MadaniBot.AppImage", "amd64.deb": "MadaniBot-amd64.deb" };
 
 /** the installer someone on `platform` runs by hand, named as SHA256SUMS names it, or null */
 export function installerIn(sums, version, platform, { appImage = false } = {}) {
   const end = platform === "win32" ? "setup.exe" : platform === "linux" ? (appImage ? "x86_64.AppImage" : "amd64.deb") : null;
   if (!end) return null;
-  const name = `DuskBot-${version}-${end}`;
+  const name = `MadaniBot-${version}-${end}`;
   return String(sums).split("\n").some((line) => /^[0-9a-f]{64} {2}/.test(line.trim()) && line.trim().slice(66) === name) ? name : null;
 }
 
-/** a link that downloads `name` itself: dusk.bot's copy when it has one, else the downloads repo's, else the download page */
+/** a link that downloads `name` itself: madani.bot's copy when it has one, else the downloads repo's, else the download page */
 export async function installerUrl(version, name, fetchImpl = fetch) {
   if (!name) return DOWNLOAD_PAGE;
   try {
     const answer = await fetchImpl(mirrorUrl(version, name), { method: "HEAD", signal: AbortSignal.timeout(15_000) });
     if (answer.ok) return mirrorUrl(version, name);
   } catch { /* the downloads repo then */ }
-  const stable = STABLE[name.slice(`DuskBot-${version}-`.length)];
+  const stable = STABLE[name.slice(`MadaniBot-${version}-`.length)];
   return stable ? zipUrl(version, stable) : DOWNLOAD_PAGE;
 }
 

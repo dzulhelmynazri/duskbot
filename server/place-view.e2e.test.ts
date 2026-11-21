@@ -65,11 +65,11 @@ describe("a cloud computer that can't start, against the real server", () => {
     const proc = spawn(process.execPath, [join(ROOT, "server/index.ts")], {
       cwd: ROOT, env: {
         PATH: dirname(process.execPath), ...(process.env.SystemRoot ? { SystemRoot: process.env.SystemRoot } : {}),
-        HOME: home, USERPROFILE: home, DUSK_DATA_DIR: data,
+        HOME: home, USERPROFILE: home, MADANI_DATA_DIR: data,
         APPDATA: join(home, "appdata"), LOCALAPPDATA: join(home, "localappdata"),
-        TEMP: home, TMP: home, TMPDIR: home, DUSK_TEST_SEALED_PATH: "1",
-        DUSK_PORT: String(port), DUSK_WEBHOOK_PORT: String(port + 1), DUSK_STATIC_DIR: ui,
-        DUSK_USER_DATA: join(home, "user-data"),
+        TEMP: home, TMP: home, TMPDIR: home, MADANI_TEST_SEALED_PATH: "1",
+        MADANI_PORT: String(port), MADANI_WEBHOOK_PORT: String(port + 1), MADANI_STATIC_DIR: ui,
+        MADANI_USER_DATA: join(home, "user-data"),
       }, stdio: ["ignore", "pipe", "pipe"],
     });
     child = proc;
@@ -88,7 +88,7 @@ describe("a cloud computer that can't start, against the real server", () => {
   }
 
   beforeAll(async () => {
-    home = mkdtempSync(join(tmpdir(), "dusk-place-view-"));
+    home = mkdtempSync(join(tmpdir(), "madani-place-view-"));
     data = join(home, "data");
     ui = join(home, "static");
     mkdirSync(data);

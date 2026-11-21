@@ -13,7 +13,7 @@ afterEach(() => {
 });
 
 function newHome() {
-  const home = mkdtempSync(join(tmpdir(), "dusk-bot-move-"));
+  const home = mkdtempSync(join(tmpdir(), "madani-bot-move-"));
   homes.push(home);
   return home;
 }
@@ -244,13 +244,13 @@ describe("Claude Code's and Gemini CLI's own agents", () => {
   });
 });
 
-describe("dusk bot's older builds", () => {
+describe("madani bot's older builds", () => {
   it("reads the bots of a left-behind ~/.openmausbot, not its helper, hidden bots or chats", () => {
     const home = newHome();
     const secrets = plantOpenMausBot(home);
     const machine = machineAt(home);
-    const app = lookForBots(machine, { dataDir: join(home, ".duskbot") }).apps[0]!;
-    expect(app).toMatchObject({ source: "openmausbot", app: "your earlier dusk bot", where: "~/.openmausbot" });
+    const app = lookForBots(machine, { dataDir: join(home, ".madanibot") }).apps[0]!;
+    expect(app).toMatchObject({ source: "openmausbot", app: "your earlier madani bot", where: "~/.openmausbot" });
     expect(app.bots).toHaveLength(1);
     expect(app.bots[0]).toMatchObject({ name: "Ledger", title: "Bookkeeper", color: "teal", instructions: "You track every expense and flag anything odd." });
     expect(Object.keys(app.bots[0]!.memoryFiles!)).toEqual(["MEMORY.md", "memory/vendors.md"]);
@@ -273,6 +273,6 @@ describe("dusk bot's older builds", () => {
     const home = newHome();
     putter(home)(".openmausbot/bots.json", "[{");
     writeFileSync(join(home, ".openmausbot", "routines.json"), "{");
-    expect(lookForBots(machineAt(home), { dataDir: join(home, ".duskbot") }).apps).toEqual([]);
+    expect(lookForBots(machineAt(home), { dataDir: join(home, ".madanibot") }).apps).toEqual([]);
   });
 });

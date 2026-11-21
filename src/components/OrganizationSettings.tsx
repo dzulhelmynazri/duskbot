@@ -7,11 +7,11 @@ import { textFieldCls } from "./ui/GrokDialog";
 import { CompanyModels } from "./CompanyModels";
 
 const providerNames: Record<string, string> = { anthropic: "Anthropic", openai: "OpenAI", openrouter: "OpenRouter" };
-const DEFAULT_PORTAL_ORIGIN = "https://dusk.bot";
+const DEFAULT_PORTAL_ORIGIN = "https://madani.bot";
 
 /** Security: only the trusted desktop bridge can enroll this computer or hold its token. */
 export function OrganizationSettings() {
-  const bridge = window.duskDesktop?.remoteClient?.active ? undefined : window.duskDesktop?.organization;
+  const bridge = window.madaniDesktop?.remoteClient?.active ? undefined : window.madaniDesktop?.organization;
   const [connection, setConnection] = useState<ManagedDesktopState | null>(null);
   const [address, setAddress] = useState("");
   const [busy, setBusy] = useState(false);

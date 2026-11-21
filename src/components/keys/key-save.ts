@@ -10,8 +10,8 @@ import { keyEntry, type KeyId, type KeyTarget, type TestableProvider } from "./k
  * there, so Remove also clears the stored copy its boot migration made, else the server's own config, which on a Cloud
  * home stays outside every bot's box. */
 export function saveKey(target: KeyTarget, value: string, firstKey: boolean): Promise<ConfigStatus> {
-  return window.duskDesktop?.setCredential && target.slot
-    ? window.duskDesktop.setCredential(target.slot, value)
+  return window.madaniDesktop?.setCredential && target.slot
+    ? window.madaniDesktop.setCredential(target.slot, value)
     : putConfig(target.patch(value, firstKey));
 }
 

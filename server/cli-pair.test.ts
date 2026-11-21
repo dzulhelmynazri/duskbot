@@ -39,7 +39,7 @@ beforeEach(() => {
   vi.resetAllMocks();
   // The shared test setup supplies a throwaway HOME before module imports.
   dataDir = mkdtempSync(join(process.env.HOME!, "cli-pair-"));
-  vi.stubEnv("DUSK_DATA_DIR", dataDir);
+  vi.stubEnv("MADANI_DATA_DIR", dataDir);
   options = { command: "pair", port: 18451, dataDir, tailscale: false, tunnel: false, client: false, pair: true, json: false };
   publicUrl = advertisedOrigin;
   remoteWorkspaceId = workspaceId;
@@ -53,13 +53,13 @@ beforeEach(() => {
   fetchMock.mockImplementation(async (input, init) => {
     const url = String(input);
     const local = `http://127.0.0.1:${options.port}`;
-    if (url === `${local}/api/health`) return Response.json({ app: "duskbot", pid: 12345 });
+    if (url === `${local}/api/health`) return Response.json({ app: "madanibot", pid: 12345 });
     if (url === `${local}/api/auth/pairing`) {
       if (init?.method === "POST") return Response.json({ code, expiresAt: Date.now() + 300_000, url: `${advertisedOrigin}/pair#code=${code}` });
       return Response.json({ pairings: [], publicUrl });
     }
-    if (url === `${local}/.well-known/duskbot/environment`) return Response.json({ environmentId: workspaceId });
-    if ([advertisedOrigin, explicitOrigin].some((origin) => url === `${origin}/.well-known/duskbot/environment`)) {
+    if (url === `${local}/.well-known/madanibot/environment`) return Response.json({ environmentId: workspaceId });
+    if ([advertisedOrigin, explicitOrigin].some((origin) => url === `${origin}/.well-known/madanibot/environment`)) {
       return Response.json({ environmentId: remoteWorkspaceId });
     }
     // No real network fallback is allowed, including stale saved addresses.
@@ -83,7 +83,7 @@ afterEach(async () => {
 function expectPhonePairing(origin: string): void {
   const probes = fetchMock.mock.calls.filter(([url]) => String(url).startsWith("https://"));
   expect(probes).toHaveLength(1);
-  expect(String(probes[0]![0])).toBe(`${origin}/.well-known/duskbot/environment`);
+  expect(String(probes[0]![0])).toBe(`${origin}/.well-known/madanibot/environment`);
   expect(probes[0]![1]).not.toHaveProperty("body");
   expect(probes[0]![1]).not.toHaveProperty("headers");
   const invitations = fetchMock.mock.calls.filter(([, init]) => init?.method === "POST");
@@ -150,7 +150,7 @@ describe("guided phone pairing address discovery", () => {
     const local = `http://127.0.0.1:${options.port}`, typed = "WXYZ-2345-6789";
     const base = fetchMock.getMockImplementation()!;
     fetchMock.mockImplementation(async (input, init) => String(input) === `${local}/api/mobile/pairing` && init?.method === "POST"
-      ? Response.json({ link: "duskbot://link?v=1&g=grant", code: typed, expiresAt: Date.now() + 300_000, payload: { via: [{ kind: "relay" }] } })
+      ? Response.json({ link: "madanibot://link?v=1&g=grant", code: typed, expiresAt: Date.now() + 300_000, payload: { via: [{ kind: "relay" }] } })
       : base(input, init));
     expect(await runPair(options)).toBe(0);
     const printed = vi.mocked(console.log).mock.calls.map(([line]) => String(line)).join("\n");
@@ -176,14 +176,14 @@ describe("guided phone pairing address discovery", () => {
   });
 });
 
-// `duskbot pair` talks to 127.0.0.1, so the server answers as its owner and builds the phone-app invite from its own
+// `madanibot pair` talks to 127.0.0.1, so the server answers as its owner and builds the phone-app invite from its own
 // public address; the CLI prints it as it is and builds its own only for --public-url.
-describe("the phone-app link `duskbot pair` prints", () => {
+describe("the phone-app link `madanibot pair` prints", () => {
   const credential = `omb_pair_${"b".repeat(43)}`;
   const serverName = "Miguel's computer";
   const pairingResponse = (fields: Record<string, unknown>) => {
     fetchMock.mockImplementation(async (input, init) => {
-      if (String(input) === `http://127.0.0.1:${options.port}/api/health`) return Response.json({ app: "duskbot", pid: 12345 });
+      if (String(input) === `http://127.0.0.1:${options.port}/api/health`) return Response.json({ app: "madanibot", pid: 12345 });
       if (String(input) === `http://127.0.0.1:${options.port}/api/auth/pairing` && init?.method === "POST") {
         return Response.json({ code, expiresAt: Date.now() + 300_000, credential, serverName, ...fields });
       }
@@ -193,7 +193,7 @@ describe("the phone-app link `duskbot pair` prints", () => {
   const printed = () => vi.mocked(console.log).mock.calls.map(([line]) => String(line)).join("\n");
 
   it("prints the server's own invite unchanged", async () => {
-    const serverInvite = `duskbot://pair?address=${encodeURIComponent(advertisedOrigin)}&token=${credential}&name=Miguel's%20computer`;
+    const serverInvite = `madanibot://pair?address=${encodeURIComponent(advertisedOrigin)}&token=${credential}&name=Miguel's%20computer`;
     pairingResponse({ url: `${advertisedOrigin}/pair#code=${code}`, inviteUrl: serverInvite });
     expect(await runPair({ ...options, label: "Pixel" })).toBe(0);
     expect(printed()).toContain(`phone app:     ${serverInvite}\n`);
@@ -202,16 +202,16 @@ describe("the phone-app link `duskbot pair` prints", () => {
   it("builds the invite for --public-url from the server's credential and name", async () => {
     pairingResponse({
       url: `${advertisedOrigin}/pair#code=${code}`,
-      inviteUrl: `duskbot://pair?address=${encodeURIComponent(advertisedOrigin)}&token=${credential}&name=Miguel's%20computer`,
+      inviteUrl: `madanibot://pair?address=${encodeURIComponent(advertisedOrigin)}&token=${credential}&name=Miguel's%20computer`,
     });
     expect(await runPair({ ...options, label: "Pixel", publicUrl: explicitOrigin })).toBe(0);
     expect(printed()).toContain(
-      `phone app:     duskbot://pair?address=${encodeURIComponent(explicitOrigin)}&token=${credential}&name=Miguel's%20computer\n`,
+      `phone app:     madanibot://pair?address=${encodeURIComponent(explicitOrigin)}&token=${credential}&name=Miguel's%20computer\n`,
     );
     expect(printed()).not.toContain(encodeURIComponent(advertisedOrigin));
   });
 
-  // DUSK_PUBLIC_URL may name a path behind a proxy; phones dial an origin, so re-deriving an invite would point at the proxy's root.
+  // MADANI_PUBLIC_URL may name a path behind a proxy; phones dial an origin, so re-deriving an invite would point at the proxy's root.
   it("prints no invite for a server whose public address has a path", async () => {
     pairingResponse({ url: `https://proxy.example.test/omb/pair#code=${code}`, inviteUrl: null });
     expect(await runPair({ ...options, label: "Pixel" })).toBe(0);

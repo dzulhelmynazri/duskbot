@@ -98,7 +98,7 @@ test("the same server saved again keeps its dashboard place", async () => {
 });
 
 test("the dashboard's move link carries a workspace id only", () => {
-  assert.equal(cloudMoveLinkWorkspace("duskbot://cloud-move/ws_abc123"), "ws_abc123");
-  assert.equal(cloudMoveLinkWorkspace("duskbot://cloud-move/ws_abc123/"), "ws_abc123");
-  for (const bad of ["duskbot://cloud-move/https://evil.test", "duskbot://cloud-move/", "duskbot://cloud", "duskbot://cloud-move/ws_a?x=1", null]) assert.equal(cloudMoveLinkWorkspace(bad), null);
+  assert.equal(cloudMoveLinkWorkspace("madanibot://cloud-move/ws_abc123"), "ws_abc123");
+  assert.equal(cloudMoveLinkWorkspace("madanibot://cloud-move/ws_abc123/"), "ws_abc123");
+  for (const bad of ["madanibot://cloud-move/https://evil.test", "madanibot://cloud-move/", "madanibot://cloud", "madanibot://cloud-move/ws_a?x=1", null]) assert.equal(cloudMoveLinkWorkspace(bad), null);
 });

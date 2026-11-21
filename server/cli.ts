@@ -83,8 +83,8 @@ export function parseArgs(argv: string[], env: NodeJS.ProcessEnv = process.env):
   }
   const options: CliOptions = {
     command: command === "--help" || command === "-h" ? "help" : (command as CliOptions["command"]),
-    port: Number(env.DUSK_PORT || 8799),
-    dataDir: dataDirFor(env.DUSK_DATA_DIR, homedir()),
+    port: Number(env.MADANI_PORT || 8799),
+    dataDir: dataDirFor(env.MADANI_DATA_DIR, homedir()),
     tailscale: false,
     tunnel: false,
     client: false,
@@ -187,14 +187,14 @@ const message = (error: unknown) => (error instanceof Error ? error.message : St
 let serveOwnerToken: string | undefined;
 
 async function api(port: number, path: string, init: { method?: string; body?: string; timeoutMs?: number } = {}): Promise<{ status: number; body: any }> {
-  // x-dusk-cli names the tool in the activity log; on loopback it grants nothing.
-  const headers: Record<string, string> = { "content-type": "application/json", "x-dusk-cli": "1", ...(serveOwnerToken ? { "x-dusk-cli-owner": serveOwnerToken } : {}) };
+  // x-madani-cli names the tool in the activity log; on loopback it grants nothing.
+  const headers: Record<string, string> = { "content-type": "application/json", "x-madani-cli": "1", ...(serveOwnerToken ? { "x-madani-cli-owner": serveOwnerToken } : {}) };
   const res = await fetch(`http://127.0.0.1:${port}${path}`, { method: init.method, body: init.body, headers, signal: AbortSignal.timeout(init.timeoutMs ?? 3000) });
   const body: unknown = await res.json().catch(() => ({}));
   return { status: res.status, body };
 }
 
-export const SERVICE_TRUST_HELP = "This server does not treat commands on this computer as its owner (DUSK_LOOPBACK_TRUST=service), so it will not pair devices or list sessions for them. Sign in as an admin and use Settings → Remote access, let people sign in with their email (duskbot access add you@example.com), or restart the server with DUSK_LOOPBACK_TRUST=owner.";
+export const SERVICE_TRUST_HELP = "This server does not treat commands on this computer as its owner (MADANI_LOOPBACK_TRUST=service), so it will not pair devices or list sessions for them. Sign in as an admin and use Settings → Remote access, let people sign in with their email (madanibot access add you@example.com), or restart the server with MADANI_LOOPBACK_TRUST=owner.";
 
 function refusedAsService(status: number, body: any): boolean {
   return status === 403 && typeof body?.error === "string" && /shared server/.test(body.error);
@@ -215,7 +215,7 @@ export async function isWorkspaceRunning(options: CliOptions): Promise<boolean> 
     const { status, body } = await api(options.port, "/api/health");
     if (status !== 200 || !isOwnAppId(body?.app)) return false;
     const expected = readFileSync(join(options.dataDir, "environment-id"), "utf8").trim();
-    const descriptor = await api(options.port, "/.well-known/duskbot/environment");
+    const descriptor = await api(options.port, "/.well-known/madanibot/environment");
     return /^[0-9a-f-]{36}$/i.test(expected) && descriptor.status === 200 && descriptor.body?.environmentId === expected;
   } catch { return false; }
 }
@@ -238,8 +238,8 @@ export async function openDashboard(port: number, env = process.env): Promise<bo
 export async function verifyPhoneEndpoint(port: number, origin: string): Promise<boolean> {
   if (!normalizePhoneOrigin(origin)) return false;
   try {
-    const local = await api(port, "/.well-known/duskbot/environment");
-    const remote = await fetch(`${origin}/.well-known/duskbot/environment`, { signal: AbortSignal.timeout(5000), redirect: "error" });
+    const local = await api(port, "/.well-known/madanibot/environment");
+    const remote = await fetch(`${origin}/.well-known/madanibot/environment`, { signal: AbortSignal.timeout(5000), redirect: "error" });
     if (local.status !== 200 || !remote.ok) return false;
     const descriptor = await remote.json() as { environmentId?: unknown };
     return typeof local.body?.environmentId === "string" && local.body.environmentId.length > 0
@@ -251,7 +251,7 @@ export function applyStartupPreferences(options: CliOptions, saved: AppConfig["c
   if (options.local) return { ...options, tunnel: false, tailscale: false, publicUrl: undefined, phone: undefined };
   if (!saved || options.tunnel || options.tailscale || options.publicUrl) return options;
   if (saved.access === "public-url" && (!saved.publicUrl || !normalizePhoneOrigin(saved.publicUrl))) {
-    throw new Error("The saved phone address is not a valid HTTPS origin. Run duskbot setup to correct it, or duskbot --local to start only on this computer.");
+    throw new Error("The saved phone address is not a valid HTTPS origin. Run madanibot setup to correct it, or madanibot --local to start only on this computer.");
   }
   return {
     ...options,
@@ -275,8 +275,8 @@ function startupPreferences(options: CliOptions): NonNullable<AppConfig["cliStar
 async function showPhonePairing(options: CliOptions, origin: string | undefined, log: (line: string) => void): Promise<boolean> {
   const ready = !!origin && await verifyPhoneEndpoint(options.port, origin);
   if (!ready) {
-    log("Phone access is not reachable yet. dusk bot is ready on this computer; no phone pairing code was created.");
-    log("Check the HTTPS connection, then run duskbot pair again with the same --data-dir and --port.");
+    log("Phone access is not reachable yet. madani bot is ready on this computer; no phone pairing code was created.");
+    log("Check the HTTPS connection, then run madanibot pair again with the same --data-dir and --port.");
     return false;
   }
   for (const line of phonePairingInstructions(options.phone ?? "ios", { origin: origin!, ready })) log(line);
@@ -303,7 +303,7 @@ async function mintPairing(port: number, options: { label?: string; client?: boo
 
 export async function runPair(options: CliOptions): Promise<number> {
   if (!(await serverUp(options.port))) {
-    console.error(`no dusk bot server on http://127.0.0.1:${options.port}; start one with \`duskbot serve\` or set DUSK_PORT`);
+    console.error(`no madani bot server on http://127.0.0.1:${options.port}; start one with \`madanibot serve\` or set MADANI_PORT`);
     return 1;
   }
   if (process.stdin.isTTY && process.stdout.isTTY && !options.label && !options.client) {
@@ -323,7 +323,7 @@ export async function runPair(options: CliOptions): Promise<number> {
     if (!origin || !normalizePhoneOrigin(origin)) {
       const relayed = await phoneAppPairing((path, init) => api(options.port, path, init));
       if (relayed) { console.log(relayed); return 0; }
-      console.log("Your workspace is running only on this computer. A phone cannot use its localhost address.\nStop the server, run duskbot setup and choose phone access, then start duskbot again.");
+      console.log("Your workspace is running only on this computer. A phone cannot use its localhost address.\nStop the server, run madanibot setup and choose phone access, then start madanibot again.");
       return 1;
     }
     const ui = defaultSetupIo();
@@ -345,7 +345,7 @@ export async function runPair(options: CliOptions): Promise<number> {
 
 export async function runSessions(options: CliOptions): Promise<number> {
   if (!(await serverUp(options.port))) {
-    console.error(`no dusk bot server on http://127.0.0.1:${options.port}`);
+    console.error(`no madani bot server on http://127.0.0.1:${options.port}`);
     return 1;
   }
   if (options.revoke) {
@@ -376,7 +376,7 @@ export async function runSessions(options: CliOptions): Promise<number> {
     return 0;
   }
   if (!sessions.length) {
-    console.log("no paired devices yet: run `duskbot pair`");
+    console.log("no paired devices yet: run `madanibot pair`");
     return 0;
   }
   console.log(formatSessions(sessions));
@@ -392,17 +392,17 @@ export function formatSessions(sessions: Array<{ id: string; label: string; scop
   const head = ["id", "device", "scope", "last seen", "expires"];
   const widths = head.map((h, i) => Math.max(h.length, ...rows.map((r) => r[i].length)));
   const line = (r: string[]) => r.map((c, i) => c.padEnd(widths[i])).join("  ");
-  return [line(head), ...rows.map(line), "", "revoke one with: duskbot sessions revoke <id>"].join("\n");
+  return [line(head), ...rows.map(line), "", "revoke one with: madanibot sessions revoke <id>"].join("\n");
 }
 
 export async function runStatus(options: CliOptions, io: CliIo = defaultIo()): Promise<number> {
   let code = 0;
   try {
-    const res = await fetch(`http://127.0.0.1:${options.port}/.well-known/duskbot/environment`);
+    const res = await fetch(`http://127.0.0.1:${options.port}/.well-known/madanibot/environment`);
     const body: any = await res.json();
-    io.log(options.json ? JSON.stringify(body, null, 2) : `${body.label} · dusk bot ${body.version} on ${body.platform} · id ${body.environmentId}`);
+    io.log(options.json ? JSON.stringify(body, null, 2) : `${body.label} · madani bot ${body.version} on ${body.platform} · id ${body.environmentId}`);
   } catch {
-    io.error(`no dusk bot server on http://127.0.0.1:${options.port}`);
+    io.error(`no madani bot server on http://127.0.0.1:${options.port}`);
     code = 1;
   }
   if (!options.json) {
@@ -412,7 +412,7 @@ export async function runStatus(options: CliOptions, io: CliIo = defaultIo()): P
   return code;
 }
 
-/** Edits the sign-in allow-list in config.json, server live or stopped (read per request); DUSK_SIGNIN_EMAILS wins when set. */
+/** Edits the sign-in allow-list in config.json, server live or stopped (read per request); MADANI_SIGNIN_EMAILS wins when set. */
 export async function runAccess(options: CliOptions, io: CliIo = defaultIo()): Promise<number> {
   const file = join(options.dataDir, "config.json");
   let raw: Record<string, unknown> = {};
@@ -430,7 +430,7 @@ export async function runAccess(options: CliOptions, io: CliIo = defaultIo()): P
   const list = (value: unknown) => parseAllowList(Array.isArray(value) ? value.map(String).join(",") : "");
   const admins = list(Reflect.get(current, "admins"));
   const members = list(Reflect.get(current, "members"));
-  const overridden = process.env.DUSK_SIGNIN_EMAILS !== undefined || process.env.DUSK_SIGNIN_MEMBER_EMAILS !== undefined;
+  const overridden = process.env.MADANI_SIGNIN_EMAILS !== undefined || process.env.MADANI_SIGNIN_MEMBER_EMAILS !== undefined;
   const write = async (next: { admins: string[]; members: string[] }) => {
     mkdirSync(options.dataDir, { recursive: true, mode: 0o700 });
     writeFileAtomic(file, `${JSON.stringify({ ...raw, signIn: next }, null, 2)}\n`, { mode: 0o600 });
@@ -448,12 +448,12 @@ export async function runAccess(options: CliOptions, io: CliIo = defaultIo()): P
   };
   if (options.accessAction === "list") {
     if (!admins.length && !members.length) {
-      io.log("nobody can sign in with an email yet; pairing codes only. Add someone with: duskbot access add you@example.com");
+      io.log("nobody can sign in with an email yet; pairing codes only. Add someone with: madanibot access add you@example.com");
       return 0;
     }
     for (const entry of admins) io.log(`${entry.padEnd(40)} full access`);
     for (const entry of members) io.log(`${entry.padEnd(40)} chat and approvals`);
-    if (overridden) io.log("(DUSK_SIGNIN_EMAILS / DUSK_SIGNIN_MEMBER_EMAILS are set in the environment and win over this list while the server runs)");
+    if (overridden) io.log("(MADANI_SIGNIN_EMAILS / MADANI_SIGNIN_MEMBER_EMAILS are set in the environment and win over this list while the server runs)");
     return 0;
   }
   const entry = (options.email ?? "").trim().toLowerCase();
@@ -468,12 +468,12 @@ export async function runAccess(options: CliOptions, io: CliIo = defaultIo()): P
       return 1;
     }
     await write({ admins: without(admins), members: without(members) });
-    io.log(`${entry} can no longer sign in (existing sessions stay until they expire or are revoked with \`duskbot sessions revoke\`)`);
+    io.log(`${entry} can no longer sign in (existing sessions stay until they expire or are revoked with \`madanibot sessions revoke\`)`);
     return 0;
   }
   await write(options.chatOnly ? { admins: without(admins), members: [...without(members), entry] } : { admins: [...without(admins), entry], members: without(members) });
   io.log(`${entry} can sign in at /pair with an emailed code (${options.chatOnly ? "chat and approvals" : "full access"})`);
-  if (overridden) io.log("note: DUSK_SIGNIN_EMAILS / DUSK_SIGNIN_MEMBER_EMAILS are set in the environment and win over this list while the server runs");
+  if (overridden) io.log("note: MADANI_SIGNIN_EMAILS / MADANI_SIGNIN_MEMBER_EMAILS are set in the environment and win over this list while the server runs");
   return 0;
 }
 
@@ -484,14 +484,14 @@ export async function runLogin(options: CliOptions, io: CliIo = defaultIo()): Pr
     return 1;
   }
   if (!account.controlPlane) {
-    io.error("DUSK_CONTROL_PLANE_URL is set but is not an https address");
+    io.error("MADANI_CONTROL_PLANE_URL is set but is not an https address");
     return 1;
   }
   const existing = describeTunnelAccount(account.credentials.read());
   if (existing.address) io.log(`already signed in as ${existing.email ?? "?"} (${existing.address}); signing in again refreshes it`);
-  const email = (options.email ?? (await io.ask("Email for your dusk bot account: "))).trim();
+  const email = (options.email ?? (await io.ask("Email for your madani bot account: "))).trim();
   if (!email) {
-    io.error("an email address is needed: duskbot login --email you@example.com");
+    io.error("an email address is needed: madanibot login --email you@example.com");
     return 1;
   }
   try {
@@ -515,7 +515,7 @@ export async function runLogin(options: CliOptions, io: CliIo = defaultIo()): Pr
   }
   io.log(`Signed in as ${signedIn.email ?? email}.`);
   io.log(`This machine's public address: ${signedIn.address}`);
-  io.log("Serve there with:  duskbot serve --tunnel");
+  io.log("Serve there with:  madanibot serve --tunnel");
   return 0;
 }
 
@@ -548,7 +548,7 @@ export async function runBrowser(options: CliOptions, io: CliIo = defaultIo()): 
   const status = browserEngineStatus({ dataDir: options.dataDir });
   if (options.browserAction === "status") {
     io.log(describeBrowserEngine(status, status.kind === "ready" ? new (await import("./browser/chrome/launcher.ts")).ChromeLauncher({ dataDir: options.dataDir }).describe() : undefined));
-    if (status.kind !== "ready" && status.installable) io.log("install it with:  duskbot browser install");
+    if (status.kind !== "ready" && status.installable) io.log("install it with:  madanibot browser install");
     return status.kind === "ready" ? 0 : 1;
   }
   let binary = resolveAgentBrowserBinary({ dataDir: options.dataDir });
@@ -571,22 +571,22 @@ export async function runBrowser(options: CliOptions, io: CliIo = defaultIo()): 
     await ensureChrome(binary, { withDeps: options.withDeps === true, log: io.log });
   } catch (error) {
     io.error(`Chrome is not ready: ${message(error)}`);
-    if (process.platform === "linux" && !options.withDeps) io.error("on Linux, install Chrome's system libraries with `sudo duskbot browser install --with-deps`, then retry `duskbot browser install` as the user running serve");
+    if (process.platform === "linux" && !options.withDeps) io.error("on Linux, install Chrome's system libraries with `sudo madanibot browser install --with-deps`, then retry `madanibot browser install` as the user running serve");
     return 1;
   }
   io.log("browser installed for this user and data directory; run serve as the same user, then enable it under Settings → Computers and per bot");
-  if (process.platform === "linux" && options.withDeps) io.log("if serve runs as another user, run `duskbot browser install` from that user's login shell too");
+  if (process.platform === "linux" && options.withDeps) io.log("if serve runs as another user, run `madanibot browser install` from that user's login shell too");
   return 0;
 }
 
 export async function runFreeBackup(argv: string[], io: CliIo = defaultIo(), env: NodeJS.ProcessEnv = process.env): Promise<number> {
   const [action, flag, dir, ...extra] = argv;
   if (action !== "install" || extra.length || (flag !== undefined && (flag !== "--data-dir" || !dir))) {
-    io.error("usage: duskbot free-backup install [--data-dir DIR]");
+    io.error("usage: madanibot free-backup install [--data-dir DIR]");
     return 2;
   }
-  const dataDir = dir ? resolve(dir) : dataDirFor(env.DUSK_DATA_DIR, homedir());
-  env.DUSK_DATA_DIR = dataDir;
+  const dataDir = dir ? resolve(dir) : dataDirFor(env.MADANI_DATA_DIR, homedir());
+  env.MADANI_DATA_DIR = dataDir;
   const { registerEnginesBinDir } = await import("./engine-install.ts");
   const { preinstallFreeBackup } = await import("./free-backup.ts");
   registerEnginesBinDir(dataDir);
@@ -630,18 +630,18 @@ async function planTunnel(options: CliOptions, log: (line: string) => void, reco
   account = createTunnelAccount({ dataDir: options.dataDir, version: serverVersion(), recovery, log: (line) => log(`tunnel: ${line}`) });
   if (account.credentials.status === "unavailable") return fail(`${account.credentials.file} exists but could not be read; fix or remove it`);
   if (!describeTunnelAccount(account.credentials.read()).email) {
-    return fail("no account on this machine yet: run `duskbot login` first, then `duskbot serve --tunnel`");
+    return fail("no account on this machine yet: run `madanibot login` first, then `madanibot serve --tunnel`");
   }
   try {
     const state = await account.service.retry();
     const saved = tunnelAccess(account.credentials.read()) !== null;
-    if (state.status === "signed-out") log(`tunnel: the sign-in on this machine expired; run \`duskbot login\` to renew it${saved ? " (serving the saved address until then)" : ""}`);
+    if (state.status === "signed-out") log(`tunnel: the sign-in on this machine expired; run \`madanibot login\` to renew it${saved ? " (serving the saved address until then)" : ""}`);
     else if (state.message) log(`tunnel: ${state.message}${saved ? " Serving the saved address for now." : ""}`);
   } catch (error) {
     log(`tunnel: control plane not reachable right now (${message(error)}); using the saved address`);
   }
   access = tunnelAccess(account.credentials.read());
-  if (!access) return fail("this machine has no public address; run `duskbot login` again");
+  if (!access) return fail("this machine has no public address; run `madanibot login` again");
   let binary: string;
   try {
     binary = await ensureCloudflared({ dataDir: options.dataDir, log });
@@ -656,7 +656,7 @@ async function planTunnel(options: CliOptions, log: (line: string) => void, reco
 export async function runServe(options: CliOptions, log: (line: string) => void = console.log): Promise<number> {
   const { browserEngineStatus, describeBrowserEngine } = await import("./browser-engine.ts");
   if (await serverUp(options.port)) {
-    console.error(`something already answers on http://127.0.0.1:${options.port}; use \`duskbot pair\` against it, or --port for a second server`);
+    console.error(`something already answers on http://127.0.0.1:${options.port}; use \`madanibot pair\` against it, or --port for a second server`);
     return 1;
   }
   let publicUrl = options.publicUrl;
@@ -695,20 +695,20 @@ export async function runServe(options: CliOptions, log: (line: string) => void 
   if (!entry.staticDir) log("note: no built UI found next to the server; the API runs but browsers get no page (build with `pnpm exec vite build`)");
   const env: NodeJS.ProcessEnv = {
     ...process.env,
-    DUSK_DATA_DIR: options.dataDir,
-    DUSK_PORT: String(options.port),
-    DUSK_WEBHOOK_PORT: process.env.DUSK_WEBHOOK_PORT || String(options.port + 1),
+    MADANI_DATA_DIR: options.dataDir,
+    MADANI_PORT: String(options.port),
+    MADANI_WEBHOOK_PORT: process.env.MADANI_WEBHOOK_PORT || String(options.port + 1),
   };
-  if (options.local) delete env.DUSK_PUBLIC_URL;
+  if (options.local) delete env.MADANI_PUBLIC_URL;
   // The per-launch secret goes over stdin, not the environment that every engine the server starts inherits.
   const serviceTrust = resolveLoopbackTrust({ env, desktopManaged: false }).trust === "service";
   const ownerToken = serviceTrust ? randomBytes(32).toString("base64url") : undefined;
-  if (ownerToken) env.DUSK_CLI_OWNER_STDIN = "1";
-  else delete env.DUSK_CLI_OWNER_STDIN;
-  if (entry.staticDir) env.DUSK_STATIC_DIR = entry.staticDir;
-  if (entry.skillsDir && !process.env.DUSK_SKILLS_DIR) env.DUSK_SKILLS_DIR = entry.skillsDir;
-  if (options.label && !process.env.DUSK_ENVIRONMENT_LABEL) env.DUSK_ENVIRONMENT_LABEL = options.label;
-  if (plan) env.DUSK_TUNNEL_SOCKET = plan.origin.socketPath;
+  if (ownerToken) env.MADANI_CLI_OWNER_STDIN = "1";
+  else delete env.MADANI_CLI_OWNER_STDIN;
+  if (entry.staticDir) env.MADANI_STATIC_DIR = entry.staticDir;
+  if (entry.skillsDir && !process.env.MADANI_SKILLS_DIR) env.MADANI_SKILLS_DIR = entry.skillsDir;
+  if (options.label && !process.env.MADANI_ENVIRONMENT_LABEL) env.MADANI_ENVIRONMENT_LABEL = options.label;
+  if (plan) env.MADANI_TUNNEL_SOCKET = plan.origin.socketPath;
   let logPath: string | undefined;
   let logFd: number | undefined;
   let tailscaleServing = false;
@@ -736,7 +736,7 @@ export async function runServe(options: CliOptions, log: (line: string) => void 
       log(`tailscale: serving https://${tailscale.dnsName} → http://127.0.0.1:${options.port} (only your tailnet can reach it)`);
     }
     if (startupCancelled) throw new SetupCancelled();
-    if (publicUrl) env.DUSK_PUBLIC_URL = publicUrl;
+    if (publicUrl) env.MADANI_PUBLIC_URL = publicUrl;
     child = spawn(entry.command, entry.args, { env, stdio: [ownerToken ? "pipe" : "ignore", logFd ?? "inherit", logFd ?? "inherit"] });
     if (ownerToken) {
       child.stdin?.on("error", () => {});
@@ -795,19 +795,19 @@ export async function runServe(options: CliOptions, log: (line: string) => void 
       await new Promise((r) => setTimeout(r, 250));
     }
     if (exited !== null) {
-      if (exited !== 0) log(`dusk bot could not start.${logPath ? ` Details: ${logPath}` : " See the output above."}`);
+      if (exited !== 0) log(`madani bot could not start.${logPath ? ` Details: ${logPath}` : " See the output above."}`);
       return exited;
     }
     if (stopping) return await childExit;
     if (!(await serverUp(options.port, child.pid))) {
-      console.error(`dusk bot did not become ready within a minute.${logPath ? ` Details: ${logPath}` : " See its output above."}`);
+      console.error(`madani bot did not become ready within a minute.${logPath ? ` Details: ${logPath}` : " See its output above."}`);
       await stop();
       return 1;
     }
     if (stopping || exited !== null) return await childExit;
     if (options.domain && caddyBinary) {
       try {
-        caddy = await startCaddy({ binary: caddyBinary, dataDir: options.dataDir, domain: options.domain, appPort: options.port, webhookPort: Number(env.DUSK_WEBHOOK_PORT), log });
+        caddy = await startCaddy({ binary: caddyBinary, dataDir: options.dataDir, domain: options.domain, appPort: options.port, webhookPort: Number(env.MADANI_WEBHOOK_PORT), log });
         log(`https: Caddy serves ${publicUrl} → http://127.0.0.1:${options.port}; it gets the certificate from Let's Encrypt once DNS for ${options.domain} points at this machine`);
         void caddy.exited.then((code) => {
           if (!stopping) log(`caddy: stopped (exit ${code ?? "signal"}); ${publicUrl} is no longer served. Stop and start the server again.`);
@@ -832,7 +832,7 @@ export async function runServe(options: CliOptions, log: (line: string) => void 
       void plan.account?.service.restore().catch(() => undefined);
     }
     log("");
-    log(`dusk bot is running on http://127.0.0.1:${options.port}${publicUrl ? `, reachable at ${publicUrl}` : ""}`);
+    log(`madani bot is running on http://127.0.0.1:${options.port}${publicUrl ? `, reachable at ${publicUrl}` : ""}`);
     if (options.guided) {
       log("Your bots and conversations are saved automatically.");
       log(`Details if you need help: ${logPath}`);
@@ -856,14 +856,14 @@ export async function runServe(options: CliOptions, log: (line: string) => void 
       log("");
       try {
         log(await mintPairing(options.port, { label: options.label ? `${options.label} owner` : undefined, client: options.client, publicUrl: publicUrl ?? undefined, guided: options.guided }));
-        if (!options.guided) log("\nanother device later:  duskbot pair --label \"Kitchen iPad\"");
+        if (!options.guided) log("\nanother device later:  madanibot pair --label \"Kitchen iPad\"");
       } catch (error) {
         log(`no pairing code: ${message(error)}`);
-        log("start without one next time:  duskbot serve --no-pair");
+        log("start without one next time:  madanibot serve --no-pair");
       }
     }
     log(options.guided ? "\nKeep this terminal open while using your bots. Ctrl+C stops the server, not your saved work." : "stop with Ctrl+C");
-    if (options.guided) log("Next time: duskbot · Change AI or phone setup: duskbot setup · Pair another phone: duskbot pair");
+    if (options.guided) log("Next time: madanibot · Change AI or phone setup: madanibot setup · Pair another phone: madanibot pair");
     return await childExit;
   } finally {
     serveOwnerToken = undefined;
@@ -880,7 +880,7 @@ export async function serveUntilStopped(options: CliOptions, run: (options: CliO
   for (;;) {
     const code = await run(launch);
     if (!policy.again(code)) return code;
-    console.log("\ndusk bot is starting again to finish installing a copy from the desktop app…");
+    console.log("\nmadani bot is starting again to finish installing a copy from the desktop app…");
     launch = { ...options, pair: false, open: false };
   }
 }
@@ -894,10 +894,10 @@ export async function runOnboardingCommand(
 ): Promise<number> {
   const interactive = process.stdin.isTTY === true && process.stdout.isTTY === true;
   if (options.command === "setup" && !interactive) {
-    io.error("Setup needs an interactive terminal. Run `duskbot setup` in a terminal, then use `duskbot serve` for unattended starts.");
+    io.error("Setup needs an interactive terminal. Run `madanibot setup` in a terminal, then use `madanibot serve` for unattended starts.");
     return 1;
   }
-  process.env.DUSK_DATA_DIR = options.dataDir;
+  process.env.MADANI_DATA_DIR = options.dataDir;
   if (options.command !== "setup" && await (flow.running ?? isWorkspaceRunning)(options)) {
     if (options.local || options.tunnel || options.tailscale || options.publicUrl) {
       io.error("This workspace is already running. Stop it before changing local or remote access; the current connection was not changed.");
@@ -913,11 +913,11 @@ export async function runOnboardingCommand(
   try {
     if (options.command === "setup" || !(await isSetupComplete(options.dataDir))) {
       if (!interactive) {
-        io.error("No completed setup was found. Run `duskbot setup` in an interactive terminal first, or use `duskbot serve` with an existing configuration.");
+        io.error("No completed setup was found. Run `madanibot setup` in an interactive terminal first, or use `madanibot serve` with an existing configuration.");
         return 1;
       }
       if (!(await runSetup({ dataDir: options.dataDir, port: options.port }))) {
-        io.log("Setup cancelled. Run duskbot when you're ready.");
+        io.log("Setup cancelled. Run madanibot when you're ready.");
         return 130;
       }
     }
@@ -937,8 +937,8 @@ export async function runOnboardingCommand(
       saveCliStartup(options.dataDir, startupPreferences(launch));
     }
     if (options.command === "setup") {
-      io.log("\nAll set. Start with: duskbot");
-      if (options.dataDir !== join(homedir(), ".duskbot") || options.port !== 8799) {
+      io.log("\nAll set. Start with: madanibot");
+      if (options.dataDir !== join(homedir(), ".madanibot") || options.port !== 8799) {
         io.log(`Use the same --data-dir (${options.dataDir}) and --port (${options.port}) options when starting.`);
       }
       return 0;
@@ -947,7 +947,7 @@ export async function runOnboardingCommand(
     return startServer({ ...launch, guided: interactive });
   } catch (error) {
     if (!(error instanceof SetupCancelled)) throw error;
-    io.log("\nSetup stopped. Any AI setup already saved is kept; no server was started. Run duskbot setup to continue.");
+    io.log("\nSetup stopped. Any AI setup already saved is kept; no server was started. Run madanibot setup to continue.");
     return 130;
   }
 }
@@ -955,7 +955,7 @@ export async function runOnboardingCommand(
 export async function main(argv = process.argv.slice(2)): Promise<number> {
   if (argv[0] === "vps") {
     const { parseVpsOpsArgs, runVpsOps } = await import("./vps-ops.ts");
-    const options = parseVpsOpsArgs(argv.slice(1), { port: Number(process.env.DUSK_PORT || 8799), dataDir: dataDirFor(process.env.DUSK_DATA_DIR, homedir()) });
+    const options = parseVpsOpsArgs(argv.slice(1), { port: Number(process.env.MADANI_PORT || 8799), dataDir: dataDirFor(process.env.MADANI_DATA_DIR, homedir()) });
     if ("error" in options) { console.error(options.error); return 2; }
     return runVpsOps(options, { log: (line) => console.log(line), error: (line) => console.error(line) });
   }
@@ -967,7 +967,7 @@ export async function main(argv = process.argv.slice(2)): Promise<number> {
     console.error(`${options.error}\n\n${USAGE}`);
     return 2;
   }
-  process.env.DUSK_DATA_DIR = options.dataDir;
+  process.env.MADANI_DATA_DIR = options.dataDir;
   switch (options.command) {
     case "setup":
     case "start":

@@ -82,7 +82,7 @@ export async function callApi(access: ApiAccess, args: Record<string, unknown>, 
     else { body = JSON.stringify(args.body); type = "application/json"; }
   }
   const send = async (using: ApiAccess, target: URL) => fetchImpl(target, {
-    method, headers: { accept: "application/json", "user-agent": "dusk-bot", ...using.headers, ...(type ? { "content-type": type } : {}) },
+    method, headers: { accept: "application/json", "user-agent": "madani-bot", ...using.headers, ...(type ? { "content-type": type } : {}) },
     body, redirect: "error", signal: AbortSignal.timeout(CALL_MS),
   });
   let response: Response;
@@ -113,7 +113,7 @@ export async function handleApiRpc(message: unknown, app: TokenAppId, access: ()
   const reply = (body: Record<string, unknown>) => ({ jsonrpc: "2.0", id, ...body });
   switch (rpc.method) {
     case "initialize":
-      return reply({ result: { protocolVersion: "2025-06-18", capabilities: { tools: {} }, serverInfo: { name: `dusk-bot-${app}`, version: "1" } } });
+      return reply({ result: { protocolVersion: "2025-06-18", capabilities: { tools: {} }, serverInfo: { name: `madani-bot-${app}`, version: "1" } } });
     case "ping":
       return reply({ result: {} });
     case "tools/list":

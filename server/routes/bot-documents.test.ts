@@ -17,7 +17,7 @@ const roots: string[] = [];
 afterEach(async () => { await Promise.all(roots.splice(0).map(removeTempDir)); });
 
 function harness() {
-  const root = mkdtempSync(join(tmpdir(), "dusk-documents-route-"));
+  const root = mkdtempSync(join(tmpdir(), "madani-documents-route-"));
   roots.push(root);
   const documents = new BotDocuments(root);
   const posted: Array<{ botId: string; threadId: string; text: string; card: ChatDocumentCard }> = [];

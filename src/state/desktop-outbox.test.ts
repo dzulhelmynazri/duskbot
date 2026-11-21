@@ -18,7 +18,7 @@ describe("the desktop's unsent messages", () => {
     outbox.hold(send);
     expect(outbox.keep("s1"), "the bubble stays as sending").toBe(true);
     await new Promise((resolve) => setTimeout(resolve, 0));
-    expect(storage.map.get("duskbot.outbox.v1:http://127.0.0.1:5199"), "and survives a restart").toContain("\"sendId\":\"s1\"");
+    expect(storage.map.get("madanibot.outbox.v1:http://127.0.0.1:5199"), "and survives a restart").toContain("\"sendId\":\"s1\"");
 
     const sent: Action[] = [];
     await outbox.flush((action) => { sent.push(action); outbox.hold(send); });
@@ -28,7 +28,7 @@ describe("the desktop's unsent messages", () => {
   });
 
   it("are kept per server, so one workspace's messages never go to another", () => {
-    expect(desktopOutboxKey("http://127.0.0.1:5199")).not.toBe(desktopOutboxKey("https://preview.dusk.bot"));
+    expect(desktopOutboxKey("http://127.0.0.1:5199")).not.toBe(desktopOutboxKey("https://preview.madani.bot"));
   });
 
   it("stay in memory when storage refuses", async () => {

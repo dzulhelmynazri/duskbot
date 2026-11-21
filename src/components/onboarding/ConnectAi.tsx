@@ -22,7 +22,7 @@ import type { AiTileId } from "./funnel";
 export function ConnectAi({ tested, onMore, onConnected }: { tested: WelcomeAiNow | null; onMore?: () => void;
   onConnected?: (tile: AiTileId) => void }) {
   const { state, dispatch } = useStore();
-  const organisation = organisationSignIn(window.duskDesktop);
+  const organisation = organisationSignIn(window.madaniDesktop);
   const [failed, setFailed] = useState(false);
   const [checking, setChecking] = useState(false);
   const latestRequest = useRef(0);

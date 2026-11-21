@@ -1,6 +1,6 @@
 // unsubscribe links for the news emails: t = base64url(email) "." base64url(hmac-sha256(secret, "unsubscribe:" + email)).
 // the email rides in the link so the server needs no lookup table; the mac proves the link came from us.
-// the secret is DUSK_UNSUBSCRIBE_SECRET (the [landing] part of dusk.env). no secret: every link reads as invalid.
+// the secret is MADANI_UNSUBSCRIBE_SECRET (the [landing] part of madani.env). no secret: every link reads as invalid.
 import { createHmac, timingSafeEqual } from 'node:crypto';
 
 const mac = (secret, email) => createHmac('sha256', secret).update(`unsubscribe:${email}`).digest();

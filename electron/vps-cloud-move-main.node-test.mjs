@@ -13,7 +13,7 @@ function setup({ handoff = async () => ({ opened: true }), state = null, cloud =
   const fetch = async (url) => {
     const path = new URL(String(url)).pathname;
     if (path === "/api/auth/session") return json({ kind: "session", own: true });
-    if (path === "/.well-known/duskbot/environment") return json({ environmentId: ENV_ID, capabilities: { move: 1, moveOut: 1 } });
+    if (path === "/.well-known/madanibot/environment") return json({ environmentId: ENV_ID, capabilities: { move: 1, moveOut: 1 } });
     return new Response("{}", { status: 404 });
   };
   const move = installVpsCloudMoveMain({
@@ -59,7 +59,7 @@ test("buy first: the checkout opens signed in on the cheapest plan (plus) when n
 
 test("bought: the move leaves waiting once the account service's session says the ready Cloud takes moves", async () => {
   // the session as apps/dashboard/server/billing/admin-routes.ts sessionFields sends it for a managed cloud
-  const origin = "https://c1.dusk.test";
+  const origin = "https://c1.madani.test";
   let summary = null;
   const session = () => ({ status: "connected", account: { id: "acct" }, entitlement: { plan: "pro", status: "active", expiresAt: null, version: 2 }, machine: summary ? parseCloudSummary(summary) : undefined });
   const { call } = setup({ cloud: () => oneHomeCloud(session()) });
@@ -75,7 +75,7 @@ test("bought: the move leaves waiting once the account service's session says th
 
 test("signed out, the buy says so and the page goes to sign-in", async () => {
   const { call } = setup({ handoff: async () => ({ signedOut: true }) });
-  await assert.rejects(call("vps-cloud-move:buy", { origin: VPS.origin }, "pro"), /Sign in to dusk cloud first/);
+  await assert.rejects(call("vps-cloud-move:buy", { origin: VPS.origin }, "pro"), /Sign in to madani cloud first/);
 });
 
 test("asked from the rail or the dashboard, only that server's own page opens the sheet, once", () => {

@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { createReplyTracker, createTalkServer, findDusk, readFrames } from "./talk-server.mjs";
+import { createReplyTracker, createTalkServer, findMadani, readFrames } from "./talk-server.mjs";
 
 const flush = () => new Promise(resolve => setImmediate(resolve));
 const turn = turnId => (turnId ? { turnId } : {});
@@ -43,14 +43,14 @@ function fakeServer({ bots, saved = null, sendStatus = 202, sendBody = { ok: tru
 const asking = (server, { signal = new AbortController().signal, onUpdate = () => {} } = {}) =>
   server.talk.ask({ chat: CHAT, text: "hi", sendId: "s1", signal, onUpdate });
 
-test("findDusk picks this computer's Dusk, else the Chief of Staff", () => {
+test("findMadani picks this computer's Madani, else the Chief of Staff", () => {
   const mine = { id: "m", defaultBot: {} }, member = { id: "p", defaultBot: { person: "a@b.test" } }, chief = { id: "c", chiefOfStaff: true };
-  assert.equal(findDusk([member, chief, mine]).id, "m");
-  assert.equal(findDusk([member, chief]).id, "c");
-  assert.equal(findDusk([{ id: "x" }, { ...chief, hidden: true }]), null);
+  assert.equal(findMadani([member, chief, mine]).id, "m");
+  assert.equal(findMadani([member, chief]).id, "c");
+  assert.equal(findMadani([{ id: "x" }, { ...chief, hidden: true }]), null);
 });
 
-test("prepare reuses the saved Quick asks chat while Dusk still has it", async () => {
+test("prepare reuses the saved Quick asks chat while Madani still has it", async () => {
   const server = fakeServer({ bots: [{ id: "m", defaultBot: {}, tasks: [{ threadId: "t0" }, { threadId: "t1" }] }], saved: { botId: "m", threadId: "t1" } });
   assert.deepEqual(await server.talk.prepare(), { botId: "m", threadId: "t1" });
   assert.deepEqual(server.calls.map(([method]) => method), ["GET"]);
@@ -85,7 +85,7 @@ test("prepare says why it cannot ask", async () => {
   await assert.rejects(server.talk.prepare(), { code: "server-down" });
   server.listing.status = 200;
   assert.deepEqual(await server.talk.prepare(), { botId: "m", threadId: "t-new" });
-  await assert.rejects(fakeServer({ bots: [] }).talk.prepare(), { code: "no-dusk" });
+  await assert.rejects(fakeServer({ bots: [] }).talk.prepare(), { code: "no-madani" });
   await assert.rejects(fakeServer({ bots: [{ id: "m", defaultBot: {}, tasks: [] }], made: { status: 500, body: {} } }).talk.prepare(), { code: "refused" });
 });
 
@@ -146,7 +146,7 @@ test("an ask steered into the running turn follows that turn to its end", () => 
   assert.deepEqual(track(completed("t1", true, "turn-1")), { kind: "done", ok: true, text: "Both done" });
 });
 
-test("a waiting card or an opened request means Dusk needs the person", () => {
+test("a waiting card or an opened request means Madani needs the person", () => {
   const track = createReplyTracker({ threadId: "t1", sendId: "s1" });
   track(userMessage("t1", "s1"));
   assert.equal(track(card("t1", { answered: "Allow" })), null);

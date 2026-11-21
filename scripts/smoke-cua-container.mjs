@@ -2,11 +2,11 @@
 // discovery, desktop capture, and one pointer move inside an existing test VM.
 import { spawn } from "node:child_process";
 
-const runtime = process.env.DUSK_CUA_RUNTIME || "docker";
-const container = process.env.DUSK_CUA_CONTAINER;
-const socket = process.env.DUSK_CUA_SOCKET || "/run/user/1000/duskbot-cua.sock";
+const runtime = process.env.MADANI_CUA_RUNTIME || "docker";
+const container = process.env.MADANI_CUA_CONTAINER;
+const socket = process.env.MADANI_CUA_SOCKET || "/run/user/1000/madanibot-cua.sock";
 if (!container || !/^[a-zA-Z0-9_.-]+$/.test(container)) {
-  throw new Error("set DUSK_CUA_CONTAINER to the explicitly created smoke container name");
+  throw new Error("set MADANI_CUA_CONTAINER to the explicitly created smoke container name");
 }
 if (!['docker', 'podman', 'container'].includes(runtime)) throw new Error("unsupported container runtime");
 
@@ -26,7 +26,7 @@ const child = spawn(
     "-e",
     "CUA_DRIVER_RS_TELEMETRY_ENABLED=0",
     container,
-    "/usr/local/libexec/duskbot/cua-driver",
+    "/usr/local/libexec/madanibot/cua-driver",
     "mcp",
     "--socket",
     socket,
@@ -79,7 +79,7 @@ try {
   await rpc("initialize", {
     protocolVersion: "2024-11-05",
     capabilities: {},
-    clientInfo: { name: "duskbot-container-smoke", version: "1" },
+    clientInfo: { name: "madanibot-container-smoke", version: "1" },
   });
   child.stdin.write(JSON.stringify({ jsonrpc: "2.0", method: "notifications/initialized" }) + "\n");
 

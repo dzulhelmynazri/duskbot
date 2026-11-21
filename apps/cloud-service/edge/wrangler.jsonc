@@ -1,12 +1,12 @@
 // The public edge of managed homes (docs/edge.md). Routes are set by scripts/edge-routes.mjs, not here: the wildcard
 // for PUBLIC_DOMAIN needs a no-Worker route for each of the zone's own proxied hosts beside it.
-// Secrets: EDGE_TOKEN (the account service's DUSK_MANAGED_EDGE_TOKEN) and HOOK_SEAL_KEY, set with `wrangler secret put`.
+// Secrets: EDGE_TOKEN (the account service's MADANI_MANAGED_EDGE_TOKEN) and HOOK_SEAL_KEY, set with `wrangler secret put`.
 {
-  "name": "dusk-edge",
+  "name": "madani-edge",
   "main": "worker.js",
   "compatibility_date": "2026-11-01",
   "workers_dev": false,
-  "vars": { "ROUTE_URL": "https://preview.dusk.bot,https://dusk.bot", "PUBLIC_DOMAIN": "dusk.bot" },
+  "vars": { "ROUTE_URL": "https://preview.madani.bot,https://madani.bot", "PUBLIC_DOMAIN": "madani.bot" },
   "durable_objects": { "bindings": [{ "name": "HOOK_QUEUE", "class_name": "HookQueue" }] },
   "migrations": [{ "tag": "hook-queue-v1", "new_sqlite_classes": ["HookQueue"] }],
   "observability": { "enabled": true }

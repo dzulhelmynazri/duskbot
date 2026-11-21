@@ -6,14 +6,14 @@ import { render } from "../email/layout.ts";
 import type { Accent, Block, Email, EmailConfig } from "../email/layout.ts";
 import { emailConfig } from "../email/templates.ts";
 
-/** DUSK_ADMIN_ALERTS: which emails the admins get; "all", or any of these, comma-separated; unset sends none.
+/** MADANI_ADMIN_ALERTS: which emails the admins get; "all", or any of these, comma-separated; unset sends none.
  *  "paid" is the first payment ever and money trouble: a paying customer's failed payment, a dispute, a refund, a big
  *  customer's churn and MRR milestones. signups, waitlist joins and cloud lifecycle never email: they are in the admin
  *  panel and the daily digest (admin-mail.test.ts holds this list) */
 export const ALERT_KINDS = ["paid", "spike", "digest"] as const;
 /** MRR milestones in cents: $100, $500, $1k, $2.5k, $5k, $10k, $25k, $50k, $100k a month */
 export const MRR_MILESTONES = [10_000, 50_000, 100_000, 250_000, 500_000, 1_000_000, 2_500_000, 5_000_000, 10_000_000];
-/** DUSK_ALERT_CHURN_CENTS: a churned customer worth at least this much MRR gets its own email; $50 unless set */
+/** MADANI_ALERT_CHURN_CENTS: a churned customer worth at least this much MRR gets its own email; $50 unless set */
 export function churnThreshold(value: string | undefined) { const cents = Number(value); return Number.isSafeInteger(cents) && cents >= 0 && value !== "" && value !== undefined ? cents : 5_000; }
 const usd = (cents: number) => `$${(cents / 100).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 export interface MoneyDigest { newCustomers: Array<{ email: string | null; cents: number }>; mrr: number; netNew: number; failed: number; recovered: number; churned: number; refunds: number }
@@ -31,7 +31,7 @@ export function isSpike(lastHour: number, hours: number[]): boolean {
 }
 
 const MAX_PER_HOUR = 30;
-const REASON = "you got this because your address is in DUSK_ADMIN_EMAILS and DUSK_ADMIN_ALERTS turns this kind on.";
+const REASON = "you got this because your address is in MADANI_ADMIN_EMAILS and MADANI_ADMIN_ALERTS turns this kind on.";
 interface AlertMail { say: string; accent: Accent; status?: Email["status"]; heading: string; blocks: Block[] }
 
 export interface AlertsOptions {
@@ -73,7 +73,7 @@ export function createAlerts(options: AlertsOptions) {
     if (!kinds.has("paid") || amountCents <= 0) return;
     void sink.once("alert|paid|first-ever", null).then(first => {
       if (first) void send(`first payment ever: ${email ?? "an account"}`, { say: "first money in!", accent: "lime", heading: "first payment ever",
-        blocks: [{ t: "total", label: "paid", value: usd(amountCents) }, { t: "p", text: `**${email ?? accountId}** just paid. that's dusk bot's first money in.` }] });
+        blocks: [{ t: "total", label: "paid", value: usd(amountCents) }, { t: "p", text: `**${email ?? accountId}** just paid. that's madani bot's first money in.` }] });
     }, () => {});
   }
   /** one email per incident, each behind a mark so a retry, a replay or a restart never sends it twice */
@@ -103,7 +103,7 @@ export function createAlerts(options: AlertsOptions) {
     const fresh: number[] = [];
     for (const cents of reached) if (await sink.once(`alert|mrr|${cents}`, null)) fresh.push(cents);
     if (fresh.length) await send(`mrr passed ${usd(fresh.at(-1)!).replace(/\.00$/, "")} a month`, { say: "a new milestone!", accent: "lime", heading: `mrr passed ${usd(fresh.at(-1)!).replace(/\.00$/, "")} a month`, blocks: [
-      { t: "total", label: "mrr", value: usd(facts.mrr) }, { t: "p", text: `dusk bot now makes ${usd(facts.mrr)} a month in recurring revenue.` }] });
+      { t: "total", label: "mrr", value: usd(facts.mrr) }, { t: "p", text: `madani bot now makes ${usd(facts.mrr)} a month in recurring revenue.` }] });
   }
   async function tick() {
     const time = now();
@@ -135,7 +135,7 @@ export function createAlerts(options: AlertsOptions) {
         + (money ? money.newCustomers.length + money.failed + money.recovered + money.churned + money.refunds : 0);
       if (!news) return;
       const day = new Date(from).toLocaleDateString("en-US", { month: "long", day: "numeric", timeZone: "UTC" }).toLowerCase();
-      await send(`dusk bot yesterday: ${visitors} visitors, ${totals.signups} signups`, { say: "here's yesterday", accent: "lav", heading: `yesterday, ${day}`, blocks: [
+      await send(`madani bot yesterday: ${visitors} visitors, ${totals.signups} signups`, { say: "here's yesterday", accent: "lav", heading: `yesterday, ${day}`, blocks: [
         { t: "stats", items: [["visitors", String(visitors), top || undefined], ["signups", String(totals.signups), `${totals.accounts.toLocaleString("en-US")} accounts in all`],
           ...(money ? [["mrr", usd(money.mrr), `${money.netNew >= 0 ? "+" : "-"}${usd(Math.abs(money.netNew))} yesterday`] as [string, string, string]] : []),
           ["paid", String(totals.paid), `${joined} joined the waitlist`],

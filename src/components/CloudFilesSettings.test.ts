@@ -10,7 +10,7 @@ import { CloudFilesSettings } from "./CloudFilesSettings";
 const GB = 1024 ** 3;
 const folder = (status: SharedFolder["status"], extra: Partial<SharedFolder> = {}): SharedFolder =>
   ({ id: `f-${status}`, name: `Folder ${status}`, pcPath: `/Users/ada/${status}`, status, files: 1200, done: 400, waitingBytes: 0, pendingDeletes: 3, problem: null, ...extra });
-const base: CloudFilesState = { phase: "idle", lastSyncedAt: 1, disk: null, shared: [], outputs: { enabled: false, dir: "/Users/ada/Documents/Dusk Bot", folders: 0, problem: null } };
+const base: CloudFilesState = { phase: "idle", lastSyncedAt: 1, disk: null, shared: [], outputs: { enabled: false, dir: "/Users/ada/Documents/Madani Bot", folders: 0, problem: null } };
 const check = (name: string, extra: Partial<FolderCheck> = {}): FolderCheck =>
   ({ token: `t-${name}`, name, pcPath: `/Users/ada/${name}`, files: 120, bytes: 3 * 1024 ** 2, partial: false, refusal: null, ...extra });
 
@@ -44,10 +44,10 @@ beforeEach(() => {
     answerDeletes: vi.fn().mockResolvedValue(base), locate: vi.fn().mockResolvedValue(base), setOutputs: vi.fn().mockResolvedValue(base),
     open: vi.fn().mockResolvedValue(undefined), moreSpace: vi.fn().mockResolvedValue(undefined),
   };
-  window.duskDesktop = { cloudAccount: { files: bridge } } as unknown as typeof window.duskDesktop;
+  window.madaniDesktop = { cloudAccount: { files: bridge } } as unknown as typeof window.madaniDesktop;
   host = document.createElement("div"); document.body.append(host); root = createRoot(host);
 });
-afterEach(() => { act(() => root.unmount()); host.remove(); document.body.replaceChildren(); delete window.duskDesktop; });
+afterEach(() => { act(() => root.unmount()); host.remove(); document.body.replaceChildren(); delete window.madaniDesktop; });
 
 describe("shared with the cloud", () => {
   it("says what sharing does, shows nothing shared yet, and always offers Add a folder", async () => {
@@ -150,7 +150,7 @@ describe("add a folder", () => {
 
   it.each([
     ["too-broad", "That folder is too big to share. Choose a folder inside it, like one in documents."],
-    ["app-data", "That's dusk bot's own folder. Choose another one."],
+    ["app-data", "That's madani bot's own folder. Choose another one."],
     ["already-shared", "This folder is already shared."],
     ["not-a-folder", "Choose a folder."],
     ["private", "That folder holds private keys or settings, so it isn't shared. Choose another one."],
@@ -183,7 +183,7 @@ describe("your bots' work", () => {
     bridge.setOutputs.mockResolvedValue({ ...base, outputs: { ...base.outputs, enabled: true } });
     await mount();
     expect(page()).toContain("Save what cloud bots make to this computer");
-    expect(page()).toContain("In documents › dusk, one folder for each bot.");
+    expect(page()).toContain("In documents › madani, one folder for each bot.");
     expect(button("Open folder")).toBeUndefined();
     const toggle = document.querySelector<HTMLButtonElement>('[role="switch"]')!;
     expect(toggle.getAttribute("aria-checked")).toBe("false");
@@ -192,8 +192,8 @@ describe("your bots' work", () => {
     expect(document.querySelector('[role="switch"]')!.getAttribute("aria-checked")).toBe("true");
     await click("Open folder");
     expect(bridge.open).toHaveBeenCalledWith({ outputs: true });
-    await act(async () => emit({ ...base, outputs: { ...base.outputs, enabled: true, problem: "Documents › Dusk is full." } }));
-    expect(page()).toContain("Documents › Dusk is full.");
+    await act(async () => emit({ ...base, outputs: { ...base.outputs, enabled: true, problem: "Documents › Madani is full." } }));
+    expect(page()).toContain("Documents › Madani is full.");
   });
 });
 
@@ -216,7 +216,7 @@ describe("My Cloud's state", () => {
   it("shows nothing without a Ready My Cloud, or on a companion connected to another computer", async () => {
     await mount({ ...base, phase: "unavailable" });
     expect(page()).toBe("");
-    delete window.duskDesktop;
+    delete window.madaniDesktop;
     await mount();
     expect(page()).toBe("");
   });

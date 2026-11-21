@@ -25,7 +25,7 @@ const RED = encodePng(2, 2, Buffer.from(Array.from({ length: 4 }, () => [255, 0,
 const v4 = (address: string): LookupAddress => ({ address, family: 4 });
 
 function harness(dns: Record<string, string[]>, answers: Record<string, Partial<IconAnswer>>) {
-  const dir = mkdtempSync(join(tmpdir(), "dusk-site-icons-"));
+  const dir = mkdtempSync(join(tmpdir(), "madani-site-icons-"));
   dirs.push(dir);
   const fetched: string[] = [];
   const fetcher: IconFetcher = async (url, address) => {

@@ -1,11 +1,11 @@
 {
-  "name": "@duskbot/companion",
+  "name": "@madanibot/companion",
   "version": "0.1.0",
   "private": true,
-  "description": "A sidecar that lets a paired phone reach an unmodified dusk bot harness",
+  "description": "A sidecar that lets a paired phone reach an unmodified madani bot harness",
   "type": "module",
   "bin": {
-    "duskbot-companion": "./src/index.ts"
+    "madanibot-companion": "./src/index.ts"
   },
   "engines": {
     "node": ">=24"

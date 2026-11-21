@@ -25,7 +25,7 @@ function fakeHost(memory: number, running: Array<{ name: string; environment?: s
   return { docker, calls, awake };
 }
 
-afterEach(() => { resetVpsCapacityForTests(); delete process.env.DUSK_VPS_MAX_DESKTOPS; });
+afterEach(() => { resetVpsCapacityForTests(); delete process.env.MADANI_VPS_MAX_DESKTOPS; });
 
 describe("desktops a VPS keeps awake", () => {
   it("leaves room for the system and about 1.5 GB per desktop: six on a 12 GB host", () => {
@@ -34,7 +34,7 @@ describe("desktops a VPS keeps awake", () => {
     expect(desktopCapacity(24 * GB)).toBe(14);
     expect(desktopCapacity(2 * GB)).toBe(1);
     expect(desktopCapacity(256 * GB)).toBe(20);
-    expect(desktopCapacity(12 * GB, { DUSK_VPS_MAX_DESKTOPS: "2" })).toBe(2);
+    expect(desktopCapacity(12 * GB, { MADANI_VPS_MAX_DESKTOPS: "2" })).toBe(2);
   });
 
   it("caps each desktop's memory with no swap, below the host's services for cpu and the oom killer, and never restarts it after a reboot", () => {
@@ -53,7 +53,7 @@ describe("desktops a VPS keeps awake", () => {
   });
 
   it("at the cap puts the least recently used idle desktop to sleep, never a busy one", async () => {
-    process.env.DUSK_VPS_MAX_DESKTOPS = "3";
+    process.env.MADANI_VPS_MAX_DESKTOPS = "3";
     const host = fakeHost(12 * GB, [{ name: name("a") }, { name: name("b") }, { name: name("c") }]);
     const slept: string[] = [];
     const used: Record<string, number> = { a: 300, b: 100, c: 200 };
@@ -68,7 +68,7 @@ describe("desktops a VPS keeps awake", () => {
   });
 
   it("sleeps a desktop no bot owns any more before anyone's own, and never another install's or a renamed backup", async () => {
-    process.env.DUSK_VPS_MAX_DESKTOPS = "3";
+    process.env.MADANI_VPS_MAX_DESKTOPS = "3";
     const backup = `${name("x")}-before-lazy-1`;
     const host = fakeHost(12 * GB, [{ name: name("a") }, { name: name("gone") }, { name: name("other"), environment: "env-2" }, { name: backup, labelled: name("x") }]);
     setVpsCapacityHost(createVpsCapacityHost({ owners: () => ["a"], containerName: name, lastActivityAt: () => 0, sleep: async () => { throw new Error("not expected"); } }));
@@ -77,7 +77,7 @@ describe("desktops a VPS keeps awake", () => {
   });
 
   it("when every awake desktop is busy, waits a little and then tells the bot plainly", async () => {
-    process.env.DUSK_VPS_MAX_DESKTOPS = "1";
+    process.env.MADANI_VPS_MAX_DESKTOPS = "1";
     const host = fakeHost(12 * GB, [{ name: name("a") }]);
     setVpsCapacityHost(createVpsCapacityHost({ owners: () => ["a", "b"], containerName: name, lastActivityAt: () => 0, sleep: async () => false }));
     let started = false;
@@ -89,7 +89,7 @@ describe("desktops a VPS keeps awake", () => {
   });
 
   it("starts as soon as a desktop frees up while waiting", async () => {
-    process.env.DUSK_VPS_MAX_DESKTOPS = "1";
+    process.env.MADANI_VPS_MAX_DESKTOPS = "1";
     const host = fakeHost(12 * GB, [{ name: name("a") }]);
     setVpsCapacityHost(createVpsCapacityHost({ owners: () => ["a", "b"], containerName: name, lastActivityAt: () => 0, sleep: async () => false }));
     setTimeout(() => host.awake.delete(name("a")), 20);
@@ -98,7 +98,7 @@ describe("desktops a VPS keeps awake", () => {
   });
 
   it("lets two starts on one host take turns, so both never take the last place", async () => {
-    process.env.DUSK_VPS_MAX_DESKTOPS = "2";
+    process.env.MADANI_VPS_MAX_DESKTOPS = "2";
     const host = fakeHost(12 * GB, [{ name: name("a") }]);
     setVpsCapacityHost(createVpsCapacityHost({ owners: () => ["a", "b", "c"], containerName: name, lastActivityAt: () => 0, sleep: async () => false }));
     const start = (owner: string) => admitVpsDesktop({ alias: "vps", containerName: name(owner), shared: false, local: false, environmentId: ENV, docker: host.docker, waitMs: 30, pollMs: 10 },

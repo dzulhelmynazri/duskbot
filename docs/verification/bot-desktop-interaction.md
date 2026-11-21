@@ -3,7 +3,7 @@
 Build the bot desktop under an isolated fixture tag, then select that tag explicitly:
 
 ```sh
-DUSK_VERIFY_DESKTOP_IMAGE=omb-bot-desktop:lean-fixture node --experimental-strip-types scripts/verify-bot-desktop-interaction.mjs
+MADANI_VERIFY_DESKTOP_IMAGE=omb-bot-desktop:lean-fixture node --experimental-strip-types scripts/verify-bot-desktop-interaction.mjs
 ```
 
 The verifier resolves the image to an immutable ID and creates two uniquely named,
@@ -31,7 +31,7 @@ computer control, production network fence, gVisor or real sign-in is qualified.
 The direct vendor browser path has a separate opt-in qualification:
 
 ```sh
-DUSK_VERIFY_DESKTOP_IMAGE=omb-bot-desktop:lean-fixture node --experimental-strip-types scripts/verify-bot-desktop-interaction.mjs --native-browser
+MADANI_VERIFY_DESKTOP_IMAGE=omb-bot-desktop:lean-fixture node --experimental-strip-types scripts/verify-bot-desktop-interaction.mjs --native-browser
 ```
 
 This keeps failures strict. The fixture HTTP server handles concurrent connections
@@ -48,7 +48,7 @@ did not establish a benefit from forcing renderer accessibility.
 The independent-screen qualification uses the same isolated image:
 
 ```sh
-DUSK_VERIFY_DESKTOP_IMAGE=omb-bot-desktop:twenty-screens-fixture-20261107 node --experimental-strip-types scripts/verify-bot-desktop-screens.mjs
+MADANI_VERIFY_DESKTOP_IMAGE=omb-bot-desktop:twenty-screens-fixture-20261107 node --experimental-strip-types scripts/verify-bot-desktop-screens.mjs
 ```
 
 It acquires two screens through the real broker and guest runtime, submits a
@@ -61,7 +61,7 @@ strict result are retained in the printed evidence directory.
 The primary desktop has a separate Docker lifecycle qualification:
 
 ```sh
-DUSK_VERIFY_DESKTOP_IMAGE=<imageID> node --experimental-strip-types scripts/verify-bot-desktop-primary.mjs
+MADANI_VERIFY_DESKTOP_IMAGE=<imageID> node --experimental-strip-types scripts/verify-bot-desktop-primary.mjs
 ```
 
 It checks persistent HTTP cookies across Docker stop/start, including a browser
@@ -70,8 +70,8 @@ reopened through the app relay, and shutdown before a browser is running.
 The resource benchmark requires an image with 20 lazy independent screens:
 
 ```sh
-DUSK_VERIFY_DESKTOP_IMAGE=<imageID> node --experimental-strip-types scripts/benchmark-bot-desktop-screens.mjs --counts=1,4,20
-DUSK_VERIFY_DESKTOP_IMAGE=<imageID> node --experimental-strip-types scripts/benchmark-bot-desktop-screens.mjs --counts=20 --forms --browser-limit=4 --admission-stress
+MADANI_VERIFY_DESKTOP_IMAGE=<imageID> node --experimental-strip-types scripts/benchmark-bot-desktop-screens.mjs --counts=1,4,20
+MADANI_VERIFY_DESKTOP_IMAGE=<imageID> node --experimental-strip-types scripts/benchmark-bot-desktop-screens.mjs --counts=20 --forms --browser-limit=4 --admission-stress
 ```
 
 It uses 2 CPUs, 4 GiB memory without swap, 4,096 processes, 64 MiB runtime storage
@@ -91,8 +91,8 @@ processes, Docker and real websites require additional resources.
 The Chromium policy and extension fixture uses an explicitly selected image:
 
 ```sh
-DUSK_VERIFY_DESKTOP_IMAGE=<imageID> node scripts/verify-bot-desktop-browser-policy.mjs
-DUSK_VERIFY_DESKTOP_IMAGE=<imageID> node scripts/verify-bot-desktop-browser-policy.mjs --installed-defaults
+MADANI_VERIFY_DESKTOP_IMAGE=<imageID> node scripts/verify-bot-desktop-browser-policy.mjs
+MADANI_VERIFY_DESKTOP_IMAGE=<imageID> node scripts/verify-bot-desktop-browser-policy.mjs --installed-defaults
 ```
 
 The comparison mounts owned empty/trial recommended-policy directories; the

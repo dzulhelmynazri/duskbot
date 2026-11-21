@@ -4,7 +4,7 @@
 import { randomBytes } from "node:crypto";
 
 export const SAVED_SECRETS_CREDENTIAL_KEY = "savedSecretsKey";
-export const SAVED_SECRETS_KEY_MESSAGE = "duskbot:saved-secrets-key";
+export const SAVED_SECRETS_KEY_MESSAGE = "madanibot:saved-secrets-key";
 const HEX_KEY = /^[0-9a-f]{64}$/;
 
 export function readSavedSecretsKey(credentials) {

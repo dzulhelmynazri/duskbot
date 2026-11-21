@@ -10,7 +10,7 @@ const state = vi.hoisted(() => ({
   api: {
     authProviders: async () => ({ providers: [{ id: "google", enabled: true }, { id: "apple", enabled: true }] }),
     start: async (_email: string, _intent?: string, _pending?: string, _recover?: boolean) => ({ attempt: "a".repeat(43), resendAfter: 30, expiresIn: 600, codeLength: 8 }),
-    verify: async (_attempt: string, _code: string) => ({ account: { id: "acct", email: "sid@duskbot.test" }, created: false }),
+    verify: async (_attempt: string, _code: string) => ({ account: { id: "acct", email: "sid@madanibot.test" }, created: false }),
     oauthUrl: () => "/v1/auth/oauth/google/start",
   },
 }));
@@ -43,11 +43,11 @@ test("trouble signing in? asks for the address, sends a recovery start and says 
   await act(async () => button(host, "trouble signing in?")!.click());
   expect(host.querySelector("h1")?.textContent).toBe("trouble signing in?");
   expect(host.textContent).toContain("can't access your email?");
-  expect(host.querySelector<HTMLAnchorElement>('a[href^="mailto:"]')?.href).toBe("mailto:hello@dusk.bot");
-  await type(host.querySelector<HTMLInputElement>("#recover-email")!, "sid@duskbot.test");
+  expect(host.querySelector<HTMLAnchorElement>('a[href^="mailto:"]')?.href).toBe("mailto:hello@madani.bot");
+  await type(host.querySelector<HTMLInputElement>("#recover-email")!, "sid@madanibot.test");
   await act(async () => button(host, "send sign-in link")!.click());
-  expect(start).toHaveBeenCalledWith("sid@duskbot.test", "signin", undefined, true);
-  expect(host.textContent).toContain("if an account uses sid@duskbot.test, we sent a link and an 8-digit code.");
+  expect(start).toHaveBeenCalledWith("sid@madanibot.test", "signin", undefined, true);
+  expect(host.textContent).toContain("if an account uses sid@madanibot.test, we sent a link and an 8-digit code.");
   await act(async () => button(host, "use a different email")!.click());
   expect(host.querySelector("h1")?.textContent).toBe("trouble signing in?");
 });
@@ -96,11 +96,11 @@ test("every sign-in button shows; one without keys yet says so in place instead 
 });
 
 test("the sent code reads with the right article for its length", async () => {
-  for (const [codeLength, line] of [[8, "we sent an 8-digit code to sid@duskbot.test."], [6, "we sent a 6-digit code to sid@duskbot.test."]] as const) {
+  for (const [codeLength, line] of [[8, "we sent an 8-digit code to sid@madanibot.test."], [6, "we sent a 6-digit code to sid@madanibot.test."]] as const) {
     history.replaceState(null, "", "/sign-in");
     vi.spyOn(state.api, "start").mockResolvedValue({ attempt: "a".repeat(43), resendAfter: 30, expiresIn: 600, codeLength });
     const host = await render();
-    await type(host.querySelector<HTMLInputElement>('input[type="email"]')!, "sid@duskbot.test");
+    await type(host.querySelector<HTMLInputElement>('input[type="email"]')!, "sid@madanibot.test");
     await act(async () => button(host, "continue")!.click());
     expect(host.textContent).toContain(line);
     await act(async () => roots.pop()!.unmount());

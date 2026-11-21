@@ -26,10 +26,10 @@ describe("app sign-ins", () => {
     expect(signIns.active()).toBe(false);
   });
 
-  it("keep an idle dusk cloud from agreeing to sleep while one is open", () => {
+  it("keep an idle madani cloud from agreeing to sleep while one is open", () => {
     let clock = 1_800_000_000_000;
     const signIns = createAppSignIns(() => clock);
-    const dataDir = mkdtempSync(join(tmpdir(), "dusk-sign-in-"));
+    const dataDir = mkdtempSync(join(tmpdir(), "madani-sign-in-"));
     dirs.push(dataDir);
     const power = createCloudPower({ dataDir, now: () => clock, broadcast: () => {}, probes: {
       turn: () => false, run: () => false, liveCall: () => false, computer: () => false, maintenance: () => signIns.active(), nextDueAt: () => null } });

@@ -196,7 +196,7 @@
       "tools": [],
       "state": "idle",
       "ms": 5593,
-      "output": "I can’t rename the folder because Works on is Off in this bot’s settings, so I can’t access your Documents. Turn it on and I can rename `dusk-bto` to `dusk-bot`."
+      "output": "I can’t rename the folder because Works on is Off in this bot’s settings, so I can’t access your Documents. Turn it on and I can rename `madani-bto` to `madani-bot`."
     },
     {
       "model": "gpt-6.1-terra",
@@ -545,7 +545,7 @@
       "tools": [],
       "state": "idle",
       "ms": 3627,
-      "output": "I can’t rename the folder because Works on is Off in this bot’s settings, so I can’t access your Documents. Turn it on, and I can rename `dusk-bto` to `dusk-bot`."
+      "output": "I can’t rename the folder because Works on is Off in this bot’s settings, so I can’t access your Documents. Turn it on, and I can rename `madani-bto` to `madani-bot`."
     },
     {
       "model": "gpt-6.1-terra",
@@ -891,7 +891,7 @@
       "tools": [],
       "state": "idle",
       "ms": 7786,
-      "output": "I can’t rename the folder because Works on is Off in my settings, so I can’t access your Documents. Nothing was changed. Turn Works on on, then I can rename `dusk-bto` to `dusk-bot`."
+      "output": "I can’t rename the folder because Works on is Off in my settings, so I can’t access your Documents. Nothing was changed. Turn Works on on, then I can rename `madani-bto` to `madani-bot`."
     },
     {
       "model": "gpt-6.1-terra",
@@ -1839,7 +1839,7 @@
       "tools": [],
       "state": "idle",
       "ms": 3164,
-      "output": "Works on is Off, so I can’t access your computer to rename the folder. You’ll need to rename `dusk-bto` to `dusk-bot` in your Documents manually. Let me know if there’s anything else I can help with."
+      "output": "Works on is Off, so I can’t access your computer to rename the folder. You’ll need to rename `madani-bto` to `madani-bot` in your Documents manually. Let me know if there’s anything else I can help with."
     },
     {
       "model": "gpt-oss-120b-medium",
@@ -2195,7 +2195,7 @@
       ],
       "state": "idle",
       "ms": 4856,
-      "output": "Works on is Off in this bot's settings, so I can't access your file system or run commands directly to rename your folder. You can rename it quickly in Finder or via the Terminal by running:\n\n`mv ~/Documents/dusk-bto ~/Documents/dusk-bot`"
+      "output": "Works on is Off in this bot's settings, so I can't access your file system or run commands directly to rename your folder. You can rename it quickly in Finder or via the Terminal by running:\n\n`mv ~/Documents/madani-bto ~/Documents/madani-bot`"
     },
     {
       "model": "gemini-3.1-flash-lite",
@@ -2587,7 +2587,7 @@
       ],
       "state": "idle",
       "ms": 6596,
-      "output": "On it, renaming your dusk-bto project folder in Documents to dusk-bot now.\n---\nWorks on is Off in this bot's settings, so I don't have computer access or a shell to rename the folder for you directly. You can quickly rename it yourself in Finder by selecting the `dusk-bto` folder in your Documents and pressing Return to change the name to `dusk-bot`."
+      "output": "On it, renaming your madani-bto project folder in Documents to madani-bot now.\n---\nWorks on is Off in this bot's settings, so I don't have computer access or a shell to rename the folder for you directly. You can quickly rename it yourself in Finder by selecting the `madani-bto` folder in your Documents and pressing Return to change the name to `madani-bot`."
     },
     {
       "model": "gemini-3.1-flash-lite",
@@ -3033,7 +3033,7 @@
       ],
       "state": "idle",
       "ms": 3643,
-      "output": "Works on is Off in this bot's settings, so I can't access your file system or run commands directly. You can rename the folder in your terminal with:\n\n`mv ~/Documents/dusk-bto ~/Documents/dusk-bot`"
+      "output": "Works on is Off in this bot's settings, so I can't access your file system or run commands directly. You can rename the folder in your terminal with:\n\n`mv ~/Documents/madani-bto ~/Documents/madani-bot`"
     },
     {
       "model": "gemini-3.1-flash-lite",

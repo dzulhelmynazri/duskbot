@@ -5,12 +5,12 @@
 // a signup that loses a race on the same email burns its number, so positions can skip; they never repeat.
 // the driver is loaded lazily: without `npm install` or with the database down, the site still serves and only
 // the waitlist calls fail.
-export function openMongoStore(uri, dbName = 'dusk') {
+export function openMongoStore(uri, dbName = 'madani') {
   let ready = null;
   const connect = () => {
     ready ??= (async () => {
       const { MongoClient } = await import('mongodb');
-      const client = new MongoClient(uri, { appName: 'dusk-site', maxPoolSize: 5, serverSelectionTimeoutMS: 5000 });
+      const client = new MongoClient(uri, { appName: 'madani-site', maxPoolSize: 5, serverSelectionTimeoutMS: 5000 });
       await client.connect();
       const db = client.db(dbName);
       const list = db.collection('waitlist');

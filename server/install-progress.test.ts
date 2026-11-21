@@ -78,7 +78,7 @@ describe("measuring an install", () => {
 describe.skipIf(process.platform === "win32")("an npm install with progress", () => {
   it("measures the folder npm writes against the dry run's total", async () => {
     vi.stubGlobal("fetch", registry({ "fake-engine/1.0.0": 4_000, "fake-dep/2.0.0": 4_000 }));
-    const base = mkdtempSync(join(tmpdir(), "dusk-progress-"));
+    const base = mkdtempSync(join(tmpdir(), "madani-progress-"));
     try {
       const seen: InstallProgress[] = [];
       const npm = async (args: string[]) => {

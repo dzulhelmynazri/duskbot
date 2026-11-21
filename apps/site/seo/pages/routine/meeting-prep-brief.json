@@ -76,7 +76,7 @@
     },
     {
       "q": "what happens when my laptop is closed?",
-      "a": "**the local bot cannot run while that laptop sleeps.** it also stops when dusk closes. dusk cloud is an always-on home. read the routine’s time zone too."
+      "a": "**the local bot cannot run while that laptop sleeps.** it also stops when madani closes. madani cloud is an always-on home. read the routine’s time zone too."
     },
     {
       "q": "can i use outlook without connecting gmail?",
@@ -85,16 +85,16 @@
   ],
   "sources": [
     {
-      "label": "dusk bot docs: routines and schedule cards",
+      "label": "madani bot docs: routines and schedule cards",
       "url": "/docs/routines"
     },
     {
-      "label": "dusk bot docs: files and apps",
+      "label": "madani bot docs: files and apps",
       "url": "/docs/files-and-apps"
     },
     {
-      "label": "dusk bot docs: dusk cloud",
-      "url": "/docs/dusk-cloud"
+      "label": "madani bot docs: madani cloud",
+      "url": "/docs/madani-cloud"
     },
     {
       "label": "composio: google calendar actions",

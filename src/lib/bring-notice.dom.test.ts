@@ -29,7 +29,7 @@ function Probe() {
 let root: Root | null = null;
 let switching: ((on: boolean) => void) | null = null;
 const desktop = (arrived: boolean) => {
-  (window as unknown as { duskDesktop: unknown }).duskDesktop = {
+  (window as unknown as { madaniDesktop: unknown }).madaniDesktop = {
     remoteClient: { active: false },
     workspaces: { arrived: () => arrived, onSwitching: (callback: (on: boolean) => void) => { switching = callback; return () => { switching = null; }; } },
   };

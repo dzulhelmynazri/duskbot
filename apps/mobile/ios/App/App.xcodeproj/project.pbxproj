@@ -506,7 +506,7 @@
 				);
 				MARKETING_VERSION = 1.4;
 				OTHER_SWIFT_FLAGS = "$(inherited) \"-D\" \"COCOAPODS\" \"-DDEBUG\"";
-				PRODUCT_BUNDLE_IDENTIFIER = bot.dusk.mobile;
+				PRODUCT_BUNDLE_IDENTIFIER = bot.madani.mobile;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_VERSION = 5.0;
@@ -529,9 +529,9 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.4;
-				PRODUCT_BUNDLE_IDENTIFIER = bot.dusk.mobile;
+				PRODUCT_BUNDLE_IDENTIFIER = bot.madani.mobile;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE_SPECIFIER = "$(DUSK_APP_PROFILE)";
+				PROVISIONING_PROFILE_SPECIFIER = "$(MADANI_APP_PROFILE)";
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 1;
@@ -553,7 +553,7 @@
 					"@executable_path/../../Frameworks",
 				);
 				MARKETING_VERSION = 1.4;
-				PRODUCT_BUNDLE_IDENTIFIER = bot.dusk.mobile.activity;
+				PRODUCT_BUNDLE_IDENTIFIER = bot.madani.mobile.activity;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
@@ -577,9 +577,9 @@
 					"@executable_path/../../Frameworks",
 				);
 				MARKETING_VERSION = 1.4;
-				PRODUCT_BUNDLE_IDENTIFIER = bot.dusk.mobile.activity;
+				PRODUCT_BUNDLE_IDENTIFIER = bot.madani.mobile.activity;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE_SPECIFIER = "$(DUSK_WIDGET_PROFILE)";
+				PROVISIONING_PROFILE_SPECIFIER = "$(MADANI_WIDGET_PROFILE)";
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "";
 				SWIFT_VERSION = 5.0;

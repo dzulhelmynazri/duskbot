@@ -16,7 +16,7 @@ export function effectiveDefaultResponder(
   if (value?.kind === "member" && members.some((member) => member.id === value.botId)) return value;
   if (value?.kind === "auto") {
     return value.fallbackBotId && members.some((member) => member.id === value.fallbackBotId) ? value
-      : value.by === "dusk" ? { kind: "auto", by: "dusk" } : { kind: "auto" };
+      : value.by === "madani" ? { kind: "auto", by: "madani" } : { kind: "auto" };
   }
   return members.length ? { kind: "everyone" } : { kind: "mentions" };
 }
@@ -33,7 +33,7 @@ export function groupResponseHint(group: Group, members: Bot[], { jevOn = true }
   const value = effectiveDefaultResponder(group, members);
   if (value.kind === "everyone") return t("room.hint.everyone");
   if (value.kind === "mentions") return t("room.hint.mentions");
-  if (value.kind === "auto" && (jevOn || value.by === "dusk")) return t("room.hint.auto");
+  if (value.kind === "auto" && (jevOn || value.by === "madani")) return t("room.hint.auto");
   const name = defaultResponderName(group, members) ?? t("room.hint.leadFallback");
   return value.kind === "member" && value.leader ? t("room.hint.leader", { name }) : t("room.hint.lead", { name });
 }

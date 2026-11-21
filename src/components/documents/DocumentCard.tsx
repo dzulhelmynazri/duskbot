@@ -49,7 +49,7 @@ export function DocumentCard({ message }: { message: Message }) {
       data-document-card={card.id}
       onClick={open}
       aria-label={t("documents.openNamed", { title: card.title })}
-      className="dusk-press-soft group block w-full max-w-md cursor-pointer rounded-[18px] bg-(--chat-card) p-1 text-start transition-[background-color] duration-150 ease-out hover:bg-[color-mix(in_srgb,var(--chat-card),var(--color-ink)_3%)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+      className="madani-press-soft group block w-full max-w-md cursor-pointer rounded-[18px] bg-(--chat-card) p-1 text-start transition-[background-color] duration-150 ease-out hover:bg-[color-mix(in_srgb,var(--chat-card),var(--color-ink)_3%)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus"
     >
       <span className="flex min-w-0 items-center gap-2.5 px-2.5 py-2">
         <span className="flex size-9 shrink-0 items-center justify-center rounded-[10px] bg-ink/[0.05]"><FileKindIcon name={glyphName(card.kind)} /></span>

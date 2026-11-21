@@ -4,7 +4,7 @@
   "title": "Claude Code routines are now scheduled tasks: a guide",
   "nav": "claude code scheduled tasks",
   "h1": "claude code routines are now called scheduled tasks",
-  "description": "Understand Claude Code cloud scheduled tasks, local tasks and /loop, including what runs with your laptop closed and how dusk bot routines differ.",
+  "description": "Understand Claude Code cloud scheduled tasks, local tasks and /loop, including what runs with your laptop closed and how madani bot routines differ.",
   "keyword": "claude code routines",
   "keywords": [
     "claude code schedule tasks",
@@ -57,12 +57,12 @@
       "md": "**cowork can work through the night too.** cowork and the new claude experience run saved prompts remotely, even while your computer sleeps.\n\nolder tasks created before 6 october 2026 that ran on your computer stay local.[^4] the [claude scheduled tasks guide](/guides/claude-scheduled-tasks) covers that split. open an older task and see where it runs before closing the laptop."
     },
     {
-      "h": "dusk routines start with a message",
-      "md": "**tell the bot what should repeat and read its card.** dusk returns the schedule and next runs. edit, pause or undo it there. automations shows a calendar and run history.[^5]\n\na connected-app event can start a routine too. local dusk routines stop while the app closes or the computer sleeps. missed by less than 12 hours? they run once when you return. older runs skip. dusk cloud runs them on time.[^5]\n\n[scheduled ai tasks](/scheduled-ai-tasks) compares those homes. decide whether a delayed result is still useful before paying for an always-on machine."
+      "h": "madani routines start with a message",
+      "md": "**tell the bot what should repeat and read its card.** madani returns the schedule and next runs. edit, pause or undo it there. automations shows a calendar and run history.[^5]\n\na connected-app event can start a routine too. local madani routines stop while the app closes or the computer sleeps. missed by less than 12 hours? they run once when you return. older runs skip. madani cloud runs them on time.[^5]\n\n[scheduled ai tasks](/scheduled-ai-tasks) compares those homes. decide whether a delayed result is still useful before paying for an always-on machine."
     },
     {
       "h": "fix the job before repeating it",
-      "md": "**a schedule repeats mistakes just as faithfully as useful work.** name the input, result destination and reason to stay quiet. run the underlying job once. open its source references, then fill in missing context.\n\nin dusk, begin reading jobs with read-only app access.[^6] for later edits, include \"ask me before you change anything\". ordinary app edits do not automatically wait for approval.[^7]"
+      "md": "**a schedule repeats mistakes just as faithfully as useful work.** name the input, result destination and reason to stay quiet. run the underlying job once. open its source references, then fill in missing context.\n\nin madani, begin reading jobs with read-only app access.[^6] for later edits, include \"ask me before you change anything\". ordinary app edits do not automatically wait for approval.[^7]"
     }
   ],
   "faq": [
@@ -75,7 +75,7 @@
       "a": "**not a recurring cloud task.** its minimum is one hour. /loop can repeat every minute inside an open local session.[^1][^3]"
     },
     {
-      "q": "do i need cron to make a dusk routine?",
+      "q": "do i need cron to make a madani routine?",
       "a": "**no. say the job and timing.** read the schedule card, then edit or pause it if needed.[^5]"
     }
   ],
@@ -101,15 +101,15 @@
       "checked": "2026-11-12"
     },
     {
-      "label": "dusk bot docs: routines",
+      "label": "madani bot docs: routines",
       "url": "/docs/routines"
     },
     {
-      "label": "dusk bot docs: files and apps",
+      "label": "madani bot docs: files and apps",
       "url": "/docs/files-and-apps"
     },
     {
-      "label": "dusk bot docs: permissions and sends",
+      "label": "madani bot docs: permissions and sends",
       "url": "/docs/computer"
     }
   ],

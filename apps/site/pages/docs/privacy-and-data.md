@@ -13,8 +13,8 @@ the short version: your things live where your bots live. this page is the plain
 
 | your bots live | bots, chats, files and memory are |
 | --- | --- |
-| on your computer | on your disk, in `.duskbot` in your home folder |
-| on dusk cloud | on your own cloud computer, which we host and back up daily |
+| on your computer | on your disk, in `.madanibot` in your home folder |
+| on madani cloud | on your own cloud computer, which we host and back up daily |
 | on your own server | on that server |
 
 ## what leaves your machine
@@ -39,7 +39,7 @@ to restore, choose **import backup** on the new machine. it replaces everything 
 ## deleting things
 
 - **a bot:** delete it from the sidebar.
-- **everything on your computer:** remove the app, the `.duskbot` folder in your home folder, and the app's own folder, which holds your sign-ins: `~/Library/Application Support/Dusk Bot` on a mac (and the **Dusk Bot Safe Storage** item in Keychain Access), `%APPDATA%\Dusk Bot` on windows, `~/.config/Dusk Bot` on linux.
+- **everything on your computer:** remove the app, the `.madanibot` folder in your home folder, and the app's own folder, which holds your sign-ins: `~/Library/Application Support/Madani Bot` on a mac (and the **Madani Bot Safe Storage** item in Keychain Access), `%APPDATA%\Madani Bot` on windows, `~/.config/Madani Bot` on linux.
 - **your account:** **delete account** on the account page.
 
-to see, correct or delete what we hold about you, write to privacy@dusk.bot. security problems go to security@dusk.bot (see the [security page](/security)).
+to see, correct or delete what we hold about you, write to privacy@madani.bot. security problems go to security@madani.bot (see the [security page](/security)).

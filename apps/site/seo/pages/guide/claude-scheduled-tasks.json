@@ -58,7 +58,7 @@
     },
     {
       "h": "diagnose before moving the job",
-      "md": "**find the failed step before rebuilding the setup.** open the task's schedule, time zone and usage account. local jobs need the host and app awake. for a cloud job, look at the remote run.\n\nin dusk, ask a named bot for a routine. its card shows upcoming runs; **automations** shows history. local dusk routines still need an awake host.[^5]\n\nprovider terms and usage allowances follow you between schedulers. read current terms before unattended work. the [scheduler comparison](/scheduled-ai-tasks) helps once you know which failure you need to fix."
+      "md": "**find the failed step before rebuilding the setup.** open the task's schedule, time zone and usage account. local jobs need the host and app awake. for a cloud job, look at the remote run.\n\nin madani, ask a named bot for a routine. its card shows upcoming runs; **automations** shows history. local madani routines still need an awake host.[^5]\n\nprovider terms and usage allowances follow you between schedulers. read current terms before unattended work. the [scheduler comparison](/scheduled-ai-tasks) helps once you know which failure you need to fix."
     }
   ],
   "faq": [
@@ -97,7 +97,7 @@
       "checked": "2026-11-12"
     },
     {
-      "label": "dusk bot: routines",
+      "label": "madani bot: routines",
       "url": "/docs/routines"
     },
     {

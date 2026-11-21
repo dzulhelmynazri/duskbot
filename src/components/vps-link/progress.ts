@@ -42,7 +42,7 @@ export function vpsProgress(view: VpsLinkView): { title: string; detail: string 
     const chats = move.step === "copy" ? move.chats : null;
     const bytes = move.step === "backup" && move.bytes ? reportedProgress({ kind: "download", receivedBytes: move.bytes.done, totalBytes: move.bytes.total }) : null;
     return {
-      title: t(MOVE_TITLE[move.step], { name: view.server?.name ?? t("vpsLink.yourServer"), device: typeof window !== "undefined" && window.duskDesktop?.platform === "darwin" ? t("vpsLink.device.mac") : t("vpsLink.device.computer") }),
+      title: t(MOVE_TITLE[move.step], { name: view.server?.name ?? t("vpsLink.yourServer"), device: typeof window !== "undefined" && window.madaniDesktop?.platform === "darwin" ? t("vpsLink.device.mac") : t("vpsLink.device.computer") }),
       detail: bytes?.detail ?? (chats ? t("vpsLink.move.chatsProgress", chats) : null),
       value: move.step === "done" ? 1 : bytes?.value ?? (chats && chats.total > 0 ? chats.done / chats.total : null), failed, error,
     };

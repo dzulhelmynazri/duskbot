@@ -1,8 +1,8 @@
-// contextIsolation stays on: the renderer sees only window.duskDesktop, never Node or ipcRenderer.
+// contextIsolation stays on: the renderer sees only window.madaniDesktop, never Node or ipcRenderer.
 const { contextBridge, ipcRenderer, webFrame, webUtils } = require("electron");
 
 // Sandboxed preloads get Electron's restricted `require`, which cannot load sibling CommonJS files.
-const desktopRemoteClient = process.argv.includes("--duskbot-remote-client");
+const desktopRemoteClient = process.argv.includes("--madanibot-remote-client");
 
 let pendingPackageInstallUrl = null;
 const packageInstallListeners = new Set();
@@ -57,13 +57,13 @@ ipcRenderer.on("app:open-settings", (_event, section) => {
 });
 
 // The full bridge goes only to the local server's UI; a remote page gets the safe subset, and main enforces the same rule.
-const currentLocalOrigin = process.argv.includes("--dusk-current-local-origin=1");
+const currentLocalOrigin = process.argv.includes("--madani-current-local-origin=1");
 const localOrigin = currentLocalOrigin ? (() => {
   try {
     const origin = ipcRenderer.sendSync("desktop:local-origin");
     return typeof origin === "string" && origin ? origin : null;
   } catch { return null; }
-})() : process.argv.find((arg) => arg.startsWith("--dusk-local-origin="))?.slice("--dusk-local-origin=".length) ?? null;
+})() : process.argv.find((arg) => arg.startsWith("--madani-local-origin="))?.slice("--madani-local-origin=".length) ?? null;
 const isLocalPage = (!currentLocalOrigin && !localOrigin) || (localOrigin !== null && location.origin === localOrigin);
 
 // The window's own rail of places stands at its left edge (electron/chrome-rail.mjs): main says how wide, and every page
@@ -120,13 +120,13 @@ const remoteKeys = isLocalPage ? REMOTE_SAFE : new Set([...REMOTE_SAFE, ...(onHo
 
 // Keep in parity with shared/workspace-backup-client.ts (a sandboxed preload cannot import it).
 const COMPANY_BACKUP_CLIENT_KEYS = [
-  "dusk-drafts", "dusk-draft-attachments", "dusk-draft-send-ids", "dusk-draft-channel-modes",
-  "dusk-skin", "dusk-show-threads", "dusk-show-run-card", "dusk-send-key", "dusk-color-user-bubbles", "dusk-chat-width", "duskbot.sidebarDensity",
-  "duskbot.sidebarToolsLayout",
-  "duskbot.sidebarCollapsedSections.v1", "duskbot.sidebarSectionOrder.v1",
-  "dusk-analytics-opt-out", "duskbot.remote-voice.v1",
+  "madani-drafts", "madani-draft-attachments", "madani-draft-send-ids", "madani-draft-channel-modes",
+  "madani-skin", "madani-show-threads", "madani-show-run-card", "madani-send-key", "madani-color-user-bubbles", "madani-chat-width", "madanibot.sidebarDensity",
+  "madanibot.sidebarToolsLayout",
+  "madanibot.sidebarCollapsedSections.v1", "madanibot.sidebarSectionOrder.v1",
+  "madani-analytics-opt-out", "madanibot.remote-voice.v1",
 ];
-if (isLocalPage && !desktopRemoteClient && process.argv.includes("--dusk-company-desktop=1")) {
+if (isLocalPage && !desktopRemoteClient && process.argv.includes("--madani-company-desktop=1")) {
   ipcRenderer.on("company-backups:collect-client-state", (_event, request) => {
     if (!request || typeof request.requestId !== "string" || !/^[a-f0-9-]{36}$/.test(request.requestId)) return;
     try {
@@ -146,7 +146,7 @@ if (isLocalPage && !desktopRemoteClient && process.argv.includes("--dusk-company
 }
 
 // main passes app.getVersion(): a server's page carries that server's version, so About asks this for the app's own.
-const appVersion = (process.argv.find((arg) => arg.startsWith("--dusk-app-version="))?.slice("--dusk-app-version=".length) ?? "").slice(0, 64);
+const appVersion = (process.argv.find((arg) => arg.startsWith("--madani-app-version="))?.slice("--madani-app-version=".length) ?? "").slice(0, 64);
 
 /** ipcRenderer wraps a main-process throw in "Error invoking remote method"; the page shows the text verbatim. */
 function invokeWithPlainError(channel, ...args) {
@@ -185,9 +185,9 @@ const bridge = {
     // Make a server of the person's own their bots' home, from a click on the rail's own page (main refuses any other page).
     makeHome: (id) => isLocalPage || navigator.userActivation?.isActive === true
       ? ipcRenderer.invoke("workspaces:make-home", String(id)) : Promise.reject(new Error("Choose Make my home.")),
-    // Open a server of the person's own with its move to dusk cloud sheet, from a click on the rail's own page.
+    // Open a server of the person's own with its move to madani cloud sheet, from a click on the rail's own page.
     cloudMove: (id) => isLocalPage || navigator.userActivation?.isActive === true
-      ? ipcRenderer.invoke("workspaces:cloud-move", String(id)) : Promise.reject(new Error("Choose Move to dusk cloud.")),
+      ? ipcRenderer.invoke("workspaces:cloud-move", String(id)) : Promise.reject(new Error("Choose Move to madani cloud.")),
     onChanged: (cb) => {
       const handler = () => cb();
       ipcRenderer.on("workspaces:changed", handler);
@@ -543,7 +543,7 @@ const bridge = {
   openAtLogin: {
     state: () => ipcRenderer.invoke("open-at-login:state"),
     set: on => on !== true || isLocalPage || navigator.userActivation?.isActive === true
-      ? ipcRenderer.invoke("open-at-login:set", on === true) : Promise.reject(new Error("Turn on the switch to open dusk bot at login.")),
+      ? ipcRenderer.invoke("open-at-login:set", on === true) : Promise.reject(new Error("Turn on the switch to open madani bot at login.")),
   },
   // An AppImage's own entry in the app menu (electron/appimage-menu-entry.mjs); this computer's page only.
   appMenuEntry: {
@@ -566,7 +566,7 @@ const bridge = {
       return () => ipcRenderer.removeListener("workspaces:open-settings", handler);
     },
   },
-  accountGate: process.argv.includes("--dusk-account-gate=1") ? {
+  accountGate: process.argv.includes("--madani-account-gate=1") ? {
     state: () => ipcRenderer.invoke("account-gate:state"),
     signInStart: (email, options) => ipcRenderer.invoke("account-gate:signInStart", String(email), { recover: options?.recover === true }),
     options: () => ipcRenderer.invoke("account-gate:options"),
@@ -582,7 +582,7 @@ const bridge = {
       return () => ipcRenderer.removeListener("account-gate:changed", handler);
     },
   } : undefined,
-  cloudAccount: process.argv.includes("--dusk-company-desktop=1") ? {
+  cloudAccount: process.argv.includes("--madani-company-desktop=1") ? {
     state: () => ipcRenderer.invoke("cloud-account:state"),
     begin: () => ipcRenderer.invoke("cloud-account:begin"),
     signInAgain: () => ipcRenderer.invoke("cloud-account:signInAgain"),
@@ -640,7 +640,7 @@ const bridge = {
     },
   } : undefined,
   // Either page: the one-time move's line.
-  cloudSendPage: process.argv.includes("--dusk-company-desktop=1") ? {
+  cloudSendPage: process.argv.includes("--madani-company-desktop=1") ? {
     notice: () => ipcRenderer.invoke("cloud-send:notice"),
     dismiss: signature => ipcRenderer.invoke("cloud-send:dismiss", String(signature)),
     moveRetry: () => isLocalPage || navigator.userActivation?.isActive === true
@@ -663,8 +663,8 @@ const bridge = {
       : Promise.reject(new Error("Choose Move to move your bots.")),
     moveOfferDismiss: which => ipcRenderer.invoke("cloud-send:move-offer-dismiss", which === "banner" ? "banner" : "prompt"),
     moveOpen: () => isLocalPage || navigator.userActivation?.isActive === true
-      ? ipcRenderer.invoke("cloud-send:move-open") : Promise.reject(new Error("Choose Open dusk cloud to open it.")),
-    // Settings → dusk cloud, Advanced: "Keep this computer's bots on this computer".
+      ? ipcRenderer.invoke("cloud-send:move-open") : Promise.reject(new Error("Choose Open madani cloud to open it.")),
+    // Settings → madani cloud, Advanced: "Keep this computer's bots on this computer".
     keepHere: () => ipcRenderer.invoke("one-home:keep"),
     setKeepHere: on => isLocalPage || navigator.userActivation?.isActive === true
       ? ipcRenderer.invoke("one-home:keep-set", on === true) : Promise.reject(new Error("Turn the switch to keep this computer's bots here.")),
@@ -680,7 +680,7 @@ const bridge = {
     start: () => navigator.userActivation?.isActive === true
       ? ipcRenderer.invoke("vps-cloud-move:start") : Promise.reject(new Error("Choose Move to move your bots.")),
     buy: plan => navigator.userActivation?.isActive === true
-      ? ipcRenderer.invoke("vps-cloud-move:buy", plan === "pro" ? "pro" : "plus") : Promise.reject(new Error("Choose Get dusk cloud to continue.")),
+      ? ipcRenderer.invoke("vps-cloud-move:buy", plan === "pro" ? "pro" : "plus") : Promise.reject(new Error("Choose Get madani cloud to continue.")),
     offer: () => ipcRenderer.invoke("vps-cloud-move:offer"),
     retry: () => navigator.userActivation?.isActive === true
       ? ipcRenderer.invoke("vps-cloud-move:retry") : Promise.reject(new Error("Choose Try again to move.")),
@@ -792,7 +792,7 @@ const bridge = {
     },
   },
   // Who is signed in on this device: this app's own pages only (main checks the sender). No token ever comes through here.
-  accounts: process.argv.includes("--dusk-company-desktop=1") ? {
+  accounts: process.argv.includes("--madani-company-desktop=1") ? {
     list: () => ipcRenderer.invoke("accounts:list"),
     signOut: id => ipcRenderer.invoke("accounts:sign-out", String(id)),
     setAvatar: choice => ipcRenderer.invoke("accounts:set-avatar", choice === null ? null : String(choice)),
@@ -816,13 +816,13 @@ const bridge = {
     },
   } : undefined,
   // Any place's page: opens the accounts sheet on the rail's page, from the person's click. The page learns nothing of them.
-  accountSheet: process.argv.includes("--dusk-company-desktop=1") ? {
+  accountSheet: process.argv.includes("--madani-company-desktop=1") ? {
     offered: () => ipcRenderer.invoke("accounts:offered"),
     face: () => ipcRenderer.invoke("accounts:face"),
     open: () => isLocalPage || navigator.userActivation?.isActive === true
       ? ipcRenderer.invoke("accounts:open") : Promise.reject(new Error("Choose your account to open it.")),
   } : undefined,
-  cloudPlan: process.argv.includes("--dusk-company-desktop=1") ? {
+  cloudPlan: process.argv.includes("--madani-company-desktop=1") ? {
     state: () => ipcRenderer.invoke("cloud-plan:state"),
     manage: () => isLocalPage || navigator.userActivation?.isActive === true
       ? ipcRenderer.invoke("cloud-plan:manage") : Promise.reject(new Error("Choose Manage to open your Plan page.")),
@@ -850,7 +850,7 @@ const bridge = {
     restartNow: () => navigator.userActivation?.isActive === true
       ? ipcRenderer.invoke("cloud-plan:restart-now") : Promise.reject(new Error("Choose Restart now to restart the Cloud.")),
   } : undefined,
-  organization: process.argv.includes("--dusk-company-desktop=1") ? {
+  organization: process.argv.includes("--madani-company-desktop=1") ? {
     settingsOpened: () => ipcRenderer.invoke("organization:settings-opened"),
     state: () => ipcRenderer.invoke("organization:state"),
     begin: input => ipcRenderer.invoke("organization:begin", input),
@@ -864,7 +864,7 @@ const bridge = {
       return () => ipcRenderer.removeListener("organization:state-changed", handler);
     },
   } : undefined,
-  companyBackups: process.argv.includes("--dusk-company-desktop=1") ? {
+  companyBackups: process.argv.includes("--madani-company-desktop=1") ? {
     state: () => ipcRenderer.invoke("company-backups:state"),
     list: () => ipcRenderer.invoke("company-backups:list"),
     create: input => ipcRenderer.invoke("company-backups:create", input),
@@ -978,6 +978,6 @@ const bridge = {
 };
 
 contextBridge.exposeInMainWorld(
-  "duskDesktop",
+  "madaniDesktop",
   isLocalPage ? bridge : Object.fromEntries(Object.entries(bridge).filter(([key]) => remoteKeys.has(key))),
 );

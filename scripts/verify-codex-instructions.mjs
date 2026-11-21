@@ -8,8 +8,8 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { createInterface } from 'node:readline';
 import { once } from 'node:events';
-const root = mkdtempSync(join(tmpdir(), 'dusk-native-instructions-'));
-process.env.DUSK_DATA_DIR = join(root, 'dusk');
+const root = mkdtempSync(join(tmpdir(), 'madani-native-instructions-'));
+process.env.MADANI_DATA_DIR = join(root, 'madani');
 const { codexDeveloperInstructions, syncCodexInstructions } = await import('../server/drivers/codex-instructions.ts');
 const captures = [];
 const server = createServer(async (req, res) => {
@@ -66,7 +66,7 @@ async function start() {
             if (w.method === m.method)
                 w.resolve(m);
     } });
-    await rpc('initialize', { clientInfo: { name: 'dusk-instruction-probe', version: '1' } });
+    await rpc('initialize', { clientInfo: { name: 'madani-instruction-probe', version: '1' } });
     child.stdin.write(JSON.stringify({ method: 'initialized' }) + '\n');
 }
 function rpc(method, params) { return new Promise((resolve, reject) => { const id = ++seq; pending.set(id, { resolve, reject }); child.stdin.write(JSON.stringify({ id, method, params }) + '\n'); }); }
@@ -111,7 +111,7 @@ try {
         assert(text(5, 'developer').includes('BOT_RULE_B'));
         assert(text(5, 'developer').indexOf('BOT_RULE_B') > text(5, 'developer').indexOf('BOT_RULE_A'));
         assert(!text(7, 'developer').includes('BOT_RULE_A') && text(7, 'developer').includes('BOT_RULE_B'));
-        assert(text(8, 'developer').includes('No Dusk bot-specific instructions remain.'));
+        assert(text(8, 'developer').includes('No Madani bot-specific instructions remain.'));
         assert(!text(10, 'developer').includes('BOT_RULE_'));
     }
     else {

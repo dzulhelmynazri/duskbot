@@ -4,7 +4,7 @@
   "title": "Canva AI assistant for design files, assets and exports",
   "nav": "canva",
   "h1": "a canva bot for finding assets and preparing exports",
-  "description": "Find the right Canva design, see its export formats and follow the finished file. Copy routines for handoffs and asset naming with dusk bot.",
+  "description": "Find the right Canva design, see its export formats and follow the finished file. Copy routines for handoffs and asset naming with madani bot.",
   "keyword": "chatgpt canva",
   "keywords": [
     "claude canva",
@@ -113,7 +113,7 @@
   "cannot": [
     "**edit any canvas element you point at.** this action list covers designs, jobs, assets, folders and comments. it has no general action for rewriting individual elements.",
     "**promise every export format.** read the design’s available formats before choosing a file.",
-    "**start from a canva change event.** canva has no events here. use a schedule and an awake computer, or dusk cloud."
+    "**start from a canva change event.** canva has no events here. use a schedule and an awake computer, or madani cloud."
   ],
   "sections": [
     {
@@ -136,20 +136,20 @@
     },
     {
       "q": "do canva routines keep running when my laptop closes?",
-      "a": "**local routines stop when it sleeps or dusk closes.** dusk cloud keeps the bot on a running machine while your computer is off."
+      "a": "**local routines stop when it sleeps or madani closes.** madani cloud keeps the bot on a running machine while your computer is off."
     }
   ],
   "sources": [
     {
-      "label": "dusk bot docs: apps and files",
+      "label": "madani bot docs: apps and files",
       "url": "/docs/files-and-apps"
     },
     {
-      "label": "dusk bot docs: routine schedules",
+      "label": "madani bot docs: routine schedules",
       "url": "/docs/routines"
     },
     {
-      "label": "dusk bot docs: permissions and sending",
+      "label": "madani bot docs: permissions and sending",
       "url": "/docs/computer"
     }
   ],

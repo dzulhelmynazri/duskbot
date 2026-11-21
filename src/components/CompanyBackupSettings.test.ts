@@ -23,7 +23,7 @@ vi.mock("react", async original => ({ ...await original<typeof import("react")>(
 vi.mock("@/state/store", () => ({ api: vi.fn() }));
 import { CompanyBackupSettings, ConnectedCompanyBackupSettings, SavedCompanyBackupSchedule } from "./CompanyBackupSettings";
 
-type BackupBridge = NonNullable<NonNullable<Window["duskDesktop"]>["companyBackups"]>;
+type BackupBridge = NonNullable<NonNullable<Window["madaniDesktop"]>["companyBackups"]>;
 type Node = ReactElement<{
   children?: ReactNode; type?: string; disabled?: boolean; value?: string; role?: string;
   "aria-label"?: string; onChange?: (event: unknown) => void;
@@ -80,7 +80,7 @@ const readyEntry: CompanyBackupEntry = {
   createdAt: Date.parse("2026-09-12T10:00:00Z"), completedAt: Date.parse("2026-09-12T10:01:00Z"),
 };
 const summary: WorkspaceBackupSummary = {
-  format: "dusk.workspace-backup", version: 1, id: READY_ID, createdAt: "2026-09-12T10:00:00Z",
+  format: "madani.workspace-backup", version: 1, id: READY_ID, createdAt: "2026-09-12T10:00:00Z",
   appVersion: "0.0.0-fixture", files: 9, directories: 3, bytes: 4096, bots: 2, groups: 1, threads: 4,
   messages: 8, warnings: ["Fixture archive warning"], exclusions: ["Saved account credentials and connections"],
 };
@@ -110,7 +110,7 @@ beforeEach(() => {
     state: vi.fn().mockResolvedValue(connected), begin: vi.fn(), cancelEnrollment: vi.fn(), refresh: vi.fn(), disconnect: vi.fn(),
     onState: vi.fn(callback => { pushOrganization = callback; return unsubscribeOrganization; }),
   };
-  vi.stubGlobal("window", { duskDesktop: { organization, companyBackups: bridge }, location: { reload: vi.fn() } });
+  vi.stubGlobal("window", { madaniDesktop: { organization, companyBackups: bridge }, location: { reload: vi.fn() } });
   vi.stubGlobal("localStorage", {
     getItem: (key: string) => storage.get(key) ?? null,
     setItem: vi.fn((key: string, value: string) => storage.set(key, value)),
@@ -134,9 +134,9 @@ async function validateRestore() {
 describe("optional Company cloud backup settings", () => {
   it.each(["browser", "remote", "missing organization", "missing backups"])("is absent on a %s surface without requesting cloud data", surface => {
     if (surface === "browser") vi.stubGlobal("window", {});
-    if (surface === "remote") vi.stubGlobal("window", { duskDesktop: { organization, companyBackups: bridge, remoteClient: { active: true } } });
-    if (surface === "missing organization") vi.stubGlobal("window", { duskDesktop: { companyBackups: bridge } });
-    if (surface === "missing backups") vi.stubGlobal("window", { duskDesktop: { organization } });
+    if (surface === "remote") vi.stubGlobal("window", { madaniDesktop: { organization, companyBackups: bridge, remoteClient: { active: true } } });
+    if (surface === "missing organization") vi.stubGlobal("window", { madaniDesktop: { companyBackups: bridge } });
+    if (surface === "missing backups") vi.stubGlobal("window", { madaniDesktop: { organization } });
     expect(render(true).html).toBe(""); effects();
     if (surface !== "missing backups") expect(organization.state).not.toHaveBeenCalled();
     expect(bridge.state).not.toHaveBeenCalled(); expect(bridge.list).not.toHaveBeenCalled();
@@ -250,7 +250,7 @@ describe("optional Company cloud backup settings", () => {
   it("shows restart instructions and no backup actions when a restore is already staged", async () => {
     vi.mocked(bridge.state).mockResolvedValueOnce({ busy: false, pendingRestore: true });
     await ready();
-    expect(render().html).toContain("Fully quit dusk bot");
+    expect(render().html).toContain("Fully quit madani bot");
     for (const label of ["Back up this installation", "Restore this backup", "Delete cloud backup", "Refresh cloud backups"]) {
       expect(button(label)).toBeUndefined();
     }
@@ -267,10 +267,10 @@ describe("optional Company cloud backup settings", () => {
     await ready();
     if (lateState) {
       expect(render().html).toContain("Cloud backups could not be loaded");
-      expect(render().html).not.toContain("Fully quit dusk bot");
+      expect(render().html).not.toContain("Fully quit madani bot");
       resolveState({ busy: false, pendingRestore: true }); await flush();
     }
-    expect(render().html).toContain("Fully quit dusk bot");
+    expect(render().html).toContain("Fully quit madani bot");
     for (const label of ["Back up this installation", "Restore this backup", "Delete cloud backup", "Refresh cloud backups"]) {
       expect(button(label)).toBeUndefined();
     }
@@ -321,8 +321,8 @@ describe("optional Company cloud backup settings", () => {
 
   it("requires an explicit backup dialog without passwords, then exports only allowlisted local preferences", async () => {
     await ready();
-    storage.set("dusk-drafts", "private fixture draft"); storage.set("dusk-skin", "fixture-theme");
-    storage.set("auth-token", "fixture auth secret"); storage.set("dusk-webhook-credentials", "fixture connection secret");
+    storage.set("madani-drafts", "private fixture draft"); storage.set("madani-skin", "fixture-theme");
+    storage.set("auth-token", "fixture auth secret"); storage.set("madani-webhook-credentials", "fixture connection secret");
     button("Back up this installation").props.onClick!();
     expect(bridge.create).not.toHaveBeenCalled(); expect(passwords()).toHaveLength(0);
     expect(render().nodes.some(node => node.type === "dialog")).toBe(true);
@@ -332,7 +332,7 @@ describe("optional Company cloud backup settings", () => {
     const submitButton = () => render().nodes.find(node => node.type === "button" && node.props.type === "submit")!;
     expect(submitButton().props.disabled).toBe(false);
     const createForm = form(); submit(createForm); submit(createForm); await flush();
-    expect(bridge.create).toHaveBeenCalledExactlyOnceWith({ clientState: { "dusk-drafts": "private fixture draft", "dusk-skin": "fixture-theme" } });
+    expect(bridge.create).toHaveBeenCalledExactlyOnceWith({ clientState: { "madani-drafts": "private fixture draft", "madani-skin": "fixture-theme" } });
     expect([...storage.values()]).not.toContain(PASSWORD);
     expect(render().html).not.toContain(PASSWORD);
     expect(fetch).not.toHaveBeenCalled();
@@ -471,7 +471,7 @@ describe("optional Company cloud backup settings", () => {
     const replace = button("Replace installation"); replace.props.onClick!(); replace.props.onClick!(); await flush();
     expect(bridge.restore).toHaveBeenCalledOnce();
     expect(storage.get(WORKSPACE_RESTORE_MARKER)).toBe(STAGE_ID);
-    expect(render().html).toContain("Fully quit dusk bot");
+    expect(render().html).toContain("Fully quit madani bot");
     expect(window.location.reload).not.toHaveBeenCalled();
     expect([...storage.values()]).not.toContain(PASSWORD);
   });

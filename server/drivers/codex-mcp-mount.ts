@@ -36,11 +36,11 @@ export function mountMcpServer(
   if (approval !== "prompt") appServerArgs.push("-c", `${prefix}.default_tools_approval_mode="${approval}"`);
 }
 
-/** The built-in mounts that may be dusk bot's own proxies; a person's server of the same shape stays a process. */
+/** The built-in mounts that may be madani bot's own proxies; a person's server of the same shape stays a process. */
 const OWN_SERVERS = new Set(["agents", "browser", "data", "email", "device"]);
 
 /** The env family holding own-server endpoint tokens and headers; it never reaches Codex's command shell. */
-export const OWN_MCP_ENV_FAMILY = "DUSK_OWN_MCP_";
+export const OWN_MCP_ENV_FAMILY = "MADANI_OWN_MCP_";
 /** The oldest codex-cli this mount was checked against: 0.167.0 lists and calls the agents endpoint, with
  * bearer_token_env_var and env_http_headers, and holds a 75-second call open. */
 export const OWN_MCP_HTTP_MIN_CODEX: VersionTriple = [0, 167, 0];
@@ -50,7 +50,7 @@ export function codexMountsOwnMcpOverHttp(version: string | null): boolean {
   return parsed !== null && versionAtLeast(parsed, OWN_MCP_HTTP_MIN_CODEX);
 }
 
-/** dusk bot's own server as an endpoint of this server, so Codex starts no proxy process for it. The token and
+/** madani bot's own server as an endpoint of this server, so Codex starts no proxy process for it. The token and
  * every header ride environment variables: argv carries names only. */
 export function mountOwnMcpOverHttp(
   appServerArgs: string[],

@@ -22,7 +22,7 @@ const release = (version: string): HomeRelease => ({ sha256: sha(version), url: 
 
 async function updating(options: { policy?: { serial: number; floor: string | null; blocked: string[] } } = {}) {
   let offered: HomeRelease | null = null;
-  const dir = mkdtempSync(join(tmpdir(), "dusk-policy-")); cleanup.push(() => rmSync(dir, { recursive: true, force: true }));
+  const dir = mkdtempSync(join(tmpdir(), "madani-policy-")); cleanup.push(() => rmSync(dir, { recursive: true, force: true }));
   const policyFile = join(dir, "policy.json");
   if (options.policy) writeFileSync(policyFile, JSON.stringify(signPolicy(options.policy, signing)));
   const f = await homeFixture({ releaseKeys: keys, settings: { package: release("1.0.0") }, release: () => offered, updatePolicy: createPolicySource(policyFile, keys, () => {}) });
@@ -86,7 +86,7 @@ describe("staged home updates", () => {
   });
 
   it("reads a release file's cloud list, and treats an empty list as every cloud", () => {
-    const dir = mkdtempSync(join(tmpdir(), "dusk-release-file-")); cleanup.push(() => rmSync(dir, { recursive: true, force: true }));
+    const dir = mkdtempSync(join(tmpdir(), "madani-release-file-")); cleanup.push(() => rmSync(dir, { recursive: true, force: true }));
     const file = join(dir, "release.json");
     writeFileSync(file, JSON.stringify({ sha256: sha("1.1.0"), url: "https://packages.example.test/1.1.0.tgz", clouds: ["c1", 7, "c2"] }));
     expect(createReleaseFile(file)()).toMatchObject({ sha256: sha("1.1.0"), clouds: ["c1", "c2"] });
@@ -217,7 +217,7 @@ describe("staged home updates", () => {
   });
 
   it("serves only a policy the pinned keys signed, and keeps the last good one", () => {
-    const dir = mkdtempSync(join(tmpdir(), "dusk-policy-")); cleanup.push(() => rmSync(dir, { recursive: true, force: true }));
+    const dir = mkdtempSync(join(tmpdir(), "madani-policy-")); cleanup.push(() => rmSync(dir, { recursive: true, force: true }));
     const file = join(dir, "p.json"), alerts: string[] = [];
     writeFileSync(file, JSON.stringify(signPolicy({ serial: 4, floor: "1.0.0", blocked: [] }, signing)));
     const source = createPolicySource(file, keys, line => alerts.push(line));
@@ -233,7 +233,7 @@ describe("staged home updates", () => {
 describe("omb-home on the machine", () => {
   // the real control script, its root paths moved into a temp folder and root-only commands stubbed
   function machine() {
-    const dir = mkdtempSync(join(tmpdir(), "dusk-machine-")); cleanup.push(() => rmSync(dir, { recursive: true, force: true }));
+    const dir = mkdtempSync(join(tmpdir(), "madani-machine-")); cleanup.push(() => rmSync(dir, { recursive: true, force: true }));
     const bin = join(dir, "stub"); mkdirSync(bin);
     writeFileSync(join(bin, "chown"), "#!/bin/sh\nexit 0\n"); chmodSync(join(bin, "chown"), 0o755);
     // systemctl records what it was asked; docker has the image once `have-image` exists, and its registry refuses a pull
@@ -341,14 +341,14 @@ describe("the machine's setup", () => {
   it("installs the bot computer image unit beside the gate and tells the home where its status is", () => {
     const setup = homeSetupScript();
     expect(setup).toContain("/etc/systemd/system/omb-desktop-image.service");
-    const unit = setup.slice(setup.indexOf("<<'DUSK_DESKTOP'"), setup.indexOf("DUSK_DESKTOP\n", setup.indexOf("<<'DUSK_DESKTOP'") + 20));
+    const unit = setup.slice(setup.indexOf("<<'MADANI_DESKTOP'"), setup.indexOf("MADANI_DESKTOP\n", setup.indexOf("<<'MADANI_DESKTOP'") + 20));
     expect(unit).toContain(`ExecStart=${HOME_CONTROL} desktop-image`);
     expect(unit).toContain("Restart=on-failure");
     expect(unit).toContain("Type=oneshot");
     expect(unit).toMatch(/Nice=\d+/);
-    expect(setup).toContain(`DUSK_BOT_DESKTOP_HOST_BUILD: "${DESKTOP_IMAGE_STATUS}"`);
+    expect(setup).toContain(`MADANI_BOT_DESKTOP_HOST_BUILD: "${DESKTOP_IMAGE_STATUS}"`);
     // the direct screen path binds a fixed UDP range, the server image's
-    expect(setup).toContain(`DUSK_SCREEN_DIRECT_PORTS: "${HOME_SCREEN_DIRECT_PORTS}"`);
+    expect(setup).toContain(`MADANI_SCREEN_DIRECT_PORTS: "${HOME_SCREEN_DIRECT_PORTS}"`);
     // the gate never builds: only root's unit does, from the signed package's kit
     expect(homeControlScript()).toContain('sh "$kit/build.sh"');
   });

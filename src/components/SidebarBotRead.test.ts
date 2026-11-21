@@ -43,12 +43,12 @@ beforeEach(() => {
   state = { ...initialState, bots: [structuredClone(bot)], selectedId: "another-bot" };
   menu = { botId: bot.id, x: 50, y: 50 }; onClose.mockReset();
 });
-afterEach(() => { flushSync(() => root.unmount()); container.remove(); vi.unstubAllGlobals(); delete window.duskDesktop; setLocale("en"); });
+afterEach(() => { flushSync(() => root.unmount()); container.remove(); vi.unstubAllGlobals(); delete window.madaniDesktop; setLocale("en"); });
 
 describe("bot menu bulk reads", () => {
 
   it("does not expose bulk sibling reads to thread-pinned remote clients", () => {
-    window.duskDesktop = { remoteClient: { active: true } } as typeof window.duskDesktop;
+    window.madaniDesktop = { remoteClient: { active: true } } as typeof window.madaniDesktop;
     draw(); expect(button()).toBeUndefined();
   });
 

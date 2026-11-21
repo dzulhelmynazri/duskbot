@@ -2,7 +2,7 @@
 # builds the bot desktop image for this machine's architecture, tagged the way the app looks for it.
 #   deploy/bot-desktop/build.sh                 local build, tag from BOT_DESKTOP_IMAGE in shared/bot-desktop.ts
 #   deploy/bot-desktop/build.sh --push          multi-arch (amd64 + arm64) build pushed to the registry (needs buildx)
-#   IMAGE=ghcr.io/me/dusk-desktop:v6 deploy/bot-desktop/build.sh
+#   IMAGE=ghcr.io/me/madani-desktop:v6 deploy/bot-desktop/build.sh
 # runs anywhere this folder is: on a VPS copy deploy/bot-desktop/ over and run it there (only docker is needed).
 set -eu
 here="$(cd "$(dirname "$0")" && pwd)"
@@ -12,8 +12,8 @@ read_const() { sed -n "s/^export const $1 = \"\\(.*\\)\";.*/\\1/p" "$constants" 
 version="${BOT_DESKTOP_VERSION:-$(read_const BOT_DESKTOP_VERSION)}"
 version="${version:-6}"
 image="${IMAGE:-$(read_const BOT_DESKTOP_IMAGE)}"
-image="${image:-ghcr.io/duskbotai/dusk-desktop:v$version}"
-resolution="${DUSK_RESOLUTION:-1280x800}"
+image="${image:-ghcr.io/madanibotai/madani-desktop:v$version}"
+resolution="${MADANI_RESOLUTION:-1280x800}"
 
 start="$(date +%s)"
 if [ "${1:-}" = "--push" ]; then

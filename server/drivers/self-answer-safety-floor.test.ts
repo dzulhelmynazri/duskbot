@@ -46,11 +46,11 @@ let scratch: string;
 
 beforeEach(() => {
   // A shell that already exports the switch must not turn the floor on here.
-  delete process.env.DUSK_SAFETY_FLOOR;
+  delete process.env.MADANI_SAFETY_FLOOR;
   ensureDirs();
   chmodSync(FAKE_CODEX, 0o755);
   chmodSync(FAKE_ACP, 0o755);
-  scratch = mkdtempSync(join(tmpdir(), "dusk-floor-drivers-"));
+  scratch = mkdtempSync(join(tmpdir(), "madani-floor-drivers-"));
 });
 
 afterEach(async () => {

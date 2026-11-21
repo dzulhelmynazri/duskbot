@@ -1,12 +1,12 @@
 // A harness holding the built-in voice's models must still stop cleanly: ONNX Runtime 1.23 aborted the process at exit
 // ("mutex lock failed") with sessions loaded. Runs where the models are downloaded:
-// DUSK_VOICE_MODELS_DIR=... pnpm exec vitest run server/local-voice/shutdown.e2e.test.ts
+// MADANI_VOICE_MODELS_DIR=... pnpm exec vitest run server/local-voice/shutdown.e2e.test.ts
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
-import { launchVerificationServer } from "../../scripts/control-dusk.ts";
+import { launchVerificationServer } from "../../scripts/control-madani.ts";
 import { ModelStore } from "./models.ts";
 
-const ready = Boolean(process.env.DUSK_VOICE_MODELS_DIR) && new ModelStore().status().phase === "ready";
+const ready = Boolean(process.env.MADANI_VOICE_MODELS_DIR) && new ModelStore().status().phase === "ready";
 
 describe.skipIf(!ready)("a harness with the built-in voice loaded", () => {
   it("exits cleanly on SIGTERM, even mid-sentence", async () => {

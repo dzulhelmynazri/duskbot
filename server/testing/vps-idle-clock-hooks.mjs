@@ -1,7 +1,7 @@
 import { registerHooks } from "node:module";
 
-const directory = process.env.DUSK_DATA_DIR;
-if (!directory || directory !== process.env.HOME || process.env.DUSK_TEST_VPS_IDLE_CLOCK !== "1") {
+const directory = process.env.MADANI_DATA_DIR;
+if (!directory || directory !== process.env.HOME || process.env.MADANI_TEST_VPS_IDLE_CLOCK !== "1") {
   throw new Error("The VPS idle clock requires an explicitly isolated fixture");
 }
 const idle = new URL("../vps-idle.ts", import.meta.url).href;

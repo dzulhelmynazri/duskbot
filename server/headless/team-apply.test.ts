@@ -316,7 +316,7 @@ describe("team export", () => {
     state.skills["bot-a"] = { common: { text: skill("first"), enabled: true } };
     state.skills["bot-b"] = { common: { text: skill("second"), enabled: true } };
     state.skills["bot-c"] = { common: { text: skill("third"), enabled: true } };
-    const dir = mkdtempSync(join(tmpdir(), "dusk-team-export-"));
+    const dir = mkdtempSync(join(tmpdir(), "madani-team-export-"));
     try {
       const out = join(dir, "team.yaml");
       const ctx = { verb: "team export", flags: { out }, positionals: [], env: {}, io: { out: () => undefined, err: () => undefined, readStdin: async () => "" },
@@ -338,7 +338,7 @@ describe("team export", () => {
     await reconcile(client, file(), options());
     state.bots.find((bot) => bot.name === "Room Lead")!.soul = `Lead the rehearsal. Pay with ${KEY}.`;
     state.skills["bot-1"]!["launch-report"]!.text = `---\nname: launch-report\ndescription: Write it.\n---\nUpload with ${KEY}\n`;
-    const dir = mkdtempSync(join(tmpdir(), "dusk-team-export-"));
+    const dir = mkdtempSync(join(tmpdir(), "madani-team-export-"));
     try {
       const out = join(dir, "team.yaml");
       const ctx = { verb: "team export", flags: { out }, positionals: [], env: {}, io: { out: () => undefined, err: () => undefined, readStdin: async () => "" },

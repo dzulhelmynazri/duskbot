@@ -364,7 +364,7 @@ export function ModelPicker({
     if (offersLocalModels(instance, instance.models.options.filter((option) => option.custom).length)) lookForLocal(instance);
   };
 
-  const remote = window.duskDesktop?.remoteClient?.active === true;
+  const remote = window.madaniDesktop?.remoteClient?.active === true;
   /** Settings > Models, at its directory: every provider, API keys and local models. */
   const openDirectory = () => {
     close(false);

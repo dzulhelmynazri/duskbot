@@ -31,7 +31,7 @@ import { createRoutineChecks } from "./routine-checks.ts";
 
 export { WATCH_INSTRUCTIONS, WATCH_NAME } from "./default-watch.ts";
 export const WATCH_FILE = "watch.json";
-/** The engines whose every tool use outside a run's allowlist reaches dusk bot's answerer and is refused there. */
+/** The engines whose every tool use outside a run's allowlist reaches madani bot's answerer and is refused there. */
 const FENCED_ENGINES = new Set(["claudeAgent"]);
 const READ_SLUG: Record<ReadApp, string> = { gmail: "GMAIL_FETCH_EMAILS", googlecalendar: "GOOGLECALENDAR_EVENTS_LIST" };
 const ACTIVE = new Set(["queued", "running", "waiting"]);
@@ -208,7 +208,7 @@ export function createProactive(deps: ProactiveDeps) {
 
   /** The proactive bot's "Keep an eye on my day", suggested once in its chat when connected apps are there to read, and
    * made only on Turn it on. One already on the bot counts as made, so nothing is suggested. Asked at start and every
-   * minute, since a Cloud's access arrives later, and a Dusk can arrive after the routine was made. Returns the card
+   * minute, since a Cloud's access arrives later, and a Madani can arrive after the routine was made. Returns the card
    * posted now. */
   function ensureWatch(): string | null {
     const manager = deps.routines();

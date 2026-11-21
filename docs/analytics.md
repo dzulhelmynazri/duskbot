@@ -1,11 +1,11 @@
 # Product analytics
 
-The desktop app shares anonymous usage information to help improve dusk bot. **Help improve dusk bot** is on on a new
-install (an opt-out). The switch is on the first screen of the first run ("Share anonymous usage to help improve dusk
+The desktop app shares anonymous usage information to help improve madani bot. **Help improve madani bot** is on on a new
+install (an opt-out). The switch is on the first screen of the first run ("Share anonymous usage to help improve madani
 bot. Never your messages or files.") and in Settings, and you can turn it off at any time. Once it is off, the app
 records nothing more, clears anything still queued and sends nothing.
 
-There is no third-party analytics SDK. Everything below goes to the dusk bot account service, the same service your
+There is no third-party analytics SDK. Everything below goes to the madani bot account service, the same service your
 sign-in uses.
 
 ## What the switch covers
@@ -50,9 +50,9 @@ and the app version.
 
 ## Turning it off
 
-Turn off **help improve dusk bot** on the first screen of the first run or in Settings. The desktop app, its background
-server (usage records) and its crash reports all follow the same switch, and stop at once. A server you run yourself can also be kept off with `DUSK_USAGE_SIGNALS=off`, and a desktop build's
-crash reports with `DUSK_ERROR_REPORTS=0`.
+Turn off **help improve madani bot** on the first screen of the first run or in Settings. The desktop app, its background
+server (usage records) and its crash reports all follow the same switch, and stop at once. A server you run yourself can also be kept off with `MADANI_USAGE_SIGNALS=off`, and a desktop build's
+crash reports with `MADANI_ERROR_REPORTS=0`.
 
 Bot usage, cost accounting, server logs and diagnostics stay available in the app and on your server whether the
 switch is on or off.

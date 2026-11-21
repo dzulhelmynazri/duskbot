@@ -9,9 +9,9 @@ enum NotificationPresentation {
         return [.banner, .sound, .list]
     }
 
-    /// The conversation a notification is about: the bot host's `dusk.threadId`, else the APNs `thread-id`.
+    /// The conversation a notification is about: the bot host's `madani.threadId`, else the APNs `thread-id`.
     static func threadId(of content: UNNotificationContent) -> String? {
-        if let dusk = content.userInfo["dusk"] as? [AnyHashable: Any], let thread = dusk["threadId"] as? String, !thread.isEmpty {
+        if let madani = content.userInfo["madani"] as? [AnyHashable: Any], let thread = madani["threadId"] as? String, !thread.isEmpty {
             return thread
         }
         return content.threadIdentifier.isEmpty ? nil : content.threadIdentifier

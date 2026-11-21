@@ -29,14 +29,14 @@ beforeAll(async () => {
   relayServer = createServer((req, res) => { largestPost = Math.max(largestPost, Number(req.headers["content-length"] ?? 0)); void service.handler(req, res); });
   base = `http://127.0.0.1:${await listen(relayServer)}`;
   seen = [];
-  // stands in for Dusk Bot on the vps
+  // stands in for Madani Bot on the vps
   fakeServer = createServer((req, res) => {
     const chunks = [];
     req.on("data", (chunk) => chunks.push(chunk));
     req.on("end", () => {
       seen.push({ method: req.method, url: req.url, headers: req.headers, body: Buffer.concat(chunks).toString("utf8") });
       if (req.url === "/api/auth/pairing") { res.writeHead(200, { "content-type": "application/json" }); return res.end(JSON.stringify({ code: "RR8Y-BLR6-H939", expiresAt: 123 })); }
-      if (req.url === "/.well-known/duskbot/environment") { res.writeHead(200, { "content-type": "application/json" }); return res.end(JSON.stringify({ environmentId: "6f1c2d3e-0000-4000-8000-000000000001" })); }
+      if (req.url === "/.well-known/madanibot/environment") { res.writeHead(200, { "content-type": "application/json" }); return res.end(JSON.stringify({ environmentId: "6f1c2d3e-0000-4000-8000-000000000001" })); }
       if (req.url === "/binary") { res.writeHead(200, { "content-type": "application/octet-stream" }); return res.end(binaryReply); }
       if (req.url === "/events") {
         res.writeHead(200, { "content-type": "text/event-stream" });
@@ -171,14 +171,14 @@ describe("setup sessions", () => {
     expect(streamed.lines.join("").length).toBeLessThanOrEqual(16 * 1024);
     expect(streamed.lines.at(-1)).toMatch(/^Get:59 /);
 
-    // the agent's own `link` command, with this suite's fake Dusk Bot as the server
+    // the agent's own `link` command, with this suite's fake Madani Bot as the server
     const home = mkdtempSync(join(dir, "home-"));
     await run(process.execPath, [join(root, "agent.mjs"), "link"], {
       env: { ...process.env, HOME: home, LINK_BASE: base, LINK_ID: made.id, LINK_TOKEN: vpsToken, LINK_MODE: "relay", LINK_NAME: "oracle-arm", LINK_SERVER_PORT: String(fakePort) },
     });
     const pairingAsk = seen.find((entry) => entry.url === "/api/auth/pairing");
     expect(JSON.parse(pairingAsk.body)).toEqual({ label: "Sid's MacBook" });
-    const tunnelFile = join(home, ".config", "duskbot-link", "tunnel.json");
+    const tunnelFile = join(home, ".config", "madanibot-link", "tunnel.json");
     expect(statSync(tunnelFile).mode & 0o777).toBe(0o600);
 
     const done = await relay.watch(made.id, made.watch, 0);
@@ -396,7 +396,7 @@ describe("a linked server's own update", () => {
     publish(Buffer.from("paused build"));
     const { id, token } = await linked();
     writeFileSync(join(dir, "data", "packages", "update-policy.json"), JSON.stringify({ body: JSON.stringify({ serial: 2, floor: null, blocked: [], paused: true }), signature: "r1.x.y.z" }));
-    const held = await get(`/v1/tunnels/${id}/server`, token, { "x-dusk-server-version": "1.1.0", "x-dusk-agent-version": "2.4.7" });
+    const held = await get(`/v1/tunnels/${id}/server`, token, { "x-madani-server-version": "1.1.0", "x-madani-agent-version": "2.4.7" });
     expect(held.status).toBe(404);
     expect((await held.json()).code).toBe("paused");
     let t = 0;
@@ -411,7 +411,7 @@ describe("a linked server's own update", () => {
     expect([...SERVER_RELEASE_KEYS]).toEqual(PINNED_RELEASE_KEYS.map(k => `${k.kid}:${k.x}`));
     const { privateKey } = generateKeyPairSync("ed25519");
     const sha = "a".repeat(64);
-    const stranger = signRelease({ kind: "vps-package", name: "duskbot", version: "1.2.0", sha256: sha, signedAt: 1 }, `${PINNED_RELEASE_KEYS[0].kid}:${privateKey.export({ format: "der", type: "pkcs8" }).toString("base64url")}`);
+    const stranger = signRelease({ kind: "vps-package", name: "madanibot", version: "1.2.0", sha256: sha, signedAt: 1 }, `${PINNED_RELEASE_KEYS[0].kid}:${privateKey.export({ format: "der", type: "pkcs8" }).toString("base64url")}`);
     expect(serverReleaseSigned(stranger, sha)).toBeNull();
   });
 
@@ -430,7 +430,7 @@ describe("a linked server's own update", () => {
     const keys = [`test-vps:${createPublicKey(privateKey).export({ format: "jwk" }).x}`];
     const bytes = Buffer.from("signed server build ".repeat(300));
     const sha = sha256hex(bytes);
-    publish(bytes, { signature: signRelease({ kind: "vps-package", name: "duskbot", version: "1.2.0", sha256: sha, signedAt: 1 }, signing) });
+    publish(bytes, { signature: signRelease({ kind: "vps-package", name: "madanibot", version: "1.2.0", sha256: sha, signedAt: 1 }, signing) });
     const { id, token } = await linked();
     const staged = join(dir, `server-release-${id}`);
     const updater = (current, k = keys) => createServerUpdater({ base, id, token, dir: staged, keys: k, current: async () => current });
@@ -459,7 +459,7 @@ describe("a linked server's own update", () => {
     const signing = `test-vps:${privateKey.export({ format: "der", type: "pkcs8" }).toString("base64url")}`;
     const keys = [`test-vps:${createPublicKey(privateKey).export({ format: "jwk" }).x}`];
     const bytes = Buffer.from("current server build ".repeat(300));
-    publish(bytes, { signature: signRelease({ kind: "vps-package", name: "duskbot", version: "1.2.0", sha256: sha256hex(bytes), signedAt: 1 }, signing) });
+    publish(bytes, { signature: signRelease({ kind: "vps-package", name: "madanibot", version: "1.2.0", sha256: sha256hex(bytes), signedAt: 1 }, signing) });
     const { id, token } = await linked();
     lines.length = 0;
     const current = createServerUpdater({ base, id, token, dir: join(dir, `server-release-${id}`), keys, current: async () => "1.2.0", log: (line) => lines.push(line) });

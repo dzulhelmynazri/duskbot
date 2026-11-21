@@ -1,4 +1,4 @@
-// A real Team Cloud (DUSK_CLOUD_ROLE=team) with the fake connected-apps service and fake MCP servers: connections the team
+// A real Team Cloud (MADANI_CLOUD_ROLE=team) with the fake connected-apps service and fake MCP servers: connections the team
 // makes once, and connections each person makes for themselves. Ada's own Gmail and mail key reach only work her own
 // message started: her private chat, her own line in a group chat, and the work those hand on to other bots. Never
 // anyone else's request or the work it hands on, Cleo's chat or an admin; and no admin read ever holds them. The engine
@@ -38,7 +38,7 @@ beforeAll(async () => {
   mail = await startFakeHttpMcp({ tools: [{ name: "read_inbox" }] });
   oauth = await startFakeOAuth();
   notes = await startFakeHttpMcp({ tools: [{ name: "read_notes" }], acceptBearer: oauth.isValid, wwwAuthenticate: oauth.challenge });
-  fx = await launchCloudSendFixture({ onePasswordToken: TOKEN, broker, team: { id: "team-acme-1", name: "Acme", engine: ENGINE, env: { DUSK_BOT_BOX: "0" } } });
+  fx = await launchCloudSendFixture({ onePasswordToken: TOKEN, broker, team: { id: "team-acme-1", name: "Acme", engine: ENGINE, env: { MADANI_BOT_BOX: "0" } } });
   team = fx.team!;
   owner = (await team.pair(OWNER)).token!;
   admin = (await team.pair(ADMIN)).token!;
@@ -153,7 +153,7 @@ it("lets Ada connect her own Gmail and mail key, and nobody reads them back", as
   const read = await team.signed("GET", "/api/cloud/team/admin");
   expect(read.body.scopes).toEqual({ apps: ["gmail"], mcp: ["mail"] });
   expect(read.body.people).toEqual({ apps: { gmail: [ADA.email] }, mcp: { mail: [ADA.email] } });
-  const held = JSON.parse(readFileSync(join(team.home, ".duskbot", "people-connections", "apps.json"), "utf8")).people[personKey({ id: "", email: ADA.email })].token as string;
+  const held = JSON.parse(readFileSync(join(team.home, ".madanibot", "people-connections", "apps.json"), "utf8")).people[personKey({ id: "", email: ADA.email })].token as string;
   for (const answer of [read.body, (await team.as(owner, "GET", "/api/mcp/servers")).body, (await team.as(admin, "GET", "/api/config")).body,
     (await team.as(owner, "GET", "/api/connectors/connected")).body, (await team.as(admin, "GET", "/api/team/my-connections")).body]) {
     expect(JSON.stringify(answer)).not.toContain(ADA_KEY);
@@ -161,7 +161,7 @@ it("lets Ada connect her own Gmail and mail key, and nobody reads them back", as
     expect(JSON.stringify(answer)).not.toContain("ada.private@gmail.example");
   }
   // On the volume: a folder of its own, 0700, that no backup carries.
-  if (process.platform !== "win32") expect(statSync(join(team.home, ".duskbot", "people-connections")).mode & 0o777).toBe(0o700);
+  if (process.platform !== "win32") expect(statSync(join(team.home, ".madanibot", "people-connections")).mode & 0o777).toBe(0o700);
 }, hostTimeout(60_000));
 
 it("gives Ada's own Gmail and mail to her private chat, for her own request, and runs as her", async () => {
@@ -180,7 +180,7 @@ it("gives Ada's own Gmail and mail to her private chat, for her own request, and
   expect(team_.thread).toContain(`Gmail here is ${ADA.email}'s own: use it through the own_apps tools`);
   expect(gmailCallsBy(teamUser)).toBe(teamBefore);
   // Each bridge keeps its own bearer from turn to turn, so her conversation's engine stays warm.
-  const bearer = (dumped: Dump, server: string) => (dumped.mcpConfig.mcpServers[server] as { env: Record<string, string> }).env.DUSK_CONNECTOR_TOKEN;
+  const bearer = (dumped: Dump, server: string) => (dumped.mcpConfig.mcpServers[server] as { env: Record<string, string> }).env.MADANI_CONNECTOR_TOKEN;
   expect(bearer(team_, "own_apps")).toBe(bearer(seen, "own_apps"));
   expect(bearer(team_, "composio")).toBe(bearer(seen, "composio"));
   expect(bearer(seen, "own_apps")).not.toBe(bearer(seen, "composio"));
@@ -226,7 +226,7 @@ it("gives work her own message hands to another bot her own Gmail, and never wor
   expect(created.status, JSON.stringify(created.body)).toBe(201);
   const helper = created.body.bot as { id: string; mainThreadId: string };
   const handOn = (who: string) => ({ name: "coordinate_bots", server: "agents", input: { bot_ids: [helper.id], message: `Fetch ${who}'s latest email.` } });
-  const helperThreads = () => (JSON.parse(readFileSync(join(team.home, ".duskbot", "bots.json"), "utf8")) as Array<{ id: string; tasks: Array<{ threadId: string }> }>)
+  const helperThreads = () => (JSON.parse(readFileSync(join(team.home, ".madanibot", "bots.json"), "utf8")) as Array<{ id: string; tasks: Array<{ threadId: string }> }>)
     .find((entry) => entry.id === helper.id)!.tasks.map((task) => task.threadId).filter((threadId) => threadId !== helper.mainThreadId);
   /** The Gmail step the helper ran in the work it was handed, once it has finished. */
   const helperGmail = async (token: string, known: readonly string[]) => {
@@ -285,7 +285,7 @@ it("runs work her group-chat line hands on in the receiving bot's chat with her,
     const created = await team.as(owner, "POST", "/api/bots", { name: "Clerk" });
     expect(created.status, JSON.stringify(created.body)).toBe(201);
     const clerk = created.body.bot as { id: string; mainThreadId: string };
-    const clerkWork = () => (JSON.parse(readFileSync(join(team.home, ".duskbot", "bots.json"), "utf8")) as Array<{ id: string; tasks: Array<{ threadId: string }> }>)
+    const clerkWork = () => (JSON.parse(readFileSync(join(team.home, ".madanibot", "bots.json"), "utf8")) as Array<{ id: string; tasks: Array<{ threadId: string }> }>)
       .find((entry) => entry.id === clerk.id)!.tasks.map((task) => task.threadId).filter((threadId) => threadId !== clerk.mainThreadId);
     /** The room's row for Clerk's result: Scout is resumed with it in the room right after. */
     const clerkReplied = async () => ((await messages(ada, roomThread)).body.messages as Array<{ roomRequest?: { phase?: string }; tool?: { name?: string } }>)
@@ -357,7 +357,7 @@ it("signs Cleo in to a notes server of her own, and only her chat gets her token
       res.setEncoding("utf8").on("data", (chunk: string) => { text += chunk; }).on("end", () => resolve(`${res.statusCode} ${text}`));
     }).on("error", reject);
   });
-  expect(page).toBe("200 Signed in. You can close this tab and return to dusk bot.");
+  expect(page).toBe("200 Signed in. You can close this tab and return to madani bot.");
   expect((await team.as(cleo, "GET", "/api/team/my-connections")).body.mcp).toEqual(expect.arrayContaining([expect.objectContaining({ name: "notes", connected: true, how: "sign-in" })]));
   const cleos = await turn(cleo, cleoThread, "Read my notes.");
   const entry = JSON.stringify((cleos.mcpConfig.mcpServers as Record<string, unknown>).notes);
@@ -450,7 +450,7 @@ it("skips automatic personal MCP probes after setup and restart while still prob
     expect.soft(personal.seenHeaders.filter((headers) => headers.authorization !== ownAuthorization), "after personal setup").toEqual([]);
 
     personal.seenHeaders.length = 0;
-    rmSync(join(team.home, ".duskbot", "mcp-app-catalog.json"));
+    rmSync(join(team.home, ".madanibot", "mcp-app-catalog.json"));
     await team.relaunch();
     await expect.poll(teamHasApps, { timeout: 40_000 }).toBe(true);
     expect(shared.toolsLists).toBe(2);

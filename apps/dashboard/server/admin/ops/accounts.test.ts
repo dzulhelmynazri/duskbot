@@ -36,7 +36,7 @@ describe("top accounts", () => {
   });
 
   it("says what is not reported yet", () => {
-    const answer = topAccounts({ now: 0, month: "2026-11", data: "dusk.bot", accounts: [], relays: [], infra: null, mail: null });
+    const answer = topAccounts({ now: 0, month: "2026-11", data: "madani.bot", accounts: [], relays: [], infra: null, mail: null });
     expect(answer.reported).toEqual({ relay: false, cloud: false, mail: false });
     expect(answer.fairUse).toEqual({ fullSpeedBytes: 20 * GB, floorAtBytes: 80 * GB });
   });
@@ -59,12 +59,12 @@ describe("top accounts", () => {
     expect(answer.rows[0]!.plan).toMatch(/^(pro|none)$/);
   });
 
-  // live data (preview reading dusk.bot) can carry rows with missing counters; none of them may fail the page
+  // live data (preview reading madani.bot) can carry rows with missing counters; none of them may fail the page
   it("counts missing or broken fields as nothing instead of failing", () => {
     const broken = card("contabo", [["ref1", 2 * GB]]);
     (broken.stats as { month?: unknown }).month = undefined;
     (broken.stats!.limits as Record<string, unknown>).accountFloorAtBytes = 0;
-    const answer = topAccounts({ now: 0, month: "2026-11", data: "dusk.bot", accounts: [{ id: "acct_b", email: "b@x.test" }], relays: [broken],
+    const answer = topAccounts({ now: 0, month: "2026-11", data: "madani.bot", accounts: [{ id: "acct_b", email: "b@x.test" }], relays: [broken],
       infra: [{ day: "2026-11-02", accountId: "acct_b" } as never, null as never],
       mail: [{ source: "mail", day: "2026-11-02", key: "acct_b", accountId: "acct_b" } as never, { source: "mail", day: "2026-11-02", key: "x", accountId: "acct_b", values: { sent: "3" } } as never],
       suspects: [null as never, { key: "k", accountId: "acct_b", email: null, ip: null, score: undefined, signals: [], why: "" } as never] });

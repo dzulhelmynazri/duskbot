@@ -94,7 +94,7 @@ const chatButton = () => {
 };
 
 beforeAll(() => {
-  vi.stubGlobal("duskDesktop", undefined);
+  vi.stubGlobal("madaniDesktop", undefined);
 });
 beforeEach(() => {
   const saved = new Map<string, string>();

@@ -1,5 +1,5 @@
-// POST /api/bots/:id/helper-followup: Dusk's follow-up after its first look around, written once under its intro as
-// a real bot message, by Dusk's own person only.
+// POST /api/bots/:id/helper-followup: Madani's follow-up after its first look around, written once under its intro as
+// a real bot message, by Madani's own person only.
 import { readFileSync, rmSync } from "node:fs";
 import { createServer, type Server } from "node:http";
 import type { AddressInfo } from "node:net";
@@ -55,7 +55,7 @@ async function fixture(person?: string, teamAiOwnerName?: () => string) {
   return { store, maus, post };
 }
 
-describe("Dusk's follow-up", () => {
+describe("Madani's follow-up", () => {
   it("is written once under the intro, as a bot message the model reads, with the server's own counts", async () => {
     const { store, maus, post } = await fixture();
     store.createBot({ name: "Scout" });
@@ -76,7 +76,7 @@ describe("Dusk's follow-up", () => {
     expect(store.messagesFor(maus.threadId)).toHaveLength(2);
   });
 
-  it("is skipped when the person's first line already gave Dusk a job, and written when it only said hello", async () => {
+  it("is skipped when the person's first line already gave Madani a job, and written when it only said hello", async () => {
     const asked = await fixture();
     asked.store.appendMessage(asked.maus.threadId, { role: "user", kind: "text", text: "Hi! Can you sort my inbox every morning?" });
     const skipped = await asked.post({ ai: "own" });
@@ -91,7 +91,7 @@ describe("Dusk's follow-up", () => {
     expect(written.body.message?.helperFollowup).toBeTruthy();
   });
 
-  it("is Dusk's own person's only: never a bot's shell, nor another member on a Team Cloud", async () => {
+  it("is Madani's own person's only: never a bot's shell, nor another member on a Team Cloud", async () => {
     const place = await fixture();
     expect((await place.post({ ai: "own" }, BOT_SHELL)).status).toBe(403);
     expect((await place.post({ ai: "own" }, session("someone@example.com"))).status).toBe(403);

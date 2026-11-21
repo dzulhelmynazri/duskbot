@@ -1,5 +1,5 @@
 // Renders the talk box (electron/talk-panel.mjs) in headless Chrome for every state, light and dark, into
-// DUSK_UI_EVIDENCE_DIR or a new temporary folder it prints. The viewport is the box's own window: 400 px wide and as tall as the card,
+// MADANI_UI_EVIDENCE_DIR or a new temporary folder it prints. The viewport is the box's own window: 400 px wide and as tall as the card,
 // 56 to 240 px, at 2x. Each skin is rendered with macOS's appearance emulated the other way round, so the pictures show
 // the box following the app's skin. Reduced motion is on, so the listening ring is still.
 //
@@ -13,7 +13,7 @@ import { replyPreview, TALK_PANEL, talkPanelHtml } from "../electron/talk-panel.
 import { TALK_TEXT } from "../electron/talk-session.mjs";
 
 const root = fileURLToPath(new URL("..", import.meta.url));
-const out = process.env.DUSK_UI_EVIDENCE_DIR ?? mkdtempSync(join(tmpdir(), "talk-shortcut-"));
+const out = process.env.MADANI_UI_EVIDENCE_DIR ?? mkdtempSync(join(tmpdir(), "talk-shortcut-"));
 mkdirSync(out, { recursive: true });
 console.log(`pictures in ${out}`);
 const chrome = process.argv[2] ?? process.env.CHROME ?? "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome";

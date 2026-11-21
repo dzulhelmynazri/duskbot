@@ -11,7 +11,7 @@ const gnuFind = spawnSync("find", [".", "-maxdepth", "0", "-printf", "%p"], { en
 
 const homes: string[] = [];
 function box(): string {
-  const home = realpathSync(mkdtempSync(join(tmpdir(), "dusk-box-home-")));
+  const home = realpathSync(mkdtempSync(join(tmpdir(), "madani-box-home-")));
   homes.push(home);
   return home;
 }
@@ -24,16 +24,16 @@ function file(path: string, ageMs = 0): string {
 }
 /** The script exactly as a desktop runs it, with its home moved into a temporary folder. */
 function run(home: string, mode: "turn" | "sweep", limit = 100): string {
-  return execFileSync("bash", ["-c", BOX_SCRATCH_SCRIPT.replaceAll("/home/cua", home), "dusk-scratch", mode, String(limit)], { encoding: "utf8" });
+  return execFileSync("bash", ["-c", BOX_SCRATCH_SCRIPT.replaceAll("/home/cua", home), "madani-scratch", mode, String(limit)], { encoding: "utf8" });
 }
 afterEach(() => { for (const home of homes.splice(0)) rmSync(home, { recursive: true, force: true }); });
 
 describe("boxScratchArgs", () => {
   it("runs the fixed script as the desktop user, with only the mode and limit as arguments", () => {
-    const args = boxScratchArgs("my-vps", "dusk-vps-bot-1-abc", "turn");
+    const args = boxScratchArgs("my-vps", "madani-vps-bot-1-abc", "turn");
     expect(args.slice(0, 2)).toEqual(["-H", "ssh://my-vps"]);
-    expect(args.slice(2, 7)).toEqual(["exec", "-u", "cua", "dusk-vps-bot-1-abc", "bash"]);
-    expect(args.slice(-4)).toEqual([BOX_SCRATCH_SCRIPT, "dusk-scratch", "turn", "80"]);
+    expect(args.slice(2, 7)).toEqual(["exec", "-u", "cua", "madani-vps-bot-1-abc", "bash"]);
+    expect(args.slice(-4)).toEqual([BOX_SCRATCH_SCRIPT, "madani-scratch", "turn", "80"]);
   });
 
   it("refuses a container reference that is not a plain name or id", () => {

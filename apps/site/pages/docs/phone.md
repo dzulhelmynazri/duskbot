@@ -10,17 +10,17 @@ your bots keep running where they live. your phone is a window onto them: send m
 
 ## get the app
 
-on an iphone, get [dusk bot from the app store](https://apps.apple.com/app/id6834725640). the android app is on its way to google play.
+on an iphone, get [madani bot from the app store](https://apps.apple.com/app/id6834725640). the android app is on its way to google play.
 
-## dusk cloud: just sign in
+## madani cloud: just sign in
 
-open the app and sign in with the same email you use for [dusk cloud](/docs/dusk-cloud). your cloud links on its own, no code needed.
+open the app and sign in with the same email you use for [madani cloud](/docs/madani-cloud). your cloud links on its own, no code needed.
 
 ## your own computer: scan a code
 
 1. on your computer, open the menu under your name and choose **connect your phone**.
-2. choose **to this computer**, or **to the cloud** if you have [dusk cloud](/docs/dusk-cloud).
-3. scan the code with your iphone's camera. it opens in the dusk bot app; confirm the computer's name.
+2. choose **to this computer**, or **to the cloud** if you have [madani cloud](/docs/madani-cloud).
+3. scan the code with your iphone's camera. it opens in the madani bot app; confirm the computer's name.
 
 {{include ui-pair}}
 
@@ -30,7 +30,7 @@ can't scan? the same screen offers a code to type into the app, a nearby list on
 
 ## your computer has to be awake
 
-paired with your computer, the phone only works while that computer is on and running dusk bot. **settings**, **remote access**, **keep this computer awake** helps. pair with [dusk cloud](/docs/dusk-cloud) and it works with your computer off.
+paired with your computer, the phone only works while that computer is on and running madani bot. **settings**, **remote access**, **keep this computer awake** helps. pair with [madani cloud](/docs/madani-cloud) and it works with your computer off.
 
 ## notifications
 

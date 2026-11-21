@@ -19,12 +19,12 @@ beforeEach(() => {
   vi.useFakeTimers();
   resetLoadingLaunch();
   handed.length = 0;
-  window.duskDesktop = {
+  window.madaniDesktop = {
     workspaces: {
       onSwitching: (cb: (on: boolean) => void) => { switching = cb; return () => { switching = null; }; },
       handLook: (look: HandedLook) => handed.push(look),
     },
-  } as unknown as typeof window.duskDesktop;
+  } as unknown as typeof window.madaniDesktop;
   const host = document.createElement("div");
   document.body.append(host);
   root = createRoot(host);
@@ -34,7 +34,7 @@ afterEach(() => {
   act(() => root?.unmount());
   root = null;
   switching = null;
-  delete (window as { duskDesktop?: unknown }).duskDesktop;
+  delete (window as { madaniDesktop?: unknown }).madaniDesktop;
   document.body.innerHTML = "";
   vi.useRealTimers();
 });

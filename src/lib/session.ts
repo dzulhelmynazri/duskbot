@@ -101,7 +101,7 @@ export function takePairingCodeFromLocation(): string | null {
 /** A single-use sign-in credential: taken off the address bar and out of history before anything renders, never shown. */
 export function takeBrowserSignInFromLocation(): string | null {
   if (!/[#&]signin=/.test(location.hash)) return null;
-  const m = /[#&]signin=((?:dusk|omb)_pair_[A-Za-z0-9_-]{43})(?:&|$)/.exec(location.hash);
+  const m = /[#&]signin=((?:madani|omb)_pair_[A-Za-z0-9_-]{43})(?:&|$)/.exec(location.hash);
   history.replaceState(null, "", location.pathname + location.search);
   return m ? m[1] : null;
 }

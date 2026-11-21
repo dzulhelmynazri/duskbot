@@ -48,9 +48,9 @@ function harness(label: string, serverEnv: Record<string, string>, instanceEnv: 
   };
   beforeAll(async () => {
     chmodSync(FAKE_CLAUDE, 0o755);
-    home = mkdtempSync(join(tmpdir(), `dusk-hooks-${label}-`));
-    mkdirSync(join(home, ".duskbot"), { recursive: true });
-    writeFileSync(join(home, ".duskbot", "config.json"), JSON.stringify({
+    home = mkdtempSync(join(tmpdir(), `madani-hooks-${label}-`));
+    mkdirSync(join(home, ".madanibot"), { recursive: true });
+    writeFileSync(join(home, ".madanibot", "config.json"), JSON.stringify({
       instances: {
         claude: {
           driver: "claudeAgent",
@@ -68,7 +68,7 @@ function harness(label: string, serverEnv: Record<string, string>, instanceEnv: 
         },
       },
     }));
-    const env: NodeJS.ProcessEnv = { HOME: home, USERPROFILE: home, DUSK_PORT: String(PORT), ...serverEnv };
+    const env: NodeJS.ProcessEnv = { HOME: home, USERPROFILE: home, MADANI_PORT: String(PORT), ...serverEnv };
     if (process.env.PATH) env.PATH = process.env.PATH;
     child = spawn(process.execPath, [join(SERVER_DIR, "index.ts")], { cwd: join(SERVER_DIR, ".."), env, stdio: ["ignore", "pipe", "pipe"] });
     child.stderr!.on("data", (c) => (stderr += c));
@@ -117,7 +117,7 @@ posixOnly("engine hooks e2e (fake Claude honouring the settings hooks)", () => {
       expect(row.tool).not.toHaveProperty("outputPath");
     }
     expect(JSON.stringify(tools)).not.toContain(h.home());
-    const root = join(h.home(), ".duskbot", "tool-results");
+    const root = join(h.home(), ".madanibot", "tool-results");
     const threads = readdirSync(root);
     expect(threads).toHaveLength(1);
     const dir = join(root, threads[0]!);
@@ -166,7 +166,7 @@ posixOnly("engine hooks e2e: compaction", () => {
 });
 
 posixOnly("engine hooks e2e: a shell call that hit its time limit", () => {
-  const dumpDir = mkdtempSync(join(tmpdir(), "dusk-hooks-timeout-dump-"));
+  const dumpDir = mkdtempSync(join(tmpdir(), "madani-hooks-timeout-dump-"));
   const dump = join(dumpDir, "turn.json");
   afterAll(() => removeTempDir(dumpDir));
   const h = harness("timeout", {}, {
@@ -193,8 +193,8 @@ posixOnly("engine hooks e2e: a shell call that hit its time limit", () => {
   }, 60_000);
 });
 
-posixOnly("engine hooks e2e with DUSK_HOOKS=0", () => {
-  const h = harness("off", { DUSK_HOOKS: "0" });
+posixOnly("engine hooks e2e with MADANI_HOOKS=0", () => {
+  const h = harness("off", { MADANI_HOOKS: "0" });
 
   it("registers nothing: rows keep only previews and the digest says so", async () => {
     const bot = await h.runTurn();

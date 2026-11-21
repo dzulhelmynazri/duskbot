@@ -17,7 +17,7 @@ const cookieName = "fixture_session";
 const viewer = "/api/desktop-viewer/local/shared/websockify";
 
 beforeEach(() => {
-  dir = mkdtempSync(join(tmpdir(), "dusk-mobile-cors-"));
+  dir = mkdtempSync(join(tmpdir(), "madani-mobile-cors-"));
   sessions = new SessionRegistry({ file: join(dir, "sessions.json") });
   phone = sessions.issue({ label: "Phone", scopes: ["admin", "client"] });
 });
@@ -37,12 +37,12 @@ function request(headers: Record<string, string | undefined> = {}, method = "GET
 
 it.each(origins)("allows only the requested preflight method and headers from %s", origin => {
   const { req, res, url } = request({ origin, "access-control-request-method": "POST",
-    "access-control-request-headers": "authorization, CONTENT-type, last-event-id, x-dusk-background, x-dusk-sha256" }, "OPTIONS");
+    "access-control-request-headers": "authorization, CONTENT-type, last-event-id, x-madani-background, x-madani-sha256" }, "OPTIONS");
   expect(answerMobilePreflight(req, res, url)).toBe(true);
   expect(res.statusCode).toBe(204);
   expect(res.getHeader("access-control-allow-origin")).toBe(origin);
   expect(res.getHeader("access-control-allow-methods")).toBe("POST");
-  expect(res.getHeader("access-control-allow-headers")).toBe("Authorization, Content-Type, Last-Event-ID, X-Dusk-Background, X-Dusk-Sha256");
+  expect(res.getHeader("access-control-allow-headers")).toBe("Authorization, Content-Type, Last-Event-ID, X-Madani-Background, X-Madani-Sha256");
   expect(res.getHeader("access-control-allow-credentials")).toBeUndefined();
 });
 
@@ -59,7 +59,7 @@ it.each(origins)("allows the live stream preflight older phone builds send from 
 
 it.each([
   ["TRACE", "authorization"], ["GET", "content-type"], ["GET", "authorization, cookie"],
-  ["GET", "authorization, x-dusk-desktop-owner"], ["GET", "authorization, x-arbitrary"],
+  ["GET", "authorization, x-madani-desktop-owner"], ["GET", "authorization, x-arbitrary"],
 ])("refuses a preflight for %s with %s", (method, headers) => {
   const { req, res, url } = request({ origin: origins[0], "access-control-request-method": method,
     "access-control-request-headers": headers }, "OPTIONS");

@@ -1,4 +1,4 @@
-package bot.dusk.mobile;
+package bot.madani.mobile;
 
 import android.Manifest;
 import android.content.Intent;
@@ -27,7 +27,7 @@ import java.util.ArrayList;
  * across restarts. Every event carries the session number the page started it with.
  */
 @CapacitorPlugin(
-    name = "DuskSpeech",
+    name = "MadaniSpeech",
     permissions = { @Permission(alias = "microphone", strings = { Manifest.permission.RECORD_AUDIO }) }
 )
 public class SpeechRecognizerPlugin extends Plugin {

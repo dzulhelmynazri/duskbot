@@ -15,7 +15,7 @@ import { keepFirefoxProfileBeforeRemove, keepInstalledAppsBeforeRemove } from ".
 
 export type LocalVmUpdateNeed = "image" | "recreate";
 
-/** A desktop dusk bot made, or a durable folder left by one, that this release cannot run without updating. */
+/** A desktop madani bot made, or a durable folder left by one, that this release cannot run without updating. */
 export function localVmUpdateNeed(status: ContainerComputerStatus, workspaceExists: boolean): LocalVmUpdateNeed | null {
   if (!status.runtime || !status.daemonUp) return null;
   if (status.container === "missing") return workspaceExists && !status.image && status.create_supported ? "image" : null;
@@ -23,7 +23,7 @@ export function localVmUpdateNeed(status: ContainerComputerStatus, workspaceExis
   return status.image ? "recreate" : "image";
 }
 
-/** A VPS desktop dusk bot made whose image this release no longer runs, whether or not it updates by itself. */
+/** A VPS desktop madani bot made whose image this release no longer runs, whether or not it updates by itself. */
 export function vpsDesktopOutdated(status: {
   configured?: boolean; daemonUp?: boolean; container?: string; managed?: boolean; imageMatches?: boolean;
 } | null | undefined): boolean {
@@ -61,7 +61,7 @@ export function vpsUpdateDecision(input: {
 export interface VpsUpdateTarget { ownerId: string; label: string }
 
 /**
- * Keeps every bot desktop on a VPS (or a dusk cloud home) on the current image: after a server update, and every so often,
+ * Keeps every bot desktop on a VPS (or a madani cloud home) on the current image: after a server update, and every so often,
  * each outdated desktop that nothing uses is replaced on its home volume, one at a time. A desktop in use waits for the
  * next pass, or is updated by the turn that wakes it. A failure leaves the old desktop as it was and is tried again later.
  */
@@ -163,7 +163,7 @@ export function createLocalVmUpdater(deps: LocalVmUpdaterDeps) {
   const entries = new Map<string, Entry>();
   const fine = new Set<string>();
   const pollMs = deps.pollMs ?? 1_000;
-  const waitMs = deps.waitMs ?? Math.max(1_000, Number(process.env.DUSK_LOCAL_VM_UPDATE_WAIT_MS) || 20 * 60_000);
+  const waitMs = deps.waitMs ?? Math.max(1_000, Number(process.env.MADANI_LOCAL_VM_UPDATE_WAIT_MS) || 20 * 60_000);
   const keepSignIns = deps.keepSignIns ?? keepFirefoxProfileBeforeRemove;
   const keepApps = deps.keepApps ?? keepInstalledAppsBeforeRemove;
   const workspaceExists = deps.workspaceExists ?? localVmWorkspaceExists;

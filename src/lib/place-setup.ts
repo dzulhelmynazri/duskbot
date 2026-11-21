@@ -1,4 +1,4 @@
-// Adding a place: dusk cloud, or a server of the person's own, linked by one line through the relay
+// Adding a place: madani cloud, or a server of the person's own, linked by one line through the relay
 // (electron/vps-link.mjs) or reached at an address it serves (main's connectHostedWorkspace).
 import { useSyncExternalStore } from "react";
 import type { VpsLinkView } from "./vps-link";
@@ -45,7 +45,7 @@ function withCode(origin: string, code: string): { link: string } | { error: "co
   return parts ? { link: `${origin}/pair#code=${parts[1]}-${parts[2]}-${parts[3]}` } : { error: "code" };
 }
 
-/** The pairing link in what `duskbot pair` printed, pasted whole or as one line: its public https link before the
+/** The pairing link in what `madanibot pair` printed, pasted whole or as one line: its public https link before the
  * loopback one it also prints, which on this computer would name this app's own server. */
 export function pastedPairingLink(text: string): string | null {
   const found = Array.from(text.matchAll(/https?:\/\/[^\s"'<>`]+?\/pair\/?#code=([A-Za-z0-9]{4}-?[A-Za-z0-9]{4}-?[A-Za-z0-9]{4})/g), (match) => {
@@ -56,7 +56,7 @@ export function pastedPairingLink(text: string): string | null {
   return (found.find((one) => !one.loopback) ?? found[0])?.link ?? null;
 }
 
-/** The pairing link main opens, from what the person typed: a pairing link (or the lines `duskbot pair` printed around
+/** The pairing link main opens, from what the person typed: a pairing link (or the lines `madanibot pair` printed around
  * it), or an address (https, or plain http on this computer for an SSH tunnel) and an optional code. */
 export function pairingLink(address: string, code: string): { link: string } | { error: "address" | "code" } {
   const typed = address.trim();

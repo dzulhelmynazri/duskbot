@@ -27,7 +27,7 @@ describe("managed Composio desktop registration", () => {
     expect(managedComposioBrokerUrl("  ", true)).toBe(DEFAULT_MANAGED_COMPOSIO_BROKER_URL);
     expect(managedComposioBrokerUrl(undefined, false)).toBe("");
     expect(devDesktopUsesManagedApps({})).toBe(false);
-    expect(devDesktopUsesManagedApps({ DUSK_DEV_MANAGED_APPS: "1" })).toBe(true);
+    expect(devDesktopUsesManagedApps({ MADANI_DEV_MANAGED_APPS: "1" })).toBe(true);
     expect(managedComposioBrokerUrl(" http://127.0.0.1:8787/ ", false)).toBe("http://127.0.0.1:8787");
     expect(managedComposioBrokerUrl("http://broker.example", true)).toBe("");
   });
@@ -62,16 +62,16 @@ describe("managed Composio desktop registration", () => {
     expect(
       managedComposioChildEnvironment("http://broker.example", credentials, {
         PATH: "/usr/bin",
-        DUSK_COMPOSIO_BROKER_URL: "http://attacker.example",
-        DUSK_COMPOSIO_BROKER_TOKEN: "attacker-controlled",
+        MADANI_COMPOSIO_BROKER_URL: "http://attacker.example",
+        MADANI_COMPOSIO_BROKER_TOKEN: "attacker-controlled",
       }),
     ).toEqual({ PATH: "/usr/bin" });
     expect(
       managedComposioChildEnvironment("http://[::1]:8787", credentials, { PATH: "/usr/bin" }),
     ).toEqual({
       PATH: "/usr/bin",
-      DUSK_COMPOSIO_BROKER_URL: "http://[::1]:8787",
-      DUSK_COMPOSIO_BROKER_TOKEN: TOKEN,
+      MADANI_COMPOSIO_BROKER_URL: "http://[::1]:8787",
+      MADANI_COMPOSIO_BROKER_TOKEN: TOKEN,
     });
   });
 

@@ -142,27 +142,27 @@ describe("container images", () => {
     expect(last(home, "EXPOSE")).toBe("8080");
     expect(last(home, "CMD")).toBe('["node", "/app/dist-server/cloud-home-start.js"]');
     expect(last(home, "HEALTHCHECK")).toContain("http://127.0.0.1:8080/api/health");
-    expect(last(chain("runtime"), "ENV")).toMatch(/^AGENT_BROWSER_EXECUTABLE_PATH=\/opt\/duskbot-browser\/chrome .*NODE_ENV=production$/);
+    expect(last(chain("runtime"), "ENV")).toMatch(/^AGENT_BROWSER_EXECUTABLE_PATH=\/opt\/madanibot-browser\/chrome .*NODE_ENV=production$/);
   });
 
   it("hands the Cloud home's server every setting the image's ENV gives it", () => {
     // The root supervisor passes the server an allow-listed environment; a setting the image sets but the list drops is
-    // lost silently (DUSK_DUCKDB_DIR was: the server then found neither the 1Password SDK nor DuckDB in /app/duckdb).
+    // lost silently (MADANI_DUCKDB_DIR was: the server then found neither the 1Password SDK nor DuckDB in /app/duckdb).
     const image: Record<string, string> = {};
     for (const step of chain("cloud-home").filter(step => step.op === "ENV")) {
       for (const [, name, value] of step.args.matchAll(/(?:^|\s)([A-Z][A-Z0-9_]*)=(\S*)/g)) image[name] = value;
     }
-    expect(image.DUSK_DUCKDB_DIR).toBe("/app/duckdb");
-    const contract = { DUSK_CLOUD_ROLE: "home", DUSK_CLOUD_MACHINE_ID: "3f9c2a4e-8b1d-4c6e-9a7f-2d5e8c1b0a93", DUSK_CLOUD_ADMIN_URL: "https://cloud.example.test",
-      DUSK_PUBLIC_URL: "https://dusk-u-1a2b3c4d5e6f.fly.dev", DUSK_CLOUD_BOOTSTRAP_SECRET: "S".repeat(43) };
+    expect(image.MADANI_DUCKDB_DIR).toBe("/app/duckdb");
+    const contract = { MADANI_CLOUD_ROLE: "home", MADANI_CLOUD_MACHINE_ID: "3f9c2a4e-8b1d-4c6e-9a7f-2d5e8c1b0a93", MADANI_CLOUD_ADMIN_URL: "https://cloud.example.test",
+      MADANI_PUBLIC_URL: "https://madani-u-1a2b3c4d5e6f.fly.dev", MADANI_CLOUD_BOOTSTRAP_SECRET: "S".repeat(43) };
     const { server } = cloudHomeChildEnvironments(cloudHomeConfiguration(contract)!, { ...image, ...contract }, "/data");
     // The launcher sets HOME, the ports and the data folder itself; everything else must come through unchanged.
     for (const name of Object.keys(image)) expect(server, name).toHaveProperty(name);
-    expect(server.DUSK_DUCKDB_DIR).toBe("/app/duckdb");
+    expect(server.MADANI_DUCKDB_DIR).toBe("/app/duckdb");
   });
 
   it("pins the direct screen path's UDP range once: the image's ENV, each target's EXPOSE, compose's ports, the cloud home's", () => {
-    const range = /(?:^|\s)DUSK_SCREEN_DIRECT_PORTS=(\S+)/.exec(chain("runtime").filter(step => step.op === "ENV").map(step => step.args).join(" "))?.[1];
+    const range = /(?:^|\s)MADANI_SCREEN_DIRECT_PORTS=(\S+)/.exec(chain("runtime").filter(step => step.op === "ENV").map(step => step.args).join(" "))?.[1];
     expect(range).toBeDefined();
     // the server reads it, and it stays below Linux's ephemeral ports (32768 and up), so outgoing sockets never hold one
     const parsed = directPortRange(range)!;
@@ -170,7 +170,7 @@ describe("container images", () => {
     expect(parsed.portRangeEnd).toBeLessThan(32768);
     for (const target of ["server", "cloud-home"]) expect(chain(target).filter(step => step.op === "EXPOSE").map(step => step.args), target).toContain(`${range}/udp`);
     const compose = parse(readFileSync(new URL("../deploy/docker-compose.yml", import.meta.url), "utf8"));
-    expect(compose.services.dusk.ports).toContain(`${range}:${range}/udp`);
+    expect(compose.services.madani.ports).toContain(`${range}:${range}/udp`);
     expect(HOME_SCREEN_DIRECT_PORTS).toBe(range);
   });
 
@@ -191,7 +191,7 @@ describe("container images", () => {
     expect(end).toBeGreaterThan(start);
     const prune = args.slice(start, end);
     const run = (target: string, elf = true) => {
-      const root = mkdtempSync(join(tmpdir(), "dusk-agent-browser-"));
+      const root = mkdtempSync(join(tmpdir(), "madani-agent-browser-"));
       temporaryDirectories.push(root);
       const bin = join(root, "lib/node_modules/agent-browser/bin");
       mkdirSync(bin, { recursive: true });
@@ -222,11 +222,11 @@ describe("container images", () => {
     expect(build.steps.indexOf(stage)).toBeGreaterThan(declared);
     if (process.platform !== "win32") {
       for (const [targetArch, arch] of [["amd64", "x64"], ["arm64", "arm64"], ["", "x64"]]) {
-        const root = mkdtempSync(join(tmpdir(), "dusk-duckdb-arch-"));
+        const root = mkdtempSync(join(tmpdir(), "madani-duckdb-arch-"));
         temporaryDirectories.push(root);
         mkdirSync(join(root, "scripts"));
         // A stand-in for the staging script: it stages the CPU it is told to, and records which.
-        writeFileSync(join(root, "scripts/prepare-duckdb.mjs"), 'import { mkdirSync, writeFileSync } from "node:fs"; const d = `dist-native/duckdb/linux-${process.env.DUSK_DUCKDB_ARCH}`; mkdirSync(d, { recursive: true }); writeFileSync(`${d}/arch`, process.env.DUSK_DUCKDB_ARCH);');
+        writeFileSync(join(root, "scripts/prepare-duckdb.mjs"), 'import { mkdirSync, writeFileSync } from "node:fs"; const d = `dist-native/duckdb/linux-${process.env.MADANI_DUCKDB_ARCH}`; mkdirSync(d, { recursive: true }); writeFileSync(`${d}/arch`, process.env.MADANI_DUCKDB_ARCH);');
         const result = spawnSync("sh", ["-c", stage.args], { cwd: root, env: { PATH: process.env.PATH, TARGETARCH: targetArch }, encoding: "utf8" });
         expect(result.status, `${targetArch}: ${result.stderr}`).toBe(0);
         expect(readdirSync(join(root, "dist-native/duckdb")), targetArch).toEqual(["target"]);
@@ -236,7 +236,7 @@ describe("container images", () => {
     // Chrome for Testing has no Linux ARM64 build: an arm64 image takes Debian's Chromium at the same path.
     const runtime = chain("runtime");
     expect(runtime.slice(0, runtime.indexOf(browserRun()))).toContainEqual({ op: "ARG", args: "TARGETARCH" });
-    expect(browserRun().args).toMatch(/if \[ "\$TARGETARCH" = arm64 \]; then .*apt-get install -y --no-install-recommends chromium .*ln -s \/usr\/lib\/chromium\/chromium \/opt\/duskbot-browser\/chrome; +else .*agent-browser install .*; +fi/);
+    expect(browserRun().args).toMatch(/if \[ "\$TARGETARCH" = arm64 \]; then .*apt-get install -y --no-install-recommends chromium .*ln -s \/usr\/lib\/chromium\/chromium \/opt\/madanibot-browser\/chrome; +else .*agent-browser install .*; +fi/);
   });
 
   it("keys the browser and engine layers on the versions they install, so a release rebuilds them", () => {
@@ -256,13 +256,13 @@ describe("container images", () => {
   });
 
   it("publishes the image compose pulls: the server target, both CPUs, in the namespace the repository's token pushes to", () => {
-    const service = parse(readFileSync(new URL("../deploy/docker-compose.yml", import.meta.url), "utf8")).services.dusk;
-    expect(service.image).toBe("${DUSK_IMAGE:-ghcr.io/duskbotai/duskbot:latest}");
+    const service = parse(readFileSync(new URL("../deploy/docker-compose.yml", import.meta.url), "utf8")).services.madani;
+    expect(service.image).toBe("${MADANI_IMAGE:-ghcr.io/madanibotai/madanibot:latest}");
     // compose builds only when asked to (--build), so `pull` gets the published image
     expect(service.pull_policy).toBeUndefined();
     expect(service.build.dockerfile).toBe("deploy/docker/Dockerfile");
     const workflow = readFileSync(new URL("../.github/workflows/server-image.yml", import.meta.url), "utf8");
-    expect(workflow).toContain('image="ghcr.io/$owner/duskbot"');
+    expect(workflow).toContain('image="ghcr.io/$owner/madanibot"');
     expect(workflow).toContain("-f deploy/docker/Dockerfile --target server ");
     expect(workflow).toContain("runner: ubuntu-24.04-arm");
     expect(workflow).toContain('imagetools create -t "$IMAGE:$TAG" "$IMAGE:$TAG-amd64" "$IMAGE:$TAG-arm64"');
@@ -271,16 +271,16 @@ describe("container images", () => {
     expect(workflow).toContain("docker run -d --name server --init --shm-size=512m ");
     for (const doc of ["../docs/self-hosting.md", "../deploy/.env.example"]) {
       const text = readFileSync(new URL(doc, import.meta.url), "utf8");
-      expect(text, doc).toContain("ghcr.io/duskbotai/duskbot");
-      expect(text, doc).not.toMatch(/ghcr\.io\/(?!duskbotai\/)[\w-]+\/duskbot\b/);
+      expect(text, doc).toContain("ghcr.io/madanibotai/madanibot");
+      expect(text, doc).not.toMatch(/ghcr\.io\/(?!madanibotai\/)[\w-]+\/madanibot\b/);
     }
   });
 
   // An init collects browser processes whose parents exit, and Chrome gets the
-  // shared memory dusk bot's desktop containers give it.
+  // shared memory madani bot's desktop containers give it.
   it("runs the compose service of the server image with an init and Chrome's shared memory", () => {
     for (const file of ["../deploy/docker-compose.yml"]) {
-      const service = parse(readFileSync(new URL(file, import.meta.url), "utf8")).services.dusk;
+      const service = parse(readFileSync(new URL(file, import.meta.url), "utf8")).services.madani;
       expect(service.init, file).toBe(true);
       expect(service.shm_size, file).toBe("512m");
     }

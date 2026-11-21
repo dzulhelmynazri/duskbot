@@ -1,4 +1,4 @@
-// An engine whose CLI runs the copy dusk bot installed: the person's terminal does not reach it, so it is
+// An engine whose CLI runs the copy madani bot installed: the person's terminal does not reach it, so it is
 // finished here, never with a terminal step.
 import { Check, KeyRound, X } from "../icons";
 import { useStore, type InstanceInfo } from "@/state/store";
@@ -32,7 +32,7 @@ export function AppCopyNotice({ instance, className }: { instance: InstanceInfo;
 /** Installed but not signed in. Only OpenCode ships such a build today, and its free models need no account. */
 export function AppCopySetup({ instance, className, unframed }: { instance: InstanceInfo; className?: string; unframed: boolean }) {
   const { dispatch } = useStore();
-  const remote = window.duskDesktop?.remoteClient?.active === true;
+  const remote = window.madaniDesktop?.remoteClient?.active === true;
   return (
     <div data-engine-setup-app-copy className={cn(!unframed && "rounded-xl border border-transparent bg-control/30 p-3", className)}>
       <div className="flex items-start gap-2.5">

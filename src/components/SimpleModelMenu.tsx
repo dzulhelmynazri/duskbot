@@ -52,7 +52,7 @@ export interface SimpleModelMenuProps extends SimpleMenuActions {
   notConnected?: { rows: readonly NotConnectedRow[]; onConnect: (row: NotConnectedRow) => void };
   /** Whether a pick is for this bot or every bot; left out where there is no choice. */
   scope?: { value: PickerScope; onChange: (value: PickerScope) => void };
-  /** Where these models run, when that is not the person's own computer (a dusk cloud lists only its own AIs). */
+  /** Where these models run, when that is not the person's own computer (a madani cloud lists only its own AIs). */
   where?: string;
 }
 

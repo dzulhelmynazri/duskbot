@@ -1,15 +1,15 @@
 <div align="center">
 
-<h1>dusk bot</h1>
+<h1>madani bot</h1>
 
 <p><b>The free Grok bot alternative that runs on your own models.</b><br><br>
 Use the ChatGPT, Claude or Grok subscription you already pay for,<br>
 and get a team of bots, each with its own memory and computer.</p>
 
 <p>
-<a href="https://dusk.bot/download"><b>Download for Mac, Windows and Linux</b></a> &nbsp;·&nbsp;
-<a href="https://dusk.bot">dusk.bot</a> &nbsp;·&nbsp;
-<a href="https://dusk.bot/docs">Docs</a>
+<a href="https://madani.bot/download"><b>Download for Mac, Windows and Linux</b></a> &nbsp;·&nbsp;
+<a href="https://madani.bot">madani.bot</a> &nbsp;·&nbsp;
+<a href="https://madani.bot/docs">Docs</a>
 </p>
 
 <sub>v0.2.13 · free forever for personal use · source available</sub>
@@ -18,11 +18,11 @@ and get a team of bots, each with its own memory and computer.</p>
 
 <br>
 
-<picture><source media="(prefers-color-scheme: dark)" srcset="docs/readme/app-dark.webp"><img src="docs/readme/app-light.webp" alt="The dusk bot app: Dusk, Nova, Echo and Quill in the sidebar, and Nova's chat with a three-day Lisbon plan in a table" width="100%"></picture>
+<picture><source media="(prefers-color-scheme: dark)" srcset="docs/readme/app-dark.webp"><img src="docs/readme/app-light.webp" alt="The madani bot app: Madani, Nova, Echo and Quill in the sidebar, and Nova's chat with a three-day Lisbon plan in a table" width="100%"></picture>
 
 ## What it is
 
-dusk bot is a desktop app where your AI helpers live as contacts. Make a bot, give it a job in plain words, and text it like you would a friend. It does the work on a computer of its own, keeps notes on how you like things done, and stops to ask when something needs a person.
+madani bot is a desktop app where your AI helpers live as contacts. Make a bot, give it a job in plain words, and text it like you would a friend. It does the work on a computer of its own, keeps notes on how you like things done, and stops to ask when something needs a person.
 
 It runs on the AI you already pay for, with your own sign-in. Bots, chats and files stay on your machine, or on a server you choose.
 
@@ -89,7 +89,7 @@ Each bot has its own settings: what it remembers, how much it may do alone, its 
 
 ## A computer of its own
 
-Every bot has a browser it can read and drive. For anything without an API it gets a full desktop: a cloud desktop on dusk cloud, a private container per bot on your server, a Linux VM in Docker on this computer, or your own screen on macOS and Ubuntu (Xorg) when you turn that on.
+Every bot has a browser it can read and drive. For anything without an API it gets a full desktop: a cloud desktop on madani cloud, a private container per bot on your server, a Linux VM in Docker on this computer, or your own screen on macOS and Ubuntu (Xorg) when you turn that on.
 
 Open the bot's **Computer** tab to watch it live. **Take control** pauses its hands so you can do a sign-in, a captcha or a two-step code, then hand it back. Only a person can take or release control, and the bot never sees the password.
 
@@ -100,7 +100,7 @@ Open the bot's **Computer** tab to watch it live. **Take control** pauses its ha
 </tr>
 <tr>
 <td><sub><b>Nova's screen.</b> A real browser on its own desktop.</sub></td>
-<td><sub><b>Where bots run.</b> Here, dusk cloud or your server.</sub></td>
+<td><sub><b>Where bots run.</b> Here, madani cloud or your server.</sub></td>
 </tr>
 </table>
 
@@ -119,7 +119,7 @@ Ask once and it becomes a routine. Schedules can be `once`, `daily` on chosen we
 </tr>
 </table>
 
-Routines run inside the dusk bot server, next to the bot. A sleeping computer runs nothing, so while it's plugged in the desktop app keeps it awake for the hour before a due routine, and a missed run can still start up to 12 hours late. On dusk cloud or your own server they run around the clock. See [routine schedules](docs/routine-schedules.md).
+Routines run inside the madani bot server, next to the bot. A sleeping computer runs nothing, so while it's plugged in the desktop app keeps it awake for the hour before a due routine, and a missed run can still start up to 12 hours late. On madani cloud or your own server they run around the clock. See [routine schedules](docs/routine-schedules.md).
 
 ## Apps and AI
 
@@ -151,11 +151,11 @@ Sign in once with the AI you already pay for and every bot can use it. Give each
 | On your machine | Ollama and LM Studio |
 | Anything else | A custom ACP agent or provider |
 
-Sign-in engines run their own tool loop and get dusk bot's tools (browser, computer, files, apps, memory, other bots) through an MCP server mounted for each turn. API keys and local models run in dusk bot's own loop. One-click apps cover GitHub, Notion, Linear, Airtable, Todoist, Trello, ClickUp, HubSpot, Jira, Shopify, Stripe and Cloudflare, plus Gmail with an app password. dusk bot is an MCP server too: `duskbot mcp`. See [Composio](docs/composio.md), [custom MCP servers](docs/custom-mcp-servers.md) and [dusk bot as an MCP server](docs/mcp-server.md).
+Sign-in engines run their own tool loop and get madani bot's tools (browser, computer, files, apps, memory, other bots) through an MCP server mounted for each turn. API keys and local models run in madani bot's own loop. One-click apps cover GitHub, Notion, Linear, Airtable, Todoist, Trello, ClickUp, HubSpot, Jira, Shopify, Stripe and Cloudflare, plus Gmail with an app password. madani bot is an MCP server too: `madanibot mcp`. See [Composio](docs/composio.md), [custom MCP servers](docs/custom-mcp-servers.md) and [madani bot as an MCP server](docs/mcp-server.md).
 
 ## Vault and moving in
 
-Save a login once and bots sign in with it without ever seeing it: dusk bot types it in or hands it to a tool, so the value never reaches the AI. Coming from another assistant? Bring your bots, skills and memories along.
+Save a login once and bots sign in with it without ever seeing it: madani bot types it in or hands it to a tool, so the value never reaches the AI. Coming from another assistant? Bring your bots, skills and memories along.
 
 <table>
 <tr>
@@ -172,14 +172,14 @@ Save a login once and bots sign in with it without ever seeing it: dusk bot type
 
 <table>
 <tr>
-<td width="33%"><img src="docs/readme/shots/onb-welcome.webp" alt="Meet dusk bot: the first screen"></td>
+<td width="33%"><img src="docs/readme/shots/onb-welcome.webp" alt="Meet madani bot: the first screen"></td>
 <td width="33%"><img src="docs/readme/shots/onb-ai.webp" alt="Connect an AI during the first run"></td>
-<td width="34%"><img src="docs/readme/shots/account.webp" alt="Your account: name, address, dusk cloud plan, Sign out and Manage account"></td>
+<td width="34%"><img src="docs/readme/shots/account.webp" alt="Your account: name, address, madani cloud plan, Sign out and Manage account"></td>
 </tr>
 <tr>
 <td><sub><b>Welcome.</b> No account needed.</sub></td>
 <td><sub><b>Pick your AI.</b> Sign in to the one you use.</sub></td>
-<td><sub><b>Your account.</b> Only for dusk cloud.</sub></td>
+<td><sub><b>Your account.</b> Only for madani cloud.</sub></td>
 </tr>
 </table>
 
@@ -189,7 +189,7 @@ Backups are one encrypted file you can move anywhere:
 
 ## Where bots live
 
-| This computer | dusk cloud | Your own server |
+| This computer | madani cloud | Your own server |
 | --- | --- | --- |
 | Free, no account. Bots work while it's awake. | We host it. Bots keep working with your laptop shut. | Free. One line on Ubuntu or Debian, and bots stay on as long as it does. |
 
@@ -197,24 +197,24 @@ A phone app to text your bots from anywhere is coming soon.
 
 ## Install
 
-**Mac.** One line in Terminal. It downloads this Mac's build of the latest release, checks it against `SHA256SUMS`, puts dusk bot in Applications and opens it.
+**Mac.** One line in Terminal. It downloads this Mac's build of the latest release, checks it against `SHA256SUMS`, puts madani bot in Applications and opens it.
 
 ```sh
-curl -fsSL https://dusk.bot/install-mac | sh
+curl -fsSL https://madani.bot/install-mac | sh
 ```
 
-Prefer the DMG? Get it from [the latest release](https://github.com/DuskBotAI/duskbot/releases/latest) (`arm64` for Apple silicon, `x64` for Intel). It isn't notarized by Apple yet, so the first time:
+Prefer the DMG? Get it from [the latest release](https://github.com/dzulhelmynazri/madani-bot/releases/latest) (`arm64` for Apple silicon, `x64` for Intel). It isn't notarized by Apple yet, so the first time:
 
-1. Open dusk bot, and click **Done** when macOS says it can't check it.
+1. Open madani bot, and click **Done** when macOS says it can't check it.
 2. Open **System Settings**, then **Privacy & Security**.
 3. Scroll down, click **Open Anyway**, and confirm.
 
-**Windows.** Run `DuskBot-0.2.0-setup.exe` from [the latest release](https://github.com/DuskBotAI/duskbot/releases/latest). Windows 10 or 11, 64-bit, no admin rights. If Windows says it protected your PC, click **More info**, then **Run anyway**.
+**Windows.** Run `MadaniBot-0.2.0-setup.exe` from [the latest release](https://github.com/dzulhelmynazri/madani-bot/releases/latest). Windows 10 or 11, 64-bit, no admin rights. If Windows says it protected your PC, click **More info**, then **Run anyway**.
 
-**Linux.** Ubuntu 24.04, 64-bit, in beta. Get the `.deb` or the `.AppImage` from [the latest release](https://github.com/DuskBotAI/duskbot/releases/latest). See the [Linux guide](docs/linux-desktop.md).
+**Linux.** Ubuntu 24.04, 64-bit, in beta. Get the `.deb` or the `.AppImage` from [the latest release](https://github.com/dzulhelmynazri/madani-bot/releases/latest). See the [Linux guide](docs/linux-desktop.md).
 
 ```sh
-sudo apt install ./DuskBot-*.deb
+sudo apt install ./MadaniBot-*.deb
 ```
 
 Then open the app, sign in to your AI, make a bot and hand it something real. About two minutes.
@@ -226,39 +226,39 @@ you          desktop app · phone (soon) · a browser
                │
 the link     1. direct: same machine, ssh, https, tailscale
              2. a Cloudflare tunnel on your server
-             3. the dusk bot relay
+             3. the madani bot relay
              end to end encrypted
                │
-bot computer dusk bot server on 127.0.0.1:8799
+bot computer madani bot server on 127.0.0.1:8799
              engines: Claude Code, Codex, Gemini, Grok, ...
              tools:   browser, desktop, files, shell, apps
-             data:    ~/.duskbot
+             data:    ~/.madanibot
                │
              your AI provider and your apps
 ```
 
 - **The desktop app** (Electron and React) is where you talk. It also owns the local browser views and the desktop driver.
-- **The dusk bot server** (Node) runs on the bot computer: this computer, dusk cloud or your own server. It owns chats, routines, approvals, the vault and the engine processes. Webhooks get their own listener on the next port.
-- **The link** to a remote server tries direct ways first, then the Cloudflare tunnel on your server, then the dusk bot relay. Frames are sealed with AES-256-GCM using a key only your app and your server hold, so the relay passes blobs it can't read. See [the link service](apps/link-service/README.md).
+- **The madani bot server** (Node) runs on the bot computer: this computer, madani cloud or your own server. It owns chats, routines, approvals, the vault and the engine processes. Webhooks get their own listener on the next port.
+- **The link** to a remote server tries direct ways first, then the Cloudflare tunnel on your server, then the madani bot relay. Frames are sealed with AES-256-GCM using a key only your app and your server hold, so the relay passes blobs it can't read. See [the link service](apps/link-service/README.md).
 
 ## Where your data lives
 
 | What | Where |
 | --- | --- |
-| Bots, chats, routines, memory, files | `~/.duskbot` on the bot computer (`DUSK_DATA_DIR`), chats in SQLite |
+| Bots, chats, routines, memory, files | `~/.madanibot` on the bot computer (`MADANI_DATA_DIR`), chats in SQLite |
 | AI sign-ins and API keys | Encrypted with the OS keychain on the desktop, or a `0600` key file where there is none |
 | Vault logins and app tokens | Encrypted files in the data folder, keys beside them as `0600` |
 | Backups | One file, AES-256-GCM, from a password of at least 12 characters |
 | What you say to a bot | Straight from the bot computer to your AI provider, not through us |
-| Usage information | Anonymous usage counts and crash reports, never your messages or files, on until you turn off "help improve dusk bot" (first screen or Settings). The phone app sends none. [What it sends](docs/analytics.md) |
+| Usage information | Anonymous usage counts and crash reports, never your messages or files, on until you turn off "help improve madani bot" (first screen or Settings). The phone app sends none. [What it sends](docs/analytics.md) |
 
 ## Security
 
 - **Loopback trust.** On your own computer the server trusts loopback as its owner. Browsers never get that trust: a browser signs in once, and tunneled or relayed requests need a paired session.
-- **Pairing.** `duskbot pair` prints a single-use code that lasts 5 minutes. Sessions last 30 days and renew on use. Five wrong codes lock an address out for 10 minutes.
+- **Pairing.** `madanibot pair` prints a single-use code that lasts 5 minutes. Sessions last 30 days and renew on use. Five wrong codes lock an address out for 10 minutes.
 - **Approvals.** Each bot has a level, from Ask to Full access. Real questions and missing sign-ins always reach you, and sending in your name has its own setting. See [approval levels](docs/approval-levels.md).
-- **Secrets stay out of the model.** dusk bot types a saved login in, or hands a secret to a tool, itself. Values are redacted from chats and logs.
-- **Sandboxes.** On your server and on dusk cloud, bots run in a bubblewrap sandbox and bot desktops are separate containers. See [bot box](docs/bot-box.md).
+- **Secrets stay out of the model.** madani bot types a saved login in, or hands a secret to a tool, itself. Values are redacted from chats and logs.
+- **Sandboxes.** On your server and on madani cloud, bots run in a bubblewrap sandbox and bot desktops are separate containers. See [bot box](docs/bot-box.md).
 - **What our servers see.** The link service keeps hashed verifiers, public keys and sealed blobs. Phone notifications carry a bot's name, never the message.
 
 Found a problem? See [SECURITY.md](SECURITY.md).
@@ -268,13 +268,13 @@ Found a problem? See [SECURITY.md](SECURITY.md).
 Run your bots on a server you look after, so they keep working with the laptop shut. It's free. In the app, choose **Add a cloud or your own server** and paste the line it gives you on Ubuntu 20.04+ or Debian 11+:
 
 ```sh
-curl -fsSL https://dusk.bot/s/<code>/cloudflare | sh   # a Cloudflare tunnel (recommended)
-curl -fsSL https://dusk.bot/s/<code> | sh              # the dusk bot relay
-curl -fsSL https://dusk.bot/s/<code>/tailscale | sh    # your tailnet
-curl -fsSL https://dusk.bot/s/<code>/ssh | sh          # over your SSH port
+curl -fsSL https://madani.bot/s/<code>/cloudflare | sh   # a Cloudflare tunnel (recommended)
+curl -fsSL https://madani.bot/s/<code> | sh              # the madani bot relay
+curl -fsSL https://madani.bot/s/<code>/tailscale | sh    # your tailnet
+curl -fsSL https://madani.bot/s/<code>/ssh | sh          # over your SSH port
 ```
 
-It installs dusk bot as `duskbot.service`, links it to your app and sets up the way you picked. The line works once and expires after 30 minutes, and puts `duskbot` on the server's PATH for every login: `duskbot pair --label desktop` there links another computer. By hand: `npx duskbot serve` on any machine with Node 24+, then `npx duskbot pair`. Docker Compose lives in [deploy/](deploy/). Never expose port 8799 directly; read [self-hosting](docs/self-hosting.md) first.
+It installs madani bot as `madanibot.service`, links it to your app and sets up the way you picked. The line works once and expires after 30 minutes, and puts `madanibot` on the server's PATH for every login: `madanibot pair --label desktop` there links another computer. By hand: `npx madanibot serve` on any machine with Node 24+, then `npx madanibot pair`. Docker Compose lives in [deploy/](deploy/). Never expose port 8799 directly; read [self-hosting](docs/self-hosting.md) first.
 
 ## Configuration
 
@@ -282,15 +282,15 @@ Most settings live in the app. These matter when you run the server yourself:
 
 | Variable | What it does |
 | --- | --- |
-| `DUSK_DATA_DIR` | The data folder. Default `~/.duskbot` |
-| `DUSK_PORT` | The server port. Default `8799` |
-| `DUSK_WEBHOOK_PORT` | The webhook listener. Default the server port plus one |
-| `DUSK_PUBLIC_URL` | The public address in pairing links |
-| `DUSK_WEBHOOK_PUBLIC_URL` | The public address in webhook URLs |
-| `DUSK_LOOPBACK_TRUST` | `owner` (default), or `service` for shared servers |
-| `DUSK_SIGNIN_EMAILS` | Who may sign in by email on a hosted server |
-| `DUSK_URL`, `DUSK_TOKEN` | Where the `duskbot` CLI connects, and its session |
-| `DUSK_BOT_BOX` | Turns the bubblewrap sandbox on or off |
+| `MADANI_DATA_DIR` | The data folder. Default `~/.madanibot` |
+| `MADANI_PORT` | The server port. Default `8799` |
+| `MADANI_WEBHOOK_PORT` | The webhook listener. Default the server port plus one |
+| `MADANI_PUBLIC_URL` | The public address in pairing links |
+| `MADANI_WEBHOOK_PUBLIC_URL` | The public address in webhook URLs |
+| `MADANI_LOOPBACK_TRUST` | `owner` (default), or `service` for shared servers |
+| `MADANI_SIGNIN_EMAILS` | Who may sign in by email on a hosted server |
+| `MADANI_URL`, `MADANI_TOKEN` | Where the `madanibot` CLI connects, and its session |
+| `MADANI_BOT_BOX` | Turns the bubblewrap sandbox on or off |
 | `COMPOSIO_API_KEY` | Your own Composio key |
 
 ## Run from source
@@ -298,8 +298,8 @@ Most settings live in the app. These matter when you run the server yourself:
 You need Node 24+, pnpm 10, and one AI tool signed in, like [Claude Code](https://claude.com/claude-code) or [Codex](https://github.com/openai/codex).
 
 ```sh
-git clone https://github.com/DuskBotAI/duskbot.git
-cd duskbot
+git clone https://github.com/dzulhelmynazri/madani-bot.git
+cd madanibot
 pnpm install
 pnpm dev:app          # the desktop app, with the server as its child
 ```
@@ -320,16 +320,16 @@ More in [development](docs/development.md).
 ```text
 src/              the app UI (React), for the desktop window and the browser
 electron/         the desktop shell: windows, the notch island, updates, the desktop driver
-server/           the dusk bot server: bots, engines, routines, computers, the vault
+server/           the madani bot server: bots, engines, routines, computers, the vault
 shared/           code the app and the server both use
 apps/
   mobile/         the phone app (Capacitor)
   companion/      the sidecar a phone talks to
   link-service/   pairing and the link for your own server
   cloudflare/     the relay and the Composio broker
-  dashboard/      the dusk bot account and dusk cloud dashboard
-  cloud-service/  dusk cloud desktops
-  site/           dusk.bot
+  dashboard/      the madani bot account and madani cloud dashboard
+  cloud-service/  madani cloud desktops
+  site/           madani.bot
 skills/           skills that ship with the app
 deploy/           Docker Compose and server deploy files
 scripts/          build, test and demo scripts
@@ -341,7 +341,7 @@ docs/             guides and references
 <details>
 <summary><b>Is it really free?</b></summary>
 <br>
-Yes, for personal use, with every feature. You only pay for dusk cloud or a work license if you want one. You pay your AI provider on the plan or key you already have; dusk bot never bills you for AI.
+Yes, for personal use, with every feature. You only pay for madani cloud or a work license if you want one. You pay your AI provider on the plan or key you already have; madani bot never bills you for AI.
 </details>
 
 <details>
@@ -359,19 +359,19 @@ You set how much each bot may do alone, you can watch or take over at any time, 
 <details>
 <summary><b>Do my bots work when my laptop is off?</b></summary>
 <br>
-On this computer, they work while it's awake. Put them on dusk cloud or your own server and they keep going, routines included.
+On this computer, they work while it's awake. Put them on madani cloud or your own server and they keep going, routines included.
 </details>
 
 <details>
 <summary><b>Can I read and change the code?</b></summary>
 <br>
-Yes. dusk bot is source available under the <a href="LICENSE">PolyForm Noncommercial License</a>: read it, run it, change it and share it (with the license and its required notice) for personal and other noncommercial use. Commercial use needs a <a href="https://dusk.bot/license">separate license</a>. Details in <a href="docs/LICENSING.md">LICENSING</a>.
+Yes. madani bot is source available under the <a href="LICENSE">PolyForm Noncommercial License</a>: read it, run it, change it and share it (with the license and its required notice) for personal and other noncommercial use. Commercial use needs a <a href="https://madani.bot/license">separate license</a>. Details in <a href="docs/LICENSING.md">LICENSING</a>.
 </details>
 
 <details>
-<summary><b>Is there a dusk bot token or coin?</b></summary>
+<summary><b>Is there a madani bot token or coin?</b></summary>
 <br>
-No. dusk bot has no token, and any coin using the name has nothing to do with this project.
+No. madani bot has no token, and any coin using the name has nothing to do with this project.
 </details>
 
 ## Contributing
@@ -380,8 +380,8 @@ Bug reports, ideas and pull requests are welcome. Start with [CONTRIBUTING.md](C
 
 ## License
 
-Source available under [PolyForm Noncommercial 1.0.0](LICENSE). Free for personal use; commercial use needs a [separate license](https://dusk.bot/license).
+Source available under [PolyForm Noncommercial 1.0.0](LICENSE). Free for personal use; commercial use needs a [separate license](https://madani.bot/license).
 
 <br>
 
-<p align="center"><img src="apps/site/public/landing/art/cat.webp" alt="" width="120"><br><sub>Made at dusk. The bots did most of it. <a href="https://dusk.bot">dusk.bot</a><br>Started as a fork of <a href="https://github.com/milind-soni/OpenMausBot">OpenMausBot</a> (Apache 2.0).</sub></p>
+<p align="center"><img src="apps/site/public/landing/art/cat.webp" alt="" width="120"><br><sub>Made at madani. The bots did most of it. <a href="https://madani.bot">madani.bot</a><br>Started as a fork of <a href="https://github.com/milind-soni/OpenMausBot">OpenMausBot</a> (Apache 2.0).</sub></p>

@@ -26,7 +26,7 @@ function grant() {
 let dir: string, sessions: SessionRegistry, server: Server, base: string, service: ReturnType<typeof createLinkService>;
 let stop: () => void = () => {};
 beforeEach(async () => {
-  dir = mkdtempSync(join(tmpdir(), "dusk-cloud-relay-"));
+  dir = mkdtempSync(join(tmpdir(), "madani-cloud-relay-"));
   sessions = new SessionRegistry({ file: join(dir, "sessions.json") });
   service = createLinkService({ base: "http://link.test", dataDir: join(dir, "link"), scriptPath: "apps/link-service/install.sh", agentPath: "apps/link-service/agent.mjs", trustProxy: false, grantKeys: keys });
   server = createServer((req, res) => void service.handler(req, res));
@@ -50,13 +50,13 @@ async function call(mobile: ReturnType<typeof createMobileLink>, auth: RequestAu
   return out;
 }
 
-it("a dusk cloud makes its own relay tunnel with the grant the account service sends, and a phone signed in with the account gets a channel on it", async () => {
+it("a madani cloud makes its own relay tunnel with the grant the account service sends, and a phone signed in with the account gets a channel on it", async () => {
   const mobile = createMobileLink({
-    dataDir: dir, sessions, workspace: () => ({ name: "My Cloud", environmentId: "cloud-1", kind: "server" }), publicOrigin: () => "https://d1.dusk.test",
+    dataDir: dir, sessions, workspace: () => ({ name: "My Cloud", environmentId: "cloud-1", kind: "server" }), publicOrigin: () => "https://d1.madani.test",
     refusal: () => "Phones sign in to this workspace through its own sign-in.", lookupRelay: null, adoptSessions: true, log: () => {},
     push: { configured: [], send: async () => "skipped" },
   });
-  const relay = startCloudPhoneRelay({ dataDir: dir, machineId: "machine-one", port: () => 9, label: () => "My Cloud phones", sync: (input) => mobile.relaySync(input), env: { DUSK_LINK_BASE: base }, checkMs: 200, retryMs: [200] });
+  const relay = startCloudPhoneRelay({ dataDir: dir, machineId: "machine-one", port: () => 9, label: () => "My Cloud phones", sync: (input) => mobile.relaySync(input), env: { MADANI_LINK_BASE: base }, checkMs: 200, retryMs: [200] });
   stop = () => relay.stop();
   expect((await relay.ready(1_000)).status).toBe("signed-out");
 
@@ -70,7 +70,7 @@ it("a dusk cloud makes its own relay tunnel with the grant the account service s
   const exchanged = sessions.exchange({ code: pairing.code, label: "Pixel", source: "test" });
   if (!exchanged.ok) throw new Error(exchanged.error);
   const phone: RequestAuth = { kind: "session", session: sessions.authenticate(exchanged.token)!, via: "bearer", scopes: ["client"] };
-  expect((await call(mobile, phone, "GET", "/api/mobile/routes")).body).toEqual({ https: [{ kind: "https", url: "https://d1.dusk.test" }], companion: null, relay: null });
+  expect((await call(mobile, phone, "GET", "/api/mobile/routes")).body).toEqual({ https: [{ kind: "https", url: "https://d1.madani.test" }], companion: null, relay: null });
   const phonePub = generateKeyPairSync("x25519").publicKey.export({ format: "jwk" }).x!;
   const opened = await call(mobile, phone, "POST", "/api/mobile/relay", { pub: phonePub, verifier: "e".repeat(64) });
   expect(opened.status).toBe(200);
@@ -85,11 +85,11 @@ it("a dusk cloud makes its own relay tunnel with the grant the account service s
 
 it("a moved or restored home never uses the tunnel another machine saved: it makes its own from the next grant, keeps its phones' channels, and serves them a new key to repair with", async () => {
   const mobile = createMobileLink({
-    dataDir: dir, sessions, workspace: () => ({ name: "My Cloud", environmentId: "cloud-1", kind: "server" }), publicOrigin: () => "https://d1.dusk.test",
+    dataDir: dir, sessions, workspace: () => ({ name: "My Cloud", environmentId: "cloud-1", kind: "server" }), publicOrigin: () => "https://d1.madani.test",
     refusal: () => "Phones sign in to this workspace through its own sign-in.", lookupRelay: null, adoptSessions: true, log: () => {},
     push: { configured: [], send: async () => "skipped" },
   });
-  const start = (machineId: string) => startCloudPhoneRelay({ dataDir: dir, machineId, port: () => 9, label: () => "My Cloud phones", sync: (input) => mobile.relaySync(input), env: { DUSK_LINK_BASE: base }, checkMs: 200, retryMs: [200] });
+  const start = (machineId: string) => startCloudPhoneRelay({ dataDir: dir, machineId, port: () => 9, label: () => "My Cloud phones", sync: (input) => mobile.relaySync(input), env: { MADANI_LINK_BASE: base }, checkMs: 200, retryMs: [200] });
   let relay = start("machine-one");
   stop = () => relay.stop();
   relay.grant(grant());

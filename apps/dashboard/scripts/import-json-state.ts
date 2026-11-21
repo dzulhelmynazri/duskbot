@@ -1,7 +1,7 @@
 // One-shot import of an account service data folder (the JSON files tests and local fixtures write) into MongoDB.
 // Refuses a database that already holds account state, so it never merges two histories. Stop the service first: it
 // holds the writer lease.
-//   MONGODB_URI=... MONGODB_DB=dusk node apps/dashboard/scripts/import-json-state.ts <data folder>
+//   MONGODB_URI=... MONGODB_DB=madani node apps/dashboard/scripts/import-json-state.ts <data folder>
 import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { join } from "node:path";
 import { openMongoBackend } from "../server/persistence/mongo.ts";
@@ -15,7 +15,7 @@ const billing = files.includes("billing.json") ? JSON.parse(readFileSync(join(di
 if (billing?.ledger?.some(row => row.via === "fixture") || billing?.checkouts?.some(row => row.providerSessionId?.startsWith("fake_"))) {
   console.error("refused: this folder holds fixture or fake-provider billing records."); process.exit(2);
 }
-const database = await openMongoBackend({ uri, db: process.env.MONGODB_DB || "dusk" });
+const database = await openMongoBackend({ uri, db: process.env.MONGODB_DB || "madani" });
 try {
   const held = await database.db.collection("stores").countDocuments() + await database.db.collection("accounts").countDocuments();
   if (held > 0) throw new Error("This database already holds account state; import into an empty one.");

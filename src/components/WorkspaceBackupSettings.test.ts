@@ -36,7 +36,7 @@ function render(recovery: boolean | "restart" = false) {
 }
 const flush = async () => { for (let i = 0; i < 20; i++) await Promise.resolve(); };
 const change = (input: Node, value: string) => input.props.onChange!({ target: { value } });
-const summary: WorkspaceBackupSummary = { format: "dusk.workspace-backup", version: 1, id: "archive-id", createdAt: "2026-09-11T00:00:00Z", appVersion: "0.1.71", files: 9, directories: 3, bytes: 1234, bots: 2, groups: 1, threads: 4, messages: 8, warnings: ["Fixture warning"], exclusions: ["Saved account credentials and connections", "External CLI sign-ins"] };
+const summary: WorkspaceBackupSummary = { format: "madani.workspace-backup", version: 1, id: "archive-id", createdAt: "2026-09-11T00:00:00Z", appVersion: "0.1.71", files: 9, directories: 3, bytes: 1234, bots: 2, groups: 1, threads: 4, messages: 8, warnings: ["Fixture warning"], exclusions: ["Saved account credentials and connections", "External CLI sign-ins"] };
 let storage: Map<string, string>;
 beforeEach(() => {
   fixture.values = []; fixture.index = 0; fixture.effects = []; fixture.api.mockReset();
@@ -57,7 +57,7 @@ describe("Settings full backups", () => {
   it("shows export and a native file input as rows, the passwords only in their dialogs, and the validated summary", async () => {
     await ready();
     const html = render().html;
-    expect(html).toContain('type="file" accept=".duskbackup,.ombbackup"');
+    expect(html).toContain('type="file" accept=".madanibackup,.ombbackup"');
     expect(html.match(/type="password"/g)).toBeNull();
     expect(html).toContain("Sign-ins and keys are left out");
     expect(html).toContain("can&#x27;t be recovered");
@@ -70,19 +70,19 @@ describe("Settings full backups", () => {
 
   it("exports encrypted state by POST and downloads without putting the password in a URL or storage", async () => {
     await ready();
-    storage.set("dusk-drafts", "private draft"); storage.set("auth-token", "not exported"); storage.set("dusk-webhook-credentials", "not exported either");
+    storage.set("madani-drafts", "private draft"); storage.set("auth-token", "not exported"); storage.set("madani-webhook-credentials", "not exported either");
     pill("Export full backup").props.onClick!();
     const passwords = render().nodes.filter((node) => node.type === "input" && node.props.type === "password");
     change(passwords[0], "correct horse battery"); change(passwords[1], "correct horse battery");
     const link = { href: "", download: "", click: vi.fn(), remove: vi.fn() };
     vi.stubGlobal("document", { createElement: () => link, body: { append: vi.fn() } });
-    fixture.api.mockResolvedValueOnce({ id: "download-id", filename: "fixture.duskbackup" });
+    fixture.api.mockResolvedValueOnce({ id: "download-id", filename: "fixture.madanibackup" });
     const dialog = dialogs()[0]!;
     void save(dialog); void save(dialog); await flush();
     expect(fixture.api).toHaveBeenCalledTimes(2); // one status, one export
     const [path, init] = fixture.api.mock.calls[1];
     expect(path).toBe("/api/workspace-backup/export");
-    expect(JSON.parse(init.body)).toEqual({ password: "correct horse battery", clientState: { "dusk-drafts": "private draft" } });
+    expect(JSON.parse(init.body)).toEqual({ password: "correct horse battery", clientState: { "madani-drafts": "private draft" } });
     expect(link.href).toBe("/api/workspace-backup/download/download-id");
     expect(link.click).toHaveBeenCalledOnce();
     expect([...storage.values()]).not.toContain("correct horse battery");
@@ -91,7 +91,7 @@ describe("Settings full backups", () => {
 
   it("uploads a raw file, validates it, and requires exact REPLACE with the staged ID", async () => {
     await ready();
-    const file = new File(["encrypted fixture"], "fixture.duskbackup");
+    const file = new File(["encrypted fixture"], "fixture.madanibackup");
     pickFile(file);
     change(importPassword(), "correct horse battery");
     fixture.api.mockResolvedValueOnce({ id: "upload-id" }).mockResolvedValueOnce({ id: "stage-id", summary });
@@ -107,13 +107,13 @@ describe("Settings full backups", () => {
     fixture.api.mockResolvedValueOnce({ restartRequired: true, restoreId: "stage-id" });
     void save(dialogs()[0]!); await flush();
     expect(JSON.parse(fixture.api.mock.calls[3][1].body)).toEqual({ id: "stage-id", confirmation: "REPLACE" });
-    expect(storage.get("dusk-pending-workspace-restore")).toBe("stage-id");
-    expect(render().html).toContain("Fully quit dusk bot");
+    expect(storage.get("madani-pending-workspace-restore")).toBe("stage-id");
+    expect(render().html).toContain("Fully quit madani bot");
   });
 
   it("does not offer a replacement after failed password validation", async () => {
     await ready();
-    pickFile(new File(["archive"], "file.duskbackup"));
+    pickFile(new File(["archive"], "file.madanibackup"));
     change(importPassword(), "wrong password");
     fixture.api.mockResolvedValueOnce({ id: "upload" }).mockRejectedValueOnce(new Error("Wrong password"));
     void save(dialogs()[0]!); await flush();
@@ -123,7 +123,7 @@ describe("Settings full backups", () => {
 
   it("reuploads the selected file if its upload or validated stage expires", async () => {
     await ready();
-    const file = new File(["archive"], "file.duskbackup");
+    const file = new File(["archive"], "file.madanibackup");
     pickFile(file);
     const validate = async () => { change(importPassword(), "correct horse battery"); void save(dialogs()[0]!); await flush(); };
     const expired = Object.assign(new Error("Backup expired; upload again"), { status: 404 });
@@ -142,24 +142,24 @@ describe("Settings full backups", () => {
   });
 
   it("does not restore client state before restart, then replaces only the initiating browser's allowlist", async () => {
-    storage.set("dusk-pending-workspace-restore", "stage-id"); storage.set("dusk-drafts", "old"); storage.set("auth-token", "keep");
+    storage.set("madani-pending-workspace-restore", "stage-id"); storage.set("madani-drafts", "old"); storage.set("auth-token", "keep");
     fixture.api.mockResolvedValueOnce({ busy: true, pendingRestore: true });
     expect(render(true).html).not.toContain("Continue without restoring drafts");
     fixture.effects[0](); await flush();
-    expect(render(true).html).toContain("Fully quit dusk bot");
+    expect(render(true).html).toContain("Fully quit madani bot");
     expect(render(true).html).not.toContain("Continue without restoring drafts");
-    expect(fixture.api).toHaveBeenCalledOnce(); expect(storage.get("dusk-drafts")).toBe("old");
+    expect(fixture.api).toHaveBeenCalledOnce(); expect(storage.get("madani-drafts")).toBe("old");
     fixture.values = [];
-    fixture.api.mockResolvedValueOnce({ busy: false, lastRestoreId: "stage-id" }).mockResolvedValueOnce({ clientState: { "dusk-drafts": "restored" } });
+    fixture.api.mockResolvedValueOnce({ busy: false, lastRestoreId: "stage-id" }).mockResolvedValueOnce({ clientState: { "madani-drafts": "restored" } });
     render(true); fixture.effects[0](); await flush();
-    expect(storage.get("dusk-drafts")).toBe("restored"); expect(storage.get("auth-token")).toBe("keep");
-    expect(storage.has("dusk-pending-workspace-restore")).toBe(false); expect(window.location.reload).toHaveBeenCalledOnce();
+    expect(storage.get("madani-drafts")).toBe("restored"); expect(storage.get("auth-token")).toBe("keep");
+    expect(storage.has("madani-pending-workspace-restore")).toBe(false); expect(window.location.reload).toHaveBeenCalledOnce();
   });
 
   it("offers a real desktop restart without clearing the restore marker or drafts, once only", async () => {
     const relaunch = vi.fn().mockResolvedValue(true);
-    vi.stubGlobal("window", { ...window, duskDesktop: { relaunch } });
-    storage.set("dusk-pending-workspace-restore", "stage-id"); storage.set("dusk-drafts", "keep");
+    vi.stubGlobal("window", { ...window, madaniDesktop: { relaunch } });
+    storage.set("madani-pending-workspace-restore", "stage-id"); storage.set("madani-drafts", "keep");
     fixture.api.mockResolvedValueOnce({ busy: true, pendingRestore: true });
     render(true); fixture.effects[0](); await flush();
     expect(render(true).html).toContain("Restart and restore");
@@ -169,25 +169,25 @@ describe("Settings full backups", () => {
     restart.props.onClick!(); restart.props.onClick!(); await flush();
     expect(relaunch).toHaveBeenCalledOnce();
     expect(render("restart").nodes.find(node => node.type === "button")!.props.disabled).toBe(true);
-    expect(storage.get("dusk-pending-workspace-restore")).toBe("stage-id");
-    expect(storage.get("dusk-drafts")).toBe("keep");
+    expect(storage.get("madani-pending-workspace-restore")).toBe("stage-id");
+    expect(storage.get("madani-drafts")).toBe("keep");
     expect(window.location.reload).not.toHaveBeenCalled();
   });
 
   it.each([false, new Error("Fixture restart unavailable")])("keeps recovery intact and offers a retry when native restart fails (%s)", async result => {
     const relaunch = result === false ? vi.fn().mockResolvedValue(false) : vi.fn().mockRejectedValue(result);
-    vi.stubGlobal("window", { ...window, duskDesktop: { relaunch } });
-    storage.set("dusk-pending-workspace-restore", "stage-id");
+    vi.stubGlobal("window", { ...window, madaniDesktop: { relaunch } });
+    storage.set("madani-pending-workspace-restore", "stage-id");
     render("restart").nodes.find(node => node.type === "button")!.props.onClick!(); await flush();
     const view = render("restart");
-    expect(view.html).toContain("Could not restart dusk bot");
+    expect(view.html).toContain("Could not restart madani bot");
     expect(view.nodes.find(node => node.type === "button")!.props.disabled).toBe(false);
-    expect(storage.get("dusk-pending-workspace-restore")).toBe("stage-id");
+    expect(storage.get("madani-pending-workspace-restore")).toBe("stage-id");
     expect(window.location.reload).not.toHaveBeenCalled();
   });
 
   it.each([undefined, { relaunch: vi.fn(), remoteClient: { active: true } }])("never restarts the local app for a browser or remote workspace", bridge => {
-    window.duskDesktop = bridge as Window["duskDesktop"];
+    window.madaniDesktop = bridge as Window["madaniDesktop"];
     const view = render("restart");
     expect(view.html).toContain("restart the server process");
     expect(view.html).not.toContain("Restart and restore");
@@ -195,7 +195,7 @@ describe("Settings full backups", () => {
   });
 
   it("retains the server-status retry for browser recovery", async () => {
-    storage.set("dusk-pending-workspace-restore", "stage-id");
+    storage.set("madani-pending-workspace-restore", "stage-id");
     fixture.api.mockResolvedValueOnce({ busy: true, pendingRestore: true });
     render(true); fixture.effects[0](); await flush();
     expect(render(true).html).toContain(">Retry<");
@@ -203,30 +203,30 @@ describe("Settings full backups", () => {
   });
 
   it("never imports a different restore's browser state", async () => {
-    storage.set("dusk-pending-workspace-restore", "my-stage"); storage.set("dusk-drafts", "keep");
+    storage.set("madani-pending-workspace-restore", "my-stage"); storage.set("madani-drafts", "keep");
     fixture.api.mockResolvedValueOnce({ busy: false, lastRestoreId: "another-stage" });
     render(true); fixture.effects[0](); await flush();
     expect(fixture.api).toHaveBeenCalledOnce();
     expect(render(true).html).toContain("Normal app");
-    expect(storage.get("dusk-drafts")).toBe("keep");
-    expect(storage.has("dusk-pending-workspace-restore")).toBe(false);
+    expect(storage.get("madani-drafts")).toBe("keep");
+    expect(storage.has("madani-pending-workspace-restore")).toBe(false);
     expect(window.location.reload).not.toHaveBeenCalled();
   });
 
   it("keeps the normal app gated and its old drafts intact on recovery failure", async () => {
-    storage.set("dusk-pending-workspace-restore", "stage-id"); storage.set("dusk-drafts", "keep");
+    storage.set("madani-pending-workspace-restore", "stage-id"); storage.set("madani-drafts", "keep");
     fixture.api.mockResolvedValueOnce({ busy: false, lastRestoreId: "stage-id" }).mockRejectedValueOnce(new Error("Fixture unavailable"));
     render(true); fixture.effects[0](); await flush();
     const html = render(true).html;
     expect(html).toContain("Fixture unavailable"); expect(html).toContain("Retry"); expect(html).not.toContain("Normal app");
-    expect(storage.get("dusk-drafts")).toBe("keep"); expect(storage.get("dusk-pending-workspace-restore")).toBe("stage-id");
+    expect(storage.get("madani-drafts")).toBe("keep"); expect(storage.get("madani-pending-workspace-restore")).toBe("stage-id");
     expect(window.location.reload).not.toHaveBeenCalled();
   });
 
   it.each([401, 403])("explicitly returns to normal bootstrap after a %s without changing browser state", async (status) => {
-    storage.set("dusk-pending-workspace-restore", "stage-id");
-    storage.set("dusk-drafts", "keep drafts"); storage.set("dusk-draft-attachments", "keep attachments");
-    storage.set("dusk-skin", "keep preferences"); storage.set("auth-token", "keep session");
+    storage.set("madani-pending-workspace-restore", "stage-id");
+    storage.set("madani-drafts", "keep drafts"); storage.set("madani-draft-attachments", "keep attachments");
+    storage.set("madani-skin", "keep preferences"); storage.set("auth-token", "keep session");
     const before = new Map(storage);
     if (status === 403) fixture.api.mockResolvedValueOnce({ busy: false, lastRestoreId: "stage-id" });
     fixture.api.mockRejectedValueOnce(Object.assign(new Error("sign-in required"), { status }));
@@ -236,7 +236,7 @@ describe("Settings full backups", () => {
     expect(view.html).not.toContain("Normal app");
     expect(storage).toEqual(before); expect(window.location.reload).not.toHaveBeenCalled();
     view.nodes.find((node) => node.type === "button" && node.props.children === "Continue without restoring drafts")!.props.onClick!();
-    before.delete("dusk-pending-workspace-restore");
+    before.delete("madani-pending-workspace-restore");
     expect(storage).toEqual(before);
     expect(window.location.reload).toHaveBeenCalledOnce();
     expect(render(true).html).not.toContain("Normal app"); // bootstrap, not a direct authentication bypass
@@ -244,13 +244,13 @@ describe("Settings full backups", () => {
   });
 
   it("keeps recovery gated if its marker cannot be cleared", async () => {
-    storage.set("dusk-pending-workspace-restore", "stage-id"); storage.set("dusk-drafts", "keep");
+    storage.set("madani-pending-workspace-restore", "stage-id"); storage.set("madani-drafts", "keep");
     fixture.api.mockRejectedValueOnce(new Error("sign-in required"));
     render(true); fixture.effects[0](); await flush();
     vi.spyOn(localStorage, "removeItem").mockImplementation(() => { throw new Error("Storage unavailable"); });
     render(true).nodes.find((node) => node.type === "button" && node.props.children === "Continue without restoring drafts")!.props.onClick!();
     expect(render(true).html).toContain("Storage unavailable"); expect(render(true).html).not.toContain("Normal app");
-    expect(storage.get("dusk-drafts")).toBe("keep"); expect(storage.get("dusk-pending-workspace-restore")).toBe("stage-id");
+    expect(storage.get("madani-drafts")).toBe("keep"); expect(storage.get("madani-pending-workspace-restore")).toBe("stage-id");
     expect(window.location.reload).not.toHaveBeenCalled();
   });
 });

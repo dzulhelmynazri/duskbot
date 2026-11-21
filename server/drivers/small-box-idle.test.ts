@@ -31,7 +31,7 @@ beforeEach(() => {
   ensureDirs();
   chmodSync(FAKE_CLAUDE, 0o755);
   chmodSync(FAKE_ACP, 0o755);
-  scratch = mkdtempSync(join(tmpdir(), "dusk-small-box-"));
+  scratch = mkdtempSync(join(tmpdir(), "madani-small-box-"));
 });
 afterEach(async () => {
   delete process.env.FAKE_CLAUDE_DUMP;

@@ -4,14 +4,14 @@
   "title": "AI teammates for solo founders and small teams",
   "nav": "ai teammates",
   "h1": "ai teammates for a small team with work to finish",
-  "description": "Give dusk bot teammates narrow jobs, clear handoffs and a human owner, with group chats, shared-bot team plans and what work use needs.",
+  "description": "Give madani bot teammates narrow jobs, clear handoffs and a human owner, with group chats, shared-bot team plans and what work use needs.",
   "keyword": "ai teammates",
   "keywords": [
     "ai team members",
     "ai agents team",
     "ai coworker"
   ],
-  "answer": "**hand off the prep and arrive with something ready to decide.** give a dusk bot a narrow job and a person who accepts the result. bots keep separate names, chats, memory and ai choices. bring them into a group when their jobs need each other. choose which apps each can reach and what it may remember. work use needs a work license.",
+  "answer": "**hand off the prep and arrive with something ready to decide.** give a madani bot a narrow job and a person who accepts the result. bots keep separate names, chats, memory and ai choices. bring them into a group when their jobs need each other. choose which apps each can reach and what it may remember. work use needs a work license.",
   "updated": "2026-11-12",
   "review": {
     "status": "approved",
@@ -54,11 +54,11 @@
     },
     {
       "h": "a shared room doesn't mean shared access",
-      "md": "**each bot keeps its own ai and permissions.** a reviewer may only need attached files. a preparer might need one connected app. make that choice separately for each bot.\n\n- apps can be off, read only, or read and write\n- an exact action list narrows access further\n- dusk blocks forbidden changes before they reach the app[^3]\n\nsends ask first unless you set a daily amount. careful with **Full access**: a bot there with no sending rule can send up to 25 a day without asking. give it **Ask every time**.[^8]\n\nfor app edits, keep read only access or add 'ask me before changing anything'. those changes don't automatically ask.[^3] group learning stays off until you enable it for that bot. agree what should carry forward, then review notes in **memory** when jobs change.[^4]"
+      "md": "**each bot keeps its own ai and permissions.** a reviewer may only need attached files. a preparer might need one connected app. make that choice separately for each bot.\n\n- apps can be off, read only, or read and write\n- an exact action list narrows access further\n- madani blocks forbidden changes before they reach the app[^3]\n\nsends ask first unless you set a daily amount. careful with **Full access**: a bot there with no sending rule can send up to 25 a day without asking. give it **Ask every time**.[^8]\n\nfor app edits, keep read only access or add 'ask me before changing anything'. those changes don't automatically ask.[^3] group learning stays off until you enable it for that bot. agree what should carry forward, then review notes in **memory** when jobs change.[^4]"
     },
     {
       "h": "work use has a license and an ai bill",
-      "md": "**budget for the work license and the ai your team will use.** dusk is source-available under polyform noncommercial. personal use on your own computer is free; work needs a work license.[^5][^6]\n\nas of 12 november 2026:\n\n- cloud pro costs $50 monthly or $500 yearly, including one person's work license\n- team plans start at $100 monthly, with a dedicated machine and shared bots\n- write to hello@dusk.bot about team plans and who needs access[^7]\n\nyour provider bills ai usage separately. ongoing work spends that allowance too. compare the [buying options](/ai-employees) with both costs in mind. ask about seats, roles, approvals and activity history before buying if your team needs them."
+      "md": "**budget for the work license and the ai your team will use.** madani is source-available under polyform noncommercial. personal use on your own computer is free; work needs a work license.[^5][^6]\n\nas of 12 november 2026:\n\n- cloud pro costs $50 monthly or $500 yearly, including one person's work license\n- team plans start at $100 monthly, with a dedicated machine and shared bots\n- write to hello@madani.bot about team plans and who needs access[^7]\n\nyour provider bills ai usage separately. ongoing work spends that allowance too. compare the [buying options](/ai-employees) with both costs in mind. ask about seats, roles, approvals and activity history before buying if your team needs them."
     },
     {
       "h": "keep it only if the handoff gets easier",
@@ -72,7 +72,7 @@
     },
     {
       "q": "can a small team share bots?",
-      "a": "**yes, on team plans.** they start at $100 monthly with shared bots and a dedicated machine. ask hello@dusk.bot about the arrangement, seats and roles you need."
+      "a": "**yes, on team plans.** they start at $100 monthly with shared bots and a dedicated machine. ask hello@madani.bot about the arrangement, seats and roles you need."
     },
     {
       "q": "do i need a work license if i run it on my own laptop?",
@@ -85,35 +85,35 @@
   ],
   "sources": [
     {
-      "label": "dusk bot docs: separate bot jobs and chats",
+      "label": "madani bot docs: separate bot jobs and chats",
       "url": "/docs/bots"
     },
     {
-      "label": "dusk bot docs: group handoffs and answer settings",
+      "label": "madani bot docs: group handoffs and answer settings",
       "url": "/docs/group-chats"
     },
     {
-      "label": "dusk bot docs: access for each bot",
+      "label": "madani bot docs: access for each bot",
       "url": "/docs/files-and-apps"
     },
     {
-      "label": "dusk bot docs: group learning and memory settings",
+      "label": "madani bot docs: group learning and memory settings",
       "url": "/docs/memory"
     },
     {
-      "label": "dusk bot docs: personal and work use",
+      "label": "madani bot docs: personal and work use",
       "url": "/docs/account-and-billing"
     },
     {
-      "label": "dusk bot docs: source-available license",
+      "label": "madani bot docs: source-available license",
       "url": "/docs/faq"
     },
     {
-      "label": "dusk bot pricing: pro and team plans",
+      "label": "madani bot pricing: pro and team plans",
       "url": "/pricing"
     },
     {
-      "label": "dusk bot docs: permissions and sends",
+      "label": "madani bot docs: permissions and sends",
       "url": "/docs/computer"
     }
   ],

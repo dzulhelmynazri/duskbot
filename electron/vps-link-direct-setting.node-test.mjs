@@ -103,7 +103,7 @@ test("unlinking takes the key off the server before the tunnel is forgotten", as
   await link.close();
 });
 
-test("DUSK_LINK_DIRECT=off in the app: no row, nothing asked of the server", async () => {
+test("MADANI_LINK_DIRECT=off in the app: no row, nothing asked of the server", async () => {
   const { link, controls } = setup({ direct: false });
   await link.resume();
   assert.equal(link.directSetting(ORIGIN), null);

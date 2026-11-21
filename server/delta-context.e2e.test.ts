@@ -7,7 +7,7 @@ import { delimiter, dirname, join } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { expect, it } from "vitest";
 
-import { launchVerificationServer, runControlDusk, verificationServerEnvironment } from "../scripts/control-dusk.ts";
+import { launchVerificationServer, runControlMadani, verificationServerEnvironment } from "../scripts/control-madani.ts";
 import { request } from "../scripts/mcp-server.ts";
 import { UNSEEN_END } from "./delta-context.ts";
 import { ENVELOPE_MARK } from "./runtime/envelope.ts";
@@ -32,7 +32,7 @@ async function fixture(test: (f: any) => Promise<void>, options: { env?: NodeJS.
   const parentEnv = { ...process.env, FAKE_CLAUDE_VERSION: "2.1.270", ...options.env };
   const session = await launchVerificationServer(parentEnv, undefined, undefined, undefined,
     { scripted: true }, options.codex ? ["codex"] : []);
-  const cli = (...args: string[]) => runControlDusk(args, { env: { DUSK_URL: session.info.url } }) as Promise<any>;
+  const cli = (...args: string[]) => runControlMadani(args, { env: { MADANI_URL: session.info.url } }) as Promise<any>;
   const api = (path: string, body?: unknown, method = "POST") =>
     request(path, body === undefined ? {} : { method, body: JSON.stringify(body) }, session.info.url) as Promise<any>;
   let restarted: ChildProcess | undefined;
@@ -57,9 +57,9 @@ async function fixture(test: (f: any) => Promise<void>, options: { env?: NodeJS.
         'const mode = (after("--resume") ? modes.resume : modes.fresh) ?? modes.any;',
         `if (mode) process.env[${JSON.stringify(name === "codex" ? "FAKE_CODEX_MODE" : "FAKE_CLAUDE_MODE")}] = mode;`,
         "let botId = null;",
-        'try { for (const s of Object.values(JSON.parse(readFileSync(after("--mcp-config"), "utf8")).mcpServers ?? {})) botId = s?.env?.DUSK_BOT_ID ?? botId; } catch {}',
+        'try { for (const s of Object.values(JSON.parse(readFileSync(after("--mcp-config"), "utf8")).mcpServers ?? {})) botId = s?.env?.MADANI_BOT_ID ?? botId; } catch {}',
         `if (after("--resume") || after("--session-id")) appendFileSync(${JSON.stringify(launchesPath)}, JSON.stringify({ botId, pid: process.pid, resume: after("--resume"), sessionId: after("--session-id"), mode: process.env.FAKE_CLAUDE_MODE ?? "happy" }) + "\\n");`,
-        `else if (argv[0] === "app-server") appendFileSync(${JSON.stringify(codexLaunchesPath)}, JSON.stringify({ botId: process.env.DUSK_BOT_ID ?? null }) + "\\n");`,
+        `else if (argv[0] === "app-server") appendFileSync(${JSON.stringify(codexLaunchesPath)}, JSON.stringify({ botId: process.env.MADANI_BOT_ID ?? null }) + "\\n");`,
         `if (botId) process.env.FAKE_CLAUDE_PROMPTS = ${JSON.stringify(join(dataDir, "consumed-"))} + botId + ".jsonl";`,
         // A warm Claude process ends once idle after its mode changed, like a CLI that exited, so the next turn launches under the new mode.
         ...(name === "claude" ? [
@@ -428,7 +428,7 @@ it("keeps the person's request on work handed on after a card answer, on the roo
   f.plan[f.lead.id] = { reply: "LEAD_DONE" };
   const ask = (key: string, brief: string, credential: string) => ({
     steps: [{ tool: "request_credential", arguments: { credential_id: credential, reason: "The team needs it" } }], reply: "Asked",
-    byPrompt: [{ promptIncludes: "dusk bot credential update", plan: f.delegate(key, [f.lead], brief) }],
+    byPrompt: [{ promptIncludes: "madani bot credential update", plan: f.delegate(key, [f.lead], brief) }],
   });
 
   f.plan[f.chief.id] = ask("after-card", "CARD_ONE_BRIEF check the team", "xaiApiKey");
@@ -683,7 +683,7 @@ it.each(["SIGTERM", "SIGKILL"] as const)("resumes a Chief whose own turn a resta
   await expect.poll(async () => (await f.messages()).some((m: any) => m.text === "CUT_REVIEWED"), { timeout: 30_000 }).toBe(true);
   expect(f.turns()).toHaveLength(chiefTurns + 1);
   expect(f.turns().at(-1).resumed).toBe(true);
-  expect(f.prompt(f.turns().at(-1))).toContain("dusk bot restarted before your previous turn here finished, after it sent work to teammates.");
+  expect(f.prompt(f.turns().at(-1))).toContain("madani bot restarted before your previous turn here finished, after it sent work to teammates.");
   expect(f.prompt(f.turns().at(-1))).toContain("LEAD_DONE_BEFORE_RESTART");
   expect(f.turns(f.lead.id)).toHaveLength(1);
   // The final reply is saved before the Chief's graph settlement is persisted.
@@ -753,7 +753,7 @@ it("ends a Chief's review a second restart cuts, and says so in its conversation
   await expect.poll(() => f.root(), { timeout: 20_000 }).toMatchObject({ status: "running", restart: "rerun" });
   await expect.poll(() => f.consumed(), { timeout: 20_000 }).toBe(4); // warm-up, delegation, review, its rerun
   await f.restart(() => {}, "SIGKILL");
-  const ended = "error: Interrupted by another dusk bot restart after resuming once; not resumed again. Some of its steps may already have taken effect.";
+  const ended = "error: Interrupted by another madani bot restart after resuming once; not resumed again. Some of its steps may already have taken effect.";
   await expect.poll(async () => (await f.messages()).filter((m: any) => m.tool?.name === ended).length, { timeout: 20_000 }).toBe(1);
   expect(f.root()).toMatchObject({ status: "failed", reported: true });
   f.open(f.gate("review"));
@@ -956,7 +956,7 @@ it("does not offer a message the person stopped before any reply again on Codex"
   const next = f.turns().at(-1);
   expect(next.resumedThread).toBeTruthy();
   expect(f.prompt(next)).not.toContain("CODEX_STOPPED_ASK");
-}, { codex: {}, env: { DUSK_CODEX_WARM: "0" } }), hostTimeout(90_000));
+}, { codex: {}, env: { MADANI_CODEX_WARM: "0" } }), hostTimeout(90_000));
 
 it("offers a steered message again when the turn fails before the provider used it", () => fixture(async (f) => {
   f.plan[f.chief.id] = { turns: [{ reply: "Noted." }, { progress: "Looking into it", gateFile: f.gate("turn"), fail: true }, { reply: "Covered" }] };
@@ -990,7 +990,7 @@ it("does not offer a steered message again after the person stops the turn it we
 }), hostTimeout(60_000));
 
 it("does not offer a message again that the person steered out of the queue into a turn they then stopped", () => {
-  const refuseLiveSteers = join(tmpdir(), `dusk-queue-steer-${process.pid}-${Date.now()}.gate`);
+  const refuseLiveSteers = join(tmpdir(), `madani-queue-steer-${process.pid}-${Date.now()}.gate`);
   writeFileSync(refuseLiveSteers, "refuse live steers until the queue is lifted");
   return fixture(async (f) => {
     await f.useModel("codex");
@@ -1309,7 +1309,7 @@ it("moves a Codex chat to a new thread with its history when the person clears a
   const next = f.turns().at(-1);
   expect(next.resumedThread).toBeTruthy();
   expect(f.prompt(next)).not.toContain("ORCHID_7Q");
-}, { codex: {}, env: { DUSK_CODEX_WARM: "0" } }), hostTimeout(90_000));
+}, { codex: {}, env: { MADANI_CODEX_WARM: "0" } }), hostTimeout(90_000));
 
 it("keeps today's fresh return on a Claude CLI that cannot refresh a resumed system prompt", () => fixture(async (f) => {
   await warmUp(f);

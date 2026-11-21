@@ -23,7 +23,7 @@ export function cheer(text: string, { confetti = false } = {}) {
 /** cheers once per account and milestone, ever */
 export function cheerOnce(accountId: string | null | undefined, milestone: string, text: string, options?: { confetti?: boolean }) {
   if (!accountId) return;
-  const key = `dusk-dash-milestone:${accountId}:${milestone}`;
+  const key = `madani-dash-milestone:${accountId}:${milestone}`;
   try { if (localStorage.getItem(key)) return; localStorage.setItem(key, "1"); } catch { return; }
   cheer(text, options);
 }

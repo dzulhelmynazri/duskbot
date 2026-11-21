@@ -3,7 +3,7 @@ import type { MobileConnectionRecord, MobileTransport } from "../../../shared/mo
 import type { RelayChannel } from "../transport/relay";
 import { learnRoutes, mergedRoutes } from "./learn-routes";
 
-const relayRoute: MobileTransport = { kind: "relay", base: "https://link.dusk.bot", channel: "abcdefghij", token: "t".repeat(43), key: "k".repeat(43) };
+const relayRoute: MobileTransport = { kind: "relay", base: "https://link.madani.bot", channel: "abcdefghij", token: "t".repeat(43), key: "k".repeat(43) };
 const oldWifi: MobileTransport = { kind: "companion", url: "http://192.168.1.4:8810", net: "lan", priority: 200 };
 const record = (via: MobileTransport[]): MobileConnectionRecord => ({
   id: "mac", environmentId: "env", label: "Mac", transport: "relay", via, sessionRef: "token.mac",
@@ -27,8 +27,8 @@ describe("a phone learning where its place is now", () => {
   it("never drops the route it just connected over", () => {
     const via = mergedRoutes(record([oldWifi]), { https: [], companion: [] }, { kind: "bearer", origin: oldWifi.url, token: "s" });
     expect(via).toBeNull();
-    const cloud = { ...record([]), via: undefined, transport: "https" as const, origin: "https://d1.dusk.bot" };
-    expect(mergedRoutes(cloud, { https: [], companion: null }, { kind: "bearer", origin: "https://d1.dusk.bot", token: "s" })).toBeNull();
+    const cloud = { ...record([]), via: undefined, transport: "https" as const, origin: "https://d1.madani.bot" };
+    expect(mergedRoutes(cloud, { https: [], companion: null }, { kind: "bearer", origin: "https://d1.madani.bot", token: "s" })).toBeNull();
   });
 
   it("saves what the place says, and an older place without the route keeps what is saved", async () => {
@@ -47,7 +47,7 @@ describe("a phone learning where its place is now", () => {
 describe("a pairing without a working relay channel", () => {
   const wifi = { kind: "bearer" as const, origin: oldWifi.url, token: "s" };
   const keys = async () => ({ pub: "P".repeat(43), priv: "x", token: "phone-token" });
-  const channel = { base: "https://link.dusk.bot", channel: "bcdefghijk", agentPub: "A".repeat(43) };
+  const channel = { base: "https://link.madani.bot", channel: "bcdefghijk", agentPub: "A".repeat(43) };
 
   it("asks the place for one when it has a relay but none for this phone, and saves it beside the routes it had", async () => {
     const save = vi.fn(async () => {});
@@ -73,13 +73,13 @@ describe("a pairing without a working relay channel", () => {
   });
 });
 
-describe("a dusk cloud signed in with the account", () => {
+describe("a madani cloud signed in with the account", () => {
   it("keeps its https address beside the relay channel it opens", async () => {
     const save = vi.fn(async () => {});
-    const channel = { base: "https://link.dusk.bot", channel: "cdefghijkl", agentPub: "C".repeat(43) };
+    const channel = { base: "https://link.madani.bot", channel: "cdefghijkl", agentPub: "C".repeat(43) };
     const ask = (async (path: string) => new Response(JSON.stringify(path === "/api/mobile/routes" ? { https: [], companion: null, relay: null } : channel))) as typeof fetch;
-    const cloud: MobileConnectionRecord = { ...record([]), via: undefined, transport: "https", origin: "https://d1.dusk.bot" };
-    await learnRoutes(cloud, { kind: "bearer", origin: "https://d1.dusk.bot", token: "s" }, save, ask, async () => ({ pub: "P".repeat(43), priv: "x", token: "t" }));
-    expect(save).toHaveBeenCalledWith("mac", [{ kind: "https", url: "https://d1.dusk.bot" }], channel);
+    const cloud: MobileConnectionRecord = { ...record([]), via: undefined, transport: "https", origin: "https://d1.madani.bot" };
+    await learnRoutes(cloud, { kind: "bearer", origin: "https://d1.madani.bot", token: "s" }, save, ask, async () => ({ pub: "P".repeat(43), priv: "x", token: "t" }));
+    expect(save).toHaveBeenCalledWith("mac", [{ kind: "https", url: "https://d1.madani.bot" }], channel);
   });
 });

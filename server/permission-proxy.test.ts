@@ -73,7 +73,7 @@ describe("permission proxy", () => {
   };
 
   beforeEach(async () => {
-    scratch = mkdtempSync(join(tmpdir(), "dusk-perm-proxy-"));
+    scratch = mkdtempSync(join(tmpdir(), "madani-perm-proxy-"));
     asks = [];
     conns = [];
     answerWith = () => null;
@@ -124,7 +124,7 @@ describe("permission proxy", () => {
 
   it("withholds an excluded question without losing the CLI permission callback", async () => {
     const exited = once(proxy, "exit"); proxy.kill(); await exited; results.clear();
-    startProxy(brokerSocketPath(scratch, "test"), { ...process.env, DUSK_PERMISSION_TOOL_SCOPE: JSON.stringify({ allow: ["native:*"] }) });
+    startProxy(brokerSocketPath(scratch, "test"), { ...process.env, MADANI_PERMISSION_TOOL_SCOPE: JSON.stringify({ allow: ["native:*"] }) });
     rpc({ jsonrpc: "2.0", id: 2, method: "tools/list" });
     expect((await waitFor(2)).result.tools.map((tool: { name: string }) => tool.name)).toEqual(["approve"]);
     rpc({ jsonrpc: "2.0", id: 3, method: "tools/call", params: { name: "ask_user", arguments: { question: "Must not ask" } } });
@@ -225,7 +225,7 @@ describe("permission proxy", () => {
     // What the broker actually sends on a timeout: `answer`, source "timeout", and a full sentence.
     answerWith = () => ({
       behavior: "answer",
-      message: "dusk bot: nobody answered in time. Use your best judgment and continue.",
+      message: "madani bot: nobody answered in time. Use your best judgment and continue.",
       source: "timeout",
     });
     rpc({
@@ -240,7 +240,7 @@ describe("permission proxy", () => {
   it("treats the turn ending the same way: system words are not the user's answer", async () => {
     answerWith = () => ({
       behavior: "answer",
-      message: "dusk bot: the turn is ending, wrap up.",
+      message: "madani bot: the turn is ending, wrap up.",
       source: "system",
     });
     rpc({
@@ -253,7 +253,7 @@ describe("permission proxy", () => {
   });
 
   it("denies when the broker is gone, rather than reporting an empty answer", async () => {
-    answerWith = () => ({ behavior: "deny", message: "dusk bot: permission broker unavailable" });
+    answerWith = () => ({ behavior: "deny", message: "madani bot: permission broker unavailable" });
     rpc({
       jsonrpc: "2.0",
       id: 2,

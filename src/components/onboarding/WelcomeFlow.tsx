@@ -38,7 +38,7 @@ type Config = ReturnType<typeof useStore>["state"]["config"];
 /** A genuine first run on this computer's own page names the person after its account, where their profile has none
  * (never on a Cloud, a Team Cloud or a remote page). The name stays theirs to change in Settings. */
 async function nameFromComputer(config: Config, done: (config: NonNullable<Config>) => void): Promise<void> {
-  const bridge = window.duskDesktop;
+  const bridge = window.madaniDesktop;
   if (!config || config.onboarding?.completedAt || config.profile?.name?.trim() || config.cloudHome || config.team) return;
   if (!localDesktopPage() || bridge?.remoteClient?.active) return;
   const name = await bridge?.desktopProfile?.systemName().catch(() => null);
@@ -73,9 +73,9 @@ export function trapTab(event: ReactKeyboardEvent<HTMLElement>, root: HTMLElemen
   }
 }
 
-/** The first run, one calm screen at a time: the welcome, an AI, a dusk bot account, where the bots live, what other AI
- * apps here hold and the prompt for AIs online, the phone (while the phone app is offered). It ends in Dusk's chat (Dusk made the Chief of Staff where no other
- * bot is one), where Dusk greets and asks for whatever is still missing. On dusk cloud it is the browser (account, plan and
+/** The first run, one calm screen at a time: the welcome, an AI, a madani bot account, where the bots live, what other AI
+ * apps here hold and the prompt for AIs online, the phone (while the phone app is offered). It ends in Madani's chat (Madani made the Chief of Staff where no other
+ * bot is one), where Madani greets and asks for whatever is still missing. On madani cloud it is the browser (account, plan and
  * checkout there, this screen waiting beside it), the AI while the Cloud is made, then the Cloud, ending in that Cloud's chat. */
 export function WelcomeFlow({
   onDone,
@@ -116,9 +116,9 @@ export function WelcomeFlow({
     window.addEventListener("focus", read);
     return () => { alive = false; stop(); window.removeEventListener("focus", read); };
   }, [account]);
-  const desktop = !embedded && localDesktopPage() && window.duskDesktop?.remoteClient?.active !== true;
+  const desktop = !embedded && localDesktopPage() && window.madaniDesktop?.remoteClient?.active !== true;
   const draft = useMemo(() => (keepsDraft ? readWelcomeDraft() : null), [keepsDraft]);
-  // where the bots live, once picked; a resumed dusk cloud run past its checkout is paid for (the AI or the Cloud being made)
+  // where the bots live, once picked; a resumed madani cloud run past its checkout is paid for (the AI or the Cloud being made)
   const [path, setPath] = useState<FunnelPath | null>(draft?.cloud === true ? "cloud" : null);
   const [paid, setPaid] = useState(draft?.cloud === true && (draft.beat === "ai" || draft.beat === "bring" || draft.beat === "making"));
   const [checkoutStart, setCheckoutStart] = useState(false);
@@ -156,7 +156,7 @@ export function WelcomeFlow({
   // requires one
   const accountStep = Boolean(account) && (!firstKnown.current?.signedIn || firstKnown.current.website === "open");
   const stepsFor = (picked: FunnelPath | null) => funnelSteps({ account: accountStep, desktop, bring: offersMove,
-    path: picked, hello: window.duskDesktop?.remoteClient?.active !== true, phone: phoneAppPrompted(), permissions, cloudBring, aiAsked: cloudHome && !replay });
+    path: picked, hello: window.madaniDesktop?.remoteClient?.active !== true, phone: phoneAppPrompted(), permissions, cloudBring, aiAsked: cloudHome && !replay });
   const steps = stepsFor(path);
 
   const [at, setAt] = useState<FunnelStep>(() => resumeBeat(steps, saved));
@@ -216,7 +216,7 @@ export function WelcomeFlow({
     [at, path, dispatch, onDone, replay, embedded, keepsDraft, cloudHome],
   );
 
-  // where it fits, Dusk becomes the Chief of Staff and greets in its chat, with no screen to ask
+  // where it fits, Madani becomes the Chief of Staff and greets in its chat, with no screen to ask
   const toChat = useCallback(() => {
     if (finishing.current) return;
     const chief = Boolean(maus && chiefStepFits(state.bots, maus));
@@ -235,12 +235,12 @@ export function WelcomeFlow({
   const back = previousStep(steps, at, { paid });
 
 
-  // dusk cloud: straight to the browser for the account, the plan and the checkout, with this screen waiting beside it.
+  // madani cloud: straight to the browser for the account, the plan and the checkout, with this screen waiting beside it.
   // Paid, the AI comes next while the Cloud is made. A window that can't buy here opens the plans page and goes on.
   const placeSheet = usePlaceSetupOpen();
   const chooseCloud = () => {
     track("onboarding_place", { choice: "cloud" });
-    if (window.duskDesktop?.cloudAccount && window.duskDesktop.remoteClient?.active !== true) {
+    if (window.madaniDesktop?.cloudAccount && window.madaniDesktop.remoteClient?.active !== true) {
       setPath("cloud");
       setCheckoutStart(true);
       setFrom("next");
@@ -257,9 +257,9 @@ export function WelcomeFlow({
     setAt("ai");
   }, []);
 
-  // an account that already has dusk cloud (bought on the website, or earlier) is never asked where the bots live: on
+  // an account that already has madani cloud (bought on the website, or earlier) is never asked where the bots live: on
   // reaching the place or the checkout it goes on as if that checkout had just completed
-  const cloudAccount = desktop && !replay ? window.duskDesktop?.cloudAccount : undefined;
+  const cloudAccount = desktop && !replay ? window.madaniDesktop?.cloudAccount : undefined;
   const [owned, setOwned] = useState(false);
   useEffect(() => {
     if (!cloudAccount || paid) return;
@@ -301,7 +301,7 @@ export function WelcomeFlow({
     const picked = websiteSeen.current && desktop ? known.website : undefined;
     websiteSeen.current = false;
     if (picked === "free") { track("onboarding_place", { choice: "mac", via: "website" }); toMac(); return; }
-    if (picked === "cloud" && window.duskDesktop?.cloudAccount) {
+    if (picked === "cloud" && window.madaniDesktop?.cloudAccount) {
       track("onboarding_place", { choice: "cloud", via: "website" });
       setPath("cloud");
       setCheckoutStart(false);
@@ -370,7 +370,7 @@ export function WelcomeFlow({
       body = <MakingStep onOpened={() => void finish("completed", null)} />;
       break;
     case "permissions": {
-      const relaunch = window.duskDesktop?.relaunch;
+      const relaunch = window.madaniDesktop?.relaunch;
       body = macAccess ? <PermissionsStep bridge={macAccess} relaunch={relaunch ? () => void relaunch().catch(() => {}) : null}
         onNext={(how, granted) => { track("onboarding_permissions", { action: how, granted }); next(); }} /> : null;
       break;

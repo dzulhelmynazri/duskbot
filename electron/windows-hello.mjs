@@ -35,7 +35,7 @@ const CSHARP = String.raw`
 using System;
 using System.Runtime.InteropServices;
 using System.Threading;
-public static class DuskHello {
+public static class MadaniHello {
   [DllImport("combase.dll")] static extern int WindowsCreateString([MarshalAs(UnmanagedType.LPWStr)] string s, int length, out IntPtr h);
   [DllImport("combase.dll")] static extern int WindowsDeleteString(IntPtr h);
   [DllImport("combase.dll")] static extern int RoGetActivationFactory(IntPtr classId, ref Guid iid, out IntPtr factory);
@@ -115,7 +115,7 @@ export const WINDOWS_HELLO_SCRIPT = [
   "try {",
   `  Add-Type -Language CSharp -TypeDefinition @'${CSHARP}'@`,
   "} catch { [Console]::Out.WriteLine('error=compile'); exit 2 }",
-  "[DuskHello]::Run([string]$env:DUSK_HELLO_MODE, [long]('0' + $env:DUSK_HELLO_HWND), [string]$env:DUSK_HELLO_REASON)",
+  "[MadaniHello]::Run([string]$env:MADANI_HELLO_MODE, [long]('0' + $env:MADANI_HELLO_HWND), [string]$env:MADANI_HELLO_REASON)",
 ].join("\n");
 
 export function encodedCommand(script = WINDOWS_HELLO_SCRIPT) {
@@ -168,7 +168,7 @@ export function runWindowsHello({ hwnd = "0", reason = "", mode = "verify", time
     let child;
     try {
       child = spawn(windowsPowerShell(env), ["-NoLogo", "-NoProfile", "-NonInteractive", "-ExecutionPolicy", "Bypass", "-EncodedCommand", encodedCommand()], {
-        env: { ...env, DUSK_HELLO_MODE: mode, DUSK_HELLO_HWND: String(hwnd), DUSK_HELLO_REASON: String(reason) },
+        env: { ...env, MADANI_HELLO_MODE: mode, MADANI_HELLO_HWND: String(hwnd), MADANI_HELLO_REASON: String(reason) },
         stdio: ["ignore", "pipe", "ignore"],
         windowsHide: true,
       });

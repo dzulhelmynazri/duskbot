@@ -6,17 +6,17 @@ import { fileURLToPath } from "node:url";
 import { expect, it } from "vitest";
 import { resolveAgentBrowserBinary } from "../../server/browser-engine.ts";
 import { removeTempDir, waitForExit } from "../../server/testing/cleanup.ts";
-import { runControlDusk } from "../control-dusk.ts";
-import { UI_TOOLS_DIR } from "./control-dusk-ui.ts";
+import { runControlMadani } from "../control-madani.ts";
+import { UI_TOOLS_DIR } from "./control-madani-ui.ts";
 
 const ROOT = fileURLToPath(new URL("../..", import.meta.url));
-const enabled = process.env.DUSK_UI_E2E === "1" || Boolean(resolveAgentBrowserBinary({ dataDir: UI_TOOLS_DIR, env: process.env }));
+const enabled = process.env.MADANI_UI_E2E === "1" || Boolean(resolveAgentBrowserBinary({ dataDir: UI_TOOLS_DIR, env: process.env }));
 
 (enabled ? it : it.skip)("coordinates from the real composer and opens the exact child task from its existing inline receipt", async () => {
-  const temporary = mkdtempSync(join(tmpdir(), "dusk-direct-ui-plan-"));
+  const temporary = mkdtempSync(join(tmpdir(), "madani-direct-ui-plan-"));
   const planPath = join(temporary, "plan.json");
   writeFileSync(planPath, "{}");
-  const child = spawn(process.execPath, ["--experimental-strip-types", "scripts/control-dusk.ts", "ui", "launch"], {
+  const child = spawn(process.execPath, ["--experimental-strip-types", "scripts/control-madani.ts", "ui", "launch"], {
     cwd: ROOT, env: { ...process.env, FAKE_CLAUDE_ROOM_PLAN: planPath }, stdio: ["ignore", "pipe", "pipe"],
   });
   let output = "";
@@ -38,7 +38,7 @@ const enabled = process.env.DUSK_UI_E2E === "1" || Boolean(resolveAgentBrowserBi
       if (!response.ok) throw new Error(JSON.stringify(result));
       return result;
     };
-    const ui = (verb: string, ...args: string[]) => runControlDusk(["ui", verb, "--ui", info.ui, ...args]) as Promise<any>;
+    const ui = (verb: string, ...args: string[]) => runControlMadani(["ui", verb, "--ui", info.ui, ...args]) as Promise<any>;
     const snapshot = async () => (await ui("snapshot")).snapshot as string;
     const click = async (name: string, role = "button") => {
       const refs = (await ui("snapshot")).refs as Record<string, { role: string; name: string }>;

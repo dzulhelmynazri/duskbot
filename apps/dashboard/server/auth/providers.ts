@@ -6,13 +6,13 @@ import { createJwtVerifier, decodeJws, fetchJson, signEs256Jwt } from "./jwt.ts"
 export interface ProviderConfig {
   clientId: string; clientSecret?: string; authorizeUrl: string; tokenUrl: string; revokeUrl?: string; jwksUrl?: string; issuers?: string[]; scopes: string;
   apple?: { teamId: string; keyId: string; privateKey: string };
-  /** apple: the native apps' bundle ids (bot.dusk.mobile) whose identity tokens /api/cloud/app/sign-in/apple accepts */
+  /** apple: the native apps' bundle ids (bot.madani.mobile) whose identity tokens /api/cloud/app/sign-in/apple accepts */
   nativeClientIds?: string[];
 }
 export type ProviderConfigs = Partial<Record<OAuthProvider, ProviderConfig>>;
 /** `refreshToken`: Apple's, kept (sealed) only so the account's deletion can revoke it, with the client id that got it
  *  (`refreshClient`: the website's services id, or the iphone app's bundle id); `privateEmail`: an apple private relay
- *  address, which only gets mail from a registered email source (account@dusk.bot) */
+ *  address, which only gets mail from a registered email source (account@madani.bot) */
 /** `picture`: the provider's https profile photo (google); apple shares none */
 export interface ProviderProfile { subject: string; email: string | null; label: string | null; name: string | null; picture?: string | null; refreshToken?: string; refreshClient?: string; privateEmail?: boolean }
 export interface NativeAppleInput { identityToken: string; authorizationCode: string; nonce: string; givenName?: string | null; familyName?: string | null }
@@ -128,24 +128,24 @@ export function providersFromEnv(env: NodeJS.ProcessEnv): ProviderConfigs {
     return value;
   }
   for (const id of OAUTH_PROVIDERS) {
-    const prefix = `DUSK_AUTH_${id.toUpperCase()}_`;
+    const prefix = `MADANI_AUTH_${id.toUpperCase()}_`;
     if (!Object.keys(env).some(key => key.startsWith(prefix) && env[key] !== undefined)) continue;
     const clientId = required(`${prefix}CLIENT_ID`);
     if (id === "google") configs.google = { ...defaults.google, clientId, clientSecret: required(`${prefix}CLIENT_SECRET`) };
     else {
       const teamId = required(`${prefix}TEAM_ID`), keyId = required(`${prefix}KEY_ID`);
       let privateKey: string;
-      // a pem with escaped newlines, or the pem base64-encoded on one line (what dusk.env holds: no spaces for `. .env`)
-      if (env.DUSK_AUTH_APPLE_PRIVATE_KEY) privateKey = env.DUSK_AUTH_APPLE_PRIVATE_KEY.includes("-----BEGIN") ? env.DUSK_AUTH_APPLE_PRIVATE_KEY.replace(/\\n/g, "\n") : Buffer.from(env.DUSK_AUTH_APPLE_PRIVATE_KEY.trim(), "base64").toString("utf8");
-      else if (env.DUSK_AUTH_APPLE_PRIVATE_KEY_FILE) {
-        try { privateKey = readFileSync(env.DUSK_AUTH_APPLE_PRIVATE_KEY_FILE, "utf8"); } catch { throw new Error("Cannot read DUSK_AUTH_APPLE_PRIVATE_KEY_FILE."); }
-      } else throw new Error("Missing DUSK_AUTH_APPLE_PRIVATE_KEY or DUSK_AUTH_APPLE_PRIVATE_KEY_FILE for sign-in provider.");
+      // a pem with escaped newlines, or the pem base64-encoded on one line (what madani.env holds: no spaces for `. .env`)
+      if (env.MADANI_AUTH_APPLE_PRIVATE_KEY) privateKey = env.MADANI_AUTH_APPLE_PRIVATE_KEY.includes("-----BEGIN") ? env.MADANI_AUTH_APPLE_PRIVATE_KEY.replace(/\\n/g, "\n") : Buffer.from(env.MADANI_AUTH_APPLE_PRIVATE_KEY.trim(), "base64").toString("utf8");
+      else if (env.MADANI_AUTH_APPLE_PRIVATE_KEY_FILE) {
+        try { privateKey = readFileSync(env.MADANI_AUTH_APPLE_PRIVATE_KEY_FILE, "utf8"); } catch { throw new Error("Cannot read MADANI_AUTH_APPLE_PRIVATE_KEY_FILE."); }
+      } else throw new Error("Missing MADANI_AUTH_APPLE_PRIVATE_KEY or MADANI_AUTH_APPLE_PRIVATE_KEY_FILE for sign-in provider.");
       try {
         const key = createPrivateKey(privateKey);
         if (key.asymmetricKeyType !== "ec" || key.asymmetricKeyDetails?.namedCurve !== "prime256v1") throw new Error();
-      } catch { throw new Error("Invalid DUSK_AUTH_APPLE_PRIVATE_KEY or DUSK_AUTH_APPLE_PRIVATE_KEY_FILE: expected a P-256 private key."); }
-      const nativeClientIds = (env.DUSK_AUTH_APPLE_NATIVE_CLIENT_IDS ?? "").split(",").map(value => value.trim()).filter(Boolean);
-      if (nativeClientIds.some(value => !/^[A-Za-z0-9.-]{1,155}$/.test(value))) throw new Error("Invalid DUSK_AUTH_APPLE_NATIVE_CLIENT_IDS: expected comma-separated bundle ids.");
+      } catch { throw new Error("Invalid MADANI_AUTH_APPLE_PRIVATE_KEY or MADANI_AUTH_APPLE_PRIVATE_KEY_FILE: expected a P-256 private key."); }
+      const nativeClientIds = (env.MADANI_AUTH_APPLE_NATIVE_CLIENT_IDS ?? "").split(",").map(value => value.trim()).filter(Boolean);
+      if (nativeClientIds.some(value => !/^[A-Za-z0-9.-]{1,155}$/.test(value))) throw new Error("Invalid MADANI_AUTH_APPLE_NATIVE_CLIENT_IDS: expected comma-separated bundle ids.");
       configs.apple = { ...defaults.apple, clientId, apple: { teamId, keyId, privateKey }, ...(nativeClientIds.length ? { nativeClientIds } : {}) };
     }
   }

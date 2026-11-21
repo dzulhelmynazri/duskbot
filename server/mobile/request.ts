@@ -5,7 +5,7 @@ import { hasTokenPrefix } from "../../electron/legacy-names.mjs";
 const APP_ORIGINS = new Set(["capacitor://localhost", "https://localhost", "http://localhost"]);
 const METHODS = new Set(["GET", "HEAD", "POST", "PUT", "PATCH", "DELETE"]);
 // cache-control: phone builds up to 1.0.1 send it on the live stream, and a refused preflight left them "Reconnecting" forever
-const HEADERS = ["Accept", "Authorization", "Cache-Control", "Content-Type", "Last-Event-ID", "X-Dusk-Background", "X-Dusk-Sha256"];
+const HEADERS = ["Accept", "Authorization", "Cache-Control", "Content-Type", "Last-Event-ID", "X-Madani-Background", "X-Madani-Sha256"];
 const VIEWER_SOCKET = /^\/api\/desktop-viewer\/(?:local\/(?:shared|bot-[a-f0-9]{64}|pool-\d+)|vps\/[\w-]+)\/websockify$/;
 
 export function isMobileOrigin(origin: string | string[] | undefined): origin is string {
@@ -50,7 +50,7 @@ export function mobileBearer(req: IncomingMessage, auth: RequestAuth): boolean {
 export function applyMobileCors(req: IncomingMessage, res: ServerResponse, auth: RequestAuth): void {
   if (!mobileBearer(req, auth)) return;
   allowOrigin(res, req.headers.origin!);
-  res.setHeader("access-control-expose-headers", "Content-Disposition, X-duskbot-Folder, X-Dusk-Cloud-Power");
+  res.setHeader("access-control-expose-headers", "Content-Disposition, X-madanibot-Folder, X-Madani-Cloud-Power");
 }
 
 export function takeViewerAccessToken(req: IncomingMessage, url: URL): string | null | undefined {

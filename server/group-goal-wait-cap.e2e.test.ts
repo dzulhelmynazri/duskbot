@@ -18,7 +18,7 @@ let home = "";
 let base = "";
 let stderr = "";
 
-const envelope = (payload: Record<string, string>) => `<dusk-goal>${JSON.stringify(payload)}</dusk-goal>`;
+const envelope = (payload: Record<string, string>) => `<madani-goal>${JSON.stringify(payload)}</madani-goal>`;
 
 // turn 1 assigns the worker that never frees up; turn 2 (after the harness note) reassigns to the helper; turn 3 completes
 const reassignLeadReplies = [
@@ -44,8 +44,8 @@ const fixture = (displayName: string, environment: Record<string, string>) => ({
 });
 
 beforeAll(async () => {
-  home = mkdtempSync(join(tmpdir(), "dusk-goal-wait-cap-"));
-  const data = join(home, ".duskbot");
+  home = mkdtempSync(join(tmpdir(), "madani-goal-wait-cap-"));
+  const data = join(home, ".madanibot");
   const staticDir = join(home, "static");
   mkdirSync(data, { recursive: true });
   mkdirSync(join(staticDir, "assets"), { recursive: true });
@@ -76,11 +76,11 @@ beforeAll(async () => {
       ...(process.env.SystemRoot ? { SystemRoot: process.env.SystemRoot } : {}),
       HOME: home,
       USERPROFILE: home,
-      DUSK_PORT: String(port),
-      DUSK_WEBHOOK_PORT: String(port + 1),
-      DUSK_STATIC_DIR: staticDir,
+      MADANI_PORT: String(port),
+      MADANI_WEBHOOK_PORT: String(port + 1),
+      MADANI_STATIC_DIR: staticDir,
       // seconds, not minutes: the point of this file is the cap firing
-      DUSK_GOAL_WAIT_MAX_MS: "1500",
+      MADANI_GOAL_WAIT_MAX_MS: "1500",
     },
     stdio: ["ignore", "pipe", "pipe"],
   });

@@ -53,8 +53,8 @@ export function createHarnessClient(baseUrl: string, token: string, stop?: Abort
 }
 
 /** The client a spawned proxy was given:
- *   DUSK_HARNESS_URL  base URL of the harness (http://127.0.0.1:8799)
- *   DUSK_COMMS_TOKEN  the capability token for the internal endpoints */
+ *   MADANI_HARNESS_URL  base URL of the harness (http://127.0.0.1:8799)
+ *   MADANI_COMMS_TOKEN  the capability token for the internal endpoints */
 export function harnessClientFromEnv(env: NodeJS.ProcessEnv, stop?: AbortSignal): HarnessClient {
-  return createHarnessClient(env.DUSK_HARNESS_URL ?? "http://127.0.0.1:8799", env.DUSK_COMMS_TOKEN ?? "", stop);
+  return createHarnessClient(env.MADANI_HARNESS_URL ?? "http://127.0.0.1:8799", env.MADANI_COMMS_TOKEN ?? "", stop);
 }

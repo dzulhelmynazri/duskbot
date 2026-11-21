@@ -87,7 +87,7 @@ describe.skipIf(process.platform === "win32")("Kimi Code sign-in with a device c
       instanceId: "kimi", displayName: "Kimi", enabled: true,
       config: KimiAgentDriver.decodeConfig({ cli: FAKE_KIMI }),
       // A stray Moonshot key must not reach the subscription login.
-      environment: { HOME: home, USERPROFILE: home, DUSK_DEVICE_AUTH_FIXTURE: "1", FAKE_KIMI_MODE: mode, MOONSHOT_API_KEY: "sk-fixture-must-not-leak", ...environment },
+      environment: { HOME: home, USERPROFILE: home, MADANI_DEVICE_AUTH_FIXTURE: "1", FAKE_KIMI_MODE: mode, MOONSHOT_API_KEY: "sk-fixture-must-not-leak", ...environment },
     });
     instances.push(instance);
     return instance;
@@ -99,7 +99,7 @@ describe.skipIf(process.platform === "win32")("Kimi Code sign-in with a device c
 
   beforeEach(() => {
     chmodSync(FAKE_KIMI, 0o755);
-    home = mkdtempSync(join(tmpdir(), "dusk-kimi-device-"));
+    home = mkdtempSync(join(tmpdir(), "madani-kimi-device-"));
     instances = [];
   });
   afterEach(async () => {
@@ -184,7 +184,7 @@ describe.skipIf(process.platform === "win32")("Kimi Code sign-in with a device c
   it("does not show a page on another host, and gives up waiting for one", async () => {
     const controller = new DeviceAuthController(KIMI_DEVICE_SIGN_IN, {
       cli: FAKE_KIMI, startupTimeoutMs: 1_000, terminateTimeoutMs: 50,
-      environment: () => ({ ...process.env, HOME: home, DUSK_DEVICE_AUTH_FIXTURE: "1", FAKE_KIMI_MODE: "evil" }),
+      environment: () => ({ ...process.env, HOME: home, MADANI_DEVICE_AUTH_FIXTURE: "1", FAKE_KIMI_MODE: "evil" }),
     });
     try {
       await expect(controller.start()).rejects.toThrow("Kimi did not provide a sign-in code in time");
@@ -212,7 +212,7 @@ describe.skipIf(process.platform === "win32")("Kimi Code sign-in with a device c
     const missing = await KimiAgentDriver.create({
       instanceId: "kimi-missing", displayName: "Kimi", enabled: true,
       config: KimiAgentDriver.decodeConfig({ cli: join(home, "no-such-kimi") }),
-      environment: { HOME: home, DUSK_DEVICE_AUTH_FIXTURE: "1" },
+      environment: { HOME: home, MADANI_DEVICE_AUTH_FIXTURE: "1" },
     });
     instances.push(missing);
     await expect(missing.startAuthentication!()).rejects.toThrow("Kimi is not installed on this server.");
@@ -222,7 +222,7 @@ describe.skipIf(process.platform === "win32")("Kimi Code sign-in with a device c
     const instance = await kimi("approve");
     const start = await instance.startAuthentication!();
     expect((await instance.getAuthentication!(start.flowId!)).phase).toBe("waiting");
-    writeFileSync(join(home, ".dusk-fake-kimi-approved"), "approve fixture only\n");
+    writeFileSync(join(home, ".madani-fake-kimi-approved"), "approve fixture only\n");
     await expect.poll(async () => (await instance.getAuthentication!(start.flowId!)).phase, { timeout: 5_000 }).toBe("succeeded");
   });
 });

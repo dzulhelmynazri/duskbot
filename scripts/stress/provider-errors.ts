@@ -7,11 +7,11 @@ import { mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { parseArgs } from "node:util";
-import { launchVerificationServer } from "../control-dusk.ts";
+import { launchVerificationServer } from "../control-madani.ts";
 import { fixtureApi } from "../testing/preview-fixture.ts";
 
 const { values } = parseArgs({ options: { only: { type: "string" } } });
-const scratch = mkdtempSync(join(tmpdir(), "dusk-provider-errors-"));
+const scratch = mkdtempSync(join(tmpdir(), "madani-provider-errors-"));
 const apiError = (text: string, kind: string, status?: number) => ({ FAKE_CLAUDE_MODE: "api-error", FAKE_CLAUDE_API_ERROR: text, FAKE_CLAUDE_API_ERROR_KIND: kind, ...(status ? { FAKE_CLAUDE_API_ERROR_STATUS: String(status) } : {}) });
 const CASES: Record<string, Record<string, string>> = {
   "429": apiError(`API Error: 429 {"type":"error","error":{"type":"rate_limit_error","message":"This request would exceed the rate limit for your organization of 50,000 input tokens per minute."},"request_id":"req_011CV1"}`, "rate_limit", 429),
@@ -24,7 +24,7 @@ const CASES: Record<string, Record<string, string>> = {
   "transient-after-output": { FAKE_CLAUDE_TRANSIENTS: "2", FAKE_CLAUDE_PARTIAL_FAILS: "1", FAKE_CLAUDE_STATE: join(scratch, "transients") },
   crash: { FAKE_CLAUDE_MODE: "exit-early" },
   malformed: { FAKE_CLAUDE_MODE: "malformed" },
-  hang: { FAKE_CLAUDE_MODE: "hang", DUSK_TEST_STALL_CLOCK: "1" },
+  hang: { FAKE_CLAUDE_MODE: "hang", MADANI_TEST_STALL_CLOCK: "1" },
 };
 // what a person must never read in a chat: provider payloads, codes, stack traces, our process plumbing
 const RAW = /API Error|rate_limit_error|api_error|request_id|req_011|\{"type"|overloaded_error|\bexit(?:ed)? (?:code|with)\b|fake-claude|\bat \S+\.(?:ts|js|mjs):\d+|ECONN|stderr|Internal server error/i;

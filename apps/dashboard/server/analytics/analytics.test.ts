@@ -23,7 +23,7 @@ describe("analytics", () => {
   let sink: ReturnType<typeof memorySink>;
   let analytics: ReturnType<typeof createAnalytics>;
   beforeEach(() => {
-    dataDir = mkdtempSync(join(tmpdir(), "dusk-analytics-test-"));
+    dataDir = mkdtempSync(join(tmpdir(), "madani-analytics-test-"));
     time = Date.parse("2026-11-12T10:00:00Z");
     sink = memorySink(() => time);
     analytics = createAnalytics({ sink, dataDir, now: () => time, trustProxy: true });
@@ -32,10 +32,10 @@ describe("analytics", () => {
 
   it("reads Cloudflare's visitor headers only when Cloudflare's edge is the proxy's peer", () => {
     const headers = { "user-agent": IPHONE, "cf-ipcountry": "IN", "cf-ipcity": "Pune", "cf-region": "Maharashtra", "cf-iplatitude": "18.52043", "cf-iplongitude": "73.85674" };
-    expect(requestContext(fakeReq(headers), { publicOrigin: "https://dusk.bot", trustProxy: true })).toEqual({ device: "mobile", os: "ios", browser: "safari", source: "direct", channel: "direct" });
+    expect(requestContext(fakeReq(headers), { publicOrigin: "https://madani.bot", trustProxy: true })).toEqual({ device: "mobile", os: "ios", browser: "safari", source: "direct", channel: "direct" });
     const edge = fakeReq({ ...headers, "x-forwarded-for": "198.51.100.7, 172.70.1.1" });
-    expect(requestContext(edge, { publicOrigin: "https://dusk.bot", trustProxy: false }).country).toBeUndefined();
-    expect(requestContext(edge, { publicOrigin: "https://dusk.bot", trustProxy: true })).toMatchObject({ country: "IN", city: "Pune", region: "Maharashtra", lat: 18.5, lon: 73.9 });
+    expect(requestContext(edge, { publicOrigin: "https://madani.bot", trustProxy: false }).country).toBeUndefined();
+    expect(requestContext(edge, { publicOrigin: "https://madani.bot", trustProxy: true })).toMatchObject({ country: "IN", city: "Pune", region: "Maharashtra", lat: 18.5, lon: 73.9 });
   });
 
   it("names channels from tags first, then the referrer, with AI assistants apart from search", () => {
@@ -127,13 +127,13 @@ describe("admin metrics", () => {
     expect(csvField("=HYPERLINK(1)")).toBe("\"'=HYPERLINK(1)\"");
     expect(csvField("a\"b")).toBe("\"a\"\"b\"");
     expect(csvField(null)).toBe("\"\"");
-    expect(healthTargets("link=https://link.dusk.bot/health, bad=ftp://x, =http://y, site=http://127.0.0.1:3106/")).toEqual([
-      { name: "link", url: "https://link.dusk.bot/health" }, { name: "site", url: "http://127.0.0.1:3106/" }]);
+    expect(healthTargets("link=https://link.madani.bot/health, bad=ftp://x, =http://y, site=http://127.0.0.1:3106/")).toEqual([
+      { name: "link", url: "https://link.madani.bot/health" }, { name: "site", url: "http://127.0.0.1:3106/" }]);
   });
 });
 
-// needs a replica set: DUSK_TEST_MONGODB_URI names a server whose user may drop DUSK_TEST_MONGODB_DB (default dusk_test)
-const uri = process.env.DUSK_TEST_MONGODB_URI, dbName = process.env.DUSK_TEST_MONGODB_DB || "dusk_test";
+// needs a replica set: MADANI_TEST_MONGODB_URI names a server whose user may drop MADANI_TEST_MONGODB_DB (default madani_test)
+const uri = process.env.MADANI_TEST_MONGODB_URI, dbName = process.env.MADANI_TEST_MONGODB_DB || "madani_test";
 describe.skipIf(!uri)("analytics in mongodb", () => {
   let client: MongoClient;
   afterAll(async () => { for (const name of ["analytics_events", "analytics_daily", "analytics_marks", "admin_audit"]) await client.db(dbName).collection(name).drop().catch(() => {}); await client.close(); });
@@ -162,14 +162,14 @@ describe.skipIf(!uri)("analytics in mongodb", () => {
 
 describe("ai crawlers", () => {
   it("keeps AI crawler requests apart, capped, with robots.txt and llms.txt by name", async () => {
-    const dataDir = mkdtempSync(join(tmpdir(), "dusk-crawl-test-"));
+    const dataDir = mkdtempSync(join(tmpdir(), "madani-crawl-test-"));
     const sink = memorySink(() => 1000);
     const analytics = createAnalytics({ sink, dataDir, now: () => 1000 });
-    analytics.crawlerVisit(fakeReq({ "user-agent": "Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko; compatible; GPTBot/1.2; +https://openai.com/gptbot)" }, "/llms.txt"), "dusk.bot");
-    analytics.crawlerVisit(fakeReq({ "user-agent": "Mozilla/5.0 (compatible; ChatGPT-User/1.0)" }, "/pricing?x=1"), "dusk.bot");
-    analytics.crawlerVisit(fakeReq({ "user-agent": SAFARI_UA }, "/"), "dusk.bot");
+    analytics.crawlerVisit(fakeReq({ "user-agent": "Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko; compatible; GPTBot/1.2; +https://openai.com/gptbot)" }, "/llms.txt"), "madani.bot");
+    analytics.crawlerVisit(fakeReq({ "user-agent": "Mozilla/5.0 (compatible; ChatGPT-User/1.0)" }, "/pricing?x=1"), "madani.bot");
+    analytics.crawlerVisit(fakeReq({ "user-agent": SAFARI_UA }, "/"), "madani.bot");
     await settle();
-    expect(await sink.crawls(0, 2000)).toEqual([{ at: 1000, bot: "GPTBot", kind: "training", path: "/llms.txt", host: "dusk.bot" }, { at: 1000, bot: "ChatGPT-User", kind: "answers", path: "/pricing", host: "dusk.bot" }]);
+    expect(await sink.crawls(0, 2000)).toEqual([{ at: 1000, bot: "GPTBot", kind: "training", path: "/llms.txt", host: "madani.bot" }, { at: 1000, bot: "ChatGPT-User", kind: "answers", path: "/pricing", host: "madani.bot" }]);
     expect(sink.all).toEqual([]);
     analytics.close(); rmSync(dataDir, { recursive: true, force: true });
   });

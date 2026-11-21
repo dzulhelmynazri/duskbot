@@ -65,8 +65,8 @@ export interface PoolHostDriver {
   destroySlot(hostId: string, slotId: string): Promise<void>;
 }
 
-/** the admin's signed requests to a cloud desktop's own dusk bot (server/cloud-home.ts) */
-/** a Team Cloud's team: DUSK_CLOUD_TEAM_ID and DUSK_CLOUD_TEAM_NAME on its machine */
+/** the admin's signed requests to a cloud desktop's own madani bot (server/cloud-home.ts) */
+/** a Team Cloud's team: MADANI_CLOUD_TEAM_ID and MADANI_CLOUD_TEAM_NAME on its machine */
 export interface CloudTeam { id: string; name: string }
 export interface TeamMemberClaim { email: string; role: "owner" | "admin" | "member" }
 export interface HomeClient {
@@ -106,7 +106,7 @@ export interface StoredCloud {
   id: string;
   accountId: string;
   name: string;
-  /** set at order for a team plan's cloud: its machine boots as a Team Cloud (DUSK_CLOUD_ROLE=team), so members pair to it */
+  /** set at order for a team plan's cloud: its machine boots as a Team Cloud (MADANI_CLOUD_ROLE=team), so members pair to it */
   team?: CloudTeam;
   color: CloudSwatch | null;
   kind: Exclude<DesktopKind, "none">;
@@ -125,7 +125,7 @@ export interface StoredCloud {
   ipv4: string | null;
   origin: string | null;
   destroyedOrigin?: string;
-  /** aes-256-gcm sealed when a key is configured; the signing key for its dusk bot */
+  /** aes-256-gcm sealed when a key is configured; the signing key for its madani bot */
   bootstrapSecret: string;
   workspaceId: string | null;
   primary: boolean;

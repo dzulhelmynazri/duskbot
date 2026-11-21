@@ -7,7 +7,7 @@ import { describe, expect, it } from "vitest";
 
 describe("bot desktop image icons", () => {
   it.skipIf(process.platform === "win32")("keeps installed icons, their link chains, folders and mime types while removing unrelated apps", () => {
-    const dir = mkdtempSync(join(tmpdir(), "dusk-desktop-icons-"));
+    const dir = mkdtempSync(join(tmpdir(), "madani-desktop-icons-"));
     const icons = join(dir, "icons");
     const applications = join(dir, "applications");
     const apps = join(icons, "Papirus", "48x48", "apps");
@@ -43,9 +43,9 @@ describe("bot desktop image icons", () => {
   });
 
   it.skipIf(process.platform === "win32")("hides the desktop's pointer: every cursor a toolkit may ask for is one transparent pixel", () => {
-    const dir = mkdtempSync(join(tmpdir(), "dusk-desktop-cursors-"));
+    const dir = mkdtempSync(join(tmpdir(), "madani-desktop-cursors-"));
     const adwaita = join(dir, "Adwaita", "cursors");
-    const theme = join(dir, "dusk-hidden");
+    const theme = join(dir, "madani-hidden");
     mkdirSync(adwaita, { recursive: true });
     writeFileSync(join(adwaita, "only-in-adwaita"), "");
     try {

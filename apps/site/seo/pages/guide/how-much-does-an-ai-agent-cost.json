@@ -42,11 +42,11 @@
   "sections": [
     {
       "h": "what the advertised prices cover",
-      "md": "**compare the bundle before comparing the number.** these prices are as of 12 november 2026. billing is monthly unless shown otherwise. the allowances measure different work.[^1][^2][^3][^4][^5][^6]\n\n| product | paid starting example | what else you pay for |\n| --- | --- | --- |\n| dusk bot | cloud plus $20 a month | personal desktop use is free; hosting and ai costs stay separate |\n| openclaw | software is free | model usage and any hosting are yours to pay |\n| hermes / nous portal | plus $20 a month | software is free; paid portal plans include a cloud agent |\n| manus | pro $20 a month | 4,000 monthly credits; max $200 has 40,000, then pay as you go |\n| poke | pro $19 a month | ultra $199 adds pay-as-you-go usage beyond credits |\n| n8n | cloud starter €20 a month, billed annually | 2,500 workflow executions; community self-hosting is free |\n\nn8n showed euros. keep that currency when comparing. manus credits, n8n executions and a provider's text usage aren't interchangeable units. a matching sticker price doesn't promise a matching result."
+      "md": "**compare the bundle before comparing the number.** these prices are as of 12 november 2026. billing is monthly unless shown otherwise. the allowances measure different work.[^1][^2][^3][^4][^5][^6]\n\n| product | paid starting example | what else you pay for |\n| --- | --- | --- |\n| madani bot | cloud plus $20 a month | personal desktop use is free; hosting and ai costs stay separate |\n| openclaw | software is free | model usage and any hosting are yours to pay |\n| hermes / nous portal | plus $20 a month | software is free; paid portal plans include a cloud agent |\n| manus | pro $20 a month | 4,000 monthly credits; max $200 has 40,000, then pay as you go |\n| poke | pro $19 a month | ultra $199 adds pay-as-you-go usage beyond credits |\n| n8n | cloud starter €20 a month, billed annually | 2,500 workflow executions; community self-hosting is free |\n\nn8n showed euros. keep that currency when comparing. manus credits, n8n executions and a provider's text usage aren't interchangeable units. a matching sticker price doesn't promise a matching result."
     },
     {
-      "h": "the dusk bill and the ai bill",
-      "md": "**pay for the home you need, then add the ai.** dusk personal desktop use includes every feature. work use needs a work license. your own server costs nothing from dusk; you pay the host and maintain it.[^1][^7][^13]\n\ncloud choices:\n\n- **plus:** $20 monthly or $200 yearly; keeps a good amount of bots working\n- **pro:** $50 monthly or $500 yearly; for heavy workloads, with a work license for one person\n- **team:** from $100 monthly\n\nyour ai provider bills usage separately.[^1]\n\n**example budget, not a typical bill:**\n\n```text\ncloud plus: $20 monthly\nclaude pro: $20 monthly\n$20 + $20 = $40 monthly\nbefore other charges or tax\n```\n\nthat adds the prices. it doesn't promise enough capacity for every job. all-night work uses your ai plan all night. heavy use can need a bigger plan or your own api key.[^1][^8]"
+      "h": "the madani bill and the ai bill",
+      "md": "**pay for the home you need, then add the ai.** madani personal desktop use includes every feature. work use needs a work license. your own server costs nothing from madani; you pay the host and maintain it.[^1][^7][^13]\n\ncloud choices:\n\n- **plus:** $20 monthly or $200 yearly; keeps a good amount of bots working\n- **pro:** $50 monthly or $500 yearly; for heavy workloads, with a work license for one person\n- **team:** from $100 monthly\n\nyour ai provider bills usage separately.[^1]\n\n**example budget, not a typical bill:**\n\n```text\ncloud plus: $20 monthly\nclaude pro: $20 monthly\n$20 + $20 = $40 monthly\nbefore other charges or tax\n```\n\nthat adds the prices. it doesn't promise enough capacity for every job. all-night work uses your ai plan all night. heavy use can need a bigger plan or your own api key.[^1][^8]"
     },
     {
       "h": "the ai plan is another line",
@@ -64,7 +64,7 @@
   "faq": [
     {
       "q": "can i run an ai agent without paying for software?",
-      "a": "**yes, but other costs can remain.** dusk personal desktop use is free. openclaw and hermes also list free software as of 12 november 2026. model usage and rented computers can still cost money.[^1][^2][^3]"
+      "a": "**yes, but other costs can remain.** madani personal desktop use is free. openclaw and hermes also list free software as of 12 november 2026. model usage and rented computers can still cost money.[^1][^2][^3]"
     },
     {
       "q": "why did my api bill cost more than the app?",
@@ -72,13 +72,13 @@
     },
     {
       "q": "does a $20 cloud plan include my ai?",
-      "a": "**dusk cloud plus does not.** it pays for the hosted computer. your provider bills the ai. compare other plans by what they include, not just the price.[^1]"
+      "a": "**madani cloud plus does not.** it pays for the hosted computer. your provider bills the ai. compare other plans by what they include, not just the price.[^1]"
     }
   ],
   "sources": [
     {
-      "label": "dusk bot: cloud pricing",
-      "url": "/docs/dusk-cloud"
+      "label": "madani bot: cloud pricing",
+      "url": "/docs/madani-cloud"
     },
     {
       "label": "openclaw: pricing on homepage",
@@ -106,7 +106,7 @@
       "checked": "2026-11-12"
     },
     {
-      "label": "dusk bot: licensing",
+      "label": "madani bot: licensing",
       "url": "/docs/faq"
     },
     {
@@ -135,7 +135,7 @@
       "checked": "2026-11-12"
     },
     {
-      "label": "dusk bot: personal use and ai billing",
+      "label": "madani bot: personal use and ai billing",
       "url": "/docs/account-and-billing"
     }
   ],

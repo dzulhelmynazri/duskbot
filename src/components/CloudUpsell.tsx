@@ -13,12 +13,12 @@ import { localDesktopPage } from "./onboarding/WelcomeGate";
 import { useCloudPlan } from "./ProIntroduction";
 import { deviceWord } from "./vps-link/parts";
 
-/** whether this computer's page may offer dusk cloud at all: someone who could buy it (signed out or free), no organization,
+/** whether this computer's page may offer madani cloud at all: someone who could buy it (signed out or free), no organization,
  * not already on a cloud or under a managed policy. null while the plan or organization is still loading. */
 export function useCloudUpsell(): { allowed: boolean | null; open: (source: CloudSource) => void } {
   const { state, dispatch } = useStore();
   const plan = useCloudPlan();
-  const organization = window.duskDesktop?.organization;
+  const organization = window.madaniDesktop?.organization;
   const [managed, setManaged] = useState<boolean | null>(organization ? null : false);
   useEffect(() => {
     if (!organization) return;
@@ -30,7 +30,7 @@ export function useCloudUpsell(): { allowed: boolean | null; open: (source: Clou
     void organization.state().then(next => { if (!updated) accept(next); }).catch(() => {});
     return () => { active = false; unsubscribe(); };
   }, [organization]);
-  const here = !storeApp() && localDesktopPage() && window.duskDesktop?.remoteClient?.active !== true && Boolean(state.config)
+  const here = !storeApp() && localDesktopPage() && window.madaniDesktop?.remoteClient?.active !== true && Boolean(state.config)
     && !state.config?.cloudHome && !state.config?.managedPolicy;
   const allowed = cloudUpsellAllowed({ here, view: plan?.view ?? null, managed });
   const signedOut = plan?.view.kind === "signed-out";
@@ -43,8 +43,8 @@ const INVESTED_LINE = { bots: "cloudUpsell.invested.bots", messages: "cloudUpsel
 // the invested pitch holds the card for the rest of the launch it first showed in
 let launchInvested: InvestedFacts | null = null;
 
-/** the dusk cloud offer in the sidebar's spot, in Give feedback's place, as the website's sidebar card: at most twice a
- * day the app is used (lib/cloud-nudge.ts), never during first run, and only for an account without dusk cloud. A launch
+/** the madani cloud offer in the sidebar's spot, in Give feedback's place, as the website's sidebar card: at most twice a
+ * day the app is used (lib/cloud-nudge.ts), never during first run, and only for an account without madani cloud. A launch
  * that already showed a cloud notice in the corner leaves it out, so the pitch is said once. Someone clearly invested
  * (shared/cloud-upsell.ts INVESTED) gets it in their own numbers instead, once per account. `covered`: an update holds the
  * spot, so no showing starts under it. */
@@ -59,7 +59,7 @@ function useSidebarOfferCta(covered: boolean): SpotCta | null {
   const [, setTick] = useState(0);
   useSyncExternalStore(watchNudge, nudgeVersion, nudgeVersion);
   const settled = firstReplyPending(state) === false && !firstChatQuiet(state) && !state.welcomeOpen;
-  // a corner cloud card claiming this launch hides this one right away: one dusk cloud offer on screen at a time
+  // a corner cloud card claiming this launch hides this one right away: one madani cloud offer on screen at a time
   const notice = useSyncExternalStore(watchLaunchNotice, launchNotice, () => null);
   const eligible = !covered && nudgeEligible({ allowed, settled, cornerCard: Boolean(notice && CLOUD_NOTICES.has(notice)) });
   const showing = nudgeShowing();

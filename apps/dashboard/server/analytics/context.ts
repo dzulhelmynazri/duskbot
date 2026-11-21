@@ -4,9 +4,9 @@ import { classify, type Channel } from "./sources.ts";
 
 /** where an event came from, shared by every event kind; each field is optional and coarse on purpose */
 export interface EventContext {
-  /** the site's anonymous visitor id (the dusk_vid cookie), or a daily hash where no cookie exists */
+  /** the site's anonymous visitor id (the madani_vid cookie), or a daily hash where no cookie exists */
   visitor?: string;
-  /** one site visit (dusk_sid, 30 minutes idle), one tab of the account page, or one app session */
+  /** one site visit (madani_sid, 30 minutes idle), one tab of the account page, or one app session */
   session?: string;
   /** one page view, so its end (site_leave) can be matched to it */
   pv?: string;

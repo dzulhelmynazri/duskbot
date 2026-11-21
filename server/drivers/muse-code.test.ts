@@ -148,7 +148,7 @@ describe("Muse Code's process", () => {
   });
 
   const fakeMuse = () => {
-    root = mkdtempSync(join(tmpdir(), "dusk-muse-launch-"));
+    root = mkdtempSync(join(tmpdir(), "madani-muse-launch-"));
     const log = join(root, "launches.jsonl");
     writeFileSync(join(root, "fake-muse.mjs"), FAKE_MUSE_SERVE);
     const cli = join(root, process.platform === "win32" ? "muse.cmd" : "muse");
@@ -163,7 +163,7 @@ describe("Muse Code's process", () => {
   it.skipIf(process.platform === "win32")("starts through the shared launcher, in the conversation's engine home, and stops with the instance", async () => {
     const { cli, log } = fakeMuse();
     const home = join(root, "home");
-    const dataDir = join(home, ".duskbot");
+    const dataDir = join(home, ".madanibot");
     mkdirSync(dataDir, { recursive: true });
     engineHomes.start({ dataDir, serverHome: home, audienceOf: () => "member:p_bob", threads: () => [], log: () => {} });
     const spawned = vi.spyOn(procs, "spawnCli");
@@ -194,7 +194,7 @@ describe("Muse Code's process", () => {
   describe("session MCP names", () => {
     const injected = { command: "fixture-mcp", args: ["serve"], env: { FIXTURE_MODE: "local", FIXTURE_FORMAT: "json" } };
     const remote = { type: "streamable-http", url: "https://example.invalid/mcp" };
-    const retainedProject = { sentry: remote, sentry_duskbot: remote };
+    const retainedProject = { sentry: remote, sentry_madanibot: remote };
     const notFound = { error: { code: -32020, message: "session not found", data: { kind: "sessionNotFound" } } };
     const scenarios: Array<{
       name: string;
@@ -217,47 +217,47 @@ describe("Muse Code's process", () => {
       { name: "reuses the same enabled stdio connection", saved: { sentry: { ...injected, env: { FIXTURE_FORMAT: "json", FIXTURE_MODE: "local" } } },
         mounts: { sentry: injected }, expected: [] },
       { name: "renames an injected connection with distinct settings", saved: { sentry: remote }, mounts: { sentry: injected },
-        expected: ["sentry_duskbot"] },
-      { name: "reserves names in legacy user settings", saved: { sentry: remote, sentry_duskbot: remote }, legacyUser: true,
-        mounts: { sentry: injected }, expected: ["sentry_duskbot2"] },
+        expected: ["sentry_madanibot"] },
+      { name: "reserves names in legacy user settings", saved: { sentry: remote, sentry_madanibot: remote }, legacyUser: true,
+        mounts: { sentry: injected }, expected: ["sentry_madanibot2"] },
       { name: "reuses equivalent legacy user settings", saved: { sentry: injected }, legacyUser: true,
         mounts: { sentry: injected }, expected: [] },
       { name: "reserves disabled names without reusing their connections", saved: { sentry: { ...injected, enabled: false } },
-        mounts: { sentry: injected }, expected: ["sentry_duskbot"] },
+        mounts: { sentry: injected }, expected: ["sentry_madanibot"] },
       { name: "reserves names declared by the workspace", saved: {}, project: { sentry: remote },
-        mounts: { sentry: injected }, expected: ["sentry_duskbot"] },
+        mounts: { sentry: injected }, expected: ["sentry_madanibot"] },
       { name: "checks the effective project entry before reusing a saved connection", saved: { sentry: injected },
-        project: { sentry: remote, sentry_duskbot: remote }, mounts: { sentry: injected }, expected: ["sentry_duskbot2"] },
+        project: { sentry: remote, sentry_madanibot: remote }, mounts: { sentry: injected }, expected: ["sentry_madanibot2"] },
       { name: "resolves project overrides and suffixes through a linked workspace on resume", saved: { sentry: injected },
-        project: { sentry: remote, sentry_duskbot: remote, sentry_duskbot2: remote }, linkedWorkspace: true,
-        mounts: { sentry: injected }, expected: ["sentry_duskbot3"], resumeCursor: "s-1",
-        system: "Use mcp__sentry__lookup.", expectedSystem: "Use mcp__sentry_duskbot3__lookup." },
+        project: { sentry: remote, sentry_madanibot: remote, sentry_madanibot2: remote }, linkedWorkspace: true,
+        mounts: { sentry: injected }, expected: ["sentry_madanibot3"], resumeCursor: "s-1",
+        system: "Use mcp__sentry__lookup.", expectedSystem: "Use mcp__sentry_madanibot3__lookup." },
       { name: "ignores the legacy key in a workspace", saved: {}, legacyProject: { sentry: remote },
         mounts: { sentry: injected }, expected: ["sentry"] },
       { name: "uses the modern workspace key when both are present", saved: {}, project: { sentry: remote },
-        legacyProject: { sentry_duskbot: remote }, mounts: { sentry: injected }, expected: ["sentry_duskbot"] },
+        legacyProject: { sentry_madanibot: remote }, mounts: { sentry: injected }, expected: ["sentry_madanibot"] },
       { name: "keeps an empty modern workspace map empty when the legacy key has names", saved: {}, project: {},
         legacyProject: { sentry: remote }, mounts: { sentry: injected }, expected: ["sentry"] },
-      { name: "skips occupied fallbacks and reserves all original injected names", saved: { sentry: remote, sentry_duskbot: remote, sentry_duskbot2: remote, metrics: remote },
-        mounts: { sentry: injected, sentry_duskbot3: injected, metrics: injected }, expected: ["sentry_duskbot4", "sentry_duskbot3", "metrics_duskbot"] },
-      { name: "uses the resolved names and tool references on resume", saved: { sentry: remote }, mounts: { sentry: injected, sentry_duskbot: injected },
-        expected: ["sentry_duskbot2", "sentry_duskbot"], resumeCursor: "s-1",
-        system: "Use mcp__sentry__lookup or mcp__sentry_duskbot__lookup. Unrelated: mcp__other__lookup.",
-        expectedSystem: "Use mcp__sentry_duskbot2__lookup or mcp__sentry_duskbot__lookup. Unrelated: mcp__other__lookup." },
+      { name: "skips occupied fallbacks and reserves all original injected names", saved: { sentry: remote, sentry_madanibot: remote, sentry_madanibot2: remote, metrics: remote },
+        mounts: { sentry: injected, sentry_madanibot3: injected, metrics: injected }, expected: ["sentry_madanibot4", "sentry_madanibot3", "metrics_madanibot"] },
+      { name: "uses the resolved names and tool references on resume", saved: { sentry: remote }, mounts: { sentry: injected, sentry_madanibot: injected },
+        expected: ["sentry_madanibot2", "sentry_madanibot"], resumeCursor: "s-1",
+        system: "Use mcp__sentry__lookup or mcp__sentry_madanibot__lookup. Unrelated: mcp__other__lookup.",
+        expectedSystem: "Use mcp__sentry_madanibot2__lookup or mcp__sentry_madanibot__lookup. Unrelated: mcp__other__lookup." },
       { name: "uses the retained project instead of reusing its overridden user entry", saved: { sentry: injected },
-        resumeProject: retainedProject, resumeCursor: "s-1", mounts: { sentry: injected }, expected: ["sentry_duskbot2"],
-        system: "Use mcp__sentry__lookup.", expectedSystem: "Use mcp__sentry_duskbot2__lookup." },
+        resumeProject: retainedProject, resumeCursor: "s-1", mounts: { sentry: injected }, expected: ["sentry_madanibot2"],
+        system: "Use mcp__sentry__lookup.", expectedSystem: "Use mcp__sentry_madanibot2__lookup." },
       { name: "reserves a suffix from the retained workspace", saved: { sentry: remote },
-        resumeProject: retainedProject, resumeCursor: "s-1", mounts: { sentry: injected }, expected: ["sentry_duskbot2"] },
+        resumeProject: retainedProject, resumeCursor: "s-1", mounts: { sentry: injected }, expected: ["sentry_madanibot2"] },
       { name: "starts in the requested workspace when session read reports not found", saved: {}, project: { sentry: remote },
-        missingAt: "read", resumeCursor: "s-1", mounts: { sentry: injected }, expected: ["sentry_duskbot"] },
+        missingAt: "read", resumeCursor: "s-1", mounts: { sentry: injected }, expected: ["sentry_madanibot"] },
       { name: "starts in the requested workspace on the compatible notFound kind", saved: {}, project: { sentry: remote },
-        missingAt: "read", legacyNotFound: true, resumeCursor: "s-1", mounts: { sentry: injected }, expected: ["sentry_duskbot"] },
+        missingAt: "read", legacyNotFound: true, resumeCursor: "s-1", mounts: { sentry: injected }, expected: ["sentry_madanibot"] },
       { name: "rebuilds the requested mounts when the session disappears after reading it", saved: {}, project: { sentry: remote },
-        resumeProject: retainedProject, missingAt: "resume", resumeCursor: "s-1", mounts: { sentry: injected }, expected: ["sentry_duskbot"],
-        system: "Use mcp__sentry__lookup.", expectedSystem: "Use mcp__sentry_duskbot__lookup." },
+        resumeProject: retainedProject, missingAt: "resume", resumeCursor: "s-1", mounts: { sentry: injected }, expected: ["sentry_madanibot"],
+        system: "Use mcp__sentry__lookup.", expectedSystem: "Use mcp__sentry_madanibot__lookup." },
       { name: "keeps the tool selection gate on a retained equivalent connection", saved: {}, resumeProject: { sentry: injected },
-        scoped: true, resumeCursor: "s-1", mounts: { sentry: injected }, expected: ["sentry_duskbot"] },
+        scoped: true, resumeCursor: "s-1", mounts: { sentry: injected }, expected: ["sentry_madanibot"] },
     ];
 
     it.each(scenarios)("$name", async ({ saved, project, linkedWorkspace, legacyUser, legacyProject, resumeProject, missingAt, legacyNotFound, scoped, mounts, expected, resumeCursor, system, expectedSystem }) => {
@@ -321,7 +321,7 @@ describe("Muse Code's process", () => {
         if (missingAt === "resume") {
           expect(methods).toEqual(["session/read", "session/resume", "session/start", "turn/start"]);
           const resume = calls.find((call) => call.method === "session/resume");
-          expect(Object.keys(resume.params.config.mcpServers)).toEqual(["sentry_duskbot2"]);
+          expect(Object.keys(resume.params.config.mcpServers)).toEqual(["sentry_madanibot2"]);
         }
         expect(readFileSync(settings, "utf8")).toBe(contents);
         if (projectContents) expect(readFileSync(projectConfig, "utf8")).toBe(projectContents);
@@ -447,7 +447,7 @@ describe("Muse Code's process", () => {
     });
 
     it.each([null, [], {}, { sentry: remote }].map((modern) => ({ modern })))("leaves conflicting user keys for Muse to reject with modern value $modern", ({ modern }) => {
-      root = mkdtempSync(join(tmpdir(), "dusk-muse-settings-"));
+      root = mkdtempSync(join(tmpdir(), "madani-muse-settings-"));
       const configHome = join(root, "config");
       mkdirSync(join(configHome, "muse"), { recursive: true });
       const settings = join(configHome, "muse", "settings.json");

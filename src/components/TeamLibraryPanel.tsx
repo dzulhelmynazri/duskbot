@@ -58,8 +58,8 @@ const DIRECTORY_COLORS = ["cyan", "red", "purple", "green", "orange"] as const;
 const LEAVE_MS = 120;
 
 async function openExternal(url: string): Promise<void> {
-  if (window.duskDesktop?.openExternal) {
-    await window.duskDesktop.openExternal(url);
+  if (window.madaniDesktop?.openExternal) {
+    await window.madaniDesktop.openExternal(url);
     return;
   }
   const opened = window.open(url, "_blank", "noopener,noreferrer");
@@ -341,7 +341,7 @@ export function TeamLibraryPanel({
   };
 
   const pickScoutFolder = async () => {
-    const chosen = await window.duskDesktop?.pickFolder?.(scoutTarget || undefined);
+    const chosen = await window.madaniDesktop?.pickFolder?.(scoutTarget || undefined);
     if (!chosen) return;
     setScoutFolder(chosen);
     await runScout(chosen);
@@ -684,7 +684,7 @@ export function TeamLibraryPanel({
                       aria-label={t("templates.projectFolder")}
                       className="min-w-0 flex-1 rounded-xl bg-raised/80 px-3 py-2.5 text-[13px] text-ink placeholder:text-ink-secondary focus:outline-none"
                     />
-                    {Boolean(window.duskDesktop?.pickFolder) && (
+                    {Boolean(window.madaniDesktop?.pickFolder) && (
                       <button
                         onClick={() => void pickScoutFolder()}
                         disabled={scouting}

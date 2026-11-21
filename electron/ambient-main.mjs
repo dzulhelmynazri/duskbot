@@ -70,7 +70,7 @@ export function installAmbient({ ipcMain, BrowserWindow, page, origin, file, ope
       relayout("dock order");
     }
   };
-  // DUSK_AMBIENT_TRACE=1 or `trace: true` in the prefs file: a millisecond timeline of both surfaces (ambient-trace.mjs)
+  // MADANI_AMBIENT_TRACE=1 or `trace: true` in the prefs file: a millisecond timeline of both surfaces (ambient-trace.mjs)
   let rawPrefs = null;
   try { rawPrefs = file.read(); } catch { /* no prefs yet */ }
   const trace = given !== undefined ? given : traceWanted(process.env, rawPrefs) ? createTrace({ folder: traceFolder(platform) }) : null;
@@ -87,7 +87,7 @@ export function installAmbient({ ipcMain, BrowserWindow, page, origin, file, ope
   const read = readPage ?? (async (url) => {
     const contents = appPage();
     if (!contents) throw new Error("no page");
-    const response = await contents.session.fetch(url, { credentials: "include", headers: { "x-dusk-background": "1" } });
+    const response = await contents.session.fetch(url, { credentials: "include", headers: { "x-madani-background": "1" } });
     if (!response.ok) throw new Error(`${response.status}`);
     return response.json();
   });

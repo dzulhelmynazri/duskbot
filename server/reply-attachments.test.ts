@@ -14,7 +14,7 @@ const ID = (n: number) => `123e4567-e89b-42d3-a456-42661417400${n}`;
 
 const roots: string[] = [];
 afterEach(() => { for (const root of roots.splice(0)) rmSync(root, { recursive: true, force: true }); });
-const store = () => { const root = mkdtempSync(join(tmpdir(), "dusk-reply-attachments-")); roots.push(root); return root; };
+const store = () => { const root = mkdtempSync(join(tmpdir(), "madani-reply-attachments-")); roots.push(root); return root; };
 const picture = (root: string, n: number) => { const path = join(root, `${ID(n)}.png`); writeFileSync(path, PNG); return path; };
 
 const old = (patch: Partial<Message>): Message => ({ id: "old", at: 1, role: "user", kind: "text", text: "", ...patch });

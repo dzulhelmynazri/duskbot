@@ -34,7 +34,7 @@ describe("PageBoundary", () => {
   it("says the app updated, not the module address, when a part of it can't load after an update", async () => {
     vi.spyOn(console, "error").mockImplementation(() => {});
     // a reload already went out within the minute, so the page waits for the button
-    sessionStorage.setItem("dusk.staleChunkReloadAt", String(Date.now()));
+    sessionStorage.setItem("madani.staleChunkReloadAt", String(Date.now()));
     function Stale(): never {
       throw new TypeError("Failed to fetch dynamically imported module: http://127.0.0.1:5199/node_modules/.vite/deps/@hpke_core.js?v=1");
     }

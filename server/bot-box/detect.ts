@@ -1,5 +1,5 @@
 // Whether this machine can run the bot box, decided once at boot: on by default on a Cloud home, off everywhere else
-// unless DUSK_BOT_BOX=1 (or `required`, which a VPS install sets: there no bot's turn runs unboxed), and never on without a working unprivileged bubblewrap (a kernel that refuses user namespaces,
+// unless MADANI_BOT_BOX=1 (or `required`, which a VPS install sets: there no bot's turn runs unboxed), and never on without a working unprivileged bubblewrap (a kernel that refuses user namespaces,
 // or an image without bwrap, reports `off` with its reason rather than running turns unboxed by surprise: the report
 // says so, and the Admin shows it).
 import { spawnSync } from "node:child_process";
@@ -26,13 +26,13 @@ export interface DetectInput {
 
 /** A Cloud home (`home`, or the Team Cloud role `team`) boxes turns unless told not to. */
 export function cloudRole(env: Record<string, string | undefined>): boolean {
-  return env.DUSK_CLOUD_ROLE === "home" || env.DUSK_CLOUD_ROLE === "team";
+  return env.MADANI_CLOUD_ROLE === "home" || env.MADANI_CLOUD_ROLE === "team";
 }
 
-/** `DUSK_BOT_BOX`: unset (Cloud homes on, others off), 0/off, 1/on/bwrap, required (on, and a bot's turn that cannot be
+/** `MADANI_BOT_BOX`: unset (Cloud homes on, others off), 0/off, 1/on/bwrap, required (on, and a bot's turn that cannot be
  * boxed is refused rather than run unboxed). */
 export function boxWanted(env: Record<string, string | undefined>): "on" | "off" | "default" | "required" {
-  const raw = (env.DUSK_BOT_BOX ?? "").trim().toLowerCase();
+  const raw = (env.MADANI_BOT_BOX ?? "").trim().toLowerCase();
   if (raw === "0" || raw === "off" || raw === "false" || raw === "no") return "off";
   if (raw === "required") return "required";
   if (raw === "1" || raw === "on" || raw === "bwrap" || raw === "true" || raw === "yes") return "on";

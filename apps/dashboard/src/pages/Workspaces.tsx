@@ -50,7 +50,7 @@ function WorkspaceRow({ w, cloud }: { w: WorkspaceSummary; cloud: CloudDesktop |
   };
   const menu: MenuItem[] = [
     { label: "rename", onSelect: () => { setName(w.name); setError(null); setEditing(true); } },
-    cloud ? { label: "manage dusk cloud", onSelect: () => navigate("/cloud") } : { label: "remove", danger: true, disabled: clouds === null, onSelect: () => { setError(null); setRemoving(true); } },
+    cloud ? { label: "manage madani cloud", onSelect: () => navigate("/cloud") } : { label: "remove", danger: true, disabled: clouds === null, onSelect: () => { setError(null); setRemoving(true); } },
   ];
   const to = `/workspaces/${encodeURIComponent(w.id)}`;
   return (
@@ -105,7 +105,7 @@ export function WorkspacesPage() {
               <thead><tr><Th>name</Th><Th className="max-md:hidden">type</Th><Th className="max-sm:w-[120px]">status</Th><Th className="max-lg:hidden">version</Th><Th className="max-lg:hidden">connected</Th><Th className="w-0 max-sm:w-11"><span className="sr-only">more</span></Th></tr></thead>
               <tbody>{sorted.map((w) => <WorkspaceRow key={w.id} w={w} cloud={cloudForWorkspace(clouds, w.id)} />)}</tbody>
             </Table>
-          ) : <p className="py-2 text-14 text-ink-3">no workspaces yet. connect your mac or get dusk cloud below.</p>}
+          ) : <p className="py-2 text-14 text-ink-3">no workspaces yet. connect your mac or get madani cloud below.</p>}
         </section>
         <section id="add" className="enter mt-6 scroll-mt-20" style={{ ["--i" as string]: 2 }}>
           <Card>
@@ -114,7 +114,7 @@ export function WorkspacesPage() {
               <div className="min-w-0 md:pr-6">
                 <h3 className="mb-5 text-14 font-medium text-ink">your mac</h3>
                 <ol className="flex flex-col gap-5">
-                  <Step n={1} title="download dusk bot for mac"><ButtonLink to={DOWNLOAD_URL} external size="sm" className="mt-1.5">download</ButtonLink></Step>
+                  <Step n={1} title="download madani bot for mac"><ButtonLink to={DOWNLOAD_URL} external size="sm" className="mt-1.5">download</ButtonLink></Step>
                   <Step n={2} title="sign in with this account">it shows up here by itself a few seconds later.</Step>
                   <Step n={3} title="keep it awake">your bots run while the mac is on.</Step>
                 </ol>
@@ -128,38 +128,38 @@ export function WorkspacesPage() {
   );
 }
 
-/** the second way to run bots: dusk cloud, so they keep working when the mac sleeps */
+/** the second way to run bots: madani cloud, so they keep working when the mac sleeps */
 function CloudColumn({ hasCloud }: { hasCloud: boolean }) {
   const { catalog } = useCloud();
   const { busy, error, buy } = useQuickCheckout("dash_workspaces");
   const from = monthlyOf(catalog, "starter");
   return (
     <div className="min-w-0 max-md:pt-6 md:pl-6">
-      <h3 className="mb-2 text-14 font-medium text-ink">dusk cloud</h3>
+      <h3 className="mb-2 text-14 font-medium text-ink">madani cloud</h3>
       <p className="mb-5 text-14 text-ink-3">your bots on a computer we run, so they keep going when your mac sleeps.{from ? ` from ${from} a month.` : ""}</p>
       <Points />
       {error && <p role="alert" className="mt-4 text-14 text-bad">{error}</p>}
       <div className="mt-6 flex flex-wrap gap-2">
         {hasCloud
-          ? <ButtonLink to="/cloud" variant="primary">open dusk cloud</ButtonLink>
-          : <Button variant="primary" onClick={() => void buy("starter")} disabled={busy || !catalog}>{busy ? "opening checkout" : "get dusk cloud"}</Button>}
+          ? <ButtonLink to="/cloud" variant="primary">open madani cloud</ButtonLink>
+          : <Button variant="primary" onClick={() => void buy("starter")} disabled={busy || !catalog}>{busy ? "opening checkout" : "get madani cloud"}</Button>}
         <ButtonLink to="/billing">compare plans</ButtonLink>
       </div>
     </div>
   );
 }
 
-/** a server of the person's own: one quiet offer, on its own page, to move it to dusk cloud. the dusk bot app that linked
+/** a server of the person's own: one quiet offer, on its own page, to move it to madani cloud. the madani bot app that linked
  *  it runs the move (its bots, chats and memory go straight across), so the button opens the app there */
 function ServerToCloud({ w }: { w: WorkspaceSummary }) {
   const { catalog } = useCloud();
   const from = monthlyOf(catalog, "starter");
   return <div className="surface flex flex-wrap items-center justify-between gap-x-6 gap-y-3 rounded-card bg-card px-6 py-4">
     <div className="min-w-0 flex-1">
-      <p className="text-14 text-ink">move {w.name} to dusk cloud</p>
+      <p className="text-14 text-ink">move {w.name} to madani cloud</p>
       <p className="mt-1 text-13 text-ink-3">always on, with nothing to keep running. we handle updates and backups.{from ? ` from ${from} a month.` : ""}</p>
     </div>
-    <Button size="sm" onClick={() => openApp(appLink.serverMove(w.id), "opening dusk bot. the move starts there.")}>move to dusk cloud</Button>
+    <Button size="sm" onClick={() => openApp(appLink.serverMove(w.id), "opening madani bot. the move starts there.")}>move to madani cloud</Button>
   </div>;
 }
 
@@ -191,8 +191,8 @@ export function WorkspacePage({ id }: { id: string }) {
     {workspacesError && workspaces === null ? <LoadError error={workspacesError} retry={refresh} /> : workspaces === null ? <Skeleton className="h-60 !rounded-card" /> : !w ? <SkyEmpty title="that workspace is not on your account">it may have been removed. choose a workspace from the list.</SkyEmpty> : <>
       <header className="mb-8 flex items-center gap-4"><span className="grid size-14 shrink-0 place-items-center rounded-[12px] bg-card-2 text-ink-2" aria-hidden>{workspaceIcon(w, cloud, 24)}</span><div className="min-w-0 flex-1"><h1 className="t-title truncate">{w.name}</h1><div className="mt-1 flex flex-wrap items-center gap-x-4 gap-y-1 text-13 text-ink-3"><span>{KIND_LABEL(w.kind, cloud)}</span><FreshnessTag freshness={w.freshness} at={w.lastReportAt} now={now} cloud={cloud} /></div></div></header>
       <div className="flex flex-col gap-4">
-        {cloud && <div className="surface flex flex-wrap items-center justify-between gap-3 rounded-card bg-card px-6 py-4"><div className="min-w-0"><p className="text-14 text-ink">{tierName(catalog, cloud)} · {regionName(catalog, cloud.region)}</p><CloudStatus cloud={cloud} className="mt-1" /></div><ButtonLink to="/cloud" size="sm">open dusk cloud</ButtonLink></div>}
-        {!detail || selected?.id !== id || cloud?.resting ? <NumbersPending cloud={cloud} error={loadError ?? (selected?.id === id ? detailError : null)} retry={retry} className="h-60 !rounded-card" /> : !detail.report ? <SkyEmpty title="waiting for its first report">keep dusk bot running there. its first report usually arrives in a few seconds.</SkyEmpty> : <><MachineView detail={detail} now={now} /><WorkspaceDevices detail={detail} now={now} ready={selected?.id === id} /></>}
+        {cloud && <div className="surface flex flex-wrap items-center justify-between gap-3 rounded-card bg-card px-6 py-4"><div className="min-w-0"><p className="text-14 text-ink">{tierName(catalog, cloud)} · {regionName(catalog, cloud.region)}</p><CloudStatus cloud={cloud} className="mt-1" /></div><ButtonLink to="/cloud" size="sm">open madani cloud</ButtonLink></div>}
+        {!detail || selected?.id !== id || cloud?.resting ? <NumbersPending cloud={cloud} error={loadError ?? (selected?.id === id ? detailError : null)} retry={retry} className="h-60 !rounded-card" /> : !detail.report ? <SkyEmpty title="waiting for its first report">keep madani bot running there. its first report usually arrives in a few seconds.</SkyEmpty> : <><MachineView detail={detail} now={now} /><WorkspaceDevices detail={detail} now={now} ready={selected?.id === id} /></>}
         {w.kind === "vps" && !cloud && clouds !== null && <ServerToCloud w={w} />}
       </div>
     </>}

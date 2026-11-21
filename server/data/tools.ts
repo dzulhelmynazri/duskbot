@@ -15,7 +15,7 @@ import {
   type DataExportFormat,
   type DataReduction,
   type DataSource,
-  type DuskChartSpec,
+  type MadaniChartSpec,
 } from "../../shared/data-surface.ts";
 import { compileToolSchema, schemaProblems } from "../mcp-schema-validator.ts";
 import type { DataSheetStore } from "./sheet.ts";
@@ -80,7 +80,7 @@ export const DATA_TOOLS = [
   ),
   tool(
     "data_sql",
-    "Run one DuckDB statement. SELECT-like statements are kept as a result table (dusk_results.q_<n>) you can show or export, and return columns, the exact row count and the first rows. CREATE [OR REPLACE] TABLE|VIEW … AS … is allowed; other writes are refused (load data with data_load instead).",
+    "Run one DuckDB statement. SELECT-like statements are kept as a result table (madani_results.q_<n>) you can show or export, and return columns, the exact row count and the first rows. CREATE [OR REPLACE] TABLE|VIEW … AS … is allowed; other writes are refused (load data with data_load instead).",
     {
       sql: { type: "string", minLength: 1, maxLength: 100000 },
       limit: { type: "integer", minimum: 1, maximum: DATA_LIMITS.sqlRowsMax, description: `Rows to return. Default ${DATA_LIMITS.sqlRowsDefault}.` },
@@ -579,7 +579,7 @@ export async function loadData(ctx: DataContext, input: LoadInput): Promise<Load
     }
     const attach = plan.attach!;
     // Attached read-only and always detached: the connection string never persists.
-    const alias = `dusk_src_${Date.now().toString(36)}`;
+    const alias = `madani_src_${Date.now().toString(36)}`;
     await ctx.database.run(`ATTACH ${quoteLiteral(attach.connection)} AS ${quoteIdent(alias)} (TYPE ${attach.type}, READ_ONLY)`, runOptions(ctx, { extensions: [attach.type] }));
     try {
       let chosen: Array<{ schema: string; table: string }>;
@@ -704,7 +704,7 @@ export interface ShowInput {
   sql?: string;
   table?: string;
   kind?: "table" | "chart";
-  chart?: DuskChartSpec;
+  chart?: MadaniChartSpec;
   vegaLite?: Record<string, unknown>;
   limit?: number;
   live?: boolean;

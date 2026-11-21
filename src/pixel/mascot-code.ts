@@ -1,4 +1,4 @@
-import { DUSK_BODY_IDS } from "../../shared/body-migration.ts";
+import { MADANI_BODY_IDS } from "../../shared/body-migration.ts";
 import { stillFrame } from "./core.ts";
 
 /** A body's still frame as the iPhone's Live Activity draws it: `<G>:` then G by G digits, row by row, 0 empty, 1 body,
@@ -17,6 +17,6 @@ export function mascotCode(body: string): string {
 
 /** The widget's table of every body, as its Swift source. */
 export function mascotSwiftSource(): string {
-  const rows = DUSK_BODY_IDS.map((id) => `        "${id}": "${mascotCode(id)}",`).join("\n");
+  const rows = MADANI_BODY_IDS.map((id) => `        "${id}": "${mascotCode(id)}",`).join("\n");
   return `// Generated from src/pixel/mascot-code.ts (mascotSwiftSource); src/pixel/mascot-code.test.ts fails when it is stale.\n\nenum MascotBodies {\n    static let codes: [String: String] = [\n${rows}\n    ]\n}\n`;
 }

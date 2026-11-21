@@ -297,10 +297,10 @@ describe("the primary tile", () => {
     expect(tiled.unsectionedBots.map((candidate) => candidate.id)).toEqual(["bea"]);
   });
 
-  it("falls back to the person's Dusk, and leaves a department's Chief in its department", () => {
-    const parts = partitionSidebarBots([bot("lead", { chiefOfStaff: true, section: "Work" }), bot("dusk"), bot("bea")]);
-    const tiled = withPrimaryTile(parts, "dusk");
-    expect(tiled.primary?.id).toBe("dusk");
+  it("falls back to the person's Madani, and leaves a department's Chief in its department", () => {
+    const parts = partitionSidebarBots([bot("lead", { chiefOfStaff: true, section: "Work" }), bot("madani"), bot("bea")]);
+    const tiled = withPrimaryTile(parts, "madani");
+    expect(tiled.primary?.id).toBe("madani");
     expect(tiled.unsectionedBots.map((candidate) => candidate.id)).toEqual(["bea"]);
     expect(tiled.sectionChiefs.map((candidate) => candidate.id)).toEqual(["lead"]);
     expect(withPrimaryTile(parts, undefined).primary).toBeNull();

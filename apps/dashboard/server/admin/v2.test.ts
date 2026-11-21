@@ -43,7 +43,7 @@ describe("admin identity", () => {
     expect(accountIdentity({ id: "acct_a", email: "pat.real-smith+x@gmail.com", name: "  " }, [])).toMatchObject({ name: "Pat Real Smith", nameFrom: "email", avatarUrl: null, avatarSeed: "acct_a" });
     expect(accountIdentity({ id: "acct_a", email: "x7k2@privaterelay.appleid.com", name: null }, [{ provider: "apple", label: null, email: null }]))
       .toMatchObject({ name: "Apple user (hidden email)", emailKind: "apple_relay", providers: ["email", "apple"] });
-    expect(accountIdentity({ id: "acct_a", email: "qa-1@qa.dusk.test", name: "QA" }, []).test).toBe(true);
+    expect(accountIdentity({ id: "acct_a", email: "qa-1@qa.madani.test", name: "QA" }, []).test).toBe(true);
   });
   it("says what an anonymous visitor or install is, never 'account'", () => {
     expect(anonymousIdentity({ key: "vid12345", kind: "visitor", city: "Pune", country: "IN", device: "mobile", os: "android", platform: null }))
@@ -134,18 +134,18 @@ describe("analytics sink: people reads", () => {
 });
 
 describe("admin v2 routes", () => {
-  const ADMIN = "owner@duskbot.test", origin = "http://127.0.0.1:7999";
+  const ADMIN = "owner@madanibot.test", origin = "http://127.0.0.1:7999";
   let dataDir: string, server: Server, url: string, app: ReturnType<typeof createDashboardApp>;
   let live: ReturnType<typeof memorySink>;
   const mailer = memoryMailer();
   const csrf = new Map<string, string>();
   async function start(withLive: boolean) {
-    dataDir = mkdtempSync(join(tmpdir(), "dusk-admin-v2-"));
+    dataDir = mkdtempSync(join(tmpdir(), "madani-admin-v2-"));
     live = memorySink(() => time);
     const liveAccounts = [{ id: "acct_payer0001", email: "pat.real@gmail.com", name: null, createdAt: time - 9 * DAY, avatarUrl: "https://lh3.example/pat.png" },
-      { id: "acct_relay0001", email: "x7k2@privaterelay.appleid.com", name: null, createdAt: time - 2 * DAY }, { id: "acct_qa000001", email: "qa-1@qa.dusk.test", name: "QA", createdAt: time - DAY }];
+      { id: "acct_relay0001", email: "x7k2@privaterelay.appleid.com", name: null, createdAt: time - 2 * DAY }, { id: "acct_qa000001", email: "qa-1@qa.madani.test", name: "QA", createdAt: time - DAY }];
     app = createDashboardApp({ dataDir, publicUrl: origin, mailer, staticDir: null, now: () => time, analytics: { sink: memorySink(() => time) },
-      admin: { emails: [ADMIN], env: {}, ...(withLive ? { live: { label: "dusk.bot", sink: live, accounts: async () => liveAccounts, infra: async () => [], daily: async () => [], latest: async () => null,
+      admin: { emails: [ADMIN], env: {}, ...(withLive ? { live: { label: "madani.bot", sink: live, accounts: async () => liveAccounts, infra: async () => [], daily: async () => [], latest: async () => null,
         identities: async () => [{ accountId: "acct_payer0001", provider: "google" as const, label: "Pat Real", email: "pat.real@gmail.com", addedAt: time }], money: async () => money() } } : {}) } });
     server = createServer(app.handle);
     await new Promise<void>(resolve => server.listen(0, "127.0.0.1", resolve));
@@ -174,7 +174,7 @@ describe("admin v2 routes", () => {
     await live.insert({ id: "a2", name: "app_paired", at: time - 60_000, accountId: "acct_relay0001", props: {} });
     const admin = await login(ADMIN);
     const people = await (await call("/v1/admin/v2/people", { cookie: admin })).json() as { data: string; total: number; people: Array<{ person: { id: string; name: string; avatarUrl: string | null; emailKind: string }; paidCents: number; lastSeenAt: number | null }> };
-    expect(people.data).toBe("dusk.bot");
+    expect(people.data).toBe("madani.bot");
     expect(people.people.map(row => [row.person.id, row.person.name, row.person.emailKind, row.paidCents])).toEqual([
       ["acct_relay0001", "Apple user (hidden email)", "apple_relay", 0], ["acct_payer0001", "Pat Real", "email", 3800]]);
     expect(people.people[1]!.person.avatarUrl).toBe("https://lh3.example/pat.png");
@@ -183,13 +183,13 @@ describe("admin v2 routes", () => {
     expect(anon.total).toBe(3);
     expect(anon.people[0]!.person).toMatchObject({ kind: "install", name: "Desktop app on Windows", label: "desktop app, not signed in" });
     const pay = await (await call("/v1/admin/v2/payments", { cookie: admin })).json() as { data: string; mode: string; totals: { live: { grossCents: number; mrrCents: number }; test: { grossCents: number } }; payments: Array<{ id: string; person: { name: string } }> };
-    expect(pay).toMatchObject({ data: "dusk.bot", mode: "live", totals: { live: { grossCents: 4000, mrrCents: 2000 }, test: { grossCents: 2000 } } });
+    expect(pay).toMatchObject({ data: "madani.bot", mode: "live", totals: { live: { grossCents: 4000, mrrCents: 2000 }, test: { grossCents: 2000 } } });
     expect(pay.payments.map(row => row.id)).toEqual(["ref_1", "inv_live2", "inv_fail", "inv_live1"]);
     const overview = await (await call("/v1/admin/v2/overview?days=7", { cookie: admin })).json() as { visitors: { unique: number }; signups: { total: number }; accounts: { total: number; activated: number }; funnel: Array<{ id: string; count: number }> };
     expect(overview.visitors.unique).toBe(2);
     expect(overview.accounts).toMatchObject({ total: 2, activated: 1 });
     expect(overview.funnel.map(step => step.count)).toEqual([2, 1, 1, 0]);
-    const shown = await (await call("/v1/admin/v2/people", { cookie: admin, headers: { "x-dusk-admin-tests": "show" } })).json() as { total: number };
+    const shown = await (await call("/v1/admin/v2/people", { cookie: admin, headers: { "x-madani-admin-tests": "show" } })).json() as { total: number };
     expect(shown.total).toBe(3);
     const person = await call("/v1/admin/v2/people/acct_payer0001", { cookie: admin });
     expect(person.status).toBe(200);
@@ -203,14 +203,14 @@ describe("admin v2 routes", () => {
 
   it("reads this service's own data on request, and refuses people who are not admins", async () => {
     const admin = await login(ADMIN);
-    const own = await (await call("/v1/admin/v2/payments", { cookie: admin, headers: { "x-dusk-admin-data": "own" } })).json() as { data: string; payments: unknown[] };
+    const own = await (await call("/v1/admin/v2/payments", { cookie: admin, headers: { "x-madani-admin-data": "own" } })).json() as { data: string; payments: unknown[] };
     expect(own).toMatchObject({ data: "own", payments: [] });
-    const people = await (await call("/v1/admin/v2/people", { cookie: admin, headers: { "x-dusk-admin-data": "own" } })).json() as { people: Array<{ person: { id: string; name: string } }> };
+    const people = await (await call("/v1/admin/v2/people", { cookie: admin, headers: { "x-madani-admin-data": "own" } })).json() as { people: Array<{ person: { id: string; name: string } }> };
     // the owner's own .test address is a test account, hidden until asked for
     expect(people.people).toEqual([]);
-    const shown = await (await call("/v1/admin/v2/people", { cookie: admin, headers: { "x-dusk-admin-data": "own", "x-dusk-admin-tests": "show" } })).json() as { people: Array<{ person: { name: string } }> };
+    const shown = await (await call("/v1/admin/v2/people", { cookie: admin, headers: { "x-madani-admin-data": "own", "x-madani-admin-tests": "show" } })).json() as { people: Array<{ person: { name: string } }> };
     expect(shown.people.map(row => row.person.name)).toEqual(["Owner"]);
-    const other = await login("someone@duskbot.test");
+    const other = await login("someone@madanibot.test");
     expect((await call("/v1/admin/v2/people", { cookie: other })).status).toBe(403);
     expect((await call("/v1/admin/v2/people")).status).toBe(401);
   });

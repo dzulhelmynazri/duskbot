@@ -3,7 +3,7 @@
 // picks whether the person's own Claude is signed in (signed out by default).
 // Run: node --experimental-strip-types scripts/verify-cloud-welcome.ts
 import type { IncomingMessage, ServerResponse } from "node:http";
-import { launchVerificationServer } from "./control-dusk.ts";
+import { launchVerificationServer } from "./control-madani.ts";
 import { mountPreview, parkUntilSignal, type MountedPreview } from "./testing/preview-fixture.ts";
 
 type Mode = "signed-in" | "signed-out";

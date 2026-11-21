@@ -64,11 +64,11 @@ afterEach(() => { vi.unstubAllGlobals(); });
 describe("bot-first sidebar", () => {
   it.each([false])("uses the selected mode for bot and room tool previews (Advanced: %s)", (advanced) => {
     fixture.advanced = advanced;
-    const messages: Bot["messages"] = [{ id: "step", role: "bot", kind: "activity", at: 1, tool: { name: "mcp__dusk__computer_batch", ok: true } }];
+    const messages: Bot["messages"] = [{ id: "step", role: "bot", kind: "activity", at: 1, tool: { name: "mcp__madani__computer_batch", ok: true } }];
     const candidate = { ...bot, messages, tasks: [], projects: [] };
     const group: Group = { id: "room", threadId: "room-thread", name: "Team", memberIds: [bot.id], messages, defaultResponder: { kind: "mentions" }, bulletin: "", unread: false, createdAt: 1 };
-    const expected = advanced ? "mcp__dusk__computer_batch" : "Use the screen";
-    const other = advanced ? "Use the screen" : "mcp__dusk__computer_batch";
+    const expected = advanced ? "mcp__madani__computer_batch" : "Use the screen";
+    const other = advanced ? "Use the screen" : "mcp__madani__computer_batch";
     for (const markup of [
       renderToStaticMarkup(createElement(BotListItem, rowProps("comfortable", candidate))),
       renderToStaticMarkup(createElement(GroupListItem, { group, density: "comfortable", onMenu: vi.fn() })),
@@ -133,8 +133,8 @@ describe("bot-first sidebar", () => {
     const line = markup.slice(markup.indexOf(">Done.<"));
     expect(line).toMatch(/^>Done\.<\/span><\/span><\/div><span class="sr-only">Unread<\/span>/);
     const name = markup.slice(markup.indexOf('class="flex items-baseline justify-between gap-2 pr-7"'), markup.indexOf(">Done.<"));
-    expect(name).toMatch(/<span aria-hidden="true" data-row-dot="" class="pointer-events-none absolute inset-y-0 right-2 flex items-center transition-opacity duration-\[120ms\] group-has-\[:focus-visible\]:opacity-0 touch:opacity-0 max-md:hidden"><span data-testid="unread-dot" title="Unread activity" class="size-2 shrink-0 rounded-full animate-\[dusk-fade-in_130ms_cubic-bezier\(\.22,1,\.36,1\)\] bg-\[var\(--color-unread,var\(--color-accent\)\)\]"><\/span><\/span>/);
-    expect(name).toContain('<span aria-hidden="true" title="Unread activity" class="size-2 shrink-0 rounded-full animate-[dusk-fade-in_130ms_cubic-bezier(.22,1,.36,1)] bg-[var(--color-unread,var(--color-accent))] hidden self-center max-md:block touch:block"></span>');
+    expect(name).toMatch(/<span aria-hidden="true" data-row-dot="" class="pointer-events-none absolute inset-y-0 right-2 flex items-center transition-opacity duration-\[120ms\] group-has-\[:focus-visible\]:opacity-0 touch:opacity-0 max-md:hidden"><span data-testid="unread-dot" title="Unread activity" class="size-2 shrink-0 rounded-full animate-\[madani-fade-in_130ms_cubic-bezier\(\.22,1,\.36,1\)\] bg-\[var\(--color-unread,var\(--color-accent\)\)\]"><\/span><\/span>/);
+    expect(name).toContain('<span aria-hidden="true" title="Unread activity" class="size-2 shrink-0 rounded-full animate-[madani-fade-in_130ms_cubic-bezier(.22,1,.36,1)] bg-[var(--color-unread,var(--color-accent))] hidden self-center max-md:block touch:block"></span>');
     expect(markup).not.toContain("data-provider-mark=");
     expect(String(findElement(tree, "data-sidebar-bot-row", bot.id)!.props.className)).not.toContain("group-hover:pr-9");
     expect(markup).not.toContain("group-hover:pr-7");

@@ -75,7 +75,7 @@ const KEY = new Uint8Array([0, 0, 0, 1, 0x67, 1, 0, 0, 0, 1, 0x68, 2, 0, 0, 0, 1
 const DELTA = new Uint8Array([0, 0, 0, 1, 0x41, 4]).buffer;
 const H264 = JSON.stringify({ type: "encoding", encoding: "h264", codec: "avc1.42E01F", width: 1280, height: 800 });
 
-const access = browserStreamAccess("pepper", { protocol: "http:", host: "dusk.test" });
+const access = browserStreamAccess("pepper", { protocol: "http:", host: "madani.test" });
 const target = { access, maxWidth: 800, maxHeight: 600 };
 const events = (more: Partial<PreviewStreamEvents> = {}): PreviewStreamEvents => ({
   onFrame: vi.fn(),

@@ -100,7 +100,7 @@ export function createWorkspaceReconnect(deps) {
     const entry = lost;
     const look = await serverLook(entry.origin, fetchImpl);
     if (lost !== entry || !still()) return lost === entry ? stop() : undefined;
-    // a deleted dusk cloud never comes back: said once, with Remove and the other places, and never looked at again
+    // a deleted madani cloud never comes back: said once, with Remove and the other places, and never looked at again
     if (look === "gone") {
       log(`workspace: ${entry.name} was deleted; it is no longer looked at`);
       lost = { ...lost, gone: true, checking: false, nextAt: null };
@@ -148,7 +148,7 @@ export function createWorkspaceReconnect(deps) {
     fetchedAt.set(entry.id, now());
     try {
       const response = await fetchImpl(`${entry.origin}/api/bots?messages=0`, { credentials: "include", cache: "no-store", redirect: "error",
-        signal: AbortSignal.timeout(FRAME_FETCH_MS), headers: { accept: "application/json", "x-dusk-background": "1" } });
+        signal: AbortSignal.timeout(FRAME_FETCH_MS), headers: { accept: "application/json", "x-madani-background": "1" } });
       if (!response.ok) { await response.body?.cancel?.().catch(() => {}); return; }
       const frame = frameOf(await response.json(), now());
       const current = active();

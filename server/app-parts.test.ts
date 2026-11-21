@@ -11,7 +11,7 @@ import { browserPartPending, browserEngineStatus, resolveAgentBrowserBinary } fr
 import { createBrowserPartHost, type BrowserPartFrame } from "./host/browser-part.ts";
 
 const dirs: string[] = [];
-const temp = () => { const dir = mkdtempSync(join(tmpdir(), "dusk-parts-")); dirs.push(dir); return dir; };
+const temp = () => { const dir = mkdtempSync(join(tmpdir(), "madani-parts-")); dirs.push(dir); return dir; };
 afterEach(() => { for (const dir of dirs.splice(0)) rmSync(dir, { recursive: true, force: true }); });
 
 const sha = (bytes: Uint8Array) => createHash("sha256").update(bytes).digest("hex");
@@ -184,11 +184,11 @@ describe("createPartsDownloader", () => {
     downloader.stop();
   });
 
-  it("GitHub failing for a downloads-repo part takes dusk.bot's copy on the next try, resuming the kept bytes", async () => {
+  it("GitHub failing for a downloads-repo part takes madani.bot's copy on the next try, resuming the kept bytes", async () => {
     const root = temp();
     const zip = bundleZip();
-    const github = "https://github.com/DuskBotAI/duskbot-releases/releases/download/v0.2.20/DuskBot-0.2.20-browser-darwin-arm64.zip";
-    const mirror = "https://dusk.bot/releases/0.2.20/DuskBot-0.2.20-browser-darwin-arm64.zip";
+    const github = "https://github.com/dzulhelmynazri/madani-bot-releases/releases/download/v0.2.20/MadaniBot-0.2.20-browser-darwin-arm64.zip";
+    const mirror = "https://madani.bot/releases/0.2.20/MadaniBot-0.2.20-browser-darwin-arm64.zip";
     expect(partSources(github)).toEqual([github, mirror]);
     expect(partSources("https://example.test/part.zip")).toEqual(["https://example.test/part.zip"]);
     const cut = Math.floor(zip.length / 2);
@@ -259,7 +259,7 @@ describe("the packaged app's browser part", () => {
     const userData = temp();
     const part = spec(zip, { target: `${process.platform}-${process.arch}` });
     writeFileSync(join(resources, "parts.json"), JSON.stringify({ v: 1, parts: [part] }));
-    return { part, env: { DUSK_RESOURCES_PATH: resources, DUSK_USER_DATA: userData, PATH: process.env.PATH } as NodeJS.ProcessEnv };
+    return { part, env: { MADANI_RESOURCES_PATH: resources, MADANI_USER_DATA: userData, PATH: process.env.PATH } as NodeJS.ProcessEnv };
   }
 
   it("waits instead of falling back to another browser while it downloads", () => {
@@ -271,7 +271,7 @@ describe("the packaged app's browser part", () => {
 
   it("an app whose installer carries the browser declares no pending part", () => {
     const { env } = app(new Uint8Array([1]));
-    mkdirSync(join(env.DUSK_RESOURCES_PATH!, "browser-engine"));
+    mkdirSync(join(env.MADANI_RESOURCES_PATH!, "browser-engine"));
     expect(browserPartPending(env)).toBe(false);
   });
 

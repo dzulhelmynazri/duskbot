@@ -14,7 +14,7 @@ const IN_CHUNK = 500;
 export interface TeamPrivacy {
   /** The conversations that are one member's alone. */
   threads: ReadonlySet<string>;
-  /** Each member's own Dusk: everything of it is theirs. */
+  /** Each member's own Madani: everything of it is theirs. */
   bots: ReadonlySet<string>;
   /** Files in attachments/ only those conversations, or a member's unsent uploads, use. */
   attachments: ReadonlySet<string>;
@@ -30,7 +30,7 @@ const ownBot = (bot: Row): boolean => record(bot.defaultBot) && typeof bot.defau
 
 /** What a Team Cloud's export must leave out; null anywhere else, where nothing is left out. */
 export function teamPrivateThreads(files: { starters: string; groups: string; bots: string }, env: NodeJS.ProcessEnv = process.env): TeamPrivacy | null {
-  if (env.DUSK_CLOUD_ROLE !== "team") return null;
+  if (env.MADANI_CLOUD_ROLE !== "team") return null;
   const rooms = new Set<string>();
   for (const group of rows(readJson(files.groups))) {
     if (typeof group.threadId === "string") rooms.add(group.threadId);

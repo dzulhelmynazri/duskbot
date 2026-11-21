@@ -36,8 +36,8 @@ export function runsOnStatus(connected: boolean, screen: "screen" | "loading" | 
  */
 export type CloudMoveStage = "buy" | "resume" | "preparing" | "ready" | "moving" | "moved" | "coming-back" | "manage" | "open" | "elsewhere";
 
-/** The account has a dusk cloud: never an offer to buy one, only the way to it. */
-export function hasDuskCloud(stage: CloudMoveStage | null): boolean {
+/** The account has a madani cloud: never an offer to buy one, only the way to it. */
+export function hasMadaniCloud(stage: CloudMoveStage | null): boolean {
   return stage !== null && stage !== "buy" && stage !== "resume" && stage !== "elsewhere";
 }
 
@@ -61,7 +61,7 @@ export const MOVE_IN_PROGRESS: ReadonlySet<CloudMoveStage> = new Set(["preparing
 
 /** A move the person asked for here and has not seen through: after checkout the sheet finishes it with no second tap.
  * Kept a day, so a checkout left open and paid tomorrow still moves. */
-export const MOVE_INTENT_KEY = "dusk-cloud-move-intent";
+export const MOVE_INTENT_KEY = "madani-cloud-move-intent";
 const INTENT_MS = 24 * 3600_000;
 
 export function moveIntended(stored: string | null, now: number): boolean {

@@ -26,7 +26,7 @@ export function lastSeenSnapshot(bots: readonly Bot[], selectedId: string | null
 }
 
 type HomeSide = { saveLastSeen?(snapshot: LastSeen): Promise<boolean>; takeHeld?(): Promise<HeldSend | null> } | undefined;
-const homeSide = (): HomeSide => (typeof window === "undefined" ? undefined : (window as { duskDesktop?: { home?: HomeSide } }).duskDesktop?.home);
+const homeSide = (): HomeSide => (typeof window === "undefined" ? undefined : (window as { madaniDesktop?: { home?: HomeSide } }).madaniDesktop?.home);
 
 /** Keeps the snapshot a few seconds after the chats settle, and only when it changed. */
 export function useCloudLastSeen(state: Pick<AppState, "bots" | "selectedId" | "hydrated">, home: HomeSide = homeSide()): void {

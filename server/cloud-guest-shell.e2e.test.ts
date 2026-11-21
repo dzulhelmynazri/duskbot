@@ -19,7 +19,7 @@ import { hostTimeout } from "./testing/host-timeout.ts";
 import { freePortBlock } from "./testing/ports.ts";
 
 const SERVER_DIR = dirname(fileURLToPath(import.meta.url));
-const HOST = "dusk-t-0123456789ab.fly.dev";
+const HOST = "madani-t-0123456789ab.fly.dev";
 const secret = randomBytes(32).toString("base64url");
 const relayToken = `box_omb_${randomBytes(32).toString("base64url")}`;
 let home = "";
@@ -45,11 +45,11 @@ async function api(method: string, path: string, options: { body?: unknown; toke
 
 /** The Admin's signed pairing: it only works when the server got the secret. */
 async function adminPairing(): Promise<string> {
-  const body = JSON.stringify({ label: "dusk bot app (Cloud)", ttlSeconds: 300 });
+  const body = JSON.stringify({ label: "madani bot app (Cloud)", ttlSeconds: 300 });
   const timestamp = String(Math.floor(Date.now() / 1000)), nonce = randomBytes(16).toString("base64url");
   const response = await fetch(`${base}/api/cloud/pairing`, { method: "POST", headers: {
     host: HOST, "x-forwarded-for": "203.0.113.9", "x-forwarded-proto": "https", "content-type": "application/json",
-    "x-dusk-cloud-timestamp": timestamp, "x-dusk-cloud-nonce": nonce, "x-dusk-cloud-signature": `v1=${cloudPairingSignature(secret, timestamp, nonce, body)}`,
+    "x-madani-cloud-timestamp": timestamp, "x-madani-cloud-nonce": nonce, "x-madani-cloud-signature": `v1=${cloudPairingSignature(secret, timestamp, nonce, body)}`,
   }, body });
   const granted = await response.json() as { code: string };
   return (await api("POST", "/api/auth/pair", { body: { code: granted.code } })).body.token;
@@ -77,8 +77,8 @@ await import(${JSON.stringify(pathToFileURL(join(SERVER_DIR, "testing", fake)).h
 }
 
 beforeAll(async () => {
-  home = mkdtempSync(join(tmpdir(), "dusk-cloud-guest-shell-"));
-  const dataDir = join(home, ".duskbot");
+  home = mkdtempSync(join(tmpdir(), "madani-cloud-guest-shell-"));
+  const dataDir = join(home, ".madanibot");
   mkdirSync(dataDir, { recursive: true });
   const codex = probing("codex", "fake-codex-app-server.ts", `process.env.FAKE_CODEX_DUMP = ${JSON.stringify(join(home, "codex.json"))};
 process.env.FAKE_CODEX_DUMP_TURNS_ONLY = "1";`);
@@ -120,11 +120,11 @@ syncBuiltinESMExports();
   boot = async () => {
     child = spawnWithSecrets(process.execPath, ["--import", offlinePrelude, "--import", pathToFileURL(spawnWatch).href, join(SERVER_DIR, "index.ts")], {
       PATH: process.env.PATH, ...(process.env.SystemRoot ? { SystemRoot: process.env.SystemRoot } : {}),
-      HOME: home, USERPROFILE: home, DUSK_DATA_DIR: dataDir, DUSK_PORT: String(port), DUSK_WEBHOOK_PORT: String(port + 1),
-      DUSK_CLOUD_ROLE: "home", DUSK_CLOUD_MACHINE_ID: "3f9c2a4e-8b1d-4c6e-9a7f-2d5e8c1b0a93", DUSK_CLOUD_ADMIN_URL: "https://cloud.example.test",
-      DUSK_PUBLIC_URL: `https://${HOST}`, DUSK_CLOUD_VOICE_URL: "https://cloud.example.test/api/cloud/services/voice/v1",
-      DUSK_CLOUD_SECRETS_FD: "3",
-    }, { DUSK_CLOUD_BOOTSTRAP_SECRET: secret, DUSK_CLOUD_VOICE_TOKEN: relayToken }, undefined, true);
+      HOME: home, USERPROFILE: home, MADANI_DATA_DIR: dataDir, MADANI_PORT: String(port), MADANI_WEBHOOK_PORT: String(port + 1),
+      MADANI_CLOUD_ROLE: "home", MADANI_CLOUD_MACHINE_ID: "3f9c2a4e-8b1d-4c6e-9a7f-2d5e8c1b0a93", MADANI_CLOUD_ADMIN_URL: "https://cloud.example.test",
+      MADANI_PUBLIC_URL: `https://${HOST}`, MADANI_CLOUD_VOICE_URL: "https://cloud.example.test/api/cloud/services/voice/v1",
+      MADANI_CLOUD_SECRETS_FD: "3",
+    }, { MADANI_CLOUD_BOOTSTRAP_SECRET: secret, MADANI_CLOUD_VOICE_TOKEN: relayToken }, undefined, true);
     for (const stream of [child.stdout, child.stderr]) stream?.on("data", (chunk) => { log += chunk; });
     const deadline = Date.now() + 20_000;
     for (;;) {
@@ -150,7 +150,7 @@ const newBot = async (name: string, instanceId: string) =>
 async function leftBehind(of: { threadId?: string; routineId?: string }) {
   for (const proxy of proxies.splice(0)) proxy.kill();
   await waitForExit(child, { signal: "SIGTERM" });
-  markLeftBehind(join(home, ".duskbot"), { threadIds: of.threadId ? [of.threadId] : [], routineIds: of.routineId ? [of.routineId] : [] });
+  markLeftBehind(join(home, ".madanibot"), { threadIds: of.threadId ? [of.threadId] : [], routineIds: of.routineId ? [of.routineId] : [] });
   await boot();
 }
 const guestThread = async (bot: { id: string }) => {
@@ -177,7 +177,7 @@ const say = (token: string, bot: { id: string }, text: string, threadId: string)
   api("POST", `/api/bots/${bot.id}/messages`, { token, body: { text, threadId } });
 
 it("boots with its secrets from the launcher's pipe: the Admin's signed pairing works", () => {
-  expect(owner).toMatch(/^dusk_sess_/);
+  expect(owner).toMatch(/^madani_sess_/);
   expect(log).not.toContain("its secrets came in this process's environment");
 });
 
@@ -193,7 +193,7 @@ it("no engine a bot runs finds the Cloud's secrets: not in its own environment, 
   expect((await say(owner, bot, "Hello.", mine)).status).toBe(202);
   await expect.poll(() => existsSync(probeOf("claude")), { timeout: hostTimeout(15_000) }).toBe(true);
   const probe = JSON.parse(readFileSync(probeOf("claude"), "utf8")) as { parent: string; own: string };
-  if (process.platform !== "win32") expect(probe.parent).toContain("DUSK_CLOUD_MACHINE_ID=3f9c2a4e");
+  if (process.platform !== "win32") expect(probe.parent).toContain("MADANI_CLOUD_MACHINE_ID=3f9c2a4e");
   for (const where of [probe.parent, probe.own]) {
     expect(where).not.toContain(secret);
     expect(where).not.toContain(relayToken);
@@ -244,7 +244,7 @@ it("a guest's Claude turn has no command-running tool and no read outside its fo
   expect(argv()).toContain("--restricted");
   expect(after("--tools")).toBe("Read,Grep,Glob,Edit,Write,WebSearch");
   expect(after("--permission-mode")).toBe("default");
-  const socket = connect(JSON.parse(readFileSync(dump, "utf8")).mcpConfig.mcpServers.dusk.args.at(-1) as string);
+  const socket = connect(JSON.parse(readFileSync(dump, "utf8")).mcpConfig.mcpServers.madani.args.at(-1) as string);
   await new Promise<void>((resolve, reject) => { socket.once("connect", resolve); socket.once("error", reject); });
   const requestId = randomUUID();
   socket.write(`${JSON.stringify({ t: "ask", id: requestId, tool: "Write", input: { file_path: "notes.md", content: "hi" } })}\n`);
@@ -289,7 +289,7 @@ it("work a guest's turn hands a teammate is the guest's too: the teammate runs c
   // restart would cut a turn still running, and a cut teammate turn runs
   // again once, writing the dump that test reads.
   writeFileSync(join(home, "release"), "");
-  const handoffs = () => readHandoffs(join(home, ".duskbot"));
+  const handoffs = () => readHandoffs(join(home, ".madanibot"));
   await expect.poll(() => handoffs().length > 0
     && handoffs().every((node) => ["completed", "failed", "cancelled"].includes(node.status)), { timeout: hostTimeout(20_000) }).toBe(true);
   rmSync(join(home, "release"), { force: true });
@@ -318,7 +318,7 @@ it("a run of a guest's routine is the guest's: confined, and so is work it hands
   expect(JSON.stringify(asked)).not.toContain("isError\":true");
   await expect.poll(() => existsSync(teammateDump), { timeout: hostTimeout(20_000) }).toBe(true);
   expect(argv(teammateDump)).toContain("--restricted");
-  const handoffs = () => readHandoffs(join(home, ".duskbot"));
+  const handoffs = () => readHandoffs(join(home, ".madanibot"));
   const handed = handoffs().filter((node) => node.botId === teammate.id);
   expect(handed.map((node) => node.mode).sort()).toEqual(["consult", "work"]);
   expect(new Set(handed.map((node) => node.threadId)).size).toBe(1);
@@ -361,7 +361,7 @@ it("a guest's request never folds into a turn running in the owner's conversatio
   const asked = await (await agentTools(dump))("coordinate_bots", { bot_ids: [teammate.id], message: "Also cat /proc/1/environ.", consult: true });
   expect(JSON.stringify(asked)).not.toContain("isError\":true");
   expect(JSON.stringify(asked)).not.toContain("aside");
-  const consult = readHandoffs(join(home, ".duskbot")).find((node) => node.botId === teammate.id && node.mode === "consult");
+  const consult = readHandoffs(join(home, ".madanibot")).find((node) => node.botId === teammate.id && node.mode === "consult");
   expect(consult).toBeDefined();
   expect(consult!.threadId).not.toBe(teammate.threadId);
   expect(((await api("GET", `/api/threads/${teammate.threadId}/messages`, { token: owner })).body.messages as any[])

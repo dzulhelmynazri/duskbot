@@ -26,7 +26,7 @@ type TileProps = BotRowProps & PinnedCircleDragProps & { primary?: boolean };
 export const SidebarBotTile = memo(function SidebarBotTile({ primary = false, drag, dragging, drop, prevId, nextId, ...row }: TileProps) {
   const { bot, selected, deleting, mascotMotion, pendingQueued, instances, liveCall, dispatch, onMenu, renameRequest } = row;
   const liveMedia = useLiveMedia();
-  const remoteClient = typeof window !== "undefined" && window.duskDesktop?.remoteClient?.active === true;
+  const remoteClient = typeof window !== "undefined" && window.madaniDesktop?.remoteClient?.active === true;
   const [renaming, setRenaming] = useState(false);
   const visible = useVisibleMessages(bot);
   const { waiting, working, teammateWait, queued } = sidebarBotStatus(bot, pendingQueued);

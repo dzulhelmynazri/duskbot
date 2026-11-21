@@ -1,10 +1,10 @@
 {
   "path": "/vs/poke",
-  "title": "Poke vs dusk bot: a text contact or separate teammates?",
+  "title": "Poke vs madani bot: a text contact or separate teammates?",
   "nav": "poke",
-  "h1": "poke vs dusk bot: where you text your assistant",
-  "description": "Compare Poke messaging, included AI and monthly prices with dusk bot roles, phone pairing and hosting. Pick the place you will actually use.",
-  "answer": "**pick where you'll actually text it.** poke works like a contact in apple messages, telegram, whatsapp or rcs.[^1][^2] dusk uses its own desktop and paired phone interface, with separate bots for different jobs.\n\npoke runs in the cloud. dusk bots live on your computer, server or dusk cloud.[^3][^7] pick where you'll text it first. the rest follows.",
+  "h1": "poke vs madani bot: where you text your assistant",
+  "description": "Compare Poke messaging, included AI and monthly prices with madani bot roles, phone pairing and hosting. Pick the place you will actually use.",
+  "answer": "**pick where you'll actually text it.** poke works like a contact in apple messages, telegram, whatsapp or rcs.[^1][^2] madani uses its own desktop and paired phone interface, with separate bots for different jobs.\n\npoke runs in the cloud. madani bots live on your computer, server or madani cloud.[^3][^7] pick where you'll text it first. the rest follows.",
   "tags": [
     "poke",
     "comparison",
@@ -36,7 +36,7 @@
       "**you want your usual messaging app.** text through apple messages, telegram, whatsapp or rcs.",
       "**you want cloud and ai together.** both come inside its service plan."
     ],
-    "dusk": [
+    "madani": [
       "**you have separate responsibilities to hand over.** each bot gets a job and memory.",
       "**you want to choose the home and ai.** each bot uses the model you pick."
     ]
@@ -46,7 +46,7 @@
     "intro": "**a similar price can buy a different setup.** these monthly usd prices and channels are as of 12 november 2026. the plans do not promise equal ai work.",
     "cols": [
       "Poke",
-      "dusk bot"
+      "madani bot"
     ],
     "rows": [
       {
@@ -75,7 +75,7 @@
         "label": "where the agent runs",
         "cells": [
           "an always-on cloud agent",
-          "your computer, your server or dusk cloud"
+          "your computer, your server or madani cloud"
         ],
         "src": [
           3,
@@ -129,19 +129,19 @@
       }
     ]
   },
-  "method": "**try the habit you want to keep.** poke's own pages don't name its models or explain how it asks before acting. ask about those details when you try it.\n\nwe make dusk bot. these dated offers help you choose a trial; we haven't measured which handles your job better.",
+  "method": "**try the habit you want to keep.** poke's own pages don't name its models or explain how it asks before acting. ask about those details when you try it.\n\nwe make madani bot. these dated offers help you choose a trial; we haven't measured which handles your job better.",
   "sections": [
     {
       "h": "use the conversation you will come back to",
-      "md": "**if you want a familiar contact, poke fits that habit.** it directly supports existing messaging apps.[^2] a separate bot workspace adds little if you only want a quick question or reminder. [assistants you text](/alternatives/ai-assistant-you-text) compares that choice.\n\ndusk pairing opens a phone browser you can add to your home screen. it has no notifications today. store apps are still on the way.[^6]\n\nif you depend on a ping to notice completed work, take that limit seriously."
+      "md": "**if you want a familiar contact, poke fits that habit.** it directly supports existing messaging apps.[^2] a separate bot workspace adds little if you only want a quick question or reminder. [assistants you text](/alternatives/ai-assistant-you-text) compares that choice.\n\nmadani pairing opens a phone browser you can add to your home screen. it has no notifications today. store apps are still on the way.[^6]\n\nif you depend on a ping to notice completed work, take that limit seriously."
     },
     {
       "h": "a paired phone does not move the bot",
-      "md": "**get the phone reply even after you've shut the laptop.** poke already runs as a cloud agent.[^3] a dusk bot on your computer needs it on with the app running.[^6]\n\ndusk cloud hosts your bots on your own unshared machine. pair your phone there and it works with the laptop off. ai usage still goes on the provider's bill.[^7][^9]\n\nchoose the home before adding more work. the [personal agent guide](/personal-ai-agent) walks through that decision."
+      "md": "**get the phone reply even after you've shut the laptop.** poke already runs as a cloud agent.[^3] a madani bot on your computer needs it on with the app running.[^6]\n\nmadani cloud hosts your bots on your own unshared machine. pair your phone there and it works with the laptop off. ai usage still goes on the provider's bill.[^7][^9]\n\nchoose the home before adding more work. the [personal agent guide](/personal-ai-agent) walks through that decision."
     },
     {
       "h": "add roles only when they earn their keep",
-      "md": "**give each bot a job worth keeping separate.** a planner and a draft reviewer can each keep their own memory and ai.[^8]\n\ntry: \"every monday at 9, read upcoming deadlines in my writing-project folder. ask which commitment matters most this week. return the question here; change nothing.\"\n\nif a reminder contact is enough, poke's reminders and schedules may fit better.[^1] [poke alternatives](/alternatives/poke) covers the other choices.\n\nstart dusk app access read only.[^12] for jobs that need writes, include \"ask me before you change anything\"; app edits can run without asking.[^11]"
+      "md": "**give each bot a job worth keeping separate.** a planner and a draft reviewer can each keep their own memory and ai.[^8]\n\ntry: \"every monday at 9, read upcoming deadlines in my writing-project folder. ask which commitment matters most this week. return the question here; change nothing.\"\n\nif a reminder contact is enough, poke's reminders and schedules may fit better.[^1] [poke alternatives](/alternatives/poke) covers the other choices.\n\nstart madani app access read only.[^12] for jobs that need writes, include \"ask me before you change anything\"; app edits can run without asking.[^11]"
     }
   ],
   "faq": [
@@ -151,7 +151,7 @@
     },
     {
       "q": "how can an agent answer my phone with my laptop closed?",
-      "a": "**the bot needs an awake home elsewhere.** poke runs in the cloud.[^3] for dusk, pair to dusk cloud. pairing to your computer still needs that computer on and the app running.[^6][^7]"
+      "a": "**the bot needs an awake home elsewhere.** poke runs in the cloud.[^3] for madani, pair to madani cloud. pairing to your computer still needs that computer on and the app running.[^6][^7]"
     },
     {
       "q": "is poke joining cognition?",
@@ -185,31 +185,31 @@
       "checked": "2026-11-12"
     },
     {
-      "label": "dusk bot: pairing and current browser limits",
+      "label": "madani bot: pairing and current browser limits",
       "url": "/docs/phone"
     },
     {
-      "label": "dusk bot: hosted computer and pricing",
-      "url": "/docs/dusk-cloud"
+      "label": "madani bot: hosted computer and pricing",
+      "url": "/docs/madani-cloud"
     },
     {
-      "label": "dusk bot: separate roles and model choices",
+      "label": "madani bot: separate roles and model choices",
       "url": "/docs/bots"
     },
     {
-      "label": "dusk bot: ai provider billing",
+      "label": "madani bot: ai provider billing",
       "url": "/docs/account-and-billing"
     },
     {
-      "label": "dusk bot: desktop and cloud timing",
+      "label": "madani bot: desktop and cloud timing",
       "url": "/docs/routines"
     },
     {
-      "label": "dusk bot: connected apps and sending",
+      "label": "madani bot: connected apps and sending",
       "url": "/docs/files-and-apps"
     },
     {
-      "label": "dusk bot: sending and full access",
+      "label": "madani bot: sending and full access",
       "url": "/docs/computer"
     }
   ],
@@ -247,14 +247,14 @@
       ],
       [
         "separate bots with their own memory and ai",
-        "dusk bot"
+        "madani bot"
       ],
       [
         "a phone reply while your laptop sleeps",
-        "poke or dusk paired to dusk cloud"
+        "poke or madani paired to madani cloud"
       ],
       [
-        "notifications from dusk's phone browser today",
+        "notifications from madani's phone browser today",
         "that browser version does not send them"
       ]
     ]
@@ -262,7 +262,7 @@
   "mistakes": [
     {
       "mistake": "expecting phone pairing to host the bot",
-      "fix": "pair to an awake computer or dusk cloud. the phone is where you talk."
+      "fix": "pair to an awake computer or madani cloud. the phone is where you talk."
     },
     {
       "mistake": "building a team for one reminder",

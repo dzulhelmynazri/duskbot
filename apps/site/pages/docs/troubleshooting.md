@@ -6,7 +6,7 @@ order: 3
 art: s-signpost
 ---
 
-find the line that sounds like your problem. if none does, write to hello@dusk.bot with what you were doing, your system and your version (**settings**, **about**).
+find the line that sounds like your problem. if none does, write to hello@madani.bot with what you were doing, your system and your version (**settings**, **about**).
 
 ## a bot doesn't answer
 
@@ -27,7 +27,7 @@ look in its **memory**. if the note isn't there, tell it to remember. if memory 
 
 ## a routine didn't run
 
-almost always the app was closed or the computer was asleep. open **automations** and look at the routine's history; it says what happened to each run. for routines that must run on time, use [dusk cloud](/docs/dusk-cloud).
+almost always the app was closed or the computer was asleep. open **automations** and look at the routine's history; it says what happened to each run. for routines that must run on time, use [madani cloud](/docs/madani-cloud).
 
 ## a routine ran at the wrong time
 
@@ -39,7 +39,7 @@ app sign-ins expire. open **Connected apps**, disconnect it and connect it again
 
 ## my phone can't connect
 
-if it's paired with your computer, that computer has to be on, awake and running dusk bot. still nothing? pair again with the default **secure HTTPS pairing**, or pair with [dusk cloud](/docs/dusk-cloud) so it never depends on your laptop.
+if it's paired with your computer, that computer has to be on, awake and running madani bot. still nothing? pair again with the default **secure HTTPS pairing**, or pair with [madani cloud](/docs/madani-cloud) so it never depends on your laptop.
 
 ## windows says it "protected your pc"
 
@@ -47,8 +47,8 @@ choose **More info**, then **Run anyway**.
 
 ## my cloud says "setting up" for a long time
 
-it usually takes about a minute. if it's still going after ten, write to hello@dusk.bot from the email on your account.
+it usually takes about a minute. if it's still going after ten, write to hello@madani.bot from the email on your account.
 
 ## still stuck
 
-write to hello@dusk.bot. a person reads it. the app's menu also has **help and support**.
+write to hello@madani.bot. a person reads it. the app's menu also has **help and support**.

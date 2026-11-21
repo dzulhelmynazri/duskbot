@@ -14,7 +14,7 @@ import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import { pathToFileURL } from "node:url";
 import { setTimeout as delay } from "node:timers/promises";
-import { launchVerificationServer, runControlDusk } from "./control-dusk.ts";
+import { launchVerificationServer, runControlMadani } from "./control-madani.ts";
 import { openHeadlessChrome, type HeadlessPage } from "./testing/headless-chrome.ts";
 import { zoomedCrop } from "./testing/png.ts";
 import { mountPreview, parkUntilSignal, type MountedPreview } from "./testing/preview-fixture.ts";
@@ -23,7 +23,7 @@ const argument = (name: string) => { const at = process.argv.indexOf(name); retu
 const shots = argument("--shots") === null ? null : resolve(argument("--shots")!);
 const only = argument("--only") === null ? null : new Set(argument("--only")!.split(",").filter(Boolean));
 const WIDTH = 1280, HEIGHT = 800;
-const ALL_SKINS = ["daylight", "midnight", "atelier", "foundry", "lagoon", "graphite", "linen", "dusk", "meadow", "pop", "halloween"];
+const ALL_SKINS = ["daylight", "midnight", "atelier", "foundry", "lagoon", "graphite", "linen", "madani", "meadow", "pop", "halloween"];
 const SKINS = argument("--skins") === "all" ? ALL_SKINS : ["daylight", "midnight"];
 const LOOK: Record<string, string> = { daylight: "light", midnight: "dark" };
 const BAR = "[data-window-frame-bar]";
@@ -152,14 +152,14 @@ const FRAME_COLOURS: Array<[string, string]> = [["today's frame grey", "&frameco
 const fixture = await launchVerificationServer();
 let ui: MountedPreview | undefined;
 try {
-  for (const name of ["Chief of Staff", "Research", "Inbox"]) await runControlDusk(["new-bot", "--name", name, "--url", fixture.info.url]);
+  for (const name of ["Chief of Staff", "Research", "Inbox"]) await runControlMadani(["new-bot", "--name", name, "--url", fixture.info.url]);
   ui = await mountPreview(fixture, { entry: "/scripts/testing/rail-preview.tsx", route: "/__window-frame.html", title: "Isolated window frame", logLevel: "warn" });
   if (!shots) {
     console.log(JSON.stringify({ ...fixture.info, previewUrl: ui.previewUrl }, null, 2));
     await parkUntilSignal();
   } else {
     mkdirSync(shots, { recursive: true });
-    const profile = mkdtempSync(join(tmpdir(), "dusk-frame-chrome-"));
+    const profile = mkdtempSync(join(tmpdir(), "madani-frame-chrome-"));
     const page = await openHeadlessChrome(profile);
     const wanted = (name: string) => !only || only.has(name);
     try {

@@ -40,7 +40,7 @@ export function pairedButUnreachable(error: unknown): boolean {
   return !(error instanceof PairError && error.code === "refused");
 }
 
-/** which signed-in account lists this dusk cloud, the one in use asked first */
+/** which signed-in account lists this madani cloud, the one in use asked first */
 async function cloudOwner(account: { accounts: { id: string; email: string }[]; places(accountId?: string): Promise<AccountPlaces | null> },
   record: MobileConnectionRecord): Promise<{ id: string; email: string } | null> {
   for (const one of account.accounts) {
@@ -61,19 +61,19 @@ export function ConnectionGate({ children, forcePair }: { children: ReactNode; f
   const [celebrate, setCelebrate] = useState<{ name: string; sequence: number } | null>(null);
   const [entered, setEntered] = useState(false);
   const [adding, setAdding] = useState(0);
-  // "dusk:sign-in" (Settings, signed out) opens the dusk cloud sign-in, "dusk:add-account" an empty one beside it
+  // "madani:sign-in" (Settings, signed out) opens the madani cloud sign-in, "madani:add-account" an empty one beside it
   const [addingStep, setAddingStep] = useState<OnboardingStart>("welcome");
-  // a dusk cloud's qr opens the app at that sign-in, its email filled in
+  // a madani cloud's qr opens the app at that sign-in, its email filled in
   const [signInEmail, setSignInEmail] = useState<{ email: string; code?: string; cloud?: string; sequence: number } | null>(null);
   useEffect(() => {
     const signIn = () => { setAddingStep("signin"); setAdding((n) => n + 1); };
     const addPlace = () => { setAddingStep("welcome"); setAdding((n) => n + 1); };
     const addAccount = () => { setSignInEmail(null); setAddingStep("addAccount"); setAdding((n) => n + 1); };
-    window.addEventListener("dusk:sign-in", signIn);
-    window.addEventListener("dusk:add-place", addPlace);
-    window.addEventListener("dusk:add-account", addAccount);
+    window.addEventListener("madani:sign-in", signIn);
+    window.addEventListener("madani:add-place", addPlace);
+    window.addEventListener("madani:add-account", addAccount);
     return () => {
-      window.removeEventListener("dusk:sign-in", signIn); window.removeEventListener("dusk:add-place", addPlace); window.removeEventListener("dusk:add-account", addAccount);
+      window.removeEventListener("madani:sign-in", signIn); window.removeEventListener("madani:add-place", addPlace); window.removeEventListener("madani:add-account", addAccount);
     };
   }, []);
   // the app never reads the shelf shared by every workspace again; it may still hold an unlinked one's chats
@@ -161,7 +161,7 @@ export function ConnectionGate({ children, forcePair }: { children: ReactNode; f
     return () => { controller.abort(); stop(); };
   }, [readyId, store, platform, retry]);
 
-  // the place's edge said its dusk cloud was deleted: connecting again finds that out and shows it, final
+  // the place's edge said its madani cloud was deleted: connecting again finds that out and shows it, final
   useEffect(() => (state.kind === "ready" ? onCloudGone(retry) : undefined), [state.kind, retry]);
 
   // the workspace stopped taking this phone's session (it was removed there): connecting again finds out which it is,
@@ -181,7 +181,7 @@ export function ConnectionGate({ children, forcePair }: { children: ReactNode; f
   // the app coming back is the person using it, also when the web view misses its visibilitychange
   useEffect(() => platform.onResume?.(() => noteCloudPageActivity()), [platform]);
 
-  // the account in use follows the place on screen: a dusk cloud opens with the account it belongs to, so Settings,
+  // the account in use follows the place on screen: a madani cloud opens with the account it belongs to, so Settings,
   // pairing and enrollment speak for that account and never for another one signed in on the phone
   const [placeAccount, setPlaceAccount] = useState<{ id: string; owner: string | null } | null>(null);
   const tagged = useRef(new Set<string>());
@@ -234,8 +234,8 @@ export function ConnectionGate({ children, forcePair }: { children: ReactNode; f
     const stop = platform.onAppUrl?.(receive);
     const held = takeHeldSignIn();
     if (held) receive(held);
-    window.addEventListener("dusk:pair-link", customLink);
-    return () => { stop?.(); window.removeEventListener("dusk:pair-link", customLink); };
+    window.addEventListener("madani:pair-link", customLink);
+    return () => { stop?.(); window.removeEventListener("madani:pair-link", customLink); };
   }, [platform]);
 
   /** Linked: the app mounts on the new installation straight away, under the success moment, so Home is loaded by the
@@ -282,7 +282,7 @@ export function ConnectionGate({ children, forcePair }: { children: ReactNode; f
     </AnimatePresence>
   );
   const onboarding = state.kind !== "ready" || (forcePair && !entered);
-  if (state.kind === "loading" && !incoming && !forcePair) return <div className="dusk-mobile flex size-full items-center justify-center bg-app"><MascotLoader naps={false} /></div>;
+  if (state.kind === "loading" && !incoming && !forcePair) return <div className="madani-mobile flex size-full items-center justify-center bg-app"><MascotLoader naps={false} /></div>;
   if (state.kind === "offline" && !forcePair) {
     if (!incoming && adding === 0) return <>{success}<Unreachable record={state.record} others={state.others} attempts={state.attempts} trying={state.trying} gone={state.gone === true} onRetry={retry} onSwitch={switchTo} onRemove={() => removeGone(state.record.id, state.others[0]?.id)} /></>;
     return <>{success}<Onboarding key={incoming ? `in-${incoming.sequence}` : `add-${adding}`} initial={incoming?.payload} initialSignIn={incoming?.signIn} startAtLink startAt={incoming ? undefined : addingStep} email={addingStep === "addAccount" ? undefined : signInEmail?.email} signInCode={incoming ? undefined : signInEmail?.code} signInCloud={incoming ? undefined : signInEmail?.cloud} onOpen={openKept} onLinked={linked} onCancel={() => { cancel(); setAdding(0); }} /></>;

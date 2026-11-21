@@ -25,7 +25,7 @@ function fixture(over = {}) {
     },
     local: async (method, route) => {
       if (route === "/api/move/freeze") return { frozen: false };
-      if (route.startsWith("/api/bots")) return { bots: [{ id: "dusk", defaultBot: true }] };
+      if (route.startsWith("/api/bots")) return { bots: [{ id: "madani", defaultBot: true }] };
       return {};
     },
     backupHere: async () => { calls.push("backup-here"); },

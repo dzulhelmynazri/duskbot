@@ -59,7 +59,7 @@ export interface BillingOptions {
   /** every deletion action of a managed cloud and fleet alerts, for the record; never an email */
   alert?: (entry: { at: number; cloudId: string; action: string; actor: string; reason: string }) => void;
 }
-export const ACCOUNT_CLOSE_UNAVAILABLE = "Your plan couldn't be cancelled with the payment provider just now, so nothing was deleted and your dusk cloud is still there; try again in a few minutes.";
+export const ACCOUNT_CLOSE_UNAVAILABLE = "Your plan couldn't be cancelled with the payment provider just now, so nothing was deleted and your madani cloud is still there; try again in a few minutes.";
 /** the hosted app's Bearer resolver remains null until shared/account-api.ts supplies the accounts service */
 export function createBilling(options: BillingOptions) {
   const env = options.env ?? process.env, now = options.now ?? Date.now, url = new URL(options.publicUrl);
@@ -71,39 +71,39 @@ export function createBilling(options: BillingOptions) {
   }
   // preview: no payment provider yet. Checkout answers "checkout_soon"; the operator grants plans (POST /v1/billing/ops/grant),
   // which run through the same checkout, webhook and provisioning code with an in-process fake provider that charges nothing
-  const billingProvider = choice("DUSK_BILLING_PROVIDER", ["fake", "dodo", "preview"]);
-  const cloudProvider = choice("DUSK_CLOUD_PROVIDER", ["fake", "hetzner"]), poolDriver = choice("DUSK_POOL_DRIVER", ["fake"]);
+  const billingProvider = choice("MADANI_BILLING_PROVIDER", ["fake", "dodo", "preview"]);
+  const cloudProvider = choice("MADANI_CLOUD_PROVIDER", ["fake", "hetzner"]), poolDriver = choice("MADANI_POOL_DRIVER", ["fake"]);
   // the fake provider mints paid checkouts that charge nothing: on a real database they would read as revenue, so it only
   // runs on the local JSON stores (the operator-grant preview mode is free comps and may)
-  if (billingProvider === "fake" && stateBackend()) throw new Error("DUSK_BILLING_PROVIDER=fake makes up payments and refuses a MongoDB store; use dodo (test mode) or preview.");
+  if (billingProvider === "fake" && stateBackend()) throw new Error("MADANI_BILLING_PROVIDER=fake makes up payments and refuses a MongoDB store; use dodo (test mode) or preview.");
   const fake = billingProvider === "fake" || billingProvider === "preview" ? createFakeBillingProvider({ now }) : null;
   const unavailable = () => { throw new BillingProviderError("unavailable"); };
   let provider: BillingProvider;
-  const dodoMode = env.DUSK_DODO_MODE ?? "test";
+  const dodoMode = env.MADANI_DODO_MODE ?? "test";
   if (billingProvider === "dodo") {
-    const apiKey = required("DUSK_DODO_API_KEY"), webhookSecret = required("DUSK_DODO_WEBHOOK_SECRET");
+    const apiKey = required("MADANI_DODO_API_KEY"), webhookSecret = required("MADANI_DODO_WEBHOOK_SECRET");
     const mode = dodoMode;
-    if (mode !== "test" && mode !== "live") throw new Error("Invalid DUSK_DODO_MODE.");
-    required("DUSK_DODO_PRODUCTS");
+    if (mode !== "test" && mode !== "live") throw new Error("Invalid MADANI_DODO_MODE.");
+    required("MADANI_DODO_PRODUCTS");
     provider = createDodoProvider({ apiKey, webhookSecret, mode, now, fetch: options.fetch });
   } else provider = fake ?? { name: "dodo", createCheckout: unavailable, updatePaymentMethod: unavailable, verifyWebhook: unavailable, cancelAtPeriodEnd: unavailable, cancelNow: unavailable, refundPayment: unavailable, previewChange: unavailable, changePlan: unavailable, cancelScheduledChange: unavailable, subscription: unavailable, applyDiscount: unavailable, invoiceUrl: unavailable, invoicePdf: unavailable };
   let products: Record<string, string>;
-  try { products = dodoProducts(env); } catch { throw new Error("Invalid DUSK_DODO_PRODUCTS."); }
-  if (billingProvider === "dodo" && missingDodoProducts(products).length) console.error(`billing: DUSK_DODO_PRODUCTS is missing ${missingDodoProducts(products).join(", ")}; carts that need them answer 503`);
-  let config = { ...BILLING_CONFIG, products, trial: trialConfig(env.DUSK_TRIAL_DAYS) };
-  const sealKey = env.DUSK_CLOUD_SEAL_KEY ? parseSealKey(env.DUSK_CLOUD_SEAL_KEY) : null;
-  const image = cloudProvider === "hetzner" ? required("DUSK_CLOUD_HOME_IMAGE") : env.DUSK_CLOUD_HOME_IMAGE ?? "ghcr.io/duskbot/duskbot-cloud-home:latest";
+  try { products = dodoProducts(env); } catch { throw new Error("Invalid MADANI_DODO_PRODUCTS."); }
+  if (billingProvider === "dodo" && missingDodoProducts(products).length) console.error(`billing: MADANI_DODO_PRODUCTS is missing ${missingDodoProducts(products).join(", ")}; carts that need them answer 503`);
+  let config = { ...BILLING_CONFIG, products, trial: trialConfig(env.MADANI_TRIAL_DAYS) };
+  const sealKey = env.MADANI_CLOUD_SEAL_KEY ? parseSealKey(env.MADANI_CLOUD_SEAL_KEY) : null;
+  const image = cloudProvider === "hetzner" ? required("MADANI_CLOUD_HOME_IMAGE") : env.MADANI_CLOUD_HOME_IMAGE ?? "ghcr.io/madanibot/madanibot-cloud-home:latest";
   const disabled: CloudProvider = { name: "fake", find: unavailable, create: unavailable, status: unavailable, power: unavailable, resize: unavailable, destroy: unavailable };
   let dedicated: CloudProvider = disabled;
   if (cloudProvider === "fake") dedicated = createFakeCloudProvider();
   if (cloudProvider === "hetzner") {
-    const token = required("DUSK_HETZNER_TOKEN"); required("DUSK_CLOUD_SEAL_KEY");
+    const token = required("MADANI_HETZNER_TOKEN"); required("MADANI_CLOUD_SEAL_KEY");
     dedicated = createHetznerProvider({ token, fetch: options.fetch });
   }
   /** a real pool host driver does not exist yet; only the isolated fake driver is available */
-  const fakePool = poolDriver === "fake" ? createFakePoolDriver({ hosts: [1, 2].map(n => ({ id: `fake-${n}`, region: "fsn1", domain: "pool.duskbot.test", draining: false, capacity: { vcpu: 64, ramGb: 128, diskGb: 4000, slots: 100 } })) }) : null;
+  const fakePool = poolDriver === "fake" ? createFakePoolDriver({ hosts: [1, 2].map(n => ({ id: `fake-${n}`, region: "fsn1", domain: "pool.madanibot.test", draining: false, capacity: { vcpu: 64, ramGb: 128, diskGb: 4000, slots: 100 } })) }) : null;
   const pool = fakePool ? createPoolProvider({ driver: fakePool, now }) : { ...disabled, suspend: unavailable, resume: unavailable };
-  // a managed backend (DUSK_MANAGED=1, apps/cloud-service): its provider key stays in this process; homes never receive it
+  // a managed backend (MADANI_MANAGED=1, apps/cloud-service): its provider key stays in this process; homes never receive it
   let billingStore: ReturnType<typeof createBillingStore> | null = null;
   const managed = managedCloudFromEnv(env, { dataDir: options.dataDir, publicUrl: url.origin, loopback, sealKey, now, fetch: options.fetch,
     subscriptions: () => billingStore?.state.subscriptions ?? [], mail: options.mail, alert: options.alert });
@@ -117,7 +117,7 @@ export function createBilling(options: BillingOptions) {
     return { code, expiresAt: now() + 300_000 };
   } };
   // a loopback service fakes the homes of its fake providers; a managed backend's homes are always real (managedHome)
-  const fakeOrigin = (origin: string) => loopback && (origin.endsWith(".pool.duskbot.test") ? poolDriver === "fake" : cloudProvider === "fake");
+  const fakeOrigin = (origin: string) => loopback && (origin.endsWith(".pool.madanibot.test") ? poolDriver === "fake" : cloudProvider === "fake");
   const home: HomeClient = {
     power: (origin, secret, minutes) => realHome.power!(origin, secret, minutes),
     sleep: (origin, secret, minutes) => realHome.sleep!(origin, secret, minutes),
@@ -143,7 +143,7 @@ export function createBilling(options: BillingOptions) {
       lastReportAt: id => options.dashboard.state.workspaces.find(ws => ws.id === id)?.lastReportAt ?? null,
       remove(id) { options.dashboard.state.workspaces = options.dashboard.state.workspaces.filter(ws => ws.id !== id); options.dashboard.changed(); options.dashboard.close?.(); },
     },
-    config: { adminOrigin: url.origin, dashboardUrl: url.origin, image, originTemplate: env.DUSK_CLOUD_ORIGIN_TEMPLATE,
+    config: { adminOrigin: url.origin, dashboardUrl: url.origin, image, originTemplate: env.MADANI_CLOUD_ORIGIN_TEMPLATE,
       configured: { pool: poolDriver !== "off", dedicated: cloudProvider !== "off" },
       poolQuota(kind, spec, botComputers) { return { ...spec, ...(config.poolQuotas[kind as "shared_s" | "shared_m"] ?? config.poolQuotas.shared_m), botComputers }; } },
   });
@@ -155,9 +155,9 @@ export function createBilling(options: BillingOptions) {
   // a deleted account's clouds left over from before (or by a failed step) are destroyed at start, then every 10 minutes
   service.destroyDeleted();
   const teams = createTeams({ store, clouds, config, now, mail: options.teamMail, accountName: options.accountName, accountEmail: options.accountEmail });
-  const opsToken = env.DUSK_OPS_TOKEN || null;
-  if (opsToken !== null && opsToken.length < 32) throw new Error("DUSK_OPS_TOKEN must be at least 32 characters.");
-  if (billingProvider === "preview" && !opsToken) throw new Error("DUSK_BILLING_PROVIDER=preview needs DUSK_OPS_TOKEN for plan grants.");
+  const opsToken = env.MADANI_OPS_TOKEN || null;
+  if (opsToken !== null && opsToken.length < 32) throw new Error("MADANI_OPS_TOKEN must be at least 32 characters.");
+  if (billingProvider === "preview" && !opsToken) throw new Error("MADANI_BILLING_PROVIDER=preview needs MADANI_OPS_TOKEN for plan grants.");
   // a grant is completed by the in-process fake provider, so only where that provider is the one billing runs on
   const completer = billingProvider === "preview" || loopback ? fake : null;
   function setEnd(owner: AccountRef, subscriptionId: string, until: number) {
@@ -181,17 +181,17 @@ export function createBilling(options: BillingOptions) {
     void clouds.reconcile().catch(() => {});
     return { checkoutId: stored.id, subscriptionId: sub?.id ?? null };
   }
-  const reviewEmail = env.DUSK_REVIEW_EMAIL?.trim().toLowerCase() || null;
+  const reviewEmail = env.MADANI_REVIEW_EMAIL?.trim().toLowerCase() || null;
   // nothing is sold while billing is off or the site is the pre-launch waitlist; an operator's grant still works
-  const checkoutOpen = billingProvider !== "preview" && billingProvider !== "off" && env.DUSK_PRELAUNCH_WAITLIST_ONLY !== "1";
+  const checkoutOpen = billingProvider !== "preview" && billingProvider !== "off" && env.MADANI_PRELAUNCH_WAITLIST_ONLY !== "1";
   const context = { service, teams, clouds, store, config, accounts: options.accounts, now, enabled: billingProvider !== "off", fake: loopback ? fake : null, wakeStats: options.wakeStats ?? (() => ({})), opsToken,
     appRoutes: billingProvider !== "off" || reviewEmail !== null,
-    checkoutOpen, endTrials: billingProvider === "preview" || env.DUSK_OPS_END_TRIAL === "1", grants: billingProvider === "preview" ? fake : null, grant,
+    checkoutOpen, endTrials: billingProvider === "preview" || env.MADANI_OPS_END_TRIAL === "1", grants: billingProvider === "preview" ? fake : null, grant,
     testPurchases: billingProvider === "dodo" && dodoMode === "test", findAccount: options.findAccount ?? (() => null), reviewEmail };
   const routes = createBillingRoutes(context), admin = createAdminRoutes(context);
   return {
     async handle(req: IncomingMessage, res: ServerResponse, target: URL) { return await routes(req, res, target) || await admin.handle(req, res, target); },
-    /** the operator may end a home package's trial early (preview, or DUSK_OPS_END_TRIAL=1) */
+    /** the operator may end a home package's trial early (preview, or MADANI_OPS_END_TRIAL=1) */
     endTrials: context.endTrials,
     async beforeAccountDelete(owner: AccountRef, body: Record<string, unknown>) {
       const blockers = service.deletionBlockers(owner.id);
@@ -224,13 +224,13 @@ export type BillingContext = {
   service: ReturnType<typeof createBillingService>; teams: ReturnType<typeof createTeams>; clouds: ReturnType<typeof createCloudsService>; store: ReturnType<typeof createBillingStore>;
   config: typeof BILLING_CONFIG; accounts: AccountResolver; now(): number; enabled: boolean; fake: ReturnType<typeof createFakeBillingProvider> | null;
   wakeStats(): NonNullable<Catalog["wake"]>;
-  /** DUSK_OPS_TOKEN: unset hides the operator's funnel read */
+  /** MADANI_OPS_TOKEN: unset hides the operator's funnel read */
   opsToken: string | null;
-  /** false in preview, with billing off and before launch (DUSK_PRELAUNCH_WAITLIST_ONLY=1): nothing can be bought */
+  /** false in preview, with billing off and before launch (MADANI_PRELAUNCH_WAITLIST_ONLY=1): nothing can be bought */
   checkoutOpen: boolean;
   /** the apps' cloud routes (/api/cloud/desktop/*): with billing, or with billing off for App Review's granted cloud */
   appRoutes?: boolean;
-  /** the operator may end a home package's trial early: preview, or DUSK_OPS_END_TRIAL=1 */
+  /** the operator may end a home package's trial early: preview, or MADANI_OPS_END_TRIAL=1 */
   endTrials?: boolean;
   /** preview only: the provider that completes an operator's grant */
   grants: ReturnType<typeof createFakeBillingProvider> | null;
@@ -239,6 +239,6 @@ export type BillingContext = {
   /** a plan given through the same checkout, webhook and provisioning code, completed by the fake provider */
   grant(owner: AccountRef, input: { bundle: string; interval: "month" | "year"; name?: string; source: OperatorGrant["source"]; amountCents?: number; until?: number }): Promise<{ checkoutId: string; subscriptionId: string | null }>;
   findAccount(email: string): AccountRef | null;
-  /** DUSK_REVIEW_EMAIL: the one account POST /v1/billing/ops/review may mark */
+  /** MADANI_REVIEW_EMAIL: the one account POST /v1/billing/ops/review may mark */
   reviewEmail?: string | null;
 };

@@ -9,14 +9,14 @@ import { ProviderRegistry } from "../harness/registry.ts";
 import { refreshStaleModelLists, STARTUP_MODEL_CACHE_FRESH_MS, writeStartupModelCache } from "../startup-model-catalog.ts";
 import {
   curateModelCatalog,
-  DUSK_MODELS_REFRESH_MS,
-  DUSK_MODELS_URL,
-  DUSK_MODELS_URL_ENV,
-  DuskModelCatalog,
-  parseDuskModels,
+  MADANI_MODELS_REFRESH_MS,
+  MADANI_MODELS_URL,
+  MADANI_MODELS_URL_ENV,
+  MadaniModelCatalog,
+  parseMadaniModels,
   prettyModelLabel,
   type CuratedEngine,
-} from "./dusk-models.ts";
+} from "./madani-models.ts";
 
 const CURATED: CuratedEngine = {
   models: [
@@ -91,12 +91,12 @@ describe("curateModelCatalog", () => {
   });
 });
 
-describe("parseDuskModels", () => {
+describe("parseMadaniModels", () => {
   it("rejects documents that are not a catalog and drops bad rows", () => {
-    expect(parseDuskModels(null)).toBeNull();
-    expect(parseDuskModels({ schema: 2, updatedAt: "2026-11-18T00:00:00Z", engines: {} })).toBeNull();
-    expect(parseDuskModels({ schema: 1, updatedAt: "not a date", engines: {} })).toBeNull();
-    const parsed = parseDuskModels({
+    expect(parseMadaniModels(null)).toBeNull();
+    expect(parseMadaniModels({ schema: 2, updatedAt: "2026-11-18T00:00:00Z", engines: {} })).toBeNull();
+    expect(parseMadaniModels({ schema: 1, updatedAt: "not a date", engines: {} })).toBeNull();
+    const parsed = parseMadaniModels({
       schema: 1,
       updatedAt: "2026-11-18T00:00:00Z",
       engines: {
@@ -113,16 +113,16 @@ describe("parseDuskModels", () => {
     expect(parsed).toEqual({ schema: 1, updatedAt: "2026-11-18T00:00:00.000Z", engines: { codex: { models: [{ id: "ok", label: "OK", add: true, contextWindow: 10 }, { id: "cw", label: "CW" }] } } });
   });
 
-  it("the bundled copy parses, lists GPT-6.2 Astra for Codex, and matches the file dusk.bot serves", () => {
-    const bundled = readFileSync(join(import.meta.dirname, "dusk-models.json"), "utf8");
+  it("the bundled copy parses, lists GPT-6.2 Astra for Codex, and matches the file madani.bot serves", () => {
+    const bundled = readFileSync(join(import.meta.dirname, "madani-models.json"), "utf8");
     const site = readFileSync(join(import.meta.dirname, "..", "..", "apps", "site", "public", "landing", "releases", "models.json"), "utf8");
     expect(site).toBe(bundled);
-    const parsed = parseDuskModels(JSON.parse(bundled))!;
+    const parsed = parseMadaniModels(JSON.parse(bundled))!;
     expect(parsed.engines.codex!.models).toContainEqual({ id: "gpt-6.2-astra", label: "GPT-6.2 Astra", add: true });
     for (const key of ["codex", "claude", "grok"]) expect(parsed.engines[key]!.models.length).toBeGreaterThan(0);
   });
   it("the bundled copy offers Claude Fable 5.2 on a Claude Code list that predates it, ahead of Fable 5.1", () => {
-    const parsed = parseDuskModels(JSON.parse(readFileSync(join(import.meta.dirname, "dusk-models.json"), "utf8")))!;
+    const parsed = parseMadaniModels(JSON.parse(readFileSync(join(import.meta.dirname, "madani-models.json"), "utf8")))!;
     const older = { default: "claude-sonnet-5", options: [{ id: "claude-fable-5-1", label: "Claude Fable 5.1" }, { id: "claude-sonnet-5", label: "Claude Sonnet 5" }] };
     expect(curateModelCatalog(older, parsed.engines.claude).options.slice(0, 2)).toEqual([
       { id: "claude-fable-5-2", label: "Claude Fable 5.2", contextWindow: 1_000_000 },
@@ -131,16 +131,16 @@ describe("parseDuskModels", () => {
   });
 });
 
-describe("DuskModelCatalog", () => {
+describe("MadaniModelCatalog", () => {
   let dir: string;
   afterEach(() => rmSync(dir, { recursive: true, force: true }));
 
   const respond = (body: unknown, init: ResponseInit = {}) => new Response(typeof body === "string" ? body : JSON.stringify(body), { status: 200, ...init });
 
   function store(options: { fetch?: typeof fetch; bundled?: unknown; env?: NodeJS.ProcessEnv; now?: () => number } = {}) {
-    return new DuskModelCatalog({ dataDir: dir, bundled: doc("2026-11-01T00:00:00Z"), env: {}, log: () => {}, ...options });
+    return new MadaniModelCatalog({ dataDir: dir, bundled: doc("2026-11-01T00:00:00Z"), env: {}, log: () => {}, ...options });
   }
-  const fresh = () => { dir = mkdtempSync(join(tmpdir(), "dusk-models-")); };
+  const fresh = () => { dir = mkdtempSync(join(tmpdir(), "madani-models-")); };
 
   it("uses the bundled copy offline, and a newer fetched one after it is cached", async () => {
     fresh();
@@ -149,7 +149,7 @@ describe("DuskModelCatalog", () => {
     const a = store({ fetch: (async (url: string) => { calls.push(url); return respond(remote); }) as typeof fetch });
     expect(a.get().updatedAt).toBe("2026-11-01T00:00:00.000Z");
     expect(await a.refresh()).toBe("updated");
-    expect(calls).toEqual([DUSK_MODELS_URL]);
+    expect(calls).toEqual([MADANI_MODELS_URL]);
     expect(a.get().engines.codex!.models[0]!.id).toBe("gpt-9");
     // a restart reads the cache, not the network
     const b = store({ fetch: (async () => { throw new Error("offline"); }) as typeof fetch });
@@ -169,7 +169,7 @@ describe("DuskModelCatalog", () => {
     let calls = 0;
     const a = store({ now: () => now, fetch: (async () => { calls += 1; return respond(doc("2026-11-18T00:00:00Z")); }) as typeof fetch });
     await a.refresh();
-    now += DUSK_MODELS_REFRESH_MS - 1;
+    now += MADANI_MODELS_REFRESH_MS - 1;
     expect(await a.refresh()).toBe("fresh");
     now += 2;
     expect(await a.refresh()).not.toBe("fresh");
@@ -191,15 +191,15 @@ describe("DuskModelCatalog", () => {
       expect(a.get().updatedAt).toBe("2026-11-01T00:00:00.000Z");
     }
     let called = false;
-    const off = store({ env: { DUSK_DISABLE_MODEL_CATALOG_FETCH: "1" }, fetch: (async () => { called = true; return respond(doc("2026-11-18T00:00:00Z")); }) as typeof fetch });
+    const off = store({ env: { MADANI_DISABLE_MODEL_CATALOG_FETCH: "1" }, fetch: (async () => { called = true; return respond(doc("2026-11-18T00:00:00Z")); }) as typeof fetch });
     expect(await off.refresh()).toBe("disabled");
     expect(called).toBe(false);
   });
 
   it("asks only https addresses, or http on this machine, and never follows a redirect", async () => {
     fresh();
-    expect(store({ env: { [DUSK_MODELS_URL_ENV]: "http://evil.example/models.json" } }).url).toBeNull();
-    expect(store({ env: { [DUSK_MODELS_URL_ENV]: "http://127.0.0.1:4000/models.json" } }).url).toBe("http://127.0.0.1:4000/models.json");
+    expect(store({ env: { [MADANI_MODELS_URL_ENV]: "http://evil.example/models.json" } }).url).toBeNull();
+    expect(store({ env: { [MADANI_MODELS_URL_ENV]: "http://127.0.0.1:4000/models.json" } }).url).toBe("http://127.0.0.1:4000/models.json");
     let init: RequestInit | undefined;
     await store({ fetch: (async (_url: string, given: RequestInit) => { init = given; return respond(doc("2026-11-18T00:00:00Z")); }) as typeof fetch }).refresh();
     expect(init?.redirect).toBe("error");
@@ -257,9 +257,9 @@ describe("the registry and stale engine lists", () => {
   }
 
   it("reads an engine's models through the catalog only when the engine names its catalog key, and follows later lists", async () => {
-    const dir = mkdtempSync(join(tmpdir(), "dusk-models-reg-"));
+    const dir = mkdtempSync(join(tmpdir(), "madani-models-reg-"));
     try {
-      const catalog = new DuskModelCatalog({ dataDir: dir, bundled: doc("2026-11-18T00:00:00Z"), env: {}, log: () => {} });
+      const catalog = new MadaniModelCatalog({ dataDir: dir, bundled: doc("2026-11-18T00:00:00Z"), env: {}, log: () => {} });
       let list: ModelCatalog = { default: "gpt-6-sol", options: [{ id: "gpt-6-sol", label: "GPT-6-Sol" }] };
       const registry = new ProviderRegistry([
         fakeDriver("curated", "codex", () => list),

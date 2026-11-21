@@ -23,7 +23,7 @@ const CHATS: Array<{ id: string; title: string; turns: string[] }> = [
   { id: "reminder", title: "A reminder", turns: ["remind me at 6pm to call mom. also her bday is next week, any gift ideas under 2000 rupees?"] },
 ];
 
-process.env.DUSK_NO_TEST_BOTS = "1";
+process.env.MADANI_NO_TEST_BOTS = "1";
 const gateway = gatewayFromEnv(values.model!);
 const proxy = await startProxy({ mode: "forward", gateway, port: 7300 + Math.floor(Math.random() * 90), models: [values.model!] });
 const box = await launchSandbox(values.repo!, { ...gateway, url: proxy.url }, { captureQuietMs: 3_600_000 });

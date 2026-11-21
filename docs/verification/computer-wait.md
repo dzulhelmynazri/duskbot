@@ -39,7 +39,7 @@ The resource-lock unit tests cover:
   history; invalid samples are ignored.
 
 Waiting remains bounded by the computer wait ceiling
-(`DUSK_COMPUTER_WAIT_MAX_MS`, 30 minutes by default). At the ceiling, the runtime
+(`MADANI_COMPUTER_WAIT_MAX_MS`, 30 minutes by default). At the ceiling, the runtime
 parks the root for later continuation. The migrated real-server index cases
 prove direct-thread and room waits, arrival-position transcript chips, Stop
 during a wait, park/resume and goal fairness on shared VPS resources. Their

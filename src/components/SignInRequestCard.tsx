@@ -161,7 +161,7 @@ export function SignInRequestCard({ botId, botName, threadId, message }: CardPro
     else dispatch({ type: "openSignIn", botId, messageId: message.id, url: card.url, site: card.site, place: card.place });
   };
   // fill_login reaches only the built-in browser (and My Chrome); a desktop paired to another host relays no passwords.
-  const canSave = card.place === "browser" && window.duskDesktop?.remoteClient?.active !== true;
+  const canSave = card.place === "browser" && window.madaniDesktop?.remoteClient?.active !== true;
   let pageHost = card.site;
   try { pageHost = new URL(card.url).hostname; } catch {}
   const takeOver = cardPrimary();

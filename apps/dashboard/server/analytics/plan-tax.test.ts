@@ -40,7 +40,7 @@ function taxed(opts: { invoiceTax: boolean }): SubscriptionsInput {
   const sub: StoredSubscription = { id: "sub_1", accountId: "acct_1", providerSubscriptionId: "sub_dodo", checkoutId: "chk_1", cart: plus("month"), totalCents: 2000, lines: [], status: "active",
     licenseId: null, cloudId: null, currentPeriodStart: NOW - 3_600_000, currentPeriodEnd: NOW + 30 * 86_400_000, cancelAtPeriodEnd: false, createdAt: NOW - 3_600_000, updatedAt: NOW, version: 1, source: "dash_billing" };
   const invoice: StoredInvoice = { id: "inv_1", accountId: "acct_1", providerPaymentId: "pay_1", subscriptionId: "sub_1", checkoutId: "chk_1", amountCents: 2360,
-    ...(opts.invoiceTax ? { taxCents: 360 } : {}), currency: "USD", status: "paid", description: "dusk cloud plus", createdAt: NOW - 3_600_000 };
+    ...(opts.invoiceTax ? { taxCents: 360 } : {}), currency: "USD", status: "paid", description: "madani cloud plus", createdAt: NOW - 3_600_000 };
   const ledger: LedgerEntry[] = [
     { ...draft({ key: "pay:1", type: "payment.succeeded", at: NOW - 3_600_000, via: "webhook", accountId: "acct_1", subscriptionId: "sub_1", providerPaymentId: "pay_1", amountCents: 2360, taxCents: 360, netCents: 2000, plan: "custom", country: "IN" }), id: ledgerId("pay:1"), recordedAt: NOW },
     { ...draft({ key: "act:1", type: "subscription.cancel_scheduled", at: NOW - 60_000, via: "webhook", accountId: "acct_1", subscriptionId: "sub_1", plan: "custom" }), id: ledgerId("act:1"), recordedAt: NOW },
@@ -86,8 +86,8 @@ describe("the fake billing provider", () => {
   let dir = "";
   afterEach(() => { useStateBackend(null); if (dir) rmSync(dir, { recursive: true, force: true }); });
   it("refuses a database store: its made-up payments would read as revenue", () => {
-    dir = mkdtempSync(join(tmpdir(), "dusk-fake-billing-"));
+    dir = mkdtempSync(join(tmpdir(), "madani-fake-billing-"));
     useStateBackend({} as StateBackend);
-    expect(() => createBilling({ dataDir: dir, publicUrl: "https://preview.example.test", env: { DUSK_BILLING_PROVIDER: "fake" } } as never)).toThrow(/refuses a MongoDB store/);
+    expect(() => createBilling({ dataDir: dir, publicUrl: "https://preview.example.test", env: { MADANI_BILLING_PROVIDER: "fake" } } as never)).toThrow(/refuses a MongoDB store/);
   });
 });

@@ -16,16 +16,16 @@ it("enrolls each connection once, and never moves it to the next account signed 
   await enrollWorkspace(platform, "workspace", "person", getGrant);
   expect(getGrant).toHaveBeenCalledOnce();
   expect(api).toHaveBeenCalledWith("/api/dashboard/link", { method: "POST", body: JSON.stringify({ url: grant.dashboardUrl, enrollToken: grant.enrollToken }) });
-  expect(prefs.get("dusk.account.enrolled.workspace")).toBe("person");
+  expect(prefs.get("madani.account.enrolled.workspace")).toBe("person");
   await enrollWorkspace(platform, "other", "person", getGrant); await enrollWorkspace(platform, "workspace", "other-person", getGrant);
   expect(getGrant).toHaveBeenCalledTimes(2);
-  expect(prefs.get("dusk.account.enrolled.workspace")).toBe("person");
+  expect(prefs.get("madani.account.enrolled.workspace")).toBe("person");
 });
 it("warns once without exposing secrets and leaves failed enrollment retryable", async () => {
   const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
   vi.mocked(api).mockRejectedValueOnce(new Error(grant.enrollToken));
   await enrollWorkspace(platform, "workspace", "person", async () => grant);
   expect(warn).toHaveBeenCalledExactlyOnceWith("Account workspace enrollment failed"); expect(prefs.size).toBe(0);
-  await enrollWorkspace(platform, "workspace", "person", async () => grant); expect(prefs.get("dusk.account.enrolled.workspace")).toBe("person");
+  await enrollWorkspace(platform, "workspace", "person", async () => grant); expect(prefs.get("madani.account.enrolled.workspace")).toBe("person");
   warn.mockRestore();
 });

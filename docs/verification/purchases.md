@@ -9,7 +9,7 @@ email**. Product results show as cards in the chat.
 ## Run
 
 ```sh
-DUSK_VITEST_WORKERS=2 pnpm exec vitest run shared/purchase.test.ts server/purchase-gate.test.ts server/computer-purchase.test.ts server/gmail-draft-read.test.ts server/routes/purchases.test.ts server/outbound-hold.test.ts src/components/ReviewCards.dom.test.ts
+MADANI_VITEST_WORKERS=2 pnpm exec vitest run shared/purchase.test.ts server/purchase-gate.test.ts server/computer-purchase.test.ts server/gmail-draft-read.test.ts server/routes/purchases.test.ts server/outbound-hold.test.ts src/components/ReviewCards.dom.test.ts
 ```
 
 ## What it checks

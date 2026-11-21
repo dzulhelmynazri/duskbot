@@ -15,7 +15,7 @@ const MODULE_URL = pathToFileURL(join(process.cwd(), "server", "data-dir-lease.t
 const dirs: string[] = [];
 
 function tempDataDir(): string {
-  const dir = mkdtempSync(join(tmpdir(), "dusk-data-dir-lease-"));
+  const dir = mkdtempSync(join(tmpdir(), "madani-data-dir-lease-"));
   dirs.push(dir);
   return dir;
 }
@@ -54,7 +54,7 @@ afterEach(() => {
   for (const dir of dirs.splice(0)) rmSync(dir, { recursive: true, force: true });
 });
 
-describe("dusk bot data-directory lease", () => {
+describe("madani bot data-directory lease", () => {
   it("holds one directory until its matching handle releases it", () => {
     const dir = tempDataDir();
     const lease = acquireDataDirLease(dir);

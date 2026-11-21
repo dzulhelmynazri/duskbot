@@ -37,7 +37,7 @@ import "./styles/motion.css";
 import "./styles/desktop-motion.css";
 
 watchStaleChunks();
-// a deleted dusk cloud: loading the page again gets the edge's 410, which the desktop window answers with its own screen
+// a deleted madani cloud: loading the page again gets the edge's 410, which the desktop window answers with its own screen
 onCloudGone(() => location.reload());
 
 // Before first paint.
@@ -60,9 +60,9 @@ const appPage = PAGES_WITHOUT_THE_APP.has(location.pathname) ? null : loadApp();
 
 async function chooseRoot(): Promise<React.ReactNode> {
   productScreen(PAGES_WITHOUT_THE_APP.has(location.pathname) ? location.pathname : "/");
-  const home = window.duskDesktop?.home;
-  if (location.pathname === "/home" && home) return <HomeScreen bridge={home} manage={window.duskDesktop?.cloudPlan?.manage} />;
-  const reconnect = window.duskDesktop?.reconnect;
+  const home = window.madaniDesktop?.home;
+  if (location.pathname === "/home" && home) return <HomeScreen bridge={home} manage={window.madaniDesktop?.cloudPlan?.manage} />;
+  const reconnect = window.madaniDesktop?.reconnect;
   if (location.pathname === "/reconnect" && reconnect) return <ReconnectScreen bridge={reconnect} />;
   if (location.pathname === "/pair") {
     const signIn = takeBrowserSignInFromLocation();
@@ -72,7 +72,7 @@ async function chooseRoot(): Promise<React.ReactNode> {
     }
     return <PairPage initialCode={takePairingCodeFromLocation()} initialEmail={takeInvitedEmailFromLocation()} />;
   }
-  const accountGate = window.duskDesktop?.accountGate;
+  const accountGate = window.madaniDesktop?.accountGate;
   if (!PAGES_WITHOUT_THE_APP.has(location.pathname) && accountGate && (await accountGate.state()).blocked) { productScreen("/sign-in"); return <><WindowDragStrip /><AccountGate bridge={accountGate} /></>; }
   if (!PAGES_WITHOUT_THE_APP.has(location.pathname) && accountGate) reloadWhenSignedOut(accountGate);
   const session = await readSessionState();

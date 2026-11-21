@@ -61,7 +61,7 @@ afterEach(() => {
 const render = (avatars: Array<Partial<MausAvatarProps> & { ref?: React.Ref<MausAvatarHandle> }>) =>
   act(() => root.render(avatars.map((props, key) => createElement(MausAvatar, { key, color: "green", ...props }))));
 const run = (ms: number) => act(() => { vi.advanceTimersByTime(ms); });
-const markOf = () => host.querySelector("[data-dusk-mark]")!;
+const markOf = () => host.querySelector("[data-madani-mark]")!;
 /** The box the engine draws in: the mark's body, fitted inside the mark. */
 const drawnOf = () => markOf().firstElementChild!;
 /** Frames the shared loop asks for over `ms`, after the marks have had `settle` ms. */
@@ -84,7 +84,7 @@ describe("marks on the shared loop", () => {
     render([{ state: "sleeping", animated: false, size: 24 }]);
     run(100);
     expect(markOf().getAttribute("data-state")).toBe("sleeping");
-    expect(host.querySelector("[data-dusk-mark] canvas")).not.toBeNull();
+    expect(host.querySelector("[data-madani-mark] canvas")).not.toBeNull();
     expect(framesOver(2000)).toBe(0);
   });
 

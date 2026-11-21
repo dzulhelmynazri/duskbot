@@ -1,16 +1,16 @@
 import { describe, expect, it } from "vitest";
 
 import { availableTools, catalogProfileFromEnv, fullInputSchema } from "./agents-catalog.ts";
-import { DUSK_TOOL_DEFINITIONS } from "./agents-dusk-tools.ts";
+import { MADANI_TOOL_DEFINITIONS } from "./agents-madani-tools.ts";
 
-const listed = (env: Record<string, string>) => availableTools(catalogProfileFromEnv({ DUSK_BOT_ID: "maus", DUSK_CHIEF_OF_STAFF: "1", ...env }));
+const listed = (env: Record<string, string>) => availableTools(catalogProfileFromEnv({ MADANI_BOT_ID: "maus", MADANI_CHIEF_OF_STAFF: "1", ...env }));
 
-describe("Dusk's two notification tools on the wire", () => {
-  const maus = listed({ DUSK_DEFAULT_BOT: "1" }).slice(-2) as Array<{ name: string; inputSchema: Record<string, any> }>;
+describe("Madani's two notification tools on the wire", () => {
+  const maus = listed({ MADANI_DEFAULT_BOT: "1" }).slice(-2) as Array<{ name: string; inputSchema: Record<string, any> }>;
 
-  it("are listed last, in this order, only with DUSK_DEFAULT_BOT", () => {
+  it("are listed last, in this order, only with MADANI_DEFAULT_BOT", () => {
     expect(maus.map((tool) => tool.name)).toEqual(["list_unread_notifications", "mark_notifications_read"]);
-    for (const env of [{}, { DUSK_DEFAULT_BOT: "0" }, { DUSK_DEFAULT_BOT: "true" }] as Array<Record<string, string>>) {
+    for (const env of [{}, { MADANI_DEFAULT_BOT: "0" }, { MADANI_DEFAULT_BOT: "true" }] as Array<Record<string, string>>) {
       expect(listed(env).map((tool) => tool.name)).not.toEqual(expect.arrayContaining(["mark_notifications_read"]));
     }
   });
@@ -22,6 +22,6 @@ describe("Dusk's two notification tools on the wire", () => {
     ]);
     expect(maus[1]!.inputSchema.properties.ids).toEqual({ type: "array", items: { type: "string" } });
     expect(fullInputSchema("mark_notifications_read")).toMatchObject({ properties: { ids: { type: "array", maxItems: 40 } } });
-    expect(JSON.stringify(DUSK_TOOL_DEFINITIONS)).not.toMatch(/"(oneOf|anyOf|allOf|const|format)"/);
+    expect(JSON.stringify(MADANI_TOOL_DEFINITIONS)).not.toMatch(/"(oneOf|anyOf|allOf|const|format)"/);
   });
 });

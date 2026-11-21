@@ -121,7 +121,7 @@ type Note = "copied" | "pay-failed" | "interest-sent" | "interest-failed" | null
 export function CloudAddDialog({ now = Date.now }: { now?: () => number }) {
   const { state, dispatch } = useStore();
   const request = state.cloudAdd;
-  const bridge = window.duskDesktop?.remoteClient?.active ? undefined : window.duskDesktop?.cloudAccount;
+  const bridge = window.madaniDesktop?.remoteClient?.active ? undefined : window.madaniDesktop?.cloudAccount;
   const [account, setAccount] = useState<CloudAccountState | null>(null);
   const [offer, setOffer] = useState<CloudOffer | null | undefined>(undefined);
   const [chosen, setChosen] = useState<string | null>(null);
@@ -282,7 +282,7 @@ export function CloudAddDialog({ now = Date.now }: { now?: () => number }) {
     return () => window.removeEventListener("blur", stop);
   }, [counting]);
   if (!open || !view || !request || !bridge || view.kind === "settings") return <AnimatePresence>{null}</AnimatePresence>;
-  if (view.kind === "has-cloud" && account?.status === "connected" && account.clouds && window.duskDesktop?.cloudAdd
+  if (view.kind === "has-cloud" && account?.status === "connected" && account.clouds && window.madaniDesktop?.cloudAdd
     && (account.addCloud?.canAdd !== false || (account.adding && !account.adding.done))) {
     return <AnimatePresence><CloudAddSheet key="cloud-add" kind={extraWide ? "offer" : "has-cloud"} staging={account.staging === true} onClose={close}>
       <AddCloudFlow onClose={close} onFirstCloud={() => {}} onWide={setExtraWide} source={request.source} />

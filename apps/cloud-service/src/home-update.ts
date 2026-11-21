@@ -1,5 +1,5 @@
 // Updates a running managed home can't be broken by (shared/update-guard.ts). The newest release this service offers
-// (DUSK_MANAGED_HOME_RELEASE_FILE, read again when it changes, else the package it was started with; a release file that
+// (MADANI_MANAGED_HOME_RELEASE_FILE, read again when it changes, else the package it was started with; a release file that
 // lists cloud ids is offered to those clouds only, the rest keep the package the service started with) is installed only
 // when its signature verifies, it is newer than what the home runs, at or above the signed floor and not blocked, and
 // only while the home is idle: no turn, routine run, upload or backup. The home self-tests on the new version
@@ -22,7 +22,7 @@ export const SELF_TEST_WAIT_MS = 5 * 60_000;
 const INSTALL_RETRY_MS = 60 * 60_000;
 const SHA256 = /^[a-f0-9]{64}$/;
 
-/** DUSK_MANAGED_HOME_RELEASE_FILE: `{ sha256, signature, url | file, clouds? }`, read again whenever it changes; `clouds`
+/** MADANI_MANAGED_HOME_RELEASE_FILE: `{ sha256, signature, url | file, clouds? }`, read again whenever it changes; `clouds`
  * (cloud ids) limits the offer to those clouds, for a canary, and an empty or missing list offers it to every cloud */
 export function createReleaseFile(file: string | null | undefined): () => HomeRelease | null {
   let held: { mtime: number; value: HomeRelease | null } | null = null;

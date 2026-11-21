@@ -23,7 +23,7 @@ let bots: Record<string, { id: string; name: string; macControl?: boolean }>;
 let enabled: boolean, owner: string | null, auths: Record<string, RequestAuth>;
 
 beforeEach(async () => {
-  dir = mkdtempSync(join(tmpdir(), "dusk-mac-host-"));
+  dir = mkdtempSync(join(tmpdir(), "madani-mac-host-"));
   bots = { nova: { id: "nova", name: "Nova" } };
   enabled = true;
   owner = "owner";

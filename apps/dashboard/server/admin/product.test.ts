@@ -64,12 +64,12 @@ describe("fix first, from what the site and apps show now", () => {
   it("names rage clicks by what was clicked and where, and drops a section the site no longer shows", () => {
     const events = [
       ...Array.from({ length: 8 }, (_, i) => site(DAY, `w${i}`, "/", { goal: "rage_click", section: "wl" })),
-      site(20 * DAY, "h0", "/", { goal: "rage_click", section: "hero", label: "meet_dusk_bot" }),
-      site(20 * DAY, "h1", "/", { goal: "rage_click", section: "hero", label: "meet_dusk_bot" }),
+      site(20 * DAY, "h0", "/", { goal: "rage_click", section: "hero", label: "meet_madani_bot" }),
+      site(20 * DAY, "h1", "/", { goal: "rage_click", section: "hero", label: "meet_madani_bot" }),
     ];
     const report = productReport({ from: 0, to, events, funnel });
-    expect(report.site.rage).toEqual([{ key: "meet dusk bot in the hero section of /", count: 2, people: 2 }]);
-    expect(report.improve.find(row => row.area === "site")?.title).toBe('rage clicks on "meet dusk bot in the hero section of /"');
+    expect(report.site.rage).toEqual([{ key: "meet madani bot in the hero section of /", count: 2, people: 2 }]);
+    expect(report.improve.find(row => row.area === "site")?.title).toBe('rage clicks on "meet madani bot in the hero section of /"');
   });
 
   it("counts an account that set up in the desktop app as onboarded, not lost at the web welcome", () => {

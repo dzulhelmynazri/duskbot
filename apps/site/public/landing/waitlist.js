@@ -115,7 +115,7 @@ if (form) {
 
   function cheer() {
     const pip = $('.wl-pip svg.bot');
-    if (window.duskBots && pip) window.duskBots.react(pip, 'boing');
+    if (window.madaniBots && pip) window.madaniBots.react(pip, 'boing');
     const ticket = $('.wl-ticket');
     if (still || !ticket) return;
     // a burst of little squares off the top of the ticket, the same sparks a poke makes elsewhere on the site
@@ -136,7 +136,7 @@ if (form) {
     lede.append(already ? 'you were already on it. ' : '', "we'll write to ", Object.assign(document.createElement('b'), { textContent: email }), " when it's your turn.");
     form.hidden = true; done.hidden = false; hero.classList.add('is-done');
     hero.dispatchEvent(new Event('wl:layout'));
-    document.title = "You're on the list · dusk bot";
+    document.title = "You're on the list · madani bot";
     title.focus();
     cheer();
   }
@@ -152,11 +152,11 @@ if (form) {
     try {
       const r = await fetch('/api/waitlist', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ email, source, ref: ref || undefined, website: $('#wl-website', form).value }) });
       const d = await r.json().catch(() => ({}));
-      if (d.ok) { window.dusk?.('waitlist_saved'); return joined(d.position, email.toLowerCase(), d.already); }
-      window.dusk?.('waitlist_failed', { label: String(d.error || r.status).toLowerCase().replace(/[^a-z0-9_]/g, '_').slice(0, 30) });
+      if (d.ok) { window.madani?.('waitlist_saved'); return joined(d.position, email.toLowerCase(), d.already); }
+      window.madani?.('waitlist_failed', { label: String(d.error || r.status).toLowerCase().replace(/[^a-z0-9_]/g, '_').slice(0, 30) });
       showError(d.message || COPY.offline);
     } catch {
-      window.dusk?.('waitlist_failed', { label: 'offline' });
+      window.madani?.('waitlist_failed', { label: 'offline' });
       showError(COPY.offline);
     } finally {
       go.disabled = false; go.textContent = label; form.removeAttribute('aria-busy');

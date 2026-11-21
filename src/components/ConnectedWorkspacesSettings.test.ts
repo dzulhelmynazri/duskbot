@@ -37,7 +37,7 @@ const flush = async () => { for (let i = 0; i < 20; i++) await Promise.resolve()
 const VPS = { id: "vps", name: "VPS", origin: "https://bots.example.test" };
 function stub(extra: Record<string, unknown> = {}) {
   vi.stubGlobal("window", {
-    duskDesktop: { environments: { state: vi.fn().mockResolvedValue({ localOrigin: "http://127.0.0.1:1", remote: false, activeId: "local", environments: [VPS] }),
+    madaniDesktop: { environments: { state: vi.fn().mockResolvedValue({ localOrigin: "http://127.0.0.1:1", remote: false, activeId: "local", environments: [VPS] }),
       switch: vi.fn(), forget: vi.fn(), addFromLink: vi.fn(), onOpenSettings: () => () => {} }, ...extra },
     location: { search: "", href: "http://127.0.0.1:1/settings" }, history: { replaceState: () => {} },
   });
@@ -49,16 +49,16 @@ beforeEach(() => {
 });
 afterEach(() => { vi.unstubAllGlobals(); setLocale("en"); config.value = {}; });
 
-const LOCAL_ENV = { id: "env-1", kind: "local", name: "Work", dataDir: "/home/me/.duskbot-work", missing: false };
-const GONE_ENV = { id: "env-2", kind: "local", name: "Old", dataDir: "/home/me/.duskbot-old", missing: true };
+const LOCAL_ENV = { id: "env-1", kind: "local", name: "Work", dataDir: "/home/me/.madanibot-work", missing: false };
+const GONE_ENV = { id: "env-2", kind: "local", name: "Old", dataDir: "/home/me/.madanibot-old", missing: true };
 const envState = (overrides: Record<string, unknown> = {}) => ({
   localOrigin: "http://127.0.0.1:1", remote: false, packaged: true, activeId: "local",
   environments: [LOCAL_ENV, GONE_ENV, VPS], ...overrides,
 });
-function stubEnvironments(stateOverrides: Record<string, unknown> = {}, bridgeExtra: Record<string, unknown> = {}, duskDesktopExtra: Record<string, unknown> = {}) {
+function stubEnvironments(stateOverrides: Record<string, unknown> = {}, bridgeExtra: Record<string, unknown> = {}, madaniDesktopExtra: Record<string, unknown> = {}) {
   const environments = { state: vi.fn().mockResolvedValue(envState(stateOverrides)), switch: vi.fn(),
     forget: vi.fn(), addFromLink: vi.fn(), create: vi.fn(), pickDir: vi.fn(), onOpenSettings: () => () => {}, ...bridgeExtra };
-  stub({ environments, ...duskDesktopExtra });
+  stub({ environments, ...madaniDesktopExtra });
   return environments;
 }
 const rowButton = (ariaLabel: string) => render().nodes.filter(n => n.type === "button" && n.props["aria-label"] === ariaLabel)[0];
@@ -77,7 +77,7 @@ it("lists local environments with their folders above the servers, marking a mis
   expect(html).toContain("Environments on this computer");
   expect(html).toContain("Your servers");
   expect(html.indexOf("Environments on this computer")).toBeLessThan(html.indexOf("Your servers"));
-  expect(html).toContain("/home/me/.duskbot-work");
+  expect(html).toContain("/home/me/.madanibot-work");
   expect(html.match(/>Missing</g)).toHaveLength(1);
   expect(html).toContain("https://bots.example.test");
 });
@@ -87,7 +87,7 @@ it("hides local environments and the create form in a dev build", async () => {
   const { html } = render();
   expect(html).not.toContain("Environments on this computer");
   expect(html).not.toContain("New environment");
-  expect(html).not.toContain("/home/me/.duskbot-work");
+  expect(html).not.toContain("/home/me/.madanibot-work");
 });
 
 it("creates an environment with the chosen folder, and without one when the field is left empty", async () => {

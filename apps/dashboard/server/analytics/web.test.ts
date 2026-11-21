@@ -13,8 +13,8 @@ const emptyPeople = (): People => ({ signups: new Map(), paid: new Map() });
 
 describe("visitsOf", () => {
   it("separates surfaces sharing a session and defaults to site visits", () => {
-    const events = [site("v", "same", FROM, "/", { host: "dusk.bot", utm: { term: "AI-Assistant" } }),
-      event("page_view", FROM + 10, { path: "/billing" }, { session: "same", visitor: "v", source: "Google", channel: "search", country: "IN", device: "desktop", os: "mac", browser: "chrome", host: "preview.dusk.bot", utm: { term: "Dusk_Bot" } }, "acct_a"),
+    const events = [site("v", "same", FROM, "/", { host: "madani.bot", utm: { term: "AI-Assistant" } }),
+      event("page_view", FROM + 10, { path: "/billing" }, { session: "same", visitor: "v", source: "Google", channel: "search", country: "IN", device: "desktop", os: "mac", browser: "chrome", host: "preview.madani.bot", utm: { term: "Madani_Bot" } }, "acct_a"),
       event("page_view", FROM + 20, { path: "/usage" }, { session: "same", visitor: "v" }, "acct_a"),
       event("page_view", FROM, { path: "/ignored" }, {}, "acct_a"), event("page_view", FROM, {}, { session: "anonymous" }),
       event("app_open", FROM + 30, { kind: "desktop" }, { session: "same", install: "mac", app: { platform: "darwin" } }, "acct_a"),
@@ -25,13 +25,13 @@ describe("visitsOf", () => {
     const visits = visitsOf(events, SURFACES);
     expect(visits).toHaveLength(3);
     expect(visits[0]).toMatchObject({ surface: "site", keyword: "ai-assistant" });
-    expect(visits[1]).toMatchObject({ surface: "account", visitor: "v", entry: "/dashboard/billing", exit: "/dashboard/usage", engagedMs: 10, bounced: false, source: "Google", channel: "search", country: "IN", device: "desktop", os: "mac", browser: "chrome", host: "preview.dusk.bot", keyword: "dusk_bot" });
+    expect(visits[1]).toMatchObject({ surface: "account", visitor: "v", entry: "/dashboard/billing", exit: "/dashboard/usage", engagedMs: 10, bounced: false, source: "Google", channel: "search", country: "IN", device: "desktop", os: "mac", browser: "chrome", host: "preview.madani.bot", keyword: "madani_bot" });
     expect(visits[2]).toMatchObject({ surface: "desktop", visitor: "acct_a", entry: "/bots", engagedMs: 5 });
     const home = visitsOf([event("page_view", FROM, { path: "/" }, { session: "s9", visitor: "w" })], SURFACES);
     expect(home[0]).toMatchObject({ surface: "account", entry: "/dashboard" });
     expect(visits[2]!.pages).toHaveLength(1);
     for (const dim of ["surface", "host", "keyword"] as const) expect(valuesOf(visits[0]!, dim)).toEqual([visits[0]![dim]]);
-    expect(matches(visits[1]!, { surface: "account", host: "preview.dusk.bot", keyword: "dusk_bot" })).toBe(true);
+    expect(matches(visits[1]!, { surface: "account", host: "preview.madani.bot", keyword: "madani_bot" })).toBe(true);
     expect(valuesOf(visits[2]!, "keyword")).toEqual(["unknown"]);
     expect(valuesOf({ ...visits[0]!, referrer: null, source: "launch-thread" }, "referrer"), "a ?ref or utm source stands in for a missing referrer").toEqual(["launch-thread"]);
     expect(valuesOf({ ...visits[0]!, referrer: null, source: "direct" }, "referrer")).toEqual(["direct"]);
@@ -72,7 +72,7 @@ describe("visitsOf", () => {
 
   it("groups sessions, keeps first-view attribution, entry/exit, and maximum leave measurements per page", () => {
     const events = [
-      site("v1", "s1", FROM, "/", { source: "ChatGPT", channel: "ai", referrer: "chatgpt.com", utm: { campaign: "launch", source: "newsletter" }, ref: "thread", country: "DE", region: "BE", city: "Berlin", lat: 52.5, lon: 13.4, device: "desktop", os: "mac", browser: "safari", host: "dusk.bot", pv: "p1" }),
+      site("v1", "s1", FROM, "/", { source: "ChatGPT", channel: "ai", referrer: "chatgpt.com", utm: { campaign: "launch", source: "newsletter" }, ref: "thread", country: "DE", region: "BE", city: "Berlin", lat: 52.5, lon: 13.4, device: "desktop", os: "mac", browser: "safari", host: "madani.bot", pv: "p1" }),
       event("site_leave", FROM + 100, { path: "/", ms: 8000, scroll: 75 }, { visitor: "v1", session: "s1", pv: "p1" }),
       event("site_leave", FROM + 200, { path: "/", ms: 2000, scroll: 90 }, { visitor: "v1", session: "s1", pv: "p1" }),
       site("v1", "s1", FROM + 300, "/pricing", { source: "Google", channel: "search", country: "US", device: "mobile", pv: "p2" }),
@@ -82,7 +82,7 @@ describe("visitsOf", () => {
     const visits = visitsOf(events);
     expect(visits).toHaveLength(2);
     expect(visits[0]).toMatchObject({ visitor: "v1", session: "s1", start: FROM, end: FROM + 400, entry: "/", exit: "/pricing", engagedMs: 12000, bounced: false,
-      source: "ChatGPT", channel: "ai", referrer: "chatgpt.com", campaign: "launch", ref: "thread", country: "DE", region: "BE", city: "Berlin", lat: 52.5, lon: 13.4, device: "desktop", os: "mac", browser: "safari", host: "dusk.bot" });
+      source: "ChatGPT", channel: "ai", referrer: "chatgpt.com", campaign: "launch", ref: "thread", country: "DE", region: "BE", city: "Berlin", lat: 52.5, lon: 13.4, device: "desktop", os: "mac", browser: "safari", host: "madani.bot" });
     expect([...visits[0]!.leaves]).toEqual([["p1", { path: "/", ms: 8000, scroll: 90 }], ["p2", { path: "/pricing", ms: 4000, scroll: 50 }]]);
     expect(visits[1]).toMatchObject({ entry: "/docs", exit: "/docs", bounced: true, engagedMs: 0, source: "direct", channel: "direct" });
   });

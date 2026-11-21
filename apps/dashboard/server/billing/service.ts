@@ -264,11 +264,11 @@ export function createBillingService(options: BillingServiceOptions) {
     if (provider.name !== "fake") return config.products;
     return new Proxy(config.products, { get: (target, key) => typeof key === "string" ? target[key] ?? key : undefined });
   }
-  /** the cart as provider ids; a key missing from DUSK_DODO_PRODUCTS is named in the log and answers 503 */
+  /** the cart as provider ids; a key missing from MADANI_DODO_PRODUCTS is named in the log and answers 503 */
   function providerCart(cart: Cart) {
     const ids = products(), lines = dodoCart(cart, ids, config);
     if (lines) return lines;
-    console.error(`billing: DUSK_DODO_PRODUCTS has no id for ${dodoCartKeys(cart, config).map(({ key }) => key).filter(key => !ids[key]).join(", ") || "this cart"}`);
+    console.error(`billing: MADANI_DODO_PRODUCTS has no id for ${dodoCartKeys(cart, config).map(({ key }) => key).filter(key => !ids[key]).join(", ") || "this cart"}`);
     fail(503, "unavailable");
   }
   function desktopPlan(cart: Cart): DesktopPlan {

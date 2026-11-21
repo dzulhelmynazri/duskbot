@@ -2,15 +2,15 @@
 // disposable fake-engine server; the desktop bridge's rail and add-a-Cloud answers are the preview's own fixtures.
 // Run: node --experimental-strip-types scripts/verify-cloud-rail.ts [--shots <dir> [--only <view,view>] [--size <width>x<height>]]
 // With --shots it photographs each view in a light and a dark skin with a headless Chrome in a throwaway profile
-// (DUSK_CDP_CHROME, else the installed Google Chrome) at twice the window's size (1280x800 unless --size says) and
+// (MADANI_CDP_CHROME, else the installed Google Chrome) at twice the window's size (1280x800 unless --size says) and
 // exits; without, it prints the preview's address and waits. The desktop window shows no rail (electron/main.mjs); the
 // rail-hidden and rail-chrome-hidden views are the window as it is now, the others the rail's page as it would draw.
 import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import { setTimeout as delay } from "node:timers/promises";
-import { launchVerificationServer, runControlDusk } from "./control-dusk.ts";
-import { duskPng } from "./testing/dusk-banner.ts";
+import { launchVerificationServer, runControlMadani } from "./control-madani.ts";
+import { madaniPng } from "./testing/madani-banner.ts";
 import { openHeadlessChrome } from "./testing/headless-chrome.ts";
 import { mountPreview, parkUntilSignal, type MountedPreview } from "./testing/preview-fixture.ts";
 
@@ -94,20 +94,20 @@ async function openChrome(profile: string) {
 const fixture = await launchVerificationServer();
 let ui: MountedPreview | undefined;
 try {
-  for (const name of ["Chief of Staff", "Research", "Inbox"]) await runControlDusk(["new-bot", "--name", name, "--url", fixture.info.url]);
+  for (const name of ["Chief of Staff", "Research", "Inbox"]) await runControlMadani(["new-bot", "--name", name, "--url", fixture.info.url]);
   ui = await mountPreview(fixture, { entry: "/scripts/testing/rail-preview.tsx", route: "/__cloud-rail.html", title: "Isolated rail of Clouds", logLevel: "warn" });
   if (!shots) {
     console.log(JSON.stringify({ ...fixture.info, previewUrl: ui.previewUrl }, null, 2));
     await parkUntilSignal();
   } else {
     mkdirSync(shots, { recursive: true });
-    const profile = mkdtempSync(join(tmpdir(), "dusk-rail-chrome-"));
+    const profile = mkdtempSync(join(tmpdir(), "madani-rail-chrome-"));
     const chrome = await openChrome(profile);
     try {
       let banner = false;
       for (const view of VIEWS.filter((entry) => !only || only.has(entry.name))) for (const skin of SKINS) {
         if (view.banner && !banner) {
-          const kept = await fetch(`${fixture.info.url}/api/workspace/banner`, { method: "PUT", headers: { "content-type": "image/png", origin: fixture.info.url }, body: new Uint8Array(duskPng()) });
+          const kept = await fetch(`${fixture.info.url}/api/workspace/banner`, { method: "PUT", headers: { "content-type": "image/png", origin: fixture.info.url }, body: new Uint8Array(madaniPng()) });
           if (!kept.ok) throw new Error(`the banner wasn't kept (${kept.status}): ${await kept.text()}`);
           banner = true;
         }

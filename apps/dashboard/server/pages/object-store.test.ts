@@ -19,7 +19,7 @@ it("matches the AWS S3 GET object signing example", () => {
 
 describe.each(["memory", "fs"])("%s object store", kind => {
   it("persists content types, isolates buffers, lists prefixes and deletes exact keys", async () => {
-    const dir = await mkdtemp(join(tmpdir(), "dusk-pages-objects-")); dirs.push(dir);
+    const dir = await mkdtemp(join(tmpdir(), "madani-pages-objects-")); dirs.push(dir);
     const store = kind === "fs" ? createFsObjectStore(dir) : createMemoryObjectStore();
     const body = Buffer.from("hello");
     await store.put("pages/a/index.html", body, { contentType: "text/html; charset=utf-8" });
@@ -39,7 +39,7 @@ describe.each(["memory", "fs"])("%s object store", kind => {
   });
 
   it.each(["../x", "a/../x", "/absolute", "a\\b", "a..b", "a//b", "a/./b"])("refuses unsafe key %s", async key => {
-    const dir = await mkdtemp(join(tmpdir(), "dusk-pages-keys-")); dirs.push(dir);
+    const dir = await mkdtemp(join(tmpdir(), "madani-pages-keys-")); dirs.push(dir);
     const store = kind === "fs" ? createFsObjectStore(dir) : createMemoryObjectStore();
     await expect(store.put(key, Buffer.from("x"), { contentType: "text/plain" })).rejects.toThrow("Invalid object key");
     await expect(store.get(key)).rejects.toThrow("Invalid object key");

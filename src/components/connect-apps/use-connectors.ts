@@ -25,7 +25,7 @@ export type ConnectorError = string | { key: LocaleKey } | null;
 export interface ComposioConnect { added: boolean; name: string | null; signedIn: boolean; enabled: boolean }
 export const COMPOSIO_CONNECT_NAME = "composio-connect";
 export const COMPOSIO_CONNECT_URL = "https://connect.composio.dev/mcp";
-const VIA_APPS = "dusk.composioConnect.apps";
+const VIA_APPS = "madani.composioConnect.apps";
 function readViaApps(): Record<string, true> {
   try { return JSON.parse(localStorage.getItem(VIA_APPS) ?? "{}") as Record<string, true>; } catch { return {}; }
 }
@@ -343,7 +343,7 @@ export function useConnectors(): Connectors {
   /** Waits for the sign-in on Composio's page: reads the app's accounts with backoff, at once when the window is back in
    * front, until one is active, the page we opened is closed, the link expires, or Composio says the sign-in is gone.
    * Time spent back here is no signal (the page may still be open in the browser), so the wait lasts the link's life.
-   * Trouble reaching dusk or Composio (a restart, the network) is retried and said, never silent; the link's own
+   * Trouble reaching madani or Composio (a restart, the network) is retried and said, never silent; the link's own
    * deadline holds even while a read hangs. */
   const pollVia = (slug: string, url: string, since: number, closed?: () => boolean) => {
     stopVia(slug);

@@ -11,7 +11,7 @@ import type { SignInVerify } from "./bridge";
 const PILL = "flex min-h-11 w-full items-center justify-center rounded-full border border-transparent px-5 text-[14px] font-medium outline-none focus-visible:border-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink disabled:opacity-50";
 const FIELD = "h-11 w-full rounded-xl border border-transparent bg-transparent px-3 text-[16px] text-ink outline-none focus:border-ink disabled:opacity-50";
 const LINK = "min-h-11 self-center rounded-full px-3 text-[13px] text-ink-secondary underline underline-offset-2 outline-none hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink disabled:opacity-40";
-export const SUPPORT_ADDRESS = "hello@dusk.bot";
+export const SUPPORT_ADDRESS = "hello@madani.bot";
 export type SignInOptions = { providers: OAuthProvider[]; recovery: boolean };
 
 export function SignIn({ emailStart, emailVerify, browser, cancelEmail, onSignedIn, notice, note, mobile = false, options, children, marks }: {
@@ -82,7 +82,7 @@ export function SignIn({ emailStart, emailVerify, browser, cancelEmail, onSigned
     if (!sent) { if (email.trim()) void send(); return; }
     verify(code);
   };
-  return <main className={`${mobile ? "dusk-mobile " : ""}flex size-full min-h-0 flex-col items-center overflow-y-auto bg-app px-6 py-8 text-ink`}>
+  return <main className={`${mobile ? "madani-mobile " : ""}flex size-full min-h-0 flex-col items-center overflow-y-auto bg-app px-6 py-8 text-ink`}>
     <div ref={host} className="my-auto flex w-full max-w-[360px] flex-col gap-4">
       <div className="flex justify-center" aria-hidden="true"><MausAvatar color="green" size={80} state="idle" animated={false} personality={false} /></div>
       <div className="text-center"><h1 className="text-[24px] font-semibold tracking-tight">{t(recover ? "accountGate.cantSignIn" : "accountGate.title")}</h1><p className="mt-2 text-[14px] leading-5 text-ink-secondary">{t(recover ? "accountGate.recoverSub" : "accountGate.sub")}</p></div>

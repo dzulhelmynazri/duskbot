@@ -76,7 +76,7 @@ describe("model provider routes", () => {
     expect(body.more.length).toBeGreaterThan(50);
   });
 
-  it("leave local models out on dusk cloud", async () => {
+  it("leave local models out on madani cloud", async () => {
     const { call } = await serve({ place: "cloud" });
     const { body } = await call("GET", "/api/model-providers");
     const ollama = body.providers.find((provider: { id: string }) => provider.id === "ollama");

@@ -223,7 +223,7 @@ describe("native scanner session", () => {
     expect(await camera.request()).toBe("denied");
     const session = await camera.start({ onCode });
     expect(scanning).toHaveBeenLastCalledWith(true);
-    read("duskbot://pair?m=1"); read("duskbot://pair?m=1");
+    read("madanibot://pair?m=1"); read("madanibot://pair?m=1");
     expect(onCode).toHaveBeenCalledOnce();
     await session.torch!.set(true);
     await session.stop();

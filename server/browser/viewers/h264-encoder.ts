@@ -33,10 +33,10 @@ const run: Run = (command, args) => new Promise((resolve, reject) => {
   execFile(command, args, { timeout: 10_000, maxBuffer: 4 * 1024 * 1024, windowsHide: true }, (error, stdout) => (error ? reject(error) : resolve(stdout)));
 });
 
-/** The H.264 encoder this machine's ffmpeg has, libx264 first, or null: none, or DUSK_BROWSER_VIDEO=off. */
+/** The H.264 encoder this machine's ffmpeg has, libx264 first, or null: none, or MADANI_BROWSER_VIDEO=off. */
 export async function findH264Encoder(env: NodeJS.ProcessEnv = process.env, exec: Run = run): Promise<H264Encoder | null> {
-  if (env.DUSK_BROWSER_VIDEO?.trim().toLowerCase() === "off") return null;
-  const command = env.DUSK_FFMPEG?.trim() || "ffmpeg";
+  if (env.MADANI_BROWSER_VIDEO?.trim().toLowerCase() === "off") return null;
+  const command = env.MADANI_FFMPEG?.trim() || "ffmpeg";
   try {
     const [encoders, formats, version] = await Promise.all([
       exec(command, ["-hide_banner", "-encoders"]),

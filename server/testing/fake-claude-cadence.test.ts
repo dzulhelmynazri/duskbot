@@ -15,10 +15,10 @@ const deltaText = (frame: { type: unknown; event?: unknown }): string => {
 };
 
 it("completes a cadence-replayed turn with a result frame and a clean exit", async () => {
-  const home = mkdtempSync(join(tmpdir(), "dusk-claude-cadence-"));
+  const home = mkdtempSync(join(tmpdir(), "madani-claude-cadence-"));
   const markers = join(home, "marker-replies.json");
   const reply = "one two three four five six seven eight";
-  writeFileSync(markers, JSON.stringify({ "dusk cadence probe": reply }));
+  writeFileSync(markers, JSON.stringify({ "madani cadence probe": reply }));
   let child: ChildProcess | undefined;
   try {
     child = spawn(process.execPath, [
@@ -39,7 +39,7 @@ it("completes a cadence-replayed turn with a result frame and a clean exit", asy
     child.stdout!.on("data", (chunk) => { out += chunk; });
     child.stderr!.on("data", (chunk) => { stderr += chunk; });
     const closed = new Promise<number | null>((resolve) => child!.once("close", (code) => resolve(code)));
-    child.stdin!.end(JSON.stringify({ type: "user", message: { role: "user", content: "dusk cadence probe" } }) + "\n");
+    child.stdin!.end(JSON.stringify({ type: "user", message: { role: "user", content: "madani cadence probe" } }) + "\n");
     await expect.poll(() => child!.exitCode, { timeout: 10_000 }).not.toBeNull();
     await closed;
     expect(child.exitCode, stderr).toBe(0);

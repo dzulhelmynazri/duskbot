@@ -21,7 +21,7 @@ describe("phone sign-in codes", () => {
   let mailer: ReturnType<typeof memoryMailer>;
   let options: DashboardAppOptions;
   beforeEach(async () => {
-    dataDir = mkdtempSync(join(tmpdir(), "dusk-phone-code-test-"));
+    dataDir = mkdtempSync(join(tmpdir(), "madani-phone-code-test-"));
     time = Date.now(); mailer = memoryMailer();
     options = { dataDir, publicUrl: "http://127.0.0.1:7480", mailer, staticDir: null, now: () => time, trustProxy: true };
     app = createDashboardApp(options);

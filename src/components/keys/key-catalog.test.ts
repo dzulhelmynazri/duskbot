@@ -8,14 +8,14 @@ import { KEY_CATALOG, KEY_SECTIONS, keyEntry, keyForInstance, keyMatches, looksL
 
 const NOT_A_PERSONS_KEY: Record<string, string> = {
   BOX_TOKEN: "retired credential kept in the engine secret denylist",
-  DUSK_ANTHROPIC_API_URL: "the address the Anthropic key goes to, set by a hosted install",
-  DUSK_COMPOSIO_BROKER_TOKEN: "dusk cloud's connected-apps broker",
-  DUSK_CLOUD_VOICE_TOKEN: "dusk cloud's included voice",
-  DUSK_CLOUD_DECIDER_TOKEN: "dusk cloud's included decisions",
-  DUSK_CLOUD_X_TOKEN: "dusk cloud's included X research",
-  DUSK_CLOUD_CONNECTED_APPS_GRANT: "dusk cloud's connected apps",
-  DUSK_BROWSER_CONNECTION: "the app's own browser, not a credential",
-  DUSK_USER_DATA: "the app's own data folder, not a credential",
+  MADANI_ANTHROPIC_API_URL: "the address the Anthropic key goes to, set by a hosted install",
+  MADANI_COMPOSIO_BROKER_TOKEN: "madani cloud's connected-apps broker",
+  MADANI_CLOUD_VOICE_TOKEN: "madani cloud's included voice",
+  MADANI_CLOUD_DECIDER_TOKEN: "madani cloud's included decisions",
+  MADANI_CLOUD_X_TOKEN: "madani cloud's included X research",
+  MADANI_CLOUD_CONNECTED_APPS_GRANT: "madani cloud's connected apps",
+  MADANI_BROWSER_CONNECTION: "the app's own browser, not a credential",
+  MADANI_USER_DATA: "the app's own data folder, not a credential",
 };
 
 const electron = (file: string) => readFileSync(new URL(`../../../electron/${file}`, import.meta.url), "utf8");

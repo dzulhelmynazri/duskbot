@@ -1,4 +1,4 @@
-// What people use Dusk for: the usage section of workspace reports (shared/usage-signals.ts), kept raw for
+// What people use Madani for: the usage section of workspace reports (shared/usage-signals.ts), kept raw for
 // USAGE_RETENTION_DAYS and rolled up per day into counts that are kept. Records hold words, counts and times, plus the
 // scrubbed summaries a workspace wrote; never message content.
 import type { Db } from "mongodb";
@@ -202,7 +202,7 @@ export function ranOf(report: UsageReport, from?: { kind?: string; version?: str
 
 export function createUsage(options: {
   store: UsageStore; now?: () => number;
-  /** the account turned "help improve dusk bot" off */
+  /** the account turned "help improve madani bot" off */
   optedOut(accountId: string): boolean;
   /** a frustration group seen for the first time ever */
   newProblem?(group: { key: string; example: string | null; count: number }): void;

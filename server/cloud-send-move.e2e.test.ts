@@ -36,7 +36,7 @@ let scratch = "";
 let release = "";
 
 beforeAll(async () => {
-  scratch = mkdtempSync(join(tmpdir(), "dusk-cloud-move-"));
+  scratch = mkdtempSync(join(tmpdir(), "madani-cloud-move-"));
   release = join(scratch, "release");
   mkdirSync(join(scratch, "turns"));
   writeFileSync(release, "");
@@ -103,7 +103,7 @@ function everythingArrived(report: Awaited<ReturnType<CloudSendFixture["check"]>
  * starts again over its own data with those lines stripped of who wrote them, before anything reads them. */
 async function asABringLeftThem(threadIds: string[]) {
   const strip = `import { DatabaseSync } from "node:sqlite"; import { join } from "node:path";
-const db = new DatabaseSync(join(process.env.DUSK_DATA_DIR, "messages.db"));
+const db = new DatabaseSync(join(process.env.MADANI_DATA_DIR, "messages.db"));
 const forget = db.prepare("UPDATE messages SET json = json_remove(json, '$.sender') WHERE thread_id = ? AND role = 'user'");
 for (const id of ${JSON.stringify(threadIds)}) forget.run(id);
 db.close(); delete process.env.NODE_OPTIONS;`;
@@ -122,7 +122,7 @@ async function turnDump(botId: string, threadId: string, seen: Set<string>) {
       let found: typeof dump;
       try { found = JSON.parse(readFileSync(join(scratch, "turns", name), "utf8")); } catch { continue; }
       const env = found?.mcpConfig?.mcpServers?.agents?.env;
-      if (env?.DUSK_BOT_ID === botId && env.DUSK_THREAD_ID === threadId) { dump = found; return true; }
+      if (env?.MADANI_BOT_ID === botId && env.MADANI_THREAD_ID === threadId) { dump = found; return true; }
     }
     return false;
   }, { timeout: 30_000 }).toBe(true);
@@ -197,13 +197,13 @@ it("a move carries everything, apps and keys first, and its check finds every ro
   for (const server of [
     { name: "dodo", command: "node", args: ["-e", "process.stdin.resume()"], env: { DODO_PAYMENTS_API_KEY: DODO_KEY } },
     { name: "docs", type: "http", url: "https://mcp.docs.example.test/mcp", headers: { Authorization: `Bearer ${DOCS_TOKEN}` } },
-    { name: "linear", type: "http", url: LINEAR_URL, oauth: { clientId: "dusk-fixture-client", clientSecret: CLIENT_SECRET } },
+    { name: "linear", type: "http", url: LINEAR_URL, oauth: { clientId: "madani-fixture-client", clientSecret: CLIENT_SECRET } },
   ]) {
     expect((await local("POST", "/api/mcp/servers", server)).status).toBe(201);
     expect((await local("PATCH", `/api/mcp/servers/${server.name}`, { enabled: true })).status).toBe(200);
   }
-  const desktopSignIns = join(fx.root, "desktop", ".duskbot", "mcp-oauth.json");
-  writeFileSync(desktopSignIns, JSON.stringify({ servers: { linear: { url: LINEAR_URL, state: "signed-in", clientId: "dusk-fixture-client", tokenAuth: "client_secret_post",
+  const desktopSignIns = join(fx.root, "desktop", ".madanibot", "mcp-oauth.json");
+  writeFileSync(desktopSignIns, JSON.stringify({ servers: { linear: { url: LINEAR_URL, state: "signed-in", clientId: "madani-fixture-client", tokenAuth: "client_secret_post",
     tokenEndpoint, tokens: { access: ACCESS, refresh: REFRESH, expiresAt: Date.now() + 3_600_000 } } } }));
   expect((await local("PATCH", "/api/config", { openrouter: { key: OPENROUTER_KEY } })).status).toBe(200);
   const gmail = broker.account(fx.desktopInstallation!.userId, "gmail");

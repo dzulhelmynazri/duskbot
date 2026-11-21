@@ -464,12 +464,12 @@ describe("the model picker in Simple mode", () => {
     expect(pane(open(bot()))!.props.where).toBeUndefined();
   });
 
-  it("says a dusk cloud's list is the cloud's own AIs, above the current model", () => {
+  it("says a madani cloud's list is the cloud's own AIs, above the current model", () => {
     fixture.cloudHome = true;
     const opened = open(bot());
-    expect(pane(opened)!.props.where).toBe("These run on your dusk cloud, not on your computer.");
+    expect(pane(opened)!.props.where).toBe("These run on your madani cloud, not on your computer.");
     const html = menu(opened.html);
-    expect(html).toContain("These run on your dusk cloud, not on your computer.");
+    expect(html).toContain("These run on your madani cloud, not on your computer.");
     expect(html.indexOf("data-picker-where")).toBeLessThan(html.indexOf("data-current-model"));
   });
 
@@ -1055,7 +1055,7 @@ describe("every capability of the picker stays reachable", () => {
     fixture.advanced = advanced;
     fixture.instances = rich();
     const forBot = followed();
-    window.duskDesktop = { remoteClient: { active: true } } as NonNullable<Window["duskDesktop"]>;
+    window.madaniDesktop = { remoteClient: { active: true } } as NonNullable<Window["madaniDesktop"]>;
     try {
       const html = menu(open(forBot).html);
       expect(html).toContain("Sonnet 5.5");
@@ -1069,7 +1069,7 @@ describe("every capability of the picker stays reachable", () => {
         expect(band).not.toContain('role="separator"');
       }
     } finally {
-      delete window.duskDesktop;
+      delete window.madaniDesktop;
     }
   });
 

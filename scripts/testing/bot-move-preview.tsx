@@ -8,11 +8,11 @@ import "../../src/styles.css";
 import "../../src/styles/overlays.css";
 import "../../src/styles/motion.css";
 
-window.duskDesktop = {
+window.madaniDesktop = {
   platform: "darwin",
   remoteClient: { active: false },
   getCapabilities: async () => initialDesktopCapabilities(),
   onCapabilitiesChanged: () => () => {},
-} as unknown as typeof window.duskDesktop;
+} as unknown as typeof window.madaniDesktop;
 applySkinChoice(readSkinChoice());
 createRoot(document.getElementById("root")!).render(<App />);

@@ -11,7 +11,7 @@ node --test electron/connector-sync.node-test.mjs
 
 `server/connector-sync.e2e.test.ts` runs this computer's server (its private
 port over Node's IPC) and a Cloud home from `scripts/testing/cloud-send-fixture.ts`,
-with a fake connector service on loopback (`DUSK_TEST_CONNECTOR_HOSTS` makes
+with a fake connector service on loopback (`MADANI_TEST_CONNECTOR_HOSTS` makes
 fixture places treat it as a public address). The service rotates its refresh
 token on every use and ends the whole sign-in when a spent one comes back, as
 Composio's sign-in server does. It checks, with a real connection test on each

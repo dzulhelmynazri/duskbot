@@ -72,7 +72,7 @@
     {
       "name": "the promised follow-up list",
       "message": "each weekday at 3:30, read this week's lead threads in my property gmail. find promises i made to send information. show the property, promised detail and source thread. use current property notes in our project folder to draft answers here. if an answer is missing, say what i need to confirm. never email anyone.",
-      "note": "**gmail can stay read only.** these replies stay in dusk chat. see the [gmail setup](/integrations/gmail)."
+      "note": "**gmail can stay read only.** these replies stay in madani chat. see the [gmail setup](/integrations/gmail)."
     },
     {
       "name": "the showing schedule check",
@@ -101,7 +101,7 @@
     },
     {
       "q": "can i message the bot while i'm out at showings?",
-      "a": "**yes, through the paired phone browser version.** an office computer must stay on with dusk running if it hosts your bot. dusk cloud is another home for it."
+      "a": "**yes, through the paired phone browser version.** an office computer must stay on with madani running if it hosts your bot. madani cloud is another home for it."
     },
     {
       "q": "will it write and publish listings for me?",
@@ -110,19 +110,19 @@
   ],
   "sources": [
     {
-      "label": "dusk bot docs: files and apps",
+      "label": "madani bot docs: files and apps",
       "url": "/docs/files-and-apps"
     },
     {
-      "label": "dusk bot docs: phone",
+      "label": "madani bot docs: phone",
       "url": "/docs/phone"
     },
     {
-      "label": "dusk bot docs: routines",
+      "label": "madani bot docs: routines",
       "url": "/docs/routines"
     },
     {
-      "label": "dusk bot docs: account and billing",
+      "label": "madani bot docs: account and billing",
       "url": "/docs/account-and-billing"
     },
     {

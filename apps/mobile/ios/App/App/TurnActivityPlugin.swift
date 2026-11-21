@@ -8,7 +8,7 @@ import UserNotifications
 @objc(TurnActivityPlugin)
 public class TurnActivityPlugin: CAPPlugin, CAPBridgedPlugin {
     public let identifier = "TurnActivityPlugin"
-    public let jsName = "DuskTurnActivity"
+    public let jsName = "MadaniTurnActivity"
     public let pluginMethods: [CAPPluginMethod] = [
         CAPPluginMethod(name: "start", returnType: CAPPluginReturnPromise),
         CAPPluginMethod(name: "update", returnType: CAPPluginReturnPromise),
@@ -25,13 +25,13 @@ public class TurnActivityPlugin: CAPPlugin, CAPBridgedPlugin {
     override public func load() {
         NotificationCenter.default.addObserver(self, selector: #selector(flushActions), name: PhoneActionInbox.posted, object: nil)
         flushActions()
-        for activity in Activity<DuskTurnAttributes>.activities { watch(activity) }
+        for activity in Activity<MadaniTurnAttributes>.activities { watch(activity) }
         tasks.append(Task { [weak self] in
-            for await activity in Activity<DuskTurnAttributes>.activityUpdates { self?.watch(activity) }
+            for await activity in Activity<MadaniTurnAttributes>.activityUpdates { self?.watch(activity) }
         })
         if #available(iOS 17.2, *) {
             tasks.append(Task { [weak self] in
-                for await token in Activity<DuskTurnAttributes>.pushToStartTokenUpdates {
+                for await token in Activity<MadaniTurnAttributes>.pushToStartTokenUpdates {
                     self?.notifyListeners("startToken", data: ["token": Self.hex(token)], retainUntilConsumed: true)
                 }
             })
@@ -47,7 +47,7 @@ public class TurnActivityPlugin: CAPPlugin, CAPBridgedPlugin {
         for action in PhoneActionInbox.take() { notifyListeners("action", data: action, retainUntilConsumed: true) }
     }
 
-    private func watch(_ activity: Activity<DuskTurnAttributes>) {
+    private func watch(_ activity: Activity<MadaniTurnAttributes>) {
         guard !watched.contains(activity.id) else { return }
         watched.insert(activity.id)
         tasks.append(Task { [weak self] in
@@ -67,12 +67,12 @@ public class TurnActivityPlugin: CAPPlugin, CAPBridgedPlugin {
         return try? JSONDecoder().decode(type, from: data)
     }
 
-    private func activity(_ id: String?) -> Activity<DuskTurnAttributes>? {
-        Activity<DuskTurnAttributes>.activities.first { $0.id == id }
+    private func activity(_ id: String?) -> Activity<MadaniTurnAttributes>? {
+        Activity<MadaniTurnAttributes>.activities.first { $0.id == id }
     }
 
     /// the line under "Done" is shown only where the person lets notifications show their text
-    private func withPreviewSetting(_ state: DuskTurnAttributes.ContentState) async -> DuskTurnAttributes.ContentState {
+    private func withPreviewSetting(_ state: MadaniTurnAttributes.ContentState) async -> MadaniTurnAttributes.ContentState {
         guard state.line != nil else { return state }
         let settings = await UNUserNotificationCenter.current().notificationSettings()
         var shown = state
@@ -82,8 +82,8 @@ public class TurnActivityPlugin: CAPPlugin, CAPBridgedPlugin {
 
     @objc func start(_ call: CAPPluginCall) {
         guard ActivityAuthorizationInfo().areActivitiesEnabled else { call.resolve([:]); return }
-        guard let attributes = decode(DuskTurnAttributes.self, call.getObject("attributes")),
-              let state = decode(DuskTurnAttributes.ContentState.self, call.getObject("state")) else {
+        guard let attributes = decode(MadaniTurnAttributes.self, call.getObject("attributes")),
+              let state = decode(MadaniTurnAttributes.ContentState.self, call.getObject("state")) else {
             call.reject("attributes and state are required", "invalid")
             return
         }
@@ -97,7 +97,7 @@ public class TurnActivityPlugin: CAPPlugin, CAPBridgedPlugin {
     }
 
     @objc func update(_ call: CAPPluginCall) {
-        guard let activity = activity(call.getString("id")), let state = decode(DuskTurnAttributes.ContentState.self, call.getObject("state")) else { call.resolve(); return }
+        guard let activity = activity(call.getString("id")), let state = decode(MadaniTurnAttributes.ContentState.self, call.getObject("state")) else { call.resolve(); return }
         Task {
             await activity.update(ActivityContent(state: state, staleDate: nil))
             call.resolve()
@@ -105,7 +105,7 @@ public class TurnActivityPlugin: CAPPlugin, CAPBridgedPlugin {
     }
 
     @objc func end(_ call: CAPPluginCall) {
-        guard let activity = activity(call.getString("id")), let state = decode(DuskTurnAttributes.ContentState.self, call.getObject("state")) else { call.resolve(); return }
+        guard let activity = activity(call.getString("id")), let state = decode(MadaniTurnAttributes.ContentState.self, call.getObject("state")) else { call.resolve(); return }
         let now = call.getBool("now") ?? false
         Task {
             let shown = await withPreviewSetting(state)
@@ -115,7 +115,7 @@ public class TurnActivityPlugin: CAPPlugin, CAPBridgedPlugin {
     }
 
     @objc func list(_ call: CAPPluginCall) {
-        let activities = Activity<DuskTurnAttributes>.activities.filter { $0.activityState == .active || $0.activityState == .stale }.map { activity -> JSObject in
+        let activities = Activity<MadaniTurnAttributes>.activities.filter { $0.activityState == .active || $0.activityState == .stale }.map { activity -> JSObject in
             ["id": activity.id, "botId": activity.attributes.botId, "threadId": activity.attributes.threadId, "startedAt": activity.content.state.startedAt]
         }
         call.resolve(["activities": activities])

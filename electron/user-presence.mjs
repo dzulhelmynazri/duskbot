@@ -74,7 +74,7 @@ export function createUserPresence({ platform = process.platform, systemPreferen
       }
     }
     if (platform === "win32") {
-      const outcome = helloOutcome(await windowsHello({ reason: `dusk bot wants to ${reason}.`, hwnd, timeoutMs }));
+      const outcome = helloOutcome(await windowsHello({ reason: `madani bot wants to ${reason}.`, hwnd, timeoutMs }));
       if (outcome === "unavailable") return ["confirm", await inApp(reason)];
       return ["windows-hello", outcome === "pass"];
     }
@@ -93,7 +93,7 @@ export function createUserPresence({ platform = process.platform, systemPreferen
   };
 }
 
-/** `presence:require` for window.duskDesktop.requireUserPresence. `guard` decides which senders may ask; `trusted(event)`
+/** `presence:require` for window.madaniDesktop.requireUserPresence. `guard` decides which senders may ask; `trusted(event)`
  * whether the page may word the reason itself. */
 export function installUserPresence({ ipcMain, guard, dialog, systemPreferences, log, window, trusted, platform = process.platform }) {
   const parent = () => { const win = window(); return win && !win.isDestroyed() ? win : null; };
@@ -105,7 +105,7 @@ export function installUserPresence({ ipcMain, guard, dialog, systemPreferences,
       const win = parent();
       if (!win) return false;
       const { response } = await dialog.showMessageBox(win, {
-        type: "question", message: "Confirm it's you", detail: `dusk bot wants to ${reason}.`,
+        type: "question", message: "Confirm it's you", detail: `madani bot wants to ${reason}.`,
         buttons: ["Continue", "Cancel"], defaultId: 1, cancelId: 1,
       });
       return response === 0;

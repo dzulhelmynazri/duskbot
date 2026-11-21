@@ -38,7 +38,7 @@ export function useNotesIntake() {
   }, [state.bots, state.config?.profile?.aboutMe, state.config?.team, firstBotId, dispatch]);
 }
 
-/** While the prompt's answer may still come, Downloads is checked every few seconds for the dusk-bot-notes.md it
+/** While the prompt's answer may still come, Downloads is checked every few seconds for the madani-bot-notes.md it
  * asks for, and a new one comes in by itself, with the first bot's note saying so. Only on the desktop app's own
  * computer; never before the prompt was copied. Paste and drop still work the whole time. */
 export function useNotesFromDownloads() {
@@ -71,7 +71,7 @@ export function useNotesReminder() {
     return scheduleNotesReminder(() => {
       if (typeof Notification === "undefined" || !systemNotificationsAllowed() || Notification.permission !== "granted") return;
       try {
-        new Notification(t("composer.notes.remindTitle"), { body: t("composer.notes.remindBody"), tag: "duskbot:notes", silent: true }).onclick = () => {
+        new Notification(t("composer.notes.remindTitle"), { body: t("composer.notes.remindBody"), tag: "madanibot:notes", silent: true }).onclick = () => {
           window.focus();
           dispatch({ type: "select", id: firstBotId });
         };

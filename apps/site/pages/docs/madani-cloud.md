@@ -1,12 +1,12 @@
 ---
-title: dusk cloud
+title: madani cloud
 description: a computer we host for your bots, so they keep working with your laptop shut. the way we recommend once bots are part of your day.
 section: start
 order: 2
 art: s-cloud
 ---
 
-on your own computer, your bots stop when it sleeps. dusk cloud gives them a computer of their own that we look after, so routines run at 3am, long jobs finish while you are out, and your phone always has someone to talk to.
+on your own computer, your bots stop when it sleeps. madani cloud gives them a computer of their own that we look after, so routines run at 3am, long jobs finish while you are out, and your phone always has someone to talk to.
 
 ## why it's the one we recommend
 
@@ -30,7 +30,7 @@ ai usage is not part of the bill. your bots use the ai you sign in with, on your
 ## how it works
 
 1. pick plus or pro on [the pricing page](/pricing) and check out.
-2. in the app, open **settings**, **dusk cloud** and sign in. your cloud is ready in about a minute and shows up as **my cloud**.
+2. in the app, open **settings**, **madani cloud** and sign in. your cloud is ready in about a minute and shows up as **my cloud**.
 3. a short welcome walks you through it: bring your bots over (chats, memory and routines come too), sign in to your ai, and give your cloud a job.
 
 after that the app is a window onto your cloud. you use it exactly the same way.
@@ -39,14 +39,14 @@ after that the app is a window onto your cloud. you use it exactly the same way.
 
 ## files
 
-**settings**, **dusk cloud** has a files section.
+**settings**, **madani cloud** has a files section.
 
 - **share a folder.** your cloud gets a read-only copy, kept up to date while your computer is on. a bot can read it but never change your files.
-- **get your bots' work.** what bots make on the cloud lands in `Documents/Dusk Bot` on your computer, a folder per bot and conversation.
+- **get your bots' work.** what bots make on the cloud lands in `Documents/Madani Bot` on your computer, a folder per bot and conversation.
 
 ## where bots can live
 
-| | your computer | dusk cloud | your own server |
+| | your computer | madani cloud | your own server |
 | --- | --- | --- | --- |
 | **cost** | free | plus or pro | free, plus the server |
 | **works with the laptop shut** | no | yes | yes |

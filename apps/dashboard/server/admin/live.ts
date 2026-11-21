@@ -5,8 +5,8 @@ import type { Money } from "./payments.ts";
 import type { InfraDay } from "./infra.ts";
 import type { OpsDaily } from "./ops/store.ts";
 
-/** another service's analytics the admin reads, never writes: preview's admin showing dusk.bot's visitors, sessions and
- *  sign-ups from dusk_prod. its money, clouds and devices stay on that service's own admin. */
+/** another service's analytics the admin reads, never writes: preview's admin showing madani.bot's visitors, sessions and
+ *  sign-ups from madani_prod. its money, clouds and devices stay on that service's own admin. */
 export interface LiveData {
   label: string;
   sink: AnalyticsSink;
@@ -16,7 +16,7 @@ export interface LiveData {
   identities?(): Promise<Array<Pick<Identity, "accountId" | "provider" | "label" | "email" | "addedAt">>>;
   /** that service's billing records, for its payments; records without a mode stamp were made in live mode */
   money?(): Promise<Money>;
-  /** that service's dusk cloud usage days and its ops daily counters ("mail"), for the ops page's top accounts */
+  /** that service's madani cloud usage days and its ops daily counters ("mail"), for the ops page's top accounts */
   infra(fromDay: string, toDay: string): Promise<InfraDay[]>;
   daily(source: string, fromDay: string, toDay: string): Promise<OpsDaily[]>;
   /** one ops_latest entry's data, null when there is none */
@@ -74,10 +74,10 @@ export function liveData(db: Db, label: string, now: () => number = Date.now, tt
   };
 }
 
-/** DUSK_ADMIN_ANALYTICS_URI names a user with only `read` on DUSK_ADMIN_ANALYTICS_DB */
+/** MADANI_ADMIN_ANALYTICS_URI names a user with only `read` on MADANI_ADMIN_ANALYTICS_DB */
 export async function openLiveData(uri: string, dbName: string, label: string): Promise<LiveData> {
-  if (!/^[a-z0-9_]{1,40}$/.test(dbName)) throw new Error("DUSK_ADMIN_ANALYTICS_DB must be a database name.");
-  const client = new MongoClient(uri, { maxPoolSize: 4, serverSelectionTimeoutMS: 10_000, appName: "dusk-admin-live" });
+  if (!/^[a-z0-9_]{1,40}$/.test(dbName)) throw new Error("MADANI_ADMIN_ANALYTICS_DB must be a database name.");
+  const client = new MongoClient(uri, { maxPoolSize: 4, serverSelectionTimeoutMS: 10_000, appName: "madani-admin-live" });
   await client.connect();
   const db = client.db(dbName);
   await db.command({ ping: 1 });

@@ -16,7 +16,7 @@ afterEach(() => {
 
 function home() {
   let clock = START;
-  const dataDir = mkdtempSync(join(tmpdir(), "dusk-cloud-focus-"));
+  const dataDir = mkdtempSync(join(tmpdir(), "madani-cloud-focus-"));
   dirs.push(dataDir);
   const power = createCloudPower({ dataDir, now: () => clock, broadcast: () => {}, probes: { turn: () => false, run: () => false, liveCall: () => false, computer: () => false, maintenance: () => false, nextDueAt: () => null } });
   powers.push(power);

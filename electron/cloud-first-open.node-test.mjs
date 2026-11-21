@@ -6,8 +6,8 @@ import test from "node:test";
 import { cloudSetupOf, myCloudOrigin, readyCloudOrigin, rememberedCloudHome } from "./cloud-home.mjs";
 import { CONNECT_GRACE_MS, createHomeWindow, createReadyClock, FRESH_MS, HOME_SCREEN_PATH, NAME_RETRY_MS, NAME_WAIT_MS, nameNotFound, RETRY_MS } from "./home-window.mjs";
 
-const CLOUD = "https://dusk-u-new1.fly.dev";
-const TEAM = "https://dusk-u-acme.fly.dev";
+const CLOUD = "https://madani-u-new1.fly.dev";
+const TEAM = "https://madani-u-acme.fly.dev";
 const LOCAL = "http://127.0.0.1:8799";
 const SCREEN = `${LOCAL}${HOME_SCREEN_PATH}`;
 const ACCOUNT = { id: "acct-1", email: "person@example.test" };
@@ -60,7 +60,7 @@ function world({ journal = null, state = settingUp(), found = true, url = `${LOC
       const route = String(url).replace(CLOUD, "");
       if (route === "/api/health") return new Response("", { status: 200 });
       if (route === "/api/auth/session") return w.server.signedIn ? json({ kind: "session" }) : json({ error: "sign in" }, 401);
-      if (route === "/.well-known/duskbot/environment") return json({ version: "0.1.122" });
+      if (route === "/.well-known/madanibot/environment") return json({ version: "0.1.122" });
       return json({}, 404);
     },
     power: { asleep: () => false, hold: () => {}, woke: () => {} },

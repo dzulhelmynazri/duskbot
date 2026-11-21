@@ -12,14 +12,14 @@ import { createProxyHandler, type ProxyOptions } from "../src/proxy.ts";
 import { denyReason } from "../src/routes.ts";
 import { gzipTunnelReplies } from "../src/tunnel-gzip.ts";
 
-const TOKEN = `dusk_sess_${"a".repeat(43)}`;
+const TOKEN = `madani_sess_${"a".repeat(43)}`;
 const auth = { authorization: `Bearer ${TOKEN}` };
 const servers: Server[] = [];
 const sockets = new Set<Duplex>();
 const dirs: string[] = [];
 
 const stateFile = (): string => {
-  const dir = mkdtempSync(join(tmpdir(), "dusk-mobile-test-"));
+  const dir = mkdtempSync(join(tmpdir(), "madani-mobile-test-"));
   dirs.push(dir);
   return join(dir, "mobile-sessions.json");
 };
@@ -66,7 +66,7 @@ const bodyOf = async (req: IncomingMessage): Promise<Buffer> => {
 };
 
 const noCompanionHeaders = (req: IncomingMessage): void => {
-  expect(Object.keys(req.headers).filter((name) => name.startsWith("x-dusk-companion"))).toEqual([]);
+  expect(Object.keys(req.headers).filter((name) => name.startsWith("x-madani-companion"))).toEqual([]);
 };
 
 const upgradeRequest = (port: number, headers: Record<string, string> = {}) => request({
@@ -113,7 +113,7 @@ describe("mobile session registry", () => {
 
   it("rejects malformed tokens, keeps duplicates stable and caps the oldest entries", () => {
     const mobile = createMobileSessions({ file: null });
-    for (const token of ["dusk_token", "dusk_sess_short", `dusk_sess_${"x".repeat(201)}`, `dusk_sess_${"!".repeat(20)}`]) {
+    for (const token of ["madani_token", "madani_sess_short", `madani_sess_${"x".repeat(201)}`, `madani_sess_${"!".repeat(20)}`]) {
       mobile.remember(token, "invalid");
       expect(mobile.has(token)).toBe(false);
     }
@@ -122,7 +122,7 @@ describe("mobile session registry", () => {
     mobile.remember(TOKEN, "duplicate");
     expect(mobile.list()).toHaveLength(1);
     expect(mobile.list()[0].deviceId).toBe("first");
-    for (let i = 0; i < 64; i++) mobile.remember(`dusk_sess_${String(i).padStart(20, "0")}`, `phone-${i}`);
+    for (let i = 0; i < 64; i++) mobile.remember(`madani_sess_${String(i).padStart(20, "0")}`, `phone-${i}`);
     expect(mobile.list()).toHaveLength(64);
     expect(mobile.has(TOKEN)).toBe(false);
     expect(mobile.list()[0].deviceId).toBe("phone-0");
@@ -156,7 +156,7 @@ describe("mobile HTTP forwarding", () => {
     expect(denyReason({ method: "POST", path: "/api/mobile/redeem", authenticated: false })).toBeNull();
     const response = await fetch(`${app.url}/api/mobile/redeem`, {
       method: "POST",
-      headers: { ...auth, "content-type": "application/json", "x-dusk-companion-auth": "forged", "x-forwarded-for": "forged", "x-forwarded-proto": "https", "last-event-id": "private", range: "bytes=0-1" },
+      headers: { ...auth, "content-type": "application/json", "x-madani-companion-auth": "forged", "x-forwarded-for": "forged", "x-forwarded-proto": "https", "last-event-id": "private", range: "bytes=0-1" },
       body: input,
     });
     expect(response.status).toBe(200);
@@ -192,7 +192,7 @@ describe("mobile HTTP forwarding", () => {
     app.mobile.remember(TOKEN, "phone");
     const response = await fetch(`${app.url}/api/full-harness?keep=1`, {
       method,
-      headers: { ...auth, "content-type": "application/json", "last-event-id": "event-1", range: " bytes=1-2 ", "x-dusk-companion": "1", "x-dusk-companion-device": "forged", "x-dusk-companion-auth": "forged", cookie: "omit=1" },
+      headers: { ...auth, "content-type": "application/json", "last-event-id": "event-1", range: " bytes=1-2 ", "x-madani-companion": "1", "x-madani-companion-device": "forged", "x-madani-companion-auth": "forged", cookie: "omit=1" },
       ...(method === "POST" ? { body: '{ "setting": true }' } : {}),
     });
     expect(response.status).toBe(201);
@@ -271,7 +271,7 @@ describe("mobile HTTP forwarding", () => {
   it("keeps a phone of another workspace while that workspace is not the one running", async () => {
     let environmentId = "env-b";
     const app = await fixture((req, res) => {
-      if (req.url === "/.well-known/duskbot/environment") return res.writeHead(200).end(JSON.stringify({ environmentId }));
+      if (req.url === "/.well-known/madanibot/environment") return res.writeHead(200).end(JSON.stringify({ environmentId }));
       res.writeHead(401).end("{}");
     });
     app.mobile.remember(TOKEN, "phone", "env-a");
@@ -288,7 +288,7 @@ describe("mobile HTTP forwarding", () => {
     const app = await fixture((_req, res) => { lookups += 1; res.writeHead(401).end(); });
     const statuses: number[] = [];
     for (let i = 0; i < 12; i += 1) {
-      const token = `dusk_sess_${String(i).padStart(43, "b")}`;
+      const token = `madani_sess_${String(i).padStart(43, "b")}`;
       statuses.push((await fetch(`${app.url}/api/bots`, { headers: { authorization: `Bearer ${token}` } })).status);
     }
     expect(statuses.every((status) => status === 503)).toBe(true);

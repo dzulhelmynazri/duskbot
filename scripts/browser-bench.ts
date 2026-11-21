@@ -1,5 +1,5 @@
 // The browser benchmark: 25 local pages that reproduce hard real-world UI (server/browser-bench/tasks*.ts), each with
-// a check of what the page saw. A real Claude Code CLI plays each task through dusk bot's browser tools on the real
+// a check of what the page saw. A real Claude Code CLI plays each task through madani bot's browser tools on the real
 // BrowserService and a headless Chrome; nothing leaves this computer.
 //   --engine claude    the real Claude Code CLI, built-in tools off, the browser tools as its one MCP server
 //   --engine scripted  each task's known way through, no model: checks the fixtures and their checks
@@ -29,7 +29,7 @@ const tasks = TASKS.filter((task) => !only.length || only.includes(task.id));
 const PLAY_MS = 6 * 60_000;
 const MCP_SERVER = fileURLToPath(new URL("../server/browser-bench/mcp-browser.ts", import.meta.url));
 
-process.env.DUSK_CDP_E2E ??= "1";
+process.env.MADANI_CDP_E2E ??= "1";
 const site = await BenchSite.start(TASKS);
 
 function prepare(task: BenchTask): { context: TaskContext; run: ReturnType<BenchSite["newRun"]>; dir: string } {
@@ -72,7 +72,7 @@ async function playClaude(task: BenchTask): Promise<Play> {
   const { context, run, dir } = prepare(task);
   const log = join(dir, "calls.jsonl");
   const config = join(dir, "mcp.json");
-  writeFileSync(config, JSON.stringify({ mcpServers: { browser: { command: process.execPath, args: ["--experimental-strip-types", "--no-warnings", MCP_SERVER], env: { BENCH_LOG: log, DUSK_CDP_E2E: "1", ...(process.env.DUSK_CDP_CHROME ? { DUSK_CDP_CHROME: process.env.DUSK_CDP_CHROME } : {}) } } } }));
+  writeFileSync(config, JSON.stringify({ mcpServers: { browser: { command: process.execPath, args: ["--experimental-strip-types", "--no-warnings", MCP_SERVER], env: { BENCH_LOG: log, MADANI_CDP_E2E: "1", ...(process.env.MADANI_CDP_CHROME ? { MADANI_CDP_CHROME: process.env.MADANI_CDP_CHROME } : {}) } } } }));
   const started = Date.now();
   try {
     const { answer, error } = await claude(dir, ["-p", "--output-format", "stream-json", "--verbose", "--model", model, "--tools", "", "--strict-mcp-config", "--mcp-config", config,

@@ -1,11 +1,11 @@
-// The review cloud's demo bot answers through a dusk-owned key, not the cloud's free model, whose shared free quota runs
+// The review cloud's demo bot answers through a madani-owned key, not the cloud's free model, whose shared free quota runs
 // out. The paid OpenRouter key wins when both are set; Groq's free tier is the fallback. A key's own limit at its
-// provider is the spend cap. DUSK_REVIEW_AI_MODEL (dusk.env or the environment) swaps the OpenRouter model.
+// provider is the spend cap. MADANI_REVIEW_AI_MODEL (madani.env or the environment) swaps the OpenRouter model.
 export const REVIEW_AI_OPENROUTER_MODEL = "deepseek/deepseek-v4.1-flash-1017";
 export const REVIEW_AI_NAME = "Demo AI";
 export const REVIEW_AI_PROVIDERS = [
-  { env: "DUSK_REVIEW_AI_OPENROUTER_KEY", provider: "openrouter", url: "https://openrouter.ai/api/v1", model: REVIEW_AI_OPENROUTER_MODEL, override: "DUSK_REVIEW_AI_MODEL" },
-  { env: "DUSK_REVIEW_AI_GROQ_KEY", provider: "groq", url: "https://api.groq.com/openai/v1", model: "openai/gpt-oss-120b" },
+  { env: "MADANI_REVIEW_AI_OPENROUTER_KEY", provider: "openrouter", url: "https://openrouter.ai/api/v1", model: REVIEW_AI_OPENROUTER_MODEL, override: "MADANI_REVIEW_AI_MODEL" },
+  { env: "MADANI_REVIEW_AI_GROQ_KEY", provider: "groq", url: "https://api.groq.com/openai/v1", model: "openai/gpt-oss-120b" },
 ];
 export const MISSING_REVIEW_AI = `missing ${REVIEW_AI_PROVIDERS.map((item) => item.env).join(" and ")}: the demo bot stays on the cloud's own AI`;
 

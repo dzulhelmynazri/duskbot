@@ -1,4 +1,4 @@
-// The funnel's dusk bot account sign-in, over whichever bridge this window has: the account gate's (which knows the
+// The funnel's madani bot account sign-in, over whichever bridge this window has: the account gate's (which knows the
 // providers the account service offers) or the cloud account's. Both keep the attempt and the token in main.
 import type { CloudSignInStart } from "../../../electron/cloud-account.mjs";
 import { OAUTH_PROVIDERS, type OAuthProvider } from "../../../shared/account-api";
@@ -30,7 +30,7 @@ export interface FunnelAccount {
   /** emails a magic link; absent where the bridge can't (the code is typed here instead) */
   magicLink?(email: string): Promise<void>;
   cancelBrowser(): Promise<void>;
-  /** signs this app out of the dusk bot account, so another can sign in; absent where the bridge can't */
+  /** signs this app out of the madani bot account, so another can sign in; absent where the bridge can't */
   signOut?(): Promise<void>;
   /** reads the account again now (the website's first steps may have ended) */
   refresh?(): Promise<void>;
@@ -41,7 +41,7 @@ export interface FunnelAccount {
 
 const signedIn = (status: string | undefined) => status === "connected";
 
-type CloudBridge = NonNullable<Window["duskDesktop"]>["cloudAccount"];
+type CloudBridge = NonNullable<Window["madaniDesktop"]>["cloudAccount"];
 function websiteWays(cloud: CloudBridge): Pick<FunnelAccount, "refresh" | "reopenWebsite"> {
   if (!cloud) return {};
   return {
@@ -51,7 +51,7 @@ function websiteWays(cloud: CloudBridge): Pick<FunnelAccount, "refresh" | "reope
 }
 
 /** Null where this window can't sign in to an account (a browser, a remote page, the app in development). */
-export function funnelAccount(desktop: Window["duskDesktop"] = window.duskDesktop): FunnelAccount | null {
+export function funnelAccount(desktop: Window["madaniDesktop"] = window.madaniDesktop): FunnelAccount | null {
   if (!desktop || desktop.remoteClient?.active === true) return null;
   const gate = desktop.accountGate;
   const cloud = desktop.cloudAccount;

@@ -19,7 +19,7 @@ for (const scene of scenes) {
   await page.close();
 }
 await browser.close();
-copyFileSync('/Users/siddharth/Desktop/code/omb-ref/brand/final/dusk-logo-64.png', `${out}/kit-64.png`);
+copyFileSync('/Users/siddharth/Desktop/code/omb-ref/brand/final/madani-logo-64.png', `${out}/kit-64.png`);
 for (const font of ['general-sans', 'geist-mono']) copyFileSync(`${here}../../public/landing/fonts/${font}.woff2`, `${out}/fonts/${font}.woff2`);
 // pixel art carries few colours: a palette png keeps them exact and small
 execFileSync('python3', ['-c', `

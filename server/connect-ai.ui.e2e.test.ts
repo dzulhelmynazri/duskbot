@@ -2,18 +2,18 @@
 // (server/testing/fake-login-cli.ts): its own sign-in prints Cursor's link and never finishes, so the card must end on a
 // timeout message with Try again instead of waiting for ever. The other cards' stages are drawn from answers the page is
 // given, for the screenshots. Runs where a Chromium and playwright-core are named:
-//   DUSK_UI_CHROMIUM=<chrome or headless shell> DUSK_UI_PLAYWRIGHT_CORE=<playwright-core dir> DUSK_UI_DIST=<vite build dir>
-//   [DUSK_UI_SHOTS=<folder for screenshots>] vitest run server/connect-ai.ui.e2e.test.ts
+//   MADANI_UI_CHROMIUM=<chrome or headless shell> MADANI_UI_PLAYWRIGHT_CORE=<playwright-core dir> MADANI_UI_DIST=<vite build dir>
+//   [MADANI_UI_SHOTS=<folder for screenshots>] vitest run server/connect-ai.ui.e2e.test.ts
 import { createRequire } from "node:module";
 import { mkdirSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterAll, beforeAll, expect, it, vi } from "vitest";
 import { WELCOME_VERSION } from "../electron/onboarding-record.mjs";
-import { launchVerificationServer } from "../scripts/control-dusk.ts";
+import { launchVerificationServer } from "../scripts/control-madani.ts";
 
-const { DUSK_UI_CHROMIUM: chromiumPath, DUSK_UI_PLAYWRIGHT_CORE: playwrightPath, DUSK_UI_DIST: dist } = process.env;
-const shots = process.env.DUSK_UI_SHOTS ?? join(tmpdir(), "duskbot-verification-evidence", "connect-ai");
+const { MADANI_UI_CHROMIUM: chromiumPath, MADANI_UI_PLAYWRIGHT_CORE: playwrightPath, MADANI_UI_DIST: dist } = process.env;
+const shots = process.env.MADANI_UI_SHOTS ?? join(tmpdir(), "madanibot-verification-evidence", "connect-ai");
 const ready = Boolean(chromiumPath && playwrightPath && dist);
 
 let fixture: Awaited<ReturnType<typeof launchVerificationServer>>;

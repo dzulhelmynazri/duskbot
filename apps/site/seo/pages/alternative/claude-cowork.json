@@ -4,7 +4,7 @@
   "title": "Claude Cowork alternatives: platforms and AI choice",
   "nav": "claude cowork",
   "h1": "a claude cowork alternative when you want more ai choices",
-  "description": "Claude Cowork is becoming Claude and now covers Windows and Linux beta. Compare its platforms, paid plans and engine choice with dusk bot.",
+  "description": "Claude Cowork is becoming Claude and now covers Windows and Linux beta. Compare its platforms, paid plans and engine choice with madani bot.",
   "keyword": "claude cowork alternative",
   "keywords": [
     "claude desktop alternative",
@@ -12,7 +12,7 @@
     "claude cowork vs chatgpt agent",
     "claude cowork pricing"
   ],
-  "answer": "**give each job the ai you want doing it.** dusk bot offers separate bots with their own chats and memory, on your disk, your server or dusk cloud.[^3][^4][^7] claude already supports windows and linux beta, alongside macos, web and phones.[^2] as of 12 november 2026, cowork is becoming just claude.[^1] switching makes more sense for ai choice than platform support.",
+  "answer": "**give each job the ai you want doing it.** madani bot offers separate bots with their own chats and memory, on your disk, your server or madani cloud.[^3][^4][^7] claude already supports windows and linux beta, alongside macos, web and phones.[^2] as of 12 november 2026, cowork is becoming just claude.[^1] switching makes more sense for ai choice than platform support.",
   "updated": "2026-11-12",
   "review": {
     "status": "approved",
@@ -51,9 +51,9 @@
       "**you want anthropic’s own app.** give it work across chosen folders, apps and connectors.",
       "**you want scheduling inside your paid plan.** that includes cloud work you start from your phone."
     ],
-    "dusk": [
+    "madani": [
       "**different jobs need different ais.** give each bot its own job and engine.",
-      "**you want to choose the home for your bots.** keep chats and memory on your disk, your server or dusk cloud."
+      "**you want to choose the home for your bots.** keep chats and memory on your disk, your server or madani cloud."
     ]
   },
   "compare": {
@@ -61,7 +61,7 @@
     "intro": "**windows users can choose either app.** these platform and plan details are as of 12 november 2026. both linux offerings are beta; match the listed system to the machine you use.",
     "cols": [
       "claude, formerly cowork",
-      "dusk bot"
+      "madani bot"
     ],
     "rows": [
       {
@@ -114,7 +114,7 @@
         "label": "work while the laptop is shut",
         "cells": [
           "since 6 october 2026, new tasks on pro, max and ultra run in the cloud, and scheduled tasks keep running while your computer sleeps",
-          "pair with dusk cloud for access while your computer is off"
+          "pair with madani cloud for access while your computer is off"
         ],
         "src": [
           12,
@@ -148,7 +148,7 @@
       }
     ]
   },
-  "method": "**use this to choose a setup, then try your own work in it.** we make dusk bot. we read anthropic's product, pricing and help pages on 12 november 2026.\n\nwe didn't run matching file tasks on every operating system or benchmark the engines. the rename is rolling out, so your installed app may still say cowork. support for a platform doesn't promise the same results on it.",
+  "method": "**use this to choose a setup, then try your own work in it.** we make madani bot. we read anthropic's product, pricing and help pages on 12 november 2026.\n\nwe didn't run matching file tasks on every operating system or benchmark the engines. the rename is rolling out, so your installed app may still say cowork. support for a platform doesn't promise the same results on it.",
   "sections": [
     {
       "h": "the name changed; the paid features still cost money",
@@ -156,17 +156,17 @@
     },
     {
       "h": "use the app that fits your actual computer",
-      "md": "**you can keep claude on windows.** its downloads also include ubuntu/debian linux beta with cowork available.[^2] the [windows guide](/guides/claude-cowork-windows) covers that narrower question.\n\ndusk bot supports macos 12+, windows 10/11 64-bit and ubuntu 24.04 beta, through .deb or appimage.[^3] use the listed linux versions; beta support stops short of every distribution.\n\nclaude has ios and android apps. dusk currently pairs through a phone browser with no notifications; store apps are on their way.[^2][^5]"
+      "md": "**you can keep claude on windows.** its downloads also include ubuntu/debian linux beta with cowork available.[^2] the [windows guide](/guides/claude-cowork-windows) covers that narrower question.\n\nmadani bot supports macos 12+, windows 10/11 64-bit and ubuntu 24.04 beta, through .deb or appimage.[^3] use the listed linux versions; beta support stops short of every distribution.\n\nclaude has ios and android apps. madani currently pairs through a phone browser with no notifications; store apps are on their way.[^2][^5]"
     },
     {
       "h": "choose the ai arrangement you want to live with",
-      "md": "**keep the bot's memory when you change its ai.** claude stays within anthropic's app and models.[^6] dusk runs vendors' own command-line apps where your bots live, with your sign-in. it has no model of its own.[^3][^11]\n\nlet a bot use claude, then switch its ai without losing chats, files or memory.[^7] different jobs can use different ais.\n\nmore choice also means more to manage. stay with claude if it does the job. read your provider's current sign-in terms, and use the [direct comparison](/vs/claude-cowork) to weigh the daily workflow."
+      "md": "**keep the bot's memory when you change its ai.** claude stays within anthropic's app and models.[^6] madani runs vendors' own command-line apps where your bots live, with your sign-in. it has no model of its own.[^3][^11]\n\nlet a bot use claude, then switch its ai without losing chats, files or memory.[^7] different jobs can use different ais.\n\nmore choice also means more to manage. stay with claude if it does the job. read your provider's current sign-in terms, and use the [direct comparison](/vs/claude-cowork) to weigh the daily workflow."
     }
   ],
   "faq": [
     {
       "q": "is there a claude cowork alternative for windows?",
-      "a": "**yes, and claude itself runs on windows now.** dusk supports windows 10 and 11. try the current claude app before rebuilding your setup just for the operating system.[^2][^3]"
+      "a": "**yes, and claude itself runs on windows now.** madani supports windows 10 and 11. try the current claude app before rebuilding your setup just for the operating system.[^2][^3]"
     },
     {
       "q": "is claude cowork free or paid?",
@@ -174,7 +174,7 @@
     },
     {
       "q": "where does my agent run when my laptop is closed?",
-      "a": "**new cowork tasks can keep going in claude’s cloud.** that applies to pro, max and ultra since 6 october 2026; schedules also run remotely.[^12][^13] local dusk routines stop during sleep. dusk cloud keeps them running.[^4][^9]"
+      "a": "**new cowork tasks can keep going in claude’s cloud.** that applies to pro, max and ultra since 6 october 2026; schedules also run remotely.[^12][^13] local madani routines stop during sleep. madani cloud keeps them running.[^4][^9]"
     }
   ],
   "sources": [
@@ -189,15 +189,15 @@
       "checked": "2026-11-12"
     },
     {
-      "label": "dusk desktop and ai setup",
+      "label": "madani desktop and ai setup",
       "url": "/docs/getting-started"
     },
     {
-      "label": "dusk cloud",
-      "url": "/docs/dusk-cloud"
+      "label": "madani cloud",
+      "url": "/docs/madani-cloud"
     },
     {
-      "label": "dusk phone",
+      "label": "madani phone",
       "url": "/docs/phone"
     },
     {
@@ -206,23 +206,23 @@
       "checked": "2026-11-12"
     },
     {
-      "label": "dusk bot model switching",
+      "label": "madani bot model switching",
       "url": "/docs/bots"
     },
     {
-      "label": "dusk billing",
+      "label": "madani billing",
       "url": "/docs/account-and-billing"
     },
     {
-      "label": "dusk routine timing",
+      "label": "madani routine timing",
       "url": "/docs/routines"
     },
     {
-      "label": "dusk group chats",
+      "label": "madani group chats",
       "url": "/docs/group-chats"
     },
     {
-      "label": "dusk ai apps on the bot machine",
+      "label": "madani ai apps on the bot machine",
       "url": "/docs/your-own-server"
     },
     {
@@ -240,7 +240,7 @@
     "steps": [
       "write down what your current claude setup cannot do",
       "see whether the current claude app already does that job",
-      "try one file question with a dusk bot",
+      "try one file question with a madani bot",
       "compare the review work each result leaves you"
     ]
   },
@@ -257,15 +257,15 @@
       ],
       [
         "i want a different ai for each job",
-        "try separate dusk bots"
+        "try separate madani bots"
       ],
       [
         "i need phone notifications now",
-        "account for dusk’s browser limit"
+        "account for madani’s browser limit"
       ],
       [
         "i want new tasks to stay local",
-        "compare dusk’s local option with claude’s cloud move"
+        "compare madani’s local option with claude’s cloud move"
       ]
     ]
   },

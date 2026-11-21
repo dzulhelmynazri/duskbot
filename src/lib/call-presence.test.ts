@@ -16,7 +16,7 @@ beforeEach(() => {
 afterEach(async () => {
   await act(async () => { root.unmount(); });
   endCall();
-  delete (window as unknown as { duskDesktop?: unknown }).duskDesktop;
+  delete (window as unknown as { madaniDesktop?: unknown }).madaniDesktop;
   vi.unstubAllGlobals();
 });
 
@@ -30,7 +30,7 @@ describe("call presence", () => {
 
   it("tells main when a call starts and ends, and says none on mount", async () => {
     const callActive = vi.fn(async () => {});
-    (window as unknown as { duskDesktop: unknown }).duskDesktop = { callActive };
+    (window as unknown as { madaniDesktop: unknown }).madaniDesktop = { callActive };
     await act(async () => { root.render(createElement(() => { useReportCallPresence(); return null; })); });
     await act(async () => { startCall("bot-1"); });
     await act(async () => { endCall("bot-1"); });

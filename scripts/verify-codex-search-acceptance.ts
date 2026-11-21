@@ -1,15 +1,15 @@
-// Real-model search acceptance through an isolated dusk bot server.
+// Real-model search acceptance through an isolated madani bot server.
 // Existing sign-in is explicitly designated; personal chats/config are not copied.
 import { copyFileSync, mkdirSync, writeFileSync, readFileSync, existsSync } from "node:fs";
 import { join } from "node:path";
-import { launchVerificationServer, runControlDusk } from "./control-dusk.ts";
+import { launchVerificationServer, runControlMadani } from "./control-madani.ts";
 import { fixtureApi } from "./testing/preview-fixture.ts";
 import { verifiedNativeSearch } from "./testing/native-search-evidence.ts";
 
-const cli = process.env.DUSK_VERIFY_CODEX_CLI;
-const auth = process.env.DUSK_VERIFY_CODEX_AUTH;
-const output = process.env.DUSK_VERIFY_OUTPUT;
-const models = (process.env.DUSK_VERIFY_MODELS ?? "gpt-5.6-luna").split(",").map(model => model.trim()).filter(Boolean);
+const cli = process.env.MADANI_VERIFY_CODEX_CLI;
+const auth = process.env.MADANI_VERIFY_CODEX_AUTH;
+const output = process.env.MADANI_VERIFY_OUTPUT;
+const models = (process.env.MADANI_VERIFY_MODELS ?? "gpt-5.6-luna").split(",").map(model => model.trim()).filter(Boolean);
 if (!models.length) throw new Error("Choose at least one acceptance model.");
 if (!cli || !auth || !output) throw new Error("Supply explicit CLI, sign-in and output. Uses real model quota.");
 mkdirSync(output, { recursive: true });
@@ -33,15 +33,15 @@ try {
     const prompt = "Check the current official OpenAI documentation: is the built-in browser available in Codex CLI? After searching, open the source URL in a separate call, read it, and cite that exact URL in your answer.";
     const entry: any = { model, prompt, botId: bot.id };
     report.cases.push(entry); save();
-    entry.sent = await runControlDusk(["send", "--bot", bot.id, "--text", prompt, "--url", fixture.info.url]);
+    entry.sent = await runControlMadani(["send", "--bot", bot.id, "--text", prompt, "--url", fixture.info.url]);
     console.log(JSON.stringify({ model, sent: entry.sent }));
     const deadline = Date.now() + 240_000;
     do {
-      entry.wait = await runControlDusk(["wait", "--bot", bot.id, "--timeout", "30", "--url", fixture.info.url]);
+      entry.wait = await runControlMadani(["wait", "--bot", bot.id, "--timeout", "30", "--url", fixture.info.url]);
       save();
       if (["settled", "failed", "needs-user", "stalled"].includes(entry.wait?.status)) break;
     } while (Date.now() < deadline);
-    entry.messages = await runControlDusk(["messages", "--bot", bot.id, "--limit", "50", "--url", fixture.info.url]);
+    entry.messages = await runControlMadani(["messages", "--bot", bot.id, "--limit", "50", "--url", fixture.info.url]);
     const nativePath = join(fixture.info.dataDir, "native", `${entry.sent.taskId}.ndjson`);
     const records = readFileSync(nativePath, "utf8").trim().split("\n").map(line => JSON.parse(line));
     const searches = records.filter(record => record.msg?.method === "item/completed" && record.msg?.params?.item?.type === "webSearch");

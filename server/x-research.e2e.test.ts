@@ -1,22 +1,22 @@
 // End-to-end coverage for research through treg on a real server and a real agents proxy: which bots are shown the X
-// and research tools, and where their calls go. One loopback stub stands in for both treg (DUSK_TREG_URL, for a person's
-// own treg key) and the Admin's relay (DUSK_CLOUD_X_URL and DUSK_CLOUD_X_TOKEN, as a Cloud home is wired). No external
+// and research tools, and where their calls go. One loopback stub stands in for both treg (MADANI_TREG_URL, for a person's
+// own treg key) and the Admin's relay (MADANI_CLOUD_X_URL and MADANI_CLOUD_X_TOKEN, as a Cloud home is wired). No external
 // service is reached.
 import { createServer, type Server } from "node:http";
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { expect, it } from "vitest";
-import { launchVerificationServer, runControlDusk } from "../scripts/control-dusk.ts";
+import { launchVerificationServer, runControlMadani } from "../scripts/control-madani.ts";
 import { request } from "../scripts/mcp-server.ts";
 
 interface Seen { method: string; path: string; authorization: string | undefined; tregToken: string | undefined; idempotencyKey: string | undefined; body: unknown; startedAt: number; finishedAt?: number }
-const RELAY_PATH = "/api/cloud/services/x", PLAN_TOKEN = "dusk_x_e2e_fixture", OWN_KEY = "treg_e2e_own_key";
+const RELAY_PATH = "/api/cloud/services/x", PLAN_TOKEN = "madani_x_e2e_fixture", OWN_KEY = "treg_e2e_own_key";
 const RESEARCH_TOOLS = ["web_search_many", "x_search", "research_search", "research_endpoint", "research_call"];
 // the scripted engine is a fake Claude Code, which searches the web on its own: the paid web_search_many is not mounted
 // for it (4f5ccabd4, agents-turn.ts engineHasNativeWeb), so its research tools are the rest
 const MOUNTED_RESEARCH_TOOLS = RESEARCH_TOOLS.filter((tool) => tool !== "web_search_many");
 const POSTS = { output: { data: { items: [
-  { id: "2107987482155561188", authorUsername: "maus", authorName: "Maus", createdUtc: 1791418354, text: "Dusk searched X", likeCount: 4, viewCount: 120 },
+  { id: "2107987482155561188", authorUsername: "maus", authorName: "Maus", createdUtc: 1791418354, text: "Madani searched X", likeCount: 4, viewCount: 120 },
 ], nextCursor: "" } } };
 const USAGE = { calls: 312, max: 5_000, resetsAt: "2026-11-01T00:00:00.000Z" };
 const USED_UP = "Your Pro plan's 5,000 X research calls for October are used up. They reset on 1 November.";
@@ -53,7 +53,7 @@ async function serveStub(seen: Seen[], options: { researchOff?: boolean } = {}):
       if (own && path === "/orgs/org-e2e/balance?limit=1") return send(200, { balance_micro: 4_250_000 });
       if (own && path === "/call/anyapi.x.search.posts") return send(200, POSTS, { "x-treg-cost-micro": "750" });
       if (own && path === "/catalog/endpoints/apollo.people.search") return send(200, { endpoint: PEOPLE_ROW });
-      if (own && path === "/call/apollo.people.search?q_organization_domains=dusk.bot") return send(200, { people: [{ name: "Maus" }] }, { "x-treg-cost-micro": "2000", "x-treg-call-id": "call-e2e" });
+      if (own && path === "/call/apollo.people.search?q_organization_domains=madani.bot") return send(200, { people: [{ name: "Maus" }] }, { "x-treg-cost-micro": "2000", "x-treg-call-id": "call-e2e" });
       if (plan && req.method === "GET" && path === PROBE) {
         return options.researchOff ? send(503, { error: "service_unavailable", message: "Research isn't available right now." })
           : send(400, { error: "invalid_request", message: "Say what the research is for in q." });
@@ -61,7 +61,7 @@ async function serveStub(seen: Seen[], options: { researchOff?: boolean } = {}):
       if (plan && req.method === "GET" && path === `${RELAY_PATH}/usage`) return send(200, USAGE);
       if (plan && path === `${RELAY_PATH}/call/anyapi.x.search.posts` && raw.includes("used up")) return send(429, { error: "quota_exceeded", message: USED_UP });
       if (plan && path === `${RELAY_PATH}/call/anyapi.x.search.posts`) return send(200, POSTS);
-      if (plan && path === `${RELAY_PATH}/research/call/apollo.people.search`) return send(200, { people: [{ name: "Maus" }] }, { "x-dusk-research-charged-usd": "0.002" });
+      if (plan && path === `${RELAY_PATH}/research/call/apollo.people.search`) return send(200, { people: [{ name: "Maus" }] }, { "x-madani-research-charged-usd": "0.002" });
       send(404, { error: "not_found" });
     });
   });
@@ -74,9 +74,9 @@ async function serveStub(seen: Seen[], options: { researchOff?: boolean } = {}):
 async function withFixture(test: (f: any) => Promise<void>, options: { plan: boolean; ownKey: boolean; researchOff?: boolean }) {
   const seen: Seen[] = [];
   const stub = await serveStub(seen, { researchOff: options.researchOff });
-  const env = { DUSK_TREG_URL: stub.url, ...(options.plan ? { DUSK_CLOUD_X_URL: `${stub.url}${RELAY_PATH}`, DUSK_CLOUD_X_TOKEN: PLAN_TOKEN } : {}) };
+  const env = { MADANI_TREG_URL: stub.url, ...(options.plan ? { MADANI_CLOUD_X_URL: `${stub.url}${RELAY_PATH}`, MADANI_CLOUD_X_TOKEN: PLAN_TOKEN } : {}) };
   const session = await launchVerificationServer({ ...process.env, ...env }, undefined, undefined, undefined, { scripted: true });
-  const cli = (...args: string[]) => runControlDusk(args, { env: { DUSK_URL: session.info.url } }) as Promise<any>;
+  const cli = (...args: string[]) => runControlMadani(args, { env: { MADANI_URL: session.info.url } }) as Promise<any>;
   const api = (path: string, body?: unknown, method = "POST") =>
     request(path, body === undefined ? {} : { method, body: JSON.stringify(body) }, session.info.url) as Promise<any>;
   const planPath = join(session.info.dataDir, "room-plan.json");
@@ -117,8 +117,8 @@ async function withFixture(test: (f: any) => Promise<void>, options: { plan: boo
   }
 }
 
-const SEARCH = { tool: "x_search", arguments: { query: "dusk" } };
-const PEOPLE = { tool: "research_call", arguments: { id: "apollo.people.search", params: { q_organization_domains: "dusk.bot" } } };
+const SEARCH = { tool: "x_search", arguments: { query: "madani" } };
+const PEOPLE = { tool: "research_call", arguments: { id: "apollo.people.search", params: { q_organization_domains: "madani.bot" } } };
 
 // The batch's concurrency, ordering and per-query payment are tested in web-search-many.test.ts, and its own-key and
 // plan credentials in routes/x-research.test.ts; through this harness only its absence is visible.
@@ -150,13 +150,13 @@ it("with the person's own treg key, every bot has the tools by default and calls
   expect(bot.xResearch).toBeUndefined();
   const { tools, results } = await f.turn(bot, [SEARCH, PEOPLE]);
   expect(tools).toEqual(expect.arrayContaining(MOUNTED_RESEARCH_TOOLS));
-  expect(results[0].posts).toEqual([expect.objectContaining({ id: "2107987482155561188", author: "@maus", text: "Dusk searched X" })]);
+  expect(results[0].posts).toEqual([expect.objectContaining({ id: "2107987482155561188", author: "@maus", text: "Madani searched X" })]);
   expect(results[1]).toEqual({ result: { people: [{ name: "Maus" }] }, cost: "$0.0020", callId: "call-e2e" });
   const calls = f.seen.filter((seen: Seen) => !seen.path.startsWith("/auth/") && !seen.path.startsWith("/orgs/"));
   expect(calls.map((seen: Seen) => [seen.method, seen.path, seen.tregToken, seen.authorization])).toEqual([
     ["POST", "/call/anyapi.x.search.posts", OWN_KEY, undefined],
     ["GET", "/catalog/endpoints/apollo.people.search", OWN_KEY, undefined],
-    ["GET", "/call/apollo.people.search?q_organization_domains=dusk.bot", OWN_KEY, undefined],
+    ["GET", "/call/apollo.people.search?q_organization_domains=madani.bot", OWN_KEY, undefined],
   ]);
   expect(calls[2].idempotencyKey).toMatch(/^[0-9a-f-]{36}$/);
   expect(f.seen.some((seen: Seen) => seen.path.startsWith(RELAY_PATH))).toBe(false);
@@ -180,7 +180,7 @@ it("with only a Cloud plan, calls go through the relay with the plan's token, an
     ["POST", `${RELAY_PATH}/call/anyapi.x.search.posts`, `Bearer ${PLAN_TOKEN}`, undefined],
     ["POST", `${RELAY_PATH}/research/call/apollo.people.search`, `Bearer ${PLAN_TOKEN}`, undefined],
   ]);
-  expect(calls[1].body).toEqual({ params: { q_organization_domains: "dusk.bot" } });
+  expect(calls[1].body).toEqual({ params: { q_organization_domains: "madani.bot" } });
   expect(calls[1].idempotencyKey).toMatch(/^[0-9a-f-]{36}$/);
   expect(await f.status()).toEqual({ using: "included", ownKey: false, included: true, usage: USAGE });
   expect(f.seen.at(-1)).toMatchObject({ method: "GET", path: `${RELAY_PATH}/usage`, authorization: `Bearer ${PLAN_TOKEN}`, tregToken: undefined });

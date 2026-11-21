@@ -27,7 +27,7 @@ const json = (status: number, body: unknown) => new Response(JSON.stringify(body
 const fetchMock = vi.fn<(path: string, init?: RequestInit) => Promise<Response>>();
 const openExternal = vi.fn(async () => true);
 const store = { state: {}, dispatch: vi.fn(), flushBotPatches: vi.fn(async () => null) } as unknown as ReturnType<typeof useStore>;
-const LINK = "https://page000000000000000000001.page.dusk.bot/";
+const LINK = "https://page000000000000000000001.page.madani.bot/";
 const LIVE: PublishedPageCard = { state: "live", title: "Pricing", pageId: "page000000000000000000001", url: LINK, usage: { pages: 1, limit: 5 } };
 
 let host: HTMLDivElement;
@@ -56,7 +56,7 @@ const button = (label: string, within: ParentNode = document) => Array.from(with
   .find((element) => element.textContent?.trim() === label || element.getAttribute("aria-label") === label)!;
 const click = (label: string, within?: ParentNode) => act(async () => { button(label, within).click(); await new Promise((resolve) => setTimeout(resolve, 0)); });
 const chips = () => JSON.parse(host.querySelector("[data-chips]")!.getAttribute("data-chips")!) as unknown[];
-const documents = () => fetchMock.mock.calls.map(([path]) => new URL(path, "http://dusk.test")).filter((url) => url.pathname.endsWith("/app"));
+const documents = () => fetchMock.mock.calls.map(([path]) => new URL(path, "http://madani.test")).filter((url) => url.pathname.endsWith("/app"));
 const posts = (ending: string) => fetchMock.mock.calls.filter(([path, init]) => path.endsWith(ending) && init?.method === "POST").map(([, init]) => JSON.parse(String(init!.body)));
 const fromFrame = (data: unknown, source: unknown) => act(async () => {
   window.dispatchEvent(new MessageEvent("message", { data, source: source as MessageEventSource }));
@@ -67,14 +67,14 @@ const PICK = { jsonrpc: "2.0", method: POINTED_METHOD, params: { tag: "button", 
 beforeEach(() => {
   fetchMock.mockReset();
   fetchMock.mockImplementation(async (path) => {
-    const url = new URL(path, "http://dusk.test");
+    const url = new URL(path, "http://madani.test");
     if (url.pathname.endsWith("/app/publish")) return json(200, { ok: true, card: LIVE });
     if (url.pathname.endsWith("/unpublish")) return json(200, { ok: true, card: { ...LIVE, state: "unpublished" } });
     const rev = url.searchParams.get("rev");
     return json(200, botHtmlDocument({ messageId: "a1", rev: rev === null ? 0 : Number(rev), html: `<p>${rev === null ? "newest" : `version ${Number(rev) + 1}`}</p>` }));
   });
   vi.stubGlobal("fetch", fetchMock);
-  vi.stubGlobal("duskDesktop", { openExternal });
+  vi.stubGlobal("madaniDesktop", { openExternal });
   vi.stubGlobal("IntersectionObserver", undefined);
   pool = createAppPool({ limit: 3 });
   forgetAppRows();
@@ -125,7 +125,7 @@ describe("a bot's page in the chat", () => {
     await fromFrame(PICK, inlineFrame().contentWindow);
     expect(chips()).toEqual([]);
     await click("Point", card());
-    expect(posted).toHaveBeenLastCalledWith({ jsonrpc: "2.0", method: "dusk/point", params: { on: true } }, "*");
+    expect(posted).toHaveBeenLastCalledWith({ jsonrpc: "2.0", method: "madani/point", params: { on: true } }, "*");
     expect(card().textContent).toContain("Click the part of the page you want changed.");
     await fromFrame(PICK, window);
     expect(chips()).toEqual([]);
@@ -136,7 +136,7 @@ describe("a bot's page in the chat", () => {
     await click("Point", card());
     await act(async () => { window.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape" })); });
     expect(button("Point", card()).getAttribute("aria-pressed")).toBe("false");
-    expect(posted).toHaveBeenLastCalledWith({ jsonrpc: "2.0", method: "dusk/point", params: { on: false } }, "*");
+    expect(posted).toHaveBeenLastCalledWith({ jsonrpc: "2.0", method: "madani/point", params: { on: false } }, "*");
   });
 
   it("shares the version on screen; the card the server patches shows the link with Copy, opens it, and unpublishes it", async () => {

@@ -51,7 +51,7 @@ describe("a working row's one short word", () => {
       expect(fun.has(word), word).toBe(false);
     }
     expect(sidebarWorkingWord(null, undefined)).toBe("Thinking");
-    expect(sidebarWorkingWord(null, undefined, { id: "m", role: "bot", kind: "activity", at: 1, tool: { name: "mcp__dusk__plan_launch" } }), "a step with no word of its own").toBe("Working");
+    expect(sidebarWorkingWord(null, undefined, { id: "m", role: "bot", kind: "activity", at: 1, tool: { name: "mcp__madani__plan_launch" } }), "a step with no word of its own").toBe("Working");
     expect(sidebarWorkingWord({ activity: "thinking" }, "Booking flights"), "a short label of its own wins").toBe("Booking flights");
     expect(sidebarWorkingWord({ activity: "thinking" }, "Comparing every standing desk on the market"), "a long one gives way").toBe("Thinking");
   });

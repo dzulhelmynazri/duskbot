@@ -70,7 +70,7 @@ export function pickerRows(places: AccountPlaces, records: readonly Pick<MobileC
  * pairs on its own. */
 export function CloudPicker({ busy, onPairing, autoPick = false, target = null, onOpen, onNone, onComputers }: {
   busy: boolean;
-  /** a dusk cloud's QR or link logged in: its cloud (by address), else the account's only one, opens without a pick */
+  /** a madani cloud's QR or link logged in: its cloud (by address), else the account's only one, opens without a pick */
   target?: { origin: string | null } | null;
   /** a cloud this phone already links, opened as it is */
   onOpen?(id: string): void;

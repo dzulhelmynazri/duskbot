@@ -2,7 +2,7 @@ import { createServer } from "node:http";
 import { writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { expect, it, vi } from "vitest";
-import { launchVerificationServer, runControlDusk } from "../scripts/control-dusk.ts";
+import { launchVerificationServer, runControlMadani } from "../scripts/control-madani.ts";
 import { STOPPED_TURN_NAME } from "../shared/client-cancel.ts";
 import { unaskedStopMessage } from "./harness/unasked-stop.ts";
 import { roomRetryRequest } from "../src/lib/room-retry.ts";
@@ -65,7 +65,7 @@ it("says in words that a turn nobody stopped was cut off, and retries the room r
     await new Promise<void>((resolve) => upstream.close(() => resolve()));
     throw error;
   });
-  const control = (args: string[]) => runControlDusk([...args, "--url", fixture.info.url]) as Promise<any>;
+  const control = (args: string[]) => runControlMadani([...args, "--url", fixture.info.url]) as Promise<any>;
   const api = async (method: string, path: string, body?: unknown) => {
     const response = await fetch(`${fixture.info.url}${path}`, {
       method, headers: { "content-type": "application/json", origin: fixture.info.url },

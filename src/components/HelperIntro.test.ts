@@ -1,5 +1,5 @@
 // @vitest-environment happy-dom
-// Dusk's first messages: three short bubbles, a follow-up once it has looked around (written once by the server, as
+// Madani's first messages: three short bubbles, a follow-up once it has looked around (written once by the server, as
 // a real message) and chips for only what is still missing.
 import { act, createElement } from "react";
 import { createRoot, type Root } from "react-dom/client";
@@ -60,10 +60,10 @@ const { SIMPLE_BOT_BUBBLE } = await import("./chat-bubble");
 (globalThis as { IS_REACT_ACT_ENVIRONMENT?: boolean }).IS_REACT_ACT_ENVIRONMENT = true;
 const claude = (ready: boolean): InstanceInfo => ({ instanceId: "claude", driverKind: "claudeAgent", displayName: "Claude",
   snapshot: { state: ready ? "available" : "unavailable", authenticated: ready }, models: { default: "m", options: [] } });
-const maus = (extra: Partial<Bot> = {}): Bot => ({ id: "maus", threadId: "t", name: "Dusk", title: "", description: "", notifications: true,
+const maus = (extra: Partial<Bot> = {}): Bot => ({ id: "maus", threadId: "t", name: "Madani", title: "", description: "", notifications: true,
   color: "chrome", unread: false, modelSelection: { instanceId: "claude", model: "m" }, messages: [], defaultBot: {}, chiefOfStaff: true, ...extra });
-const intro: Message = { id: "intro", role: "bot", kind: "options", at: 1, helperIntro: true, text: "Hey! I'm Dusk. I'm new here.",
-  card: { title: "Hey! I'm Dusk. I'm new here.", subtitle: "", options: ["What are my bots up to?"] } };
+const intro: Message = { id: "intro", role: "bot", kind: "options", at: 1, helperIntro: true, text: "Hey! I'm Madani. I'm new here.",
+  card: { title: "Hey! I'm Madani. I'm new here.", subtitle: "", options: ["What are my bots up to?"] } };
 const saved = (facts: HelperFollowupFacts): Message => ({ id: "f", role: "bot", kind: "text", at: 2, text: "English", helperFollowup: facts });
 
 let host: HTMLDivElement, root: Root;
@@ -81,7 +81,7 @@ const tick = async (ms: number) => {
 
 beforeEach(() => {
   // these runs offer the phone app; the hidden phone has its own case below
-  vi.stubEnv("VITE_DUSK_PHONE_APP", "1");
+  vi.stubEnv("VITE_MADANI_PHONE_APP", "1");
   setLocale("en");
   f.dispatch.mockReset();
   f.detect.mockReset();
@@ -111,29 +111,29 @@ afterEach(async () => {
   vi.unstubAllEnvs();
 });
 
-describe("what Dusk says first", () => {
+describe("what Madani says first", () => {
   it("as the Chief: who it is, what it does here, and that it is looking around, never by the person's name", () => {
     const said = [
-      "Hey! I'm Dusk. I'm new here.",
+      "Hey! I'm Madani. I'm new here.",
       "I'm here to be your chief of staff. I can manage your other bots. Task me with anything. I'll make sure it gets to the right bot.",
       "I'm taking a look around to see if there's anything I can pick up for you. I'll follow up in a moment.",
     ];
-    expect(introLines({ name: "Dusk", chief: true })).toEqual(said);
-    expect(introLines({ name: "Dusk", chief: true, person: "Ada" })).toEqual(said);
-    expect(introLines({ name: "Dusk", chief: true, team: "Acme" })[1]).toBe(`${said[1]} On Acme, I'm here for you and look after your own bots.`);
+    expect(introLines({ name: "Madani", chief: true })).toEqual(said);
+    expect(introLines({ name: "Madani", chief: true, person: "Ada" })).toEqual(said);
+    expect(introLines({ name: "Madani", chief: true, team: "Acme" })[1]).toBe(`${said[1]} On Acme, I'm here for you and look after your own bots.`);
   });
 
   it("on a cloud set up from the computer: the Chief greets the person by name and says what came along", () => {
-    const lines = introLines({ name: "Dusk", chief: true, person: "Ada", fromComputer: true, carried: true });
-    expect(lines[0]).toBe("Hey Ada! I'm Dusk. I'm new here.");
+    const lines = introLines({ name: "Madani", chief: true, person: "Ada", fromComputer: true, carried: true });
+    expect(lines[0]).toBe("Hey Ada! I'm Madani. I'm new here.");
     expect(lines[1]).toMatch(/I brought over what you told me about yourself on your computer\.$/);
-    expect(introLines({ name: "Dusk", chief: true, fromComputer: true })[0]).toBe("Hey! I'm Dusk. I'm new here.");
+    expect(introLines({ name: "Madani", chief: true, fromComputer: true })[0]).toBe("Hey! I'm Madani. I'm new here.");
   });
 
-  it("keeps a helper's lines for a Dusk that is not the Chief", () => {
-    expect(introLines({ name: "Dusk", chief: false })[0]).toBe("Hi! I'm Dusk, your helper for everything here.");
-    expect(introLines({ name: "Dusk", chief: false, person: "Ada" })[0]).toBe("Hi Ada! I'm Dusk, your helper for everything here.");
-    const member = introLines({ name: "Dusk", chief: false, team: "Acme" });
+  it("keeps a helper's lines for a Madani that is not the Chief", () => {
+    expect(introLines({ name: "Madani", chief: false })[0]).toBe("Hi! I'm Madani, your helper for everything here.");
+    expect(introLines({ name: "Madani", chief: false, person: "Ada" })[0]).toBe("Hi Ada! I'm Madani, your helper for everything here.");
+    const member = introLines({ name: "Madani", chief: false, team: "Acme" });
     expect(member[1]).toBe("Ask me how to do anything here. I can set up bots, apps and routines with you. On Acme, I'm here for you and look after your own bots.");
   });
 
@@ -182,7 +182,7 @@ describe("in the chat (Simple mode)", () => {
   });
 
   it("offers no phone while the phone app is hidden", async () => {
-    vi.stubEnv("VITE_DUSK_PHONE_APP", "0");
+    vi.stubEnv("VITE_MADANI_PHONE_APP", "0");
     f.services = { gmail: { connected: false } };
     await show(false, saved({ ai: "own", apps: [], bots: 0, routines: 0 }));
     expect(chips()).toEqual(["apps", "cloud"]);
@@ -215,7 +215,7 @@ describe("in the chat (Simple mode)", () => {
     expect(chips()).toEqual(["ai", "apps", "phone"]);
   });
 
-  it("opens the dusk cloud sheet from its chip and keeps the chip", async () => {
+  it("opens the madani cloud sheet from its chip and keeps the chip", async () => {
     f.state = { ...f.state, instances: [claude(true)] };
     await show();
     await act(async () => { host.querySelector<HTMLElement>('[data-helper-step="cloud"]')!.click(); });
@@ -304,7 +304,7 @@ describe("in the chat (Simple mode)", () => {
     expect(chipAction("cloud")).toEqual({ type: "openCloudAdd", source: "app_onboarding" });
   });
 
-  it("says nothing while the Chief step still introduces Dusk", async () => {
+  it("says nothing while the Chief step still introduces Madani", async () => {
     setWelcomingBot("maus");
     await show();
     expect(host.querySelector("[data-helper-intro]")).toBeNull();

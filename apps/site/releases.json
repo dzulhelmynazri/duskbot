@@ -2,14 +2,14 @@
   "released": true,
   "version": "0.2.25",
   "date": "2026-11-20",
-  "base": "https://github.com/DuskBotAI/duskbot-releases/releases/latest/download/",
+  "base": "https://github.com/dzulhelmynazri/madani-bot-releases/releases/latest/download/",
   "files": {
-    "mac-arm64": "DuskBot.dmg",
-    "mac-x64": "DuskBot-intel.dmg",
-    "windows": "DuskBot-setup.exe",
-    "linux-deb": "DuskBot-amd64.deb",
-    "linux-appimage": "DuskBot.AppImage",
-    "android": "DuskBot.apk"
+    "mac-arm64": "MadaniBot.dmg",
+    "mac-x64": "MadaniBot-intel.dmg",
+    "windows": "MadaniBot-setup.exe",
+    "linux-deb": "MadaniBot-amd64.deb",
+    "linux-appimage": "MadaniBot.AppImage",
+    "android": "MadaniBot.apk"
   },
   "checksums": "SHA256SUMS",
   "macNotarized": true,

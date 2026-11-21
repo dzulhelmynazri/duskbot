@@ -1,8 +1,8 @@
-// A dusk cloud for a test account on preview, bought for real in Dodo's TEST mode (nothing is charged): signs the account
-// in (a qa.dusk.test address, so no mail is sent), asks the operator grant for a test-mode checkout, pays it with the
+// A madani cloud for a test account on preview, bought for real in Dodo's TEST mode (nothing is charged): signs the account
+// in (a qa.madani.test address, so no mail is sent), asks the operator grant for a test-mode checkout, pays it with the
 // test card in a headless Chrome, and waits until the plan is active. For stress harnesses that need a cloud.
 //
-//   node scripts/smoke/test-purchase.mjs --email stress@qa.dusk.test [--bundle starter] [--name "Stress Cloud"] [--profile DIR]
+//   node scripts/smoke/test-purchase.mjs --email stress@qa.madani.test [--bundle starter] [--name "Stress Cloud"] [--profile DIR]
 import { mkdirSync } from "node:fs";
 import { homedir } from "node:os";
 import { dirname, join, resolve } from "node:path";
@@ -14,15 +14,15 @@ import { until } from "./app.mjs";
 const args = process.argv.slice(2);
 const option = (key, fallback = null) => { const at = args.indexOf(key); return at === -1 ? fallback : args[at + 1] ?? fallback; };
 const email = option("--email");
-if (!email || !isTestAddress(email)) { console.error("--email <name>@qa.dusk.test is required"); process.exit(2); }
+if (!email || !isTestAddress(email)) { console.error("--email <name>@qa.madani.test is required"); process.exit(2); }
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..");
-const profile = resolve(option("--profile", join(homedir(), ".cache", "dusk-smoke", "purchase", email.replace(/[^a-z0-9]+/gi, "-"))));
+const profile = resolve(option("--profile", join(homedir(), ".cache", "madani-smoke", "purchase", email.replace(/[^a-z0-9]+/gi, "-"))));
 mkdirSync(profile, { recursive: true });
 const log = (line) => console.log(`[test-purchase] ${line}`);
 
 const { client, how } = await smokeAccount({ root, profile, email });
 log(`${email}: ${how}`);
-const token = envValue("DUSK_OPS_TOKEN_PREVIEW");
+const token = envValue("MADANI_OPS_TOKEN_PREVIEW");
 const granted = await fetch(`${PREVIEW_ORIGIN}/v1/billing/ops/grant`, { method: "POST", headers: { authorization: `Bearer ${token}`, "content-type": "application/json" },
   body: JSON.stringify({ email, bundle: option("--bundle", "starter"), name: option("--name", "Stress Cloud") }) });
 const answer = await granted.json().catch(() => ({}));

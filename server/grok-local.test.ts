@@ -12,7 +12,7 @@ afterEach(() => {
 });
 
 function fixtureHome() {
-  const home = mkdtempSync(join(tmpdir(), "dusk-grok-home-"));
+  const home = mkdtempSync(join(tmpdir(), "madani-grok-home-"));
   homes.push(home);
   const put = (path: string, text: string) => {
     mkdirSync(dirname(join(home, path)), { recursive: true });
@@ -121,22 +121,22 @@ describe("what the desktop app finds about Grok Bot", () => {
 });
 
 describe("notes another AI saved to Downloads", () => {
-  it("reads only dusk-bot-notes*.json saved after the prompt was copied, small, real files, oldest first", () => {
+  it("reads only madani-bot-notes*.json saved after the prompt was copied, small, real files, oldest first", () => {
     const { home, put } = fixtureHome();
     const copiedAt = Date.now() - 60_000;
     const at = (path: string, ms: number) => utimesSync(join(home, path), ms / 1000, ms / 1000);
-    put("Downloads/dusk-bot-notes.json", '{"format":"dusk-bot-notes","from":"ChatGPT"}');
-    at("Downloads/dusk-bot-notes.json", copiedAt + 20_000);
-    put("Downloads/dusk-bot-notes (1).json", '{"format":"dusk-bot-notes","from":"Claude"}');
-    at("Downloads/dusk-bot-notes (1).json", copiedAt + 10_000);
-    put("Downloads/dusk-bot-notes-old.json", "{}");
-    at("Downloads/dusk-bot-notes-old.json", copiedAt - 10_000);
-    const big = put("Downloads/dusk-bot-notes-big.json", "x".repeat(NOTES_FILE_MAX + 1));
+    put("Downloads/madani-bot-notes.json", '{"format":"madani-bot-notes","from":"ChatGPT"}');
+    at("Downloads/madani-bot-notes.json", copiedAt + 20_000);
+    put("Downloads/madani-bot-notes (1).json", '{"format":"madani-bot-notes","from":"Claude"}');
+    at("Downloads/madani-bot-notes (1).json", copiedAt + 10_000);
+    put("Downloads/madani-bot-notes-old.json", "{}");
+    at("Downloads/madani-bot-notes-old.json", copiedAt - 10_000);
+    const big = put("Downloads/madani-bot-notes-big.json", "x".repeat(NOTES_FILE_MAX + 1));
     const other = put("Downloads/bank-statement.json", "{}");
     const secret = put("secret.json", "{}");
-    symlinkSync(secret, join(home, "Downloads", "dusk-bot-notes-link.json"));
+    symlinkSync(secret, join(home, "Downloads", "madani-bot-notes-link.json"));
     const machine = machineAt(home);
-    expect(lookForNotes(machine, copiedAt).map((file) => file.name)).toEqual(["dusk-bot-notes (1).json", "dusk-bot-notes.json"]);
+    expect(lookForNotes(machine, copiedAt).map((file) => file.name)).toEqual(["madani-bot-notes (1).json", "madani-bot-notes.json"]);
     for (const path of [big, other, secret]) expect(machine.opened).not.toContain(path);
   });
 

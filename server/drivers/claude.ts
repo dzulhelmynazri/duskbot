@@ -145,7 +145,7 @@ function claudeEnvironment(
 /** Escape hatch: the bot inherits this machine's Claude Code setup (MCP servers, connectors,
  * skills, agents, hooks, personal CLAUDE.md). */
 function inheritsUserConfig(env: NodeJS.ProcessEnv): boolean {
-  return env.DUSK_CLAUDE_INHERIT_USER_CONFIG === "1";
+  return env.MADANI_CLAUDE_INHERIT_USER_CONFIG === "1";
 }
 
 export function claudeInheritWarning(env: NodeJS.ProcessEnv): ProviderSnapshot["warning"] | undefined {
@@ -153,7 +153,7 @@ export function claudeInheritWarning(env: NodeJS.ProcessEnv): ProviderSnapshot["
   return {
     title: "Bots inherit this machine's Claude Code setup",
     message:
-      "DUSK_CLAUDE_INHERIT_USER_CONFIG=1 is set on the dusk bot process, so every Claude bot also loads this " +
+      "MADANI_CLAUDE_INHERIT_USER_CONFIG=1 is set on the madani bot process, so every Claude bot also loads this " +
       "computer's own MCP servers, connectors, skills, hooks and personal CLAUDE.md on every turn: often thousands " +
       "of extra tokens per model call, and tools nobody gave the bot. Unless a bot genuinely needs a server from " +
       "your user-scope Claude config, remove the variable and restart; add the server under Settings → MCP servers " +
@@ -186,10 +186,10 @@ export function readClaudeAuthSettings(
   }
 }
 
-/** DUSK_CLAUDE_AUTOCOMPACT: a token count, "auto" (the CLI's own window) or "off". The CLI rejects
+/** MADANI_CLAUDE_AUTOCOMPACT: a token count, "auto" (the CLI's own window) or "off". The CLI rejects
  * a window outside 100k-1M as an argument error, so a configured value is clamped. */
 export function autoCompactWindow(env: NodeJS.ProcessEnv): string | null {
-  const raw = (env.DUSK_CLAUDE_AUTOCOMPACT ?? "").trim().toLowerCase();
+  const raw = (env.MADANI_CLAUDE_AUTOCOMPACT ?? "").trim().toLowerCase();
   if (raw === "off") return null;
   if (raw === "auto") return "auto";
   const parsed = raw ? Number(raw) : DEFAULT_AUTOCOMPACT_TOKENS;
@@ -330,14 +330,14 @@ type AskBehavior = "allow" | "deny" | "answer";
 type AskResolutionSource = "user" | "timeout" | "system";
 
 const DENY_TIMEOUT_NOTE =
-  "dusk bot: nobody answered this permission request in time. Skip this action and finish what you can without it.";
-const DUPLICATE_ASK_ID_NOTE = "dusk bot: duplicate ask id, skipping this request.";
-const ASK_UNAVAILABLE_NOTE = "dusk bot: the app could not show this request, so it was denied. Ask again if it is still needed.";
+  "madani bot: nobody answered this permission request in time. Skip this action and finish what you can without it.";
+const DUPLICATE_ASK_ID_NOTE = "madani bot: duplicate ask id, skipping this request.";
+const ASK_UNAVAILABLE_NOTE = "madani bot: the app could not show this request, so it was denied. Ask again if it is still needed.";
 
 function systemEndedReply(kind: Ask["kind"]): { behavior: AskBehavior; message: string } {
   return kind === "question"
-    ? { behavior: "answer", message: "dusk bot: the turn is ending, wrap up." }
-    : { behavior: "deny", message: "dusk bot: the turn ended" };
+    ? { behavior: "answer", message: "madani bot: the turn is ending, wrap up." }
+    : { behavior: "deny", message: "madani bot: the turn ended" };
 }
 
 function askQuestions(ask: Ask): AskQuestion[] | null {
@@ -431,7 +431,7 @@ export function brokerSocketCandidates(threadId: string, botId?: string): string
   if (process.platform !== "win32") {
     const scope = createHash("sha256").update(`${DATA_DIR}\0${process.pid}\0${botId ?? ""}\0${threadId}`).digest("hex").slice(0, 16);
     const fresh = (dir: string) => join(dir, `dp-${randomBytes(4).toString("hex")}.sock`);
-    return [base, join(tmpdir(), `dusk-perm-${scope}.sock`), fresh(tmpdir()), ...(tmpdir() === "/tmp" ? [] : [fresh("/tmp")])];
+    return [base, join(tmpdir(), `madani-perm-${scope}.sock`), fresh(tmpdir()), ...(tmpdir() === "/tmp" ? [] : [fresh("/tmp")])];
   }
   return [
     base,
@@ -777,7 +777,7 @@ export const ClaudeDriver: ProviderDriver<ClaudeConfig> = {
       claudeEnvironment(config.managed ? undefined : model, { ...process.env, ...input.environment }, config.configDir, input.environment);
     const catalogEnv = environment();
     if (inheritsUserConfig(catalogEnv)) {
-      console.error(`claude (${instanceId}): DUSK_CLAUDE_INHERIT_USER_CONFIG=1, bots inherit this machine's Claude Code MCP servers, skills, hooks and CLAUDE.md on every turn; remove it unless a bot needs a user-scope server`);
+      console.error(`claude (${instanceId}): MADANI_CLAUDE_INHERIT_USER_CONFIG=1, bots inherit this machine's Claude Code MCP servers, skills, hooks and CLAUDE.md on every turn; remove it unless a bot needs a user-scope server`);
     }
     let models = config.managedModels ? { default: config.managedModels[0], options: config.managedModels.map(id => ({ id, label: id })) } : STATIC_CLAUDE_MODELS;
     const orgBlocks = createOrgModelBlocks(() => engineHomes.everyHome(catalogEnv), (blocked) => { models = withOrgBlocks(models, blocked); });
@@ -1132,17 +1132,17 @@ export const ClaudeDriver: ProviderDriver<ClaudeConfig> = {
       let broker: Awaited<ReturnType<typeof createPermissionBroker>> | undefined;
       const socketPath = permissionSocketPath(threadId, botId);
       if (permissionMode !== "bypassPermissions") {
-        args.push("--permission-prompt-tool", "mcp__dusk__approve");
+        args.push("--permission-prompt-tool", "mcp__madani__approve");
       }
-      const permissionEnv = { ...NODE_ENV_FLAG, ...(turn.toolScope !== undefined ? { DUSK_PERMISSION_TOOL_SCOPE: JSON.stringify(turn.toolScope) } : {}) };
-      mcpServers.dusk = { command: process.execPath, args: [PERM_PROXY_PATH, socketPath], env: permissionEnv, alwaysLoad: true };
-      allowed.push("mcp__dusk", ...gateQueryTools(mcpServers));
+      const permissionEnv = { ...NODE_ENV_FLAG, ...(turn.toolScope !== undefined ? { MADANI_PERMISSION_TOOL_SCOPE: JSON.stringify(turn.toolScope) } : {}) };
+      mcpServers.madani = { command: process.execPath, args: [PERM_PROXY_PATH, socketPath], env: permissionEnv, alwaysLoad: true };
+      allowed.push("mcp__madani", ...gateQueryTools(mcpServers));
       // A guest pre-allows only harness tools; anything else (the browser can open file:) asks.
-      if (turn.guestConfined) allowed.splice(0, allowed.length, ...allowed.filter((name) => name === "mcp__dusk" || name === "mcp__agents"));
+      if (turn.guestConfined) allowed.splice(0, allowed.length, ...allowed.filter((name) => name === "mcp__madani" || name === "mcp__agents"));
       // The MCP config carries credentials and argv is readable via `ps`: a 0600 file, removed at settle.
       let mcpConfigPath: string | null = null;
       if (Object.keys(mcpServers).length) {
-        mcpConfigPath = join(mkdtempSync(join(tmpdir(), "dusk-mcp-")), "mcp.json");
+        mcpConfigPath = join(mkdtempSync(join(tmpdir(), "madani-mcp-")), "mcp.json");
         args.push("--mcp-config", mcpConfigPath);
         args.push("--allowedTools", allowed.join(","));
       }
@@ -1157,8 +1157,8 @@ export const ClaudeDriver: ProviderDriver<ClaudeConfig> = {
       if (hooks && hookTokenPath) {
         mkdirSync(dirname(hookTokenPath), { recursive: true, mode: 0o700 });
         writeFileAtomicIfChanged(hookTokenPath, hooks.token, { mode: 0o600, durable: false });
-        env.DUSK_HOOK_URL = hooks.url;
-        env.DUSK_HOOK_TOKEN_FILE = hookTokenPath;
+        env.MADANI_HOOK_URL = hooks.url;
+        env.MADANI_HOOK_TOKEN_FILE = hookTokenPath;
         // in the packaged app process.execPath is Electron, run the helper as node
         if (process.versions.electron) env.ELECTRON_RUN_AS_NODE = "1";
       }
@@ -1259,7 +1259,7 @@ export const ClaudeDriver: ProviderDriver<ClaudeConfig> = {
 
       try {
         if (launchSystem) {
-          systemPromptPath = join(mkdtempSync(join(tmpdir(), "dusk-system-")), "prompt.txt");
+          systemPromptPath = join(mkdtempSync(join(tmpdir(), "madani-system-")), "prompt.txt");
           writeFileSync(systemPromptPath, launchSystem, { mode: 0o600 });
           args.push("--append-system-prompt-file", systemPromptPath);
         }
@@ -1315,7 +1315,7 @@ export const ClaudeDriver: ProviderDriver<ClaudeConfig> = {
             throw new Error(serverLine(conversationLanguage(threadId), "server.claude.approvalChannel"), { cause: error });
           });
           if (broker.socketPath !== socketPath && mcpConfigPath) {
-            mcpServers.dusk = { command: process.execPath, args: [PERM_PROXY_PATH, broker.socketPath], env: permissionEnv, alwaysLoad: true };
+            mcpServers.madani = { command: process.execPath, args: [PERM_PROXY_PATH, broker.socketPath], env: permissionEnv, alwaysLoad: true };
           }
         }
 
@@ -2074,7 +2074,7 @@ export const ClaudeDriver: ProviderDriver<ClaudeConfig> = {
             return cliVersionChecked && cliVersion !== null && claudeCliSupports(cliVersion, "--system-prompt-snapshot");
           },
           localComputerMcp: true,
-          hooks: true, askTool: { kind: "mcp", server: "dusk", name: "ask_user" },
+          hooks: true, askTool: { kind: "mcp", server: "madani", name: "ask_user" },
         },
         sendTurn: (turn) => authRecovery.send(turn, sendTurn),
         steer,

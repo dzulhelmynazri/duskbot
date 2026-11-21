@@ -9,7 +9,7 @@ function escapeHtml(value) {
 }
 
 /** Addresses the server-failure page's two buttons navigate to; main runs them and never lets the navigation through. */
-export const SERVER_PAGE_ACTIONS = Object.freeze({ retry: "https://duskbot.invalid/start-again", report: "https://duskbot.invalid/report" });
+export const SERVER_PAGE_ACTIONS = Object.freeze({ retry: "https://madanibot.invalid/start-again", report: "https://madanibot.invalid/report" });
 
 /** The server-failure page's button behind `url`, or null. */
 export function serverPageAction(url) {
@@ -18,23 +18,23 @@ export function serverPageAction(url) {
 
 /** Why the background server isn't up, in the person's words. */
 export const SERVER_FAILURES = Object.freeze({
-  ports: "Other apps are using every port dusk bot can open on.",
+  ports: "Other apps are using every port madani bot can open on.",
   timeout: "Its background server didn't answer within a minute.",
   stopped: "Its background server stopped while it was starting.",
-  crashed: "Its background server kept stopping, so dusk bot paused it.",
+  crashed: "Its background server kept stopping, so madani bot paused it.",
 });
 
 /** The page the main window shows while the background server isn't up: why, Try again, and a way to report it. */
 export function buildErrorPage({ reason = "timeout", logDir, starting = false }) {
   if (starting) {
-    return dataUrl(handoffPage({ title: "dusk bot", mood: "go", content: `<h1 role="status">Starting dusk bot again…</h1><p>This takes a few seconds.</p>` }));
+    return dataUrl(handoffPage({ title: "madani bot", mood: "go", content: `<h1 role="status">Starting madani bot again…</h1><p>This takes a few seconds.</p>` }));
   }
   const serverLogPath = path.join(logDir, "server.log");
   const why = SERVER_FAILURES[reason] ?? SERVER_FAILURES.timeout;
   return dataUrl(handoffPage({
-    title: "dusk bot couldn't start",
+    title: "madani bot couldn't start",
     mood: "oops",
-    content: `<h1>dusk bot couldn't start</h1><p>${escapeHtml(why)} Your bots and chats are safe.</p>`
+    content: `<h1>madani bot couldn't start</h1><p>${escapeHtml(why)} Your bots and chats are safe.</p>`
       + `<p class="go"><a href="${SERVER_PAGE_ACTIONS.retry}">Try again</a></p>`
       + `<p class="hint">Still stuck? <a href="${SERVER_PAGE_ACTIONS.report}">Report the problem</a> and we'll look into it. The details are in <code>${escapeHtml(serverLogPath)}</code></p>`,
   }));
@@ -43,12 +43,12 @@ export function buildErrorPage({ reason = "timeout", logDir, starting = false })
 /** A new GitHub issue about a server that couldn't start, filled in with what helps and nothing private. */
 export function serverProblemReportUrl({ reason, version, platform, arch }) {
   const body = [
-    "### What happened", "dusk bot showed \"dusk bot couldn't start\".", "",
+    "### What happened", "madani bot showed \"madani bot couldn't start\".", "",
     `- Reason: ${SERVER_FAILURES[reason] ?? reason}`, `- Version: ${version}`, `- Platform: ${platform} ${arch}`, "",
     "Attach server.log from the folder the page names if you can.",
   ].join("\n");
-  const url = new URL("https://github.com/DuskBotAI/duskbot/issues/new");
-  url.searchParams.set("title", "dusk bot couldn't start");
+  const url = new URL("https://github.com/dzulhelmynazri/madani-bot/issues/new");
+  url.searchParams.set("title", "madani bot couldn't start");
   url.searchParams.set("body", body);
   return url.toString();
 }
@@ -76,7 +76,7 @@ export const RENDERER_CRASHES = new Set(["crashed", "oom", "launch-failed", "int
 export function windowCrashedPage(reopenUrl) {
   const escape = (value) => String(value).replaceAll("&", "&amp;").replaceAll('"', "&quot;").replaceAll("<", "&lt;").replaceAll(">", "&gt;");
   return dataUrl(handoffPage({
-    title: "dusk bot",
+    title: "madani bot",
     mood: "oops",
     content: `<h1>This window tripped</h1><p>The window stopped drawing, but your bots kept running. Reopen it to pick up right where you were.</p><p class="go"><a href="${escape(reopenUrl)}">Reopen window</a></p>`,
   }));

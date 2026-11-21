@@ -1,5 +1,5 @@
 # the ending picture: end-sea.png cleaned up into public/landing/art/end-sea.webp
-#   python3 art-src/final/sea.py   (run from sites/dusk)
+#   python3 art-src/final/sea.py   (run from sites/madani)
 from PIL import Image
 import numpy as np, random
 

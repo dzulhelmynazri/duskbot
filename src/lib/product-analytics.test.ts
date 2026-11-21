@@ -107,7 +107,7 @@ describe("product analytics", () => {
     await vi.advanceTimersByTimeAsync(60_000);
     expect(client.usageAnalyticsEnabled()).toBe(false);
     expect(fetcher).not.toHaveBeenCalled();
-    expect(localStorage.getItem("dusk-install-id")).toBeNull();
+    expect(localStorage.getItem("madani-install-id")).toBeNull();
   });
 
   it("keeps only valid action extras, counts eight valid extras and requires a word name", async () => {
@@ -198,7 +198,7 @@ describe("product analytics", () => {
     const first = bodies()[0];
     expect(first.install).toMatch(/^[A-Za-z0-9_-]{22}$/);
     expect(first.session).toMatch(/^[A-Za-z0-9_-]{22}$/);
-    expect(localStorage.getItem("dusk-install-id")).toBe(first.install);
+    expect(localStorage.getItem("madani-install-id")).toBe(first.install);
     vi.resetModules();
     const next = await import("./product-analytics");
     next.configure(config);
@@ -231,7 +231,7 @@ describe("product analytics", () => {
   });
 
   it("replaces a malformed persisted install id", async () => {
-    localStorage.setItem("dusk-install-id", "person@example.com");
+    localStorage.setItem("madani-install-id", "person@example.com");
     client.configure(config);
     await client.flush();
     expect(bodies()[0].install).toMatch(/^[A-Za-z0-9_-]{22}$/);
@@ -324,7 +324,7 @@ describe("product analytics", () => {
     client.messageSent();
     client.feature("bot_created");
     client.setUsageAnalytics(false);
-    expect(localStorage.getItem("dusk-usage-analytics")).toBe("off");
+    expect(localStorage.getItem("madani-usage-analytics")).toBe("off");
     expect(client.usageAnalyticsEnabled()).toBe(false);
     client.feature("room_created");
     client.replyReceived(100);
@@ -342,7 +342,7 @@ describe("product analytics", () => {
     client.feature("bot_created");
     await client.flush();
     expect(fetcher).not.toHaveBeenCalled();
-    localStorage.setItem("dusk-usage-analytics", "off");
+    localStorage.setItem("madani-usage-analytics", "off");
     client.configure(config);
     await client.flush();
     expect(fetcher).not.toHaveBeenCalled();

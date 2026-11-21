@@ -1,4 +1,4 @@
-// per-hop latency of the vps link (docs/verification/wire-latency.md). a fake duskbot server and the real link agent
+// per-hop latency of the vps link (docs/verification/wire-latency.md). a fake madanibot server and the real link agent
 // (the vps), the real relay, and the real app proxy with a stand-in renderer (the mac) each run on their own thread, and
 // every network leg goes through a proxy that delays it like the real one. timestamps come from one clock.
 //   node scripts/bench-wire.mjs [--path relay|direct] [--runs 30] [--vps-relay 72] [--mac-relay 210] [--mac-vps 158]

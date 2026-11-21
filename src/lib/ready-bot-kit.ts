@@ -1,5 +1,5 @@
 import type { BotRoutineTemplate } from "../../shared/new-bot-defaults.ts";
-import type { DuskBodyId } from "../../shared/body-migration.ts";
+import type { MadaniBodyId } from "../../shared/body-migration.ts";
 import type { MausColor } from "../../shared/wire.ts";
 
 export type ReadyBotCategory = "everyday" | "work" | "writing" | "design" | "sales" | "personal";
@@ -13,7 +13,7 @@ export interface ReadyBot {
   title: string;
   description: string;
   soul: string;
-  look: { color: MausColor; mascotBody: DuskBodyId };
+  look: { color: MausColor; mascotBody: MadaniBodyId };
   tryAsking: string[];
   /** Connected apps the bot works best with; suggested, never connected for the person. */
   apps: string[];

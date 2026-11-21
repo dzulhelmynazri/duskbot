@@ -3,7 +3,7 @@
   display: grid;
   grid-template-rows: 1fr;
   opacity: 1;
-  transition: grid-template-rows 280ms var(--dusk-ease-spring), opacity 200ms var(--dusk-ease-out);
+  transition: grid-template-rows 280ms var(--madani-ease-spring), opacity 200ms var(--madani-ease-out);
 }
 @starting-style {
   .connect-reveal { grid-template-rows: 0fr; opacity: 0; }
@@ -24,15 +24,15 @@
   position: relative;
   overflow: clip;
   overflow-clip-margin: 6px;
-  transition: height 280ms var(--dusk-ease-spring);
+  transition: height 280ms var(--madani-ease-spring);
 }
-.connect-stage-in { animation: connect-stage-in 240ms var(--dusk-ease-out) both; }
+.connect-stage-in { animation: connect-stage-in 240ms var(--madani-ease-out) both; }
 @keyframes connect-stage-in { from { opacity: 0; transform: translate3d(0, 4px, 0); } }
 .connect-stage-out {
   position: absolute;
   inset: 0 0 auto;
   pointer-events: none;
-  animation: dusk-fade-out 140ms var(--dusk-ease-out) forwards;
+  animation: madani-fade-out 140ms var(--madani-ease-out) forwards;
 }
 
 /* an install's measured progress: the fill glides to each new reading over about one poll */
@@ -43,15 +43,15 @@
 [dir="rtl"] .connect-bar { transform-origin: right; }
 
 /* connected: the check pops, then the words fade in after it */
-.connect-check-in { animation: connect-check-in 360ms var(--dusk-ease-pop) both; }
+.connect-check-in { animation: connect-check-in 360ms var(--madani-ease-pop) both; }
 @keyframes connect-check-in { from { opacity: 0; transform: scale(0.6); } }
-.connect-label-in { animation: dusk-fade-in 200ms var(--dusk-ease-out) 140ms both; }
+.connect-label-in { animation: madani-fade-in 200ms var(--madani-ease-out) 140ms both; }
 
 @media (prefers-reduced-motion: reduce) {
   .connect-reveal, .connect-reveal[data-leaving] { grid-template-rows: 1fr; transition-property: opacity; }
   .connect-stage-box, .connect-bar { transition: none; }
-  .connect-stage-in, .connect-check-in { animation-name: dusk-fade-in; }
+  .connect-stage-in, .connect-check-in { animation-name: madani-fade-in; }
 }
 :root[data-reduced-motion="true"] :is(.connect-reveal, .connect-reveal[data-leaving]) { grid-template-rows: 1fr; transition-property: opacity; }
 :root[data-reduced-motion="true"] :is(.connect-stage-box, .connect-bar) { transition: none; }
-:root[data-reduced-motion="true"] :is(.connect-stage-in, .connect-check-in) { animation-name: dusk-fade-in; }
+:root[data-reduced-motion="true"] :is(.connect-stage-in, .connect-check-in) { animation-name: madani-fade-in; }

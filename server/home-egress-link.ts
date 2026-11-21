@@ -1,4 +1,4 @@
-// A dusk cloud home's end of "browse through the person's connection when a site blocks the cloud". A linked VPS has
+// A madani cloud home's end of "browse through the person's connection when a site blocks the cloud". A linked VPS has
 // the link agent for this (apps/link-service/agent.mjs createEgressProxy); a cloud home has no link agent, so the app
 // keeps a websocket to the home's own https while the home is awake (electron/home-egress-link.mjs) and its egress
 // endpoint (electron/vps-link-egress.mjs createEgressEndpoint, unchanged) opens the connections from the person's

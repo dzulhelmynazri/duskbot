@@ -234,25 +234,25 @@ describe("API onboarding", () => {
   }>([
     {
       label: "explicit config key", configKey: "config-key",
-      environment: { DUSK_SETUP_TEST_CUSTOM_KEY: "instance-custom-key", OPENAI_COMPAT_API_KEY: "instance-default-key" },
-      processEnvironment: { DUSK_SETUP_TEST_CUSTOM_KEY: "process-custom-key", OPENAI_COMPAT_API_KEY: "process-default-key" },
+      environment: { MADANI_SETUP_TEST_CUSTOM_KEY: "instance-custom-key", OPENAI_COMPAT_API_KEY: "instance-default-key" },
+      processEnvironment: { MADANI_SETUP_TEST_CUSTOM_KEY: "process-custom-key", OPENAI_COMPAT_API_KEY: "process-default-key" },
       expected: "config-key",
     },
     {
       label: "custom instance environment key",
-      environment: { DUSK_SETUP_TEST_CUSTOM_KEY: "instance-custom-key", OPENAI_COMPAT_API_KEY: "instance-default-key" },
-      processEnvironment: { DUSK_SETUP_TEST_CUSTOM_KEY: "process-custom-key", OPENAI_COMPAT_API_KEY: "process-default-key" },
+      environment: { MADANI_SETUP_TEST_CUSTOM_KEY: "instance-custom-key", OPENAI_COMPAT_API_KEY: "instance-default-key" },
+      processEnvironment: { MADANI_SETUP_TEST_CUSTOM_KEY: "process-custom-key", OPENAI_COMPAT_API_KEY: "process-default-key" },
       expected: "instance-custom-key",
     },
     {
       label: "standard instance environment fallback",
       environment: { OPENAI_COMPAT_API_KEY: "instance-default-key" },
-      processEnvironment: { DUSK_SETUP_TEST_CUSTOM_KEY: "process-custom-key" },
+      processEnvironment: { MADANI_SETUP_TEST_CUSTOM_KEY: "process-custom-key" },
       expected: "instance-default-key",
     },
     {
       label: "custom process environment fallback",
-      processEnvironment: { DUSK_SETUP_TEST_CUSTOM_KEY: "process-custom-key" }, expected: "process-custom-key",
+      processEnvironment: { MADANI_SETUP_TEST_CUSTOM_KEY: "process-custom-key" }, expected: "process-custom-key",
     },
     {
       label: "standard process environment fallback",
@@ -262,7 +262,7 @@ describe("API onboarding", () => {
     for (const [name, value] of Object.entries(processEnvironment)) vi.stubEnv(name, value);
     const original = {
       driver: "openai-compat", ...(environment ? { environment } : {}),
-      config: { url: "https://api.example.test/v1", apiKeyEnv: "DUSK_SETUP_TEST_CUSTOM_KEY", ...(configKey ? { key: configKey } : {}) },
+      config: { url: "https://api.example.test/v1", apiKeyEnv: "MADANI_SETUP_TEST_CUSTOM_KEY", ...(configKey ? { key: configKey } : {}) },
     };
     persist({ instances: { existing: original } });
     const deps = dependencies();

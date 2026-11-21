@@ -69,18 +69,18 @@ describe("settings account rows", () => {
     expect(accountRows({ native: true, identity: nothing }).signOut).toBe(false);
   });
 
-  it("a phone on a dusk cloud is on its account even without the session: Sign out, never Log in", () => {
+  it("a phone on a madani cloud is on its account even without the session: Sign out, never Log in", () => {
     expect(accountRows({ native: true, identity: fromCloud, offered: true })).toEqual({ dashboard: false, signOut: true, deleteAccount: false, signIn: false, cloudSignIn: false });
     expect(accountRows({ native: true, identity: cloudOnly, offered: true })).toEqual({ dashboard: false, signOut: true, deleteAccount: false, signIn: false, cloudSignIn: false });
   });
 
-  it("a phone with only its own computers gets the dusk cloud sign-in lower down, not Log in", () => {
+  it("a phone with only its own computers gets the madani cloud sign-in lower down, not Log in", () => {
     expect(accountRows({ native: true, identity: computerOnly, offered: true })).toMatchObject({ signIn: false, cloudSignIn: true, signOut: false });
   });
 
-  it("offers Remove this computer only for a computer on screen, never for a dusk cloud", () => {
+  it("offers Remove this computer only for a computer on screen, never for a madani cloud", () => {
     const place = (id: string, origin: string) => ({ id, origin, environmentId: id, label: id, transport: "https" as const, sessionRef: `token.${id}`, capabilities: {} as never, addedAt: 1, lastUsedAt: 1 });
-    const records = [place("cloud", "https://d0123456789abcdef0123.dusk.bot"), place("box", "https://box.example.org")];
+    const records = [place("cloud", "https://d0123456789abcdef0123.madani.bot"), place("box", "https://box.example.org")];
     expect(shownComputer(records, "box")?.id).toBe("box");
     expect(shownComputer(records, "cloud")).toBeNull();
     expect(shownComputer(records, null)).toBeNull();
@@ -90,7 +90,7 @@ describe("settings account rows", () => {
     expect(accountRows({ native: true, identity: nothing, offered: true })).toMatchObject({ signIn: true, signOut: false });
     expect(accountRows({ native: true, identity: session, offered: true }).signIn).toBe(false);
     expect(accountRows({ native: true, identity: nothing, offered: false }).signIn).toBe(false);
-    expect(LEGAL_LINKS.privacy).toBe("https://dusk.bot/privacy");
+    expect(LEGAL_LINKS.privacy).toBe("https://madani.bot/privacy");
   });
 
   it("a report or a question opens a mail to a person, spaces kept as spaces", () => {

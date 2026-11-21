@@ -8,8 +8,8 @@ and Kokoro-82M saying the reply once it is in the chat. The models (about 160 MB
 are fetched by the desktop app's harness (and a Cloud's) while it is quiet: 90 s
 after start, making way for turns and batteries, resuming, retrying 10 minutes
 after a failure (`server/local-voice/prefetch.ts`). They come from
-`https://dusk.bot/voice/<sha256>/<name>` first and the pinned upstream after,
-hash-checked (`scripts/mirror-voice-models.sh` puts them on dusk.bot).
+`https://madani.bot/voice/<sha256>/<name>` first and the pinned upstream after,
+hash-checked (`scripts/mirror-voice-models.sh` puts them on madani.bot).
 
 ## Sub-features
 
@@ -41,18 +41,18 @@ hash-checked (`scripts/mirror-voice-models.sh` puts them on dusk.bot).
 ## Recipe
 
 ```sh
-DUSK_VITEST_WORKERS=2 pnpm exec vitest run server/local-voice server/routes/local-voice.test.ts server/routes/bot-messages.test.ts src/lib/voice-call
-# the real models, once downloaded (any DUSK_VOICE_MODELS_DIR that holds them):
-DUSK_VOICE_MODELS_DIR=~/Library/Caches/bot.dusk.app/voice pnpm exec vitest run server/local-voice/engine.e2e.test.ts
+MADANI_VITEST_WORKERS=2 pnpm exec vitest run server/local-voice server/routes/local-voice.test.ts server/routes/bot-messages.test.ts src/lib/voice-call
+# the real models, once downloaded (any MADANI_VOICE_MODELS_DIR that holds them):
+MADANI_VOICE_MODELS_DIR=~/Library/Caches/bot.madani.app/voice pnpm exec vitest run server/local-voice/engine.e2e.test.ts
 ```
 
 By hand, a whole call in headless Chromium with a WAV as the microphone:
 
 ```sh
-# terminal 1 (DUSK_VOICE_MODELS_DIR crosses into the fixture)
-DUSK_VOICE_MODELS_DIR=~/Library/Caches/bot.dusk.app/voice FAKE_CLAUDE_STREAM_CADENCE=10:30 \
+# terminal 1 (MADANI_VOICE_MODELS_DIR crosses into the fixture)
+MADANI_VOICE_MODELS_DIR=~/Library/Caches/bot.madani.app/voice FAKE_CLAUDE_STREAM_CADENCE=10:30 \
   FAKE_CLAUDE_REPLIES='["You have two meetings tomorrow."]' \
-  node --experimental-strip-types scripts/control-dusk.ts ui launch --tool-calls '[]'
+  node --experimental-strip-types scripts/control-madani.ts ui launch --tool-calls '[]'
 # terminal 2: Chromium with --use-fake-ui-for-media-stream --use-fake-device-for-media-stream
 # --use-file-for-fake-audio-capture=<16-bit WAV: silence, a question, long silence>, microphone permission granted;
 # open previewUrl, click [data-call-button="composer"], read [data-voice-call] for the phase and

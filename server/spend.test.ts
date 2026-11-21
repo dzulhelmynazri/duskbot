@@ -13,7 +13,7 @@ const NOW = Date.UTC(2026, 10, 10, 12);
 const HOUR = 60 * 60_000;
 
 function dir() {
-  const made = mkdtempSync(join(tmpdir(), "dusk-spend-"));
+  const made = mkdtempSync(join(tmpdir(), "madani-spend-"));
   dirs.push(made);
   return made;
 }

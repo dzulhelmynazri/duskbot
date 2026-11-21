@@ -3,14 +3,14 @@ import { existsSync, mkdtempSync, readFileSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { expect, it, vi } from "vitest";
-import { launchVerificationServer, runControlDusk } from "../scripts/control-dusk.ts";
+import { launchVerificationServer, runControlMadani } from "../scripts/control-madani.ts";
 import { removeTempDir } from "./testing/cleanup.ts";
 import { openSse } from "./testing/sse.ts";
 
 const ACK = "On it, checking this week's Delhi to Goa fares.";
 
 it("acks real work once its first tool runs, labels the status line from the call, and tells the engine next turn", async () => {
-  const scratch = mkdtempSync(join(tmpdir(), "dusk-turn-beats-"));
+  const scratch = mkdtempSync(join(tmpdir(), "madani-turn-beats-"));
   const release = join(scratch, "release");
   const fixture = await launchVerificationServer({
     ...process.env,
@@ -20,7 +20,7 @@ it("acks real work once its first tool runs, labels the status line from the cal
     FAKE_CLAUDE_REPLIES: JSON.stringify(["The cheapest fare is ₹3,900 on Friday.", "You're welcome."]),
   });
   const { url } = fixture.info;
-  const control = (args: string[]) => runControlDusk([...args, "--url", url]) as Promise<any>;
+  const control = (args: string[]) => runControlMadani([...args, "--url", url]) as Promise<any>;
   const messages = async (threadId: string) => {
     const response = await fetch(`${url}/api/threads/${threadId}/messages?limit=100`, { headers: { origin: url } });
     return ((await response.json()) as any).messages as any[];

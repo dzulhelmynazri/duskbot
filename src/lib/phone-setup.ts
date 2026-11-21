@@ -1,4 +1,4 @@
-import type { CompanionAccountState } from "../types/duskDesktop";
+import type { CompanionAccountState } from "../types/madaniDesktop";
 import { t } from "./i18n";
 import type { CompanionEndpoint, CompanionPairingRouteMode } from "./companion-pairing";
 
@@ -313,7 +313,7 @@ export function companionPairingOpenFailure(
   if (
     !pairing
     || pairing.token === previousToken
-    || !/^(?:dusk|omb)_pair_[A-Za-z0-9_-]{43}$/.test(pairing.token)
+    || !/^(?:madani|omb)_pair_[A-Za-z0-9_-]{43}$/.test(pairing.token)
     || !/^\d{6}$/.test(pairing.code ?? "")
     || !Number.isFinite(pairing.expiresAt)
     || (pairing.expiresAt ?? 0) <= now
@@ -408,7 +408,7 @@ const PUBLIC_ACCOUNT_MESSAGES = [
   /^The secure connection request (?:was not accepted|was not allowed)\./,
   /^That code (?:is not valid|expired)\./,
   /^Your sign-in expired\./,
-  /^dusk bot could not reach its secure connection service\./i,
+  /^madani bot could not reach its secure connection service\./i,
   /^Too many attempts were made\./,
   /^This computer was reconnected too often\./,
   /^This account has reached its computer limit\./,

@@ -4,7 +4,7 @@
 <dict>
 	<key>keychain-access-groups</key>
 	<array>
-		<string>$(AppIdentifierPrefix)bot.dusk.shared</string>
+		<string>$(AppIdentifierPrefix)bot.madani.shared</string>
 	</array>
 </dict>
 </plist>

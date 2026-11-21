@@ -23,8 +23,8 @@ async function csrf() {
   return fetchedCsrf ?? "";
 }
 
-/** which analytics the panel reads when the service has a live site's too (preview reading dusk.bot): "live" or "own" */
-const DATA_KEY = "dusk-admin-data";
+/** which analytics the panel reads when the service has a live site's too (preview reading madani.bot): "live" or "own" */
+const DATA_KEY = "madani-admin-data";
 export function adminData(): "live" | "own" {
   try { return localStorage.getItem(DATA_KEY) === "own" ? "own" : "live"; } catch { return "live"; }
 }
@@ -34,7 +34,7 @@ export function setAdminData(value: "live" | "own") {
 
 /** whether the panel includes the QA and review accounts the server leaves out by default: off, unless a page of this tab
  *  was opened with ?tests=show (for checking the fixture); an older panel's saved choice is dropped */
-const TESTS_KEY = "dusk-admin-tests";
+const TESTS_KEY = "madani-admin-tests";
 export function adminTests(): boolean {
   try {
     localStorage.removeItem(TESTS_KEY);
@@ -44,7 +44,7 @@ export function adminTests(): boolean {
 }
 
 /** which money every number counts: live (the default), test (dodo test mode) or both; the revenue page's switch shares it */
-export const MONEY_KEY = "dusk-admin-money";
+export const MONEY_KEY = "madani-admin-money";
 export function adminMoney(): "live" | "test" | "all" {
   try { const v = localStorage.getItem(MONEY_KEY); return v === "test" || v === "all" ? v : "live"; } catch { return "live"; }
 }
@@ -54,7 +54,7 @@ export async function adminCall<T>(path: string, init: { method?: string; body?:
   let res: Response;
   try {
     res = await fetch(`/v1/admin${path}`, { method, credentials: "same-origin", signal: init.signal,
-      headers: { accept: "application/json", ...(adminData() === "own" ? { "x-dusk-admin-data": "own" } : {}), ...(adminTests() ? { "x-dusk-admin-tests": "show" } : {}), ...(adminMoney() === "live" ? {} : { "x-dusk-admin-money": adminMoney() }), ...(init.body === undefined ? {} : { "content-type": "application/json" }), ...(method === "GET" ? {} : { [CSRF_HEADER]: await csrf() }) },
+      headers: { accept: "application/json", ...(adminData() === "own" ? { "x-madani-admin-data": "own" } : {}), ...(adminTests() ? { "x-madani-admin-tests": "show" } : {}), ...(adminMoney() === "live" ? {} : { "x-madani-admin-money": adminMoney() }), ...(init.body === undefined ? {} : { "content-type": "application/json" }), ...(method === "GET" ? {} : { [CSRF_HEADER]: await csrf() }) },
       ...(init.body === undefined ? {} : { body: JSON.stringify(init.body) }) });
   } catch (error) {
     if ((error as Error).name === "AbortError") throw error;

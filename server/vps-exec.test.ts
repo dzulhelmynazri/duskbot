@@ -15,7 +15,7 @@ describe("vm_exec on a VPS desktop", () => {
     const command = "echo $HOME; touch '/x y' && $(id) # not parsed here";
     const args = vpsExecArgs("workspace-vps", id, command, { seconds: 30, display: 4, marker: "m:" });
     expect(args.slice(0, 13)).toEqual(["-H", "ssh://workspace-vps", "exec", "-u", "cua", "-w", "/home/cua/workspace", "-e", "HOME=/home/cua", "-e", "DISPLAY=:4", id, "sh"]);
-    expect(args.slice(-4)).toEqual(["dusk-exec", "30", command, "m:"]);
+    expect(args.slice(-4)).toEqual(["madani-exec", "30", command, "m:"]);
   });
   it("reads the exit code from the in-box marker and keeps stderr clean", async () => {
     const runner = vi.fn<VpsCommandRunner>(async (args) => ({ stdout: "13264 dummy.pdf\n", stderr: `warn\n\n${markerOf(args)}3\n` }));

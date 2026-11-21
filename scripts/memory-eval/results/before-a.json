@@ -1,6 +1,6 @@
 {
   "label": "before-a",
-  "repo": "/private/tmp/claude-501/dusk-memory-base",
+  "repo": "/private/tmp/claude-501/madani-memory-base",
   "model": "gpt-6.1-terra",
   "judge": "gpt-6.1-terra",
   "started": "2026-11-14T10:00:28.927Z",
@@ -584,5 +584,5 @@
     "notesBytes": 964,
     "minutes": 11.5
   },
-  "serverLog": "/private/tmp/claude-501/memeval/runs/dusk-memory-eval-RZEkJH/server.log"
+  "serverLog": "/private/tmp/claude-501/memeval/runs/madani-memory-eval-RZEkJH/server.log"
 }

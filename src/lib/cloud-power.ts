@@ -7,10 +7,10 @@ import { readHeader, withLegacyHeaders } from "../../electron/legacy-names.mjs";
 
 /** Background requests (polls nobody asked for just now) carry this header, so the home doesn't count them as someone
  * using it (server/cloud-power.ts `countsAsActivity`). */
-export const BACKGROUND_HEADER = "x-dusk-background";
+export const BACKGROUND_HEADER = "x-madani-background";
 /** the same hint under every name a Cloud home may still know it by */
 export const BACKGROUND_HEADERS: Record<string, string> = withLegacyHeaders({ [BACKGROUND_HEADER]: "1" });
-export const CLOUD_POWER_HEADER = "x-dusk-cloud-power";
+export const CLOUD_POWER_HEADER = "x-madani-cloud-power";
 const WAKE_PATH = "/api/cloud/wake";
 export type PageWakeIntent = "type" | "click";
 /** A page with no touch, key press or return to it for this long is left alone, so its home can sleep. */
@@ -167,7 +167,7 @@ export function asleepAnswer(response: Pick<Response, "status" | "headers">): bo
   return response.status === 503 && readHeader(response.headers, CLOUD_POWER_HEADER) === "asleep";
 }
 
-/** The edge's answer for a dusk cloud that was deleted: nothing will ever answer at this address again. */
+/** The edge's answer for a madani cloud that was deleted: nothing will ever answer at this address again. */
 export function goneAnswer(response: Pick<Response, "status" | "headers">): boolean {
   return response.status === 410 && readHeader(response.headers, CLOUD_POWER_HEADER) === "gone";
 }

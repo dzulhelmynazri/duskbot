@@ -1,6 +1,6 @@
 import { useSyncExternalStore } from "react";
 
-export const RUN_CARD_KEY = "dusk-show-run-card";
+export const RUN_CARD_KEY = "madani-show-run-card";
 
 let sessionChoice: boolean | undefined;
 const listeners = new Set<() => void>();

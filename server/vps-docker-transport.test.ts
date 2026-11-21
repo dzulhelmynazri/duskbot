@@ -4,15 +4,15 @@ import { failedTurnTool, failedTurnCause } from "../shared/failed-turn.ts";
 import { computerSkippedNote, continuesWithoutComputer } from "./surface.ts";
 import { SERVER_REPAIR_COMMAND, dockerUnreachableProblem, gateDockerHost, isGateSocket, isTransientDockerTransport, retryTransient } from "./vps-docker-transport.ts";
 
-const GATE_EOF = 'error during connect: Get "http://%2Frun%2Fopenmausbot-docker%2Fdocker.sock/v1.56/images/ghcr.io/duskbotai/dusk-desktop:v6/json": EOF';
+const GATE_EOF = 'error during connect: Get "http://%2Frun%2Fopenmausbot-docker%2Fdocker.sock/v1.56/images/ghcr.io/madanibotai/madani-desktop:v6/json": EOF';
 const RAW = `Docker over SSH failed while checking the VPS: ${GATE_EOF}`;
 
 describe("docker transport failures on a VPS", () => {
   it("reads a dropped gate connection, a restarting gate or daemon and the gate's own 502 as transient", () => {
     for (const message of [
       GATE_EOF,
-      "Cannot connect: dial unix /run/duskbot-docker/docker.sock: connect: no such file or directory",
-      "dial unix /run/duskbot-docker/docker.sock: connect: connection refused",
+      "Cannot connect: dial unix /run/madanibot-docker/docker.sock: connect: no such file or directory",
+      "dial unix /run/madanibot-docker/docker.sock: connect: connection refused",
       "Error response from daemon: docker gate: docker closed the connection before answering; try again",
       "Docker-over-SSH command timed out",
       "read: connection reset by peer",
@@ -50,10 +50,10 @@ describe("docker transport failures on a VPS", () => {
   });
 
   it("finds the docker gate under either name: an install from before the rename and a new one", () => {
-    const old = "unix:///run/openmausbot-docker/docker.sock", renamed = "unix:///run/duskbot-docker/docker.sock";
+    const old = "unix:///run/openmausbot-docker/docker.sock", renamed = "unix:///run/madanibot-docker/docker.sock";
     const only = (path: string) => (candidate: string) => candidate === path;
     expect(gateDockerHost(old, only("/run/openmausbot-docker/docker.sock"))).toBe(old);
-    expect(gateDockerHost(old, only("/run/duskbot-docker/docker.sock"))).toBe(renamed);
+    expect(gateDockerHost(old, only("/run/madanibot-docker/docker.sock"))).toBe(renamed);
     expect(gateDockerHost(renamed, only("/run/openmausbot-docker/docker.sock"))).toBe(old);
     expect(gateDockerHost(renamed, () => false)).toBe(renamed);
     expect(gateDockerHost("unix:///var/run/docker.sock", () => false)).toBe("unix:///var/run/docker.sock");

@@ -1,25 +1,25 @@
-# dusk cloud: the home machine
+# madani cloud: the home machine
 
-dusk cloud (the Starter, Pro and Max plans) gives one person an always-on
-dusk bot server of their own (a plan may instead sleep when idle: see
+madani cloud (the Starter, Pro and Max plans) gives one person an always-on
+madani bot server of their own (a plan may instead sleep when idle: see
 [Sleeping homes](#sleeping-homes-the-power-read-and-the-sleep-handshake)). The plans differ in machine size, disk and
 included allowances; everything on this page applies to all of them. Each
 customer gets one Fly app with one `home` machine that is always on, a volume
 at `/data`, and TLS at `https://<app>.fly.dev`. The desktop app, the phone and
 the web are windows onto it. Local use of the app is unchanged and free.
-Customers read its name as **dusk cloud** wherever they meet it (the
-app, the Admin's pages, emails); "dusk cloud" is this page's shorthand, and
-the app itself is still dusk bot.
+Customers read its name as **madani cloud** wherever they meet it (the
+app, the Admin's pages, emails); "madani cloud" is this page's shorthand, and
+the app itself is still madani bot.
 
-dusk cloud includes no AI usage. The person signs in on their machine with their
+madani cloud includes no AI usage. The person signs in on their machine with their
 own Claude or ChatGPT subscription, or an API key, through the same sign-in
-flows as any dusk bot server. Nothing on a Cloud home is routed to a
+flows as any madani bot server. Nothing on a Cloud home is routed to a
 platform model gateway.
 
-This page is the dusk bot half of a contract with three parties:
+This page is the madani bot half of a contract with three parties:
 
 - **the home machine**: this repository's `cloud-home` image (`deploy/docker/Dockerfile`);
-- **the Admin** (dusk-cloud, `docs/consumer-cloud.md` there): provisions
+- **the Admin** (madani-cloud, `docs/consumer-cloud.md` there): provisions
   the app, holds the machine's signing secret, and answers the desktop's Cloud
   session;
 - **the desktop app**: signs in to Cloud, lists the machine under Servers,
@@ -30,7 +30,7 @@ Contract version: `1` (`cloudContractVersion` on the wire).
 ## What the person sees
 
 1. They subscribe on the Cloud site. The Admin creates the Fly app and machine.
-2. They open the desktop app, go to **Settings → dusk cloud** and sign in (the
+2. They open the desktop app, go to **Settings → madani cloud** and sign in (the
    existing device sign-in). A **Your Cloud** card says **Setting up** until
    the machine is up.
 3. When it is ready, the machine appears under **Servers** as **My Cloud**, and
@@ -60,9 +60,9 @@ Contract version: `1` (`cloudContractVersion` on the wire).
       A backup file is imported from Settings → Backups, as on any server.
    2. **Connect your AI**: the engine sign-in's own tiles and sign-in panel
       (below), with **Connected** on one that can run: Claude recommended
-      first, ChatGPT, Gemini or an API key under **Other ways**. dusk bot
+      first, ChatGPT, Gemini or an API key under **Other ways**. madani bot
       provides no AI usage; with nothing connected, **Skip for now** moves on.
-   3. **Files and apps**, optional: **Share folders** opens Settings → Dusk
+   3. **Files and apps**, optional: **Share folders** opens Settings → Madani
       Cloud in this computer's window, one click from Files (a browser is told
       to use the desktop app), and **Connect apps** opens Connected apps on the
       Cloud.
@@ -76,7 +76,7 @@ Contract version: `1` (`cloudContractVersion` on the wire).
    good at its last step or with **Skip setup** (`cloud-welcome-done`), and
    with Hide setup. A save the Cloud refuses (a 409 while provider settings
    are being changed, say) is tried once more; an end that still cannot be
-   saved is kept on this device (`dusk.cloudWelcome.done`), so the welcome does
+   saved is kept on this device (`madani.cloudWelcome.done`), so the welcome does
    not come back on the next launch, and a small keeper beside the setup card
    (`WelcomeKeeper.tsx`) sends it again when the Cloud answers.
    The main pane and the setup card read the record the same way, with the
@@ -97,7 +97,7 @@ Contract version: `1` (`cloudContractVersion` on the wire).
    itself up for the job in the chat. With an engine already able to run, it
    is sent at once; the box becomes the composer on the way (a named View
    Transition) and the request is the chat's first message. Otherwise the job
-   waits on this device (`dusk.cloudIntent.pending` in browser storage) and
+   waits on this device (`madani.cloudIntent.pending` in browser storage) and
    the engine sign-in shows it at the top, with **Edit**. The Cloud keeps
    that the question was answered (`cloud-intent-asked`) and that a job was
    given (`cloud-intent-given`) in its onboarding record.
@@ -139,7 +139,7 @@ sign-in instead of the welcome flow, which describes the person's own computer
 1. Get the phone app: the menu under your name → **Get the phone app** (App
    Store for iPhone, APK for Android).
 2. The same menu → **Connect your phone · to your Cloud (always on)**, or
-   **Settings → dusk cloud → Use My Cloud on your phone**. The Cloud opens in
+   **Settings → madani cloud → Use My Cloud on your phone**. The Cloud opens in
    the app window at its phone pairing.
 3. **Create pairing code**, and scan the QR code with the phone app.
 
@@ -156,14 +156,14 @@ How it fits together (`src/lib/phone-pairing.ts`):
   Cloud (always on)* first, which does what **Use My Cloud on your phone**
   does, then *to this computer*. A paid plan whose Cloud is not Ready keeps
   the single *to this computer* line, with a note that the Cloud will show
-  there. A failed switch opens Settings → dusk cloud.
+  there. A failed switch opens Settings → madani cloud.
 - **Use My Cloud on your phone** shows for a paid plan. With a Ready Cloud it
   calls `cloud-account:connectHomeForPhone`, which takes no arguments and
   connects as **Open My Cloud** does, adding the one fixed request
   `?desktop-settings=phone` (on `/pair` too, which carries it on once paired).
   The Cloud's page opens Settings on its phone pairing. It never makes a code
   by itself. Before the Cloud is Ready, or if opening it failed, the card
-  lists the two steps instead. On the Cloud itself, Settings → dusk cloud
+  lists the two steps instead. On the Cloud itself, Settings → madani cloud
   offers the same button and opens the pairing directly.
 
 ### Only your own devices
@@ -314,7 +314,7 @@ welcome flow. The step to do now leads the card, with its explanation and
 action, under a segment per step that fills as each finishes. Every other step
 sits below it on one line; one not done becomes the lead with a click. The
 chevron minimizes the card to its segments on this device only
-(`dusk.cloudSetup.collapsed` in browser storage), which is not hiding it. When
+(`madani.cloudSetup.collapsed` in browser storage), which is not hiding it. When
 the last required step finishes in the session that is open,
 the card gives way once to **Your Cloud is ready**, with the guide mascot;
 a Cloud that opens already done shows nothing. Each step's state comes from
@@ -348,7 +348,7 @@ bot has finished a turn there) keeps the first-job checklist:
 4. **Approve its plan**: listed once a first job is given. The bot asks its
    questions in the chat and proposes a routine; done once that routine
    exists, the job's bot's and made after the job was sent (this device
-   remembers which bot got it, `dusk.cloudIntent.sent`; another device counts
+   remembers which bot got it, `madani.cloudIntent.sent`; another device counts
    any routine). **Open the chat** goes to that bot.
 
 A job counts as given the moment it is sent, before the Cloud's record
@@ -417,7 +417,7 @@ says "sign in again on your computer". A check that names no machine for the
 account ends it (a stopped machine named without its address does not). A
 call placed while a saved sign-in is still restoring, in the first seconds
 after launch, waits for it (at most 5 seconds) rather than being refused.
-Signing out of dusk cloud takes it away at once, and so do another
+Signing out of madani cloud takes it away at once, and so do another
 account, companion client mode and restarting the app before a check succeeds
 (the last verified Cloud is kept in memory only); every other server's page
 stays refused. In a web browser, the browser asks for the microphone for
@@ -446,12 +446,12 @@ the Cloud's address.
   the call with one bot is a Live call
   (`effectiveCallMode` in `src/lib/call-mode.ts`). Rooms have no call.
 
-### Open in the app: `duskbot://cloud`
+### Open in the app: `madanibot://cloud`
 
-The Cloud page (`https://dusk.bot/cloud`) can offer **Open in the
-app** as a link to exactly `duskbot://cloud`. The app accepts that string
+The Cloud page (`https://madani.bot/cloud`) can offer **Open in the
+app** as a link to exactly `madanibot://cloud`. The app accepts that string
 and nothing else: no path, query, fragment or trailing slash, and it ignores
-any other form. Like `duskbot://organization`, it is an action, not a
+any other form. Like `madanibot://organization`, it is an action, not a
 router. It never carries an address, a pairing code or a credential; the app
 decides everything from its own verified state (`electron/cloud-entry.mjs`).
 
@@ -460,7 +460,7 @@ decides everything from its own verified state (`electron/cloud-entry.mjs`).
    that arrives before the app is ready). If the window already shows
    **My Cloud**, coming forward is all it does.
 2. Otherwise the window returns to this computer (a hosted server that was
-   showing stays saved under **Servers**) and opens **Settings → dusk cloud**.
+   showing stays saved under **Servers**) and opens **Settings → madani cloud**.
    Before that view acts, the app gives a saved Cloud sign-in up to five
    seconds to finish restoring, so it is never mistaken for signed out.
 3. Opened this way, the view acts on its own, with no confirmation:
@@ -478,11 +478,11 @@ sign-out in that view starts nothing) and one automatic connection per link.
 A failed connection shows the card's error; clicking the link again retries.
 Closing Settings or choosing another section ends it. While it is open, the
 first-run welcome waits, as it does for Organization settings. A normal visit
-to **Settings → dusk cloud** never signs in or connects by itself.
+to **Settings → madani cloud** never signs in or connects by itself.
 
 The link does nothing in development builds, and in companion client mode it
 explains that the app must be disconnected from the other computer first.
-The `duskbot` scheme belongs to the installed app: on macOS through the
+The `madanibot` scheme belongs to the installed app: on macOS through the
 app bundle, on Linux through the `.deb`'s desktop entry, and on Windows (and
 for an AppImage) once the installed app has started at least once, since it
 registers itself at startup. Before that, or if the app is not installed, the
@@ -503,7 +503,7 @@ a new tab, signed in after one **Continue**, with nothing to copy.
    scopes, at most two minutes, redeemable only by its 256-bit credential
    through a browser sign-in, and recording its owner. The answer has no
    typeable code and says `"purpose":"browser"` back.
-3. The tab goes to `https://<app>.fly.dev/pair#signin=dusk_pair_…`. The
+3. The tab goes to `https://<app>.fly.dev/pair#signin=madani_pair_…`. The
    credential is only in the fragment, which never reaches a server, a proxy
    log or a `Referer`.
 4. Before anything renders, the web UI takes the fragment off the address bar
@@ -584,7 +584,7 @@ layers (Node, Chrome's libraries, agent-browser and its Chrome) and adds:
   image whose Grok sign-in cannot run; `--build-arg GROK_VERSION=` leaves it
   out on purpose;
 - the engine CLIs from `CLOUD_HOME_ENGINES` (default Claude Code and Codex);
-- `DUSK_PREINSTALL_FREE_BACKUP=1`, so the server downloads OpenCode's pinned
+- `MADANI_PREINSTALL_FREE_BACKUP=1`, so the server downloads OpenCode's pinned
   build, the free backup AI, into the volume in the background at its first
   start;
 - the app files, root's, with `server/cloud-home-start.ts` (bundled to
@@ -615,13 +615,13 @@ and Fly restarts the machine. The one exception: after a restore commits
 (a backup restored in Settings), the server exits with code 75
 (`server/restart.ts`) and the launcher starts only the server again.
 
-The machine's secrets (`DUSK_CLOUD_BOOTSTRAP_SECRET` and the relay tokens
-`DUSK_CLOUD_VOICE_TOKEN`, `DUSK_CLOUD_DECIDER_TOKEN`, `DUSK_CLOUD_X_TOKEN`)
+The machine's secrets (`MADANI_CLOUD_BOOTSTRAP_SECRET` and the relay tokens
+`MADANI_CLOUD_VOICE_TOKEN`, `MADANI_CLOUD_DECIDER_TOKEN`, `MADANI_CLOUD_X_TOKEN`)
 arrive as the launcher's environment, from the Fly app secrets the Admin
 sets. The launcher never puts them in a child's environment, because
 `/proc/<pid>/environ` keeps a process's starting environment for anything
 running as the same user to read. It writes them to the server over an
-inherited pipe (`DUSK_CLOUD_SECRETS_FD`). The server reads it and closes it
+inherited pipe (`MADANI_CLOUD_SECRETS_FD`). The server reads it and closes it
 as its very first step (`server/cloud-secrets-boot.ts`, its first import),
 before any other module loads, so no process it starts inherits the pipe.
 The server's environment is built from an allow-list: the process basics,
@@ -638,7 +638,7 @@ refuses to start if Node, itself, the server's entry point, Caddy or its
 config (or any folder above them) is not root's, is writable by others, or
 is on the volume. Only the `/data` volume is `maus`'s.
 
-`HOME=/data`, so `~/.claude`, `~/.codex`, `~/.grok` and dusk bot's own
+`HOME=/data`, so `~/.claude`, `~/.codex`, `~/.grok` and madani bot's own
 data (`CLOUD_HOME.data` in `electron/legacy-names.mjs`) persist on the volume.
 
 ### Memory
@@ -666,7 +666,7 @@ provider outage. So on a Cloud home (`server/engine-memory.ts`):
   signed `POST /api/cloud/plan` `{"v":1,"tier":"starter"}` (`server/host/cloud-plan-tier.ts`), and a
   home it never told has no such limit. What a bot's own turn starts always goes through,
   and a teammate's hand-off never takes that one thread from the person.
-- **How many bots a Starter Cloud makes.** Five beside its Dusk, one number in
+- **How many bots a Starter Cloud makes.** Five beside its Madani, one number in
   `server/host/starter-bot-limit.ts`, from the same signed plan. An archived bot or one
   that moved away takes no room. Making one past it answers `409` with
   `{"code":"bot_limit","error":"…"}` from `POST /api/bots`, `POST /api/teams/import`,
@@ -719,7 +719,7 @@ provider outage. So on a Cloud home (`server/engine-memory.ts`):
   server is -800 and Caddy -900, so the health check is the last to go, and
   the root supervisor that restarts them is -1000, never picked. When memory
   runs out the kernel takes a bot's process, never the workspace.
-- **OpenCode reaches dusk bot's own tools over HTTP.** The agents,
+- **OpenCode reaches madani bot's own tools over HTTP.** The agents,
   browser, computer, Data and Email servers are endpoints of this server
   (`/api/internal/mcp-http/<name>`, `server/routes/own-mcp-http.ts`) with the
   turn's capability in the Authorization header, instead of a Node proxy
@@ -751,7 +751,7 @@ provider outage. So on a Cloud home (`server/engine-memory.ts`):
   tasks that waited for memory and how long, turns stopped for it, processes
   the kernel stopped, and minutes the machine stalled on memory (its `full
   avg10` at 20% or more). The Admin offers a bigger plan from it
-  (dusk-cloud `server/cloud-room.ts`).
+  (madani-cloud `server/cloud-room.ts`).
 
 ### Why the server stays on loopback
 
@@ -767,20 +767,20 @@ server, where any local process can reach the published port, it trusts
 tunnel connects from, and ignores a client-address header from any other peer
 (the launcher sets both: `edgeClientAddress`). That address feeds the pairing
 lockout, never authorization. Apart from `/api/health`, Caddy answers only for
-the machine's own name (`DUSK_PUBLIC_URL`) and refuses any other `Host`.
+the machine's own name (`MADANI_PUBLIC_URL`) and refuses any other `Host`.
 
 ### Fly
 
 The Admin creates the machine through the Machines API; `deploy/fly/fly.toml`
 is the same shape for a manual deploy: `internal_port = 8080`, `force_https`,
-no auto-stop, one machine always running, a volume `dusk_home` at `/data`,
+no auto-stop, one machine always running, a volume `madani_home` at `/data`,
 restart policy `always`, and an HTTP check on `GET /api/health` (it answers
-`{"app":"duskbot"}` with no session). Each customer's app lives in its
+`{"app":"madanibot"}` with no session). Each customer's app lives in its
 own Fly private network, so no machine can reach another's over 6PN.
 
 ## Boot contract
 
-Set by dusk-cloud's provisioner (`server/cloud-machines.ts`). Any of the
+Set by madani-cloud's provisioner (`server/cloud-machines.ts`). Any of the
 first four switches the server into Cloud home mode; then all of them are
 required and the whole contract is validated. A partial or invalid contract
 stops the server before it serves, with a message that names the variable and
@@ -788,19 +788,19 @@ never echoes a secret.
 
 | Variable | Fly | Value |
 | --- | --- | --- |
-| `DUSK_CLOUD_ROLE` | env | `home`. (`desktop` belongs to the Cloud desktop image and is refused here.) |
-| `DUSK_CLOUD_MACHINE_ID` | env | The Admin's machine id (a UUID). Binds the volume. |
-| `DUSK_CLOUD_ADMIN_URL` | secret | The Cloud origin, exact `https://`, e.g. `https://dusk.bot`. |
-| `DUSK_CLOUD_BOOTSTRAP_SECRET` | secret | 43 base64url characters (256 bits): the key the Admin signs pairing requests with. |
-| `DUSK_PUBLIC_URL` | env | The machine's exact `https://` origin, `https://<app>.fly.dev`. |
+| `MADANI_CLOUD_ROLE` | env | `home`. (`desktop` belongs to the Cloud desktop image and is refused here.) |
+| `MADANI_CLOUD_MACHINE_ID` | env | The Admin's machine id (a UUID). Binds the volume. |
+| `MADANI_CLOUD_ADMIN_URL` | secret | The Cloud origin, exact `https://`, e.g. `https://madani.bot`. |
+| `MADANI_CLOUD_BOOTSTRAP_SECRET` | secret | 43 base64url characters (256 bits): the key the Admin signs pairing requests with. |
+| `MADANI_PUBLIC_URL` | env | The machine's exact `https://` origin, `https://<app>.fly.dev`. |
 
-- `HOME=/data` and `DUSK_DATA_DIR` (the `CLOUD_HOME.data` path in `electron/legacy-names.mjs`) are set by the image.
+- `HOME=/data` and `MADANI_DATA_DIR` (the `CLOUD_HOME.data` path in `electron/legacy-names.mjs`) are set by the image.
 - The server keeps the secret in memory and removes it from its environment at
   startup; no engine or tool it starts ever inherits it.
 
 ### No model gateway
 
-dusk cloud includes no AI, so the contract has no model gateway. The person's own engines are the only way to a model.
+madani cloud includes no AI, so the contract has no model gateway. The person's own engines are the only way to a model.
 
 ### Included voice and decisions
 
@@ -810,13 +810,13 @@ For each service the Admin has configured, it also sets:
 
 | Variable | Fly | Value |
 | --- | --- | --- |
-| `DUSK_CLOUD_VOICE_URL` | env | `https://dusk.bot/api/cloud/services/voice/v1`, the Admin's voice relay. |
-| `DUSK_CLOUD_VOICE_TOKEN` | secret | This machine's voice relay token (`dusk_voice_…`). |
-| `DUSK_TTS_DEFAULT_VOICE` | env | An ElevenLabs voice id, used until the person picks a voice or another speech provider in Settings. |
-| `DUSK_CLOUD_DECIDER_URL` | env | `https://dusk.bot/api/cloud/services/decider`, the Admin's Jev relay. It is a Jev base URL, used as it is: the decider adds `/v1/systemone`, the relay's only route, so every included decision goes to exactly `<DUSK_CLOUD_DECIDER_URL>/v1/systemone`. |
-| `DUSK_CLOUD_DECIDER_TOKEN` | secret | This machine's decision relay token (`dusk_decide_…`). It is not a Jev key and works only through the relay. |
-| `DUSK_CLOUD_X_URL` | env | `https://dusk.bot/api/cloud/services/x`, the Admin's treg relay; the client calls `<DUSK_CLOUD_X_URL>/call/<endpoint>` for the X tools' eight endpoints, `/research/search`, `/research/endpoints/<id>` and `/research/call/<id>` for the research tools, and `GET /usage` for the month's calls on the Apps page's X card (`GET /api/x/status`). The home asks `GET /research/search` with no job at start, which spends nothing: a 400 means research is on, an off answer hides the research tools (x_search stays) until an hour later or a restart, and a research call refused as off does the same. A person's own treg key (Settings → API keys) wins over it and goes straight to treg. |
-| `DUSK_CLOUD_X_TOKEN` | secret | This machine's X research relay token (`dusk_x_…`). Not a treg key; it works only through the relay, within the plan's monthly X research calls. A signed-in desktop gets its own (`dusk_xd_…`) from `POST /api/cloud/desktop/services/x` and hands it to its server in memory. |
+| `MADANI_CLOUD_VOICE_URL` | env | `https://madani.bot/api/cloud/services/voice/v1`, the Admin's voice relay. |
+| `MADANI_CLOUD_VOICE_TOKEN` | secret | This machine's voice relay token (`madani_voice_…`). |
+| `MADANI_TTS_DEFAULT_VOICE` | env | An ElevenLabs voice id, used until the person picks a voice or another speech provider in Settings. |
+| `MADANI_CLOUD_DECIDER_URL` | env | `https://madani.bot/api/cloud/services/decider`, the Admin's Jev relay. It is a Jev base URL, used as it is: the decider adds `/v1/systemone`, the relay's only route, so every included decision goes to exactly `<MADANI_CLOUD_DECIDER_URL>/v1/systemone`. |
+| `MADANI_CLOUD_DECIDER_TOKEN` | secret | This machine's decision relay token (`madani_decide_…`). It is not a Jev key and works only through the relay. |
+| `MADANI_CLOUD_X_URL` | env | `https://madani.bot/api/cloud/services/x`, the Admin's treg relay; the client calls `<MADANI_CLOUD_X_URL>/call/<endpoint>` for the X tools' eight endpoints, `/research/search`, `/research/endpoints/<id>` and `/research/call/<id>` for the research tools, and `GET /usage` for the month's calls on the Apps page's X card (`GET /api/x/status`). The home asks `GET /research/search` with no job at start, which spends nothing: a 400 means research is on, an off answer hides the research tools (x_search stays) until an hour later or a restart, and a research call refused as off does the same. A person's own treg key (Settings → API keys) wins over it and goes straight to treg. |
+| `MADANI_CLOUD_X_TOKEN` | secret | This machine's X research relay token (`madani_x_…`). Not a treg key; it works only through the relay, within the plan's monthly X research calls. A signed-in desktop gets its own (`madani_xd_…`) from `POST /api/cloud/desktop/services/x` and hands it to its server in memory. |
 
 A service is included only when both its URL and its token are set
 (`server/included-services.ts`). The real ElevenLabs and Jev keys stay
@@ -824,12 +824,12 @@ on the Admin, which checks the subscription, the monthly caps on every request.
 
 - **The person's own key always wins.** An included token is a fallback, used
   only while the person has no key of their own: none saved in Settings
-  (`tts.key`, `decider.key`) and no `DUSK_TTS_KEY`
-  or `DUSK_JEV_API_KEY` in the environment. Adding a key switches to it at
+  (`tts.key`, `decider.key`) and no `MADANI_TTS_KEY`
+  or `MADANI_JEV_API_KEY` in the environment. Adding a key switches to it at
   once; removing it falls back to the included service again. The choice is
   made on every request.
 - **Each credential goes to one place.** The relays know only the Admin's
-  accounts, so an own key goes only to the provider (`DUSK_ELEVENLABS_API` or
+  accounts, so an own key goes only to the provider (`MADANI_ELEVENLABS_API` or
   `decider.baseUrl` when set, for development and tests, else ElevenLabs' and
   Jev's own APIs) and an included token
   only to its relay, whatever those settings say.
@@ -871,7 +871,7 @@ on the Admin, which checks the subscription, the monthly caps on every request.
   engine, so a process running as the same user that may trace it (the
   kernel's ptrace policy, `kernel.yama.ptrace_scope`, decides) could read
   them there. That is why a guest's turn gets no shell (above); the complete
-  fix is engines under a user of their own. A relay token is only this customer's own dusk cloud
+  fix is engines under a user of their own. A relay token is only this customer's own madani cloud
   allowance: it works only through the Admin, only on this machine's cloud
   computers, voice and decisions, and only up to the monthly caps.
 - A refusal from the cloud desktop or voice relay (for example, the month's cloud
@@ -891,17 +891,17 @@ on the Admin, which checks the subscription, the monthly caps on every request.
 ### Included connected apps
 
 Connected apps (Gmail, Outlook, Slack, LinkedIn, Calendly and the rest of the
-catalog) come with the plan through dusk bot's managed connection service,
+catalog) come with the plan through madani bot's managed connection service,
 the same one the packaged desktop app uses. The Admin sets nothing for it: at
 every start the server registers the Cloud's own installation if it has none,
 keeps the token owner-only in `connected-apps-installation.json` under `CLOUD_HOME.data` in `electron/legacy-names.mjs`
 (never in a backup, a move or `config.json`), checks it with the service, and
 retries with backoff while the service is down, without holding up the start.
 An owner's own Composio project key still wins. The details are in
-[composio.md](composio.md#dusk-cloud). `DUSK_COMPOSIO_BROKER_URL` (env, not
+[composio.md](composio.md#madani-cloud). `MADANI_COMPOSIO_BROKER_URL` (env, not
 secret, optional) points a Cloud at another service, such as a staging one.
 
-For a paid plan the Admin also sets `DUSK_CLOUD_CONNECTED_APPS_GRANT` (secret):
+For a paid plan the Admin also sets `MADANI_CLOUD_CONNECTED_APPS_GRANT` (secret):
 a grant it signs for the machine id, which the server presents to the service
 once it holds its token. The service then gives this installation a paid
 Cloud's app-event limit (2,000 a day instead of a desktop's 500). Without it a
@@ -924,11 +924,11 @@ already connected is not checked again.
 ```http
 POST /api/cloud/pairing
 Content-Type: application/json
-x-dusk-cloud-timestamp: 1790000000
-x-dusk-cloud-nonce: <base64url, 16–128 characters>
-x-dusk-cloud-signature: v1=<base64url HMAC-SHA256(DUSK_CLOUD_BOOTSTRAP_SECRET, canonical)>
+x-madani-cloud-timestamp: 1790000000
+x-madani-cloud-nonce: <base64url, 16–128 characters>
+x-madani-cloud-signature: v1=<base64url HMAC-SHA256(MADANI_CLOUD_BOOTSTRAP_SECRET, canonical)>
 
-{"label":"dusk bot app (Cloud)","ttlSeconds":300}
+{"label":"madani bot app (Cloud)","ttlSeconds":300}
 ```
 
 where `canonical` is
@@ -940,7 +940,7 @@ v1\n<timestamp>\n<nonce>\nPOST\n/api/cloud/pairing\n<base64url SHA-256 of the ra
 `200`:
 
 ```json
-{ "code": "ABCD-EFGH-JKLM", "credential": "dusk_pair_…", "expiresAt": 1790000300000 }
+{ "code": "ABCD-EFGH-JKLM", "credential": "madani_pair_…", "expiresAt": 1790000300000 }
 ```
 
 `code` and `credential` are two encodings of **one ordinary pairing window**
@@ -952,7 +952,7 @@ With `"purpose":"browser"` and `"owner":"<the account's email>"` in the body
 sign-in window for that owner instead and answers
 
 ```json
-{ "credential": "dusk_pair_…", "expiresAt": 1790000120000, "purpose": "browser" }
+{ "credential": "madani_pair_…", "expiresAt": 1790000120000, "purpose": "browser" }
 ```
 
 `ttlSeconds` then defaults to and is capped at 120. Only
@@ -1078,7 +1078,7 @@ judge a pending timer by a wall-clock time stored when it was set.
 - nobody used the home for 10 minutes (the Admin may ask for another window).
   A use is an authenticated request, except the event stream, `/api/health`,
   `/api/sync/…` and requests the page marks
-  `x-dusk-background: 1` (its own polls). A request with no mark counts, so an
+  `x-madani-background: 1` (its own polls). A request with no mark counts, so an
   older client can only keep a home awake, never let it sleep under someone;
 - work ended 2 minutes ago, the home has been awake 2 minutes, and the next
   scheduled run is at least 5 minutes away.
@@ -1124,7 +1124,7 @@ resume, someone's use, or 120 s (a sleep the Admin never carried out):
   waits until the page shows again, one per path (`src/state/api.ts`), so a
   hidden tab whose stream dropped (the laptop slept) can't wake a sleeping home
   every minute;
-- a held `GET /api/sync/changes` answers `503 {"error":"asleep"}` with `x-dusk-cloud-power: asleep`, and new
+- a held `GET /api/sync/changes` answers `503 {"error":"asleep"}` with `x-madani-cloud-power: asleep`, and new
   ones get the same, so the desktop's Files sync pauses instead of
   waking it;
 - `cloud-sleep.json` in the data folder marks the sleep. A boot that finds it
@@ -1132,7 +1132,7 @@ resume, someone's use, or 120 s (a sleep the Admin never carried out):
   startup" routines don't fire. Any other boot removes nothing and runs them as
   before.
 
-**The edge on a cold wake.** `DUSK_CLOUD_EDGE_HOLD` (whole seconds, at most
+**The edge on a cold wake.** `MADANI_CLOUD_EDGE_HOLD` (whole seconds, at most
 120, such as `30s`; unset: `0s`, today's edge) makes Caddy hold a request while
 the server starts instead of answering 502, so a webhook or the app's first
 request after a stop is answered late rather than refused; Caddy dials the
@@ -1180,7 +1180,7 @@ The desktop polls `GET /api/cloud/desktop/session` with its personal device
 token (`Authorization: Bearer omc_…`). Contract version 1 adds:
 
 ```json
-"cloud": { "state": "ready", "origin": "https://dusk-u-1a2b3c4d5e6f.fly.dev", "pairingAvailable": true }
+"cloud": { "state": "ready", "origin": "https://madani-u-1a2b3c4d5e6f.fly.dev", "pairingAvailable": true }
 ```
 
 - `null` or absent when the account has no machine; the app then shows nothing new.
@@ -1282,7 +1282,7 @@ notice queue (below), on this computer's page and on My Cloud's own page.
 Customers couldn't find how to cancel: the plan card only said **Manage in
 your browser**. Now, while the session's `renewal` says this account pays for a
 plan that runs, the plan card in Settings (Usage & billing → Plan in Simple
-mode, dusk cloud in Advanced) and on the Cloud's own page in home mode
+mode, madani cloud in Advanced) and on the Cloud's own page in home mode
 (`CloudPlanOnCloud`) shows **Cancel trial** during a free trial and **Cancel
 plan** otherwise (`src/components/CloudCancelPlan.tsx`). Someone in a team's
 Cloud never sees it: the Admin sends no `renewal` for a Cloud they don't pay
@@ -1291,7 +1291,7 @@ for.
 Its sheet asks "Before you go: what's the main reason?" with one-tap chips
 (Missing a feature, Too expensive, Hard to set up, Didn't work as I expected,
 Not using it right now, Something else; tap again to let one go), two optional
-boxes ("What did you expect dusk bot to do?", "What could we have done
+boxes ("What did you expect madani bot to do?", "What could we have done
 better?"), and **Keep my
 plan** and **Cancel my trial** / **Cancel my plan**. Cancelling never needs an
 answer. The page sends only the survey's words: `cloudAccount.cancelPlan` on
@@ -1337,11 +1337,11 @@ for a later launch.
    or a desktop signed in with an organization), never during setup (the welcome,
    the tour), a call, another dialog, busy work or an update being offered,
    never in the launch whose welcome finished or before a new install's first
-   reply, and after Dusk's first-launch card. `lib/whats-new.ts` decides the
+   reply, and after Madani's first-launch card. `lib/whats-new.ts` decides the
    slides from the account the app already holds (its plan, its trial, its
    teams and its Clouds list):
    - **No Cloud plan** (signed out, or signed in with none): **Meet the new
-     dusk cloud**, the Cloud website's Home pictured in the skin's light or
+     madani cloud**, the Cloud website's Home pictured in the skin's light or
      dark, then **Team**.
    - **A Cloud plan of one's own**, in no team: the Team slide only.
    - **In a team** (any role, a Team or Business plan, or a team's Cloud in the
@@ -1354,9 +1354,9 @@ for a later launch.
    button carries the slide's tag on the Cloud's funnel (`app_whats_new_pro`,
    `app_whats_new_team`): **Get Pro** opens the Add a Cloud dialog with
    `source: app_whats_new_pro`, which its checkout sends; **See the new Cloud**
-   opens `https://dusk.bot/dashboard/cloud?src=app_whats_new_pro` (the plans,
+   opens `https://madani.bot/dashboard/cloud?src=app_whats_new_pro` (the plans,
    for someone without one); **Start a Team** opens
-   `https://dusk.bot/pro/buy?plan=team&src=app_whats_new_team`, the
+   `https://madani.bot/pro/buy?plan=team&src=app_whats_new_team`, the
    website's Get Team with this slide's tag (the staging Admin's site for an app
    on staging), and for someone with a plan of their own, whom that page would
    only tell to write in, the Add a Cloud dialog with `source:
@@ -1368,10 +1368,10 @@ for a later launch.
    unless focus has moved on. `whats_new` ([docs/analytics.md](analytics.md))
    counts each slide seen and each step.
 2. **The card after the update** (`CloudTrialIntro`, id `cloud-trial-intro-v1`):
-   dusk cloud's free trial for someone signed out or with no plan who
+   madani cloud's free trial for someone signed out or with no plan who
    has used the app before this launch, only while the Admin offers a trial
    (it waits for one), and never on a desktop whose first-run welcome
-   showed its dusk cloud step. Its numbers are the Admin's: the trial's
+   showed its madani cloud step. Its numbers are the Admin's: the trial's
    days, the lowest monthly price and money-back. At most
    once a calendar day, on at most three days (one for someone who closed the
    earlier Pro card), kept in browser storage and the workspace's hint record;
@@ -1413,15 +1413,15 @@ restoring or connecting.
 
 In the Server menu, **My Cloud** goes through the same connection as
 **Open My Cloud** (no pairing code to type); when it cannot, the app
-opens **Settings → dusk cloud**, which says the next step. In the desktop app a
+opens **Settings → madani cloud**, which says the next step. In the desktop app a
 `/pair#code=` link connects without a second click; a browser still asks. On a
 Cloud home the pairing page says where its connection starts (the environment
 descriptor's `capabilities.cloudHome`).
 
-On the person's own Cloud, open in the app's window, **Settings → dusk cloud**
+On the person's own Cloud, open in the app's window, **Settings → madani cloud**
 shows the plan read only (`cloud-plan:*`: its name and whether it is active,
 **Manage in your browser** and **Switch to this computer**). It is listed only
-on a dusk bot Cloud home (`config.cloudHome`), never on another server open in the
+on a madani bot Cloud home (`config.cloudHome`), never on another server open in the
 window. Main answers it for the Cloud this account verified, or last verified
 while a check is failing or the sign-in has ended (`myCloudOrigin`, the rule
 the Cloud's microphone uses too), so that page says
@@ -1446,7 +1446,7 @@ its proxy). The session's `cloud.power` (additive, only for such a plan) says `{
 sleeps: true}`; `cloud.state` stays `ready`. Without `cloud.power`, nothing below happens (`electron/cloud-power.mjs`).
 
 - **Files sync pauses** while the session says `asleep`, and also at once when My Cloud answers a held poll
-  `503` with `x-dusk-cloud-power: asleep` (it does just before it sleeps). It makes no request to My Cloud then, not even
+  `503` with `x-madani-cloud-power: asleep` (it does just before it sleeps). It makes no request to My Cloud then, not even
   a retry, and the session is read every 15 s instead of 60 s while they wait. They resume when it says awake. Files shows
   "My Cloud is asleep" meanwhile.
 - **Opening My Cloud while it sleeps** asks the Admin to wake it first (`POST /api/cloud/desktop/wake`), shows "Waking
@@ -1464,10 +1464,10 @@ ready: the plan (`tier`), when the monthly allowances start over (`resetsAt`, th
 during a free trial), each included allowance as `{kind, used, max, usedUp?}` (`computerHours` in hours, `voice` in
 characters, `decisions`, `x` in calls, `research` in dollars, `storage` in GB of the most the disk grows to), and the bigger
 plans the app can move to itself (`upgrades: [{tier, amount}]`, US cents a month; empty on Max, a team's plan, or while
-the Admin's `DUSK_CLOUD_APP_UPGRADES` is off). `electron/cloud-home.mjs` `parseCloudUsage` drops anything malformed (an
+the Admin's `MADANI_CLOUD_APP_UPGRADES` is off). `electron/cloud-home.mjs` `parseCloudUsage` drops anything malformed (an
 unknown kind, an allowance of nothing, a plan it doesn't know); it is display only and never grants or limits anything.
 Main keeps it on the account's state, and `cloudPlanSnapshot` hands it to this computer's page and the person's own Cloud
-page alike (`duskDesktop.cloudPlan`), so the meter reads the same on both (`src/components/CloudUsageMeter.tsx`,
+page alike (`madaniDesktop.cloudPlan`), so the meter reads the same on both (`src/components/CloudUsageMeter.tsx`,
 `src/lib/usage-meter.ts`).
 
 - **The sidebar card**, above the person's name (not in the icon rail), only while an allowance is at 80% or more: the
@@ -1476,16 +1476,16 @@ page alike (`duskDesktop.cloudPlan`), so the meter reads the same on both (`src/
   month at this level: it comes back when one reaches 100%, and next month. Never shown in a browser, without a paid plan,
   or on a Team Cloud unless the plan whose usage it is is that team's (only the person who pays for a team sees its usage;
   its members never do).
-- **Settings → General → dusk cloud usage**, while there is a paid plan: every allowance with its meter, when they
+- **Settings → General → madani cloud usage**, while there is a paid plan: every allowance with its meter, when they
   start over, and Upgrade to the next plan (the others as links), "You're on the top plan" on Max, or "To change your
   team's plan, write to us" on a team's plan.
-- **Upgrade, one tap and a confirm.** Upgrade asks main for a preview (`duskDesktop.cloudPlan.upgradePreview(plan, source)`,
+- **Upgrade, one tap and a confirm.** Upgrade asks main for a preview (`madaniDesktop.cloudPlan.upgradePreview(plan, source)`,
   only from a click, only for a plan the verified session lists), which asks the Admin
   (`POST /api/cloud/desktop/upgrade/preview`): Dodo's own numbers for this change, nothing changed. The confirm says them
   in plain words: "Max is $99 a month and starts right away. Today you pay $23.40, the difference for the rest of this
   billing month. From Nov 18 it's $99 a month, plus any tax." (a free trial: nothing today, the new price at its first
   payment). The preview's confirmation stays in main, never in a page. Only the confirm's own **Upgrade to Max**
-  (`duskDesktop.cloudPlan.upgrade(plan, source)`, which needs a click) sends `POST /api/cloud/desktop/upgrade` with it; without a
+  (`madaniDesktop.cloudPlan.upgrade(plan, source)`, which needs a click) sends `POST /api/cloud/desktop/upgrade` with it; without a
   preview of that very plan, still good (ten minutes), main sends nothing. The Admin changes the plan in Dodo (the prorated
   difference now, the billing date kept; `on_payment_failure: prevent_change`), refuses if Dodo would now charge more than
   the confirm said, and reads the plan back, so the session (read again at once) shows the new plan and allowances. Plain
@@ -1496,7 +1496,7 @@ page alike (`duskDesktop.cloudPlan`), so the meter reads the same on both (`src/
 ### Room card: short on memory or disk, and the plan that fixes it
 
 The session's `cloud.room` (additive, only beside `cloud.usage`; the Admin's `server/cloud-room.ts`, behind its
-`DUSK_CLOUD_ROOM_OFFERS`) says this Cloud is short on room, from its health report's `room` and disk: `cause` is
+`MADANI_CLOUD_ROOM_OFFERS`) says this Cloud is short on room, from its health report's `room` and disk: `cause` is
 `{kind: "memory", waits, waitMinutes, stopped}` (the last day) or `{kind: "disk", usedGb, capGb}`, then either `plan`
 (the next plan up that fixes it: `tier`, `amount` in US cents a month, `memoryMb`/`fromMemoryMb`, `diskGb`/`fromDiskGb`)
 or `tip: true` on the top plan, and `id`. `electron/cloud-home.mjs` `parseCloudRoom` drops anything malformed; it is display
@@ -1509,18 +1509,18 @@ only.
   the memory. $49 a month. Today you pay only for the rest of this month."), **Upgrade** and **Not now**; on the top plan
   a tip ("run fewer bots at once and close browsers you're not using") and **Got it**.
 - **Upgrade** is the usual one: the preview, then the person's confirm, with source `app_room`. After it the card offers
-  **Restart now** (`duskDesktop.cloudPlan.restartNow()`, `POST /api/cloud/desktop/resize-now`, "Takes about a minute, and stops anything
+  **Restart now** (`madaniDesktop.cloudPlan.restartNow()`, `POST /api/cloud/desktop/resize-now`, "Takes about a minute, and stops anything
   running now"); otherwise the Cloud gets its new size the next time it's not busy.
-- **Not now** (`duskDesktop.cloudPlan.roomNotNow(id)`, `POST /api/cloud/desktop/room`) hides it here at once and the Admin offers
+- **Not now** (`madaniDesktop.cloudPlan.roomNotNow(id)`, `POST /api/cloud/desktop/room`) hides it here at once and the Admin offers
   nothing for two weeks. A new offer comes at most once a week. Both channels act only on the session's own Cloud, only from
   a click.
 
 ## Add a Cloud
 
-The one way to buy dusk cloud in the app, the same for every way in:
+The one way to buy madani cloud in the app, the same for every way in:
 What's new, the card after the update, **Show me how**, **Add a
 Cloud…** in the server menu (the sidebar's and the menu bar's Server menu),
-Settings (the Cloud card in General, and dusk cloud), and the routine
+Settings (the Cloud card in General, and madani cloud), and the routine
 screen's note.
 
 - **The menu item.** Main adds **Add a Cloud…** under the saved servers only
@@ -1543,7 +1543,7 @@ screen's note.
   the menu is.
 - **The dialog** (`components/CloudAddDialog.tsx`, one state→view function,
   `lib/cloud-plan` `cloudAddView`) covers the buying journey only: the offer
-  (the night card: dusk cloud's name and one line over a linocut night sky
+  (the night card: madani cloud's name and one line over a linocut night sky
   where the three bots ride a cloud while this computer's laptop sleeps, with
   Compare plans in the card; then one card
   per plan the Admin sells, side by side on a wide sheet and stacked in a
@@ -1576,7 +1576,7 @@ screen's note.
   checkout already being prepared), the offer says why. A screen reader
   hears each card's button with its plan's name, and each new step takes
   focus at its heading. A payment problem, an ended sign-in or a Cloud that can't
-  be reached go to Settings → dusk cloud instead.
+  be reached go to Settings → madani cloud instead.
 - **Checkout runs in the default browser, never the app.** Signed in, main
   asks the Admin for this account's checkout (`POST /api/cloud/desktop/checkout`
   with the plan and where it was opened) and opens the address only when it is
@@ -1588,7 +1588,7 @@ screen's note.
   with `&next=checkout&plan=<plan>&src=<source>` added (older Admins ignore it).
   The app follows its own session, never the return page: every 15 seconds
   for 30 minutes after it opened a checkout, and at once when the window comes
-  back or `duskbot://cloud` arrives (which then opens the dialog).
+  back or `madanibot://cloud` arrives (which then opens the dialog).
 - **Ready.** When My Cloud is ready after a checkout this app opened and the
   window is elsewhere, one system notification says so.
 
@@ -1621,7 +1621,7 @@ screen's note.
   `app_onboarding`, `app_computer_move` (main refuses any other, and any plan the offer doesn't
   sell).
 - **Interest** `POST /api/cloud/desktop/interest` `{kind: "another_cloud"}` → `{ok: true}`.
-- Every signed-in request carries this app's version in `x-dusk-version`.
+- Every signed-in request carries this app's version in `x-madani-version`.
 
 Nothing in the app is a price: with the Admin's trial switch off, no card is
 shown, and the dialog offers today's plans at the Admin's prices, charged
@@ -1639,7 +1639,7 @@ itself, and from then on opens the Cloud as its only home
 thing by id over one owner session (`electron/cloud-send.mjs`), checks that it
 all arrived, and freezes this computer's copy so nothing runs in two places
 (`server/move-freeze.ts`). An older desktop's Copy this computer here gets
-`410` with "Update dusk bot to bring your bots here by itself."
+`410` with "Update madani bot to bring your bots here by itself."
 (`server/cloud-move-http.ts`); a backup file still restores from Settings →
 Backups. [docs/verification/cloud-send.md](verification/cloud-send.md) has the
 tests.
@@ -1667,8 +1667,8 @@ tests.
 ## Published image
 
 Every push to `main` and every release tag publishes the home machine image as
-`ghcr.io/duskbotai/duskbot-cloud-home`, tagged `latest` (main only), `sha-<commit>` and the release tag.
+`ghcr.io/madanibotai/madanibot-cloud-home`, tagged `latest` (main only), `sha-<commit>` and the release tag.
 It is the `Dockerfile`'s `cloud-home` target for the same commit, with Grok and the current Claude Code and
 Codex installed. The Docker workflow's summary prints the digest. Set it in the Admin as
-`DUSK_CLOUD_HOME_IMAGE=ghcr.io/duskbotai/duskbot-cloud-home@sha256:…`; changing it rolls the new image
+`MADANI_CLOUD_HOME_IMAGE=ghcr.io/madanibotai/madanibot-cloud-home@sha256:…`; changing it rolls the new image
 out to existing machines one at a time, reverting automatically on a failed health check.

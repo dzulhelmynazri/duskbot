@@ -76,9 +76,9 @@ function fakeFetch(...responses: Reply[]) {
   return { fetcher: fetcher as unknown as typeof fetch, calls };
 }
 
-/** The Admin's X relay (a Cloud home's DUSK_CLOUD_X_URL, or a desktop's from its Cloud sign-in). */
+/** The Admin's X relay (a Cloud home's MADANI_CLOUD_X_URL, or a desktop's from its Cloud sign-in). */
 const RELAY = "https://cloud.example.test/api/cloud/services/x";
-const clientWith = (fetcher: typeof fetch) => createXRelayClient({ url: RELAY, token: "dusk_xd_test", fetcher });
+const clientWith = (fetcher: typeof fetch) => createXRelayClient({ url: RELAY, token: "madani_xd_test", fetcher });
 
 async function failure(promise: Promise<unknown>): Promise<XResearchError> {
   try {
@@ -215,12 +215,12 @@ describe("toPost", () => {
 describe("search", () => {
   it("calls anyapi's search with the token, a cost ceiling and Latest, and returns compact posts", async () => {
     const { fetcher, calls } = fakeFetch({ body: anyapi({ items: [searchRow("12"), searchRow("11")], nextCursor: "" }) });
-    const result = await clientWith(fetcher).search({ query: "dusk", sort: "latest", limit: 20 });
+    const result = await clientWith(fetcher).search({ query: "madani", sort: "latest", limit: 20 });
     expect(calls).toHaveLength(1);
     expect(calls[0]!.method).toBe("POST");
     expect(calls[0]!.url.href).toBe(`${RELAY}/call/anyapi.x.search.posts`);
-    expect(calls[0]!.body).toEqual({ query: "dusk", queryType: "Latest", limit: 20 });
-    expect(calls[0]!.headers.get("authorization")).toBe("Bearer dusk_xd_test");
+    expect(calls[0]!.body).toEqual({ query: "madani", queryType: "Latest", limit: 20 });
+    expect(calls[0]!.headers.get("authorization")).toBe("Bearer madani_xd_test");
     // Our treg key, the customer tag and the cost ceiling are the relay's to add; nothing of treg's is sent from here.
     expect(calls[0]!.headers.get("x-treg-token")).toBeNull();
     expect(calls[0]!.headers.get("x-treg-route-max-cost")).toBeNull();
@@ -404,7 +404,7 @@ describe("profile", () => {
 
 describe("errors", () => {
   it("maps HTTP statuses to plain sentences", () => {
-    // What the Admin's relay answers (dusk-cloud server/cloud-services.ts).
+    // What the Admin's relay answers (madani-cloud server/cloud-services.ts).
     expect(errorFor(401, { error: "invalid_api_key" })).toMatchObject({ code: "bad_key", message: X_MESSAGES.badKey });
     expect(errorFor(402, { error: "subscription_inactive" })).toMatchObject({ code: "no_credit", message: X_MESSAGES.noPlan });
     expect(errorFor(422, { error: "invalid_request" }).code).toBe("bad_input");
@@ -455,7 +455,7 @@ describe("errors", () => {
 });
 
 describe("the plan's included X calls this month", () => {
-  const plan = { token: "dusk_xd_plan", api: `${RELAY}/`, included: true };
+  const plan = { token: "madani_xd_plan", api: `${RELAY}/`, included: true };
   const usage = { calls: 312, max: 5_000, resetsAt: "2026-11-01T00:00:00.000Z" };
 
   it("asks the relay's /usage with the plan's bearer, by GET, and reads its answer", async () => {
@@ -464,7 +464,7 @@ describe("the plan's included X calls this month", () => {
     expect(calls).toHaveLength(1);
     expect(calls[0]!.url.href).toBe(`${RELAY}/usage`);
     expect(calls[0]!.method).toBe("GET");
-    expect(calls[0]!.headers.get("authorization")).toBe("Bearer dusk_xd_plan");
+    expect(calls[0]!.headers.get("authorization")).toBe("Bearer madani_xd_plan");
     expect(calls[0]!.headers.get("x-treg-token")).toBeNull();
   });
 
@@ -506,9 +506,9 @@ describe("with the person's own treg key", () => {
 
   it("goes through the relay with a bearer when the credential is the plan's", async () => {
     const { fetcher, calls } = fakeFetch({ body: anyapi({ items: [], nextCursor: "" }) });
-    await createXClient({ token: "dusk_xd_plan", api: RELAY, included: true }, { fetcher }).search({ query: "maus", sort: "latest", limit: 20 });
+    await createXClient({ token: "madani_xd_plan", api: RELAY, included: true }, { fetcher }).search({ query: "maus", sort: "latest", limit: 20 });
     expect(calls[0]!.url.toString()).toBe(`${RELAY}/call/anyapi.x.search.posts`);
-    expect(calls[0]!.headers.get("authorization")).toBe("Bearer dusk_xd_plan");
+    expect(calls[0]!.headers.get("authorization")).toBe("Bearer madani_xd_plan");
     expect(calls[0]!.headers.get("x-treg-token")).toBeNull();
   });
 

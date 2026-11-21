@@ -61,12 +61,12 @@ const tick = () => new Promise((resolve) => setTimeout(resolve, 5));
 it("a setting changed in any one place reaches the others, and the last change wins", async () => {
   const key = `sk-ant-fake-${hex(16)}`;
   await save(fx.local, { language: "fr", features: { showToolCalls: true }, tts: { provider: "system" }, anthropic: { key } });
-  expect((await fx.local("PUT", "/api/settings-sync/ui", { name: "dusk-skin", value: "midnight", at: Date.now() })).body.ok).toBe(true);
+  expect((await fx.local("PUT", "/api/settings-sync/ui", { name: "madani-skin", value: "midnight", at: Date.now() })).body.ok).toBe(true);
   const first = await level();
   expect(first.changed.length).toBeGreaterThan(0);
-  const keys = ["language", "features.showToolCalls", "tts.provider", "anthropic.key", "ui.dusk-skin"];
-  for (const values of await everywhere(keys)) expect(values).toEqual({ language: "fr", "features.showToolCalls": true, "tts.provider": "system", "anthropic.key": key, "ui.dusk-skin": "midnight" });
-  expect((await fx.onCloud("GET", "/api/settings-sync/ui")).body.prefs["dusk-skin"].value).toBe("midnight");
+  const keys = ["language", "features.showToolCalls", "tts.provider", "anthropic.key", "ui.madani-skin"];
+  for (const values of await everywhere(keys)) expect(values).toEqual({ language: "fr", "features.showToolCalls": true, "tts.provider": "system", "anthropic.key": key, "ui.madani-skin": "midnight" });
+  expect((await fx.onCloud("GET", "/api/settings-sync/ui")).body.prefs["madani-skin"].value).toBe("midnight");
   expect((await level()).changed, "level now: another pass changes nothing").toEqual([]);
 
   // changed on the person's server, then later on My Cloud: My Cloud's wins everywhere, the server's other change too
@@ -77,11 +77,11 @@ it("a setting changed in any one place reaches the others, and the last change w
   for (const values of await everywhere(["language", "talkingStyle"])) expect(values).toEqual({ language: "ja", talkingStyle: "casual" });
 
   // a page's preference changed on My Cloud reaches this computer's page
-  expect((await fx.onCloud("PUT", "/api/settings-sync/ui", { name: "dusk-send-key", value: "mod-enter", at: Date.now() })).body.ok).toBe(true);
+  expect((await fx.onCloud("PUT", "/api/settings-sync/ui", { name: "madani-send-key", value: "mod-enter", at: Date.now() })).body.ok).toBe(true);
   await level();
-  expect((await fx.local("GET", "/api/settings-sync/ui")).body.prefs["dusk-send-key"].value).toBe("mod-enter");
+  expect((await fx.local("GET", "/api/settings-sync/ui")).body.prefs["madani-send-key"].value).toBe("mod-enter");
   // an older change from a page is refused, and the newer one kept
-  expect((await fx.local("PUT", "/api/settings-sync/ui", { name: "dusk-send-key", value: "enter", at: 1 })).body.ok).toBe(false);
+  expect((await fx.local("PUT", "/api/settings-sync/ui", { name: "madani-send-key", value: "enter", at: 1 })).body.ok).toBe(false);
 }, hostTimeout(180_000));
 
 it("what belongs to one computer stays there", async () => {

@@ -2,7 +2,7 @@
 // (scripts/testing/cloud-move-preview.tsx). POST /__fixture/cloud?home=1 answers the config as a Cloud home's, for the
 // done sheet on My Cloud's page. Run: node --experimental-strip-types scripts/verify-cloud-move.ts
 import type { IncomingMessage, ServerResponse } from "node:http";
-import { launchVerificationServer } from "./control-dusk.ts";
+import { launchVerificationServer } from "./control-madani.ts";
 import { mountPreview, parkUntilSignal, type MountedPreview } from "./testing/preview-fixture.ts";
 
 let home = false;
@@ -19,7 +19,7 @@ async function relay(req: IncomingMessage, res: ServerResponse) {
 
 try {
   ui = await mountPreview(fixture, {
-    entry: "/scripts/testing/cloud-move-preview.tsx", route: "/__cloud-move.html", title: "Isolated move to dusk cloud",
+    entry: "/scripts/testing/cloud-move-preview.tsx", route: "/__cloud-move.html", title: "Isolated move to madani cloud",
     extraRoutes: [
       { path: "/api/config", method: "GET", handler: relay },
       { path: "/api/auth/session", method: "GET", handler: relay },

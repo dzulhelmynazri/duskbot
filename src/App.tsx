@@ -113,11 +113,11 @@ function Shell({ viewer }: { viewer: WelcomeViewer | null }) {
   const unreadCount =
     state.bots.filter((bot) => !bot.hidden).reduce((sum, bot) => sum + botUnreadCount(bot), 0) +
     state.groups.filter((group) => group.unread).length;
-  const remoteClient = window.duskDesktop?.remoteClient?.active === true;
+  const remoteClient = window.madaniDesktop?.remoteClient?.active === true;
   // the bot's panel docks beside the sidebar only while the chat keeps its minimum width beside it
   const botPanelDocks = useMediaQuery(`(min-width: ${PANEL_DOCKS_AT}px)`, true);
   useEffect(() => {
-    if (!window.duskDesktop?.environments) return;
+    if (!window.madaniDesktop?.environments) return;
     const open = () => dispatch({ type: "toggleAppSettings", open: true, section: "desktopWorkspaces" });
     // connect a server (the switcher, the rail's ＋): the guided setup at its ways to connect, never Settings; sharing this computer
     // with one still lands on its Settings page
@@ -125,8 +125,8 @@ function Shell({ viewer }: { viewer: WelcomeViewer | null }) {
     const url = new URL(window.location.href);
     const requestedSettings = url.searchParams.get("desktop-settings");
     const cloud = ["cloud", "cloud-settings", "cloud-add", "cloud-add-howto"].includes(requestedSettings ?? "");
-    if (requestedSettings === "workspaces" || (requestedSettings === "organization" && window.duskDesktop.organization && !remoteClient) ||
-      (cloud && window.duskDesktop.cloudAccount && !remoteClient)) {
+    if (requestedSettings === "workspaces" || (requestedSettings === "organization" && window.madaniDesktop.organization && !remoteClient) ||
+      (cloud && window.madaniDesktop.cloudAccount && !remoteClient)) {
       url.searchParams.delete("desktop-settings");
       window.history.replaceState(null, "", `${url.pathname}${url.search}${url.hash}`);
       if (requestedSettings === "organization") dispatch({ type: "toggleAppSettings", open: true, section: "organization" });
@@ -136,7 +136,7 @@ function Shell({ viewer }: { viewer: WelcomeViewer | null }) {
       else if (url.searchParams.has("share-computer")) open();
       else openPlaceSetup();
     }
-    return window.duskDesktop.environments.onOpenSettings?.(connect);
+    return window.madaniDesktop.environments.onOpenSettings?.(connect);
   }, [dispatch]);
   useEffect(() => {
     const rest = takePhonePairingRequest(window.location.href);
@@ -238,10 +238,10 @@ function Shell({ viewer }: { viewer: WelcomeViewer | null }) {
     const opened = state.settingsOpen && !settingsOpened.current;
     settingsOpened.current = state.settingsOpen;
     const grow = PANEL_DOCKS_AT - window.innerWidth;
-    if (opened && grow > 0) void window.duskDesktop?.windowControls?.resizeWidthBy?.(grow).catch(() => {});
+    if (opened && grow > 0) void window.madaniDesktop?.windowControls?.resizeWidthBy?.(grow).catch(() => {});
   }, [state.settingsOpen]);
   useEffect(() => {
-    if (window.duskDesktop?.setUnreadCount) window.duskDesktop.setUnreadCount(unreadCount);
+    if (window.madaniDesktop?.setUnreadCount) window.madaniDesktop.setUnreadCount(unreadCount);
     else showBrowserUnread(unreadCount);
   }, [unreadCount]);
 
@@ -257,9 +257,9 @@ function Shell({ viewer }: { viewer: WelcomeViewer | null }) {
   }, [state.selectedId, bot?.threadId, group?.threadId, state.activeView, state.pluginsOpen, state.settingsOpen]);
 
   useEffect(() => {
-    return window.duskDesktop?.onOpenAppSettings?.(section => {
-      // signed out, any "sign in to dusk cloud" from main is the sign-in sheet right here, then what was asked for
-      const cloud = window.duskDesktop?.cloudAccount;
+    return window.madaniDesktop?.onOpenAppSettings?.(section => {
+      // signed out, any "sign in to madani cloud" from main is the sign-in sheet right here, then what was asked for
+      const cloud = window.madaniDesktop?.cloudAccount;
       if ((section === "cloud" || section === "cloud-settings") && cloud?.continueInBrowser && !remoteClient) {
         void cloud.state().then((state) => {
           if (state.account && state.status === "connected") dispatch(section === "cloud" ? CLOUD_LINK_SETTINGS : { type: "toggleAppSettings", open: true, section: "cloudAccount" });
@@ -267,18 +267,18 @@ function Shell({ viewer }: { viewer: WelcomeViewer | null }) {
         }, () => openSignIn());
         return;
       }
-      dispatch((section === "cloud-add" || section === "cloud-add-howto") && window.duskDesktop?.cloudAccount && !remoteClient
+      dispatch((section === "cloud-add" || section === "cloud-add-howto") && window.madaniDesktop?.cloudAccount && !remoteClient
       ? { type: "openCloudAdd", source: section === "cloud-add" ? "app_menu" : "app_howto" }
-      : section === "cloud" && window.duskDesktop?.cloudAccount && !remoteClient
+      : section === "cloud" && window.madaniDesktop?.cloudAccount && !remoteClient
         ? CLOUD_LINK_SETTINGS
-        : section === "cloud-settings" && (window.duskDesktop?.cloudAccount || window.duskDesktop?.cloudPlan) && !remoteClient
+        : section === "cloud-settings" && (window.madaniDesktop?.cloudAccount || window.madaniDesktop?.cloudPlan) && !remoteClient
           ? { type: "toggleAppSettings", open: true, section: "cloudAccount" }
-          : { type: "toggleAppSettings", open: true, ...(section === "organization" && window.duskDesktop?.organization && !remoteClient ? { section } : {}) });
+          : { type: "toggleAppSettings", open: true, ...(section === "organization" && window.madaniDesktop?.organization && !remoteClient ? { section } : {}) });
     });
   }, [dispatch]);
 
   useEffect(() => {
-    return window.duskDesktop?.desktopViewer?.onState((viewer) => {
+    return window.madaniDesktop?.desktopViewer?.onState((viewer) => {
       if (viewer.open || !viewer.contextId) return;
       const botId = viewer.contextId;
       void fetch(`/api/bots/${botId}/computer/control`, {
@@ -412,7 +412,7 @@ function Shell({ viewer }: { viewer: WelcomeViewer | null }) {
       </div>
       {/* Last child on purpose: Blink resolves -webkit-app-region in DOM order, so no-drag buttons must follow every drag region. */}
       <WindowCaptionButtons
-        visible={capabilities.windowChrome === "win-caption" && Boolean(window.duskDesktop?.windowControls)}
+        visible={capabilities.windowChrome === "win-caption" && Boolean(window.madaniDesktop?.windowControls)}
       />
     </div>
   );

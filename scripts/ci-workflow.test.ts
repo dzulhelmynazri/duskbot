@@ -89,9 +89,9 @@ describe("CI concurrency", () => {
     const run = (workflow.jobs.vitest.steps as { name?: string; run?: string; env?: Record<string, string> }[])
       .find((step) => step.name === "Run tests")!;
     expect(run.run).toContain("pnpm exec vitest run ${{ matrix.files }} --shard=${{ matrix.shard }}/${{ matrix.shards }} ");
-    expect(run.env?.DUSK_VITEST_E2E).toBe("${{ matrix.e2e }}");
-    expect(run.env?.DUSK_VITEST_SUBSET).toBe("${{ matrix.files }}");
-    expect(run.env?.DUSK_VITEST_WORKERS).toBe("${{ matrix.workers }}");
+    expect(run.env?.MADANI_VITEST_E2E).toBe("${{ matrix.e2e }}");
+    expect(run.env?.MADANI_VITEST_SUBSET).toBe("${{ matrix.files }}");
+    expect(run.env?.MADANI_VITEST_WORKERS).toBe("${{ matrix.workers }}");
     const { include } = vitestMatrix(["macos-latest", "ubuntu-latest", "windows-latest"]);
     for (const os of ["macos-latest", "ubuntu-latest", "windows-latest"]) {
       const shards = include.filter((entry) => entry.os === os);
@@ -149,7 +149,7 @@ describe("CI concurrency", () => {
   });
 
   // regression: no packaging step had the clients, so every release shipped with each one-click sign-in off
-  it("bakes dusk bot's own OAuth clients into every release package", async () => {
+  it("bakes madani bot's own OAuth clients into every release package", async () => {
     const release = parse(readFileSync(new URL("../.github/workflows/release.yml", import.meta.url), "utf8"));
     const { NATIVE_CLIENT_ENVS } = await import("../shared/native-connectors.ts");
     const packaging = Object.values(release.jobs as Record<string, { steps?: Array<{ run?: string; env?: Record<string, string> }> }>)
@@ -202,7 +202,7 @@ describe("CI concurrency", () => {
     // The runner context exists only at step level, never in a job's env.
     expect(workflow.jobs.vitest.env).toBeUndefined();
     for (const step of [steps[tests]!, steps[report]!]) {
-      expect(step.env?.DUSK_VITEST_RETRY_LOG).toBe("${{ runner.temp }}/vitest-retries.jsonl");
+      expect(step.env?.MADANI_VITEST_RETRY_LOG).toBe("${{ runner.temp }}/vitest-retries.jsonl");
     }
     expect(readFileSync(new URL("../vite.config.ts", import.meta.url), "utf8")).toContain('runner: "./scripts/testing/ci-retry-runner.ts"');
   });
@@ -324,7 +324,7 @@ describe("standard CI runners", () => {
     expect(workflow.jobs.static["runs-on"]).toBe("ubuntu-latest");
     expect(workflow.jobs.static.name).toBe("typecheck + lint");
     expect(workflow.jobs.static["timeout-minutes"]).toBe(15);
-    expect(workflow.jobs.static.steps.some((step: Step) => step.env?.DUSK_CI_LINUX_IN_STATIC !== undefined)).toBe(false);
+    expect(workflow.jobs.static.steps.some((step: Step) => step.env?.MADANI_CI_LINUX_IN_STATIC !== undefined)).toBe(false);
     expect(workflow.jobs.static.steps.some((step: Step) => step.run === "node scripts/ci-linux-lanes.mjs")).toBe(false);
   });
 

@@ -1,4 +1,4 @@
-package bot.dusk.mobile;
+package bot.madani.mobile;
 
 import android.os.Build;
 import android.view.HapticFeedbackConstants;
@@ -12,7 +12,7 @@ import com.getcapacitor.annotation.CapacitorPlugin;
  * The system's own short haptics, played on the web view, in place of @capacitor/haptics' Vibrator pulses (43-50 ms
  * buzzes on Android 14-16). They follow the person's touch-feedback setting.
  */
-@CapacitorPlugin(name = "DuskHaptics")
+@CapacitorPlugin(name = "MadaniHaptics")
 public class HapticsPlugin extends Plugin {
 
     @PluginMethod

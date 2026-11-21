@@ -26,7 +26,7 @@ async function page(start: PlaceLook | null, { answer = saved(start ?? COMPUTER)
     prepareBanner: async (file: Blob) => ({ ok: true, blob: file }), uploadBanner: pictures.upload, removeBanner: pictures.remove }));
   let changed: () => void = () => {};
   const workspaces = { look: vi.fn(async () => start), color: vi.fn(async (swatch: string | null) => answer(swatch)), onChanged: vi.fn((callback: () => void) => { changed = callback; return () => {}; }) };
-  Object.assign(window, { duskDesktop: { app: { version: "0.1.131", ownPage: own }, workspaces } });
+  Object.assign(window, { madaniDesktop: { app: { version: "0.1.131", ownPage: own }, workspaces } });
   const { setLocale } = await import("@/lib/i18n");
   setLocale("en");
   const { PlaceLookRows } = await import("./PlaceLookCard");
@@ -133,9 +133,9 @@ it("the Admin's refusal, an Admin without the route, and a failure: said plainly
   }
 });
 
-it("another Cloud of the person's own while the dusk cloud sign-in is away: locked, and says why", async () => {
+it("another Cloud of the person's own while the madani cloud sign-in is away: locked, and says why", async () => {
   await page(look({ change: null, reason: "signed-out" }));
-  expect(host.querySelector('[data-place-look="locked"]')?.textContent).toContain("Sign in to dusk cloud to change its color.");
+  expect(host.querySelector('[data-place-look="locked"]')?.textContent).toContain("Sign in to madani cloud to change its color.");
   expect(swatch("rose").disabled).toBe(true);
 });
 
@@ -149,7 +149,7 @@ it("a browser or an older app: no colour and no tint, only the place's picture",
   vi.resetModules();
   vi.doMock("@/state/store", () => ({ useStore: () => ({ state: { config: {} } }) }));
   vi.doMock("@/lib/use-owner-or-admin", () => ({ useOwnerOrAdmin: () => true }));
-  Object.assign(window, { duskDesktop: { workspaces: { state: vi.fn() } } });
+  Object.assign(window, { madaniDesktop: { workspaces: { state: vi.fn() } } });
   const { PlaceLookRows } = await import("./PlaceLookCard");
   root = createRoot(host);
   await act(async () => { root!.render(createElement("div", { "data-sidebar-look": "" }, createElement(PlaceLookRows))); });

@@ -463,7 +463,7 @@ export class EngineMemory {
   }
 }
 
-export const engineMemory = new EngineMemory({ enabled: (process.env.DUSK_CLOUD_ROLE === "home" || process.env.DUSK_CLOUD_ROLE === "team") && process.platform === "linux" });
+export const engineMemory = new EngineMemory({ enabled: (process.env.MADANI_CLOUD_ROLE === "home" || process.env.MADANI_CLOUD_ROLE === "team") && process.platform === "linux" });
 
 /**
  * One engine's adapter on a Cloud home: a turn that needs a new engine process waits for memory first (saying so in the

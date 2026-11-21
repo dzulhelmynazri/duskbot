@@ -7,7 +7,7 @@ working unchanged until the panel moves to these.
 ## Common rules
 
 - **Auth.** Every route needs a signed-in web session (`401 signed_out`) whose email
-  is in `DUSK_ADMIN_EMAILS` (`403 not_admin`). Same cookie and CSRF rules as v1.
+  is in `MADANI_ADMIN_EMAILS` (`403 not_admin`). Same cookie and CSRF rules as v1.
   All v2 routes are `GET`.
 - **Errors.** Always JSON `{ "error": "<sentence for a person>", "code": "<code>" }`.
 
@@ -26,13 +26,13 @@ working unchanged until the panel moves to these.
   seen (`admin_web_warm`), so it answers at once even after a restart; its `online`
   count is always read at the moment of the request.
 - **Request headers (the panel's switches), same as v1:**
-  - `x-dusk-admin-data: own`: on preview, read preview's own data. Without it,
-    preview's admin reads dusk.bot's (`dusk_prod`, read only) and every answer says
-    `"data": "dusk.bot"`. On dusk.bot itself `data` is always `"own"`.
-  - `x-dusk-admin-tests: show`: include test accounts (harness `@qa.dusk.test`,
-    `qa*@dusk.bot`, reserved `.test`/`example.*` domains, App Review's account) and
+  - `x-madani-admin-data: own`: on preview, read preview's own data. Without it,
+    preview's admin reads madani.bot's (`madani_prod`, read only) and every answer says
+    `"data": "madani.bot"`. On madani.bot itself `data` is always `"own"`.
+  - `x-madani-admin-tests: show`: include test accounts (harness `@qa.madani.test`,
+    `qa*@madani.bot`, reserved `.test`/`example.*` domains, App Review's account) and
     harness installs. Hidden by default; nothing is deleted.
-  - `x-dusk-admin-money: test | all`: which money mode people rows count
+  - `x-madani-admin-money: test | all`: which money mode people rows count
     (default `live`). `/v2/payments` takes `?mode=` instead.
 - **Caching.** Answers are kept 30 s per (path, query, switches) and identical
   reads in flight are joined, so timers and several open tabs cost one read. A
@@ -60,7 +60,7 @@ interface Person {
   avatarSeed: string;         // seed for the generated pixel mascot (stable per person)
   label: string;              // "account" | "deleted account" | "site visitor, not signed in"
                               // | "desktop app, not signed in" | "phone app, not signed in"
-  test: boolean;              // a test account (only shown with x-dusk-admin-tests: show)
+  test: boolean;              // a test account (only shown with x-madani-admin-tests: show)
 }
 ```
 
@@ -81,7 +81,7 @@ Query: `days` (1 to 400, default 30). The window is `days` whole UTC days ending
 
 ```ts
 {
-  data: "own" | "dusk.bot"; now: number; days: number; from: number; range: string[]; // range: "YYYY-MM-DD" per day
+  data: "own" | "madani.bot"; now: number; days: number; from: number; range: string[]; // range: "YYYY-MM-DD" per day
   visitors: { unique: number;        // distinct site visitors in the window (database distinct count)
               perDay: number[];      // daily unique visitors (kept rollup, aligned to range)
               views: number[] };     // daily site page views
@@ -118,7 +118,7 @@ Accounts, newest activity first:
     onboarded: boolean;
     installs: number;    // app installs linked to the account
     visitors: number;    // site visitor ids linked to the account
-    devices: number;     // signed-in app sessions (own data only; 0 for dusk.bot read from preview)
+    devices: number;     // signed-in app sessions (own data only; 0 for madani.bot read from preview)
     plan: string | null; planStatus: SubscriptionStatus | null;
     paidCents: number;   // net paid (after refunds) in the money mode
     mrrCents: number; currency: string; lastPaidAt: number | null;
@@ -204,7 +204,7 @@ interface PersonMoney {
 ```
 
 - **Live and test are never mixed.** A record's mode is its `mode` stamp, else the
-  server's provider mode (preview: test; dusk.bot read from preview: live).
+  server's provider mode (preview: test; madani.bot read from preview: live).
 - **Grants are not money.** Ops grants, admin comps and App Review's plan never
   appear in rows or totals.
 - `cancelling` means active until the period ends. `trial` is reserved; no plan has
@@ -226,5 +226,5 @@ These are unchanged, now with the same cache, deadline and error codes:
 - Plans: `POST /v1/admin/users/:id/plan` and `/plan/preview`.
 
 The old `/users` list reads only the service's own accounts. On preview that list
-is preview's accounts while `/journeys` is dusk.bot's; `/v2/people` follows the
+is preview's accounts while `/journeys` is madani.bot's; `/v2/people` follows the
 data switch like everything else.

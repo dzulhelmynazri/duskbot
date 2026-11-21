@@ -31,14 +31,14 @@ export function ReadyBotGallery({ search, onDialog, onAdded }: {
   const [confirming, setConfirming] = useState<string | null>(null);
   const [making, setMaking] = useState<string | null>(null);
   const team = useTeamPeople();
-  useEffect(() => { if (!window.duskDesktop?.remoteClient?.active) prefetchBotDefaults(); }, []);
+  useEffect(() => { if (!window.madaniDesktop?.remoteClient?.active) prefetchBotDefaults(); }, []);
   const ask = (id: string | null) => { setConfirming(id); onDialog(id !== null); };
   // one click makes the bot, as Grok's create does; it is tuned afterwards in its settings
   const add = async (id: string, allowLocalAuto = false) => {
     const ready = readyBot(id);
     if (!ready || making || state.botCreationPending || stoppedAtBotLimit(state)) return;
     // a paired device may not read the host's New bot defaults the bot is filled from
-    if (window.duskDesktop?.remoteClient?.active) { dispatch({ type: "newBot", onCreated: onAdded }); return; }
+    if (window.madaniDesktop?.remoteClient?.active) { dispatch({ type: "newBot", onCreated: onAdded }); return; }
     setMaking(id);
     dispatch({ type: "botCreationPending", on: true });
     let draft: BotCreationDraft | undefined;

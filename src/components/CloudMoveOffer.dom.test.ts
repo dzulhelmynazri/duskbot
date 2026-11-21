@@ -58,7 +58,7 @@ beforeEach(() => {
   listener = null;
   current = { ...BASE, offer: { stage: "prompt", bots: 12 } };
   bridge.moveOfferAccept.mockClear();
-  (window as unknown as { duskDesktop: unknown }).duskDesktop = { cloudSendPage: bridge, workspaces };
+  (window as unknown as { madaniDesktop: unknown }).madaniDesktop = { cloudSendPage: bridge, workspaces };
   host = document.createElement("div");
   document.body.append(host);
   root = createRoot(host);
@@ -69,17 +69,17 @@ afterEach(() => {
   document.body.innerHTML = "";
 });
 
-it("asks in one line with Move and Later, then the same sheet follows the bots hopping across, and ends with All moved and Open dusk cloud", async () => {
+it("asks in one line with Move and Later, then the same sheet follows the bots hopping across, and ends with All moved and Open madani cloud", async () => {
   await render(createElement(CloudMoveOffer));
   expect(sheet()?.getAttribute("data-cloud-move")).toBe("ask");
-  expect(sheet()?.querySelector("#" + CSS.escape(sheet()!.getAttribute("aria-labelledby")!))?.textContent).toBe("Move your bots to dusk cloud? They'll keep working when this computer is off.");
+  expect(sheet()?.querySelector("#" + CSS.escape(sheet()!.getAttribute("aria-labelledby")!))?.textContent).toBe("Move your bots to madani cloud? They'll keep working when this computer is off.");
   expect([...sheet()!.querySelectorAll("button")].map((found) => found.textContent)).toEqual(["What moves", "Later", "Move"]);
   expect(across()).toBe(0);
   expect(fixture.tracked).toEqual([["cloud_move_prompt", { action: "shown" }]]);
   await press("Move");
   expect(calls).toEqual(["accept:prompt"]);
   expect(sheet()?.getAttribute("data-cloud-move")).toBe("moving");
-  expect(sheet()?.textContent).toBe("Moving your bots to dusk cloud…Hide");
+  expect(sheet()?.textContent).toBe("Moving your bots to madani cloud…Hide");
   await push({ ...BASE, move: { phase: "copy", chats: { done: 60, total: 120 } } });
   expect(across()).toBe(1);
   await push({ ...BASE, move: { phase: "finishing" } });
@@ -88,14 +88,14 @@ it("asks in one line with Move and Later, then the same sheet follows the bots h
   expect(across(), "the bots never hop back").toBe(2);
   await push(DONE);
   expect(sheet()?.getAttribute("data-cloud-move")).toBe("done");
-  expect(sheet()?.textContent).toBe("All movedYour bots are working on dusk cloud.Open dusk cloud");
+  expect(sheet()?.textContent).toBe("All movedYour bots are working on madani cloud.Open madani cloud");
   expect(across()).toBe(3);
-  await press("Open dusk cloud");
+  await press("Open madani cloud");
   expect(calls).toEqual(["accept:prompt", "open"]);
 });
 
 it("says in one line what moves and that this computer keeps a copy, and What moves opens the whole list", async () => {
-  (window as unknown as { duskDesktop: { platform?: string } }).duskDesktop.platform = "darwin";
+  (window as unknown as { madaniDesktop: { platform?: string } }).madaniDesktop.platform = "darwin";
   await render(createElement(CloudMoveOffer));
   const list = document.querySelector<HTMLElement>("[data-what-moves]")!;
   expect(list.firstElementChild?.textContent).toBe("Your bots move with their chats, memory, routines and logins. This Mac keeps a copy. What moves");
@@ -117,7 +117,7 @@ it("Later closes the sheet for good, then a slim line with Move asks; its close 
   await press("Later");
   expect(calls).toEqual(["dismiss-offer:prompt"]);
   expect(sheet()).toBeNull();
-  expect(document.querySelector("[data-cloud-move-banner]")?.textContent).toBe("Move your bots to dusk cloudMove");
+  expect(document.querySelector("[data-cloud-move-banner]")?.textContent).toBe("Move your bots to madani cloudMove");
   expect(document.querySelector("[data-cloud-move-banner]")?.closest("[data-topbar-notice-frame]"), "a pill in the top bar, never a strip in the page's flow").not.toBeNull();
   expect(host.contains(document.querySelector("[data-cloud-move-banner]"))).toBe(false);
   expect(fixture.tracked).toContainEqual(["cloud_move_banner", { action: "shown" }]);
@@ -182,13 +182,13 @@ it("on My Cloud's page, All moved is a slim line, never a sheet over the cloud's
   await render(createElement(CloudMoveOffer, { cloudHome: true }));
   expect(sheet()).toBeNull();
   const line = document.querySelector("[data-cloud-move-done]");
-  expect(line?.textContent).toBe("All moved · Your bots are working on dusk cloud.");
+  expect(line?.textContent).toBe("All moved · Your bots are working on madani cloud.");
   (document.querySelector('[data-cloud-move-done] button[aria-label="Close"]') as HTMLButtonElement).click();
   await new Promise((resolve) => setTimeout(resolve, 0));
   expect(calls).toEqual(["dismiss:one-home"]);
 });
 
-it("a fresh first run's move (dusk bot and its welcome chat, nothing of the person's own) says no All moved, here or on the cloud's page", async () => {
+it("a fresh first run's move (madani bot and its welcome chat, nothing of the person's own) says no All moved, here or on the cloud's page", async () => {
   current = { ...BASE, move: { phase: "done", phone: false, counts: { bots: 1, skills: 0, logins: 0, onePassword: false, chats: 1, routines: 0 } } };
   await render(createElement(CloudMoveOffer, { cloudHome: true }));
   expect(sheet()).toBeNull();

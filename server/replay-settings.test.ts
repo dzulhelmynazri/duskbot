@@ -40,14 +40,14 @@ describe("replayToolHistoryEnabled", () => {
     expect(replayToolHistoryEnabled(ON, NO_ENV)).toBe(true);
   });
 
-  it("lets DUSK_REPLAY_TOOL_HISTORY win over the file, both ways", () => {
-    expect(replayToolHistoryEnabled(undefined, { DUSK_REPLAY_TOOL_HISTORY: "1" })).toBe(true);
-    expect(replayToolHistoryEnabled({ replayToolHistory: false }, { DUSK_REPLAY_TOOL_HISTORY: "1" })).toBe(true);
-    expect(replayToolHistoryEnabled(ON, { DUSK_REPLAY_TOOL_HISTORY: "0" })).toBe(false);
+  it("lets MADANI_REPLAY_TOOL_HISTORY win over the file, both ways", () => {
+    expect(replayToolHistoryEnabled(undefined, { MADANI_REPLAY_TOOL_HISTORY: "1" })).toBe(true);
+    expect(replayToolHistoryEnabled({ replayToolHistory: false }, { MADANI_REPLAY_TOOL_HISTORY: "1" })).toBe(true);
+    expect(replayToolHistoryEnabled(ON, { MADANI_REPLAY_TOOL_HISTORY: "0" })).toBe(false);
     // anything else is not an answer: the file decides
     for (const value of ["", "true", "yes", "2"]) {
-      expect(replayToolHistoryEnabled(ON, { DUSK_REPLAY_TOOL_HISTORY: value })).toBe(true);
-      expect(replayToolHistoryEnabled(undefined, { DUSK_REPLAY_TOOL_HISTORY: value })).toBe(false);
+      expect(replayToolHistoryEnabled(ON, { MADANI_REPLAY_TOOL_HISTORY: value })).toBe(true);
+      expect(replayToolHistoryEnabled(undefined, { MADANI_REPLAY_TOOL_HISTORY: value })).toBe(false);
     }
   });
 });

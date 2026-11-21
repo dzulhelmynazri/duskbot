@@ -1,20 +1,20 @@
 #!/usr/bin/env bash
-# Sets up and deploys the connected-apps broker (apps/cloudflare/composio-broker) on dusk bot's own cloudflare account at
-# https://composio.dusk.bot. Safe to run again: it creates only what is missing.
+# Sets up and deploys the connected-apps broker (apps/cloudflare/composio-broker) on madani bot's own cloudflare account at
+# https://composio.madani.bot. Safe to run again: it creates only what is missing.
 #
-# Reads ~/.config/duskbot/dusk.env (falls back to cloudflare.env for the cloudflare names):
-#   DUSK_COMPOSIO_API_KEY   our Composio project's API key
-#   CLOUDFLARE_API_TOKEN    Workers Scripts edit, D1 edit, Workers Routes / custom domains edit on the dusk.bot zone
+# Reads ~/.config/madanibot/madani.env (falls back to cloudflare.env for the cloudflare names):
+#   MADANI_COMPOSIO_API_KEY   our Composio project's API key
+#   CLOUDFLARE_API_TOKEN    Workers Scripts edit, D1 edit, Workers Routes / custom domains edit on the madani.bot zone
 #   CLOUDFLARE_ACCOUNT_ID
-# Adds to dusk.env when missing (mode 600, never printed): DUSK_COMPOSIO_BROKER_GRANT_SECRET,
-# DUSK_COMPOSIO_BROKER_STATS_TOKEN, DUSK_COMPOSIO_WEBHOOK_SECRET.
+# Adds to madani.env when missing (mode 600, never printed): MADANI_COMPOSIO_BROKER_GRANT_SECRET,
+# MADANI_COMPOSIO_BROKER_STATS_TOKEN, MADANI_COMPOSIO_WEBHOOK_SECRET.
 set -euo pipefail
 cd "$(dirname "$0")/.."
-CONF="$HOME/.config/duskbot"
-ENV_FILE="$CONF/dusk.env"
+CONF="$HOME/.config/madanibot"
+ENV_FILE="$CONF/madani.env"
 CONFIG=apps/cloudflare/composio-broker/wrangler.jsonc
-DB=duskbot-composio
-URL=https://composio.dusk.bot
+DB=madanibot-composio
+URL=https://composio.madani.bot
 
 umask 077
 touch "$ENV_FILE"; chmod 600 "$ENV_FILE"
@@ -22,16 +22,16 @@ set -a
 [ -f "$CONF/cloudflare.env" ] && . "$CONF/cloudflare.env"
 . "$ENV_FILE"
 set +a
-for name in DUSK_COMPOSIO_API_KEY CLOUDFLARE_API_TOKEN CLOUDFLARE_ACCOUNT_ID; do
+for name in MADANI_COMPOSIO_API_KEY CLOUDFLARE_API_TOKEN CLOUDFLARE_ACCOUNT_ID; do
   [ -n "${!name:-}" ] || { echo "missing $name in $ENV_FILE" >&2; exit 1; }
 done
 
-keep() { # name value: append to dusk.env once
+keep() { # name value: append to madani.env once
   grep -q "^$1=" "$ENV_FILE" || printf '%s=%s\n' "$1" "$2" >> "$ENV_FILE"
   export "$1=$2"
 }
-[ -n "${DUSK_COMPOSIO_BROKER_GRANT_SECRET:-}" ] || keep DUSK_COMPOSIO_BROKER_GRANT_SECRET "$(openssl rand -base64 32)"
-[ -n "${DUSK_COMPOSIO_BROKER_STATS_TOKEN:-}" ] || keep DUSK_COMPOSIO_BROKER_STATS_TOKEN "$(openssl rand -hex 32)"
+[ -n "${MADANI_COMPOSIO_BROKER_GRANT_SECRET:-}" ] || keep MADANI_COMPOSIO_BROKER_GRANT_SECRET "$(openssl rand -base64 32)"
+[ -n "${MADANI_COMPOSIO_BROKER_STATS_TOKEN:-}" ] || keep MADANI_COMPOSIO_BROKER_STATS_TOKEN "$(openssl rand -hex 32)"
 
 wrangler() { pnpm exec wrangler "$@"; }
 
@@ -48,25 +48,25 @@ echo "2. migrations"
 wrangler d1 migrations apply "$DB" --remote --config "$CONFIG"
 
 echo "3. Composio webhook subscription"
-if [ -z "${DUSK_COMPOSIO_WEBHOOK_SECRET:-}" ]; then
-  existing=$(curl -fsS https://backend.composio.dev/api/v3.1/webhook_subscriptions -H "x-api-key: $DUSK_COMPOSIO_API_KEY" | node -e 'let s="";process.stdin.on("data",d=>s+=d).on("end",()=>{const j=JSON.parse(s);process.stdout.write(String((j.items??j.data??[]).length))})')
+if [ -z "${MADANI_COMPOSIO_WEBHOOK_SECRET:-}" ]; then
+  existing=$(curl -fsS https://backend.composio.dev/api/v3.1/webhook_subscriptions -H "x-api-key: $MADANI_COMPOSIO_API_KEY" | node -e 'let s="";process.stdin.on("data",d=>s+=d).on("end",()=>{const j=JSON.parse(s);process.stdout.write(String((j.items??j.data??[]).length))})')
   if [ "$existing" = "0" ]; then
-    secret=$(curl -fsS -X POST https://backend.composio.dev/api/v3.1/webhook_subscriptions -H "x-api-key: $DUSK_COMPOSIO_API_KEY" -H "content-type: application/json" \
+    secret=$(curl -fsS -X POST https://backend.composio.dev/api/v3.1/webhook_subscriptions -H "x-api-key: $MADANI_COMPOSIO_API_KEY" -H "content-type: application/json" \
       -d "{\"webhook_url\":\"$URL/v1/composio/webhook\",\"enabled_events\":[\"composio.trigger.message\",\"composio.connected_account.expired\"],\"version\":\"V3\"}" \
       | node -e 'let s="";process.stdin.on("data",d=>s+=d).on("end",()=>{process.stdout.write(JSON.parse(s).secret??"")})')
-    [ -n "$secret" ] && keep DUSK_COMPOSIO_WEBHOOK_SECRET "$secret"
+    [ -n "$secret" ] && keep MADANI_COMPOSIO_WEBHOOK_SECRET "$secret"
   else
-    echo "   the project has a subscription already; put its secret in dusk.env as DUSK_COMPOSIO_WEBHOOK_SECRET and run again" >&2
+    echo "   the project has a subscription already; put its secret in madani.env as MADANI_COMPOSIO_WEBHOOK_SECRET and run again" >&2
   fi
 fi
 
 echo "4. deploy with secrets"
 secrets=$(mktemp); trap 'rm -f "$secrets"' EXIT
 {
-  printf 'COMPOSIO_API_KEY=%s\n' "$DUSK_COMPOSIO_API_KEY"
-  printf 'CLOUD_GRANT_SECRET=%s\n' "$DUSK_COMPOSIO_BROKER_GRANT_SECRET"
-  printf 'STATS_TOKEN=%s\n' "$DUSK_COMPOSIO_BROKER_STATS_TOKEN"
-  [ -n "${DUSK_COMPOSIO_WEBHOOK_SECRET:-}" ] && printf 'COMPOSIO_WEBHOOK_SECRET=%s\n' "$DUSK_COMPOSIO_WEBHOOK_SECRET"
+  printf 'COMPOSIO_API_KEY=%s\n' "$MADANI_COMPOSIO_API_KEY"
+  printf 'CLOUD_GRANT_SECRET=%s\n' "$MADANI_COMPOSIO_BROKER_GRANT_SECRET"
+  printf 'STATS_TOKEN=%s\n' "$MADANI_COMPOSIO_BROKER_STATS_TOKEN"
+  [ -n "${MADANI_COMPOSIO_WEBHOOK_SECRET:-}" ] && printf 'COMPOSIO_WEBHOOK_SECRET=%s\n' "$MADANI_COMPOSIO_WEBHOOK_SECRET"
 } > "$secrets"
 wrangler deploy --config "$CONFIG" --secrets-file "$secrets"
 

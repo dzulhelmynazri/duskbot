@@ -35,7 +35,7 @@ describe("the cloudflare backup path", () => {
   });
 
   it("keeps a fetched cloudflared only when it matches the pinned hash", async () => {
-    const dir = mkdtempSync(join(tmpdir(), "dusk-cf-"));
+    const dir = mkdtempSync(join(tmpdir(), "madani-cf-"));
     const saved = process.env.PATH;
     process.env.PATH = dir;
     try {

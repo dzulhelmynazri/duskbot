@@ -1,7 +1,7 @@
 // Voice-latency measurement harness. Drives the real app — renderer store
 // speak path, the Speaker, the server TTS route and the provider call —
 // against the committed corpus fixture, through the same disposable
-// verification fixture `control-dusk ui` uses. The record protocol is the
+// verification fixture `control-madani ui` uses. The record protocol is the
 // deterministic stub: no live engine call, no engine key. See
 // fixtures/voice-latency/README.md for the protocol.
 import { execFileSync } from "node:child_process";
@@ -10,8 +10,8 @@ import { mkdirSync, mkdtempSync, readFileSync, writeFileSync } from "node:fs";
 import { cpus, tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
-import { runControlDusk, launchVerificationServer, type VerificationServer } from "../control-dusk.ts";
-import { agentBrowser, ensureUiBrowser, sessionEnv } from "./control-dusk-ui.ts";
+import { runControlMadani, launchVerificationServer, type VerificationServer } from "../control-madani.ts";
+import { agentBrowser, ensureUiBrowser, sessionEnv } from "./control-madani-ui.ts";
 import { mountPreview, type MountedPreview } from "./preview-fixture.ts";
 import { CADENCE, corpusFixtureId, readLfText, SYNTHESIS } from "./voice-latency-corpus.ts";
 import { launchVoiceLatencyStub, STUB_KEY, STUB_MODEL, STUB_VOICE } from "./voice-latency-stub.ts";
@@ -151,16 +151,16 @@ async function main(): Promise<void> {
 
   // Marker routing, not ordered slots: the driver replays a user message over
   // several CLI launches, and slot order would misalign replies across them.
-  const WARMUP_MARKER = "dusk voice probe warmup";
-  const markerPath = join(mkdtempSync(join(tmpdir(), "dusk-voice-latency-")), "marker-replies.json");
+  const WARMUP_MARKER = "madani voice probe warmup";
+  const markerPath = join(mkdtempSync(join(tmpdir(), "madani-voice-latency-")), "marker-replies.json");
   const markerReplies: Record<string, string> = { [WARMUP_MARKER]: WARMUP_REPLY };
-  for (const reply of selected) markerReplies[`dusk voice probe ${reply.id}`] = reply.text;
+  for (const reply of selected) markerReplies[`madani voice probe ${reply.id}`] = reply.text;
   writeFileSync(markerPath, JSON.stringify(markerReplies));
   const fakeEnv: NodeJS.ProcessEnv = {
     FAKE_CLAUDE_MARKER_REPLIES: markerPath,
     FAKE_CLAUDE_TOOL_CALLS: "[]",
     FAKE_CLAUDE_STREAM_CADENCE: `${CADENCE.chunkChars}:${CADENCE.intervalMs}`,
-    DUSK_ELEVENLABS_API: stub.url,
+    MADANI_ELEVENLABS_API: stub.url,
   };
 
   let fixture: VerificationServer | undefined;
@@ -177,7 +177,7 @@ async function main(): Promise<void> {
     const serverEnv: NodeJS.ProcessEnv = { ...process.env, ...fakeEnv };
     // Keyless record run: an exported live key would otherwise ride the
     // parent env into measurement, even though nothing reads it here.
-    delete serverEnv.DUSK_TTS_KEY;
+    delete serverEnv.MADANI_TTS_KEY;
     fixture = await launchVerificationServer(serverEnv, stop.signal, undefined,
       { binaryPath: binary, executablePath: chrome ?? "" });
 
@@ -193,7 +193,7 @@ async function main(): Promise<void> {
     };
 
     await api("PATCH", "/api/config", { tts: { provider: "elevenlabs", key: STUB_KEY, model: STUB_MODEL, voice: STUB_VOICE } });
-    const created = await runControlDusk(["new-bot", "--name", "VoiceProbe", "--url", fixture.info.url]) as { bot: { id: string } };
+    const created = await runControlMadani(["new-bot", "--name", "VoiceProbe", "--url", fixture.info.url]) as { bot: { id: string } };
     const botId = created.bot.id;
     await api("PATCH", `/api/bots/${botId}`, { speakReplies: true, voice: STUB_VOICE });
     console.error(`tts provider=elevenlabs(stub) model=${STUB_MODEL} voice=${STUB_VOICE} synthesis=modeled rtf=${SYNTHESIS.rtf} audioMsPerChar=${SYNTHESIS.audioMsPerChar}`);
@@ -201,19 +201,19 @@ async function main(): Promise<void> {
     preview = await mountPreview(fixture, {
       entry: "/scripts/testing/threads-preview.tsx",
       route: "/__threads.html",
-      title: "Isolated dusk bot Chat",
+      title: "Isolated madani bot Chat",
       logLevel: "warn",
     });
-    const session = { home: fixture.info.dataDir, session: `dusk-voice-${new URL(fixture.info.url).port}`, chrome };
+    const session = { home: fixture.info.dataDir, session: `madani-voice-${new URL(fixture.info.url).port}`, chrome };
     browserEnv = sessionEnv(session, process.env);
     // Headless Chrome otherwise refuses media playback without a user gesture.
     browserEnv.AGENT_BROWSER_ARGS = [browserEnv.AGENT_BROWSER_ARGS ?? "", "--autoplay-policy=no-user-gesture-required"].filter(Boolean).join("\n");
-    await agentBrowser(binary, browserEnv, ["open", `${preview.previewUrl}?duskVoiceProbe=1`], 120_000);
+    await agentBrowser(binary, browserEnv, ["open", `${preview.previewUrl}?madaniVoiceProbe=1`], 120_000);
 
     // The `open` verb drops the query string, so the sink is installed by
-    // eval; the preview entry's ?duskVoiceProbe hook stays as documentation.
-    await evalInPage(binary, browserEnv, "window.__duskVoiceProbe = window.__duskVoiceProbe ?? []");
-    if (await evalInPage(binary, browserEnv, "Array.isArray(window.__duskVoiceProbe)") !== true) {
+    // eval; the preview entry's ?madaniVoiceProbe hook stays as documentation.
+    await evalInPage(binary, browserEnv, "window.__madaniVoiceProbe = window.__madaniVoiceProbe ?? []");
+    if (await evalInPage(binary, browserEnv, "Array.isArray(window.__madaniVoiceProbe)") !== true) {
       throw new Error("voice probe sink failed to install in the page");
     }
     // The app must render (and hydrate its event stream) before the first
@@ -228,7 +228,7 @@ async function main(): Promise<void> {
     const seen = new Set<string>();
 
     const pullSamples = async (): Promise<VoiceProbeSample[]> => {
-      const raw = await evalInPage(binary, browserEnv!, "JSON.stringify(window.__duskVoiceProbe)");
+      const raw = await evalInPage(binary, browserEnv!, "JSON.stringify(window.__madaniVoiceProbe)");
       if (typeof raw !== "string") return [];
       return JSON.parse(raw) as VoiceProbeSample[];
     };
@@ -266,7 +266,7 @@ async function main(): Promise<void> {
           console.error(`${scope} timeout: samples=${samples.length} fresh=${fresh.length} quiet=${quiet} own=${own.length} expected=${expectedChars}c href=${JSON.stringify(href)}`);
           try {
             const tail = readFileSync(fixture!.info.logPath, "utf8").split("\n").filter((line) =>
-              line.includes("[dusk-turn]") || line.includes("[dusk-error]") || line.includes("tts")).slice(-10);
+              line.includes("[madani-turn]") || line.includes("[madani-error]") || line.includes("tts")).slice(-10);
             for (const line of tail) console.error(`  srv ${line.slice(0, 240)}`);
           } catch {}
           return null;
@@ -315,7 +315,7 @@ async function main(): Promise<void> {
       const expected = manifest.replies.find((row) => row.id === reply.id)?.blocks;
       if (!expected) throw new Error(`manifest has no block count for ${reply.id}`);
       const timeout = 45_000 + expected * 8_000;
-      const frames = await driveTurn(`reply ${reply.id}`, `dusk voice probe ${reply.id}`, reply.text.length, timeout);
+      const frames = await driveTurn(`reply ${reply.id}`, `madani voice probe ${reply.id}`, reply.text.length, timeout);
       // The turn's other frames carry chunk-sized prefixes or trailing
       // auxiliary messages; the corpus reply is identified by its length.
       const audioFrame = frames?.filter((frame) => frame.textChars === reply.text.length)
@@ -351,7 +351,7 @@ async function main(): Promise<void> {
       label,
       corpusFixtureId: corpusSha,
       baseCommit: BASE_COMMIT,
-      measuredBuildCommit: process.env.DUSK_MEASURED_COMMIT ?? "(unset: worktree HEAD)",
+      measuredBuildCommit: process.env.MADANI_MEASURED_COMMIT ?? "(unset: worktree HEAD)",
       date: new Date().toISOString(),
       machine: { platform: process.platform, arch: process.arch, cpuModel: cpus()[0]?.model ?? null },
       configSummary: { provider: "elevenlabs (record stub)", model: STUB_MODEL, voice: STUB_VOICE },

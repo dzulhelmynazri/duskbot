@@ -7,7 +7,7 @@ import { TeamComputers, teamComputerAssignment, teamComputerCreate, teamComputer
 
 const directories: string[] = [];
 const fixture = () => {
-  const directory = mkdtempSync(join(tmpdir(), "dusk-team-computers-"));
+  const directory = mkdtempSync(join(tmpdir(), "madani-team-computers-"));
   directories.push(directory);
   const file = join(directory, "team-computers.json");
   const environmentId = randomUUID();

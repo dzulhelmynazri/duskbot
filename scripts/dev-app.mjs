@@ -1,5 +1,5 @@
 // `pnpm dev:app [electron args]`: the Vite UI plus the desktop app, which runs the harness from source as its own
-// child (electron/dev-server-child.mjs). DUSK_PORT, DUSK_UI_PORT and DUSK_DATA_DIR work as they do for dev:server and dev.
+// child (electron/dev-server-child.mjs). MADANI_PORT, MADANI_UI_PORT and MADANI_DATA_DIR work as they do for dev:server and dev.
 import { spawn, spawnSync } from "node:child_process";
 import { createRequire } from "node:module";
 import { fileURLToPath } from "node:url";
@@ -9,20 +9,20 @@ import { takeRelaunchRequest } from "./dev-relaunch.mjs";
 
 const root = fileURLToPath(new URL("..", import.meta.url));
 const require = createRequire(import.meta.url);
-const uiPort = Number(process.env.DUSK_UI_PORT) || 5199;
-const env = { ...process.env, DUSK_DEV_OWN_SERVER: "1", ELECTRON_START_URL: process.env.ELECTRON_START_URL || `http://127.0.0.1:${uiPort}` };
-// the dev app has the packaged app's account (sign-in sheet, dusk cloud, checkout) against preview, test payments only;
-// it never blocks on the sign-in gate. DUSK_CLOUD_ORIGIN or DUSK_CLOUD_STAGING given by hand win.
-if (!env.DUSK_CLOUD_ORIGIN && env.DUSK_CLOUD_STAGING !== "1") env.DUSK_CLOUD_ORIGIN = "https://preview.dusk.bot";
-env.DUSK_ALLOW_SIGNED_OUT ??= "1";
+const uiPort = Number(process.env.MADANI_UI_PORT) || 5199;
+const env = { ...process.env, MADANI_DEV_OWN_SERVER: "1", ELECTRON_START_URL: process.env.ELECTRON_START_URL || `http://127.0.0.1:${uiPort}` };
+// the dev app has the packaged app's account (sign-in sheet, madani cloud, checkout) against preview, test payments only;
+// it never blocks on the sign-in gate. MADANI_CLOUD_ORIGIN or MADANI_CLOUD_STAGING given by hand win.
+if (!env.MADANI_CLOUD_ORIGIN && env.MADANI_CLOUD_STAGING !== "1") env.MADANI_CLOUD_ORIGIN = "https://preview.madani.bot";
+env.MADANI_ALLOW_SIGNED_OUT ??= "1";
 // the dev app pairs phones like the packaged app: typed codes go through the default relay
-env.DUSK_MOBILE_RELAY ??= "default";
-// the dev app reports its usage to preview (tagged +dev), so the owner's own testing shows in the admin; DUSK_ANALYTICS=0 stops it
-if (env.DUSK_CLOUD_ORIGIN === "https://preview.dusk.bot") env.DUSK_ANALYTICS ??= "1";
+env.MADANI_MOBILE_RELAY ??= "default";
+// the dev app reports its usage to preview (tagged +dev), so the owner's own testing shows in the admin; MADANI_ANALYTICS=0 stops it
+if (env.MADANI_CLOUD_ORIGIN === "https://preview.madani.bot") env.MADANI_ANALYTICS ??= "1";
 delete env.ELECTRON_RUN_AS_NODE;
 // a relaunch inside the app (Start fresh, desktop remote change) asks this runner to restart Electron; Vite stays up
-const relaunchFile = path.join(os.tmpdir(), `dusk-dev-relaunch-${process.pid}.json`);
-env.DUSK_DEV_RELAUNCH_FILE = relaunchFile;
+const relaunchFile = path.join(os.tmpdir(), `madani-dev-relaunch-${process.pid}.json`);
+env.MADANI_DEV_RELAUNCH_FILE = relaunchFile;
 
 const prepared = spawnSync(process.execPath, ["scripts/prepare-cloudflared.mjs", "--current"], { cwd: root, stdio: "inherit" });
 if (prepared.status !== 0) process.exit(prepared.status ?? 1);

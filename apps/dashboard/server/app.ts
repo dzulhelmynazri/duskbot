@@ -71,18 +71,18 @@ export interface DashboardAppOptions {
   dataDir: string;
   publicUrl: string;
   mailer: Mailer;
-  /** where mail to test addresses (@qa.dusk.test) goes; readable only on preview and in development */
+  /** where mail to test addresses (@qa.madani.test) goes; readable only on preview and in development */
   testMail?: TestMailbox;
   oauth?: ProviderConfigs;
   dev?: boolean;
   signupOpen?: boolean;
-  /** App Review's fixed app sign-in; read from DUSK_REVIEW_EMAIL and DUSK_REVIEW_CODE when not given */
+  /** App Review's fixed app sign-in; read from MADANI_REVIEW_EMAIL and MADANI_REVIEW_CODE when not given */
   review?: ReviewAccount | null;
   trustProxy?: boolean;
   staticDir: string | null;
   /** the page's path on publicUrl: "/dashboard" when the site shares the origin, "" (the default) at the root */
   pageBase?: string;
-  /** before launch (DUSK_PRELAUNCH_WAITLIST_ONLY=1): the page's routes go home (the waitlist) except the few the apps,
+  /** before launch (MADANI_PRELAUNCH_WAITLIST_ONLY=1): the page's routes go home (the waitlist) except the few the apps,
    *  emailed links and the admin sign-in open; the API, webhooks, admin and site are untouched. needs a page base */
   waitlistOnly?: boolean;
   mailPerHour?: number;
@@ -90,18 +90,18 @@ export interface DashboardAppOptions {
   /** the site served beside the page on a shared origin (loopback http): every path that is not the page's, an API or
    *  a well-known address is proxied there */
   siteUpstream?: string | null;
-  /** the link service beside this one (loopback): dusk.bot/s/<code>, the own-server short line, is its, behind Cloudflare */
+  /** the link service beside this one (loopback): madani.bot/s/<code>, the own-server short line, is its, behind Cloudflare */
   linkUpstream?: string | null;
   now?: () => number;
   fetch?: typeof fetch;
   /** errors worth an operator's look: the service's own failures, and the page's (sent to POST /v1/client-error) */
   errors?: { service: ErrorReporter; page: ErrorReporter };
   version?: string;
-  /** the slack wake edge: DUSK_SLACK_EDGE and DUSK_CLOUD_SEAL_KEY from env; tests pass a fake socket */
+  /** the slack wake edge: MADANI_SLACK_EDGE and MADANI_CLOUD_SEAL_KEY from env; tests pass a fake socket */
   slackEdge?: { env?: NodeJS.ProcessEnv; socket?: EdgeSocketFactory };
-  /** product analytics: MongoDB in production (main.ts), memory otherwise; the waitlist is dusk.waitlist when connected */
+  /** product analytics: MongoDB in production (main.ts), memory otherwise; the waitlist is madani.waitlist when connected */
   analytics?: { sink?: AnalyticsSink; waitlist?: WaitlistSource | null; trackOrigins?: string[]; usage?: UsageStore; infra?: InfraStore; ops?: OpsStore; db?: Db | null };
-  /** the owner's panel at /admin: DUSK_ADMIN_EMAILS by default */
+  /** the owner's panel at /admin: MADANI_ADMIN_EMAILS by default */
   admin?: { emails?: string[]; growthEmails?: string[]; backupDir?: string | null; environment?: string; env?: NodeJS.ProcessEnv; opsFixture?: boolean; live?: LiveData | null;
     /** how long the admin keeps an analytics answer (main.ts: 30 s); none by default, so a fixture shows each event at once */
     readCacheMs?: number;
@@ -164,8 +164,8 @@ export function prelaunchOpen(path: string, query: URLSearchParams = new URLSear
   return depth === 0 && (under(path, "/assets") || /^\/[^/]+\.(?:svg|png|ico|webmanifest|json|webp|jpg|woff2)$/.test(path));
 }
 
-/** the service's origin and its www twin (hostRedirect sends www here), so a dusk.bot visit counts whichever one the page
- *  was on, whatever DUSK_TRACK_ORIGINS says */
+/** the service's origin and its www twin (hostRedirect sends www here), so a madani.bot visit counts whichever one the page
+ *  was on, whatever MADANI_TRACK_ORIGINS says */
 export function ownOrigins(publicUrl: string) {
   const own = new URL(publicUrl);
   const named = own.hostname.includes(".") && !own.hostname.startsWith("www.") && !/^[\d.]+$|:/.test(own.hostname);
@@ -204,7 +204,7 @@ function siteProxy(upstream: string, onError: (error: Error, res: ServerResponse
 
 /** unclaimed workspaces at once (each lives a day unless claimed), computers one account holds, reports one workspace sends an hour */
 export const WORKSPACE_LIMITS = { unclaimed: 5000, perAccount: 50, reportsPerHour: 2400 };
-/** a dusk cloud's own reports above this cpu share for this long open an incident */
+/** a madani cloud's own reports above this cpu share for this long open an incident */
 /** the digest's cloud line: clouds first up, and clouds deleted, in [from, to); harness accounts left out */
 export function cloudDigest(clouds: StoredCloud[], from: number, to: number, test: (accountId: string) => boolean) {
   const within = (at: number | undefined) => at !== undefined && at >= from && at < to;
@@ -222,7 +222,7 @@ export function createDashboardApp(options: DashboardAppOptions) {
   const now = options.now ?? Date.now;
   const publicUrl = new URL(options.publicUrl).origin;
   const pageBase = pageBaseOf(options.pageBase), pagesUrl = `${publicUrl}${pageBase}`;
-  if (options.waitlistOnly && !pageBase) throw new Error("Waitlist-only needs the page base (DUSK_DASHBOARD_PAGE_BASE).");
+  if (options.waitlistOnly && !pageBase) throw new Error("Waitlist-only needs the page base (MADANI_DASHBOARD_PAGE_BASE).");
   const reported = new WeakSet<ServerResponse>();
   const site = options.siteUpstream ? siteProxy(options.siteUpstream, (error, res) => reported.add(res) && incidents.report({ source: "upstream", name: "SiteUpstreamDown", key: "site-upstream",
     message: `the site behind ${publicUrl} did not answer (${error.message.slice(0, 60)})`, status: 502 })) : null;
@@ -266,9 +266,9 @@ export function createDashboardApp(options: DashboardAppOptions) {
   const emailCfg = emailConfig(process.env, { publicUrl, pageBase });
   const mail = (to: string | null | undefined, subject: string, text: string) => {
     if (!to) return;
-    const message = render(emailCfg, { subject, preheader: text.slice(0, 120), tag: "dusk cloud", say: "a note about your cloud",
+    const message = render(emailCfg, { subject, preheader: text.slice(0, 120), tag: "madani cloud", say: "a note about your cloud",
       accent: "sky", blocks: [{ t: "h1", text: subject.toLowerCase() }, { t: "p", text }],
-      reason: "you got this because you have a dusk bot account. it's about your account, so it can't be turned off." });
+      reason: "you got this because you have a madani bot account. it's about your account, so it can't be turned off." });
     void mailer.send({ to, ...message }).catch(() => console.warn("clouds: a notice email failed"));
   };
   const ownIncidents = options.incidents ? null : createIncidents({ env: options.admin?.environment ?? "development", store: memoryIncidentStore(), to: () => [], mailers: [],
@@ -289,9 +289,9 @@ export function createDashboardApp(options: DashboardAppOptions) {
     if (kind === "required" || auth.wantsEmail(accountId, kind)) send(emailOf(accountId), message);
   };
   /** a harness's account (isTestAccount) gets no account mail at all: welcome, cloud ready, receipts, billing, goodbye. only the
-   *  sign-in codes it needs, and those to @qa.dusk.test never leave the service */
+   *  sign-in codes it needs, and those to @qa.madani.test never leave the service */
   const courtesy = (email: string | null | undefined) => !!email && !isTestAccount(email);
-  const retentionDays = Number(process.env.DUSK_MANAGED_RETENTION_DAYS) || DEFAULT_RETENTION_DAYS;
+  const retentionDays = Number(process.env.MADANI_MANAGED_RETENTION_DAYS) || DEFAULT_RETENTION_DAYS;
   const cloudFacts = (cloud: StoredCloud) => ({ name: cloud.name, plan: (BILLING_CONFIG.desktops[cloud.kind]?.label ?? cloud.kind).toLowerCase(),
     machine: `${cloud.spec.vcpu} vcpu, ${cloud.spec.ramGb} gb memory, ${cloud.spec.diskGb} gb disk`, region: (regionLabel(cloud.backend ? MANAGED_REGION.id : cloud.region) ?? cloud.region).toLowerCase() });
   const cloudFromCents = Math.min(...Object.values(BILLING_CONFIG.desktops).flatMap(desktop => desktop.monthlyCents === null ? [] : [desktop.monthlyCents]));
@@ -385,25 +385,25 @@ export function createDashboardApp(options: DashboardAppOptions) {
       if (!found || found.account.id !== owner.id) throw new AuthError(401, "signed_out");
       return { id: owner.id, signedInAt: found.session.createdAt };
     } });
-  const adminEmails = options.admin?.emails ?? parseAdminEmails(process.env.DUSK_ADMIN_EMAILS);
+  const adminEmails = options.admin?.emails ?? parseAdminEmails(process.env.MADANI_ADMIN_EMAILS);
   const managedUsage = billing.clouds.managed?.usage ? billing.clouds.managed.usage.bind(billing.clouds.managed) : null;
   const infraStore = options.analytics?.infra ?? memoryInfraStore();
   const infra = createInfraCollector({ store: infraStore, clouds: () => billing.clouds.all?.() ?? [], usage: managedUsage ? (c, from) => managedUsage(c, from) : null, now });
   infra.start();
   const bugReportStore = options.bugReports?.store ?? memoryBugReportStore();
-  const admin = createAdmin({ emails: adminEmails, growthEmails: options.admin?.growthEmails ?? parseAdminEmails(process.env.DUSK_GROWTH_ADMIN_EMAILS), auth, billing, workspaces: () => state.workspaces, analytics, usage, bugReports: bugReportStore, infra: { store: infraStore },
+  const admin = createAdmin({ emails: adminEmails, growthEmails: options.admin?.growthEmails ?? parseAdminEmails(process.env.MADANI_GROWTH_ADMIN_EMAILS), auth, billing, workspaces: () => state.workspaces, analytics, usage, bugReports: bugReportStore, infra: { store: infraStore },
     ops: { answer: () => ops.answer(), collect: () => ops.collect(), accounts: (relays, query) => ops.accounts(relays, query) }, wakeStats: () => slackEdge?.edge.wakeStats() ?? {},
     waitlist: options.analytics?.waitlist ?? null, live: options.admin?.live ?? null, now, fetch: options.fetch, env: options.admin?.env, errors: errorsSeen, readBody, bodyObject, json, relayFixture: options.admin?.opsFixture, readCacheMs: options.admin?.readCacheMs ?? 0, warm: options.admin?.warm ?? null,
     service: { version: options.version ?? null, startedAt, environment: options.admin?.environment ?? (dev ? "development" : "production"), dataDir: options.dataDir,
       backupDir: options.admin?.backupDir ?? null, database: () => stateBackend()?.health() ?? null } });
   // only production's numbers are news: preview and development share the env but never email the admins
   const alertsEnv = options.admin?.environment ?? (dev ? "development" : "production");
-  const alerts = createAlerts({ kinds: alertsEnv === "production" ? parseAlerts((options.admin?.env ?? process.env).DUSK_ADMIN_ALERTS) : new Set(), emails: () => adminEmails, mailer: outbound, sink: analytics.sink, now, email: emailCfg,
+  const alerts = createAlerts({ kinds: alertsEnv === "production" ? parseAlerts((options.admin?.env ?? process.env).MADANI_ADMIN_ALERTS) : new Set(), emails: () => adminEmails, mailer: outbound, sink: analytics.sink, now, email: emailCfg,
     panelUrl: `${publicUrl}${ADMIN_PATH}`, totals: (from, to) => ({ accounts: auth.directory().accounts.length, signups: auth.directory().accounts.filter(account => account.createdAt >= from && account.createdAt < to).length,
       paid: billing.store.state.invoices.filter(invoice => invoice.status === "paid" && invoice.createdAt >= from && invoice.createdAt < to).length, waitlist: null,
       money: moneyDigestOf({ ...ledgerState(), accounts: new Map(auth.directory().accounts.map(account => [account.id, { email: account.email, createdAt: account.createdAt }])) }, from, to),
       clouds: cloudDigest(billing.clouds.all?.() ?? [], from, to, id => isTestAccount(emailOf(id))) }),
-    churnCents: churnThreshold((options.admin?.env ?? process.env).DUSK_ALERT_CHURN_CENTS) });
+    churnCents: churnThreshold((options.admin?.env ?? process.env).MADANI_ALERT_CHURN_CENTS) });
   const adminEnv = options.admin?.env ?? process.env;
   const ops = createOps({ store: options.analytics?.ops ?? memoryOpsStore(), env: adminEnv, now, fetch: options.fetch, db: options.analytics?.db ?? null, infra: infraStore,
     clouds: () => billing.clouds.all?.() ?? [],
@@ -426,12 +426,12 @@ export function createDashboardApp(options: DashboardAppOptions) {
   const incidentRoutes = createIncidentRoutes({ incidents, json, readBody, bodyObject, rate, onClientError: (error, page) => { errorsSeen.note("page"); options.errors?.page.capture(error, { tags: { page } }); },
     admin: (req, mutation) => { const owner = auth.requireWeb(req, { mutation }); if (!admin.isAdmin(owner.email)) throw new AdminError(403, "not_admin", "This account is not an admin."); } });
   const reportMail = options.bugReports?.mail;
-  const cloudSealer = createSealer((options.admin?.env ?? process.env).DUSK_CLOUD_SEAL_KEY ? parseSealKey((options.admin?.env ?? process.env).DUSK_CLOUD_SEAL_KEY!) : null);
+  const cloudSealer = createSealer((options.admin?.env ?? process.env).MADANI_CLOUD_SEAL_KEY ? parseSealKey((options.admin?.env ?? process.env).MADANI_CLOUD_SEAL_KEY!) : null);
   const bugReports = createBugReports({ store: bugReportStore, now, json, bodyObject, ip: req => rateIp(clientIp(req, options.trustProxy ?? false)),
     admin: (req, mutation) => { const owner = auth.requireWeb(req, { mutation }); if (!admin.isAdmin(owner.email)) throw new AdminError(403, "not_admin", "This account is not an admin."); return owner.id; },
     audit: (actor, action, target, detail) => { void analytics.sink.audit({ id: `aud_${random(12)}`, at: now(), actor, action, target, detail }).catch(() => {}); },
     clouds: { get: id => billing.clouds.get(id), unseal: sealed => cloudSealer.unseal(sealed) },
-    // test addresses (@qa.dusk.test) never leave this service, whichever mailer is first
+    // test addresses (@qa.madani.test) never leave this service, whichever mailer is first
     mail: reportMail ? { on: reportMail.on, to: reportMail.to, mailers: reportMail.mailers.map(mailer => sinkTestMail(mailer, testMail)), email: emailCfg, panelUrl: `${publicUrl}${ADMIN_PATH}/bug-reports` } : undefined });
   const requestIp = new AsyncLocalStorage<string>();
   const limits = new Map<string, { count: number; until: number }>();
@@ -493,19 +493,19 @@ export function createDashboardApp(options: DashboardAppOptions) {
     if (++current.count > max) fail(429, "rate_limited", "Try again later.");
     limits.set(key, current);
   }
-  /** the owner has the dashboard open on their dusk cloud: its power policy keeps it up a while (a hint, never a wake) */
+  /** the owner has the dashboard open on their madani cloud: its power policy keeps it up a while (a hint, never a wake) */
   function viewed(ws: StoredWorkspace) {
     if (ws.kind !== "vps" || !billing.clouds.managed?.noteView) return;
     const cloud = billing.clouds.all?.().find(item => item.workspaceId === ws.id && item.status === "running");
     if (cloud) billing.clouds.managed.noteView(cloud);
   }
-  /** a dusk cloud at full cpu for hours on end is mining or a runaway loop: one incident a day, before instabox flags our account */
+  /** a madani cloud at full cpu for hours on end is mining or a runaway loop: one incident a day, before instabox flags our account */
   function pinned(ws: StoredWorkspace, samples: Array<{ t: number; cpu: number }>) {
     if (!cpuPinned(samples, now())) return;
     const cloud = billing.clouds.all?.().find(item => item.workspaceId === ws.id && item.status !== "destroyed");
     if (!cloud) return;
     incidents.report({ source: "server", name: "CloudCpuPinned", key: `cloud-cpu-${cloud.id}-${new Date(now()).toISOString().slice(0, 10)}`,
-      message: `dusk cloud ${cloud.id} (account ${cloud.accountId}) has used over ${CLOUD_CPU_ALERT.percent}% cpu for ${CLOUD_CPU_ALERT.hours} hours. mining or a runaway loop? look at it in admin before instabox does` });
+      message: `madani cloud ${cloud.id} (account ${cloud.accountId}) has used over ${CLOUD_CPU_ALERT.percent}% cpu for ${CLOUD_CPU_ALERT.hours} hours. mining or a runaway loop? look at it in admin before instabox does` });
   }
   /** a limit on a key of its own (a workspace, not an address) */
   function limitKey(key: string, max: number, message = "Try again later.") {
@@ -606,8 +606,8 @@ export function createDashboardApp(options: DashboardAppOptions) {
     return value as Record<string, unknown>;
   }
   function verifySignature(req: IncomingMessage, body: Buffer, publicKey: string) {
-    const timeHeader = req.headers["x-dusk-time"];
-    const signature = req.headers["x-dusk-signature"];
+    const timeHeader = req.headers["x-madani-time"];
+    const signature = req.headers["x-madani-signature"];
     const time = typeof timeHeader === "string" && /^\d{1,16}$/.test(timeHeader) ? Number(timeHeader) : NaN;
     if (!Number.isSafeInteger(time) || Math.abs(now() - time) > SIGNATURE_SKEW_MS) fail(401, "stale_time", "Request time is invalid.");
     if (typeof signature !== "string" || !/^[A-Za-z0-9+/]{86}==$/.test(signature)) fail(401, "bad_signature", "Signature is invalid.");
@@ -621,7 +621,7 @@ export function createDashboardApp(options: DashboardAppOptions) {
     replays.set(signature, time + SIGNATURE_SKEW_MS);
   }
   function signed(req: IncomingMessage, body: Buffer): StoredWorkspace {
-    const id = req.headers["x-dusk-workspace"];
+    const id = req.headers["x-madani-workspace"];
     const ws = typeof id === "string" ? state.workspaces.find(item => item.id === id) : undefined;
     if (!ws) fail(401, "unknown_workspace", "Workspace is unknown.");
     verifySignature(req, body, ws.publicKey);
@@ -648,7 +648,7 @@ export function createDashboardApp(options: DashboardAppOptions) {
       let content = readFileSync(file);
       // before launch the page itself sends in-page moves outside a flow home (src/lib/prelaunch.ts)
       if (options.waitlistOnly && ext === ".html") {
-        const html = content.toString("utf8"), marker = '<meta name="dusk-prelaunch" content="1">';
+        const html = content.toString("utf8"), marker = '<meta name="madani-prelaunch" content="1">';
         content = Buffer.from(/<head[^>]*>/i.test(html) ? html.replace(/<head[^>]*>/i, tag => `${tag}${marker}`) : `${marker}${html}`);
       }
       const types: Record<string, string> = { ".html": "text/html; charset=utf-8", ".js": "text/javascript; charset=utf-8", ".css": "text/css; charset=utf-8", ".svg": "image/svg+xml", ".png": "image/png", ".jpg": "image/jpeg", ".webp": "image/webp", ".ico": "image/x-icon", ".webmanifest": "application/manifest+json", ".woff2": "font/woff2", ".json": "application/json" };
@@ -721,7 +721,7 @@ export function createDashboardApp(options: DashboardAppOptions) {
     if (computersRoute) {
       // bearer only, never a cookie: any origin may call it, as the session and enroll-grant routes allow
       res.setHeader("access-control-allow-origin", "*");
-      res.setHeader("access-control-allow-headers", "content-type, authorization, x-dusk-version");
+      res.setHeader("access-control-allow-headers", "content-type, authorization, x-madani-version");
       res.setHeader("access-control-allow-methods", "GET, POST, OPTIONS");
       if (method === "OPTIONS") { res.writeHead(204); res.end(); return; }
     }
@@ -747,7 +747,7 @@ export function createDashboardApp(options: DashboardAppOptions) {
       return json(res, 200, signLinkGrant(found.account.id, linkGrants, now()));
     }
     // the app forgot a server it linked to this account: its workspace leaves the dashboard. only the account's own, and
-    // never a dusk cloud's (that goes with the cloud itself); one already gone is not an error
+    // never a madani cloud's (that goes with the cloud itself); one already gone is not an error
     if (method === "POST" && path === ACCOUNT_ROUTES.workspaceUnlink) {
       rate(req, "workspace-unlink", 120);
       const found = auth.appSession(req);
@@ -756,14 +756,14 @@ export function createDashboardApp(options: DashboardAppOptions) {
       if (typeof data.workspaceId !== "string" || !/^ws_[A-Za-z0-9_-]{1,64}$/.test(data.workspaceId)) fail(400, "invalid_request", "Invalid workspace.");
       const ws = state.workspaces.find(item => item.id === data.workspaceId && item.ownerAccountId === found.account.id);
       if (!ws) return json(res, 200, { ok: true, removed: false });
-      if (billing.clouds.list(found.account.id, true).some(cloud => billing.clouds.view(cloud).workspaceId === ws.id)) fail(409, "cloud_workspace", "A dusk cloud's workspace goes with the cloud.");
+      if (billing.clouds.list(found.account.id, true).some(cloud => billing.clouds.view(cloud).workspaceId === ws.id)) fail(409, "cloud_workspace", "A madani cloud's workspace goes with the cloud.");
       forget(ws);
       void usage.forgetWorkspace(ws.id);
       state.workspaces = state.workspaces.filter(item => item !== ws);
       store.changed();
       return json(res, 200, { ok: true, removed: true });
     }
-    // the phone's list of the account's computers: only its own, never a dusk cloud's workspace (the cloud row covers it)
+    // the phone's list of the account's computers: only its own, never a madani cloud's workspace (the cloud row covers it)
     if (method === "GET" && path === ACCOUNT_ROUTES.appComputers) {
       rate(req, "app-computers", 1200);
       const found = auth.appSession(req);
@@ -824,7 +824,7 @@ export function createDashboardApp(options: DashboardAppOptions) {
     if (await bugReports.handle(req, res, url)) return;
     // preview and development only: the latest code and link mailed to a test address, for test harnesses
     if (path === "/v1/ops/test-mail" && method === "GET") {
-      const token = adminEnv.DUSK_OPS_TOKEN, given = String(req.headers.authorization ?? "");
+      const token = adminEnv.MADANI_OPS_TOKEN, given = String(req.headers.authorization ?? "");
       if (!testMail.readable || !token || given.length !== token.length + 7 || !timingSafeEqual(Buffer.from(given), Buffer.from(`Bearer ${token}`))) {
         rate(req, "test-mail-denied", 20); fail(404, "not_found", "Route not found.");
       }
@@ -833,9 +833,9 @@ export function createDashboardApp(options: DashboardAppOptions) {
       const found = testMail.latest(to, Number(url.searchParams.get("since")) || 0);
       return found ? json(res, 200, found) : fail(404, "not_found", "No mail yet.");
     }
-    // the release tool's view of the fleet (scripts/release-all.mjs status): counts only, to DUSK_OPS_TOKEN only
+    // the release tool's view of the fleet (scripts/release-all.mjs status): counts only, to MADANI_OPS_TOKEN only
     if (path === "/v1/ops/fleet" && method === "GET") {
-      const token = adminEnv.DUSK_OPS_TOKEN, given = String(req.headers.authorization ?? "");
+      const token = adminEnv.MADANI_OPS_TOKEN, given = String(req.headers.authorization ?? "");
       if (!token || given.length !== token.length + 7 || !timingSafeEqual(Buffer.from(given), Buffer.from(`Bearer ${token}`))) { rate(req, "ops-fleet-denied", 20); fail(404, "not_found", "Route not found."); }
       const days = Number(url.searchParams.get("days") ?? 14), canary = (url.searchParams.get("canary") ?? "").split(",").filter(Boolean);
       if (!Number.isInteger(days) || days < 1 || days > 60 || canary.length > 200 || !canary.every(id => CANARY_IDS.test(id))) fail(400, "invalid_request", "Invalid fleet query.");
@@ -881,7 +881,7 @@ export function createDashboardApp(options: DashboardAppOptions) {
         publicKey = der.toString("base64");
       } catch { fail(400, "invalid_key", "Public key is invalid."); }
       let ownerAccountId: string | null = null;
-      const proven = typeof input.enrollToken === "string" || req.headers["x-dusk-signature"] !== undefined;
+      const proven = typeof input.enrollToken === "string" || req.headers["x-madani-signature"] !== undefined;
       if (proven) verifySignature(req, body, publicKey);
       if (typeof input.enrollToken === "string") {
         ownerAccountId = auth.consumeEnrollGrant(input.enrollToken);
@@ -904,7 +904,7 @@ export function createDashboardApp(options: DashboardAppOptions) {
         // security invariant: a grant claims only an unclaimed workspace or one its own account already owns
         if (ws.ownerAccountId !== ownerAccountId && state.workspaces.filter(item => item.ownerAccountId === ownerAccountId).length >= WORKSPACE_LIMITS.perAccount)
           fail(409, "too_many_workspaces", `An account holds at most ${WORKSPACE_LIMITS.perAccount} computers. Remove one from the dashboard first.`);
-        if (ws.ownerAccountId && ws.ownerAccountId !== ownerAccountId) fail(409, "owned_elsewhere", "This workspace belongs to another Dusk account. Remove it from that account's dashboard first.");
+        if (ws.ownerAccountId && ws.ownerAccountId !== ownerAccountId) fail(409, "owned_elsewhere", "This workspace belongs to another Madani account. Remove it from that account's dashboard first.");
         ws.ownerAccountId = ownerAccountId;
         ws.claimHash = null;
         ws.claimExpiresAt = 0;
@@ -986,7 +986,7 @@ export function createDashboardApp(options: DashboardAppOptions) {
         workspaces: state.workspaces.filter(ws => ws.ownerAccountId === owner.id).map(ws => ({ ...summary(ws), report: ws.report })),
         ...billing.exportAccount(owner.id) };
       res.writeHead(200, { "content-type": "application/json; charset=utf-8", "cache-control": "no-store",
-        "content-disposition": `attachment; filename="dusk-bot-account-${new Date(now()).toISOString().slice(0, 10)}.json"` });
+        "content-disposition": `attachment; filename="madani-bot-account-${new Date(now()).toISOString().slice(0, 10)}.json"` });
       res.end(JSON.stringify(data, null, 2));
       return;
     }
@@ -1065,7 +1065,7 @@ export function createDashboardApp(options: DashboardAppOptions) {
           if (queue.filter(item => item.kind.startsWith("app.") && (item.status === "queued" || item.status === "sent")).length >= 5) fail(429, "rate_limited", "Too many app sign-ins at once. Try again in a minute.");
           if (now() - (seen.get(ws.id) ?? -Infinity) > APP_COMMAND_ONLINE_MS) fail(409, "workspace_offline", ws.kind === "vps"
             ? "This cloud is asleep or not answering. Wake it from clouds, then try again."
-            : "Your computer is asleep. Connect from the dusk bot app on it, or use dusk cloud.");
+            : "Your computer is asleep. Connect from the madani bot app on it, or use madani cloud.");
         }
         const command: StoredCommand = { id: `cmd_${random(16)}`, workspaceId: ws.id, kind, target, issuedAt: now(), expiresAt: now() + COMMAND_TTL_MS,
           purgeAt: now() + 2 * COMMAND_TTL_MS, status: "queued", message: null, doneAt: null };

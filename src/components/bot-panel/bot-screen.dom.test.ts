@@ -44,14 +44,14 @@ afterEach(() => {
   act(() => root.unmount());
   resetLiveScreen();
   vi.useRealTimers();
-  delete (window as { duskDesktop?: unknown }).duskDesktop;
+  delete (window as { madaniDesktop?: unknown }).madaniDesktop;
   Object.defineProperty(navigator, "mediaDevices", { value: undefined, configurable: true });
 });
 
 describe("the bot's screen", () => {
   it("shows this computer's own screen and keeps it fresh while it shows", async () => {
     const screenFrame = vi.fn().mockResolvedValueOnce("data:image/png;base64,AAA").mockResolvedValue("data:image/png;base64,BBB");
-    (window as { duskDesktop?: unknown }).duskDesktop = { screenFrame };
+    (window as { madaniDesktop?: unknown }).madaniDesktop = { screenFrame };
     await render(bot({ computer: "local" }));
     expect(seen).toMatchObject({ place: "local", src: "data:image/png;base64,AAA", loading: false, blocked: false });
     await act(async () => { await vi.advanceTimersByTimeAsync(LOCAL_FRAME_MS); });
@@ -69,7 +69,7 @@ describe("the bot's screen", () => {
     const getDisplayMedia = vi.fn(() => Promise.resolve(stream));
     Object.defineProperty(navigator, "mediaDevices", { value: { getDisplayMedia }, configurable: true });
     const screenFrame = vi.fn().mockResolvedValue("data:image/png;base64,AAA");
-    (window as { duskDesktop?: unknown }).duskDesktop = { screenFrame, screenLive: { begin: () => Promise.resolve(true) } };
+    (window as { madaniDesktop?: unknown }).madaniDesktop = { screenFrame, screenLive: { begin: () => Promise.resolve(true) } };
     await render(bot({ computer: "local" }), false);
     expect(getDisplayMedia).not.toHaveBeenCalled();
     await render(bot({ computer: "local" }), true);
@@ -81,7 +81,7 @@ describe("the bot's screen", () => {
   it("falls back to taking frames when the desktop app's main process cannot grant a live screen", async () => {
     Object.defineProperty(navigator, "mediaDevices", { value: { getDisplayMedia: vi.fn() }, configurable: true });
     const screenFrame = vi.fn().mockResolvedValue("data:image/png;base64,AAA");
-    (window as { duskDesktop?: unknown }).duskDesktop = { screenFrame, screenLive: { begin: () => Promise.reject(new Error("No handler registered for 'screen:live-intent'")) } };
+    (window as { madaniDesktop?: unknown }).madaniDesktop = { screenFrame, screenLive: { begin: () => Promise.reject(new Error("No handler registered for 'screen:live-intent'")) } };
     await render(bot({ computer: "local" }));
     await act(async () => { await vi.advanceTimersByTimeAsync(0); });
     expect(seen).toMatchObject({ place: "local", stream: null, src: "data:image/png;base64,AAA", blocked: false });
@@ -90,7 +90,7 @@ describe("the bot's screen", () => {
   });
 
   it("calls this computer's screen blocked after empty frames, never an older posted one", async () => {
-    (window as { duskDesktop?: unknown }).duskDesktop = { screenFrame: vi.fn().mockResolvedValue(null) };
+    (window as { madaniDesktop?: unknown }).madaniDesktop = { screenFrame: vi.fn().mockResolvedValue(null) };
     await render(bot({ computer: "local", messages: [{ id: "m1", role: "assistant", kind: "screen", hasImage: true, mime: "image/png", text: "", at: 0 }] as unknown as Bot["messages"] }));
     expect(seen).toMatchObject({ src: null, loading: true });
     await act(async () => { await vi.advanceTimersByTimeAsync(LOCAL_FRAME_MS * (LOCAL_MISSES - 1)); });

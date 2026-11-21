@@ -11,11 +11,11 @@
     "claude sheets tab pdf",
     "ai google sheets range to pdf"
   ],
-  "answer": "**get a printable roster without exporting the budget beside it.** a bot can export one google sheets tab or rectangle as a pdf. give the original sheet link and tab name, then choose portrait, gridlines or fit to width. dusk counts export as a change, so it needs read and write access. your source cells stay untouched.",
+  "answer": "**get a printable roster without exporting the budget beside it.** a bot can export one google sheets tab or rectangle as a pdf. give the original sheet link and tab name, then choose portrait, gridlines or fit to width. madani counts export as a change, so it needs read and write access. your source cells stay untouched.",
   "updated": "2026-11-12",
   "review": {
     "status": "approved",
-    "by": "lead agent, after two independent reviewer passes, against dusk bot docs and the composio catalog",
+    "by": "lead agent, after two independent reviewer passes, against madani bot docs and the composio catalog",
     "at": "2026-11-12"
   },
   "tags": [
@@ -75,20 +75,20 @@
     },
     {
       "q": "will asking every time for sends approve this export?",
-      "a": "**no. dusk treats export as a change.** put 'ask me before exporting' in the routine if you want that checkpoint."
+      "a": "**no. madani treats export as a change.** put 'ask me before exporting' in the routine if you want that checkpoint."
     }
   ],
   "sources": [
     {
-      "label": "dusk bot docs: files and apps",
+      "label": "madani bot docs: files and apps",
       "url": "/docs/files-and-apps"
     },
     {
-      "label": "dusk bot docs: routines",
+      "label": "madani bot docs: routines",
       "url": "/docs/routines"
     },
     {
-      "label": "dusk bot docs: a bot's computer",
+      "label": "madani bot docs: a bot's computer",
       "url": "/docs/computer"
     }
   ],

@@ -13,8 +13,8 @@ import "../../src/styles.css";
 const params = new URLSearchParams(location.search);
 const skin = params.get("skin");
 const VERSION = "0.2.16";
-const EXE = `https://dusk.bot/releases/${VERSION}/DuskBot-${VERSION}-setup.exe`;
-const DEB = `https://dusk.bot/releases/${VERSION}/DuskBot-${VERSION}-amd64.deb`;
+const EXE = `https://madani.bot/releases/${VERSION}/MadaniBot-${VERSION}-setup.exe`;
+const DEB = `https://madani.bot/releases/${VERSION}/MadaniBot-${VERSION}-amd64.deb`;
 
 type Flow = "mac" | "mac-drop" | "mac-fail" | "mac-move" | "windows" | "linux";
 const FLOWS: { id: Flow; label: string }[] = [
@@ -56,7 +56,7 @@ function pretendBridge(flow: Flow, say: (line: string) => void): AppUpdateBridge
         }
         if (flow === "mac-fail" && progress >= 0.6) {
           set({ progress: null, checking: false, failed: true });
-          say("every try failed (GitHub, then dusk.bot); the pill offers the download page instead of trying again in silence");
+          say("every try failed (GitHub, then madani.bot); the pill offers the download page instead of trying again in silence");
           return resolve(null);
         }
         set({ progress: Math.floor(progress * 100) / 100 });
@@ -71,7 +71,7 @@ function pretendBridge(flow: Flow, say: (line: string) => void): AppUpdateBridge
       return true;
     },
     seen: async () => set({ updated: null }),
-    open: async () => { say(`opens ${state.manual?.url ?? "https://dusk.bot/download"} in the browser`); return true; },
+    open: async () => { say(`opens ${state.manual?.url ?? "https://madani.bot/download"} in the browser`); return true; },
     move: async () => { say("moves the app to /Applications and relaunches it from there (Electron's app.moveToApplicationsFolder)"); return true; },
   };
 }

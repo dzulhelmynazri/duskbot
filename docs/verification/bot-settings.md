@@ -65,8 +65,8 @@ role creation, optional setup, connected-app settings and failure recovery:
 pnpm exec vitest run scripts/testing/bot-tools-ui.e2e.test.ts src/state/store.test.ts
 ```
 
-It uses the disposable `control-dusk ui` launcher, not the running app. Set
-`DUSK_UI_E2E=1` to install the pinned browser if unavailable.
+It uses the disposable `control-madani ui` launcher, not the running app. Set
+`MADANI_UI_E2E=1` to install the pinned browser if unavailable.
 
 This browser fixture verifies renderer interaction and persistence, not
 packaged Electron privileges, actual operating-system access, or the
@@ -150,12 +150,12 @@ tabbed panel instead, and that one is driven through
 [Chat UI, driven headlessly](chat-ui.md):
 
 ```sh
-node --experimental-strip-types scripts/control-dusk.ts ui launch
-H=/tmp/duskbot-verify-data-XXXXXX/ui.json
+node --experimental-strip-types scripts/control-madani.ts ui launch
+H=/tmp/madanibot-verify-data-XXXXXX/ui.json
 # The preview reads as an existing install, so it starts in Advanced mode.
-pnpm control:dusk ui eval --ui $H --js "localStorage.setItem('dusk-advanced-mode','0'); location.reload(); 'simple'"
-pnpm control:dusk ui click --ui $H --name "Open Pepper's profile"
-pnpm control:dusk ui snapshot --ui $H --interactive
+pnpm control:madani ui eval --ui $H --js "localStorage.setItem('madani-advanced-mode','0'); location.reload(); 'simple'"
+pnpm control:madani ui click --ui $H --name "Open Pepper's profile"
+pnpm control:madani ui snapshot --ui $H --interactive
 ```
 
 Expected: six tabs (Details, Memory, Library, Skills, Routines, Vault), and on

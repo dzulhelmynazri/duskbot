@@ -1,6 +1,6 @@
 // the twenty pixel bots (the same drawings as explore/pixel/crowd.js) and how the site names them. build-pages.mjs draws
 // their rest frames into the pages, site.js brings them to life
-import DuskPixel from './engine.js';
+import MadaniPixel from './engine.js';
 
 // the electric palette: one solid colour per bot
 export const COLOURS = {
@@ -68,7 +68,7 @@ export const CROWD = [
   ['tofu', 'violet', { eyes: { w: 2, h: 3, gap: 4, y: 9 }, parts: [['r', 2, 4, 14, 16, 2.2]], p: { zeta: 0.5, hop: 0.8 } }],
 ];
 
-for (const [name, , def] of CROWD) DuskPixel.define(name, def);
+for (const [name, , def] of CROWD) MadaniPixel.define(name, def);
 export const NAMES = CROWD.map(([name]) => name);
 export const HOME_COLOUR = Object.fromEntries(CROWD.map(([name, colour]) => [name, colour]));
 
@@ -78,4 +78,4 @@ export const SHAPES = {
   cloud: 'puff', clover: 'kit', pixel: 'tofu', capsule: 'mochi', gem: 'boxo', blob: 'pip', teardrop: 'drip', square: 'loaf', crescent: 'wisp',
 };
 export const bodyName = (name) => (HOME_COLOUR[name] ? name : SHAPES[name]) || 'pip';
-export { DuskPixel };
+export { MadaniPixel };

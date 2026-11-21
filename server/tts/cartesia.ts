@@ -1,4 +1,4 @@
-// Cartesia Sonic voices and Ink speech-to-text; DUSK_CARTESIA_API overrides the base URL in tests.
+// Cartesia Sonic voices and Ink speech-to-text; MADANI_CARTESIA_API overrides the base URL in tests.
 import { z } from "zod";
 import type { Audio, Voice } from "./elevenlabs.ts";
 import { readAudio, verifyWith, voiceRefusal, type VerifyResult } from "./http-audio.ts";
@@ -7,7 +7,7 @@ export const CARTESIA_TTS_MODEL = "sonic-3.6";
 export const CARTESIA_STT_MODEL = "ink-whisper";
 // Cartesia requires this header on every request; 2026-08-14 is the only version its API accepts.
 const VERSION = "2026-08-14";
-const api = () => (process.env.DUSK_CARTESIA_API || "https://api.cartesia.ai").replace(/\/+$/, "");
+const api = () => (process.env.MADANI_CARTESIA_API || "https://api.cartesia.ai").replace(/\/+$/, "");
 const VOICE_ID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const headers = (key: string) => ({ authorization: `Bearer ${key}`, "cartesia-version": VERSION });
 const voicesSchema = z.object({

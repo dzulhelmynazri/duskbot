@@ -3,11 +3,11 @@ import { afterEach, expect, it, vi } from "vitest";
 
 import { bestSystemVoice, SystemListener } from "./fallback";
 
-afterEach(() => { delete (window as { duskDesktop?: unknown }).duskDesktop; });
+afterEach(() => { delete (window as { madaniDesktop?: unknown }).madaniDesktop; });
 
 it("a bot's call language reaches the computer's recognizer, and Auto-detect sends none", () => {
   const speechStart = vi.fn(async () => {});
-  (window as { duskDesktop?: unknown }).duskDesktop = { speechStart, speechStop: vi.fn(async () => {}), onSpeechTranscript: () => () => {}, onSpeechEnd: () => () => {} };
+  (window as { madaniDesktop?: unknown }).madaniDesktop = { speechStart, speechStop: vi.fn(async () => {}), onSpeechTranscript: () => () => {}, onSpeechEnd: () => () => {} };
   new SystemListener(() => {}, "de").start();
   new SystemListener(() => {}).start();
   expect(speechStart.mock.calls).toEqual([[{ endpointMs: 700, locale: "de" }], [{ endpointMs: 700 }]]);

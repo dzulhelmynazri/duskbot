@@ -33,12 +33,12 @@ describe("useExternalChatLinks", () => {
   it("holds a link that arrives at launch until the bots have loaded, then opens it once", () => {
     let deliver: ((link: string) => void) | undefined;
     const unsubscribe = vi.fn();
-    vi.stubGlobal("window", { duskDesktop: { onChatLink: (cb: (link: string) => void) => { deliver = cb; return unsubscribe; } } });
+    vi.stubGlobal("window", { madaniDesktop: { onChatLink: (cb: (link: string) => void) => { deliver = cb; return unsubscribe; } } });
     const dispatch = vi.fn();
 
     const [cleanup] = render(loading, dispatch);
     expect(cleanup).toBe(unsubscribe);
-    deliver!("duskbot://bot/scout");
+    deliver!("madanibot://bot/scout");
     render(loading, dispatch);
     expect(dispatch).not.toHaveBeenCalled();
 
@@ -56,7 +56,7 @@ describe("useExternalChatLinks", () => {
 
   it("closes Settings and the shortcuts list so the linked chat is not left behind them", () => {
     vi.stubGlobal("window", {});
-    fixture.link = "duskbot://bot/scout";
+    fixture.link = "madanibot://bot/scout";
     const dispatch = vi.fn();
     render({ ...loaded, appSettingsOpen: true, shortcutsOpen: true }, dispatch);
     expect(dispatch.mock.calls.map(([action]) => action)).toEqual([
@@ -69,18 +69,18 @@ describe("useExternalChatLinks", () => {
 
   it("opens the website's connect link on that app's page in Connect Apps, and nothing else", () => {
     vi.stubGlobal("window", {});
-    fixture.link = "duskbot://apps/GoogleCalendar";
+    fixture.link = "madanibot://apps/GoogleCalendar";
     const dispatch = vi.fn();
     render(loaded, dispatch);
     expect(connectAppsState()).toMatchObject({ open: true, page: { kind: "detail", id: "googlecalendar" } });
     expect(dispatch).not.toHaveBeenCalled();
-    expect(connectAppLinkId("duskbot://apps/../bot/scout")).toBeNull();
-    expect(connectAppLinkId("duskbot://bot/scout")).toBeNull();
+    expect(connectAppLinkId("madanibot://apps/../bot/scout")).toBeNull();
+    expect(connectAppLinkId("madanibot://bot/scout")).toBeNull();
   });
 
   it("opens a bot's link as its row would: at its main thread while threads are hidden", () => {
     vi.stubGlobal("window", {});
-    fixture.link = "duskbot://bot/scout";
+    fixture.link = "madanibot://bot/scout";
     const dispatch = vi.fn();
     const left = { ...scout, threadId: "scout-report", mainThreadId: "scout-main",
       tasks: [...scout.tasks!, { threadId: "scout-report", title: "Report", createdAt: 2, unread: true }] };
@@ -111,7 +111,7 @@ describe("useDesktopNotificationOpens", () => {
   it("holds a click until a page just loaded for it has its bots, then opens that thread once", () => {
     let deliver: ((target: unknown) => void) | undefined;
     const unsubscribe = vi.fn();
-    vi.stubGlobal("window", { duskDesktop: { desktopNotifications: { onOpen: (cb: (target: unknown) => void) => { deliver = cb; return unsubscribe; } } } });
+    vi.stubGlobal("window", { madaniDesktop: { desktopNotifications: { onOpen: (cb: (target: unknown) => void) => { deliver = cb; return unsubscribe; } } } });
     const dispatch = vi.fn();
     const [cleanup] = opens(loading, dispatch);
     expect(cleanup).toBe(unsubscribe);

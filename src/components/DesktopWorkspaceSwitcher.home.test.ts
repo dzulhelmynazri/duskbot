@@ -10,19 +10,19 @@ let host: HTMLDivElement;
 let root: Root;
 const menu = vi.fn(() => Promise.resolve());
 const show = async (state: Record<string, unknown>, props: Record<string, unknown> = {}, plan?: Record<string, unknown>) => {
-  window.duskDesktop = { workspaces: { state: vi.fn().mockResolvedValue(state), menu },
-    ...(plan ? { cloudPlan: { state: vi.fn().mockResolvedValue(plan), manage: vi.fn() } } : {}) } as unknown as typeof window.duskDesktop;
+  window.madaniDesktop = { workspaces: { state: vi.fn().mockResolvedValue(state), menu },
+    ...(plan ? { cloudPlan: { state: vi.fn().mockResolvedValue(plan), manage: vi.fn() } } : {}) } as unknown as typeof window.madaniDesktop;
   flushSync(() => root.render(createElement(DesktopWorkspaceSwitcher, props)));
   await vi.waitFor(() => expect(host.innerHTML).not.toBe(""));
   await new Promise((resolve) => setTimeout(resolve, 0));
 };
 
 beforeEach(() => { setLocale("en"); menu.mockClear(); host = document.createElement("div"); document.body.append(host); root = createRoot(host); });
-afterEach(() => { flushSync(() => root.unmount()); host.remove(); delete window.duskDesktop; });
+afterEach(() => { flushSync(() => root.unmount()); host.remove(); delete window.madaniDesktop; });
 
 it("in a window whose home is My Cloud, names My Cloud with nothing to open: no menu, no This computer", async () => {
   for (const props of [{ cloudHome: true }, { cloudHome: true, inline: true, pill: true }, { cloudHome: true, rail: true }]) {
-    await show({ local: false, name: "My Cloud", origin: "https://dusk-u-1a2b3c4d5e6f.fly.dev", home: true }, props);
+    await show({ local: false, name: "My Cloud", origin: "https://madani-u-1a2b3c4d5e6f.fly.dev", home: true }, props);
     expect(host.querySelector("[data-cloud-home-indicator]"), JSON.stringify(props)).not.toBeNull();
     expect(host.querySelector("button"), JSON.stringify(props)).toBeNull();
     expect(host.textContent).not.toContain("This computer");
@@ -31,14 +31,14 @@ it("in a window whose home is My Cloud, names My Cloud with nothing to open: no 
 });
 
 it("anywhere else keeps the switcher as it was", async () => {
-  await show({ local: false, name: "My Cloud", origin: "https://dusk-u-1a2b3c4d5e6f.fly.dev" }, { cloudHome: true });
+  await show({ local: false, name: "My Cloud", origin: "https://madani-u-1a2b3c4d5e6f.fly.dev" }, { cloudHome: true });
   expect(host.querySelector("button")?.getAttribute("aria-haspopup")).toBe("menu");
   await show({ local: true, name: "This computer" });
   expect(host.querySelector("button")?.textContent).toContain("This computer");
 });
 
 it("says always available only when My Cloud's verified plan never sleeps, on its pages and its pair page alike", async () => {
-  const home = { local: false, name: "My Cloud", origin: "https://dusk-u-1a2b3c4d5e6f.fly.dev", home: true };
+  const home = { local: false, name: "My Cloud", origin: "https://madani-u-1a2b3c4d5e6f.fly.dev", home: true };
   const label = () => host.querySelector("[data-cloud-home-indicator]")?.textContent ?? "";
   for (const props of [{ cloudHome: true }, {}]) {
     await show(home, props, { status: "paid", tier: "pro" });
@@ -55,7 +55,7 @@ it("says always available only when My Cloud's verified plan never sleeps, on it
 });
 
 it("in a browser on a team's Cloud names the team, never My Cloud", async () => {
-  delete window.duskDesktop;
+  delete window.madaniDesktop;
   for (const props of [{ cloudHome: true, place: "Acme Labs" }, { cloudHome: true, inline: true, pill: true, place: "Acme Labs" }]) {
     flushSync(() => root.render(createElement(DesktopWorkspaceSwitcher, props)));
     await vi.waitFor(() => expect(host.querySelector("[data-cloud-home-indicator]")?.textContent).toContain("Acme Labs"));

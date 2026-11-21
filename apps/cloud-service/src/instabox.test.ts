@@ -42,7 +42,7 @@ it("creates one labelled machine per cloud and attempt with no account credentia
   expect(machine.files.get(INSTABOX_BOOT_FILE)?.toString()).toBe("{\"v\":2}");
   expect(machine.files.has(INSTABOX_SETUP_FILE)).toBe(true);
   expect(machine.metadata["omb.setup"]).toBe("running");
-  expect(machine.leases.has("dusk-lifecycle")).toBe(true);
+  expect(machine.leases.has("madani-lifecycle")).toBe(true);
   expect((await provider.machine(first.id))?.setup).toBe("done");
   expect(machine.metadata["omb.setup"]).toBe("done");
   const recovery = await provider.create({ ...input, attempt: 1 });
@@ -124,11 +124,11 @@ it("archives in one call when the save is accepted as an operation and the snaps
   const server = await provider.create(input);
   await provider.power(server.id, "off");
   api.slowSnapshots(3);
-  const snap = await provider.archive(server.id, "dusk-slow-save");
+  const snap = await provider.archive(server.id, "madani-slow-save");
   expect(snap?.id).toMatch(/^sn_/);
-  expect(api.snapshots.get(snap!.id)!.name).toBe("dusk-slow-save");
+  expect(api.snapshots.get(snap!.id)!.name).toBe("madani-slow-save");
   expect(api.requests.filter(r => r.method === "POST" && r.path.endsWith("/snapshots"))).toHaveLength(1);
-  expect(await provider.archive(server.id, "dusk-slow-save")).toEqual(snap);
+  expect(await provider.archive(server.id, "madani-slow-save")).toEqual(snap);
 });
 
 it("treats limits, cooldowns and conflicts as waiting, deletes only with confirmation and a receipt, and never names the key", async () => {

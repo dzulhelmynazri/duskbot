@@ -58,7 +58,7 @@ export function announceNewBot(dispatch: (action: Action) => void, bot: Bot, war
  * computer needs the person's own OK, so a bot whose defaults ask for it starts on Ask. */
 async function createNewBot(section: string | undefined, bots: readonly Bot[], team: TeamPeople | null, request: typeof api,
   look?: Extract<Action, { type: "newBot" }>["look"]) {
-  if (typeof window !== "undefined" && window.duskDesktop?.remoteClient?.active) {
+  if (typeof window !== "undefined" && window.madaniDesktop?.remoteClient?.active) {
     // the look rides in the create itself: a second request that failed would leave a default-looking bot behind
     const named = look ? { name: look.name, settings: { color: look.color, mascotBody: look.mascotBody } } : {};
     const { bot } = await request<{ bot: Bot }>("/api/bots", { method: "POST", body: JSON.stringify({ greeting: false, ...(section === undefined ? {} : { section }), ...named }) });

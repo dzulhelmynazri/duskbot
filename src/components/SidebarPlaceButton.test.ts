@@ -35,9 +35,9 @@ beforeEach(() => {
   current = { local: true, name: "This computer" };
   rail = { places: [], add: { cloud: false, link: false, address: false } };
   store.state = { config: {}, hydrated: true, connected: true, bots: [], groups: [], selectedId: null };
-  Object.assign(window, { duskDesktop: { workspaces } });
+  Object.assign(window, { madaniDesktop: { workspaces } });
   vi.clearAllMocks();
-  try { localStorage.removeItem("dusk-place-dot-seen"); } catch { /* no storage */ }
+  try { localStorage.removeItem("madani-place-dot-seen"); } catch { /* no storage */ }
   host = document.createElement("div"); document.body.append(host);
 });
 afterEach(async () => { await act(async () => root?.unmount()); root = null; host.remove(); document.body.innerHTML = ""; });
@@ -106,7 +106,7 @@ it("My Cloud as home with nothing else still shows the place button, a cloud, wh
   await act(async () => control.click());
   expect(workspaces.menu).toHaveBeenCalledTimes(1);
   await act(async () => root?.unmount());
-  Object.assign(window, { duskDesktop: undefined });
+  Object.assign(window, { madaniDesktop: undefined });
   await mount();
   expect(host.querySelector("[data-sidebar-place]")).toBeNull();
   expect(switchPlaceCommand()).toBeNull();

@@ -19,11 +19,11 @@ const MAX_CORRECTIVE_ROUNDS = 5;
 
 /** The `loopGuard` section of config.json. */
 export const loopGuardConfigSchema = z.object({
-  /** Off unless true; DUSK_LOOP_GUARD=1 switches it on too. */
+  /** Off unless true; MADANI_LOOP_GUARD=1 switches it on too. */
   enabled: z.boolean().optional(),
   /** Identical failures in a row before the note; 5 when unset. */
   steerAt: count.optional(),
-  /** Identical failures in a row before the turn is stopped; unset never stops. DUSK_LOOP_GUARD_STOP_AT wins; null clears. */
+  /** Identical failures in a row before the turn is stopped; unset never stops. MADANI_LOOP_GUARD_STOP_AT wins; null clears. */
   stopAt: count.nullable().optional(),
   /** For bots on API models: times a turn that answers after a failed tool call is sent back to re-run it; 0 when unset. */
   correctiveRounds: z.number().int().min(0).max(MAX_CORRECTIVE_ROUNDS).optional(),
@@ -39,13 +39,13 @@ export interface LoopGuardSettings {
 
 export const DEFAULT_STEER_AT = 5;
 
-/** Off by default: it speaks into a running turn. DUSK_LOOP_GUARD_STOP_AT never switches the guard on by itself. */
+/** Off by default: it speaks into a running turn. MADANI_LOOP_GUARD_STOP_AT never switches the guard on by itself. */
 export function loopGuardSettings(cfg: { loopGuard?: LoopGuardConfig }, env: NodeJS.ProcessEnv = process.env): LoopGuardSettings {
-  const fromEnv = env.DUSK_LOOP_GUARD_STOP_AT?.trim();
+  const fromEnv = env.MADANI_LOOP_GUARD_STOP_AT?.trim();
   const parsed = fromEnv ? Number(fromEnv) : NaN;
   const stopAt = Number.isInteger(parsed) && parsed >= COUNT_MIN && parsed <= COUNT_MAX ? parsed : cfg.loopGuard?.stopAt ?? undefined;
   return {
-    enabled: env.DUSK_LOOP_GUARD === "1" || cfg.loopGuard?.enabled === true,
+    enabled: env.MADANI_LOOP_GUARD === "1" || cfg.loopGuard?.enabled === true,
     steerAt: cfg.loopGuard?.steerAt ?? DEFAULT_STEER_AT,
     ...(stopAt === undefined ? {} : { stopAt }),
   };
@@ -128,9 +128,9 @@ function quoted(call: CountedCall): string {
   return `“${quoteInNote(`${call.tool}: ${call.args}`, CALL_QUOTE_MAX).replace(/[“”]/g, '"')}”`;
 }
 
-/** Opened as `[dusk bot …]`, which model-written text cannot open, and never carrying what the command printed. */
+/** Opened as `[madani bot …]`, which model-written text cannot open, and never carrying what the command printed. */
 function loopNote(call: string, streak: number): string {
-  return `[dusk bot: this exact call has failed the same way ${streak} times in a row: ${call}. Change approach, or stop and report what is blocking.]`;
+  return `[madani bot: this exact call has failed the same way ${streak} times in a row: ${call}. Change approach, or stop and report what is blocking.]`;
 }
 
 function loopCause(call: string, streak: number): string {

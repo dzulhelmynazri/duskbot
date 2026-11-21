@@ -1,9 +1,9 @@
 # Bring Your Own VPS
 
-dusk bot can turn a Linux server you already own into a bot's computer. The agent process stays on your
+madani bot can turn a Linux server you already own into a bot's computer. The agent process stays on your
 machine; Docker's own SSH transport reaches the daemon on the VPS, and each bot gets one managed, hardened
 bot desktop container there — a Linux desktop it can see and control. SSH is the only credential involved and the
-only surface exposed: dusk bot never opens a public port on the VPS, never stores your SSH key or
+only surface exposed: madani bot never opens a public port on the VPS, never stores your SSH key or
 passphrase, and never runs an agent remotely.
 
 ## What works
@@ -38,10 +38,10 @@ not one that also holds things you would not hand to the agent.
 
 ## The required SSH config alias
 
-dusk bot connects only through a named alias in your `~/.ssh/config` — you type the alias into
+madani bot connects only through a named alias in your `~/.ssh/config` — you type the alias into
 Settings → API keys, nothing else. Every bot action becomes a `docker exec` over SSH, so the app
 supplies connection sharing and fail-fast timeouts itself: it runs each VPS command through its own
-`ssh_config` (under `~/.duskbot/ssh/`) that includes your file first and fills in `ControlMaster`,
+`ssh_config` (under `~/.madanibot/ssh/`) that includes your file first and fills in `ControlMaster`,
 `ControlPersist`, keepalives and a connect timeout wherever your alias leaves them unset. Anything your
 alias sets wins. Startup, previews, bot tools and their connection probes use the same settings.
 For long data-directory paths, the app keeps its control socket in a private, user-owned directory
@@ -85,7 +85,7 @@ is back. (Changing the default alias still waits until its server can be listed.
 `~/.ssh/config`, host key already verified by hand, is all it takes. The field is in a saved bot's settings; a new
 bot starts on the default server.
 
-**Host key first, by hand.** Connect once manually before pointing dusk bot at the alias:
+**Host key first, by hand.** Connect once manually before pointing madani bot at the alias:
 
 ```sh
 ssh my-vps true
@@ -96,13 +96,13 @@ host is unknown simply fails until you have done this once.
 
 ## Security
 
-- **No public ports.** The managed container is created with no published ports, and dusk bot refuses to
+- **No public ports.** The managed container is created with no published ports, and madani bot refuses to
   use a container that publishes any — the check runs before every attach, not just at creation. Live view
   reaches the container's private bridge address through SSH and is loopback-only on your computer.
-- **Firewall the VPS to SSH only**, ideally from your IP. Nothing dusk bot does needs any other inbound
+- **Firewall the VPS to SSH only**, ideally from your IP. Nothing madani bot does needs any other inbound
   port open, so anything else open is pure attack surface.
-- **Nothing sensitive is stored.** The only thing dusk bot persists is the alias name itself
-  (`~/.duskbot/config.json`, plus a bot's own alias in `bots.json` when it has one); keys, passphrases,
+- **Nothing sensitive is stored.** The only thing madani bot persists is the alias name itself
+  (`~/.madanibot/config.json`, plus a bot's own alias in `bots.json` when it has one); keys, passphrases,
   and agent state stay with SSH. Aliases are also kept out of the settings and bot records that paired phones
   and members of a shared workspace receive — they get configured-or-not, never the name. An SSH or Docker
   error that a bot reports in its conversation can still quote a server's name.
@@ -128,13 +128,13 @@ A bot can never take its own VPS down:
 - **A host cap.** At most `floor((host memory - 2.5 GB) / 1.5 GB)` desktops are awake at once (six on
   12 GB, from `docker info`); a shared computer's independent screens follow the same rule. At the cap a
   desktop no bot owns any more sleeps first, then the least recently used idle one; when all are busy the
-  start waits up to 30 seconds, then the bot is told plainly to wait. `DUSK_VPS_MAX_DESKTOPS` overrides it.
+  start waits up to 30 seconds, then the bot is told plainly to wait. `MADANI_VPS_MAX_DESKTOPS` overrides it.
 - **Limits per container.** 1.5 GB of memory with no swap (a shared computer gets the whole budget), CPU
   weight below host services (`--cpu-shares 256`), `--oom-score-adj 500`, 2 CPUs, 4096 PIDs, 512 MiB shared
   memory and restart policy `no`, so a reboot leaves desktops asleep instead of starting them all at once.
   A stopped desktop made under the old 4 GB, `unless-stopped` defaults is updated in place
   (`docker update`) before it next starts; a running one keeps its settings until then.
-- **Host services first.** The installer gives `duskbot.service` `OOMScoreAdjust=-800`, the link
+- **Host services first.** The installer gives `madanibot.service` `OOMScoreAdjust=-800`, the link
   `-700`, and sshd `-1000` with `MemoryMin=64M`, so the kernel kills a desktop's tab long before SSH.
 
 - **Provision** (choosing **Cloud** for the bot, or the panel's button): pulls the bot desktop image on
@@ -142,7 +142,7 @@ A bot can never take its own VPS down:
 - **Start** only wakes an existing stopped container; it never creates one.
 - **Sleep** stops the container. The VPS stops spending CPU on it; the filesystem stays put.
 - **Remove** is yours, done by hand when a bot no longer needs the server:
-  `docker -H ssh://my-vps rm -f <container>`. dusk bot never deletes a container on its own.
+  `docker -H ssh://my-vps rm -f <container>`. madani bot never deletes a container on its own.
 
 What survives what: sleep/start preserves the container's filesystem; removal — including the recreate that
 follows an image upgrade, since a container pinned to an old image is refused rather than reused — wipes

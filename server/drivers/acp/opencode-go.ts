@@ -20,7 +20,7 @@ import { titleCaseModelId } from "../../contracts.ts";
 import { execCli, killCliTree, spawnCli } from "../../procs.ts";
 
 /** "0" turns off the start-up probe of the free models. */
-export const FREE_PROBE_ENV = "DUSK_FREE_PROBE";
+export const FREE_PROBE_ENV = "MADANI_FREE_PROBE";
 
 const NO_MODELS: ModelCatalog = { default: "", options: [] };
 
@@ -252,7 +252,7 @@ function runGit(directory: string, args: string[]): Promise<void> {
   const env = Object.fromEntries(Object.entries(process.env).filter(([key]) => !key.startsWith("GIT_")));
   return new Promise((resolveRun, rejectRun) => {
     execFile("git", [
-      "-c", "user.name=dusk bot", "-c", "user.email=model-discovery@dusk.invalid",
+      "-c", "user.name=madani bot", "-c", "user.email=model-discovery@madani.invalid",
       "-c", "commit.gpgsign=false", "-c", `core.hooksPath=${join(directory, ".git", "no-hooks")}`,
       ...args,
     ], { cwd: directory, env: { ...env, GIT_TERMINAL_PROMPT: "0" }, timeout: 10_000, windowsHide: true }, (error) => {
@@ -270,11 +270,11 @@ function discoveryDirectory(): Promise<string> {
   discoveryFolder ??= (async () => {
     const directory = join(DATA_DIR, "providers", "opencode", "discovery");
     mkdirSync(directory, { recursive: true });
-    const marker = join(directory, ".dusk-project");
+    const marker = join(directory, ".madani-project");
     if (!existsSync(marker)) {
       try {
         await runGit(directory, ["init", "-q"]);
-        await runGit(directory, ["commit", "-q", "--allow-empty", "--no-verify", "-m", "dusk bot model discovery"]);
+        await runGit(directory, ["commit", "-q", "--allow-empty", "--no-verify", "-m", "madani bot model discovery"]);
         writeFileSync(marker, "OpenCode files this folder's sessions under its own project.\n");
       } catch {}
     }
@@ -387,7 +387,7 @@ export async function probeOpenCodeSession(
     void (async () => {
       await request("initialize", {
         protocolVersion: 1,
-        clientInfo: { name: "duskbot", version: "0.0.0" },
+        clientInfo: { name: "madanibot", version: "0.0.0" },
         clientCapabilities: { fs: { readTextFile: false, writeTextFile: false }, terminal: false },
       });
       const session = await request("session/new", { cwd, mcpServers: [] });
@@ -662,12 +662,12 @@ function withinFolder(path: string, folder: string): boolean {
 }
 
 /** A bot's shared or private folder: bots wrote everything there, so none of it may become OpenCode configuration. */
-export function duskOwnsWorkingFolder(cwd: string): boolean {
+export function madaniOwnsWorkingFolder(cwd: string): boolean {
   return [join(DATA_DIR, "workspaces"), join(DATA_DIR, "task-workspaces")].some((root) =>
     withinFolder(cwd, root) && resolvePath(cwd) !== resolvePath(root));
 }
 
-/** dusk bot folders an OpenCode bot may use without an approval card: attachments and its own shared folder.
+/** madani bot folders an OpenCode bot may use without an approval card: attachments and its own shared folder.
  * Never one at or above the working folder: OpenCode reads opencode.json, .opencode/ and AGENTS.md from
  * every folder above it, so a planted file would configure later conversations. Known risk: the folder
  * rule covers writes too, so a bot can change or delete files in the attachments folder. */
@@ -880,7 +880,7 @@ const support = (loadCatalog: OpenCodeCatalogLoader, ownAccess = new Map<string,
   },
   spawnFingerprint: (env, config) => openCodeSpawnFingerprint(env, config.cli),
   applyTurnEnv: (env, { fullAuto, botId, cwd }) => {
-    if (duskOwnsWorkingFolder(cwd)) env.OPENCODE_DISABLE_PROJECT_CONFIG = "1";
+    if (madaniOwnsWorkingFolder(cwd)) env.OPENCODE_DISABLE_PROJECT_CONFIG = "1";
     if (!fullAuto) {
       allowOwnedDirectories(env, botId, cwd);
       return;

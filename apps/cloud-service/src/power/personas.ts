@@ -1,4 +1,4 @@
-// The usage personas the simulator runs (dusk-ref LIFECYCLE-RESEARCH.md section 3.2), plus a normal Grok-style user.
+// The usage personas the simulator runs (madani-ref LIFECYCLE-RESEARCH.md section 3.2), plus a normal Grok-style user.
 // Every number is an assumption from that research, randomised per day: when sessions start, how many sends a session
 // has and the gaps between them, how long a turn works, which routines run and when, and connector events that address
 // the bot. Times are local; a user's time zone shifts them.

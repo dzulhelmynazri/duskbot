@@ -9,7 +9,7 @@ const desktopIds = { none: "none", shared_s: "shared-s", shared_m: "shared-m", d
 const desktopKinds = { none: "none", "shared-s": "shared_s", "shared-m": "shared_m", dedicated: "dedicated" } as const;
 const bundleBlurbs = {
   free: "for personal use on your computer or your own vps",
-  starter: "dusk cloud, always available",
+  starter: "madani cloud, always available",
   pro: "a bigger machine, priority wake and a work license",
   team: "a dedicated machine and a team license",
 };
@@ -66,7 +66,7 @@ export function cartFromQuote(quote: Quote, catalog: PlanCatalog): PricedCart {
       const extra = Math.max(0, quote.members - (license?.includedMembers ?? quote.members));
       lines.push({ key: "license", label: license ? `${license.name} license` : line.label, detail: `${quote.members} ${quote.members === 1 ? "member" : "members"}${extra ? `, ${extra} extra` : ""}`, monthly: line.amountCents / divisor });
     } else {
-      lines.push({ key: "desktop", label: desktop ? `dusk cloud, ${desktop.name}` : line.label, detail: quote.machine ? specLine(quote.machine) : "", monthly: line.amountCents / divisor });
+      lines.push({ key: "desktop", label: desktop ? `madani cloud, ${desktop.name}` : line.label, detail: quote.machine ? specLine(quote.machine) : "", monthly: line.amountCents / divisor });
     }
   }
   return { lines, subtotal: subtotalCents / divisor, bundle: catalog.bundles.find((item) => item.id === quote.bundle) ?? null, bundleSaving: 0, discount: discountCents / divisor, perMonth: quote.monthlyEquivalentCents / 100, dueNow: quote.totalCents / 100, free: quote.totalCents === 0 && lines.length === 0 };
@@ -104,7 +104,7 @@ export function billingFromWire(overview: WireBillingOverview, catalog: PlanCata
   };
 }
 
-export const SETUP_LABELS = { reserving: "reserving your machine", storage: "preparing its disk", starting: "installing dusk bot", checking: "waking your bots" } as const;
+export const SETUP_LABELS = { reserving: "reserving your machine", storage: "preparing its disk", starting: "installing madani bot", checking: "waking your bots" } as const;
 
 export function cloudFromWire(cloud: CloudDesktopView): CloudDesktop | null {
   if (cloud.status === "checkout" || cloud.status === "destroying" || cloud.status === "destroyed") return null;
@@ -116,7 +116,7 @@ export function cloudFromWire(cloud: CloudDesktopView): CloudDesktop | null {
     id: cloud.id, name: cloud.name, status, tier: desktopIds[cloud.kind], placement: cloud.placement === "pool" ? "shared" : "dedicated", region: cloud.region,
     ...cloud.machine, workspaceId: cloud.workspaceId, createdAt: cloud.createdAt,
     progress: status === "provisioning" && cloud.setupStep !== null ? { step: SETUP_LABELS[cloud.setupStep], value: (SETUP_STEPS.indexOf(cloud.setupStep) + 0.5) / 4 } : null,
-    error: cloud.status === "payment_problem" ? "the last payment did not go through. update your card to wake it." : cloud.status === "suspended" ? "it is paused. write to us at hello@dusk.bot to sort it out." : cloud.error,
+    error: cloud.status === "payment_problem" ? "the last payment did not go through. update your card to wake it." : cloud.status === "suspended" ? "it is paused. write to us at hello@madani.bot to sort it out." : cloud.error,
     botComputers: { used: 0, limit: cloud.botComputers }, uptimeSec: null,
     ...(resting ? { resting: true } : {}),
     ...(cloud.revivedAt ? { revivedAt: cloud.revivedAt } : {}),
@@ -131,7 +131,7 @@ export function accountFromWire(answer: AccountAnswer, now = Date.now(), storage
   let onboarded = answer.onboarded;
   try {
     storage ??= typeof localStorage === "undefined" ? undefined : localStorage;
-    onboarded ||= storage?.getItem(`dusk-dash-onboarded:${account.id}`) === "1";
+    onboarded ||= storage?.getItem(`madani-dash-onboarded:${account.id}`) === "1";
   } catch {}
   const kinds = { web: "browser", desktop: "desktop", mobile: "phone" } as const;
   return {

@@ -1,4 +1,4 @@
-// A real Team Cloud: what a User's own Dusk says about connecting an AI, and that it names the owner once the owner has
+// A real Team Cloud: what a User's own Madani says about connecting an AI, and that it names the owner once the owner has
 // opened the team.
 import { randomBytes } from "node:crypto";
 import { afterAll, beforeAll, expect, it } from "vitest";

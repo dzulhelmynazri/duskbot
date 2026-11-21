@@ -1,7 +1,7 @@
 import { readFileSync, readdirSync, unlinkSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { expect, it } from "vitest";
-import { launchVerificationServer, type VerificationServer } from "../scripts/control-dusk.ts";
+import { launchVerificationServer, type VerificationServer } from "../scripts/control-madani.ts";
 import { fixtureApi } from "../scripts/testing/preview-fixture.ts";
 import { createTeamVpsFixture } from "../scripts/testing/team-vps-fixture.ts";
 
@@ -23,13 +23,13 @@ it.skipIf(process.platform === "win32").each([false, true])("reinitializes bot s
     expect(initial.viewerKey).toBeTypeOf("string");
     expect(initial.viewerKey).not.toBe("unallocated");
     await api("POST", `/api/bots/${bot.id}/messages`, { text: "Keep this fixture turn open." });
-    let control: { DUSK_CONTROL_URL: string; DUSK_CONTROL_TOKEN: string } | undefined;
+    let control: { MADANI_CONTROL_URL: string; MADANI_CONTROL_TOKEN: string } | undefined;
     await expect.poll(() => {
       try { control = JSON.parse(readFileSync(fixture!.fixtureDumpPath, "utf8")).mcpConfig?.mcpServers?.computer?.env; }
       catch { return false; }
-      return Boolean(control?.DUSK_CONTROL_URL);
+      return Boolean(control?.MADANI_CONTROL_URL);
     }, { timeout: 10_000 }).toBe(true);
-    const gate = () => fetch(control!.DUSK_CONTROL_URL, { headers: { authorization: `Bearer ${control!.DUSK_CONTROL_TOKEN}` } });
+    const gate = () => fetch(control!.MADANI_CONTROL_URL, { headers: { authorization: `Bearer ${control!.MADANI_CONTROL_TOKEN}` } });
     expect((await gate()).status).toBe(200);
     const calls = () => readFileSync(vps.calls, "utf8").split("\n").filter(Boolean).map(line => JSON.parse(line) as string[]);
     const resets = () => calls().filter(args => args.includes("/usr/local/bin/omb-screen") && args.includes("reset")).length;

@@ -10,7 +10,7 @@
     "ai agent for students",
     "best ai agent for students"
   ],
-  "answer": "**turn the notes you keep rereading into questions you can actually answer.** give the bot your reading list, lecture notes and current deadlines. get short reading sessions, flashcard drafts and a view of what's due next. dusk is free for personal use on your computer; ai costs stay separate. follow your course rules and keep assessed work yours.",
+  "answer": "**turn the notes you keep rereading into questions you can actually answer.** give the bot your reading list, lecture notes and current deadlines. get short reading sessions, flashcard drafts and a view of what's due next. madani is free for personal use on your computer; ai costs stay separate. follow your course rules and keep assessed work yours.",
   "updated": "2026-11-12",
   "review": {
     "status": "approved",
@@ -91,7 +91,7 @@
     },
     {
       "h": "the app and ai have separate costs",
-      "md": "**the app costs nothing for personal use; budget for the ai separately.** every feature is included on your computer, without an account or card. your provider bills ai on your plan. you can also choose a local model through ollama or lm studio.\n\nleave dusk open and the laptop awake for evening routines. use automations to see run history, and keep the course's own deadline system as your reference."
+      "md": "**the app costs nothing for personal use; budget for the ai separately.** every feature is included on your computer, without an account or card. your provider bills ai on your plan. you can also choose a local model through ollama or lm studio.\n\nleave madani open and the laptop awake for evening routines. use automations to see run history, and keep the course's own deadline system as your reference."
     }
   ],
   "faq": [
@@ -101,7 +101,7 @@
     },
     {
       "q": "can i text the study bot from my phone?",
-      "a": "**yes, through a paired phone browser.** add it to your home screen if useful. it sends no notifications. bots on your computer answer only while it stays on with dusk running."
+      "a": "**yes, through a paired phone browser.** add it to your home screen if useful. it sends no notifications. bots on your computer answer only while it stays on with madani running."
     },
     {
       "q": "will it know all my assignment deadlines?",
@@ -110,23 +110,23 @@
   ],
   "sources": [
     {
-      "label": "dusk bot docs: files and apps",
+      "label": "madani bot docs: files and apps",
       "url": "/docs/files-and-apps"
     },
     {
-      "label": "dusk bot docs: account and billing",
+      "label": "madani bot docs: account and billing",
       "url": "/docs/account-and-billing"
     },
     {
-      "label": "dusk bot docs: getting started",
+      "label": "madani bot docs: getting started",
       "url": "/docs/getting-started"
     },
     {
-      "label": "dusk bot docs: routines",
+      "label": "madani bot docs: routines",
       "url": "/docs/routines"
     },
     {
-      "label": "dusk bot docs: phone",
+      "label": "madani bot docs: phone",
       "url": "/docs/phone"
     },
     {

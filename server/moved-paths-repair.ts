@@ -10,10 +10,10 @@ import { INSTRUCTION_FILE, restorePaths } from "./workspace-backup-paths.ts";
 const DEFINITIONS = ["bots.json", "groups.json", "config.json", "routines.json"];
 const ID = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/;
 const MAX_FILE_BYTES = 16 * 1024 ** 2;
-// The folder a desktop keeps its data in by default, <home>\.duskbot or <home>/.duskbot, where a path ends.
+// The folder a desktop keeps its data in by default, <home>\.madanibot or <home>/.madanibot, where a path ends.
 const END = String.raw`(?=[.,;:!?)\]}]*(?:[\s"'\x60<>|]|$)|[\\/])`;
-const WINDOWS_DATA_FOLDER = new RegExp(String.raw`(?<![\w\\/])[A-Za-z]:(?:[\\/][^\\/:*?"<>|\r\n]+?)*?[\\/]\.duskbot${END}`, "gi");
-const POSIX_DATA_FOLDER = new RegExp(String.raw`(?<![\w.:\\/-])\/(?:[^/\s"'\x60<>|]+\/)*?\.duskbot${END}`, "g");
+const WINDOWS_DATA_FOLDER = new RegExp(String.raw`(?<![\w\\/])[A-Za-z]:(?:[\\/][^\\/:*?"<>|\r\n]+?)*?[\\/]\.madanibot${END}`, "gi");
+const POSIX_DATA_FOLDER = new RegExp(String.raw`(?<![\w.:\\/-])\/(?:[^/\s"'\x60<>|]+\/)*?\.madanibot${END}`, "g");
 
 type Paths = ReturnType<typeof restorePaths>;
 

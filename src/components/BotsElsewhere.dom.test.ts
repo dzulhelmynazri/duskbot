@@ -30,7 +30,7 @@ const memoryStorage = () => { const kept = new Map<string, string>(); return { g
 beforeEach(() => {
   vi.stubGlobal("localStorage", memoryStorage());
   fixture.state = { hydrated: true, connected: true, bots: [], appSettingsOpen: false, cloudAdd: null };
-  (window as unknown as { duskDesktop: unknown }).duskDesktop = { elsewhere: bridge };
+  (window as unknown as { madaniDesktop: unknown }).madaniDesktop = { elsewhere: bridge };
   host = document.createElement("div");
   document.body.append(host);
   root = createRoot(host);

@@ -3,7 +3,7 @@ import { api } from "@/state/api";
 import { parseSlackOAuthLink } from "../../shared/slack.ts";
 import type { SlackBotStatus } from "../../shared/slack.ts";
 
-export const SLACK_OAUTH_EVENT = "duskbot:slack-oauth";
+export const SLACK_OAUTH_EVENT = "madanibot:slack-oauth";
 export type SlackOAuthResult = { ok: true; status: SlackBotStatus } | { ok: false; error: string };
 
 const postOAuth = (path: string, body: unknown) => api<{ status: SlackBotStatus }>(path, {
@@ -34,7 +34,7 @@ export async function completeSlackOAuth(
 }
 
 export function useSlackOAuthLinks(): void {
-  useEffect(() => window.duskDesktop?.onSlackOAuth?.((link) => void completeSlackOAuth(link)), []);
+  useEffect(() => window.madaniDesktop?.onSlackOAuth?.((link) => void completeSlackOAuth(link)), []);
 }
 
 export function useSlackOAuthResult(onResult: (result: SlackOAuthResult) => void): void {

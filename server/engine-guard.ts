@@ -2,7 +2,7 @@
 // CLI. One would sign in with the person's own account (the Claude CLI reads its macOS Keychain sign-in whatever HOME
 // says) and spend its usage. The first attempt ends the process, so a misconfigured fixture fails at once. Only the
 // read-only probes a fixture's engine list makes (its version, help or sign-in status) still run.
-// DUSK_ALLOW_REAL_ENGINES=1 is for the live checks that mean to use one.
+// MADANI_ALLOW_REAL_ENGINES=1 is for the live checks that mean to use one.
 import childProcess from "node:child_process";
 import { existsSync, realpathSync } from "node:fs";
 import { syncBuiltinESMExports } from "node:module";
@@ -57,8 +57,8 @@ function onPath(name: string, path: string): string | null {
 
 /** whether this server runs as a test fixture: its data folder is a temporary one */
 export function fixtureServer(env: NodeJS.ProcessEnv = process.env): boolean {
-  const dataDir = env.DUSK_DATA_DIR;
-  return Boolean(dataDir) && env.DUSK_ALLOW_REAL_ENGINES !== "1" && within(real(dataDir!), temporaryRoots(env));
+  const dataDir = env.MADANI_DATA_DIR;
+  return Boolean(dataDir) && env.MADANI_ALLOW_REAL_ENGINES !== "1" && within(real(dataDir!), temporaryRoots(env));
 }
 
 export function guardRealEngines(fixtures: readonly string[], refuse: (engine: string, command: string) => never): void {

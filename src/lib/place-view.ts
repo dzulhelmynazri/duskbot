@@ -104,7 +104,7 @@ export function openPlaceAction(
     case "manage-computers": appSettings("computer"); return true;
     case "add-vps": appSettings("computer"); return true;
     case "open-vm-settings":
-      window.sessionStorage?.setItem("duskbot.settings.section", "computer");
+      window.sessionStorage?.setItem("madanibot.settings.section", "computer");
       appSettings("computer");
       return true;
     case "see-plan":

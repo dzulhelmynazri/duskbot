@@ -27,11 +27,11 @@ describe("packaged native modules", () => {
   });
 
   it("declares every natively required package in the npm manifest at the app's exact pin", () => {
-    const checkout = mkdtempSync(join(tmpdir(), "dusk-npm-package-"));
+    const checkout = mkdtempSync(join(tmpdir(), "madani-npm-package-"));
     temporaryDirectories.push(checkout);
     const pins = Object.fromEntries(nativelyRequired().map((name, i) => [name, `9.9.${i}`]));
     writeFileSync(join(checkout, "package.json"), JSON.stringify({ version: "0.0.1", dependencies: { ...pins, react: "19.0.0" } }));
-    for (const file of ["dist-server/index.js", "dist-server/duskbot.js", "dist/index.html", "LICENSE", "docs/LICENSING.md", "third_party/openmausbot/NOTICE"]) {
+    for (const file of ["dist-server/index.js", "dist-server/madanibot.js", "dist/index.html", "LICENSE", "docs/LICENSING.md", "third_party/openmausbot/NOTICE"]) {
       mkdirSync(join(checkout, file, ".."), { recursive: true });
       writeFileSync(join(checkout, file), "");
     }

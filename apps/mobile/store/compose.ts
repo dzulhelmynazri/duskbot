@@ -20,7 +20,7 @@ const fonts = fileURLToPath(new URL("../../../build/art/fonts/", import.meta.url
 const store = process.argv[2] ?? join(homedir(), "Desktop/code/omb-ref/store");
 const sheetPath = process.argv[3] ?? join(homedir(), ".playwright-mcp/store-sheet.png");
 const raw = join(store, "raw");
-const work = mkdtempSync(join(tmpdir(), "dusk-store-compose-"));
+const work = mkdtempSync(join(tmpdir(), "madani-store-compose-"));
 
 const INK = "#1b1b1f";
 const PAPER = "#fcfcfd";
@@ -39,11 +39,11 @@ function botSvg(body: string, fill: string, px: number, eyes = C.cloud) {
 }
 
 /** a full-bleed pixel sky drawn on a grid 660 points wide (the banner's cell size), stretched to the canvas */
-function skySvg(kind: "meadow" | "dusk", width: number, height: number) {
+function skySvg(kind: "meadow" | "madani", width: number, height: number) {
   const W = 660;
   const H = Math.round((W * height) / width);
   const rows = Math.floor(H / 8);
-  const s = scene(W, H, { cell: 8, seed: kind === "dusk" ? 23 : 41 });
+  const s = scene(W, H, { cell: 8, seed: kind === "madani" ? 23 : 41 });
   const fray = { fray: [0, 1, 1, 1, 2, 2, 3, 4], stray: 0.16 };
   const ground = rows - Math.round(rows * 0.16);
   if (kind === "meadow") {
@@ -51,8 +51,8 @@ function skySvg(kind: "meadow" | "dusk", width: number, height: number) {
     s.cloud(W - 120, Math.round(rows * 0.36), 12, C.pink);
     s.cloud(90, Math.round(rows * 0.52), 9, C.lemon);
   } else {
-    const DUSK = ["#2e2c86", "#4744e2", "#7a5ae8", "#b896f2", "#ffc4dd", "#ffe3ee"];
-    s.sky(DUSK.map((fill, i) => [fill, Math.round(rows * [0, 0.34, 0.5, 0.62, 0.72, 0.78][i]!)] as [string, number]), fray);
+    const MADANI = ["#2e2c86", "#4744e2", "#7a5ae8", "#b896f2", "#ffc4dd", "#ffe3ee"];
+    s.sky(MADANI.map((fill, i) => [fill, Math.round(rows * [0, 0.34, 0.5, 0.62, 0.72, 0.78][i]!)] as [string, number]), fray);
     for (let i = 0; i < 70; i++) {
       const x = Math.floor((0.7 + s.rand() * 0.3) * (W / 4)) * 4;
       const y = Math.floor(s.rand() * (rows * 0.3 * 2)) * 4;
@@ -146,7 +146,7 @@ p { font: 500 ${L.line}px/1.4 "Body"; color: ${lineInk}; margin-top: ${30 * u}px
 .island { position: absolute; left: 50%; top: ${11 * P.pt}px; width: ${126 * P.pt}px; height: ${37 * P.pt}px; margin-left: ${-63 * P.pt}px; border-radius: ${19 * P.pt}px; background: #050506; }
 .home { position: absolute; left: 50%; bottom: ${8 * P.pt}px; width: ${144 * P.pt}px; height: ${5 * P.pt}px; margin-left: ${-72 * P.pt}px; border-radius: 99px; background: ${shot.dark ? "rgba(255,255,255,0.86)" : "rgba(16,16,20,0.9)"}; }
 </style></head><body>
-${sky ? `<div class="sky">${skySvg(shot.bg as "meadow" | "dusk", L.W, L.H)}</div>` : ""}
+${sky ? `<div class="sky">${skySvg(shot.bg as "meadow" | "madani", L.W, L.H)}</div>` : ""}
 <div class="text"><h1>${esc(shot.headline)}</h1>${shot.line ? `<p>${esc(shot.line)}</p>` : ""}</div>
 ${prop}
 <div class="phone"><div class="screen"><img src="${fileUrl(screen)}" alt="">${statusBar(shot.dark)}<div class="island"></div><div class="home"></div></div></div>
@@ -185,7 +185,7 @@ function opaque(png: Buffer, width: number, height: number) {
 async function main() {
   const missing = [...new Set(SHOTS.map((shot) => shot.screen))].filter((name) => !existsSync(join(raw, `${name}.png`)));
   if (missing.length) throw new Error(`run capture.ts first; missing ${missing.join(", ")} in ${raw}`);
-  const profile = mkdtempSync(join(tmpdir(), "dusk-store-chrome-"));
+  const profile = mkdtempSync(join(tmpdir(), "madani-store-chrome-"));
   const page = await openHeadlessChrome(profile);
   const written: Array<{ file: string; label: string; width: number; height: number }> = [];
   const render = async (html: string, width: number, height: number, file: string, label: string) => {

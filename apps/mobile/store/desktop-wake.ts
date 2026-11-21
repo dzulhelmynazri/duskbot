@@ -48,7 +48,7 @@ const COMPUTER = `(() => {
       if (path === "/api/config") {
         data.vps = { ...(data.vps ?? {}), configured: true, mode: "shared", sshAlias: "fixture" };
         data.onboarding = { ...(data.onboarding ?? {}), completedAt: Date.now(), version: 999 };
-        // the owner's case: the app is a dusk cloud's, so the bot's computer is the cloud's own desktop
+        // the owner's case: the app is a madani cloud's, so the bot's computer is the cloud's own desktop
         data.cloudHome = true;
       }
       const instances = Array.isArray(data) ? data : Array.isArray(data.instances) ? data.instances : [];
@@ -66,7 +66,7 @@ try {
   await page.send("Emulation.setDeviceMetricsOverride", { width: 1280, height: 800, deviceScaleFactor: 2, mobile: false });
   await page.send("Emulation.setTouchEmulationEnabled", { enabled: false });
   await page.send("Page.addScriptToEvaluateOnNewDocument", { source: COMPUTER });
-  const ui = Number(process.env.DUSK_UI_PORT) || 5199;
+  const ui = Number(process.env.MADANI_UI_PORT) || 5199;
   await page.send("Page.navigate", { url: `http://127.0.0.1:${ui}/` });
   await page.until(`[...document.querySelectorAll("*")].some((el) => el.children.length === 0 && el.textContent.trim() === "Nova")`, 60_000).catch(async (error) => {
     const { data } = await page.send("Page.captureScreenshot", { format: "png" });

@@ -8,7 +8,7 @@ import { localSettingsPlace, remoteSettingsPlace, syncSettings } from "./setting
 const EVERY_MS = 2 * 60_000;
 const LOOK_MS = 20_000;
 const SOON_MS = 1_000;
-export const SETTINGS_CHANGED = "duskbot:settings-changed";
+export const SETTINGS_CHANGED = "madanibot:settings-changed";
 
 /** What a place last changed, in one line: two looks that differ mean something changed there. */
 const lastChange = (listing) => listing ? Object.entries(listing.settings).map(([key, entry]) => `${key}:${entry.digest.slice(0, 12)}:${entry.at}`).sort().join(",") : "";

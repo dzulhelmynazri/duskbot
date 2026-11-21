@@ -122,7 +122,7 @@ jobs:
     timeout-minutes: 90
     env:
       # until the Developer ID certificate is in the repo's secrets the Mac build is ad-hoc signed and not notarized:
-      # macOS asks people to allow it once (dusk.bot/download says how), and it can't update itself (docs/releasing.md)
+      # macOS asks people to allow it once (madani.bot/download says how), and it can't update itself (docs/releasing.md)
       MAC_SIGNED: ${{ secrets.MAC_CERT_P12_BASE64 != '' }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -172,28 +172,28 @@ jobs:
         # macos-15 runners have 7 GB, so Node's default heap stops near 2 GB; the server typecheck now needs a little more.
         env:
           NODE_OPTIONS: --max-old-space-size=4096
-          # dusk bot's own OAuth clients (shared/native-connectors.json), baked in by scripts/bundle-server.mjs; a missing one
+          # madani bot's own OAuth clients (shared/native-connectors.json), baked in by scripts/bundle-server.mjs; a missing one
           # leaves that one-click sign-in off
-          DUSK_GITHUB_APP_CLIENT_ID: ${{ secrets.DUSK_GITHUB_APP_CLIENT_ID }}
-          DUSK_GOOGLE_DRIVE_CLIENT_ID: ${{ secrets.DUSK_GOOGLE_DRIVE_CLIENT_ID }}
-          DUSK_GOOGLE_DRIVE_CLIENT_SECRET: ${{ secrets.DUSK_GOOGLE_DRIVE_CLIENT_SECRET }}
-          DUSK_OAUTH_NOTION_CLIENT_ID: ${{ secrets.DUSK_OAUTH_NOTION_CLIENT_ID }}
-          DUSK_OAUTH_NOTION_CLIENT_SECRET: ${{ secrets.DUSK_OAUTH_NOTION_CLIENT_SECRET }}
-          DUSK_OAUTH_LINEAR_CLIENT_ID: ${{ secrets.DUSK_OAUTH_LINEAR_CLIENT_ID }}
-          DUSK_OAUTH_LINEAR_CLIENT_SECRET: ${{ secrets.DUSK_OAUTH_LINEAR_CLIENT_SECRET }}
-          DUSK_OAUTH_AIRTABLE_CLIENT_ID: ${{ secrets.DUSK_OAUTH_AIRTABLE_CLIENT_ID }}
-          DUSK_OAUTH_AIRTABLE_CLIENT_SECRET: ${{ secrets.DUSK_OAUTH_AIRTABLE_CLIENT_SECRET }}
-          DUSK_OAUTH_TODOIST_CLIENT_ID: ${{ secrets.DUSK_OAUTH_TODOIST_CLIENT_ID }}
-          DUSK_OAUTH_TODOIST_CLIENT_SECRET: ${{ secrets.DUSK_OAUTH_TODOIST_CLIENT_SECRET }}
-          DUSK_OAUTH_CLICKUP_CLIENT_ID: ${{ secrets.DUSK_OAUTH_CLICKUP_CLIENT_ID }}
-          DUSK_OAUTH_CLICKUP_CLIENT_SECRET: ${{ secrets.DUSK_OAUTH_CLICKUP_CLIENT_SECRET }}
-          DUSK_OAUTH_TRELLO_API_KEY: ${{ secrets.DUSK_OAUTH_TRELLO_API_KEY }}
-          DUSK_OAUTH_DROPBOX_CLIENT_ID: ${{ secrets.DUSK_OAUTH_DROPBOX_CLIENT_ID }}
+          MADANI_GITHUB_APP_CLIENT_ID: ${{ secrets.MADANI_GITHUB_APP_CLIENT_ID }}
+          MADANI_GOOGLE_DRIVE_CLIENT_ID: ${{ secrets.MADANI_GOOGLE_DRIVE_CLIENT_ID }}
+          MADANI_GOOGLE_DRIVE_CLIENT_SECRET: ${{ secrets.MADANI_GOOGLE_DRIVE_CLIENT_SECRET }}
+          MADANI_OAUTH_NOTION_CLIENT_ID: ${{ secrets.MADANI_OAUTH_NOTION_CLIENT_ID }}
+          MADANI_OAUTH_NOTION_CLIENT_SECRET: ${{ secrets.MADANI_OAUTH_NOTION_CLIENT_SECRET }}
+          MADANI_OAUTH_LINEAR_CLIENT_ID: ${{ secrets.MADANI_OAUTH_LINEAR_CLIENT_ID }}
+          MADANI_OAUTH_LINEAR_CLIENT_SECRET: ${{ secrets.MADANI_OAUTH_LINEAR_CLIENT_SECRET }}
+          MADANI_OAUTH_AIRTABLE_CLIENT_ID: ${{ secrets.MADANI_OAUTH_AIRTABLE_CLIENT_ID }}
+          MADANI_OAUTH_AIRTABLE_CLIENT_SECRET: ${{ secrets.MADANI_OAUTH_AIRTABLE_CLIENT_SECRET }}
+          MADANI_OAUTH_TODOIST_CLIENT_ID: ${{ secrets.MADANI_OAUTH_TODOIST_CLIENT_ID }}
+          MADANI_OAUTH_TODOIST_CLIENT_SECRET: ${{ secrets.MADANI_OAUTH_TODOIST_CLIENT_SECRET }}
+          MADANI_OAUTH_CLICKUP_CLIENT_ID: ${{ secrets.MADANI_OAUTH_CLICKUP_CLIENT_ID }}
+          MADANI_OAUTH_CLICKUP_CLIENT_SECRET: ${{ secrets.MADANI_OAUTH_CLICKUP_CLIENT_SECRET }}
+          MADANI_OAUTH_TRELLO_API_KEY: ${{ secrets.MADANI_OAUTH_TRELLO_API_KEY }}
+          MADANI_OAUTH_DROPBOX_CLIENT_ID: ${{ secrets.MADANI_OAUTH_DROPBOX_CLIENT_ID }}
         run: pnpm package:mac
 
       - name: "Gate: the signature must verify BEFORE notarization"
         run: |
-          for app in "release/mac-arm64/Dusk Bot.app" "release/mac/Dusk Bot.app"; do
+          for app in "release/mac-arm64/Madani Bot.app" "release/mac/Madani Bot.app"; do
             codesign --verify --deep --strict "$app"
             bin="$app/Contents/Resources/cloudflared/cloudflared"
             test -x "$bin" || { echo "::error::missing executable $bin"; exit 1; }
@@ -210,7 +210,7 @@ jobs:
             test -s "$app/Contents/Resources/parts.json" || { echo "::error::missing parts.json in $app"; exit 1; }
             case "$app" in *mac-arm64*) parch=arm64 ;; *) parch=x64 ;; esac
             part="$RUNNER_TEMP/part-$parch/browser-engine"; rm -rf "$part"; mkdir -p "$part"
-            ditto -x -k "release/DuskBot-$(node -p "require('./package.json').version")-browser-darwin-$parch.zip" "$part"
+            ditto -x -k "release/MadaniBot-$(node -p "require('./package.json').version")-browser-darwin-$parch.zip" "$part"
             for browser_bin in "$part/agent-browser" "$part/chrome/"*/chrome-headless-shell; do
               test -x "$browser_bin"
               codesign --verify --strict "$browser_bin"
@@ -223,22 +223,22 @@ jobs:
       - name: "Gate: signed native browser works with an empty home"
         run: |
           case "$(node -p process.arch)" in
-            arm64) resources="$PWD/release/mac-arm64/Dusk Bot.app/Contents/Resources" ;;
-            x64) resources="$PWD/release/mac/Dusk Bot.app/Contents/Resources" ;;
+            arm64) resources="$PWD/release/mac-arm64/Madani Bot.app/Contents/Resources" ;;
+            x64) resources="$PWD/release/mac/Madani Bot.app/Contents/Resources" ;;
             *) exit 1 ;;
           esac
           # the browser is a downloaded part: smoke the signed copy the release ships, unpacked as the app unpacks it
           part="$RUNNER_TEMP/part-$(node -p process.arch)"
           node scripts/smoke-browser-bundle.mjs --resources "$part"
-          DUSK_SMOKE_DIST="$resources/server" node scripts/smoke-packaged-server.mjs --browser-bundle "$part/browser-engine"
+          MADANI_SMOKE_DIST="$resources/server" node scripts/smoke-packaged-server.mjs --browser-bundle "$part/browser-engine"
 
       - name: "Gate: both packaged servers start and every helper path resolves"
         run: |
-          for app in "release/mac-arm64/Dusk Bot.app" "release/mac/Dusk Bot.app"; do
+          for app in "release/mac-arm64/Madani Bot.app" "release/mac/Madani Bot.app"; do
             res="$app/Contents/Resources"
             # the server tree is plain JS — runnable on the runner's node
             # regardless of the app binary's arch
-            DUSK_SMOKE_DIST="$res/server" node scripts/smoke-packaged-server.mjs \
+            MADANI_SMOKE_DIST="$res/server" node scripts/smoke-packaged-server.mjs \
               || { echo "::error::packaged server in $app failed to start"; exit 1; }
             node scripts/check-module-scopes.mjs "$res" || exit 1
             node --input-type=module - "$res/server" <<'EOF'
@@ -254,7 +254,7 @@ jobs:
           console.log(`ok: ${Object.keys(SPAWNED_PROXIES).length} proxies resolve in ${server}`);
           EOF
             # the speech helper is a nested signed .app and stays universal
-            speech="$res/Dusk Bot Speech.app/Contents/MacOS/speech-helper"
+            speech="$res/Madani Bot Speech.app/Contents/MacOS/speech-helper"
             lipo -archs "$speech" | grep -q "x86_64" || { echo "::error::$speech lacks x86_64"; exit 1; }
             lipo -archs "$speech" | grep -q "arm64" || { echo "::error::$speech lacks arm64"; exit 1; }
             # every other native payload carries only this app's own CPU slice
@@ -307,17 +307,17 @@ jobs:
           }
           v=$(node -p "require('./package.json').version")
           for pair in "arm64:release/mac-arm64" "x64:release/mac"; do
-            arch="${pair%%:*}"; app="${pair#*:}/Dusk Bot.app"
+            arch="${pair%%:*}"; app="${pair#*:}/Madani Bot.app"
             ditto -c -k --sequesterRsrc --keepParent "$app" "$RUNNER_TEMP/app-$arch.zip"
             notarize "$RUNNER_TEMP/app-$arch.zip"
             # a zip cannot be stapled: Gatekeeper finds the browser part's ticket online
-            notarize "release/DuskBot-$v-browser-darwin-$arch.zip"
+            notarize "release/MadaniBot-$v-browser-darwin-$arch.zip"
             staple "$app"
-            scripts/mac-dmg-swap-app.sh "release/DuskBot-$v-$arch.dmg" "$app" "$MAC_SIGN_IDENTITY" "$MAC_KEYCHAIN"
-            notarize "release/DuskBot-$v-$arch.dmg"
-            staple "release/DuskBot-$v-$arch.dmg"
-            rm -f "release/DuskBot-$v-$arch.zip" "release/DuskBot-$v-$arch.zip.blockmap"
-            ditto -c -k --sequesterRsrc --keepParent "$app" "release/DuskBot-$v-$arch.zip"
+            scripts/mac-dmg-swap-app.sh "release/MadaniBot-$v-$arch.dmg" "$app" "$MAC_SIGN_IDENTITY" "$MAC_KEYCHAIN"
+            notarize "release/MadaniBot-$v-$arch.dmg"
+            staple "release/MadaniBot-$v-$arch.dmg"
+            rm -f "release/MadaniBot-$v-$arch.zip" "release/MadaniBot-$v-$arch.zip.blockmap"
+            ditto -c -k --sequesterRsrc --keepParent "$app" "release/MadaniBot-$v-$arch.zip"
           done
           rm "$RUNNER_TEMP/notary.p8"
 
@@ -326,7 +326,7 @@ jobs:
         run: |
           v=$(node -p "require('./package.json').version")
           for pair in "arm64:release/mac-arm64" "x64:release/mac"; do
-            arch="${pair%%:*}"; app="${pair#*:}/Dusk Bot.app"; dmg="release/DuskBot-$v-$arch.dmg"
+            arch="${pair%%:*}"; app="${pair#*:}/Madani Bot.app"; dmg="release/MadaniBot-$v-$arch.dmg"
             codesign --verify --deep --strict --verbose=2 "$app"
             spctl -a -vvv -t exec "$app" 2>&1 | tee /dev/stderr | grep -q "source=Notarized Developer ID"
             xcrun stapler validate "$app"
@@ -339,8 +339,8 @@ jobs:
       - name: Stable-named copies for the README's /latest/download links
         run: |
           v=$(node -p "require('./package.json').version")
-          cp "release/DuskBot-$v-arm64.dmg" release/DuskBot.dmg
-          cp "release/DuskBot-$v-x64.dmg" release/DuskBot-intel.dmg
+          cp "release/MadaniBot-$v-arm64.dmg" release/MadaniBot.dmg
+          cp "release/MadaniBot-$v-x64.dmg" release/MadaniBot-intel.dmg
 
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
@@ -375,29 +375,29 @@ jobs:
         env:
           # the server typecheck in package:prepare outgrows Node's default ~2 GB heap (both runners have 16 GB)
           NODE_OPTIONS: --max-old-space-size=4096
-          # dusk bot's own OAuth clients (shared/native-connectors.json), baked in by scripts/bundle-server.mjs; a missing one
+          # madani bot's own OAuth clients (shared/native-connectors.json), baked in by scripts/bundle-server.mjs; a missing one
           # leaves that one-click sign-in off
-          DUSK_GITHUB_APP_CLIENT_ID: ${{ secrets.DUSK_GITHUB_APP_CLIENT_ID }}
-          DUSK_GOOGLE_DRIVE_CLIENT_ID: ${{ secrets.DUSK_GOOGLE_DRIVE_CLIENT_ID }}
-          DUSK_GOOGLE_DRIVE_CLIENT_SECRET: ${{ secrets.DUSK_GOOGLE_DRIVE_CLIENT_SECRET }}
-          DUSK_OAUTH_NOTION_CLIENT_ID: ${{ secrets.DUSK_OAUTH_NOTION_CLIENT_ID }}
-          DUSK_OAUTH_NOTION_CLIENT_SECRET: ${{ secrets.DUSK_OAUTH_NOTION_CLIENT_SECRET }}
-          DUSK_OAUTH_LINEAR_CLIENT_ID: ${{ secrets.DUSK_OAUTH_LINEAR_CLIENT_ID }}
-          DUSK_OAUTH_LINEAR_CLIENT_SECRET: ${{ secrets.DUSK_OAUTH_LINEAR_CLIENT_SECRET }}
-          DUSK_OAUTH_AIRTABLE_CLIENT_ID: ${{ secrets.DUSK_OAUTH_AIRTABLE_CLIENT_ID }}
-          DUSK_OAUTH_AIRTABLE_CLIENT_SECRET: ${{ secrets.DUSK_OAUTH_AIRTABLE_CLIENT_SECRET }}
-          DUSK_OAUTH_TODOIST_CLIENT_ID: ${{ secrets.DUSK_OAUTH_TODOIST_CLIENT_ID }}
-          DUSK_OAUTH_TODOIST_CLIENT_SECRET: ${{ secrets.DUSK_OAUTH_TODOIST_CLIENT_SECRET }}
-          DUSK_OAUTH_CLICKUP_CLIENT_ID: ${{ secrets.DUSK_OAUTH_CLICKUP_CLIENT_ID }}
-          DUSK_OAUTH_CLICKUP_CLIENT_SECRET: ${{ secrets.DUSK_OAUTH_CLICKUP_CLIENT_SECRET }}
-          DUSK_OAUTH_TRELLO_API_KEY: ${{ secrets.DUSK_OAUTH_TRELLO_API_KEY }}
-          DUSK_OAUTH_DROPBOX_CLIENT_ID: ${{ secrets.DUSK_OAUTH_DROPBOX_CLIENT_ID }}
+          MADANI_GITHUB_APP_CLIENT_ID: ${{ secrets.MADANI_GITHUB_APP_CLIENT_ID }}
+          MADANI_GOOGLE_DRIVE_CLIENT_ID: ${{ secrets.MADANI_GOOGLE_DRIVE_CLIENT_ID }}
+          MADANI_GOOGLE_DRIVE_CLIENT_SECRET: ${{ secrets.MADANI_GOOGLE_DRIVE_CLIENT_SECRET }}
+          MADANI_OAUTH_NOTION_CLIENT_ID: ${{ secrets.MADANI_OAUTH_NOTION_CLIENT_ID }}
+          MADANI_OAUTH_NOTION_CLIENT_SECRET: ${{ secrets.MADANI_OAUTH_NOTION_CLIENT_SECRET }}
+          MADANI_OAUTH_LINEAR_CLIENT_ID: ${{ secrets.MADANI_OAUTH_LINEAR_CLIENT_ID }}
+          MADANI_OAUTH_LINEAR_CLIENT_SECRET: ${{ secrets.MADANI_OAUTH_LINEAR_CLIENT_SECRET }}
+          MADANI_OAUTH_AIRTABLE_CLIENT_ID: ${{ secrets.MADANI_OAUTH_AIRTABLE_CLIENT_ID }}
+          MADANI_OAUTH_AIRTABLE_CLIENT_SECRET: ${{ secrets.MADANI_OAUTH_AIRTABLE_CLIENT_SECRET }}
+          MADANI_OAUTH_TODOIST_CLIENT_ID: ${{ secrets.MADANI_OAUTH_TODOIST_CLIENT_ID }}
+          MADANI_OAUTH_TODOIST_CLIENT_SECRET: ${{ secrets.MADANI_OAUTH_TODOIST_CLIENT_SECRET }}
+          MADANI_OAUTH_CLICKUP_CLIENT_ID: ${{ secrets.MADANI_OAUTH_CLICKUP_CLIENT_ID }}
+          MADANI_OAUTH_CLICKUP_CLIENT_SECRET: ${{ secrets.MADANI_OAUTH_CLICKUP_CLIENT_SECRET }}
+          MADANI_OAUTH_TRELLO_API_KEY: ${{ secrets.MADANI_OAUTH_TRELLO_API_KEY }}
+          MADANI_OAUTH_DROPBOX_CLIENT_ID: ${{ secrets.MADANI_OAUTH_DROPBOX_CLIENT_ID }}
         run: pnpm package:win
       - name: "Gate: bundled browser works with an empty home"
         run: node scripts/smoke-browser-bundle.mjs --resources "${{ github.workspace }}/release/win-unpacked/resources"
       - name: "Gate: packaged Windows server discovers its browser"
         env:
-          DUSK_SMOKE_DIST: ${{ github.workspace }}/release/win-unpacked/resources/server
+          MADANI_SMOKE_DIST: ${{ github.workspace }}/release/win-unpacked/resources/server
         run: node scripts/smoke-packaged-server.mjs --browser-bundle "${{ github.workspace }}/release/win-unpacked/resources/browser-engine"
       - name: Verify the packaged tree and start the packaged server
         shell: bash
@@ -415,7 +415,7 @@ jobs:
           [ "$actual" = "$expected" ] || { echo "::error::cloudflared hash is $actual"; exit 1; }
           "$res/cloudflared/cloudflared.exe" version | grep -Fq "cloudflared version 2026.10.3 " || {
             echo "::error::cloudflared has the wrong version"; exit 1; }
-          HOME="$RUNNER_TEMP/smoke" USERPROFILE="$RUNNER_TEMP/smoke" DUSK_PORT=21987 \
+          HOME="$RUNNER_TEMP/smoke" USERPROFILE="$RUNNER_TEMP/smoke" MADANI_PORT=21987 \
             node "$res/server/index.js" > "$RUNNER_TEMP/server.log" 2>&1 &
           pid=$!
           for _ in $(seq 1 90); do
@@ -430,7 +430,7 @@ jobs:
         shell: bash
         run: |
           v=$(node -p "require('./package.json').version")
-          cp "release/DuskBot-$v-setup.exe" release/DuskBot-setup.exe
+          cp "release/MadaniBot-$v-setup.exe" release/MadaniBot-setup.exe
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: windows-release
@@ -470,23 +470,23 @@ jobs:
         env:
           # the server typecheck in package:prepare outgrows Node's default ~2 GB heap (both runners have 16 GB)
           NODE_OPTIONS: --max-old-space-size=4096
-          # dusk bot's own OAuth clients (shared/native-connectors.json), baked in by scripts/bundle-server.mjs; a missing one
+          # madani bot's own OAuth clients (shared/native-connectors.json), baked in by scripts/bundle-server.mjs; a missing one
           # leaves that one-click sign-in off
-          DUSK_GITHUB_APP_CLIENT_ID: ${{ secrets.DUSK_GITHUB_APP_CLIENT_ID }}
-          DUSK_GOOGLE_DRIVE_CLIENT_ID: ${{ secrets.DUSK_GOOGLE_DRIVE_CLIENT_ID }}
-          DUSK_GOOGLE_DRIVE_CLIENT_SECRET: ${{ secrets.DUSK_GOOGLE_DRIVE_CLIENT_SECRET }}
-          DUSK_OAUTH_NOTION_CLIENT_ID: ${{ secrets.DUSK_OAUTH_NOTION_CLIENT_ID }}
-          DUSK_OAUTH_NOTION_CLIENT_SECRET: ${{ secrets.DUSK_OAUTH_NOTION_CLIENT_SECRET }}
-          DUSK_OAUTH_LINEAR_CLIENT_ID: ${{ secrets.DUSK_OAUTH_LINEAR_CLIENT_ID }}
-          DUSK_OAUTH_LINEAR_CLIENT_SECRET: ${{ secrets.DUSK_OAUTH_LINEAR_CLIENT_SECRET }}
-          DUSK_OAUTH_AIRTABLE_CLIENT_ID: ${{ secrets.DUSK_OAUTH_AIRTABLE_CLIENT_ID }}
-          DUSK_OAUTH_AIRTABLE_CLIENT_SECRET: ${{ secrets.DUSK_OAUTH_AIRTABLE_CLIENT_SECRET }}
-          DUSK_OAUTH_TODOIST_CLIENT_ID: ${{ secrets.DUSK_OAUTH_TODOIST_CLIENT_ID }}
-          DUSK_OAUTH_TODOIST_CLIENT_SECRET: ${{ secrets.DUSK_OAUTH_TODOIST_CLIENT_SECRET }}
-          DUSK_OAUTH_CLICKUP_CLIENT_ID: ${{ secrets.DUSK_OAUTH_CLICKUP_CLIENT_ID }}
-          DUSK_OAUTH_CLICKUP_CLIENT_SECRET: ${{ secrets.DUSK_OAUTH_CLICKUP_CLIENT_SECRET }}
-          DUSK_OAUTH_TRELLO_API_KEY: ${{ secrets.DUSK_OAUTH_TRELLO_API_KEY }}
-          DUSK_OAUTH_DROPBOX_CLIENT_ID: ${{ secrets.DUSK_OAUTH_DROPBOX_CLIENT_ID }}
+          MADANI_GITHUB_APP_CLIENT_ID: ${{ secrets.MADANI_GITHUB_APP_CLIENT_ID }}
+          MADANI_GOOGLE_DRIVE_CLIENT_ID: ${{ secrets.MADANI_GOOGLE_DRIVE_CLIENT_ID }}
+          MADANI_GOOGLE_DRIVE_CLIENT_SECRET: ${{ secrets.MADANI_GOOGLE_DRIVE_CLIENT_SECRET }}
+          MADANI_OAUTH_NOTION_CLIENT_ID: ${{ secrets.MADANI_OAUTH_NOTION_CLIENT_ID }}
+          MADANI_OAUTH_NOTION_CLIENT_SECRET: ${{ secrets.MADANI_OAUTH_NOTION_CLIENT_SECRET }}
+          MADANI_OAUTH_LINEAR_CLIENT_ID: ${{ secrets.MADANI_OAUTH_LINEAR_CLIENT_ID }}
+          MADANI_OAUTH_LINEAR_CLIENT_SECRET: ${{ secrets.MADANI_OAUTH_LINEAR_CLIENT_SECRET }}
+          MADANI_OAUTH_AIRTABLE_CLIENT_ID: ${{ secrets.MADANI_OAUTH_AIRTABLE_CLIENT_ID }}
+          MADANI_OAUTH_AIRTABLE_CLIENT_SECRET: ${{ secrets.MADANI_OAUTH_AIRTABLE_CLIENT_SECRET }}
+          MADANI_OAUTH_TODOIST_CLIENT_ID: ${{ secrets.MADANI_OAUTH_TODOIST_CLIENT_ID }}
+          MADANI_OAUTH_TODOIST_CLIENT_SECRET: ${{ secrets.MADANI_OAUTH_TODOIST_CLIENT_SECRET }}
+          MADANI_OAUTH_CLICKUP_CLIENT_ID: ${{ secrets.MADANI_OAUTH_CLICKUP_CLIENT_ID }}
+          MADANI_OAUTH_CLICKUP_CLIENT_SECRET: ${{ secrets.MADANI_OAUTH_CLICKUP_CLIENT_SECRET }}
+          MADANI_OAUTH_TRELLO_API_KEY: ${{ secrets.MADANI_OAUTH_TRELLO_API_KEY }}
+          MADANI_OAUTH_DROPBOX_CLIENT_ID: ${{ secrets.MADANI_OAUTH_DROPBOX_CLIENT_ID }}
         run: pnpm package:linux
       - name: Verify package contents and metadata
         run: node scripts/verify-linux-package.mjs
@@ -511,27 +511,27 @@ jobs:
           sudo chmod 4755 release/linux-unpacked/chrome-sandbox
           test "$(stat -c '%U:%G %a' release/linux-unpacked/chrome-sandbox)" = "root:root 4755"
       - name: "Gate: installed browser works with Ubuntu sandbox restrictions"
-        run: node scripts/smoke-browser-bundle.mjs --resources "/opt/dusk-bot/resources"
+        run: node scripts/smoke-browser-bundle.mjs --resources "/opt/madani-bot/resources"
       - name: "Gate: packaged Linux server discovers its browser"
         env:
-          DUSK_SMOKE_DIST: /opt/dusk-bot/resources/server
-        run: node scripts/smoke-packaged-server.mjs --browser-bundle "/opt/dusk-bot/resources/browser-engine"
+          MADANI_SMOKE_DIST: /opt/madani-bot/resources/server
+        run: node scripts/smoke-packaged-server.mjs --browser-bundle "/opt/madani-bot/resources/browser-engine"
       - name: "Gate: packaged server and phone helper load as ES modules"
-        run: node scripts/check-module-scopes.mjs "/opt/dusk-bot/resources"
+        run: node scripts/check-module-scopes.mjs "/opt/madani-bot/resources"
       - name: Smoke the packages
         env:
-          DUSK_KEEP_SMOKE_DIR: "1"
-          DUSK_SMOKE_INSTALLED_DEB: "1"
+          MADANI_KEEP_SMOKE_DIR: "1"
+          MADANI_SMOKE_INSTALLED_DEB: "1"
         run: pnpm smoke:linux-package
       - name: Remove the installed upgrade fixture
         if: always()
-        run: sudo dpkg --purge duskbot || true
+        run: sudo dpkg --purge madanibot || true
       - name: Stable-named copies and checksums
         run: |
           v=$(node -p "require('./package.json').version")
-          cp "release/DuskBot-$v-amd64.deb" release/DuskBot-amd64.deb
-          cp "release/DuskBot-$v-x86_64.AppImage" release/DuskBot.AppImage
-          (cd release && sha256sum DuskBot-$v-amd64.deb DuskBot-$v-x86_64.AppImage > SHA256SUMS-ubuntu-x64.txt)
+          cp "release/MadaniBot-$v-amd64.deb" release/MadaniBot-amd64.deb
+          cp "release/MadaniBot-$v-x86_64.AppImage" release/MadaniBot.AppImage
+          (cd release && sha256sum MadaniBot-$v-amd64.deb MadaniBot-$v-x86_64.AppImage > SHA256SUMS-ubuntu-x64.txt)
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: linux-release
@@ -565,24 +565,24 @@ jobs:
           VERSION: ${{ needs.prepare.outputs.version }}
         run: |
           required=(
-            "DuskBot-$VERSION-amd64.deb"
-            "DuskBot-$VERSION-arm64.dmg"
-            "DuskBot-$VERSION-arm64.zip"
-            "DuskBot-$VERSION-setup.exe"
-            "DuskBot-$VERSION-x64.dmg"
-            "DuskBot-$VERSION-x64.zip"
-            "DuskBot-$VERSION-browser-darwin-arm64.zip"
-            "DuskBot-$VERSION-browser-darwin-x64.zip"
-            "DuskBot-$VERSION-x86_64.AppImage"
-            DuskBot-amd64.deb DuskBot-intel.dmg DuskBot-setup.exe
-            DuskBot.AppImage DuskBot.dmg SHA256SUMS-ubuntu-x64.txt
+            "MadaniBot-$VERSION-amd64.deb"
+            "MadaniBot-$VERSION-arm64.dmg"
+            "MadaniBot-$VERSION-arm64.zip"
+            "MadaniBot-$VERSION-setup.exe"
+            "MadaniBot-$VERSION-x64.dmg"
+            "MadaniBot-$VERSION-x64.zip"
+            "MadaniBot-$VERSION-browser-darwin-arm64.zip"
+            "MadaniBot-$VERSION-browser-darwin-x64.zip"
+            "MadaniBot-$VERSION-x86_64.AppImage"
+            MadaniBot-amd64.deb MadaniBot-intel.dmg MadaniBot-setup.exe
+            MadaniBot.AppImage MadaniBot.dmg SHA256SUMS-ubuntu-x64.txt
           )
           for file in "${required[@]}"; do
             test -s "assets/$file" || { echo "::error::missing or empty release asset: $file"; exit 1; }
           done
           test "$(find assets -maxdepth 1 -type f | wc -l | tr -d ' ')" = "${#required[@]}" || {
             echo "::error::unexpected release asset set"; find assets -maxdepth 1 -type f -print; exit 1; }
-      # the files dusk.bot serves for this release: the installers' sums and the signed latest.json the app checks
+      # the files madani.bot serves for this release: the installers' sums and the signed latest.json the app checks
       # (server/update-check.ts). Kept apart from the canonical asset set, which the draft must match exactly.
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -600,21 +600,21 @@ jobs:
       - name: Sign the update manifest
         env:
           VERSION: ${{ needs.prepare.outputs.version }}
-          DUSK_RELEASE_SIGNING_KEY: ${{ secrets.DUSK_RELEASE_SIGNING_KEY }}
+          MADANI_RELEASE_SIGNING_KEY: ${{ secrets.MADANI_RELEASE_SIGNING_KEY }}
         run: |
-          if [ -z "$DUSK_RELEASE_SIGNING_KEY" ]; then
-            echo "::warning title=No update manifest::DUSK_RELEASE_SIGNING_KEY is not set, so apps will not hear about this release"
+          if [ -z "$MADANI_RELEASE_SIGNING_KEY" ]; then
+            echo "::warning title=No update manifest::MADANI_RELEASE_SIGNING_KEY is not set, so apps will not hear about this release"
             exit 0
           fi
           mkdir -p site
-          cp assets/DuskBot-"$VERSION"-* site/
+          cp assets/MadaniBot-"$VERSION"-* site/
           node src/scripts/release-manifest.ts site --version "$VERSION"
-          find site -maxdepth 1 -name 'DuskBot-*' -delete
+          find site -maxdepth 1 -name 'MadaniBot-*' -delete
           cat site/SHA256SUMS
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         if: hashFiles('site/latest.json') != ''
         with:
-          name: dusk-site
+          name: madani-site
           path: site/
           if-no-files-found: error
           retention-days: 90
@@ -647,7 +647,7 @@ jobs:
             done
           }
           ensure_draft "$GITHUB_REPOSITORY" --target "$SHA" \
-            --draft --title "dusk bot $VERSION" --generate-notes
+            --draft --title "madani bot $VERSION" --generate-notes
           target=$(gh release view "$tag" --repo "$GITHUB_REPOSITORY" --json targetCommitish --jq .targetCommitish)
           target_sha=$(gh api "repos/$GITHUB_REPOSITORY/commits/$target" --jq .sha)
           test "$target_sha" = "$SHA" || {
@@ -703,4 +703,4 @@ jobs:
             --repo "$GITHUB_REPOSITORY" --draft=false --latest
           GH_TOKEN="$CANONICAL_TOKEN" gh release view "v$VERSION" \
             --repo "$GITHUB_REPOSITORY" --json isDraft --jq .isDraft | grep -q false
-          echo "published v$VERSION; put it on dusk.bot with scripts/publish-downloads.sh v$VERSION (docs/LAUNCH.md)"
+          echo "published v$VERSION; put it on madani.bot with scripts/publish-downloads.sh v$VERSION (docs/LAUNCH.md)"

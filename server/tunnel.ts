@@ -1,4 +1,4 @@
-// `duskbot serve --tunnel`: every public request arrives over an IPC listener, so request-auth always demands a paired session.
+// `madanibot serve --tunnel`: every public request arrives over an IPC listener, so request-auth always demands a paired session.
 import { spawn } from "node:child_process";
 import { randomUUID } from "node:crypto";
 import { chmodSync, existsSync, mkdirSync, readFileSync, statSync } from "node:fs";
@@ -124,7 +124,7 @@ export interface TunnelRecovery {
 
 const STOPPED_TUNNEL: ManagedTunnelState = { status: "stopped", ready: false };
 
-/** A server's operator owns its environment, so DUSK_CONTROL_PLANE_URL is always honoured here (the desktop: dev builds only). */
+/** A server's operator owns its environment, so MADANI_CONTROL_PLANE_URL is always honoured here (the desktop: dev builds only). */
 export function createTunnelAccount(options: {
   dataDir: string;
   version: string;
@@ -169,7 +169,7 @@ export function createTunnelAccount(options: {
   return { service, credentials, controlPlane };
 }
 
-/** DUSK_CLOUDFLARED_PATH, then the copy this command downloaded into the data
+/** MADANI_CLOUDFLARED_PATH, then the copy this command downloaded into the data
  * dir, then PATH. */
 export function cloudflaredPath(dataDir: string, env: NodeJS.ProcessEnv = process.env): string | null {
   return resolveCloudflaredBinary({ isPackaged: false, appPath: dataDir, environment: env });
@@ -226,7 +226,7 @@ export interface RunningTunnel {
   stop(): Promise<void>;
 }
 
-/** The control plane points the tunnel at 127.0.0.1:8812 (DUSK_TUNNEL_ORIGIN_PORT for tests); the gateway forwards to the IPC socket. */
+/** The control plane points the tunnel at 127.0.0.1:8812 (MADANI_TUNNEL_ORIGIN_PORT for tests); the gateway forwards to the IPC socket. */
 export function startTunnel(options: {
   dataDir: string;
   access: ManagedTunnelAccess;
@@ -238,7 +238,7 @@ export function startTunnel(options: {
   onState?: (state: ManagedTunnelState) => void;
 }): RunningTunnel {
   const env = options.env ?? process.env;
-  const originPort = Number(env.DUSK_TUNNEL_ORIGIN_PORT || MANAGED_COMPANION_ORIGIN_PORT);
+  const originPort = Number(env.MADANI_TUNNEL_ORIGIN_PORT || MANAGED_COMPANION_ORIGIN_PORT);
   let current: ManagedTunnelState = { status: "stopped", ready: false };
   const tunnel = createManagedCompanionTunnel({
     binaryPath: options.binaryPath,

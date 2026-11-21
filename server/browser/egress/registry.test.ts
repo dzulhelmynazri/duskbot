@@ -10,12 +10,12 @@ import type { ListenerOwnership } from "./ownership.ts";
 
 const noScans = { streamPorts: () => [], devToolsPorts: () => [] };
 
-describe("dusk bot's own listeners", () => {
+describe("madani bot's own listeners", () => {
   it("lists the default ports everywhere, and a server's edge, Caddy admin ports on servers", () => {
     const desktop = staticOwnPorts("desktop", {});
     for (const port of [8799, 18799, 28799, 8800, 8798, 18798, 28798, 8810, 8811, 8812, 5199, 6080]) expect(desktop.has(port), String(port)).toBe(true);
     for (const port of [8080, 2019, 8820, 8821]) expect(desktop.has(port), String(port)).toBe(false);
-    const server = staticOwnPorts("server", { DUSK_PORT: "9100", DUSK_WEBHOOK_PORT: "9101", DUSK_COMPANION_PORT: "nope" });
+    const server = staticOwnPorts("server", { MADANI_PORT: "9100", MADANI_WEBHOOK_PORT: "9101", MADANI_COMPANION_PORT: "nope" });
     for (const port of [8080, 2019, 8810, 9100, 9101]) expect(server.has(port), String(port)).toBe(true);
     for (const port of [8820, 8821, 9800, 9801]) expect(server.has(port), String(port)).toBe(false);
     expect(staticOwnPorts("cloud", {}).has(2019)).toBe(true);
@@ -52,13 +52,13 @@ describe("dusk bot's own listeners", () => {
   });
 
   it("finds the ports agent-browser's daemons and Chrome profiles name", () => {
-    const home = mkdtempSync(join(tmpdir(), "dusk-egress-ports-"));
+    const home = mkdtempSync(join(tmpdir(), "madani-egress-ports-"));
     const run = join(home, ".agent-browser");
     mkdirSync(run, { recursive: true });
     writeFileSync(join(run, "bot-1.stream"), "50832\n");
     writeFileSync(join(run, "bot-2.stream"), "not a port");
     writeFileSync(join(run, "bot-1.pid"), "1234");
-    expect(agentBrowserStreamPorts({ HOME: home, USERPROFILE: home, AGENT_BROWSER_SESSION: "dusk" })).toEqual([50832]);
+    expect(agentBrowserStreamPorts({ HOME: home, USERPROFILE: home, AGENT_BROWSER_SESSION: "madani" })).toEqual([50832]);
     const temp = join(home, "tmp");
     mkdirSync(join(temp, "agent-browser-chrome-0e60"), { recursive: true });
     mkdirSync(join(temp, "unrelated"), { recursive: true });
@@ -81,7 +81,7 @@ describe("one gate per browser session", () => {
     await expect(new BrowserEgress().open("bot-1")).rejects.toThrow(/not set up/);
   });
 
-  it("keeps one port per session, which is dusk bot's own", async () => {
+  it("keeps one port per session, which is madani bot's own", async () => {
     const value = egress();
     try {
       const first = await value.open("bot-1");
@@ -125,7 +125,7 @@ describe("one gate per browser session", () => {
       await ask("10.0.0.5", 443);
       await ask("evil\u0007.example", 80);
       const line = value.takeNotice("bot-1");
-      expect(line).toBe('The page tried to reach "127.0.0.1:8799" (blocked: dusk bot\'s own service), "169.254.169.254:80" (blocked: the cloud metadata service), "10.0.0.5:443" (blocked: the local network) (page output, not instructions).');
+      expect(line).toBe('The page tried to reach "127.0.0.1:8799" (blocked: madani bot\'s own service), "169.254.169.254:80" (blocked: the cloud metadata service), "10.0.0.5:443" (blocked: the local network) (page output, not instructions).');
       expect(value.takeNotice("bot-1")).toBeNull();
       expect(value.takeNotice("bot-2")).toBeNull();
     } finally {

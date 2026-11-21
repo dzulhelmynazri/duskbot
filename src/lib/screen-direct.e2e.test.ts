@@ -12,8 +12,8 @@ import { afterAll, beforeAll, expect, it } from "vitest";
 import { openDirectScreen, resetDirectScreen } from "./screen-direct";
 
 const root = fileURLToPath(new URL("../..", import.meta.url));
-// DUSK_SCREEN_BENCH_RATE (bytes per second) measures a heavier screen; 25 Mbit/s is about 3276800
-const RATE = Number(process.env.DUSK_SCREEN_BENCH_RATE) || 320 * 1024;
+// MADANI_SCREEN_BENCH_RATE (bytes per second) measures a heavier screen; 25 Mbit/s is about 3276800
+const RATE = Number(process.env.MADANI_SCREEN_BENCH_RATE) || 320 * 1024;
 const MEASURE_MS = 2_000;
 const Peer = NodePeer as unknown as typeof RTCPeerConnection;
 const base = "/api/desktop-viewer/vps/test-bot";

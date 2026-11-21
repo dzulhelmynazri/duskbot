@@ -8,7 +8,7 @@ describe("computer problems in the panel", () => {
       "The bot computer image ghcr.io/sidddevz/omb-bot-desktop:v5 could not be downloaded (Error response from daemon: manifest unknown)",
       "building it on the VPS failed: ERROR: failed to solve: docker.io/moby/buildkit:buildx-stable-1: pulling is not allowed",
       "Traceback (most recent call last):\n  File \"/opt/venv/lib/python3.12/site-packages/cua_driver/server.py\"",
-      "connect ECONNREFUSED /run/duskbot-docker/docker.sock",
+      "connect ECONNREFUSED /run/madanibot-docker/docker.sock",
       "x".repeat(300),
     ]) {
       expect(looksRaw(raw)).toBe(true);
@@ -18,7 +18,7 @@ describe("computer problems in the panel", () => {
 
   it("keeps the server's own short sentences", () => {
     for (const plain of [
-      "The dusk bot VPS container is stopped",
+      "The madani bot VPS container is stopped",
       "Docker over SSH could not reach the VPS; check the SSH alias and Docker on the VPS",
       "This computer couldn't be set up yet. It tries again by itself; try again in a few minutes.",
     ]) {

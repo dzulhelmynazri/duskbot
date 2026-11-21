@@ -4,12 +4,12 @@ import { fileURLToPath } from "node:url";
 import { afterAll, describe, expect, it } from "vitest";
 import { resolveAgentBrowserBinary } from "../../server/browser-engine.ts";
 import { waitForExit } from "../../server/testing/cleanup.ts";
-import { runControlDusk } from "../control-dusk.ts";
-import { UI_TOOLS_DIR } from "./control-dusk-ui.ts";
+import { runControlMadani } from "../control-madani.ts";
+import { UI_TOOLS_DIR } from "./control-madani-ui.ts";
 import { clickByName, openBotSheet, sheetPage } from "./grok-nav.ts";
 
 const ROOT = fileURLToPath(new URL("../..", import.meta.url));
-const enabled = process.env.DUSK_UI_E2E === "1" || Boolean(resolveAgentBrowserBinary({ dataDir: UI_TOOLS_DIR, env: process.env }));
+const enabled = process.env.MADANI_UI_E2E === "1" || Boolean(resolveAgentBrowserBinary({ dataDir: UI_TOOLS_DIR, env: process.env }));
 interface FixtureInfo { ui: string; url: string; logPath: string }
 interface SavedBot { id: string; name: string; modelSelection: { instanceId: string; model: string }; outbound?: unknown; connectorScopes?: unknown; fallback?: unknown }
 
@@ -23,7 +23,7 @@ describe("trust controls in the real renderer", () => {
   (enabled ? it : it.skip)("saves outbound limits, app limits and backup AIs from the bot's settings pages", async () => {
     let output = "", errors = "";
     let info!: FixtureInfo;
-    const launcher = new URL("./control-dusk-ui.ts", import.meta.url).href;
+    const launcher = new URL("./control-madani-ui.ts", import.meta.url).href;
     const bootstrap = `import { launchUi } from ${JSON.stringify(launcher)};
       process.on('message', message => { if (message === 'stop') process.emit('SIGINT'); });
       try { await launchUi(['--tool-calls', '[{"name":"Bash","input":{"command":"echo fixture"},"ok":true}]']); } finally { process.disconnect(); }`;
@@ -38,7 +38,7 @@ describe("trust controls in the real renderer", () => {
       try { info = JSON.parse(output); return Boolean(info.ui); } catch { return false; }
     }, { timeout: 300_000, interval: 250 }).toBe(true);
 
-    const ui = (verb: string, ...args: string[]) => runControlDusk(["ui", verb, "--ui", info.ui, ...args]) as Promise<Record<string, any>>;
+    const ui = (verb: string, ...args: string[]) => runControlMadani(["ui", verb, "--ui", info.ui, ...args]) as Promise<Record<string, any>>;
     const evaluate = async (js: string) => (await ui("eval", "--js", js)).result;
     const click = (name: string) => ui("click", "--name", name);
     const type = async (name: string, text: string) => {
@@ -61,8 +61,8 @@ describe("trust controls in the real renderer", () => {
 
     // the bot runs a harmless fixture tool first. Its Activity panel, which showed that run, left the Share menu on
     // purpose in 65902595e, so the run is not read back on screen here.
-    await runControlDusk(["send", "--bot", bot.id, "--text", "Run the harmless fixture tool.", "--url", info.url]);
-    await runControlDusk(["wait", "--bot", bot.id, "--timeout", "20", "--url", info.url]);
+    await runControlMadani(["send", "--bot", bot.id, "--text", "Run the harmless fixture tool.", "--url", info.url]);
+    await runControlMadani(["wait", "--bot", bot.id, "--timeout", "20", "--url", info.url]);
 
     await openBotSheet(ui, "Pepper", "permissions");
     // Sending on your behalf is a menu on its row

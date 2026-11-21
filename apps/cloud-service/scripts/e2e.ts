@@ -22,7 +22,7 @@ import { startFakeInstaboxApi } from "../src/fake-instabox-api.ts";
 import { createInstaboxProvider } from "../src/instabox.ts";
 import { createCloudSend } from "../../../electron/cloud-send.mjs";
 import { openOwnerSession } from "../../../electron/cloud-send-main.mjs";
-import { launchVerificationServer } from "../../../scripts/control-dusk.ts";
+import { launchVerificationServer } from "../../../scripts/control-madani.ts";
 import { pagesRoutesFromEnv } from "../../dashboard/server/pages/routes.ts";
 import { createSealer, parseSealKey } from "../../dashboard/server/clouds/seal.ts";
 import { createPagesClient } from "../../../server/pages/client.ts";
@@ -40,7 +40,7 @@ function mark(step: string) { const now = Date.now(); marks.push({ step, ms: now
 function note(line: string) { console.log(`  ${line}`); if (ledger) appendFileSync(ledger, `${new Date().toISOString()} ${line}\n`); }
 const sleep = (ms: number) => new Promise(r => setTimeout(r, ms));
 
-const dataDir = mkdtempSync(join(tmpdir(), "dusk-managed-e2e-"));
+const dataDir = mkdtempSync(join(tmpdir(), "madani-managed-e2e-"));
 const api = fake ? await startFakeInstaboxApi() : null;
 // --fake: a release key of this run's own signs every home package, so the update path runs signed end to end; each fake
 // machine keeps the version it runs and the one before, and a version listed here fails its self-test
@@ -98,8 +98,8 @@ const homeFetch: typeof fetch = async (input, init) => {
 };
 
 // a real home is a release build: it trusts only the pinned entitlement key, so a real run signs with the production one
-const entitlementKey = process.env.DUSK_ENTITLEMENT_SIGNING_KEY ?? (fake ? generateEntitlementSigner("dev-e2e").env : "");
-if (!entitlementKey) { console.error("DUSK_ENTITLEMENT_SIGNING_KEY is required for a real run (the release home refuses anything else)."); process.exit(2); }
+const entitlementKey = process.env.MADANI_ENTITLEMENT_SIGNING_KEY ?? (fake ? generateEntitlementSigner("dev-e2e").env : "");
+if (!entitlementKey) { console.error("MADANI_ENTITLEMENT_SIGNING_KEY is required for a real run (the release home refuses anything else)."); process.exit(2); }
 const sealKey = randomBytes(32).toString("base64url"), edgeToken = randomBytes(32).toString("base64url"), PUBLIC_DOMAIN = "desktops.e2e.invalid";
 const store = createStore(dataDir);
 const account = { id: "acct_e2e", email: "e2e@example.test" };
@@ -107,11 +107,11 @@ const billing = createBilling({ dataDir, publicUrl: "https://dashboard.e2e.inval
   accounts: { fromCookie: () => account, fromBearer: () => account },
   mail: (cloud, letter) => note(`notice to owner: ${letter.subject} for ${cloud.id}`),
   alert: entry => note(`ALERT ${entry.action} ${entry.cloudId} (${entry.reason})`),
-  env: { DUSK_BILLING_PROVIDER: "fake", DUSK_CLOUD_SEAL_KEY: sealKey, DUSK_MANAGED: "1", DUSK_MANAGED_EDGE_TOKEN: edgeToken, ...(fake ? { DUSK_MANAGED_PUBLIC_DOMAIN: PUBLIC_DOMAIN } : {}), INSTABOX_API_KEY: key, ...(baseUrl ? { INSTABOX_BASE_URL: baseUrl } : {}), DUSK_MANAGED_SCOPE: scope,
-    DUSK_MANAGED_KINDS: "shared_s", DUSK_MANAGED_HOME_PACKAGE_FILE: packageFile, DUSK_MANAGED_HOME_PACKAGE_SHA256: sha256,
-    ...(firstRelease ? { DUSK_MANAGED_HOME_PACKAGE_SIGNATURE: firstRelease.signature, DUSK_RELEASE_PUBLIC_KEYS: releasePublic!, DUSK_MANAGED_HOME_RELEASE_FILE: releaseFile } : {}), DUSK_MANAGED_LEASE_HOURS: "1", DUSK_MANAGED_IDLE_MINUTES: "5", DUSK_MANAGED_LOST_AFTER_MINUTES: "2", DUSK_POOL_DRIVER: "fake",
+  env: { MADANI_BILLING_PROVIDER: "fake", MADANI_CLOUD_SEAL_KEY: sealKey, MADANI_MANAGED: "1", MADANI_MANAGED_EDGE_TOKEN: edgeToken, ...(fake ? { MADANI_MANAGED_PUBLIC_DOMAIN: PUBLIC_DOMAIN } : {}), INSTABOX_API_KEY: key, ...(baseUrl ? { INSTABOX_BASE_URL: baseUrl } : {}), MADANI_MANAGED_SCOPE: scope,
+    MADANI_MANAGED_KINDS: "shared_s", MADANI_MANAGED_HOME_PACKAGE_FILE: packageFile, MADANI_MANAGED_HOME_PACKAGE_SHA256: sha256,
+    ...(firstRelease ? { MADANI_MANAGED_HOME_PACKAGE_SIGNATURE: firstRelease.signature, MADANI_RELEASE_PUBLIC_KEYS: releasePublic!, MADANI_MANAGED_HOME_RELEASE_FILE: releaseFile } : {}), MADANI_MANAGED_LEASE_HOURS: "1", MADANI_MANAGED_IDLE_MINUTES: "5", MADANI_MANAGED_LOST_AFTER_MINUTES: "2", MADANI_POOL_DRIVER: "fake",
     // no machine can reach this harness, and nobody uses it: no claim, no public domain, an unsigned test package
-    DUSK_MANAGED_TEST_HARNESS: "1", DUSK_ENTITLEMENT_SIGNING_KEY: entitlementKey } });
+    MADANI_MANAGED_TEST_HARNESS: "1", MADANI_ENTITLEMENT_SIGNING_KEY: entitlementKey } });
 // published pages: the account service's own routes, with object storage in memory for this run
 let pages: ReturnType<typeof pagesRoutesFromEnv>;
 const webhooks = createServer((req, res) => void (async () => {
@@ -125,7 +125,7 @@ const webhooks = createServer((req, res) => void (async () => {
 })());
 await new Promise<void>(r => webhooks.listen(0, "127.0.0.1", r));
 const hookBase = `http://127.0.0.1:${(webhooks.address() as { port: number }).port}`;
-pages = pagesRoutesFromEnv({ dataDir, publicUrl: hookBase, clouds: billing.clouds, env: { DUSK_PAGES_STORE: "memory", DUSK_CLOUD_SEAL_KEY: sealKey } });
+pages = pagesRoutesFromEnv({ dataDir, publicUrl: hookBase, clouds: billing.clouds, env: { MADANI_PAGES_STORE: "memory", MADANI_CLOUD_SEAL_KEY: sealKey } });
 
 const created = new Set<string>();
 async function track() { for (const s of await ops.inventory()) if (!created.has(s.id)) { created.add(s.id); note(`created machine ${s.id} (${s.type}) for ${s.cloudId}`); } }
@@ -165,10 +165,10 @@ try {
   // a synthetic engine on the home, so a bot can answer (test tooling only, never part of the product install)
   if (!fake) {
     const engine = readFileSync(resolve(option("--engine")!));
-    const wrapper = `#!/bin/sh\nif [ "$1" = auth ]; then echo '{"loggedIn":true,"email":"person@example.test"}'; exit 0; fi\nexport FAKE_CLAUDE_VERSION=2.1.284\nexec ${CLOUD_HOME.root}/node/bin/node /opt/dusk-test/fake-claude.mjs "$@"\n`;
+    const wrapper = `#!/bin/sh\nif [ "$1" = auth ]; then echo '{"loggedIn":true,"email":"person@example.test"}'; exit 0; fi\nexport FAKE_CLAUDE_VERSION=2.1.284\nexec ${CLOUD_HOME.root}/node/bin/node /opt/madani-test/fake-claude.mjs "$@"\n`;
     await ops.upload(cloud().serverId!, "/data/home/fake-claude.mjs", engine);
     await ops.upload(cloud().serverId!, "/data/home/claude-wrapper.sh", Buffer.from(wrapper));
-    const done = await ops.run(cloud().serverId!, "sudo install -d -m 0755 /opt/dusk-test && sudo install -m 0755 /data/home/fake-claude.mjs /opt/dusk-test/fake-claude.mjs && sudo install -m 0755 /data/home/claude-wrapper.sh /usr/local/bin/claude && sudo systemctl restart omb-home && sleep 10 && echo ok", 120);
+    const done = await ops.run(cloud().serverId!, "sudo install -d -m 0755 /opt/madani-test && sudo install -m 0755 /data/home/fake-claude.mjs /opt/madani-test/fake-claude.mjs && sudo install -m 0755 /data/home/claude-wrapper.sh /usr/local/bin/claude && sudo systemctl restart omb-home && sleep 10 && echo ok", 120);
     note(`synthetic engine installed: ${done.ok}`);
   }
 

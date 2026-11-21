@@ -14,7 +14,7 @@ import { connectedSocket, relayFetch } from "./vps-link-protocol.mjs";
 let pem = null;
 function certificate() {
   if (pem !== null) return pem;
-  const dir = mkdtempSync(join(tmpdir(), "dusk-fallback-"));
+  const dir = mkdtempSync(join(tmpdir(), "madani-fallback-"));
   try {
     execFileSync("openssl", ["req", "-x509", "-newkey", "ec", "-pkeyopt", "ec_paramgen_curve:prime256v1", "-nodes", "-days", "1", "-subj", "/CN=relay.test", "-addext", "subjectAltName=DNS:relay.test", "-keyout", join(dir, "key.pem"), "-out", join(dir, "cert.pem")], { stdio: "ignore" });
     pem = { key: readFileSync(join(dir, "key.pem"), "utf8"), cert: readFileSync(join(dir, "cert.pem"), "utf8") };

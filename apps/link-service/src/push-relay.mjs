@@ -48,9 +48,9 @@ const REPLY_KINDS = new Set(["done", "mention", "brief", "wait", "delegation-set
 
 /** the notification's buttons, as the app registers them */
 export function pushCategory({ kind, requestId, groupId }) {
-  if (kind === "approval") return requestId ? "dusk.approval" : undefined;
-  if (kind === "question") return "dusk.question";
-  if (REPLY_KINDS.has(kind) && !groupId) return "dusk.message";
+  if (kind === "approval") return requestId ? "madani.approval" : undefined;
+  if (kind === "question") return "madani.question";
+  if (REPLY_KINDS.has(kind) && !groupId) return "madani.message";
   return undefined;
 }
 
@@ -97,7 +97,7 @@ export function activityBody(push) {
       timestamp: push.timestamp, event: push.event, "content-state": push.state,
       ...(push.event === "end" && push.dismissAt ? { "dismissal-date": push.dismissAt } : {}),
       ...(push.event === "start" && push.attributes ? {
-        "attributes-type": "DuskTurnAttributes", attributes: push.attributes, alert: { title: push.attributes.botName, body: "Waiting for you" },
+        "attributes-type": "MadaniTurnAttributes", attributes: push.attributes, alert: { title: push.attributes.botName, body: "Waiting for you" },
       } : {}),
     },
   };
@@ -106,7 +106,7 @@ export function activityBody(push) {
 export function createPushRelay({ env = process.env, now = Date.now, fetch: fetchImpl = fetch, http2Connect = connect, readFile = readFileSync, log = () => {} } = {}) {
   const services = [];
   let apns, fcm;
-  const { DUSK_APNS_KEY_FILE: keyFile, DUSK_APNS_KEY_ID: keyId, DUSK_APNS_TEAM_ID: teamId, DUSK_APNS_TOPIC: topic } = env;
+  const { MADANI_APNS_KEY_FILE: keyFile, MADANI_APNS_KEY_ID: keyId, MADANI_APNS_TEAM_ID: teamId, MADANI_APNS_TOPIC: topic } = env;
   if (keyFile || keyId || teamId || topic) {
     try {
       if (!keyFile || !keyId || !teamId || !topic) throw new Error("incomplete");
@@ -118,9 +118,9 @@ export function createPushRelay({ env = process.env, now = Date.now, fetch: fetc
       log("push relay: could not load APNs credentials; APNs is off");
     }
   }
-  if (env.DUSK_FCM_SERVICE_ACCOUNT_FILE) {
+  if (env.MADANI_FCM_SERVICE_ACCOUNT_FILE) {
     try {
-      const account = JSON.parse(readFile(env.DUSK_FCM_SERVICE_ACCOUNT_FILE).toString());
+      const account = JSON.parse(readFile(env.MADANI_FCM_SERVICE_ACCOUNT_FILE).toString());
       if (![account.project_id, account.client_email, account.private_key, account.token_uri].every((one) => typeof one === "string" && one)) throw new Error("invalid account");
       const key = createPrivateKey(account.private_key);
       if (key.asymmetricKeyType !== "rsa") throw new Error("invalid key");
@@ -150,7 +150,7 @@ export function createPushRelay({ env = process.env, now = Date.now, fetch: fetc
     if (!providerToken || now() - providerToken.createdAt >= 50 * 60_000) {
       providerToken = { value: jwt({ alg: "ES256", kid: apns.keyId }, { iss: apns.teamId, iat: Math.floor(now() / 1000) }, apns.key), createdAt: now() };
     }
-    const origin = env.DUSK_APNS_HOST ?? (environment === "sandbox" ? "https://api.sandbox.push.apple.com" : "https://api.push.apple.com");
+    const origin = env.MADANI_APNS_HOST ?? (environment === "sandbox" ? "https://api.sandbox.push.apple.com" : "https://api.push.apple.com");
     const session = apnsSession(origin);
     return new Promise((resolve) => {
       const request = session.request({
@@ -208,7 +208,7 @@ export function createPushRelay({ env = process.env, now = Date.now, fetch: fetc
   async function sendFcm(token, message) {
     const access = await fcmToken();
     const { botName, ...data } = message;
-    const response = await fetchImpl(`${env.DUSK_FCM_HOST ?? "https://fcm.googleapis.com"}/v1/projects/${encodeURIComponent(fcm.projectId)}/messages:send`, {
+    const response = await fetchImpl(`${env.MADANI_FCM_HOST ?? "https://fcm.googleapis.com"}/v1/projects/${encodeURIComponent(fcm.projectId)}/messages:send`, {
       method: "POST", headers: { authorization: `Bearer ${access}`, "content-type": "application/json" },
       body: JSON.stringify({ message: { token, notification: { title: botName, body: "New message" }, data, android: { collapse_key: message.threadId, priority: "high" } } }),
       signal: AbortSignal.timeout(10_000),

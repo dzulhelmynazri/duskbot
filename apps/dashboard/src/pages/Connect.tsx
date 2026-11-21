@@ -6,7 +6,7 @@ import { Button, ButtonLink, Card } from "../ui/kit";
 import { Mascot } from "../ui/Mascot";
 import { SkyEmpty } from "../ui/Sky";
 
-const CLAIM_KEY = "dusk-dash-claim";
+const CLAIM_KEY = "madani-dash-claim";
 
 /** keeps a claim link's token across the sign-in round trip, out of the address bar */
 export function stashClaim() {

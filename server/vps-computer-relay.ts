@@ -27,7 +27,7 @@ export function vpsToolsKey(status: { desktop: string; driver_version: string })
 /** What the engine mounts as its computer: the harness proxy, holding only the turn's capability. */
 export function relayedComputerSpec(token: string, port: number) {
   return { command: process.execPath, args: [SPAWNED_PROXIES.harnessMcp, "computer"], platform: "linux" as const,
-    env: { ...AGENTS_NODE_FLAG, [harnessMcpTokenEnv("computer")]: token, DUSK_HARNESS_URL: `http://127.0.0.1:${port}` } };
+    env: { ...AGENTS_NODE_FLAG, [harnessMcpTokenEnv("computer")]: token, MADANI_HARNESS_URL: `http://127.0.0.1:${port}` } };
 }
 
 export interface RelayOwner { threadId: string; generation: string }
@@ -104,7 +104,7 @@ export function openBridgeSession(bridge: RelayBridge): McpSession {
     pending.set(id, finish);
     write({ jsonrpc: "2.0", id, method, params });
   });
-  const ready = send("initialize", { protocolVersion: "2024-11-05", capabilities: {}, clientInfo: { name: "duskbot", version: "1" } }, START_MS)
+  const ready = send("initialize", { protocolVersion: "2024-11-05", capabilities: {}, clientInfo: { name: "madanibot", version: "1" } }, START_MS)
     .then((answer) => {
       if ("error" in answer) end(answer.error);
       else write({ jsonrpc: "2.0", method: "notifications/initialized" });

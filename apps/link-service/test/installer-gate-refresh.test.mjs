@@ -10,15 +10,15 @@ const script = (await readFile(new URL("../install.sh", import.meta.url), "utf8"
 const dirs = [];
 afterEach(async () => { for (const dir of dirs.splice(0)) await rm(dir, { recursive: true, force: true }); });
 
-/** a verified build at `<dir>/root-pkgs/duskbot-<name>.tgz` carrying `gate` as package/link/docker-gate.mjs (none: null) */
+/** a verified build at `<dir>/root-pkgs/madanibot-<name>.tgz` carrying `gate` as package/link/docker-gate.mjs (none: null) */
 async function build(dir, name, gate) {
   const stage = join(dir, `stage-${name}`);
   await mkdir(join(stage, "package", "link"), { recursive: true });
   if (gate !== null) await writeFile(join(stage, "package", "link", "docker-gate.mjs"), gate);
   else await writeFile(join(stage, "package", "link", "install.sh"), "#!/bin/sh\n");
   await mkdir(join(dir, "root-pkgs"), { recursive: true });
-  await run("tar", ["-czf", join(dir, "root-pkgs", `duskbot-${name}.tgz`), "-C", stage, "package"]);
-  return join(dir, "root-pkgs", `duskbot-${name}.tgz`);
+  await run("tar", ["-czf", join(dir, "root-pkgs", `madanibot-${name}.tgz`), "-C", stage, "package"]);
+  return join(dir, "root-pkgs", `madanibot-${name}.tgz`);
 }
 
 /** runs `body` in install.sh with root's paths in `dir`, systemd saying the gate is `gate` and the server idle or not */
@@ -43,7 +43,7 @@ ${body}
   return { out, log, installed, read };
 }
 
-const NEW_GATE = 'export const DEFAULT_PULL = ["ghcr.io/duskbotai/dusk-desktop"];\n';
+const NEW_GATE = 'export const DEFAULT_PULL = ["ghcr.io/madanibotai/madani-desktop"];\n';
 
 describe("root's server update keeps the docker gate in step with the build (install.sh refresh_gate)", () => {
   it("installs the gate a verified build carries and restarts it; the same gate again changes nothing", async () => {
@@ -72,8 +72,8 @@ describe("root's server update keeps the docker gate in step with the build (ins
     const dir = await mkdtemp(join(tmpdir(), "omb-gate-refresh-")); dirs.push(dir);
     await build(dir, "bbb", NEW_GATE);
     const sync = `_running=$(state_get running-package | sed 's/^sha256://')
-if [ -n "$_running" ] && [ "$(state_get gate-from)" != "$_running" ] && [ -f "$PKGS/duskbot-$_running.tgz" ] && [ "$(restart_allowed)" = go ]; then
-  refresh_gate "$PKGS/duskbot-$_running.tgz"; state_set gate-from "$_running"
+if [ -n "$_running" ] && [ "$(state_get gate-from)" != "$_running" ] && [ -f "$PKGS/madanibot-$_running.tgz" ] && [ "$(restart_allowed)" = go ]; then
+  refresh_gate "$PKGS/madanibot-$_running.tgz"; state_set gate-from "$_running"
 fi`;
     expect(script).toContain(sync.split("\n")[1]);
     const busy = await inInstaller(dir, sync, { busy: true, state: { "running-package": "sha256:bbb" } });

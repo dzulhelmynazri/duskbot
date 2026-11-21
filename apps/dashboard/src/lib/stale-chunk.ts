@@ -1,4 +1,4 @@
-const STALE_KEY = "dusk-stale-chunk-reload";
+const STALE_KEY = "madani-stale-chunk-reload";
 /** a tab opened before a deploy asks for chunks the new build no longer has: load the new build once, at most every
  * 30 s so a chunk that is really missing still shows its error instead of reloading forever */
 export function reloadForStaleChunk(error: unknown, storage: Pick<Storage, "getItem" | "setItem"> = sessionStorage, reload = () => location.reload(), now = Date.now()) {

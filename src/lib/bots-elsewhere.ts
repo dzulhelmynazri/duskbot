@@ -48,7 +48,7 @@ export function parseBotCounts(raw: unknown): Record<string, number> {
   return Object.fromEntries(Object.entries(raw as Record<string, unknown>).filter((entry): entry is [string, number] => Number.isSafeInteger(entry[1]) && (entry[1] as number) >= 0));
 }
 
-/** No bots of the person's own here: Dusk, the helper every place gets, and bots taken off the sidebar don't count. */
+/** No bots of the person's own here: Madani, the helper every place gets, and bots taken off the sidebar don't count. */
 export function emptyHere(bots: readonly { defaultBot?: unknown; hidden?: boolean }[]): boolean {
   return !bots.some((bot) => !bot.defaultBot && !bot.hidden);
 }
@@ -70,7 +70,7 @@ export function macEmptyFrom({ view, empty, screen }: { view: ElsewhereView | nu
   return view.places[0] ?? null;
 }
 
-const CHOSEN = "dusk-places-chosen";
+const CHOSEN = "madani-places-chosen";
 /** The same choice kept on this page, for an app whose main does not keep it yet. */
 export function placesChosenHere(): boolean {
   try { return localStorage.getItem(CHOSEN) === "1"; } catch { return false; }
@@ -92,7 +92,7 @@ export function useMacEmpty(): ElsewherePlace | null {
 }
 
 /** The sheets this screen's own ways out open over the page: Settings (where the switcher's "connect a server" lands), the
- * dusk cloud offer, Add your VPS and a move to dusk cloud. The screen steps aside while one is up, or it would cover it. */
+ * madani cloud offer, Add your VPS and a move to madani cloud. The screen steps aside while one is up, or it would cover it. */
 export function elsewhereCovered({ settings, cloudAdd, addVps, cloudMove, placeSetup = false }: { settings: boolean; cloudAdd: boolean; addVps: boolean; cloudMove: boolean; placeSetup?: boolean }): boolean {
   return settings || cloudAdd || addVps || cloudMove || placeSetup;
 }
@@ -101,7 +101,7 @@ export function dismissKey(screen: ElsewhereScreen): string {
   return screen.kind === "bots-on" ? `place:${screen.place.id}` : `setup:${screen.setup.kind}:${screen.setup.name}`;
 }
 
-const DISMISSED = "dusk-elsewhere-dismissed";
+const DISMISSED = "madani-elsewhere-dismissed";
 export function dismissedPlaces(): string[] {
   try {
     const kept: unknown = JSON.parse(localStorage.getItem(DISMISSED) ?? "[]");
@@ -112,15 +112,15 @@ export function dismissPlace(key: string): void {
   try { localStorage.setItem(DISMISSED, JSON.stringify([...dismissedPlaces().filter((entry) => entry !== key), key].slice(-20))); } catch { /* storage full or off */ }
 }
 
-/** The dev button's stand-in: a fresh install whose account already set up dusk bot on a VPS. */
+/** The dev button's stand-in: a fresh install whose account already set up madani bot on a VPS. */
 export const SIMULATED_FRESH_INSTALL: ElsewhereView = { places: [], known: { kind: "server", name: "My VPS" } };
 
-/** Dev builds, or any build with localStorage "dusk-dev-tools" set to "1"; never a test preview, which renders the app as it
- * ships (VITE_DUSK_DEV_TOOLS=0, scripts/testing/preview-fixture.ts). */
+/** Dev builds, or any build with localStorage "madani-dev-tools" set to "1"; never a test preview, which renders the app as it
+ * ships (VITE_MADANI_DEV_TOOLS=0, scripts/testing/preview-fixture.ts). */
 export function devToolsShown(): boolean {
-  if (import.meta.env.VITE_DUSK_DEV_TOOLS === "0") return false;
+  if (import.meta.env.VITE_MADANI_DEV_TOOLS === "0") return false;
   if (import.meta.env.DEV) return true;
-  try { return localStorage.getItem("dusk-dev-tools") === "1"; } catch { return false; }
+  try { return localStorage.getItem("madani-dev-tools") === "1"; } catch { return false; }
 }
 
 let simulating = false;

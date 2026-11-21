@@ -17,7 +17,7 @@ export function BootCover({ busy, first }: { busy: boolean; first?: string }) {
   const waiting = busy || switching;
 
   useEffect(() => {
-    const workspaces = window.duskDesktop?.workspaces;
+    const workspaces = window.madaniDesktop?.workspaces;
     return workspaces?.onSwitching?.((on) => {
       if (on) {
         restartLoadingLaunch();

@@ -4,14 +4,14 @@
   "title": "Claude connectors: choose the app access your job needs",
   "nav": "claude connectors",
   "h1": "claude connectors: connect the job you actually need",
-  "description": "Get answers from the apps you already use. Compare Claude connectors with dusk bot connections, then pick one of 20 reading jobs to try.",
+  "description": "Get answers from the apps you already use. Compare Claude connectors with madani bot connections, then pick one of 20 reading jobs to try.",
   "keyword": "claude connectors",
   "keywords": [
     "claude connectors list",
     "chatgpt connectors",
     "claude connectors not working"
   ],
-  "answer": "**get the answer from the app instead of hunting through it yourself.** claude connectors retrieve data and act in services. anthropic's directory lists what each connection can read, change and access.[^1]\n\ndusk connects through composio on its own screen.[^3] choose where you'll do the job: connecting gmail in claude won't connect it in dusk.",
+  "answer": "**get the answer from the app instead of hunting through it yourself.** claude connectors retrieve data and act in services. anthropic's directory lists what each connection can read, change and access.[^1]\n\nmadani connects through composio on its own screen.[^3] choose where you'll do the job: connecting gmail in claude won't connect it in madani.",
   "updated": "2026-11-12",
   "review": {
     "status": "approved",
@@ -69,12 +69,12 @@
       "md": "**find the connection that does the job you keep putting off.** as of 12 november 2026, web connectors are available to all users. they work across claude, claude desktop, claude code and the api. free, pro, max and ultra include connectors.[^1][^2]\n\nopen the directory entry for its actual read and write abilities and availability. the plan gets you connectors; each entry tells you what you can do.\n\nanthropic also supports custom connections for services using mcp. the [mcp guide](/guides/what-is-mcp) explains that standard."
     },
     {
-      "h": "dusk has its own connection screen",
-      "md": "**sign in once where you'll do the work.** in dusk, open **connected apps** and sign in on the app's own page. choose which bots may use it.[^3]\n\neach bot can have the app off, read only, or read and write. you can allow exact actions too. dusk blocks changes from a read-only bot before they reach the app.\n\ncomposio holds the connection; dusk stores no provider tokens. **disconnect** revokes the grant upstream.[^3]"
+      "h": "madani has its own connection screen",
+      "md": "**sign in once where you'll do the work.** in madani, open **connected apps** and sign in on the app's own page. choose which bots may use it.[^3]\n\neach bot can have the app off, read only, or read and write. you can allow exact actions too. madani blocks changes from a read-only bot before they reach the app.\n\ncomposio holds the connection; madani stores no provider tokens. **disconnect** revokes the grant upstream.[^3]"
     },
     {
-      "h": "twenty reading jobs to try in dusk",
-      "md": "**start where you already waste time looking things up.** these are dusk app tasks. anthropic's directory can expose different actions.\n\n- **[gmail](/integrations/gmail):** find one sender's messages for a follow-up list.[^4]\n- **google calendar:** find the meeting you need to prepare for.[^5]\n- **google drive:** locate the named source file before summarising it.[^6]\n- **google sheets:** read the cells behind your weekly status report.[^7]\n- **[slack](/integrations/slack):** find the message behind a decision.[^8]\n- **notion:** find the right project page or database.[^9]\n- **[github](/integrations/github):** list your assigned issues before planning work.[^10]\n- **linear:** read a team's issues before its planning discussion.[^11]\n- **figma:** get file details for a design handoff.[^12]\n- **stripe:** review invoices without taking payments.[^13]\n- **hubspot:** pull up the contacts you need before an account review.[^14]\n- **airtable:** read the table records you want to inspect.[^15]\n- **asana:** gather tasks for a status note.[^16]\n- **outlook:** list messages from your work inbox.[^17]\n- **canva:** find the right design in your own collection.[^18]\n- **salesforce:** find contacts before preparing account notes.[^19]\n- **youtube:** list channel videos for a content inventory.[^20]\n- **jira:** search a project's issues for a focused review.[^21]\n- **excel:** list worksheets before choosing one to read.[^22]\n- **discord:** review the servers your account belongs to.[^23]"
+      "h": "twenty reading jobs to try in madani",
+      "md": "**start where you already waste time looking things up.** these are madani app tasks. anthropic's directory can expose different actions.\n\n- **[gmail](/integrations/gmail):** find one sender's messages for a follow-up list.[^4]\n- **google calendar:** find the meeting you need to prepare for.[^5]\n- **google drive:** locate the named source file before summarising it.[^6]\n- **google sheets:** read the cells behind your weekly status report.[^7]\n- **[slack](/integrations/slack):** find the message behind a decision.[^8]\n- **notion:** find the right project page or database.[^9]\n- **[github](/integrations/github):** list your assigned issues before planning work.[^10]\n- **linear:** read a team's issues before its planning discussion.[^11]\n- **figma:** get file details for a design handoff.[^12]\n- **stripe:** review invoices without taking payments.[^13]\n- **hubspot:** pull up the contacts you need before an account review.[^14]\n- **airtable:** read the table records you want to inspect.[^15]\n- **asana:** gather tasks for a status note.[^16]\n- **outlook:** list messages from your work inbox.[^17]\n- **canva:** find the right design in your own collection.[^18]\n- **salesforce:** find contacts before preparing account notes.[^19]\n- **youtube:** list channel videos for a content inventory.[^20]\n- **jira:** search a project's issues for a focused review.[^21]\n- **excel:** list worksheets before choosing one to read.[^22]\n- **discord:** review the servers your account belongs to.[^23]"
     },
     {
       "h": "one connection can be enough",
@@ -82,20 +82,20 @@
     },
     {
       "h": "keep the first job read only",
-      "md": "**a reading job earns its keep without changing your apps.** start with read-only access in dusk.[^3][^24] labels and page edits don't automatically ask first. for a job that needs writes, put \"ask me before you change anything\" in the routine.\n\nconnection failing? open the product's connection screen. confirm the signed-in account and the bot's allowed actions. more access won't fix a sign-in to the wrong account."
+      "md": "**a reading job earns its keep without changing your apps.** start with read-only access in madani.[^3][^24] labels and page edits don't automatically ask first. for a job that needs writes, put \"ask me before you change anything\" in the routine.\n\nconnection failing? open the product's connection screen. confirm the signed-in account and the bot's allowed actions. more access won't fix a sign-in to the wrong account."
     }
   ],
   "faq": [
     {
       "q": "why are my claude connectors not working?",
-      "a": "**start with the action you expected to use.** find it in the connection entry and read its availability.[^1] in dusk, use the separate **connected apps** screen and look at that bot's access.[^3]"
+      "a": "**start with the action you expected to use.** find it in the connection entry and read its availability.[^1] in madani, use the separate **connected apps** screen and look at that bot's access.[^3]"
     },
     {
       "q": "do claude connectors need a paid plan?",
       "a": "**no: free includes connectors as of 12 november 2026.** so do pro, max and ultra. individual connections still have their own availability.[^1][^2]"
     },
     {
-      "q": "can i connect multiple gmail accounts in dusk bot?",
+      "q": "can i connect multiple gmail accounts in madani bot?",
       "a": "**yes, up to five usable accounts per app.** label them and name the account in each task.[^3]"
     }
   ],
@@ -111,7 +111,7 @@
       "checked": "2026-11-12"
     },
     {
-      "label": "dusk bot docs: files and apps",
+      "label": "madani bot docs: files and apps",
       "url": "/docs/files-and-apps"
     },
     {
@@ -215,7 +215,7 @@
       "checked": "2026-11-12"
     },
     {
-      "label": "dusk bot docs: computer",
+      "label": "madani bot docs: computer",
       "url": "/docs/computer"
     }
   ],
@@ -230,7 +230,7 @@
   "checklist": {
     "h": "before you grant app access",
     "items": [
-      "you know whether the setup is for claude or dusk",
+      "you know whether the setup is for claude or madani",
       "the exact action exists in that connection",
       "the intended account is clear",
       "reading alone is enough, or the write has a review rule"
@@ -238,8 +238,8 @@
   },
   "mistakes": [
     {
-      "mistake": "following claude setup steps inside dusk",
-      "fix": "use dusk's own connected-app flow. the two connections are separate."
+      "mistake": "following claude setup steps inside madani",
+      "fix": "use madani's own connected-app flow. the two connections are separate."
     },
     {
       "mistake": "granting writes to solve a read error",

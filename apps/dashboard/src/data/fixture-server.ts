@@ -10,14 +10,14 @@ import { CANCEL_ANSWERS } from "./wire";
 const DAY = 86_400_000;
 /** the managed fixture's emailed delete link: /clouds/fx-cloud/delete?fixture=managed#<this> */
 export const FIXTURE_DELETE_TOKEN = "fixture-delete-link".padEnd(43, "0");
-const steps = ["Reserving your machine", "Installing dusk bot", "Linking it to your account", "Waking your bots"];
+const steps = ["Reserving your machine", "Installing madani bot", "Linking it to your account", "Waking your bots"];
 const fail = (message: string, status = 400, code = "invalid_request"): never => { throw new ApiError(message, status, code); };
 
 function createState() {
   const scenario = FIXTURE ?? "new", now = Date.now();
   const clouds = fixtureClouds(scenario, now);
   return {
-    signedIn: scenario !== "signedout", firstSignIn: scenario === "signedout", email: "sid@duskbot.test", intent: "signin", attemptAt: null as number | null,
+    signedIn: scenario !== "signedout", firstSignIn: scenario === "signedout", email: "sid@madanibot.test", intent: "signin", attemptAt: null as number | null,
     account: fixtureAccount(scenario, now), billing: fixtureBilling(scenario, now), clouds,
     workspaces: new Map(fixtureWorkspaces(scenario, now).map((detail) => [detail.workspace.id, detail])),
     connections: fixtureConnections(),
@@ -49,7 +49,7 @@ function sizeFrom(input: unknown): MachineSpec {
 
 function desktopSelection(tier: Exclude<DesktopId, "none">, size: MachineSpec | null) {
   const desktop = desktopOf(fixtureCatalog, tier);
-  if (!desktop) return fail("Choose a dusk cloud size.");
+  if (!desktop) return fail("Choose a madani cloud size.");
   if (size !== null && !desktop.sizable) fail("Choose a dedicated desktop to set its size.");
   const spec = size === null ? desktop : sizeFrom(size);
   return { tier: desktop.id, placement: desktop.placement, vcpu: spec.vcpu, ramGb: spec.ramGb, diskGb: spec.diskGb, limit: desktop.botComputers };
@@ -249,7 +249,7 @@ function route(method: string, path: string, body: unknown, query: URLSearchPara
           ...(s.billing.subscription ? [{ kind: "subscription" as const, id: s.billing.subscription.id, label: "Pro", status: s.billing.subscription.status }] : []),
           ...s.clouds.map(cloud => ({ kind: "cloud_desktop" as const, id: cloud.id, label: cloud.name, status: cloud.status })),
         ];
-        throw new ApiError("Cancel your plan and dusk cloud before deleting your account.", 409, "billing_active", blockers);
+        throw new ApiError("Cancel your plan and madani cloud before deleting your account.", 409, "billing_active", blockers);
       }
       s.signedIn = false; s.firstSignIn = true; return {};
     }
@@ -391,7 +391,7 @@ function route(method: string, path: string, body: unknown, query: URLSearchPara
       if (!COMMAND_KINDS.includes(b.kind as CommandKind) || typeof b.target !== "string") fail("Choose a command and target.");
       if ((b.kind as string).startsWith("app.")) {
         if (!appSlug(b.target)) fail("Command is invalid.", 400, "invalid_command");
-        if (workspaceDetail(detail, now).workspace.freshness === "offline") fail(detail.workspace.kind === "vps" ? "This cloud is asleep or not answering. Wake it from clouds, then try again." : "Your computer is asleep. Connect from the dusk bot app on it, or use dusk cloud.", 409, "workspace_offline");
+        if (workspaceDetail(detail, now).workspace.freshness === "offline") fail(detail.workspace.kind === "vps" ? "This cloud is asleep or not answering. Wake it from clouds, then try again." : "Your computer is asleep. Connect from the madani bot app on it, or use madani cloud.", 409, "workspace_offline");
       }
       const command: CommandView = { id: `fx-command-${s.nextId++}`, kind: b.kind as CommandKind, target: b.target as string, issuedAt: now, expiresAt: now + 600_000, status: "sent", message: null, doneAt: null,
         ...(b.kind === "app.connect" && b.returnHere === true ? { callback: `${location.origin}${location.pathname}?connect=${fixtureConnectState(id, b.target as string)}` } : {}) };

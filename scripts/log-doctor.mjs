@@ -20,8 +20,8 @@ import { defaultLogDirs, parseWhen } from "./trail.mjs";
 const HELP = `usage: node scripts/log-doctor.mjs [--since 2d] [--remote | --oracle | --contabo] [--dir <folder>]... [--grep <regex>]
   [--top 40] [--min 1] [--samples 1] [--all] [--json] [--state <file>] [--no-save]`;
 
-export const ORACLE_UNITS = Object.freeze(["duskbot", "duskbot-link", "omb-docker-gate", "dusk-link-node"]);
-export const CONTABO_PROJECTS = Object.freeze(["dusk-account", "dusk-account-prod", "omb-link", "dusk-preview", "dusk-landing"]);
+export const ORACLE_UNITS = Object.freeze(["madanibot", "madanibot-link", "omb-docker-gate", "madani-link-node"]);
+export const CONTABO_PROJECTS = Object.freeze(["madani-account", "madani-account-prod", "omb-link", "madani-preview", "madani-landing"]);
 /** a request slower than this is a signature of its own (streams and long polls excepted) */
 export const SLOW_MS = 3000;
 const LEVEL_WEIGHT = { error: 3, warn: 2, info: 1 };
@@ -40,7 +40,7 @@ export const KNOWN = Object.freeze([
   { re: /docker gate: refused POST \/grpc|pulling docker\.io\/moby\/buildkit/, note: "a computer image build through the gate (BuildKit is refused): follows an unpublished image" },
   { re: /computer update: .* could not update yet/, note: "image tag shipped before it was published: guarded since f4a6e70bf" },
   { re: /New commit detected|Reinstalling and restarting|Restarting\.\.\./, note: "prozessor restarts the service on every deploy (a second or two of 502)" },
-  { re: /pulling ghcr\.io\/duskbotai\/dusk-desktop is not allowed|could not pull ghcr\.io\/duskbotai\/dusk-desktop/, note: "gate older than the image rename: d31ddbf2f, lands with the next signed server build" },
+  { re: /pulling ghcr\.io\/madanibotai\/madani-desktop is not allowed|could not pull ghcr\.io\/madanibotai\/madani-desktop/, note: "gate older than the image rename: d31ddbf2f, lands with the next signed server build" },
   { re: /startup HTTP cache cleared \(no-persisted-version/, note: "another app copy shares this userData and rewrites last-run-version.json: not the app" },
   { re: /direct path did not connect \(connect ENETUNREACH/, note: "this network has no ipv4 route to the server (nat64): expected" },
 ]);
@@ -247,7 +247,7 @@ export async function readContabo(since, run = ssh) {
   return lines;
 }
 
-const DEFAULT_STATE = () => path.join(process.env.XDG_STATE_HOME ?? path.join(os.homedir(), ".cache"), "dusk-log-doctor", "seen.json");
+const DEFAULT_STATE = () => path.join(process.env.XDG_STATE_HOME ?? path.join(os.homedir(), ".cache"), "madani-log-doctor", "seen.json");
 
 export function readSeen(file) {
   try {

@@ -34,7 +34,7 @@ export interface SlackApi {
 }
 
 export function slackTestOrigin(env: NodeJS.ProcessEnv = process.env): string | null {
-  const value = env.DUSK_SLACK_API_URL;
+  const value = env.MADANI_SLACK_API_URL;
   return value && value === value.trim() && /^http:\/\/127\.0\.0\.1:\d{1,5}$/.test(value) ? value : null;
 }
 
@@ -65,7 +65,7 @@ export function allowedSocketUrl(value: string, testOrigin: string | null): bool
 }
 
 export function slackRedirectUrl(env: NodeJS.ProcessEnv = process.env): string {
-  const value = env.DUSK_SLACK_REDIRECT_URL;
+  const value = env.MADANI_SLACK_REDIRECT_URL;
   if (value) {
     try {
       const url = new URL(value);

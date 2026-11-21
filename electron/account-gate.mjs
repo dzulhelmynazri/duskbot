@@ -1,7 +1,7 @@
 /** The app works without an account: where bots live comes first, and an account is asked for only where something needs
- * one (dusk cloud's checkout, a server's link, a sign-in the person asks for), in the browser. DUSK_REQUIRE_ACCOUNT=1 puts
+ * one (madani cloud's checkout, a server's link, a sign-in the person asks for), in the browser. MADANI_REQUIRE_ACCOUNT=1 puts
  * the sign-in back in front of the app, for an install that must have one. */
-export const accountGateRequired = ({ env, remote }) => !remote && env.DUSK_REQUIRE_ACCOUNT === "1";
+export const accountGateRequired = ({ env, remote }) => !remote && env.MADANI_REQUIRE_ACCOUNT === "1";
 export const gateBlocks = state => !(state?.account && ["connected", "unavailable"].includes(state.status));
 const plain = value => typeof value === "string" ? value : "";
 

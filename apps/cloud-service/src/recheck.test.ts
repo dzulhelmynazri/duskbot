@@ -26,7 +26,7 @@ const plan: DesktopPlan = { kind: "shared_s", placement: "pool", spec: { vcpu: 2
 const SEAL = Buffer.alloc(32, 7), BACKUP_SECRET = Buffer.alloc(32, 9);
 
 async function fixture() {
-  const dataDir = mkdtempSync(join(tmpdir(), "dusk-recheck-")); cleanup.push(() => rmSync(dataDir, { recursive: true, force: true }));
+  const dataDir = mkdtempSync(join(tmpdir(), "madani-recheck-")); cleanup.push(() => rmSync(dataDir, { recursive: true, force: true }));
   let at = Date.UTC(2026, 10, 9, 12);
   const now = () => at;
   const api = await startFakeInstaboxApi({ now }); cleanup.push(() => api.close());
@@ -172,7 +172,7 @@ it("an ended plan's cloud that is confirmed lost keeps its notices and is not de
 });
 
 it("the data-dir lock: another process is refused, a dead process's lock is taken over", () => {
-  const dir = mkdtempSync(join(tmpdir(), "dusk-lock-")); cleanup.push(() => rmSync(dir, { recursive: true, force: true }));
+  const dir = mkdtempSync(join(tmpdir(), "madani-lock-")); cleanup.push(() => rmSync(dir, { recursive: true, force: true }));
   const unlock = lockDataDir(dir);
   const child = spawnSync(process.execPath, ["--experimental-strip-types", "-e", `import("${join(process.cwd(), "apps/dashboard/server/data-dir-lock.ts")}").then(m => { try { m.lockDataDir(${JSON.stringify(dir)}); console.log("TOOK"); } catch (e) { console.log("REFUSED " + e.name); } })`], { encoding: "utf8" });
   expect(child.stdout).toContain("REFUSED DataDirLockedError");
@@ -187,7 +187,7 @@ it("the data-dir lock: another process is refused, a dead process's lock is take
 });
 
 it("a stale lock left by an earlier run that had this same pid (a restarted container's pid 1) is taken over", () => {
-  const dir = mkdtempSync(join(tmpdir(), "dusk-lock-")); cleanup.push(() => rmSync(dir, { recursive: true, force: true }));
+  const dir = mkdtempSync(join(tmpdir(), "madani-lock-")); cleanup.push(() => rmSync(dir, { recursive: true, force: true }));
   writeFileSync(join(dir, ".writer.lock"), JSON.stringify({ pid: process.pid, host: hostname(), at: Date.now() - 3_600_000 }));
   let took = false;
   try { lockDataDir(dir)(); took = true; } catch {}
@@ -216,7 +216,7 @@ it("a changed backup secret refuses to start unless the previous one is given, a
   await f.settle(A.service, c, c => c.status === "stopped");
   await f.settle(A.service, c, c => (c.managed!.backups.at(-1)?.verifiedAt ?? null) !== null);
   A.service.close();
-  // the operator sets DUSK_MANAGED_BACKUP_KEY (or rotates the seal key) after backups were written
+  // the operator sets MADANI_MANAGED_BACKUP_KEY (or rotates the seal key) after backups were written
   expect(() => f.instance(Buffer.alloc(32, 1))).toThrow("backup secret changed");
   // given the old one, every backup is sealed again first
   const B = f.instance(Buffer.alloc(32, 1), BACKUP_SECRET); const cB = B.service.get(c.id)!;

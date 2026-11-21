@@ -48,11 +48,11 @@ posixOnly("bulk delete tasks e2e", () => {
 
   beforeAll(async () => {
     chmodSync(FAKE_CLAUDE, 0o755);
-    home = mkdtempSync(join(tmpdir(), "dusk-bulk-delete-"));
-    mkdirSync(join(home, ".duskbot"), { recursive: true });
+    home = mkdtempSync(join(tmpdir(), "madani-bulk-delete-"));
+    mkdirSync(join(home, ".madanibot"), { recursive: true });
     finishGate = join(home, "finish-turn.gate");
     writeFileSync(
-      join(home, ".duskbot", "config.json"),
+      join(home, ".madanibot", "config.json"),
       JSON.stringify({
         instances: {
           claudeSlow: {
@@ -65,7 +65,7 @@ posixOnly("bulk delete tasks e2e", () => {
     );
     child = spawn(process.execPath, [join(SERVER_DIR, "index.ts")], {
       cwd: join(SERVER_DIR, ".."),
-      env: { ...(process.env.PATH ? { PATH: process.env.PATH } : {}), HOME: home, USERPROFILE: home, DUSK_PORT: String(PORT) },
+      env: { ...(process.env.PATH ? { PATH: process.env.PATH } : {}), HOME: home, USERPROFILE: home, MADANI_PORT: String(PORT) },
       stdio: ["ignore", "pipe", "pipe"],
     });
     child.stderr!.on("data", (c) => (stderr += c));

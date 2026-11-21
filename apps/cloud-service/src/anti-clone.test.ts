@@ -56,7 +56,7 @@ describe("the machine never receives its secrets through the provider", () => {
     expect((await call(handle, "POST", "/v1/managed/claims/redeem", { cloud: c.id, claim: "x".repeat(43) })).status).toBe(403);
     const first = await call(handle, "POST", "/v1/managed/claims/redeem", { cloud: c.id, claim: boot.claim });
     expect(first.status).toBe(200);
-    expect(first.body).toMatchObject({ v: 1, machine: c.id, env: { DUSK_CLOUD_BOOTSTRAP_SECRET: secret, DUSK_CLOUD_MACHINE_ID: c.id } });
+    expect(first.body).toMatchObject({ v: 1, machine: c.id, env: { MADANI_CLOUD_BOOTSTRAP_SECRET: secret, MADANI_CLOUD_MACHINE_ID: c.id } });
     f.advance(4 * 60_000);
     expect((await call(handle, "POST", "/v1/managed/claims/redeem", { cloud: c.id, claim: boot.claim })).status).toBe(200);
     f.advance(2 * 60_000);
@@ -115,7 +115,7 @@ describe("the machine never receives its secrets through the provider", () => {
 describe("the scripts a machine runs", () => {
   it("are valid bash and valid JavaScript, and the claim redeemer refuses a boot file that points anywhere else", () => {
     const { key } = releaseKey();
-    const dir = mkdtempSync(join(tmpdir(), "dusk-scripts-")); dirs.push(dir);
+    const dir = mkdtempSync(join(tmpdir(), "madani-scripts-")); dirs.push(dir);
     for (const [name, text] of [["setup.sh", homeSetupScript({ releaseKeys: [key], requireSigned: true })], ["control.sh", homeControlScript({ releaseKeys: [key], requireSigned: true })]] as const) {
       writeFileSync(join(dir, name), text);
       execFileSync("bash", ["-n", join(dir, name)]);
@@ -178,7 +178,7 @@ describe("signed releases", () => {
 
   it("the machine's own check, run by node as the control script runs it, accepts only the pinned key's signature for this sha256", () => {
     const { signing, key } = releaseKey(), other = releaseKey("rel-test");
-    const dir = mkdtempSync(join(tmpdir(), "dusk-release-")); dirs.push(dir);
+    const dir = mkdtempSync(join(tmpdir(), "madani-release-")); dirs.push(dir);
     const sha256 = "e".repeat(64), file = join(dir, "sig");
     const check = (signature: string, sum: string, kind: string) => {
       writeFileSync(file, signature);
@@ -204,18 +204,18 @@ describe("signed releases", () => {
 });
 
 describe("a service people use refuses an unsafe setup", () => {
-  const base = { INSTABOX_API_KEY: `ibk_${"k".repeat(52)}`, DUSK_MANAGED: "1", DUSK_CLOUD_SEAL_KEY: Buffer.alloc(32, 3).toString("base64url"),
-    DUSK_MANAGED_HOME_PACKAGE_URL: "https://packages.example.test/home.tgz", DUSK_MANAGED_HOME_PACKAGE_SHA256: "a".repeat(64) };
-  const make = (env: Record<string, string>) => () => managedCloudFromEnv(env, { dataDir: mkdtempSync(join(tmpdir(), "dusk-env-")), publicUrl: "https://dash.example.com", loopback: false,
+  const base = { INSTABOX_API_KEY: `ibk_${"k".repeat(52)}`, MADANI_MANAGED: "1", MADANI_CLOUD_SEAL_KEY: Buffer.alloc(32, 3).toString("base64url"),
+    MADANI_MANAGED_HOME_PACKAGE_URL: "https://packages.example.test/home.tgz", MADANI_MANAGED_HOME_PACKAGE_SHA256: "a".repeat(64) };
+  const make = (env: Record<string, string>) => () => managedCloudFromEnv(env, { dataDir: mkdtempSync(join(tmpdir(), "madani-env-")), publicUrl: "https://dash.example.com", loopback: false,
     sealKey: Buffer.alloc(32, 3), now: Date.now, subscriptions: () => [] });
   it("needs the provider key, our public domain, the edge token and a signed package", () => {
     expect(make({ ...base, INSTABOX_API_KEY: "" })).toThrow("INSTABOX_API_KEY");
-    expect(make(base)).toThrow("DUSK_MANAGED_PUBLIC_DOMAIN");
-    const named = { ...base, DUSK_MANAGED_PUBLIC_DOMAIN: "desktops.example.com", DUSK_MANAGED_EDGE_TOKEN: "e".repeat(40) };
-    expect(make(named)).toThrow("DUSK_MANAGED_HOME_PACKAGE_SIGNATURE");
-    expect(make({ ...named, DUSK_MANAGED_HOME_PACKAGE_SIGNATURE: "r1.rel-x.e30.AA" })).toThrow("unknown key");
+    expect(make(base)).toThrow("MADANI_MANAGED_PUBLIC_DOMAIN");
+    const named = { ...base, MADANI_MANAGED_PUBLIC_DOMAIN: "desktops.example.com", MADANI_MANAGED_EDGE_TOKEN: "e".repeat(40) };
+    expect(make(named)).toThrow("MADANI_MANAGED_HOME_PACKAGE_SIGNATURE");
+    expect(make({ ...named, MADANI_MANAGED_HOME_PACKAGE_SIGNATURE: "r1.rel-x.e30.AA" })).toThrow("unknown key");
     const { signing, key } = releaseKey("rel-staging");
     const signature = signRelease({ kind: "home-package", name: "omb-home", version: "1", sha256: "a".repeat(64), signedAt: 1 }, signing);
-    expect(make({ ...named, DUSK_MANAGED_HOME_PACKAGE_SIGNATURE: signature, DUSK_RELEASE_PUBLIC_KEYS: `${key.kid}:${key.x}` })()).not.toBeNull();
+    expect(make({ ...named, MADANI_MANAGED_HOME_PACKAGE_SIGNATURE: signature, MADANI_RELEASE_PUBLIC_KEYS: `${key.kid}:${key.x}` })()).not.toBeNull();
   });
 });

@@ -19,7 +19,7 @@ export function mobileFace(account: unknown): Pick<MobileAccount, "avatarUrl" | 
   return { ...(photo ? { avatarUrl: photo } : {}), ...(choice ? { avatar: choice } : {}) };
 }
 export type MobileCloud = { id: string; name: string; status: string; origin: string | null; primary: boolean; asleep: boolean };
-/** a team's dusk cloud this account is a member of, as the session lists it */
+/** a team's madani cloud this account is a member of, as the session lists it */
 export type MobileTeamCloud = { id: string; name: string; status: string; origin: string | null; asleep: boolean };
 /** one of the account's computers (a Mac, a pc or a server it linked), as the service lists it */
 export type MobileComputer = { id: string; name: string; kind: "vps" | "mac" | "linux" | "windows"; presence: "online" | "asleep" | "offline"; environmentId: string | null };
@@ -46,11 +46,11 @@ export async function appleNonce(): Promise<{ raw: string; hash: string }> {
 }
 const TOKEN = /^omc_[A-Za-z0-9_-]{43}$/;
 const OPAQUE = /^[A-Za-z0-9_-]{43}$/;
-const SECRET = "dusk.account";
+const SECRET = "madani.account";
 /** the phone's other signed-in accounts, each with its own session, kept beside the one in use */
-const OTHERS = "dusk.account.others";
+const OTHERS = "madani.account.others";
 const MAX_OTHERS = 5;
-const PENDING = "dusk.account.pending";
+const PENDING = "madani.account.pending";
 const OAUTH_ERRORS: readonly string[] = ["oauth_denied", "oauth_failed", "oauth_expired", "provider_unavailable", "signup_closed", "identity_taken"];
 const object = (value: unknown): value is Record<string, unknown> => Boolean(value) && typeof value === "object" && !Array.isArray(value);
 const identity = (value: unknown): value is MobileAccount => object(value) && typeof value.id === "string" && Boolean(value.id) && typeof value.email === "string" && Boolean(cleanEmail(value.email));
@@ -132,7 +132,7 @@ export function parseComputers(input: unknown): MobileComputer[] {
 
 /** the computer's pairing link, only a v2 phone link whose grant is still live */
 export function parseComputerPair(input: unknown, now = Date.now()): string | null {
-  if (!object(input) || input.v !== 1 || typeof input.link !== "string" || input.link.length > 8192 || !/^duskbot:\/\/pair\?m=[A-Za-z0-9_-]+$/.test(input.link)) return null;
+  if (!object(input) || input.v !== 1 || typeof input.link !== "string" || input.link.length > 8192 || !/^madanibot:\/\/pair\?m=[A-Za-z0-9_-]+$/.test(input.link)) return null;
   return expiry(input.expiresAt) && input.expiresAt > now - CLOCK_SLACK_MS && input.expiresAt <= now + MAX_GRANT_MS + CLOCK_SLACK_MS ? input.link : null;
 }
 

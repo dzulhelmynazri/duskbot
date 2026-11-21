@@ -20,27 +20,27 @@ describe("private managed origin", () => {
     expect(companionOriginSocket("127.0.0.1:8810")).toBeNull();
     expect(companionOriginSocket("/tmp/origin.sock", "linux")).toBeNull();
     expect(
-      companionOriginSocket("/tmp/dusk-companion-origin-test/origin.sock", "linux"),
-    ).toBe("/tmp/dusk-companion-origin-test/origin.sock");
+      companionOriginSocket("/tmp/madani-companion-origin-test/origin.sock", "linux"),
+    ).toBe("/tmp/madani-companion-origin-test/origin.sock");
     expect(
       companionOriginSocket(
-        "\\\\.\\pipe\\duskbot-companion-origin-42-12345678-1234-1234-1234-123456789abc",
+        "\\\\.\\pipe\\madanibot-companion-origin-42-12345678-1234-1234-1234-123456789abc",
         "win32",
       ),
-    ).toContain("duskbot-companion-origin-42");
+    ).toContain("madanibot-companion-origin-42");
     expect(companionOriginSocket("\\\\.\\pipe\\foreign", "win32")).toBeNull();
   });
 
   it.runIf(process.platform !== "win32")(
     "binds a private socket that serves the same HTTP handler",
     async () => {
-      const directory = fs.mkdtempSync(path.join(os.tmpdir(), "dusk-companion-origin-test-"));
+      const directory = fs.mkdtempSync(path.join(os.tmpdir(), "madani-companion-origin-test-"));
       directories.push(directory);
       fs.chmodSync(directory, 0o700);
       const socketPath = path.join(directory, "origin.sock");
       const server = createServer((_incoming, response) => {
         response.writeHead(200, { "content-type": "application/json" });
-        response.end(JSON.stringify({ app: "duskbot" }));
+        response.end(JSON.stringify({ app: "madanibot" }));
       });
       await listenCompanionOrigin(server, socketPath);
       expect(fs.statSync(socketPath).mode & 0o777).toBe(0o600);
@@ -54,7 +54,7 @@ describe("private managed origin", () => {
         outgoing.once("error", reject);
         outgoing.end();
       });
-      expect(JSON.parse(body)).toEqual({ app: "duskbot" });
+      expect(JSON.parse(body)).toEqual({ app: "madanibot" });
       await new Promise<void>((resolve) => server.close(() => resolve()));
     },
   );
@@ -62,7 +62,7 @@ describe("private managed origin", () => {
   it.runIf(process.platform !== "win32")(
     "rejects and closes the socket when its permissions cannot be restricted",
     async () => {
-      const directory = fs.mkdtempSync(path.join(os.tmpdir(), "dusk-companion-origin-test-"));
+      const directory = fs.mkdtempSync(path.join(os.tmpdir(), "madani-companion-origin-test-"));
       directories.push(directory);
       fs.chmodSync(directory, 0o700);
       const socketPath = path.join(directory, "origin.sock");

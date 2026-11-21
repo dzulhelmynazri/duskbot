@@ -24,7 +24,7 @@ const flush = async () => { for (let i = 0; i < 5; i++) await Promise.resolve();
 beforeEach(() => {
   f.values = []; f.index = 0; f.effects = []; push = () => {};
   bridge = { state: vi.fn().mockResolvedValue(readyCloud), onState: vi.fn((callback) => { push = callback; return () => {}; }), connectHomeForPhone: vi.fn() } as unknown as CloudAccountBridge;
-  vi.stubGlobal("window", { duskDesktop: { cloudAccount: bridge } });
+  vi.stubGlobal("window", { madaniDesktop: { cloudAccount: bridge } });
 });
 afterEach(() => vi.unstubAllGlobals());
 
@@ -49,7 +49,7 @@ it("is not read anywhere but this computer's own window", async () => {
   render(false);
   expect(result).toEqual({ cloud: null });
   expect(bridge.state).not.toHaveBeenCalled();
-  vi.stubGlobal("window", { duskDesktop: { cloudAccount: bridge, remoteClient: { active: true } } });
+  vi.stubGlobal("window", { madaniDesktop: { cloudAccount: bridge, remoteClient: { active: true } } });
   f.values = []; render(true); f.effects[0]!(); await flush(); render(true);
   expect(result).toEqual({ cloud: null });
   expect(bridge.state).not.toHaveBeenCalled();

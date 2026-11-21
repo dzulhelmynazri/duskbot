@@ -420,7 +420,7 @@ export function LocalBrowserSection({ bot, after, askFirst = null }: {
         : known || late || override ? <LocalBrowserClosed bot={bot} pill={pill} starting={checking} onStart={start} /> : null}
       <div ref={below} className="mt-3 empty:hidden">{(known || late) && !wide && after}</div>
       <AnimatePresence>{asking && askFirst && <MacPermissionsDialog key="mac-permissions-dialog" bridge={askFirst} onClose={() => setAsking(false)} onAllowed={openBrowser}
-        relaunch={typeof window.duskDesktop?.relaunch === "function" ? () => void window.duskDesktop!.relaunch!() : null} />}</AnimatePresence>
+        relaunch={typeof window.madaniDesktop?.relaunch === "function" ? () => void window.madaniDesktop!.relaunch!() : null} />}</AnimatePresence>
     </>
   );
 }

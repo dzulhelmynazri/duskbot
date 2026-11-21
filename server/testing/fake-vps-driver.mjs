@@ -1,5 +1,5 @@
 // stands in for `docker exec <desktop> cua mcp` behind the vps bridge: answers mcp over stdio, and before each tools/call
-// asks the turn's control gate as the real bridge does. calls are appended to DUSK_TEST_VPS_DRIVER_LOG when set.
+// asks the turn's control gate as the real bridge does. calls are appended to MADANI_TEST_VPS_DRIVER_LOG when set.
 import { appendFileSync } from 'node:fs';
 
 const [, , , alias, ownerId, containerId] = process.argv;
@@ -9,7 +9,7 @@ const TOOLS = [
 ];
 const write = (frame) => process.stdout.write(`${JSON.stringify(frame)}\n`);
 const gate = async () => {
-  const url = process.env.DUSK_CONTROL_URL, token = process.env.DUSK_CONTROL_TOKEN;
+  const url = process.env.MADANI_CONTROL_URL, token = process.env.MADANI_CONTROL_TOKEN;
   if (!url || !token) return { held: false };
   const response = await fetch(url, { headers: { authorization: `Bearer ${token}` } });
   return response.ok ? response.json() : { held: true, blockedReason: `gate answered ${response.status}` };
@@ -19,7 +19,7 @@ const answer = async (frame) => {
   if (frame.method === 'tools/list') return { tools: TOOLS };
   if (frame.method !== 'tools/call') return null;
   const state = await gate();
-  if (process.env.DUSK_TEST_VPS_DRIVER_LOG) appendFileSync(process.env.DUSK_TEST_VPS_DRIVER_LOG, `${JSON.stringify({ alias, ownerId, containerId, call: frame.params, held: Boolean(state.held) })}\n`);
+  if (process.env.MADANI_TEST_VPS_DRIVER_LOG) appendFileSync(process.env.MADANI_TEST_VPS_DRIVER_LOG, `${JSON.stringify({ alias, ownerId, containerId, call: frame.params, held: Boolean(state.held) })}\n`);
   if (state.held) return { isError: true, content: [{ type: 'text', text: state.blockedReason ?? 'held' }] };
   return { content: [{ type: 'text', text: `fixture ${frame.params?.name} on ${ownerId}` }] };
 };

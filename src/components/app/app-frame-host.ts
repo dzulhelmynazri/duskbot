@@ -115,7 +115,7 @@ export interface AppFrameHost {
   destroy(): void;
 }
 
-const PARKED_ID = "dusk-app-frames-leaving";
+const PARKED_ID = "madani-app-frames-leaving";
 
 function parkingPlace(doc: Document): HTMLElement {
   const existing = doc.getElementById(PARKED_ID);

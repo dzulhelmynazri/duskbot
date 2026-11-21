@@ -6,7 +6,7 @@ import Security
 
 /// A bot's turn on the lock screen and in the Dynamic Island. The bot host pushes the same JSON (content-state,
 /// attributes), so a field here is a field there.
-struct DuskTurnAttributes: ActivityAttributes {
+struct MadaniTurnAttributes: ActivityAttributes {
     struct Ask: Codable, Hashable {
         /// "approve" or "answer"
         var kind: String
@@ -36,7 +36,7 @@ struct DuskTurnAttributes: ActivityAttributes {
     var body: String
 }
 
-extension DuskTurnAttributes.ContentState {
+extension MadaniTurnAttributes.ContentState {
     var started: Date { Date(timeIntervalSince1970: startedAt) }
     var ended: Bool { phase == "done" || phase == "stopped" }
 
@@ -51,9 +51,9 @@ extension DuskTurnAttributes.ContentState {
 /// The X25519 key a done reply's first line is sealed to. It lives in the keychain group the app and its Live Activity
 /// share, readable after the first unlock so a locked phone can show the line.
 enum TurnLineKey {
-    private static let service = "bot.dusk.turn-line"
+    private static let service = "bot.madani.turn-line"
     private static let account = "line-key"
-    private static var group: String? { Bundle.main.object(forInfoDictionaryKey: "DuskKeychainGroup") as? String }
+    private static var group: String? { Bundle.main.object(forInfoDictionaryKey: "MadaniKeychainGroup") as? String }
 
     private static func query() -> [String: Any] {
         var query: [String: Any] = [kSecClass as String: kSecClassGenericPassword, kSecAttrService as String: service, kSecAttrAccount as String: account]
@@ -89,7 +89,7 @@ enum TurnLineKey {
         do {
             let ephemeral = try Curve25519.KeyAgreement.PublicKey(rawRepresentation: raw.prefix(32))
             let shared = try key.sharedSecretFromKeyAgreement(with: ephemeral)
-            let symmetric = shared.hkdfDerivedSymmetricKey(using: SHA256.self, salt: Data("dusk-turn-line-v1".utf8), sharedInfo: Data("seal".utf8), outputByteCount: 32)
+            let symmetric = shared.hkdfDerivedSymmetricKey(using: SHA256.self, salt: Data("madani-turn-line-v1".utf8), sharedInfo: Data("seal".utf8), outputByteCount: 32)
             let box = try AES.GCM.SealedBox(nonce: AES.GCM.Nonce(data: raw.subdata(in: 32..<44)), ciphertext: raw.subdata(in: 44..<(raw.count - 16)), tag: raw.suffix(16))
             return String(data: try AES.GCM.open(box, using: symmetric), encoding: .utf8)
         } catch {
@@ -111,8 +111,8 @@ enum TurnLineKey {
 /// What a Live Activity button asked the app to do, kept until the page takes it: the button opens the app, and the page
 /// may not be listening yet.
 enum PhoneActionInbox {
-    static let posted = Notification.Name("DuskPhoneActionPosted")
-    private static let key = "dusk.phoneActions"
+    static let posted = Notification.Name("MadaniPhoneActionPosted")
+    private static let key = "madani.phoneActions"
 
     static func post(_ action: [String: Any]) {
         var list = UserDefaults.standard.array(forKey: key) ?? []
@@ -143,7 +143,7 @@ struct CloseTurnActivityIntent: LiveActivityIntent {
     }
 
     func perform() async throws -> some IntentResult {
-        for activity in Activity<DuskTurnAttributes>.activities where activity.attributes.threadId == threadId {
+        for activity in Activity<MadaniTurnAttributes>.activities where activity.attributes.threadId == threadId {
             await activity.end(nil, dismissalPolicy: .immediate)
         }
         return .result()
@@ -174,7 +174,7 @@ struct ApproveAskIntent: LiveActivityIntent {
     func perform() async throws -> some IntentResult {
         var data: [String: Any] = ["requestId": requestId, "threadId": threadId, "botId": botId]
         if !groupId.isEmpty { data["groupId"] = groupId }
-        PhoneActionInbox.post(["actionId": "dusk.approve", "data": data])
+        PhoneActionInbox.post(["actionId": "madani.approve", "data": data])
         return .result()
     }
 }

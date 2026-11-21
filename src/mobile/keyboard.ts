@@ -86,10 +86,10 @@ export function useKeyboardDismiss(platform: MobilePlatform, rootRef: RefObject<
   }, [platform, rootRef]);
 }
 
-/** Each keyboard, composer and send step with its page clock, in the console, when localStorage has dusk.kbtrace. */
+/** Each keyboard, composer and send step with its page clock, in the console, when localStorage has madani.kbtrace. */
 export function kbTrace(step: string, detail: Record<string, number | string>): void {
   try {
-    if (!localStorage.getItem("dusk.kbtrace")) return;
+    if (!localStorage.getItem("madani.kbtrace")) return;
   } catch {
     return;
   }

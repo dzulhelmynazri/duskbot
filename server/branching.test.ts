@@ -61,10 +61,10 @@ posixOnly("conversation branching e2e (fake ACP fleet)", () => {
 
   beforeAll(async () => {
     chmodSync(FAKE_CLI, 0o755);
-    home = mkdtempSync(join(tmpdir(), "dusk-branch-test-"));
-    mkdirSync(join(home, ".duskbot"), { recursive: true });
+    home = mkdtempSync(join(tmpdir(), "madani-branch-test-"));
+    mkdirSync(join(home, ".madanibot"), { recursive: true });
     writeFileSync(
-      join(home, ".duskbot", "config.json"),
+      join(home, ".madanibot", "config.json"),
       JSON.stringify({
         instances: {
           happy: { driver: "grokAgent", config: { cli: FAKE_CLI, fullAuto: true } },
@@ -83,7 +83,7 @@ posixOnly("conversation branching e2e (fake ACP fleet)", () => {
     const env: NodeJS.ProcessEnv = {
       HOME: home,
       USERPROFILE: home,
-      DUSK_PORT: String(PORT),
+      MADANI_PORT: String(PORT),
     };
     if (process.env.PATH) env.PATH = process.env.PATH;
     child = spawn(process.execPath, [join(SERVER_DIR, "index.ts")], {
@@ -261,7 +261,7 @@ posixOnly("conversation branching e2e (fake ACP fleet)", () => {
       // the fake's reply is fixed, so the proof lives in the native protocol
       // tee: the prompt each engine received must carry the history it lacks
       const bot = await getBot(created.id);
-      const log = readFileSync(join(home, ".duskbot", "native", `${bot.threadId}.ndjson`), "utf8");
+      const log = readFileSync(join(home, ".madanibot", "native", `${bot.threadId}.ndjson`), "utf8");
       const prompts = log
         .split("\n")
         .filter(Boolean)

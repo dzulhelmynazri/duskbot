@@ -1,5 +1,5 @@
-// Read before main.tsx's first-paint writes: applySkin stamps dusk-skin on every boot.
-const PRIOR_RUN_KEYS = ["dusk-skin", "dusk-installed", "dusk-email-gate", "dusk-drafts", "dusk-show-threads"];
+// Read before main.tsx's first-paint writes: applySkin stamps madani-skin on every boot.
+const PRIOR_RUN_KEYS = ["madani-skin", "madani-installed", "madani-email-gate", "madani-drafts", "madani-show-threads"];
 
 export function hasPriorRun(store: Pick<Storage, "getItem"> | undefined): boolean {
   try {

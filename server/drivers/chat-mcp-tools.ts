@@ -51,7 +51,7 @@ export interface ChatToolSession {
   trimmed: TrimmedChatMcpServer[];
   budget: ToolBudget;
   validate(name: string, args: unknown): void;
-  /** Directory reads and dusk bot's own agents server need no card; call_tool shows the tool it runs. */
+  /** Directory reads and madani bot's own agents server need no card; call_tool shows the tool it runs. */
   view(name: string, args: Record<string, unknown>): ChatToolCallView;
   /** Scheduling only: explicitly read-only calls may overlap. This never changes approval or scope checks. */
   parallel(name: string, args: Record<string, unknown>): boolean;
@@ -106,7 +106,7 @@ abstract class McpPeer {
       if (Date.now() >= deadline) throw new Error("MCP startup timed out");
       return deadline - Date.now();
     };
-    const handshake = { protocolVersion: "2024-11-05", capabilities: {}, clientInfo: { name: "duskbot-chat", version: "1" } };
+    const handshake = { protocolVersion: "2024-11-05", capabilities: {}, clientInfo: { name: "madanibot-chat", version: "1" } };
     let initialized: unknown;
     if (observer?.mount.extension) {
       try { initialized = await this.call("initialize", withUiExtension(handshake), signal, remaining(), true); }
@@ -274,16 +274,16 @@ export class ChatMcpClient extends McpPeer {
 
 type Answer = (frame: Record<string, unknown>) => Promise<unknown>;
 
-/** dusk bot's own agents or harness server for a built-in mount, answered in this process by the code its stdio proxy
+/** madani bot's own agents or harness server for a built-in mount, answered in this process by the code its stdio proxy
  * runs, with the environment that proxy would get; the endpoints behind it check the turn's token as they do the proxy's.
  * `stop` ends the harness requests still in flight, as ending the proxy's process does. */
 export function ownServerAnswer(server: Server): ((stop: AbortSignal) => Answer) | undefined {
   if (server.command !== process.execPath) return undefined;
   const env = chatMcpEnvironment(server.env);
-  const harness = env.DUSK_HARNESS_URL;
+  const harness = env.MADANI_HARNESS_URL;
   if (!harness || !/^http:\/\/127\.0\.0\.1:\d+$/.test(harness)) return undefined;
   if (server.args.length === 1 && server.args[0] === SPAWNED_PROXIES.agents) {
-    if (!env.DUSK_COMMS_TOKEN) return undefined;
+    if (!env.MADANI_COMMS_TOKEN) return undefined;
     return (stop) => {
       const answer = agentsMcp(env, stop);
       return (frame) => answer(frame as Json);
@@ -357,7 +357,7 @@ function frameLimit(computerUse: boolean): number {
   return computerUse ? 32 * 1024 * 1024 : FRAME_BYTES;
 }
 
-/** A built-in mount of dusk bot's own server is answered in this process; anything else runs as its own child. */
+/** A built-in mount of madani bot's own server is answered in this process; anything else runs as its own child. */
 function openPeer(server: Server, computerUse: boolean, builtIn: boolean): McpPeer {
   const own = builtIn ? ownServerAnswer(server) : undefined;
   if (own) return new InProcessMcpClient(own, frameLimit(computerUse));

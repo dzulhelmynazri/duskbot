@@ -13,7 +13,7 @@ let home: string;
 
 /** The real package path over a throwaway home, with a bot of the person's own already there. */
 async function installation() {
-  home = mkdtempSync(join(tmpdir(), "dusk-bot-move-install-"));
+  home = mkdtempSync(join(tmpdir(), "madani-bot-move-install-"));
   vi.resetModules();
   vi.stubEnv("HOME", home);
   vi.stubEnv("USERPROFILE", home);
@@ -42,7 +42,7 @@ async function installation() {
   };
   /** Every bot found, moved unless a bot here already carries its package id: the check the app makes before moving. */
   const moveAll = (fixtureHome: string) => {
-    const look = lookForBots({ ...thisMachine(), home: fixtureHome, platform: "darwin", env: {} }, { dataDir: join(home, ".duskbot") });
+    const look = lookForBots({ ...thisMachine(), home: fixtureHome, platform: "darwin", env: {} }, { dataDir: join(home, ".madanibot") });
     const added: string[] = [];
     const facts: string[] = [];
     for (const app of look.apps) {
@@ -71,7 +71,7 @@ describe("bots from other apps, through the real package path", () => {
   it("come over with their persona, memory, skills off and routines paused, beside a bot already here, once", async () => {
     const app = await installation();
     const mine = app.store.createBot({ name: "Molty", soul: "my own Molty" } as never, { seedMessages: false });
-    const source = mkdtempSync(join(tmpdir(), "dusk-bot-move-source-"));
+    const source = mkdtempSync(join(tmpdir(), "madani-bot-move-source-"));
     try {
       plantOpenClawList(source);
       plantHermes(source);

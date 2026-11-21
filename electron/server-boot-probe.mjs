@@ -7,7 +7,7 @@ export const SERVER_LISTENING_GRACE_MS = 180_000;
 /** A child that has printed anything is alive and loading: on a slow PC its first start may need more than the boot
  * budget, and stopping it only makes the next one redo the same cold work. */
 export const SERVER_STARTING_GRACE_MS = 120_000;
-const LISTENING_LINE = "duskbot server on ";
+const LISTENING_LINE = "madanibot server on ";
 
 export function listeningSignal() {
   let tail = "";
@@ -91,7 +91,7 @@ export async function pollServerIdentity({
     const identified =
       res.ok &&
       expectedPid !== undefined &&
-      body?.app === "duskbot" &&
+      body?.app === "madanibot" &&
       body.pid === expectedPid &&
       body.static;
     if (!identified) return { outcome: "foreign-owner" };

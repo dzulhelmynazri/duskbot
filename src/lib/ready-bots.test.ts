@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import { MAUS_COLORS } from "./mascot";
 import { CLASSIC_ROLE_IDS, READY_BOT_CATEGORIES, READY_BOTS, matchesReadyBot, readyBot, readyBotTemplate } from "./ready-bots";
-import { DUSK_BODY_IDS, DUSK_BODY_NAMES } from "../../shared/body-migration";
+import { MADANI_BODY_IDS, MADANI_BODY_NAMES } from "../../shared/body-migration";
 import type { NewBotDefaults } from "../../shared/new-bot-defaults";
 
 const defaults = (): NewBotDefaults => ({
@@ -25,7 +25,7 @@ describe("ready-made bots", () => {
   it("each has a look the app can draw, a category, and something to try", () => {
     for (const bot of READY_BOTS) {
       expect(Object.keys(MAUS_COLORS)).toContain(bot.look.color);
-      expect(DUSK_BODY_IDS).toContain(bot.look.mascotBody);
+      expect(MADANI_BODY_IDS).toContain(bot.look.mascotBody);
       expect(READY_BOT_CATEGORIES).toContain(bot.category);
       expect(bot.tryAsking.length).toBeGreaterThanOrEqual(2);
       expect(bot.description.length).toBeLessThanOrEqual(120);
@@ -44,7 +44,7 @@ describe("ready-made bots", () => {
       expect(bot.soul.length, bot.id).toBeGreaterThan(1_500);
       expect(bot.soul.length, bot.id).toBeLessThanOrEqual(4_500);
       for (const text of [bot.soul, bot.description, ...bot.tryAsking, ...Object.values(bot.notes ?? {})]) {
-        expect(text, bot.id).not.toMatch(/\u2014|\bDusk\b/);
+        expect(text, bot.id).not.toMatch(/\u2014|\bMadani\b/);
       }
     }
   });
@@ -52,7 +52,7 @@ describe("ready-made bots", () => {
   it("have their own names, never a mascot body's, the helper's or another template's", () => {
     const names = READY_BOTS.map((bot) => bot.name.toLowerCase());
     expect(new Set(names).size).toBe(names.length);
-    const taken = [...Object.values(DUSK_BODY_NAMES), "dusk", "dusk bot", "mausbot"].map((name) => name.toLowerCase());
+    const taken = [...Object.values(MADANI_BODY_NAMES), "madani", "madani bot", "mausbot"].map((name) => name.toLowerCase());
     for (const name of names) expect(taken, name).not.toContain(name);
   });
 

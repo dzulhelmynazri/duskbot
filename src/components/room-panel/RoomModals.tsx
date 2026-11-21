@@ -65,7 +65,7 @@ export function RoomInstructionsModal({ group }: { group: Group; onClose: () => 
 export function RoomFolderModal({ group }: { group: Group; onClose: () => void }) {
   const { capabilities } = useDesktopCapabilities();
   const home = capabilities.host?.homeDir;
-  const canPick = typeof window !== "undefined" && Boolean(window.duskDesktop?.pickFolder);
+  const canPick = typeof window !== "undefined" && Boolean(window.madaniDesktop?.pickFolder);
   const locked = group.pinnedCwd !== undefined;
   const cwd = locked ? group.pinnedCwd ?? undefined : group.cwd;
   const [typing, setTyping] = useState(false);
@@ -84,7 +84,7 @@ export function RoomFolderModal({ group }: { group: Group; onClose: () => void }
     }
   };
   const pick = async () => {
-    const path = await window.duskDesktop?.pickFolder?.(group.cwd);
+    const path = await window.madaniDesktop?.pickFolder?.(group.cwd);
     if (path) void save(path);
   };
 
@@ -118,7 +118,7 @@ export function RoomFolderModal({ group }: { group: Group; onClose: () => void }
   );
 }
 
-/** Who answers a message that @mentions nobody: a leader who hands out the work, everyone, Dusk deciding or Jev
+/** Who answers a message that @mentions nobody: a leader who hands out the work, everyone, Madani deciding or Jev
  * deciding (with Jev set up right under it). A leader picks who leads in the rows under it; arrow keys move between rows. */
 export function RoomResponderModal({ group, members }: { group: Group; members: Bot[]; onClose: () => void }) {
   const { dispatch } = useStore();
@@ -134,9 +134,9 @@ export function RoomResponderModal({ group, members }: { group: Group; members: 
     if (next === current) return;
     set(chosenResponder(next, responder));
   };
-  const behaviours: { choice: "everyone" | "dusk" | "auto" | "mentions"; title: LocaleKey; hint: LocaleKey }[] = [
+  const behaviours: { choice: "everyone" | "madani" | "auto" | "mentions"; title: LocaleKey; hint: LocaleKey }[] = [
     { choice: "everyone", title: "room.panel.responder.everyone", hint: "room.panel.responder.everyoneHint" },
-    { choice: "dusk", title: "room.panel.responder.dusk", hint: "room.panel.responder.duskHint" },
+    { choice: "madani", title: "room.panel.responder.madani", hint: "room.panel.responder.madaniHint" },
     { choice: "auto", title: "room.panel.responder.jev", hint: "room.panel.responder.autoHint" },
     // only who is @mentioned stays for rooms already set that way
     ...(current === "mentions" ? [{ choice: "mentions" as const, title: "room.panel.responder.mentions" as LocaleKey, hint: "room.panel.responder.mentionsHint" as LocaleKey }] : []),

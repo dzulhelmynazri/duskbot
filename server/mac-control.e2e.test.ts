@@ -7,12 +7,12 @@ import { expect, it } from "vitest";
 
 import { createMacControlHost } from "../electron/mac-control.mjs";
 import { createMacExecutor, macLogFile } from "../electron/mac-control-tools.mjs";
-import { launchVerificationServer } from "../scripts/control-dusk.ts";
+import { launchVerificationServer } from "../scripts/control-madani.ts";
 import { MAC_OFFLINE_TEXT } from "./mac-control/instructions.ts";
 
 it("a VPS bot runs a command and writes a file on the linked Mac, hears when it is offline, and loses the tools when switched off", async () => {
-  const scratch = mkdtempSync(join(tmpdir(), "dusk-mac-e2e-"));
-  const home = realpathSync(mkdtempSync(join(tmpdir(), "dusk-mac-e2e-home-")));
+  const scratch = mkdtempSync(join(tmpdir(), "madani-mac-e2e-"));
+  const home = realpathSync(mkdtempSync(join(tmpdir(), "madani-mac-e2e-home-")));
   const calls = join(scratch, "calls.json");
   const script = (list: unknown[]) => writeFileSync(calls, JSON.stringify(list));
   const fixture = await launchVerificationServer({ FAKE_CLAUDE_TOOL_CALLS_FILE: calls });

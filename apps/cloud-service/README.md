@@ -1,7 +1,7 @@
 # Managed cloud service
 
 The managed cloud desktop backend. It runs inside the account service (`apps/dashboard/server`), which attaches it
-with `DUSK_MANAGED=1` and talks to it only through `apps/dashboard/server/clouds/managed.ts`. Everything that names the
+with `MADANI_MANAGED=1` and talks to it only through `apps/dashboard/server/clouds/managed.ts`. Everything that names the
 provider lives here: the provider client (`src/instabox.ts`), the lifecycle (`src/lifecycle.ts`), the machine setup
 (`src/home.ts`), backups, retention, the stray-machine sweep, the fake provider API for tests, the home package
 builder, the e2e harnesses, the home's edge config (`deploy/Caddyfile`), the public edge (`edge/worker.js`, notes in `docs/edge.md`) and
@@ -21,11 +21,11 @@ have: signed releases, opaque public names and offline-verified entitlements.
 | Secret | Where | Who uses it |
 |---|---|---|
 | `INSTABOX_API_KEY` (runtime key) | account service environment only | `src/instabox.ts`, from the reconciler |
-| `DUSK_ENTITLEMENT_SIGNING_KEY` (Ed25519, `kid:<pkcs8>`) | account service environment only | `apps/dashboard/server/entitlements.ts` |
-| `DUSK_RELEASE_SIGNING_KEY` (Ed25519) | the release CI environment only | `scripts/sign-release.ts` |
-| `DUSK_CLOUD_SEAL_KEY` | account service environment | seals each cloud's bootstrap secret and link key at rest; backups key is derived from it unless `DUSK_MANAGED_BACKUP_KEY` is set |
-| `DUSK_MANAGED_BACKUP_KEY` (optional) | account service environment | seals backups; never on a machine |
-| `DUSK_MANAGED_EDGE_TOKEN` | account service and the edge Worker (`EDGE_TOKEN`) | the edge's route lookup |
+| `MADANI_ENTITLEMENT_SIGNING_KEY` (Ed25519, `kid:<pkcs8>`) | account service environment only | `apps/dashboard/server/entitlements.ts` |
+| `MADANI_RELEASE_SIGNING_KEY` (Ed25519) | the release CI environment only | `scripts/sign-release.ts` |
+| `MADANI_CLOUD_SEAL_KEY` | account service environment | seals each cloud's bootstrap secret and link key at rest; backups key is derived from it unless `MADANI_MANAGED_BACKUP_KEY` is set |
+| `MADANI_MANAGED_BACKUP_KEY` (optional) | account service environment | seals backups; never on a machine |
+| `MADANI_MANAGED_EDGE_TOKEN` | account service and the edge Worker (`EDGE_TOKEN`) | the edge's route lookup |
 | Payment, email, ops tokens | account service environment | billing, notices |
 | A cloud's bootstrap secret and dashboard link key | sealed in the account service's store; on its machine in root-only files | the signed admin requests to that home |
 
@@ -45,7 +45,7 @@ service's machines in a workspace of their own, and every list and delete is lim
 | `/v1/clouds/*`, `/api/cloud/desktop/*` (account service) | the owner's app or browser | the account session (cookie with CSRF, or app bearer) |
 | `/v1/clouds/:id/delete-data[/confirm\|/cancel]` | the owner | fresh sign-in (10 minutes), CSRF, emailed one-time link; rate limited; acts only after 7 days through the retention verdict |
 | `POST /v1/managed/claims/redeem` | a machine at first boot | the one-time claim; 30 wrong tries per address per 15 minutes (a good one never counts) |
-| `GET /v1/managed/edge/route` | the edge Worker | `DUSK_MANAGED_EDGE_TOKEN`; anyone else gets 404 |
+| `GET /v1/managed/edge/route` | the edge Worker | `MADANI_MANAGED_EDGE_TOKEN`; anyone else gets 404 |
 | Home `/api/cloud/*` (health, power, sleep, plan, pairing, entitlement) | the account service | HMAC over method, path, body hash, timestamp and nonce with the cloud's bootstrap secret |
 | Home API and pairing | the owner's app | a paired session, and only while the home holds a valid entitlement |
 | Provider API | the reconciler only | the provider key above |
@@ -64,42 +64,42 @@ service's machines in a workspace of their own, and every list and delete is lim
    release keys before unpacking.
 4. **Entitlement.** Before a cloud counts as running, and hourly after (and on every wake), the account service signs an
    Ed25519 entitlement (24 hours, key id, cloud id, plan, features, an opaque account reference, no email) and pushes it
-   through the signed `POST /api/cloud/entitlement`. Every home this service makes has `DUSK_CLOUD_ENTITLEMENT=required`
+   through the signed `POST /api/cloud/entitlement`. Every home this service makes has `MADANI_CLOUD_ENTITLEMENT=required`
    in its boot env, and then serves nothing but its liveness probe and the signed admin routes without a valid token
    for its own machine id, pairing included. A home another Admin runs from the same release (without that env) is
    unaffected until that Admin pushes entitlements too. Clock skew of 5 minutes
    either way is tolerated; tokens longer than 7 days are refused whoever signed them.
 5. **App.** The session's cloud list carries the same token; the app verifies it offline (`electron/entitlement.mjs`)
    and offers the Cloud desktop only for a cloud whose token verifies for that cloud id. A packaged app trusts only the
-   pinned keys; a development build also trusts `DUSK_ENTITLEMENT_DEV_KEYS`.
+   pinned keys; a development build also trusts `MADANI_ENTITLEMENT_DEV_KEYS`.
 6. **Rotation.** Pin the next public key in a release first (kid `ent-YYYY-MM`), ship it, then switch the service's
    signing key. Tokens from the old key keep verifying until it is removed from the pinned list in a later release.
 
 ### What people see
 
-User-facing origins are `https://<label>.<DUSK_MANAGED_PUBLIC_DOMAIN>`. The label is an HMAC of the cloud id (20 hex
+User-facing origins are `https://<label>.<MADANI_MANAGED_PUBLIC_DOMAIN>`. The label is an HMAC of the cloud id (20 hex
 characters): it names no person, no cloud id and no provider. The edge Worker (`edge/worker.js`) maps it to the
 machine's own hosted URL through `/v1/managed/edge/route`, caches the answer 60 seconds, forwards WebSockets, strips
-`server`/`via`/`x-powered-by` and rewrites redirects. The home answers for both names (`DUSK_CLOUD_UPSTREAM_HOST`) and
-keeps the public one as its `DUSK_PUBLIC_URL`. The account service itself talks to the machine's own URL.
+`server`/`via`/`x-powered-by` and rewrites redirects. The home answers for both names (`MADANI_CLOUD_UPSTREAM_HOST`) and
+keeps the public one as its `MADANI_PUBLIC_URL`. The account service itself talks to the machine's own URL.
 
 DNS and proxy, once:
 
 1. A zone you control, say `desktops.example.com`, on Cloudflare.
 2. Deploy `edge/worker.js` with `wrangler deploy` and bindings `ROUTE_URL` (the account service origin), `PUBLIC_DOMAIN`
    (`desktops.example.com`) and the secret `EDGE_TOKEN` (`wrangler secret put EDGE_TOKEN`, same value as the service's
-   `DUSK_MANAGED_EDGE_TOKEN`, 32 characters or more).
+   `MADANI_MANAGED_EDGE_TOKEN`, 32 characters or more).
 3. A proxied wildcard record `*.desktops.example.com` (any target; the Worker answers) and the Worker route
    `*.desktops.example.com/*`. Cloudflare's universal certificate covers one wildcard level.
-4. Set `DUSK_MANAGED_PUBLIC_DOMAIN=desktops.example.com` on the account service. It refuses to start without it (and
+4. Set `MADANI_MANAGED_PUBLIC_DOMAIN=desktops.example.com` on the account service. It refuses to start without it (and
    without the edge token) unless it runs on loopback.
 
-Machines are named `dusk-<cloud id>-<attempt>-<scope>` at the provider (no email), labelled with the cloud id and this deployment's scope.
+Machines are named `madani-<cloud id>-<attempt>-<scope>` at the provider (no email), labelled with the cloud id and this deployment's scope.
 
 ### What cannot be prevented
 
 - Anyone with the source can remove the entitlement check from their own build of the app or the home, or start our
-  home package without `DUSK_CLOUD_ENTITLEMENT=required`, and run it against a service of their own. Signed tokens stop
+  home package without `MADANI_CLOUD_ENTITLEMENT=required`, and run it against a service of their own. Signed tokens stop
   forged tokens, not a modified copy or a different boot env. A release build never trusts development keys.
 - Anyone can buy the same provider, run their own account service and their own Stripe. The recipe is public here, as
   OpenBot's is. What they do not have is our keys, our accounts, our domain, our users' data and the service itself.
@@ -113,8 +113,8 @@ Machines are named `dusk-<cloud id>-<attempt>-<scope>` at the provider (no email
 - **Account service.** Built from `main`; secrets come from the deploy environment, never from the repo. Deploy it
   before any home that requires entitlements: a home from this release refuses clients until the service pushes one.
 - **Home package.** CI builds it (`node apps/cloud-service/scripts/build-home-package.mjs`), signs it
-  (`DUSK_RELEASE_SIGNING_KEY=… node apps/cloud-service/scripts/sign-release.ts release/home/omb-home.tgz --kind home-package --name omb-home --version <v>`),
-  publishes the package and its `.sig`, and the service gets `DUSK_MANAGED_HOME_PACKAGE_URL`, `_SHA256` and
+  (`MADANI_RELEASE_SIGNING_KEY=… node apps/cloud-service/scripts/sign-release.ts release/home/omb-home.tgz --kind home-package --name omb-home --version <v>`),
+  publishes the package and its `.sig`, and the service gets `MADANI_MANAGED_HOME_PACKAGE_URL`, `_SHA256` and
   `_SIGNATURE` (or `_SIGNATURE_FILE`). The service checks the signature at start and refuses an unsigned package off
   loopback.
 - **Test and production** use different provider keys and, preferably, different provider accounts, and every list and
@@ -145,7 +145,7 @@ The bot computer image is made ready on the machine itself, with no registry cre
 `omb-home install` starts `omb-desktop-image.service` (`omb-home desktop-image`, root, low priority, retried a minute
 after a failure), which uses a public registry copy when there is one and otherwise builds from the signed package's
 `deploy/bot-desktop` kit. It writes `building`, `ready` or `failed` to `DESKTOP_IMAGE_STATUS`; the home's server, told the
-path by `DUSK_BOT_DESKTOP_HOST_BUILD`, waits for it the first time a bot's computer starts. Making the registry package
+path by `MADANI_BOT_DESKTOP_HOST_BUILD`, waits for it the first time a bot's computer starts. Making the registry package
 public would skip the build.
 
 ### Idle sleep and waking for routines
@@ -154,7 +154,7 @@ The home itself reports, through the signed `GET /api/cloud/power` read once a m
 busy (a turn, a run, a call, a computer, maintenance, recent use, work finished under 2 minutes ago, a run due within
 5 minutes) and when its next routine or retry is due; the sleep handshake returns the same. Background polls from open
 windows are marked and never count as use, so an idle open app does not keep a machine running. The service sleeps a
-home only on the home's word and wakes it 2 minutes before its next run (`DUSK_MANAGED_WAKE_LEAD_MINUTES`); the home
+home only on the home's word and wakes it 2 minutes before its next run (`MADANI_MANAGED_WAKE_LEAD_MINUTES`); the home
 refuses to sleep within 5 minutes of one.
 
 ### Memory guard
@@ -168,9 +168,9 @@ changes in the server's process spawning.
 ## Updates
 
 A running home takes a new release only when it can't break it (`src/home-update.ts`, `shared/update-guard.ts`): the
-release (`DUSK_MANAGED_HOME_RELEASE_FILE`, `{ sha256, signature, url | file, clouds? }`, read again when it changes, else the
+release (`MADANI_MANAGED_HOME_RELEASE_FILE`, `{ sha256, signature, url | file, clouds? }`, read again when it changes, else the
 package the service started with) must be signed, newer than what the home runs, at or above the floor and not blocked
-in the signed update policy (`DUSK_UPDATE_POLICY_FILE`, signed with `scripts/sign-update-policy.ts`, read again when it
+in the signed update policy (`MADANI_UPDATE_POLICY_FILE`, signed with `scripts/sign-update-policy.ts`, read again when it
 changes, served unchanged at `GET /v1/updates/policy`), and the policy is not `paused`. With `clouds` (cloud ids, a canary) only
 those clouds are offered it. `scripts/release-all.ts` writes both files ([docs](../../docs/releases-auto-update.md)). It goes in only while no turn, routine run, upload or backup
 runs. The home then self-tests (`server/update-state.ts`: health, a page in the bot's browser, one read per connected
@@ -183,14 +183,14 @@ Audit actions: `update_applied`, `update_settled`, `update_rolled_back`, `update
 
 ## Settings
 
-`DUSK_MANAGED=1`, `INSTABOX_API_KEY`, `DUSK_CLOUD_SEAL_KEY`, `DUSK_ENTITLEMENT_SIGNING_KEY`, `DUSK_MANAGED_PUBLIC_DOMAIN`,
-`DUSK_MANAGED_EDGE_TOKEN`, and a package (`DUSK_MANAGED_HOME_PACKAGE_URL` or `_FILE`, `_SHA256`, `_SIGNATURE`). Provider:
-`INSTABOX_BASE_URL`, `DUSK_MANAGED_PROVIDER_PLAN` (`pro`, `builder`, `team`), `DUSK_MANAGED_PROVIDER_TEMPLATE` (default
-`universal`), `DUSK_MANAGED_IDLE_PAUSE_MINUTES` (5 to 30, default 30). Optional: `DUSK_MANAGED_KINDS`, `_SCOPE`,
+`MADANI_MANAGED=1`, `INSTABOX_API_KEY`, `MADANI_CLOUD_SEAL_KEY`, `MADANI_ENTITLEMENT_SIGNING_KEY`, `MADANI_MANAGED_PUBLIC_DOMAIN`,
+`MADANI_MANAGED_EDGE_TOKEN`, and a package (`MADANI_MANAGED_HOME_PACKAGE_URL` or `_FILE`, `_SHA256`, `_SIGNATURE`). Provider:
+`INSTABOX_BASE_URL`, `MADANI_MANAGED_PROVIDER_PLAN` (`pro`, `builder`, `team`), `MADANI_MANAGED_PROVIDER_TEMPLATE` (default
+`universal`), `MADANI_MANAGED_IDLE_PAUSE_MINUTES` (5 to 30, default 30). Optional: `MADANI_MANAGED_KINDS`, `_SCOPE`,
 `_IDLE_MINUTES`, `_LEASE_HOURS`, `_WAKE_LEAD_MINUTES` (default 2), `_EDGE_WAKES_PER_HOUR`, `_BACKUP_DIR`, `_BACKUP_KEY`,
 `_BACKUP_KEY_PREVIOUS`, `_BACKUP_HOURS`, `_BACKUP_KEEP`, `_BACKUP_TAIL_DAYS`, `_BACKUP_MAX_MB`, `_RETENTION_DAYS`,
-`_DELETE_DELAY_DAYS`, `_LOST_AFTER_MINUTES`, `_HOME_RELEASE_FILE`, `DUSK_RELEASE_PUBLIC_KEYS` (staging keys),
-`DUSK_UPDATE_POLICY_FILE`. Details in `docs/provider.md`.
+`_DELETE_DELAY_DAYS`, `_LOST_AFTER_MINUTES`, `_HOME_RELEASE_FILE`, `MADANI_RELEASE_PUBLIC_KEYS` (staging keys),
+`MADANI_UPDATE_POLICY_FILE`. Details in `docs/provider.md`.
 
 ## Tests
 

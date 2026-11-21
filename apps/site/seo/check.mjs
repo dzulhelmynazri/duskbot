@@ -10,7 +10,7 @@ import { fileURLToPath } from 'node:url';
 const here = path.dirname(fileURLToPath(import.meta.url));
 const only = process.argv.slice(2).map((f) => JSON.parse(fs.readFileSync(f, 'utf8')).path);
 try {
-  const out = execFileSync(process.execPath, [path.join(here, '..', 'build-pages.mjs'), process.env.DUSK_REPO || path.join(here, '..', '..', '..')], {
+  const out = execFileSync(process.execPath, [path.join(here, '..', 'build-pages.mjs'), process.env.MADANI_REPO || path.join(here, '..', '..', '..')], {
     env: { ...process.env, SEO_CHECK: '1', SEO_CHECK_ONLY: only.join(',') }, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'],
   });
   process.stdout.write(out.split('\n').filter((l) => /^(warning|problem|all checks|\d+ problems)/.test(l)).join('\n') + '\n');

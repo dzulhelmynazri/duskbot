@@ -49,7 +49,7 @@ describe("an imported bot's instructions", () => {
     for (const part of ["## What you are for\nYou are Scout, Researcher. Finds sources.", "## Your instructions from OpenClaw\nAlways cite sources.",
       "## What you know", "memory/openclaw-setup.md", "in their about me", "## Skills", "sources", "## Routines\nThese came over paused: News sweep.",
       "## Apps\nIn OpenClaw you used Linear.", "## Limits", "## Reporting back"]) expect(soul).toContain(part);
-    expect(soul).not.toMatch(/\u2014|\bDusk\b/);
+    expect(soul).not.toMatch(/\u2014|\bMadani\b/);
   });
 
   it("fit the limit by cutting the source's words from the end, and say so", () => {

@@ -1,6 +1,6 @@
 import { existsSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { expect, it } from "vitest";
-import { launchVerificationServer, type VerificationServer } from "../scripts/control-dusk.ts";
+import { launchVerificationServer, type VerificationServer } from "../scripts/control-madani.ts";
 import { fixtureApi } from "../scripts/testing/preview-fixture.ts";
 import { createTeamVpsFixture } from "../scripts/testing/team-vps-fixture.ts";
 
@@ -8,7 +8,7 @@ it.skipIf(process.platform === "win32")("protects an admitted shared-screen turn
   const vps = await createTeamVpsFixture({ screens: true });
   let fixture: VerificationServer | undefined;
   try {
-    fixture = await launchVerificationServer({ DUSK_TEST_VPS_IDLE_CLOCK: "1", FAKE_CLAUDE_MODE: "hang" }, undefined, vps.localVm);
+    fixture = await launchVerificationServer({ MADANI_TEST_VPS_IDLE_CLOCK: "1", FAKE_CLAUDE_MODE: "hang" }, undefined, vps.localVm);
     const api = fixtureApi(fixture.info.url);
     await api("PUT", "/api/config", { vps: { sshAlias: "fixture-vps", mode: "shared", independentScreens: true,
       lifecycle: { browserIdleMinutes: 0, screenIdleMinutes: 0, computerIdleMinutes: 0 } } });

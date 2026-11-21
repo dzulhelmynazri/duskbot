@@ -84,7 +84,7 @@ beforeEach(() => {
   flushBotPatches.mockImplementation(async () => null);
   openExternal.mockClear();
   vi.stubGlobal("fetch", fetchMock);
-  vi.stubGlobal("duskDesktop", { openExternal });
+  vi.stubGlobal("madaniDesktop", { openExternal });
   host = document.createElement("div");
   document.body.appendChild(host);
   root = createRoot(host);
@@ -113,7 +113,7 @@ describe("drawing a widget", () => {
     mount(row(sample("pullRequests")));
     const card = find('[data-widget="w1"]')!;
     expect(card.getAttribute("aria-label")).toBe("Pull requests");
-    expect(card.textContent).toContain("dusk-mobile");
+    expect(card.textContent).toContain("madani-mobile");
     expect(card.textContent).toContain("3 open");
     const rows = all('[role="listitem"] > button');
     expect(rows.map((item) => item.textContent)).toEqual([
@@ -190,8 +190,8 @@ describe("drawing a widget", () => {
     expect(find("img")).toBeNull();
     act(() => find<HTMLButtonElement>(`button[title="${t("attach.externalHidden")}"]`)!.click());
     const image = find<HTMLImageElement>("img")!;
-    expect(image.getAttribute("src")).toBe("https://dusk.bot/og.png");
-    expect(image.getAttribute("alt")).toBe("Dusk");
+    expect(image.getAttribute("src")).toBe("https://madani.bot/og.png");
+    expect(image.getAttribute("alt")).toBe("Madani");
     expect(image.getAttribute("loading")).toBe("lazy");
     expect(image.getAttribute("referrerpolicy")).toBe("no-referrer");
     expect(Number.parseFloat(image.style.aspectRatio)).toBeCloseTo(16 / 9);
@@ -226,7 +226,7 @@ describe("drawing a widget", () => {
   it("lets a clipped button label be read in full, with a link's address under it", () => {
     mount(row(sample("kitchenSink")));
     expect(button("Send feedback")!.title).toBe("Send feedback");
-    expect(button("Open the docs")!.title).toBe("Open the docs\nhttps://dusk.bot/docs");
+    expect(button("Open the docs")!.title).toBe("Open the docs\nhttps://madani.bot/docs");
     mount(row(sample("pullRequests")));
     expect(button("Merge the two ready")!.title).toBe("Merge the two ready");
     expect(button("Fix #719 first")!.title).toBe("Fix #719 first");
@@ -526,12 +526,12 @@ describe("pressing", () => {
 
     mount(row(sample("kitchenSink")));
     await press(button("Open the docs")!);
-    expect(openExternal).toHaveBeenLastCalledWith("https://dusk.bot/docs");
+    expect(openExternal).toHaveBeenLastCalledWith("https://madani.bot/docs");
     expect(fetchMock).not.toHaveBeenCalled();
   });
 
   it("opens a published page's open_url in the bot's browser panel in the desktop app, and posts nothing", async () => {
-    const PAGE = "https://abcdefghijklmnopqrstuvwxyz.page.dusk.bot/";
+    const PAGE = "https://abcdefghijklmnopqrstuvwxyz.page.madani.bot/";
     const dispatch = vi.fn();
     const withBrowser = { ...store, dispatch, state: { selectedId: "scout", bots: [{ id: "scout" }], groups: [], config: { features: { browser: true }, browserEngine: { kind: "engine" } } } } as unknown as ReturnType<typeof useStore>;
     const parsed = parseWidgetInput({ type: "Card", children: [{ type: "Button", label: "open page", onClickAction: { type: "open_url", payload: { url: PAGE } } }] });

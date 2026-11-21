@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { samples } from "./samples.ts";
 import { EMAIL_ASSETS, cloudNoticeEmail, emailConfig, promoEmail } from "./templates.ts";
 
-const cfg = emailConfig({}, { publicUrl: "https://preview.dusk.bot", pageBase: "/dashboard" });
+const cfg = emailConfig({}, { publicUrl: "https://preview.madani.bot", pageBase: "/dashboard" });
 const all = samples(cfg);
 const hrefs = (html: string) => [...html.matchAll(/href="([^"]*)"/g)].map(match => match[1]!.replace(/&amp;/g, "&"));
 const BILLING = new Set(["05-payment-failed"]);
@@ -17,10 +17,10 @@ describe("account emails", () => {
     expect(email.html).toMatch(/^<!doctype html>/);
     expect(email.html).toContain('<meta name="color-scheme" content="light dark">');
     expect(email.html).toContain('class="kit"');
-    expect(email.html).toContain(">dusk bot<");
+    expect(email.html).toContain(">madani bot<");
     expect(email.html).toContain("prefers-color-scheme: dark");
     expect(email.html).toContain("max-width:560px");
-    expect(email.text).toMatch(/\n--\n\ndusk bot\n/);
+    expect(email.text).toMatch(/\n--\n\nmadani bot\n/);
     for (const href of hrefs(email.html)) expect(href).toMatch(/^https:\/\/[a-z0-9.-]+\//);
     for (const tag of email.html.match(/<img [^>]*>/g) ?? []) {
       expect(tag).toMatch(/ alt="[^"]*"/);
@@ -64,39 +64,39 @@ describe("account emails", () => {
 
   it("keeps what a receipt must say in plain sight", () => {
     const receipt = all.find(sample => sample.id === "04-receipt")!.email;
-    for (const fact of ["$20.00", "dusk cloud plus", "next charge", "december 11, 2026", "inv_7Qm2xK9"]) { expect(receipt.text).toContain(fact); expect(receipt.html).toContain(fact); }
+    for (const fact of ["$20.00", "madani cloud plus", "next charge", "december 11, 2026", "inv_7Qm2xK9"]) { expect(receipt.text).toContain(fact); expect(receipt.html).toContain(fact); }
   });
 
   it("keeps the code one copyable string, and in the subject and preheader for notifications", () => {
     const code = all.find(sample => sample.id === "01-code")!.email;
-    expect(code.subject).toBe("48213097 is your dusk bot code");
+    expect(code.subject).toBe("48213097 is your madani bot code");
     expect(code.text).toContain("    48213097");
     const shown = /user-select:all">([\s\S]*?)<\/div>/.exec(code.html)![1]!;
     expect(shown.replace(/<[^>]+>/g, "")).toBe("48213097");
-    expect(code.html).toContain("your dusk bot code is 48213097.");
-    expect(all.find(sample => sample.id === "01b-recovery")!.email.subject).toBe("48213097 is your dusk bot code");
+    expect(code.html).toContain("your madani bot code is 48213097.");
+    expect(all.find(sample => sample.id === "01b-recovery")!.email.subject).toBe("48213097 is your madani bot code");
     const welcome = all.find(sample => sample.id === "02-welcome")!.email;
     expect(welcome.text).toContain("from $20/mo");
-    expect(welcome.html).toContain("https://preview.dusk.bot/dashboard/cloud");
+    expect(welcome.html).toContain("https://preview.madani.bot/dashboard/cloud");
     const deleted = samples(cfg).find(sample => sample.id === "09-account-deleted")!;
     expect(deleted.email.html).not.toContain("<script");
     expect(deleted.email.text).toContain("kept 30 days, then deleted");
   });
 
   it("refuses a promo without an unsubscribe link", () => {
-    expect(() => promoEmail(cfg, { subject: "x", preheader: "x", eyebrow: "new", title: "x", intro: "x", features: [], cta: { label: "x", href: "https://dusk.bot/" }, unsubscribe: "" })).toThrow();
+    expect(() => promoEmail(cfg, { subject: "x", preheader: "x", eyebrow: "new", title: "x", intro: "x", features: [], cta: { label: "x", href: "https://madani.bot/" }, unsubscribe: "" })).toThrow();
   });
 
   it("folds the cloud notices into the emails that matter, and keeps quiet for the rest", () => {
     for (const kind of ["ended", "delete_cancelled", "resumed"] as const) expect(cloudNoticeEmail(cfg, { kind, name: "night shift", at: 0 })).toBeNull();
     expect(cloudNoticeEmail(cfg, { kind: "left_7", name: "night shift", at: Date.UTC(2026, 0, 8) })!.subject).toBe("night shift will be deleted in 7 days");
-    expect(cloudNoticeEmail(cfg, { kind: "delete_requested", name: "night shift", at: null, link: "https://preview.dusk.bot/dashboard/clouds/c/delete#t" })!.html).toContain('href="https://preview.dusk.bot/dashboard/clouds/c/delete#t"');
+    expect(cloudNoticeEmail(cfg, { kind: "delete_requested", name: "night shift", at: null, link: "https://preview.madani.bot/dashboard/clouds/c/delete#t" })!.html).toContain('href="https://preview.madani.bot/dashboard/clouds/c/delete#t"');
     expect(cloudNoticeEmail(cfg, { kind: "deleted", name: "night shift", at: 0 })!.subject).toBe("night shift was deleted");
     expect(cloudNoticeEmail(cfg, { kind: "recovered", name: "night shift", at: null })!.subject).toBe("night shift is back");
   });
 
   it("reads its asset base and site from the environment", () => {
-    expect(emailConfig({ DUSK_EMAIL_ASSET_BASE: "https://cdn.example.test/e/" }, { publicUrl: "https://app.example.test" })).toMatchObject({ assets: "https://cdn.example.test/e", site: "https://dusk.bot", app: "https://app.example.test" });
-    expect(emailConfig({}, { publicUrl: "https://preview.dusk.bot/x", pageBase: "/dashboard" })).toMatchObject({ assets: "https://dusk.bot/email", site: "https://preview.dusk.bot", app: "https://preview.dusk.bot/dashboard" });
+    expect(emailConfig({ MADANI_EMAIL_ASSET_BASE: "https://cdn.example.test/e/" }, { publicUrl: "https://app.example.test" })).toMatchObject({ assets: "https://cdn.example.test/e", site: "https://madani.bot", app: "https://app.example.test" });
+    expect(emailConfig({}, { publicUrl: "https://preview.madani.bot/x", pageBase: "/dashboard" })).toMatchObject({ assets: "https://madani.bot/email", site: "https://preview.madani.bot", app: "https://preview.madani.bot/dashboard" });
   });
 });

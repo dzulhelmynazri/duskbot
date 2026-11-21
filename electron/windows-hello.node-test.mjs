@@ -39,7 +39,7 @@ test("WinRT parameterized IIDs match the ones Windows publishes", () => {
 
 test("the helper script carries no input and fits a Windows command line", () => {
   assert.ok(!WINDOWS_HELLO_SCRIPT.includes("${"), "no unexpanded template");
-  assert.ok(WINDOWS_HELLO_SCRIPT.includes("$env:DUSK_HELLO_REASON"));
+  assert.ok(WINDOWS_HELLO_SCRIPT.includes("$env:MADANI_HELLO_REASON"));
   assert.ok(encodedCommand().length < 30_000);
   assert.equal(windowsPowerShell({ SystemRoot: "D:\\Win" }), "D:\\Win\\System32\\WindowsPowerShell\\v1.0\\powershell.exe");
 });
@@ -72,9 +72,9 @@ test("the helper gets its inputs through the environment, hidden, from the syste
   assert.equal(file, "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe");
   assert.deepEqual(args.slice(0, -1), ["-NoLogo", "-NoProfile", "-NonInteractive", "-ExecutionPolicy", "Bypass", "-EncodedCommand"]);
   assert.ok(!args.join(" ").includes("rm -rf"));
-  assert.equal(options.env.DUSK_HELLO_REASON, "x'; rm -rf /");
-  assert.equal(options.env.DUSK_HELLO_HWND, "123");
-  assert.equal(options.env.DUSK_HELLO_MODE, "verify");
+  assert.equal(options.env.MADANI_HELLO_REASON, "x'; rm -rf /");
+  assert.equal(options.env.MADANI_HELLO_HWND, "123");
+  assert.equal(options.env.MADANI_HELLO_MODE, "verify");
   assert.equal(options.windowsHide, true);
 });
 
@@ -103,7 +103,7 @@ test("on a real Windows: the availability probe answers cleanly", { skip: !onWin
 });
 
 test("on a real Windows: the parented verification call reaches WinRT and completes", { skip: !onWindows && "Windows only" }, async () => {
-  const output = await runWindowsHello({ mode: "force-verify", reason: "Dusk Bot CI check", timeoutMs: 90_000 });
+  const output = await runWindowsHello({ mode: "force-verify", reason: "Madani Bot CI check", timeoutMs: 90_000 });
   console.log(`forced verification: availability=${output.availability} parented=${output.parented} result=${output.result} error=${output.stage}`);
   assert.equal(output.error, false);
   assert.ok(Object.values(RESULT).includes(output.result));

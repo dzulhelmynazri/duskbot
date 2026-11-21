@@ -130,9 +130,9 @@ function desktopApp(saved: string | null = null) {
 async function openPage(app: ReturnType<typeof desktopApp>, stored: string | null = null) {
   vi.resetModules();
   local = memoryStorage();
-  if (stored !== null) local.setItem("dusk-language", stored);
+  if (stored !== null) local.setItem("madani-language", stored);
   const bridge = app.page();
-  browser = Object.assign(new EventTarget(), { duskDesktop: { desktopLanguage: bridge } });
+  browser = Object.assign(new EventTarget(), { madaniDesktop: { desktopLanguage: bridge } });
   vi.stubGlobal("localStorage", local);
   vi.stubGlobal("window", browser);
   return { preference: await import("./language-preference"), storage: local, bridge };
@@ -147,7 +147,7 @@ describe("app language in the desktop app", () => {
     expect(app.saved()).toBe("en");
 
     const team = await openPage(app);
-    expect(team.storage.getItem("dusk-language"), "the team's page has its own storage").toBeNull();
+    expect(team.storage.getItem("madani-language"), "the team's page has its own storage").toBeNull();
     expect(team.preference.languageChoice()).toBe("en");
     expect(team.preference.effectiveLanguage(team.preference.useLanguageChoice(), "de")).toBe("en");
 

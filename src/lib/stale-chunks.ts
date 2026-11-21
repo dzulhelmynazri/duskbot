@@ -1,7 +1,7 @@
 // After the app or the dev server swaps its built files, a page that loaded the old ones can no longer fetch a part
 // it loads later ("Failed to fetch dynamically imported module"). One quiet reload brings the page onto the new files;
 // a second failure within a minute is left alone so a real outage never turns into a reload loop.
-const KEY = "dusk.staleChunkReloadAt";
+const KEY = "madani.staleChunkReloadAt";
 const WINDOW_MS = 60_000;
 
 export const STALE_CHUNK = /Failed to fetch dynamically imported module|Importing a module script failed|error loading dynamically imported module|ChunkLoadError|Loading (?:CSS )?chunk \S+ failed/i;

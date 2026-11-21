@@ -11,8 +11,8 @@ import { ONE_PASSWORD_MALFORMED, ONE_PASSWORD_REFUSED } from "./onepassword.ts";
 import type { TotpKey } from "./totp.ts";
 import type { HandedVault } from "./vault-move.ts";
 
-export const LOGIN_HANDOFF_REQUEST = "duskbot:login-handoff";
-export const LOGIN_HANDOFF_RESULT = "duskbot:login-handoff-result";
+export const LOGIN_HANDOFF_REQUEST = "madanibot:login-handoff";
+export const LOGIN_HANDOFF_RESULT = "madanibot:login-handoff-result";
 
 export type LoginHandoffWhat = { kind: "1password" } | { kind: "login"; id: string } | { kind: "verify-secrets"; nonce: string };
 /** For a move to the person's own Cloud: one connection's secrets, a code for that Cloud to act as this computer's
@@ -63,7 +63,7 @@ const DIGEST = /^[0-9a-f]{64}$/u;
 
 export function totpAddress(key: TotpKey): string {
   const query = new URLSearchParams({ secret: key.secret, algorithm: key.algorithm, digits: String(key.digits), period: String(key.period) });
-  return `otpauth://totp/dusk bot?${query}`;
+  return `otpauth://totp/madani bot?${query}`;
 }
 
 /** What main may ask: a connection's fingerprints are asked only on its behalf, by a check of the credentials. */

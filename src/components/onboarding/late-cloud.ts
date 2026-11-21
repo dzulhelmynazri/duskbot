@@ -5,7 +5,7 @@ import { hintSeen, type OnboardingStatus } from "@/lib/onboarding";
  * hand-off never runs again. */
 export const CLOUD_OPENED_HERE = "cloud-opened-here-v1";
 
-/** The first run's record, kept as the one that made its cloud from here when it went the dusk cloud way. */
+/** The first run's record, kept as the one that made its cloud from here when it went the madani cloud way. */
 export function cloudOpenedHere<Patch extends { onboarding: { hintsSeen?: string[] } }>(patch: Patch, cloud: boolean, had: readonly string[] = []): Patch {
   if (!cloud) return patch;
   const hints = patch.onboarding.hintsSeen ?? [...had];

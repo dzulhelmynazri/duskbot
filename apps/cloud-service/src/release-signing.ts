@@ -27,7 +27,7 @@ export function parseReleaseKeys(value: string | undefined): ReleaseKey[] {
   });
 }
 
-/** `r1.<kid>.<manifest>.<signature>`; the private key is `kid:<base64url pkcs8>` (CI's DUSK_RELEASE_SIGNING_KEY) */
+/** `r1.<kid>.<manifest>.<signature>`; the private key is `kid:<base64url pkcs8>` (CI's MADANI_RELEASE_SIGNING_KEY) */
 export function signRelease(manifest: Omit<ReleaseManifest, "v">, signingKey: string): string {
   const at = signingKey.indexOf(":"), kid = signingKey.slice(0, at);
   if (at < 1 || !KID.test(kid) || !/^[a-f0-9]{64}$/.test(manifest.sha256)) throw new Error("Invalid release signing input.");

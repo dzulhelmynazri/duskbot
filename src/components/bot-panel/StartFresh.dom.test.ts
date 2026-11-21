@@ -11,7 +11,7 @@ import type { StartFreshView } from "../../../electron/start-fresh.mjs";
 const { StartFreshHost, StartFreshDialog, openStartFresh, startFreshTyped } = await import("./StartFresh");
 
 const pending: StartFreshView = { phase: "idle", steps: [
-  { id: "signout", kind: "signout", label: "tester@qa.dusk.test", status: "pending" },
+  { id: "signout", kind: "signout", label: "tester@qa.madani.test", status: "pending" },
   { id: "ai", kind: "ai", label: "", status: "pending" },
   { id: "local", kind: "local", label: "", status: "pending" },
 ] };
@@ -44,7 +44,7 @@ afterEach(() => {
   act(() => root.unmount());
   host.remove();
   document.body.innerHTML = "";
-  delete (window as { duskDesktop?: unknown }).duskDesktop;
+  delete (window as { madaniDesktop?: unknown }).madaniDesktop;
 });
 
 const $ = <T extends Element = HTMLElement>(selector: string) => document.querySelector<T & HTMLElement>(selector);
@@ -65,16 +65,16 @@ describe("Start fresh", () => {
   });
 
   it("opens the reset dialog from the dev menu's event, and only in the desktop app", async () => {
-    (window as { duskDesktop?: unknown }).duskDesktop = { startFresh: fakeBridge() };
+    (window as { madaniDesktop?: unknown }).madaniDesktop = { startFresh: fakeBridge() };
     act(() => root.render(createElement(StartFreshHost)));
     await settle();
     expect($("[role=alertdialog]")).toBeNull();
     act(() => openStartFresh());
     await settle();
-    expect($("[role=alertdialog]")?.textContent).toContain("This resets dusk bot on this computer and can't be undone");
+    expect($("[role=alertdialog]")?.textContent).toContain("This resets madani bot on this computer and can't be undone");
     act(() => root.unmount());
     root = createRoot(host);
-    (window as { duskDesktop?: unknown }).duskDesktop = {};
+    (window as { madaniDesktop?: unknown }).madaniDesktop = {};
     act(() => root.render(createElement(StartFreshHost)));
     act(() => openStartFresh());
     await settle();
@@ -85,7 +85,7 @@ describe("Start fresh", () => {
     const bridge = fakeBridge();
     act(() => root.render(createElement(StartFreshDialog, { bridge: bridge as never, onClose: vi.fn() })));
     await settle();
-    expect($("[role=alertdialog]")?.textContent).toContain("This resets dusk bot on this computer and can't be undone");
+    expect($("[role=alertdialog]")?.textContent).toContain("This resets madani bot on this computer and can't be undone");
     const confirm = () => $<HTMLButtonElement>("[data-start-fresh-confirm]")!;
     expect(confirm().disabled).toBe(true);
     type("start fres");
@@ -99,13 +99,13 @@ describe("Start fresh", () => {
     expect(bridge.run).toHaveBeenCalledWith("Start fresh");
   });
 
-  it("says the account, plan and dusk cloud stay, and sends account deletion to the account page instead", async () => {
+  it("says the account, plan and madani cloud stay, and sends account deletion to the account page instead", async () => {
     const openPage = vi.fn(async () => ({ outcome: "opened" }));
-    (window as { duskDesktop?: unknown }).duskDesktop = { cloudAccount: { openPage } };
+    (window as { madaniDesktop?: unknown }).madaniDesktop = { cloudAccount: { openPage } };
     act(() => root.render(createElement(StartFreshDialog, { bridge: fakeBridge() as never, onClose: vi.fn() })));
     await settle();
     const text = $("[role=alertdialog]")!.textContent!;
-    expect(text).toContain("Your dusk bot account, your plan or trial, your dusk cloud and your servers stay as they are");
+    expect(text).toContain("Your madani bot account, your plan or trial, your madani cloud and your servers stay as they are");
     expect(text).not.toMatch(/cancel(s|led)? (your|the|its) plan|destroy/i);
     act(() => $<HTMLButtonElement>("[data-start-fresh-delete-account]")!.click());
     expect(openPage).toHaveBeenCalledWith("account");
@@ -145,7 +145,7 @@ describe("Start fresh", () => {
     act(() => bridge.emit({ phase: "running", steps: pending.steps.map((step, index) => ({ ...step, status: index === 0 ? "done" : index === 1 ? "running" : "pending" })) }));
     expect($("[data-start-fresh-dialog]")?.getAttribute("data-start-fresh-dialog")).toBe("running");
     expect($("[data-start-fresh-step=ai]")?.dataset.status).toBe("running");
-    expect($("[data-start-fresh-step=signout]")?.textContent).toContain("Sign out of tester@qa.dusk.test");
+    expect($("[data-start-fresh-step=signout]")?.textContent).toContain("Sign out of tester@qa.madani.test");
   });
 
   it("closes from Cancel before anything is deleted", async () => {

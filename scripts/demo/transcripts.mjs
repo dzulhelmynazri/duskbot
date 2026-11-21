@@ -1,5 +1,5 @@
 // Turns content.mjs's conversation scripts into stored messages (the shape server/message-db.ts keeps) and into the
-// text-only projection a dusk.backup carries. Both are built from the same `now`, so their timestamps agree.
+// text-only projection a madani.backup carries. Both are built from the same `now`, so their timestamps agree.
 import { join } from "node:path";
 
 const EXT = { "text/markdown": ".md", "text/csv": ".csv", "text/plain": ".txt" };
@@ -84,10 +84,10 @@ export function buildThread(botKey, thread, { now, attachmentsDir, botId = "", t
   };
 }
 
-/** A question card as the one line a dusk.backup can carry: the question, why, and the answers it offered. */
+/** A question card as the one line a madani.backup can carry: the question, why, and the answers it offered. */
 const questionText = (card) => [card.title, card.subtitle, card.options.map((option, i) => `${i + 1}. ${option}`).join("\n")].filter(Boolean).join("\n\n");
 
-/** What a dusk.backup keeps of a conversation: readable text only, chained in order. A team backup carries no cards, so a
+/** What a madani.backup keeps of a conversation: readable text only, chained in order. A team backup carries no cards, so a
  * question reads as its text with its answers (and the lead-in line that only repeats it goes), and an answered
  * approval, which a chat keeps no line for, is left out. */
 export function backupProjection(built) {

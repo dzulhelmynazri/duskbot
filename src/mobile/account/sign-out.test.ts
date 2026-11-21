@@ -4,9 +4,9 @@ import { webPlatform, type MobilePlatform, type TurnActivityBridge } from "../pl
 import { forgetCloudPlaces, removePlace, signOutPhone } from "./sign-out";
 import { claimFreshInstall, INSTALLED_KEY } from "./install";
 
-const CONNECTIONS = "dusk.mobile.connections.v1";
-const ACTIVE = "dusk.mobile.active.v1";
-const CLOUD_ORIGIN = "https://d0123456789abcdef0123.dusk.bot";
+const CONNECTIONS = "madani.mobile.connections.v1";
+const ACTIVE = "madani.mobile.active.v1";
+const CLOUD_ORIGIN = "https://d0123456789abcdef0123.madani.bot";
 const record = (id: string, extra: Partial<MobileConnectionRecord> = {}): MobileConnectionRecord => ({
   id, environmentId: `env-${id}`, label: id, transport: "https", sessionRef: `token.${id}`, deviceId: `device-${id}`,
   capabilities: {} as MobileConnectionRecord["capabilities"], addedAt: 1, lastUsedAt: 1, ...extra,
@@ -23,13 +23,13 @@ const save = (records: MobileConnectionRecord[], active: string) => {
   for (const one of records) {
     secrets.set(one.sessionRef, `session-${one.id}`);
     secrets.set(`relay.${one.id}`, "{}");
-    prefs.set(`dusk.mobile.push.${one.id}`, "{}");
-    prefs.set(`dusk.mobile.outbox.${one.id}`, "[]");
-    prefs.set(`dusk.account.enrolled.${one.id}`, "person");
+    prefs.set(`madani.mobile.push.${one.id}`, "{}");
+    prefs.set(`madani.mobile.outbox.${one.id}`, "[]");
+    prefs.set(`madani.account.enrolled.${one.id}`, "person");
   }
 };
 const saved = () => (JSON.parse(prefs.get(CONNECTIONS) ?? "[]") as MobileConnectionRecord[]).map((one) => one.id);
-const leftFor = (id: string) => [secrets.has(`token.${id}`), secrets.has(`relay.${id}`), prefs.has(`dusk.mobile.push.${id}`), prefs.has(`dusk.mobile.outbox.${id}`), prefs.has(`dusk.account.enrolled.${id}`)];
+const leftFor = (id: string) => [secrets.has(`token.${id}`), secrets.has(`relay.${id}`), prefs.has(`madani.mobile.push.${id}`), prefs.has(`madani.mobile.outbox.${id}`), prefs.has(`madani.account.enrolled.${id}`)];
 
 beforeEach(() => {
   prefs = new Map(); secrets = new Map(); ended = [];
@@ -47,7 +47,7 @@ beforeEach(() => {
 });
 
 describe("signing out on the phone", () => {
-  it("with only a dusk cloud: forgets it everywhere on the phone, revokes it there, ends the account and lands on the first screen", async () => {
+  it("with only a madani cloud: forgets it everywhere on the phone, revokes it there, ends the account and lands on the first screen", async () => {
     save([cloud], "cloud");
     const signOutAccount = vi.fn(async () => {});
     expect(await signOutPhone({ platform, signOutAccount, fetch: fetcher })).toBe("first-screen");
@@ -96,9 +96,9 @@ describe("signing out on the phone", () => {
   });
 });
 
-describe("two accounts, each with its own dusk cloud", () => {
-  const aliceCloud = record("alice-cloud", { origin: "https://d1111111111111111111a.dusk.bot", account: { id: "alice", email: "alice@example.com" }, lastUsedAt: 30 });
-  const bobCloud = record("bob-cloud", { origin: "https://d2222222222222222222b.dusk.bot", account: { id: "bob", email: "bob@example.com" }, lastUsedAt: 20 });
+describe("two accounts, each with its own madani cloud", () => {
+  const aliceCloud = record("alice-cloud", { origin: "https://d1111111111111111111a.madani.bot", account: { id: "alice", email: "alice@example.com" }, lastUsedAt: 30 });
+  const bobCloud = record("bob-cloud", { origin: "https://d2222222222222222222b.madani.bot", account: { id: "bob", email: "bob@example.com" }, lastUsedAt: 20 });
 
   it("signing out of one takes only its cloud and opens the other account's", async () => {
     save([aliceCloud, bobCloud], "alice-cloud");
@@ -110,7 +110,7 @@ describe("two accounts, each with its own dusk cloud", () => {
   });
 
   it("a cloud the phone linked before it knew whose it was leaves with the account that lists it, and no other", async () => {
-    const untagged = record("old-cloud", { origin: "https://d3333333333333333333c.dusk.bot", lastUsedAt: 40 });
+    const untagged = record("old-cloud", { origin: "https://d3333333333333333333c.madani.bot", lastUsedAt: 40 });
     save([untagged, bobCloud], "old-cloud");
     await signOutPhone({ platform, signOutAccount: async () => {}, signedOut: { account: "bob", othersStay: true, listed: [] }, fetch: fetcher });
     expect(saved()).toEqual(["old-cloud"]);

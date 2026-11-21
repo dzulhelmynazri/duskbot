@@ -43,7 +43,7 @@ describe("composer dictation through Fish Audio", () => {
     cacheDesktopCapabilities({ ...initialDesktopCapabilities(), dictation: { available: true, engine: "fish-audio", onDevice: false } });
     fixture.config = { savedKeys: { fishAudioKey: { configured: true } } };
     // Linux's desktop app: Fish Audio stands in for a built-in recognizer
-    window.duskDesktop = { platform: "linux" } as unknown as typeof window.duskDesktop;
+    window.madaniDesktop = { platform: "linux" } as unknown as typeof window.madaniDesktop;
     setVoicePrefs({ ...DEFAULT_VOICE_PREFS, firstRunSeen: true });
     typed = [];
     vi.clearAllMocks();
@@ -57,7 +57,7 @@ describe("composer dictation through Fish Audio", () => {
   afterEach(() => {
     flushSync(() => root.unmount());
     cacheDesktopCapabilities(initialDesktopCapabilities());
-    delete window.duskDesktop;
+    delete window.madaniDesktop;
     setVoicePrefs(DEFAULT_VOICE_PREFS);
   });
 

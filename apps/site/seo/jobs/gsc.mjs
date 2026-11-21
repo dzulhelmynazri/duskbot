@@ -1,13 +1,13 @@
 // a small google search console client for the release gate, with no dependencies: a service account signs its own
 // token (rs256 through node:crypto), then asks the url inspection api whether each page is indexed and the search
 // analytics api how many impressions each page had. read-only scope.
-//   DUSK_GSC_CREDENTIALS  path to the service account's json key file (never commit it; keep it 0600 outside the repo)
-//   DUSK_GSC_SITE         the property exactly as search console names it: sc-domain:dusk.bot or https://dusk.bot/
+//   MADANI_GSC_CREDENTIALS  path to the service account's json key file (never commit it; keep it 0600 outside the repo)
+//   MADANI_GSC_SITE         the property exactly as search console names it: sc-domain:madani.bot or https://madani.bot/
 // limits (developers.google.com/webmaster-tools/limits): url inspection 2,000 a day and 600 a minute per property.
 import fs from 'node:fs';
 import { createSign } from 'node:crypto';
 
-export const GSC_ENV = { credentials: 'DUSK_GSC_CREDENTIALS', site: 'DUSK_GSC_SITE' };
+export const GSC_ENV = { credentials: 'MADANI_GSC_CREDENTIALS', site: 'MADANI_GSC_SITE' };
 export const gscConfigured = (env = process.env) => Boolean(env[GSC_ENV.credentials] && env[GSC_ENV.site] && fs.existsSync(env[GSC_ENV.credentials]));
 
 const b64url = (b) => Buffer.from(b).toString('base64').replace(/=+$/, '').replace(/\+/g, '-').replace(/\//g, '_');

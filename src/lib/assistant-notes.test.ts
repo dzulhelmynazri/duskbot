@@ -85,17 +85,17 @@ describe("bringing notes in", () => {
     await copyNotesPrompt();
     f.api.mockImplementation(async (path: string, init?: { method?: string; body?: string }) => {
       if (path === "/api/config") return { profile: JSON.parse(init!.body!).profile };
-      if (path.startsWith("/api/bots/dusk/memory/file?")) return { text: "" };
+      if (path.startsWith("/api/bots/madani/memory/file?")) return { text: "" };
       if (path === "/api/mcp/servers") return { servers: [] };
       return { ok: true };
     });
     f.runBotMove.mockResolvedValue([{ report: { bots: [{ id: "r" }], failed: [] } }]);
     const dispatch = vi.fn();
-    const outcome = await importNotes(`Here you go:\n${notes()}`, { bots: [], aboutMe: "I bake.", team: false, firstBotId: "dusk", dispatch });
+    const outcome = await importNotes(`Here you go:\n${notes()}`, { bots: [], aboutMe: "I bake.", team: false, firstBotId: "madani", dispatch });
     const about = JSON.parse(f.api.mock.calls.find(([path]) => path === "/api/config")![1].body).profile.aboutMe;
     expect(about).toMatch(/^I bake\.\n\n- \d{4}-\d{2}-\d{2} · learned by Claude · Name is Sam\./);
     expect(about).toContain("Be brief.");
-    const memory = JSON.parse(f.api.mock.calls.find(([path, init]) => path === "/api/bots/dusk/memory/file" && init?.method === "PUT")![1].body);
+    const memory = JSON.parse(f.api.mock.calls.find(([path, init]) => path === "/api/bots/madani/memory/file" && init?.method === "PUT")![1].body);
     expect(memory.path).toBe("memory/notes-from-claude.md");
     expect(f.runBotMove.mock.calls[0]![0].apps[0].preview.plans.map((plan: { name: string }) => plan.name)).toEqual(["Recipe helper"]);
     expect(dispatch).toHaveBeenCalledWith({ type: "profileSaved", profile: { aboutMe: about } });
@@ -123,14 +123,14 @@ describe("bringing notes in", () => {
     f.runBotMove.mockResolvedValue([{ report: { bots: [], failed: [] } }]);
     const part2 = notes({ version: 2, about_me: { basics: ["Name is Sam."] }, memories: [], open_threads: ["Pick a payment provider."], bots: [recipe] });
     const outcome = await importNotes(part2, {
-      bots: [{ id: "recipe", name: "Recipe helper", installedPackage: { id: packageId } } as never], aboutMe: "", team: false, firstBotId: "dusk", dispatch: vi.fn(),
+      bots: [{ id: "recipe", name: "Recipe helper", installedPackage: { id: packageId } } as never], aboutMe: "", team: false, firstBotId: "madani", dispatch: vi.fn(),
     });
-    expect(topics.get("dusk:memory/open-threads-from-claude.md")).toContain("- Pick a payment provider.");
+    expect(topics.get("madani:memory/open-threads-from-claude.md")).toContain("- Pick a payment provider.");
     expect(topics.get("recipe:memory/notes-from-claude.md"), "the bot from part 1 gets part 2's memories").toContain("- Sam bakes sourdough.");
     expect(outcome).toMatchObject({ threads: 1, joined: 1, bots: 0 });
     expect(notesOutcomeLine(outcome)).toBe("Brought in from Claude: 2 things about you, 1 open thread, and 1 bot already here, with more.");
-    await vi.waitFor(() => expect(f.api).toHaveBeenCalledWith("/api/bots/dusk/import-note", expect.objectContaining({ method: "POST" })));
-    const said = f.api.mock.calls.filter(([path]) => path === "/api/bots/dusk/import-note").map(([, init]) => JSON.parse(init.body));
+    await vi.waitFor(() => expect(f.api).toHaveBeenCalledWith("/api/bots/madani/import-note", expect.objectContaining({ method: "POST" })));
+    const said = f.api.mock.calls.filter(([path]) => path === "/api/bots/madani/import-note").map(([, init]) => JSON.parse(init.body));
     expect(said[0], "first it says it got them").toEqual({ from: ["Claude"], start: true });
     const note = said.at(-1);
     expect(note).toMatchObject({ from: ["Claude"], facts: 2, threads: 1 });
@@ -143,20 +143,20 @@ describe("bringing notes in", () => {
       if (path === "/api/config") return { profile: JSON.parse(init!.body!).profile };
       if (path === "/api/routines" && init?.method === "POST") { routines.push({ ...JSON.parse(init.body!), id: `r${routines.length}` }); return { routine: {} }; }
       if (path === "/api/routines") return { routines };
-      if (path === "/api/bots/dusk/skills") return { skills };
-      if (path === "/api/bots/dusk/skill-template") { skills.push({ name: JSON.parse(init!.body!).name }); return { installed: {} }; }
+      if (path === "/api/bots/madani/skills") return { skills };
+      if (path === "/api/bots/madani/skill-template") { skills.push({ name: JSON.parse(init!.body!).name }); return { installed: {} }; }
       return { ok: true };
     });
     const md = [
-      "---", "format: dusk-bot-notes", "version: 3", "from: Gemini", "---", "",
+      "---", "format: madani-bot-notes", "version: 3", "from: Gemini", "---", "",
       "# Routines", "## Morning brief", "- Cron: 0 8 * * 1-5", "- Time zone: Europe/Lisbon", "~~~text", "Summarize my inbox.", "~~~",
       "## Someday", "- Schedule: whenever it rains", "~~~text", "Tell me to take an umbrella.", "~~~",
-      "# Skills", "## Tone check", "- When to use: before I send an email", "~~~text", "Flag anything curt.", "~~~", "", "END OF DUSK BOT NOTES",
+      "# Skills", "## Tone check", "- When to use: before I send an email", "~~~text", "Flag anything curt.", "~~~", "", "END OF MADANI BOT NOTES",
     ].join("\n");
-    const context = { bots: [], aboutMe: "", team: false, firstBotId: "dusk", dispatch: vi.fn() };
+    const context = { bots: [], aboutMe: "", team: false, firstBotId: "madani", dispatch: vi.fn() };
     const outcome = await importNotes(md, context);
-    expect(routines).toEqual([{ id: "r0", botId: "dusk", name: "Morning brief", prompt: "Summarize my inbox.", enabled: false, schedule: { type: "cron", expression: "0 8 * * 1-5", timeZone: "Europe/Lisbon" } }]);
-    const skill = JSON.parse(f.api.mock.calls.find(([path]) => path === "/api/bots/dusk/skill-template")![1].body);
+    expect(routines).toEqual([{ id: "r0", botId: "madani", name: "Morning brief", prompt: "Summarize my inbox.", enabled: false, schedule: { type: "cron", expression: "0 8 * * 1-5", timeZone: "Europe/Lisbon" } }]);
+    const skill = JSON.parse(f.api.mock.calls.find(([path]) => path === "/api/bots/madani/skill-template")![1].body);
     expect(skill).toMatchObject({ name: "tone-check", description: "before I send an email", enabled: false, source: "notes from Gemini" });
     expect(skill.text).toContain("Flag anything curt.");
     expect(outcome).toMatchObject({ routines: 1, skills: 1, threads: 1 });
@@ -180,14 +180,14 @@ describe("bringing notes in", () => {
       .toEqual({ names: ["claude-notes.json"], text: notes() });
     expect(await notesInFiles([file("readme.md", "plain")])).toBeNull();
     // the file the prompt asks for now: markdown with front matter, dropped or picked into any chat
-    const md = "---\nformat: dusk-bot-notes\nversion: 3\nfrom: Grok\n---\n\n# Memories\n- Likes tea\n\nEND OF DUSK BOT NOTES\n";
+    const md = "---\nformat: madani-bot-notes\nversion: 3\nfrom: Grok\n---\n\n# Memories\n- Likes tea\n\nEND OF MADANI BOT NOTES\n";
     expect(looksLikeNotes(md)).toBe(true);
-    expect(await notesInFiles([file("notes.md", "# my notes\n- nothing here"), file("dusk-bot-notes.md", md)])).toEqual({ names: ["dusk-bot-notes.md"], text: md });
+    expect(await notesInFiles([file("notes.md", "# my notes\n- nothing here"), file("madani-bot-notes.md", md)])).toEqual({ names: ["madani-bot-notes.md"], text: md });
   });
 });
 
 describe("the notes file in Downloads", () => {
-  const context = () => ({ bots: [], aboutMe: "", team: false, firstBotId: "dusk", dispatch: vi.fn() });
+  const context = () => ({ bots: [], aboutMe: "", team: false, firstBotId: "madani", dispatch: vi.fn() });
   const serve = (files: Array<{ name: string; modifiedAt: number; text: string }>) => f.api.mockImplementation(async (path: string, init?: { method?: string; body?: string }) => {
     if (path.startsWith("/api/setup-import/notes?")) return { files };
     if (path === "/api/config") return { profile: JSON.parse(init!.body!).profile };
@@ -213,12 +213,12 @@ describe("the notes file in Downloads", () => {
     f.copy.mockResolvedValue("copied");
     await copyNotesPrompt(1_000);
     f.runBotMove.mockResolvedValue([{ report: { bots: [], failed: [] } }]);
-    serve([{ name: "dusk-bot-notes.json", modifiedAt: 2_000, text: notes({ bots: [] }) }]);
+    serve([{ name: "madani-bot-notes.json", modifiedAt: 2_000, text: notes({ bots: [] }) }]);
     const outcome = await takeNotesFromDownloads(context(), 3_000);
     expect(outcome).toMatchObject({ from: "Claude", memories: 1 });
-    await vi.waitFor(() => expect(f.api).toHaveBeenCalledWith("/api/bots/dusk/import-note", expect.anything()));
-    expect(JSON.parse(f.api.mock.calls.findLast(([path]) => path === "/api/bots/dusk/import-note")![1].body)).toMatchObject({ via: "downloads", from: ["Claude"] });
-    expect(notesWatch()!.taken).toEqual(["dusk-bot-notes.json:2000"]);
+    await vi.waitFor(() => expect(f.api).toHaveBeenCalledWith("/api/bots/madani/import-note", expect.anything()));
+    expect(JSON.parse(f.api.mock.calls.findLast(([path]) => path === "/api/bots/madani/import-note")![1].body)).toMatchObject({ via: "downloads", from: ["Claude"] });
+    expect(notesWatch()!.taken).toEqual(["madani-bot-notes.json:2000"]);
     f.api.mockClear();
     expect(await takeNotesFromDownloads(context(), 4_000), "the same file never twice").toBeNull();
     expect(f.api.mock.calls.filter(([path]) => String(path).includes("/memory/file"))).toEqual([]);

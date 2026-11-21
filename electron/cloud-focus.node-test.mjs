@@ -8,7 +8,7 @@ const CLOUD = "https://d0123456789abcdef0123.desktops.example.test";
 function harness({ origin = CLOUD } = {}) {
   const h = { clock: 1_000_000, focused: true, origin, input: 0, sent: [], ticks: null };
   h.focus = createCloudFocus({ origin: () => h.origin, focused: () => h.focused, lastInput: () => h.input, now: () => h.clock,
-    fetch: async (url, init) => { h.sent.push({ url, method: init.method, background: init.headers["x-dusk-background"], credentials: init.credentials }); return new Response(null, { status: 200 }); },
+    fetch: async (url, init) => { h.sent.push({ url, method: init.method, background: init.headers["x-madani-background"], credentials: init.credentials }); return new Response(null, { status: 200 }); },
     every: (work) => { h.ticks = work; return 1; }, stop: () => {} });
   h.settle = () => new Promise((resolve) => setImmediate(resolve));
   return h;

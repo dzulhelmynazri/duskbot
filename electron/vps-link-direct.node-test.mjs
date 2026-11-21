@@ -77,7 +77,7 @@ test("a reply's records go out as one write (sshd does not set nodelay for a cha
   assert.equal(writes.length, 1);
 });
 
-/** a fake dusk bot, an in-memory ssh channel to the real agent half, and a fake relay that serves the same frames */
+/** a fake madani bot, an in-memory ssh channel to the real agent half, and a fake relay that serves the same frames */
 async function rig({ agentKey = KEY } = {}) {
   const seen = [];
   const slow = [];
@@ -281,21 +281,21 @@ test("a direct ssh path that ends says why: the server's command exiting, what i
   } finally { await new Promise((resolve) => sshd.close(resolve)); }
 });
 
-test("DUSK_LINK_DIRECT=off on the server refuses a key before touching anything", async () => {
-  const before = process.env.DUSK_LINK_DIRECT;
-  process.env.DUSK_LINK_DIRECT = "off";
+test("MADANI_LINK_DIRECT=off on the server refuses a key before touching anything", async () => {
+  const before = process.env.MADANI_LINK_DIRECT;
+  process.env.MADANI_LINK_DIRECT = "off";
   try { await assert.rejects(control("direct-key", { pub: newDirectKey().publicKey }, { id: ID }), /direct links are off/); }
-  finally { if (before === undefined) delete process.env.DUSK_LINK_DIRECT; else process.env.DUSK_LINK_DIRECT = before; }
+  finally { if (before === undefined) delete process.env.MADANI_LINK_DIRECT; else process.env.MADANI_LINK_DIRECT = before; }
 });
 
 test("the agent's key line allows one forced command and nothing else, and leaves other keys alone", () => {
   const { publicKey } = newDirectKey();
-  const line = directKeyLine({ pub: publicKey, id: ID, node: "/usr/bin/node", agent: "/opt/duskbot-link/agent.mjs" });
-  assert.equal(line, `restrict,command="/usr/bin/node /opt/duskbot-link/agent.mjs direct" ${publicKey} omb-link-${ID}`);
+  const line = directKeyLine({ pub: publicKey, id: ID, node: "/usr/bin/node", agent: "/opt/madanibot-link/agent.mjs" });
+  assert.equal(line, `restrict,command="/usr/bin/node /opt/madanibot-link/agent.mjs direct" ${publicKey} omb-link-${ID}`);
   assert.throws(() => directKeyLine({ pub: `${publicKey}\nssh-ed25519 AAAA evil`, id: ID }));
   assert.throws(() => directKeyLine({ pub: "ssh-rsa AAAAB3NzaC1yc2E", id: ID }));
   assert.throws(() => directKeyLine({ pub: publicKey, id: ID, node: "/usr/bin/node\" evil" }));
-  const dir = mkdtempSync(join(tmpdir(), "dusk-direct-key-"));
+  const dir = mkdtempSync(join(tmpdir(), "madani-direct-key-"));
   try {
     const file = join(dir, ".ssh", "authorized_keys");
     setDirectKey(ID, null, file);
@@ -307,9 +307,9 @@ test("the agent's key line allows one forced command and nothing else, and leave
     assert.equal(lines.length, 2);
     assert.equal(lines[0], "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOWNERS person@laptop");
     // node moved (an upgrade): the line follows it at the agent's next start, the key itself unchanged
-    const moved = { node: "/usr/local/bin/node", agent: "/opt/duskbot-link/agent.mjs" };
+    const moved = { node: "/usr/local/bin/node", agent: "/opt/madanibot-link/agent.mjs" };
     assert.equal(refreshDirectKey(ID, file, moved), true);
-    assert.match(readFileSync(file, "utf8"), /command="\/usr\/local\/bin\/node \/opt\/duskbot-link\/agent.mjs direct"/);
+    assert.match(readFileSync(file, "utf8"), /command="\/usr\/local\/bin\/node \/opt\/madanibot-link\/agent.mjs direct"/);
     assert.equal(refreshDirectKey(ID, file, moved), false);
     setDirectKey(ID, null, file);
     assert.equal(readFileSync(file, "utf8"), "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOWNERS person@laptop\n");

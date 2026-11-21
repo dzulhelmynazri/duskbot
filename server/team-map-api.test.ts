@@ -2,13 +2,13 @@
 import { writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { expect, it } from "vitest";
-import { launchVerificationServer, runControlDusk } from "../scripts/control-dusk.ts";
+import { launchVerificationServer, runControlMadani } from "../scripts/control-madani.ts";
 import { readHandoffs } from "./testing/handoff-rows.ts";
 
 it("shows coordinate_bots work on the team map while it runs, with ids only", async () => {
   const fixture = await launchVerificationServer({}, undefined, undefined, undefined, { scripted: true });
   const api = async (path: string) => (await fetch(`${fixture.info.url}${path}`)).json() as Promise<any>;
-  const control = (args: string[]) => runControlDusk([...args, "--url", fixture.info.url]) as Promise<any>;
+  const control = (args: string[]) => runControlMadani([...args, "--url", fixture.info.url]) as Promise<any>;
   try {
     const sender = (await control(["new-bot", "--name", "Map sender"])).bot;
     const teammate = (await control(["new-bot", "--name", "Map teammate"])).bot;

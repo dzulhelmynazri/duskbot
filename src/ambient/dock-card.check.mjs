@@ -1,18 +1,18 @@
 // The dock's card as Chromium really lays it out: the real page and stylesheet at the dock window's size, a bot with a
 // long chat, a fake bridge. Catches what DOM tests cannot see: the reply field or the transcript covered, cut off or
 // outside where the page says clicks land, a transcript that does not scroll.
-// Headless only. `node src/ambient/dock-card.check.mjs` (DUSK_VERIFY_PLAYWRIGHT: a playwright module to load,
-// DUSK_VERIFY_BROWSER_CHROME: a Chromium to use, DUSK_DOCK_SHOT: where to save a screenshot).
+// Headless only. `node src/ambient/dock-card.check.mjs` (MADANI_VERIFY_PLAYWRIGHT: a playwright module to load,
+// MADANI_VERIFY_BROWSER_CHROME: a Chromium to use, MADANI_DOCK_SHOT: where to save a screenshot).
 import assert from "node:assert/strict";
 import { fileURLToPath } from "node:url";
 import { createServer } from "vite";
 
 const root = fileURLToPath(new URL("../..", import.meta.url));
-const { chromium } = await import(process.env.DUSK_VERIFY_PLAYWRIGHT || "playwright");
-const server = await createServer({ root, cacheDir: `${root}/.dusk-scratch/vite-dock-card`, configFile: `${root}/vite.config.ts`, logLevel: "error", server: { host: "127.0.0.1", port: 0, strictPort: false } });
+const { chromium } = await import(process.env.MADANI_VERIFY_PLAYWRIGHT || "playwright");
+const server = await createServer({ root, cacheDir: `${root}/.madani-scratch/vite-dock-card`, configFile: `${root}/vite.config.ts`, logLevel: "error", server: { host: "127.0.0.1", port: 0, strictPort: false } });
 await server.listen();
 const { port } = server.httpServer.address();
-const browser = await chromium.launch({ executablePath: process.env.DUSK_VERIFY_BROWSER_CHROME || undefined, headless: true, args: ["--use-mock-keychain", "--password-store=basic"] });
+const browser = await chromium.launch({ executablePath: process.env.MADANI_VERIFY_BROWSER_CHROME || undefined, headless: true, args: ["--use-mock-keychain", "--password-store=basic"] });
 
 // electron/ambient-geometry.mjs: the dock window on a 14-inch MacBook Pro
 const LAYOUT = { surface: "dock", width: 408, height: 945, body: 853, top: 46, dock: { cell: 56, tile: 36, column: 64, open: 404, pad: 8, ear: 18, sliver: 6, margin: 28, overhang: 4 }, order: [] };
@@ -94,7 +94,7 @@ try {
   assert.ok(acts.some((next) => next.kind === "reply" && next.text === "hello there"), `the reply was not sent: ${JSON.stringify(acts)}`);
   assert.ok(await page.locator(".amb-card:not([inert])").count(), "the card closed while replying");
 
-  if (process.env.DUSK_DOCK_SHOT) await page.screenshot({ path: process.env.DUSK_DOCK_SHOT });
+  if (process.env.MADANI_DOCK_SHOT) await page.screenshot({ path: process.env.MADANI_DOCK_SHOT });
 
   // away to the left: the card fades where it was, never moving or resizing while it goes
   await page.evaluate(() => document.activeElement?.blur());

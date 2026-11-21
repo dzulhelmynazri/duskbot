@@ -2,11 +2,11 @@
   "applinks": {
     "details": [
       {
-        "appIDs": ["S85QBF7KWC.bot.dusk.mobile"],
+        "appIDs": ["S85QBF7KWC.bot.madani.mobile"],
         "components": [
           { "/": "/m/open", "comment": "opens a chat or bot in the phone app" },
           { "/": "/m/pair", "comment": "pairs the phone app with a computer" },
-          { "/": "/m/signin", "comment": "opens the phone app at its dusk cloud log in" }
+          { "/": "/m/signin", "comment": "opens the phone app at its madani cloud log in" }
         ]
       }
     ]

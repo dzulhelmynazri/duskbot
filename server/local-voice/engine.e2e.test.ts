@@ -1,10 +1,10 @@
-// Runs the real models where they are already downloaded: DUSK_VOICE_MODELS_DIR=... pnpm exec vitest run server/local-voice/engine.e2e.test.ts
+// Runs the real models where they are already downloaded: MADANI_VOICE_MODELS_DIR=... pnpm exec vitest run server/local-voice/engine.e2e.test.ts
 import { describe, expect, it } from "vitest";
 import { decodeTokens, KOKORO_RATE, LocalVoiceEngine, MOONSHINE_RATE, trimSilence } from "./engine.ts";
 import { ModelStore } from "./models.ts";
 import { resample } from "./wav.ts";
 
-const store = process.env.DUSK_VOICE_MODELS_DIR ? new ModelStore() : null;
+const store = process.env.MADANI_VOICE_MODELS_DIR ? new ModelStore() : null;
 const ready = store?.status().phase === "ready";
 
 describe("decodeTokens and trimSilence", () => {

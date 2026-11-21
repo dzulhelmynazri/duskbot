@@ -9,14 +9,14 @@ import type { FeatureFlagConfig } from "@/lib/feature-flags";
 // tree. `seed` presets what the resolve effect would have reached.
 const fixture = vi.hoisted(() => {
   const view = { current: "computer" as string };
-  const duskDesktop: Record<string, unknown> = {};
-  vi.stubGlobal("window", { duskDesktop });
+  const madaniDesktop: Record<string, unknown> = {};
+  vi.stubGlobal("window", { madaniDesktop });
   vi.stubGlobal("document", { visibilityState: "visible" });
-  vi.stubGlobal("localStorage", { getItem: (key: string) => key.startsWith("dusk-computer-panel-view") ? view.current : null, setItem: () => {} });
+  vi.stubGlobal("localStorage", { getItem: (key: string) => key.startsWith("madani-computer-panel-view") ? view.current : null, setItem: () => {} });
   return {
     advanced: false,
     view,
-    duskDesktop,
+    madaniDesktop,
     platform: "darwin" as "darwin" | "win32" | "linux",
     localComputer: {} as Record<string, unknown>,
     values: [] as unknown[],
@@ -160,7 +160,7 @@ beforeEach(() => {
   fixture.dispatch = vi.fn();
   fixture.api = vi.fn(() => Promise.resolve({ features: { browser: true } }));
   fixture.ownerOrAdmin = null;
-  for (const key of Object.keys(fixture.duskDesktop)) delete fixture.duskDesktop[key];
+  for (const key of Object.keys(fixture.madaniDesktop)) delete fixture.madaniDesktop[key];
 });
 
 describe("Computer panel tabs", () => {
@@ -345,7 +345,7 @@ describe("Technical controls", () => {
   });
 
   it("hides two desktops and Delete VM", () => {
-    fixture.duskDesktop.desktopWorkspace = {};
+    fixture.madaniDesktop.desktopWorkspace = {};
     fixture.seed = {
       phase: "vm",
       resolved: { botId: "scout", threadId: "thread-scout", computer: "vm", cloudBackend: "vps" },

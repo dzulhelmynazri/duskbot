@@ -286,14 +286,14 @@ for (const skinId of ["daylight", "grok", "pop"]) {
   if (!bubbleFailed) console.log(`✓ ${skinId} bubble — editor, controls and paired fills above 4.5:1`);
 }
 
-// dusk cloud's night card paints its own sky in every skin: an indigo dusk in the light scheme, a deep night in the
+// madani cloud's night card paints its own sky in every skin: an indigo madani in the light scheme, a deep night in the
 // dark one. Its text sits between the sky's first two stops; the close button's glyph also lands on the far stop.
 const night = [...css.matchAll(/:root\s*\{([^}]*)\}/g)].map(([, body]) => declarations(body)).find(tokens => tokens["--cloud-night-from"]);
 if (!night) {
   failed = true;
   console.log("✗ night card — no :root block defines --cloud-night-from");
 } else {
-  for (const [scheme, pick] of [["dusk", 1], ["night", 2]]) {
+  for (const [scheme, pick] of [["madani", 1], ["night", 2]]) {
     const value = (token) => /^light-dark\(\s*([^,]+?)\s*,\s*([^)]+?)\s*\)$/.exec(night[token] ?? "")?.[pick] ?? night[token] ?? "";
     let schemeFailed = false;
     for (const [fg, bg, min] of [

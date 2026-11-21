@@ -2,7 +2,7 @@ import { createServer } from "node:http";
 import { readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { expect, it } from "vitest";
-import { launchVerificationServer } from "../scripts/control-dusk.ts";
+import { launchVerificationServer } from "../scripts/control-madani.ts";
 import { fixtureApi } from "../scripts/testing/preview-fixture.ts";
 import { openSse } from "./testing/sse.ts";
 

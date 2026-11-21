@@ -1,9 +1,9 @@
-// before launch (DUSK_PRELAUNCH_WAITLIST_ONLY on the account service) the page only exists for a real flow: the desktop
+// before launch (MADANI_PRELAUNCH_WAITLIST_ONLY on the account service) the page only exists for a real flow: the desktop
 // app's sign-in, an emailed link, a handoff, claim or delete link (the admin panel is used from preview then). the server checks what it can see on load and marks
 // the page; this sends every in-page move outside such a flow to the waitlist at /.
 
 /** set by the server in the page's <head> while waitlist-only is on */
-export const PRELAUNCH = typeof document !== "undefined" && document.querySelector('meta[name="dusk-prelaunch"]')?.getAttribute("content") === "1";
+export const PRELAUNCH = typeof document !== "undefined" && document.querySelector('meta[name="madani-prelaunch"]')?.getAttribute("content") === "1";
 
 /** the flow this tab arrived with: tokens that only ever come from a link and never sit in the address bar */
 export interface PrelaunchFlows { handoff: boolean; claim: boolean; deleting(id: string): boolean; appReturn?: boolean; teamInvite?: boolean }

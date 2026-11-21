@@ -1,33 +1,33 @@
 #!/usr/bin/env bash
 # a new link service node on a fresh ubuntu 24.04 box (a hetzner cx22 or any small vps), the way oracle-in runs:
-# node 24 from nodesource, the service as the dusklink user under systemd, caddy in front for https, coturn beside it.
+# node 24 from nodesource, the service as the madanilink user under systemd, caddy in front for https, coturn beside it.
 #
 # from the repo root on the mac, with the box's dns name already pointing at it:
-#   NODE_ID=hetzner-de DOMAIN=link-de.dusk.bot REGION=eu ALLOWANCE_TB=20 \
-#   LINK_NODES="contabo=https://link.dusk.bot@eu,oracle-in=https://link-in.dusk.bot@asia,hetzner-de=https://link-de.dusk.bot@eu" \
+#   NODE_ID=hetzner-de DOMAIN=link-de.madani.bot REGION=eu ALLOWANCE_TB=20 \
+#   LINK_NODES="contabo=https://link.madani.bot@eu,oracle-in=https://link-in.madani.bot@asia,hetzner-de=https://link-de.madani.bot@eu" \
 #   apps/link-service/deploy/add-node.sh root@<box ip>
 # the secrets (LINK_PEER_TOKEN, LINK_STATS_TOKEN, LINK_TURN_SECRET) are read from the environment, the same values every
 # node has; they are sent over ssh into a 0600 file and never printed. TURN_SECRET empty: no coturn.
-# then: add the node to LINK_NODES on every other node and to the account service's DUSK_LINK_NODES (docs/capacity.md).
+# then: add the node to LINK_NODES on every other node and to the account service's MADANI_LINK_NODES (docs/capacity.md).
 set -euo pipefail
 
 target="${1:?usage: add-node.sh root@<box>}"
-: "${NODE_ID:?NODE_ID, like hetzner-de}" "${DOMAIN:?DOMAIN, like link-de.dusk.bot}" "${LINK_NODES:?LINK_NODES, every node including this one}"
+: "${NODE_ID:?NODE_ID, like hetzner-de}" "${DOMAIN:?DOMAIN, like link-de.madani.bot}" "${LINK_NODES:?LINK_NODES, every node including this one}"
 : "${LINK_PEER_TOKEN:?LINK_PEER_TOKEN (the same on every node)}" "${LINK_STATS_TOKEN:?LINK_STATS_TOKEN}"
 REGION="${REGION:-eu}" ALLOWANCE_TB="${ALLOWANCE_TB:-20}" LINK_TURN_SECRET="${LINK_TURN_SECRET:-}"
 case ",$LINK_NODES," in *",$NODE_ID=https://$DOMAIN@"*) ;; *) echo "LINK_NODES must list $NODE_ID=https://$DOMAIN@<region>" >&2; exit 1 ;; esac
 root="$(cd "$(dirname "$0")/../../.." && pwd)"
 
 echo "== copying the link service to $target"
-git -C "$root" archive --format=tar HEAD apps/link-service | ssh "$target" 'rm -rf /tmp/dusk-link-src && mkdir -p /tmp/dusk-link-src && tar -x -C /tmp/dusk-link-src'
+git -C "$root" archive --format=tar HEAD apps/link-service | ssh "$target" 'rm -rf /tmp/madani-link-src && mkdir -p /tmp/madani-link-src && tar -x -C /tmp/madani-link-src'
 
 echo "== the node's settings"
 {
-  printf 'PORT=8790\nHOST=127.0.0.1\nLINK_BASE=https://%s\nLINK_DATA_DIR=/var/lib/dusk-link-node\nLINK_PACKAGES_DIR=/var/lib/dusk-link-node/packages\n' "$DOMAIN"
+  printf 'PORT=8790\nHOST=127.0.0.1\nLINK_BASE=https://%s\nLINK_DATA_DIR=/var/lib/madani-link-node\nLINK_PACKAGES_DIR=/var/lib/madani-link-node/packages\n' "$DOMAIN"
   printf 'LINK_TRUST_PROXY=1\nLINK_NODE_ID=%s\nLINK_NODES=%s\nLINK_ALLOWANCE_TB=%s\n' "$NODE_ID" "$LINK_NODES" "$ALLOWANCE_TB"
   printf 'LINK_PEER_TOKEN=%s\nLINK_STATS_TOKEN=%s\n' "$LINK_PEER_TOKEN" "$LINK_STATS_TOKEN"
   if [ -n "$LINK_TURN_SECRET" ]; then printf 'LINK_TURN_SECRET=%s\n' "$LINK_TURN_SECRET"; fi
-} | ssh "$target" 'umask 077 && cat > /tmp/dusk-link-node.env'
+} | ssh "$target" 'umask 077 && cat > /tmp/madani-link-node.env'
 
 echo "== installing (node 24, caddy, ${LINK_TURN_SECRET:+coturn, }the service)"
 ssh "$target" DOMAIN="$DOMAIN" NODE_ID="$NODE_ID" TURN="${LINK_TURN_SECRET:+1}" bash -s <<'REMOTE'
@@ -44,23 +44,23 @@ if ! command -v caddy >/dev/null; then
   curl -fsSL https://dl.cloudsmith.io/public/caddy/stable/debian.deb.txt > /etc/apt/sources.list.d/caddy-stable.list
   apt-get update -qq && apt-get install -y -qq caddy >/dev/null
 fi
-id dusklink >/dev/null 2>&1 || useradd --system --home /var/lib/dusk-link-node --shell /usr/sbin/nologin dusklink
-install -d -o dusklink -g dusklink -m 0700 /var/lib/dusk-link-node
-rm -rf /opt/dusk-link-node.new && cp -r /tmp/dusk-link-src/apps/link-service /opt/dusk-link-node.new
-[ -d /opt/dusk-link-node ] && mv /opt/dusk-link-node "/opt/dusk-link-node.bak-$(date +%s)"
-mv /opt/dusk-link-node.new /opt/dusk-link-node && rm -rf /tmp/dusk-link-src
-install -o root -g root -m 0600 /tmp/dusk-link-node.env /etc/dusk-link-node.env && rm -f /tmp/dusk-link-node.env
-cat > /etc/systemd/system/dusk-link-node.service <<UNIT
+id madanilink >/dev/null 2>&1 || useradd --system --home /var/lib/madani-link-node --shell /usr/sbin/nologin madanilink
+install -d -o madanilink -g madanilink -m 0700 /var/lib/madani-link-node
+rm -rf /opt/madani-link-node.new && cp -r /tmp/madani-link-src/apps/link-service /opt/madani-link-node.new
+[ -d /opt/madani-link-node ] && mv /opt/madani-link-node "/opt/madani-link-node.bak-$(date +%s)"
+mv /opt/madani-link-node.new /opt/madani-link-node && rm -rf /tmp/madani-link-src
+install -o root -g root -m 0600 /tmp/madani-link-node.env /etc/madani-link-node.env && rm -f /tmp/madani-link-node.env
+cat > /etc/systemd/system/madani-link-node.service <<UNIT
 [Unit]
-Description=dusk bot link service, node $NODE_ID
+Description=madani bot link service, node $NODE_ID
 After=network-online.target
 Wants=network-online.target
 
 [Service]
-User=dusklink
-Group=dusklink
-EnvironmentFile=/etc/dusk-link-node.env
-WorkingDirectory=/opt/dusk-link-node
+User=madanilink
+Group=madanilink
+EnvironmentFile=/etc/madani-link-node.env
+WorkingDirectory=/opt/madani-link-node
 ExecStart=/usr/bin/node src/server.mjs
 Restart=always
 RestartSec=2
@@ -69,7 +69,7 @@ ProtectSystem=strict
 ProtectHome=yes
 PrivateTmp=yes
 PrivateDevices=yes
-ReadWritePaths=/var/lib/dusk-link-node
+ReadWritePaths=/var/lib/madani-link-node
 ProtectKernelTunables=yes
 ProtectControlGroups=yes
 RestrictSUIDSGID=yes
@@ -81,7 +81,7 @@ WantedBy=multi-user.target
 UNIT
 cat > /etc/caddy/Caddyfile <<CADDY
 {
-	email ops@dusk.bot
+	email ops@madani.bot
 }
 
 $DOMAIN {
@@ -103,7 +103,7 @@ $DOMAIN {
 CADDY
 if [ -n "${TURN:-}" ]; then
   apt-get install -y -qq coturn >/dev/null
-  secret="$(sed -n 's/^LINK_TURN_SECRET=//p' /etc/dusk-link-node.env)"
+  secret="$(sed -n 's/^LINK_TURN_SECRET=//p' /etc/madani-link-node.env)"
   public="$(curl -fsS4 https://api.ipify.org)"; private="$(hostname -I | awk '{print $1}')"
   umask 077
   cat > /etc/turnserver.conf <<TURNCONF
@@ -111,7 +111,7 @@ listening-port=3478
 fingerprint
 use-auth-secret
 static-auth-secret=$secret
-realm=dusk.bot
+realm=madani.bot
 no-tls
 no-dtls
 min-port=49160
@@ -145,12 +145,12 @@ TURNCONF
 fi
 if command -v ufw >/dev/null && ufw status | grep -q active; then ufw allow 80/tcp >/dev/null; ufw allow 443/tcp >/dev/null; if [ -n "${TURN:-}" ]; then ufw allow 3478 >/dev/null; ufw allow 49160:49999/udp >/dev/null; fi; fi
 systemctl daemon-reload
-systemctl enable -q dusk-link-node caddy
-systemctl restart dusk-link-node caddy
+systemctl enable -q madani-link-node caddy
+systemctl restart madani-link-node caddy
 for _ in $(seq 1 30); do curl -fsS -o /dev/null http://127.0.0.1:8790/healthz && break; sleep 1; done
 curl -fsS -o /dev/null http://127.0.0.1:8790/healthz && echo "node $NODE_ID answers on 127.0.0.1:8790"
 REMOTE
 
 echo "== checking https://$DOMAIN/healthz (caddy may need a minute for its certificate)"
 for _ in $(seq 1 30); do curl -fsS -o /dev/null "https://$DOMAIN/healthz" && { echo "up: https://$DOMAIN"; break; }; sleep 4; done
-echo "next: put the same LINK_NODES on every other node and in the account service's DUSK_LINK_NODES, then restart them"
+echo "next: put the same LINK_NODES on every other node and in the account service's MADANI_LINK_NODES, then restart them"

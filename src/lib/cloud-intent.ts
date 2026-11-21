@@ -1,8 +1,8 @@
 import { useSyncExternalStore } from "react";
 import type { OnboardingStatus, WelcomeViewer } from "@/lib/onboarding";
 
-const KEY = "dusk.cloudIntent.pending";
-const SENT_KEY = "dusk.cloudIntent.sent";
+const KEY = "madani.cloudIntent.pending";
+const SENT_KEY = "madani.cloudIntent.sent";
 
 export interface SentIntent { botId: string; at: number }
 

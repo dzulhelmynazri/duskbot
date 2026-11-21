@@ -7,12 +7,12 @@ import { afterAll, expect, it } from "vitest";
 import { fixtureServer, guardRealEngines, realEngine, temporaryRoots } from "./engine-guard.ts";
 
 // stand-ins for installed engines: outside every temporary folder, never run
-const installed = join(dirname(fileURLToPath(import.meta.url)), "..", "node_modules", ".cache", `dusk-engine-guard-unit-${process.pid}`);
+const installed = join(dirname(fileURLToPath(import.meta.url)), "..", "node_modules", ".cache", `madani-engine-guard-unit-${process.pid}`);
 const bin = join(installed, "bin"), sdk = join(installed, "@anthropic-ai", "claude-agent-sdk", "cli.js");
 mkdirSync(bin, { recursive: true });
 mkdirSync(dirname(sdk), { recursive: true });
 for (const file of [join(bin, "claude"), join(bin, "codex"), sdk]) writeFileSync(file, "", { mode: 0o755 });
-const fixtureHome = mkdtempSync(join(tmpdir(), "dusk-engine-guard-"));
+const fixtureHome = mkdtempSync(join(tmpdir(), "madani-engine-guard-"));
 mkdirSync(join(fixtureHome, "bin"));
 writeFileSync(join(fixtureHome, "bin", "claude"), "", { mode: 0o755 });
 afterAll(() => { rmSync(installed, { recursive: true, force: true }); rmSync(fixtureHome, { recursive: true, force: true }); });
@@ -35,9 +35,9 @@ it("lets the read-only probes through, and an engine that is not installed fail 
 });
 
 it("guards a server whose data folder is temporary, never an installed one, unless a live check allows real engines", () => {
-  expect(fixtureServer({ DUSK_DATA_DIR: fixtureHome })).toBe(true);
-  expect(fixtureServer({ DUSK_DATA_DIR: fixtureHome, DUSK_ALLOW_REAL_ENGINES: "1" })).toBe(false);
-  expect(fixtureServer({ DUSK_DATA_DIR: join(homedir(), ".duskbot") })).toBe(false);
+  expect(fixtureServer({ MADANI_DATA_DIR: fixtureHome })).toBe(true);
+  expect(fixtureServer({ MADANI_DATA_DIR: fixtureHome, MADANI_ALLOW_REAL_ENGINES: "1" })).toBe(false);
+  expect(fixtureServer({ MADANI_DATA_DIR: join(homedir(), ".madanibot") })).toBe(false);
   expect(fixtureServer({})).toBe(false);
 });
 

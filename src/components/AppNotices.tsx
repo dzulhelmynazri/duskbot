@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { openSignIn } from "@/lib/sign-in-sheet";
-const browserSignIn = () => Boolean(window.duskDesktop?.cloudAccount?.continueInBrowser);
+const browserSignIn = () => Boolean(window.madaniDesktop?.cloudAccount?.continueInBrowser);
 import type { CloudAccountState } from "../../electron/cloud-account.mjs";
 import type { CloudOffer } from "../../electron/cloud-home.mjs";
 import { api, useStore } from "@/state/store";
@@ -42,17 +42,17 @@ const trialKey = (trial: { state: string; endsAt: number }) => `${trial.state}:$
 
 export function AppNotices({ quiet = false, viewer = null, now = Date.now }: { quiet?: boolean; viewer?: WelcomeViewer | null; now?: () => number }) {
   const { state, dispatch } = useStore();
-  const remote = window.duskDesktop?.remoteClient?.active === true;
+  const remote = window.madaniDesktop?.remoteClient?.active === true;
   const local = localDesktopPage();
-  const bridge = !remote && local ? window.duskDesktop?.cloudAccount : undefined;
-  const desktop = remote ? undefined : window.duskDesktop?.desktopNotices;
+  const bridge = !remote && local ? window.madaniDesktop?.cloudAccount : undefined;
+  const desktop = remote ? undefined : window.madaniDesktop?.desktopNotices;
   const desktopState = useDesktopNotices(desktop);
   // Asked once main has restored the Cloud sign-in, which it waits for before answering desktopState.
-  const planBridge = !remote && (bridge || (viewer?.cloudHome && (desktopState || !desktop))) ? window.duskDesktop?.cloudPlan : undefined;
+  const planBridge = !remote && (bridge || (viewer?.cloudHome && (desktopState || !desktop))) ? window.madaniDesktop?.cloudPlan : undefined;
   const [account, setAccount] = useState<CloudAccountState | null>(null);
   const plan = useCloudPlanSnapshot(planBridge);
   const [offer, setOffer] = useState<CloudOffer | null | undefined>(undefined);
-  const [organization, setOrganization] = useState<boolean | null>(window.duskDesktop?.organization ? null : false);
+  const [organization, setOrganization] = useState<boolean | null>(window.madaniDesktop?.organization ? null : false);
   const [closed, setClosed] = useState(false);
   const [introOpen, setIntroOpen] = useState(false);
   const [trialOpen, setTrialOpen] = useState<string | null>(null);
@@ -82,7 +82,7 @@ export function AppNotices({ quiet = false, viewer = null, now = Date.now }: { q
     return () => { active = false; unsubscribe(); };
   }, [bridge]);
   useEffect(() => {
-    const org = window.duskDesktop?.organization;
+    const org = window.madaniDesktop?.organization;
     if (!org) return;
     let active = true;
     const read = (next: { status: string; organization?: unknown }) => { if (active) setOrganization(next.status !== "signed-out" && Boolean(next.organization)); };
@@ -123,7 +123,7 @@ export function AppNotices({ quiet = false, viewer = null, now = Date.now }: { q
     if (stage === "resting" && !introOpen) return false;
     return introOpen || stage === "due" ? true : null;
   };
-  // a routine here that ran late or not at all while this computer slept: the plainest case for dusk cloud, said once
+  // a routine here that ran late or not at all while this computer slept: the plainest case for madani cloud, said once
   const late = bridge && !noticeSeen(record, LATE_ROUTINE_NOTICE) ? lateRoutineRun(state.routines ?? [], state.routineRuns ?? [], now()) : null;
   const asleep = useAsleepWork(state.bots, Boolean(bridge) && !noticeSeen(record, ASLEEP_NOTICE), now);
   const slept = bridge && !noticeSeen(record, ASLEEP_NOTICE) ? asleepFresh(asleep, now()) : null;

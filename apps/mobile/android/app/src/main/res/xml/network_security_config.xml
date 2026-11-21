@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- Android 9+ (API 28+) blocks cleartext HTTP by default and NetworkSecurityPolicy has no CIDR rule for RFC 1918 LAN
-     literals, so allow cleartext at the base level for local desktop companion pairing while pinning dusk.bot to HTTPS. -->
+     literals, so allow cleartext at the base level for local desktop companion pairing while pinning madani.bot to HTTPS. -->
 <network-security-config>
     <base-config cleartextTrafficPermitted="true">
         <trust-anchors>
@@ -8,7 +8,7 @@
         </trust-anchors>
     </base-config>
     <domain-config cleartextTrafficPermitted="false">
-        <domain includeSubdomains="true">dusk.bot</domain>
+        <domain includeSubdomains="true">madani.bot</domain>
     </domain-config>
     <domain-config cleartextTrafficPermitted="true">
         <domain includeSubdomains="true">ts.net</domain>

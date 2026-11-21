@@ -26,14 +26,14 @@ vi.mock("@/lib/mcp-servers", async (importOriginal) => ({
   useMcpServers: () => ({ servers: fixture.servers, error: fixture.mcpError, refresh: vi.fn() }),
 }));
 
-// DesktopCapabilities reads window.duskDesktop at module scope, and this suite runs in the node environment.
+// DesktopCapabilities reads window.madaniDesktop at module scope, and this suite runs in the node environment.
 vi.mock("../DesktopCapabilities", () => ({
   useDesktopCapabilities: () => ({ capabilities: { host: { homeDir: undefined } } }),
 }));
 
 const { AccessSection } = await import("./AccessSection");
 
-// WorkingFolder reads window.duskDesktop?.pickFolder at render time, so window is stubbed per test.
+// WorkingFolder reads window.madaniDesktop?.pickFolder at render time, so window is stubbed per test.
 beforeEach(() => {
   vi.stubGlobal("window", {});
   fixture.dispatch.mockReset();
@@ -75,7 +75,7 @@ function makeDerived(overrides: Partial<ReturnType<typeof useBotSettingsDerived>
     browserAllowed: true,
     browserEnabled: false,
     browserSelectable: false,
-    browserDisabledReason: "The built-in browser needs the dusk bot desktop app",
+    browserDisabledReason: "The built-in browser needs the madani bot desktop app",
     sectionName: "general",
     currentChief: undefined,
     botRoutines: [],
@@ -258,7 +258,7 @@ describe("Research (treg) card", () => {
 
   it("is on by default with a Cloud plan, and turns off for one bot with one patch", () => {
     fixture.config = { xResearch: { included: true } } as Partial<ConfigStatus>;
-    expect(render(makeBot())).toContain("Included with your dusk cloud plan");
+    expect(render(makeBot())).toContain("Included with your madani cloud plan");
     const { card, derived } = capture(makeBot());
     const toggle = card.find((node) => node.props["aria-label"] === "Let this bot use research")!;
     (toggle.props.onClick as () => void)();
@@ -360,7 +360,7 @@ describe("working folder note", () => {
   const inFolder = (cwd: string | null, botCwd?: string) => makeBot({ ...(botCwd ? { cwd: botCwd } : {}), tasks: [{ threadId: "thread-1", cwd }] as unknown as Bot["tasks"] });
 
   it("calls a thread pinned only to a folder chosen for it, or to an earlier working folder, never to its own folder", () => {
-    for (const own of ["/data/.duskbot/task-workspaces/bot-1/thread-1", "C:\\Users\\Ada\\.duskbot\\task-workspaces\\bot-1\\thread-1"]) {
+    for (const own of ["/data/.madanibot/task-workspaces/bot-1/thread-1", "C:\\Users\\Ada\\.madanibot\\task-workspaces\\bot-1\\thread-1"]) {
       expect(folderCard(inFolder(own, "/projects/site"))).not.toContain("This task is pinned");
       expect(folderCard(inFolder(own))).not.toContain("This task is pinned");
     }

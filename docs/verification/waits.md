@@ -18,22 +18,22 @@ never renews itself.
 ```sh
 W=$(mktemp -d)
 printf '[{"server":"agents","name":"wait_until","input":{"label":"the report","kind":"file_exists","path":"%s/report.txt","follow_up":"Say the report is ready."}}]' "$W" > "$W/calls.json"
-FAKE_CLAUDE_TOOL_CALLS_FILE="$W/calls.json" node --experimental-strip-types scripts/control-dusk.ts launch
+FAKE_CLAUDE_TOOL_CALLS_FILE="$W/calls.json" node --experimental-strip-types scripts/control-madani.ts launch
 ```
 
 Second terminal (same `W`; `DATA` is the `dataDir` the launcher printed):
 
 ```sh
-pnpm control:dusk new-bot --name Pepper --url http://127.0.0.1:PORT
-pnpm control:dusk send --bot BOT_ID --text "Tell me when report.txt is there, then say so" --url http://127.0.0.1:PORT
-pnpm control:dusk wait --bot BOT_ID --timeout 30 --url http://127.0.0.1:PORT
-pnpm control:dusk messages --bot BOT_ID --limit 12 --url http://127.0.0.1:PORT
+pnpm control:madani new-bot --name Pepper --url http://127.0.0.1:PORT
+pnpm control:madani send --bot BOT_ID --text "Tell me when report.txt is there, then say so" --url http://127.0.0.1:PORT
+pnpm control:madani wait --bot BOT_ID --timeout 30 --url http://127.0.0.1:PORT
+pnpm control:madani messages --bot BOT_ID --limit 12 --url http://127.0.0.1:PORT
 touch "$W/report.txt"; sleep 25
-pnpm control:dusk wait --bot BOT_ID --timeout 60 --url http://127.0.0.1:PORT
-pnpm control:dusk messages --bot BOT_ID --limit 12 --url http://127.0.0.1:PORT
+pnpm control:madani wait --bot BOT_ID --timeout 60 --url http://127.0.0.1:PORT
+pnpm control:madani messages --bot BOT_ID --limit 12 --url http://127.0.0.1:PORT
 curl -s http://127.0.0.1:PORT/api/notifications
 cat "$DATA/waits.json"
-sleep 10; pnpm control:dusk messages --bot BOT_ID --limit 12 --url http://127.0.0.1:PORT
+sleep 10; pnpm control:madani messages --bot BOT_ID --limit 12 --url http://127.0.0.1:PORT
 ```
 
 Expected:
@@ -61,7 +61,7 @@ internet, and what a real model does with the follow-up (the fake engine replies
 ## Last exercised
 
 2026-10-28, Node 24, branch `feat/bot-waits` at `4fc4ef0bb`, fixture log
-`/var/folders/7b/15jj691d4tj_7vq99cqvwgbr0000gn/T/duskbot-verification-evidence/server-1793162265419-23568.log`.
+`/var/folders/7b/15jj691d4tj_7vq99cqvwgbr0000gn/T/madanibot-verification-evidence/server-1793162265419-23568.log`.
 Every expectation above held. The lines below are abridged: only these fields of each
 message are kept, and `<W>` stands for the temp dir.
 

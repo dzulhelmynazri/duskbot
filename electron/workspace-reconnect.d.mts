@@ -13,7 +13,7 @@ export interface ReconnectView {
   host: string;
   /** Added by hand and never opened: it can't be reached yet, and there is nothing it showed before. */
   neverConnected?: boolean;
-  /** A dusk cloud that was deleted: nothing is looked at again; the person removes it or opens another place. */
+  /** A madani cloud that was deleted: nothing is looked at again; the person removes it or opens another place. */
   gone?: true;
   attempt: number;
   nextAt: number | null;

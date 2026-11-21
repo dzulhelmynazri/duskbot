@@ -18,7 +18,7 @@ import { saveTeamProfile } from "./own-profile";
 
 export { isNotesPrompt, looksLikeNotes };
 
-const KEY = "dusk.notesWaiting";
+const KEY = "madani.notesWaiting";
 export const REMIND_AFTER_MS = 15 * 60_000;
 
 export interface NotesWaiting { since: number; reminded?: boolean }
@@ -70,7 +70,7 @@ export async function copyNotesPrompt(now = Date.now()): Promise<boolean> {
   return copied;
 }
 
-const WATCH_KEY = "dusk.notesWatch";
+const WATCH_KEY = "madani.notesWatch";
 /** How long after a copy Downloads is checked for the notes file, and how much longer after each one that came. */
 export const WATCH_FOR_MS = 3 * 60 * 60_000;
 export const WATCH_AFTER_FILE_MS = 30 * 60_000;

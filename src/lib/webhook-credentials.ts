@@ -1,6 +1,6 @@
 import type { WebhookCredential } from "./webhooks.js";
 
-const KEY = "dusk-webhook-credentials";
+const KEY = "madani-webhook-credentials";
 
 type Store = Pick<Storage, "getItem" | "setItem"> | undefined;
 

@@ -2,7 +2,7 @@
 
 How fast a live event (a bot's reply frame) and an API request cross between the bot server on a VPS and the Mac app,
 hop by hop, and what each change on `w10/wire-speed` bought. Measured 2026-11-07 on the user's Oracle VPS (Mumbai),
-the relay at `link.dusk.bot` (Contabo) and this Mac behind Proton VPN.
+the relay at `link.madani.bot` (Contabo) and this Mac behind Proton VPN.
 
 ## The path
 
@@ -41,7 +41,7 @@ SWITCH=localhost ./node_modules/.bin/electron scripts/testing/electron-connectio
 
 ## Live measurement (read-only)
 
-- Network legs: `curl -w` timings and keep-alive request loops to `https://link.dusk.bot/healthz` from the Mac
+- Network legs: `curl -w` timings and keep-alive request loops to `https://link.madani.bot/healthz` from the Mac
   and from the VPS; `ssh oracle` exec streams for the direct path.
 - Events: a loopback SSE reader on the VPS (`127.0.0.1:8799/api/events`) and an extra EventSource in the user's
   renderer (CDP 9335 `Runtime.evaluate`, no input), matched by `seq`, while a test bot (Moss, Codex) answered a
@@ -159,8 +159,8 @@ sockets set it); the direct path already writes each turn's records as one write
 Every piece works with an old other side, in any order.
 
 - The Mac app (`electron/main.mjs`, `electron/vps-link-main.mjs`, `electron/vps-link-protocol.mjs`): restart it.
-- The VPS's link agent (`apps/link-service/agent.mjs` as `/opt/duskbot-link/agent.mjs`), then restart
-  `duskbot-link.service`.
+- The VPS's link agent (`apps/link-service/agent.mjs` as `/opt/madanibot-link/agent.mjs`), then restart
+  `madanibot-link.service`.
 - The VPS's server package (`server/harness/sse-gzip.ts`, `server/index.ts`): the gzipped event stream.
 - The link service needs no code change (nginx already offers h2); redeploy it only so new installs fetch the new
   `agent.mjs`.

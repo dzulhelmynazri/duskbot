@@ -14,7 +14,7 @@ import { SettingsSection } from "./sheets/SettingsRow";
 
 const ROW = "mobile-row flex min-h-[52px] w-full items-center gap-3 rounded-[inherit] px-4 py-2 text-left text-ink";
 
-const presentOver = (sheet: ReactNode) => createPortal(sheet, document.querySelector(".dusk-mobile") ?? document.body);
+const presentOver = (sheet: ReactNode) => createPortal(sheet, document.querySelector(".madani-mobile") ?? document.body);
 
 /** The bot's model as a phone settings row: Model on the left, the model on the right, and the picker in its own sheet
  * over the bot's. Under it, Thinking, when the model takes a thinking level. */

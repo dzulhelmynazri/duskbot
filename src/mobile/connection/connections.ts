@@ -12,14 +12,14 @@ import { PairError } from "./pair";
 import { RACED_COMPANION_TRY_MS, raceRoutes, routeHeadStart, routeOrder, type RouteOutcome } from "./route-order";
 import { asleepAnswer, goneAnswer, wakingAnswer } from "@/lib/cloud-power";
 
-/** `asleep`: the place's edge said its dusk cloud sleeps (or is waking). It is still the place: the app opens on it and
+/** `asleep`: the place's edge said its madani cloud sleeps (or is waking). It is still the place: the app opens on it and
  * wakes it, because the edge never wakes a cloud for a read, so asking again could never get past this answer. */
 export type WorkspaceTransport = PhoneTransport & { asleep?: true };
 
-/** The place's edge says its dusk cloud was deleted: no route will ever reach it again. */
+/** The place's edge says its madani cloud was deleted: no route will ever reach it again. */
 export class PlaceGoneError extends Error {
   constructor() {
-    super("this dusk cloud was deleted");
+    super("this madani cloud was deleted");
     this.name = "PlaceGoneError";
   }
 }
@@ -95,7 +95,7 @@ async function moveOutbox(platform: MobilePlatform, from: string, to: string): P
   await platform.prefs.set(outboxKey(to), held);
 }
 
-/** The same installation linked again: at the same address, or a dusk cloud (https, with its own environment id) that
+/** The same installation linked again: at the same address, or a madani cloud (https, with its own environment id) that
  * moved to another one, whose old address will never answer again. */
 function sameInstallation(a: MobileConnectionRecord, b: MobileConnectionRecord): boolean {
   if (a.environmentId !== b.environmentId) return false;
@@ -104,8 +104,8 @@ function sameInstallation(a: MobileConnectionRecord, b: MobileConnectionRecord):
   return a.transport === "https" && b.transport === "https" && ownId(a) && ownId(b);
 }
 
-const CONNECTIONS_KEY = "dusk.mobile.connections.v1";
-const ACTIVE_KEY = "dusk.mobile.active.v1";
+const CONNECTIONS_KEY = "madani.mobile.connections.v1";
+const ACTIVE_KEY = "madani.mobile.active.v1";
 type ActiveConnection = { record: MobileConnectionRecord; token: string };
 type ConnectionStore = {
   list(): Promise<MobileConnectionRecord[]>;
@@ -160,7 +160,7 @@ export function createConnectionStore(platform: MobilePlatform): ConnectionStore
         for (const old of replaced) if (old.sessionRef !== saved.sessionRef) {
           await platform.secrets.remove(old.sessionRef);
           await platform.secrets.remove(`relay.${old.id}`);
-          await platform.prefs.remove(`dusk.mobile.push.${old.id}`);
+          await platform.prefs.remove(`madani.mobile.push.${old.id}`);
           await moveOutbox(platform, old.id, saved.id);
           // IndexedDB can stall in WKWebView; the saved list never waits on it
           void forgetTranscriptShelf(old.id).catch(() => {});
@@ -182,7 +182,7 @@ export function createConnectionStore(platform: MobilePlatform): ConnectionStore
         if (await platform.prefs.get(ACTIVE_KEY) === id) await platform.prefs.remove(ACTIVE_KEY);
         await platform.secrets.remove(`token.${id}`);
         await platform.secrets.remove(`relay.${id}`);
-        await platform.prefs.remove(`dusk.mobile.push.${id}`);
+        await platform.prefs.remove(`madani.mobile.push.${id}`);
         await platform.prefs.remove(outboxKey(id));
         void forgetTranscriptShelf(id).catch(() => {});
         await write(records.filter((entry) => entry.id !== id));

@@ -12,7 +12,7 @@ import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const root = fileURLToPath(new URL("..", import.meta.url));
-const flag = "--dusk-organization-fixture";
+const flag = "--madani-organization-fixture";
 
 if (process.versions.electron && process.argv.includes(flag)) {
   const { app, BrowserWindow, ipcMain, session } = await import("electron");
@@ -68,7 +68,7 @@ if (process.versions.electron && process.argv.includes(flag)) {
       assert.equal(message.connection.token, modelToken, "native provider gets model-only capability");
       grantsApplied++;
     } else clearsApplied++;
-    queueMicrotask(() => relay.receive(fakeProcess, { type: "duskbot:managed-desktop-result", requestId: message.requestId, ok: true }));
+    queueMicrotask(() => relay.receive(fakeProcess, { type: "madanibot:managed-desktop-result", requestId: message.requestId, ok: true }));
   } };
   const client = createManagedDesktopClient({
     store: { read: async () => saved, write: async value => { saved = structuredClone(value); } },
@@ -108,7 +108,7 @@ if (process.versions.electron && process.argv.includes(flag)) {
     const open = async (local, path = url) => {
       const window = new BrowserWindow({ show: false, width: 820, height: 760, webPreferences: {
         preload: join(root, "electron/preload.cjs"), contextIsolation: true, sandbox: true, nodeIntegration: false,
-        additionalArguments: [`--dusk-local-origin=${local ? localOrigin : "https://remote-fixture.invalid"}`, "--dusk-company-desktop=1"],
+        additionalArguments: [`--madani-local-origin=${local ? localOrigin : "https://remote-fixture.invalid"}`, "--madani-company-desktop=1"],
       } });
       await window.loadURL(path); return window;
     };
@@ -145,10 +145,10 @@ if (process.versions.electron && process.argv.includes(flag)) {
     await until(() => browserRequests.length === 2, "second browser request"); approved = true;
     await until(() => evaluate("document.body.textContent.includes('Fixture Studio')"), "approved company connected");
     assert.equal(await evaluate("document.body.textContent.includes('Approved models: 2')"), true);
-    assert.equal(await evaluate("JSON.stringify(window.duskDesktop.organization).includes('token')"), false);
-    assert.equal(await evaluate("window.duskDesktop.organization.state().then(s => /om[dg]_/.test(JSON.stringify(s)))"), false);
-    assert.equal(await evaluate("typeof window.duskDesktop.organization.connection"), "undefined");
-    assert.equal(await evaluate("window.duskDesktop.getCapabilities().then(value => value.dictation.available)"), process.platform === "darwin", "organisation sign-in does not turn the local renderer into a remote workspace");
+    assert.equal(await evaluate("JSON.stringify(window.madaniDesktop.organization).includes('token')"), false);
+    assert.equal(await evaluate("window.madaniDesktop.organization.state().then(s => /om[dg]_/.test(JSON.stringify(s)))"), false);
+    assert.equal(await evaluate("typeof window.madaniDesktop.organization.connection"), "undefined");
+    assert.equal(await evaluate("window.madaniDesktop.getCapabilities().then(value => value.dictation.available)"), process.platform === "darwin", "organisation sign-in does not turn the local renderer into a remote workspace");
     assert.ok(grantsApplied > 0);
     await until(() => evaluate("document.querySelector('img[alt=\"Organization logo\"]')?.naturalWidth > 0"), "organization logo decoded");
     await win.loadURL(`${url}?branding=1`);
@@ -187,7 +187,7 @@ if (process.versions.electron && process.argv.includes(flag)) {
     await until(() => client.state().status === "signed-out", "revoked grant cleared");
 
     const remote = await open(false);
-    assert.equal(await remote.webContents.executeJavaScript("typeof window.duskDesktop.organization"), "undefined");
+    assert.equal(await remote.webContents.executeJavaScript("typeof window.madaniDesktop.organization"), "undefined");
     assert.equal(await remote.webContents.executeJavaScript("typeof require"), "undefined");
     remote.destroy();
 
@@ -196,7 +196,7 @@ if (process.versions.electron && process.argv.includes(flag)) {
     const beginsBeforeApp = begins;
     win.setSize(1180, 850);
     await win.loadURL(`${url}?app=1`);
-    await until(() => evaluate("document.body.textContent.includes('Meet dusk bot')"), "normal optional welcome flow");
+    await until(() => evaluate("document.body.textContent.includes('Meet madani bot')"), "normal optional welcome flow");
     assert.equal(await evaluate(`Boolean(${button("Sign in with your organization")})`), false);
     assert.equal(begins, beginsBeforeApp);
     win.webContents.send("app:open-settings");
@@ -228,7 +228,7 @@ if (process.versions.electron && process.argv.includes(flag)) {
     });
     await win.loadURL(activeEnvironment(readEnvironments()).origin);
     await until(() => evaluate("document.body.textContent.includes('Old hosted workspace')"), "saved old server restored");
-    assert.equal(await evaluate("typeof window.duskDesktop.organization"), "undefined", "old cloud renderer has no organisation authority");
+    assert.equal(await evaluate("typeof window.madaniDesktop.organization"), "undefined", "old cloud renderer has no organisation authority");
     const beforeCancel = readFileSync(environmentsFile, "utf8");
     await entry.request();
     assert.equal(readFileSync(environmentsFile, "utf8"), beforeCancel, "cancel preserves the exact saved selection");
@@ -253,8 +253,8 @@ if (process.versions.electron && process.argv.includes(flag)) {
     const previousWindow = win;
     win = await open(true, activeEnvironment(readEnvironments())?.origin ?? `${url}?app=1`);
     previousWindow.destroy();
-    await until(() => evaluate("document.body.textContent.includes('Meet dusk bot')"), "local choice survives recreated renderer");
-    assert.equal(await evaluate("typeof window.duskDesktop.organization"), "object");
+    await until(() => evaluate("document.body.textContent.includes('Meet madani bot')"), "local choice survives recreated renderer");
+    assert.equal(await evaluate("typeof window.madaniDesktop.organization"), "object");
     assert.equal(new URL(win.webContents.getURL()).origin, localOrigin);
     // Simulate the already-confirmed companion disconnect's one-bit restart
     // intent; only the actual local panel's acknowledgement consumes it.
@@ -275,17 +275,17 @@ if (process.versions.electron && process.argv.includes(flag)) {
   const { createServer } = await import("vite");
   const { default: react } = await import("@vitejs/plugin-react");
   const { default: tailwindcss } = await import("@tailwindcss/vite");
-  const { launchVerificationServer } = await import("./control-dusk.ts");
+  const { launchVerificationServer } = await import("./control-madani.ts");
   const fixture = await launchVerificationServer();
-  const output = mkdtempSync(join(tmpdir(), "dusk-organization-ui-"));
+  const output = mkdtempSync(join(tmpdir(), "madani-organization-ui-"));
   for (const name of ["home", "user-data"]) mkdirSync(join(output, name));
-  const ui = await createServer({ configFile: false, root, cacheDir: `${root}/.dusk-scratch/vite-organization-settings`, resolve: { alias: { "@": join(root, "src") } },
+  const ui = await createServer({ configFile: false, root, cacheDir: `${root}/.madani-scratch/vite-organization-settings`, resolve: { alias: { "@": join(root, "src") } },
     define: { __APP_VERSION__: JSON.stringify("fixture") },
     server: { host: "127.0.0.1", port: 0, proxy: { "/api": { target: fixture.info.url } } },
     plugins: [react(), tailwindcss(), {
       name: "organization-fixture",
       resolveId(id) { if (id === "virtual:organization-fixture") return `\0${id}`; },
-      load(id) { if (id === "\0virtual:organization-fixture") return `import React from 'react'; import { createRoot } from 'react-dom/client'; import { OrganizationSettings } from '/src/components/OrganizationSettings.tsx'; import { setLocale } from '/src/lib/i18n.ts'; import { StoreProvider } from '/src/state/store.tsx'; import { BotProfileAvatarCard } from '/src/components/BotProfileAvatarCard.tsx'; import { OrganizationIdentity } from '/src/components/OrganizationIdentity.tsx'; import '/src/styles.css'; setLocale('en'); localStorage.setItem('dusk-analytics-opt-out','1'); const root = createRoot(document.getElementById('root')); if(location.search.includes('app=1')) { document.body.classList.remove('p-4'); import('/src/App.tsx').then(({default: App}) => root.render(React.createElement(App))); } else if(location.search.includes('branding=1')) { function Fixture() { const [bot, setBot] = React.useState({ id:'fixture-avatar', name:'Studio bot', color:'green', mascotBody:'cursor', avatarCrop:'mascot', messages:[] }); window.fixtureBot = bot; return React.createElement(StoreProvider, null, React.createElement('main', {className:'mx-auto flex max-w-xl flex-col gap-4'}, React.createElement(OrganizationIdentity), React.createElement(OrganizationSettings), React.createElement(BotProfileAvatarCard, {bot, activeState:'idle', mascotMotion:null, onPatch: patch => setBot(b => ({...b,...patch}))}))); } root.render(React.createElement(Fixture)); } else root.render(React.createElement('main',{className:'mx-auto flex max-w-xl flex-col gap-4'},React.createElement(OrganizationSettings)));`; },
+      load(id) { if (id === "\0virtual:organization-fixture") return `import React from 'react'; import { createRoot } from 'react-dom/client'; import { OrganizationSettings } from '/src/components/OrganizationSettings.tsx'; import { setLocale } from '/src/lib/i18n.ts'; import { StoreProvider } from '/src/state/store.tsx'; import { BotProfileAvatarCard } from '/src/components/BotProfileAvatarCard.tsx'; import { OrganizationIdentity } from '/src/components/OrganizationIdentity.tsx'; import '/src/styles.css'; setLocale('en'); localStorage.setItem('madani-analytics-opt-out','1'); const root = createRoot(document.getElementById('root')); if(location.search.includes('app=1')) { document.body.classList.remove('p-4'); import('/src/App.tsx').then(({default: App}) => root.render(React.createElement(App))); } else if(location.search.includes('branding=1')) { function Fixture() { const [bot, setBot] = React.useState({ id:'fixture-avatar', name:'Studio bot', color:'green', mascotBody:'cursor', avatarCrop:'mascot', messages:[] }); window.fixtureBot = bot; return React.createElement(StoreProvider, null, React.createElement('main', {className:'mx-auto flex max-w-xl flex-col gap-4'}, React.createElement(OrganizationIdentity), React.createElement(OrganizationSettings), React.createElement(BotProfileAvatarCard, {bot, activeState:'idle', mascotMotion:null, onPatch: patch => setBot(b => ({...b,...patch}))}))); } root.render(React.createElement(Fixture)); } else root.render(React.createElement('main',{className:'mx-auto flex max-w-xl flex-col gap-4'},React.createElement(OrganizationSettings)));`; },
       configureServer(server) { server.middlewares.use((req, res, next) => {
         if (req.url?.split("?")[0] !== "/__organization.html") return next();
         void server.transformIndexHtml(req.url, '<html><head><meta name="viewport" content="width=device-width, initial-scale=1"><title>Isolated Organisation Settings</title></head><body class="bg-app p-4"><div id="root"></div><script type="module" src="/@id/virtual:organization-fixture"></script></body></html>')

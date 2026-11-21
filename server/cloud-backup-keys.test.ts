@@ -1,5 +1,5 @@
 // A managed Cloud's volume backup holds every key its sealed records need: restored into a fresh home, each Vault item
-// opens. The volume is laid out as a managed home runs it (HOME=/data, the data folder /data/.duskbot, no XDG config
+// opens. The volume is laid out as a managed home runs it (HOME=/data, the data folder /data/.madanibot, no XDG config
 // folder), snapshotted with the snapshot's own exclusions (PLATFORM_ENTRIES) and restored as omb-home restore does it.
 import { execFileSync } from "node:child_process";
 import { existsSync, lstatSync, mkdirSync, mkdtempSync, readdirSync, renameSync, rmSync, writeFileSync } from "node:fs";
@@ -12,13 +12,13 @@ import { serverEnvironmentAllowed } from "./cloud-home-start.ts";
 import { LoginStore } from "./login-store.ts";
 import { fileSavedSecretsKey, SavedSecretStore } from "./saved-secrets.ts";
 
-const KEPT_ENV = ["HOME", "XDG_CONFIG_HOME", "DUSK_SAVED_SECRETS_KEY_FILE"] as const;
+const KEPT_ENV = ["HOME", "XDG_CONFIG_HOME", "MADANI_SAVED_SECRETS_KEY_FILE"] as const;
 let saved: Partial<Record<(typeof KEPT_ENV)[number], string | undefined>> = {};
 let root = "";
 
 beforeEach(() => {
   saved = Object.fromEntries(KEPT_ENV.map((name) => [name, process.env[name]]));
-  root = mkdtempSync(join(tmpdir(), "dusk-backup-keys-"));
+  root = mkdtempSync(join(tmpdir(), "madani-backup-keys-"));
 });
 afterEach(() => {
   for (const name of KEPT_ENV) { if (saved[name] === undefined) delete process.env[name]; else process.env[name] = saved[name]; }
@@ -43,14 +43,14 @@ function files(dir: string): Record<string, number> {
 it("restores a managed Cloud's backup into a fresh home that opens every Vault item, its keys owner-only", () => {
   // the server's environment on a managed home never takes another config folder or key file
   expect(serverEnvironmentAllowed("XDG_CONFIG_HOME")).toBe(false);
-  expect(serverEnvironmentAllowed("DUSK_SAVED_SECRETS_KEY_FILE")).toBe(false);
+  expect(serverEnvironmentAllowed("MADANI_SAVED_SECRETS_KEY_FILE")).toBe(false);
 
   const volume = join(root, "data");
   const dataDir = join(volume, CLOUD_HOME.dataName);
   mkdirSync(dataDir, { recursive: true, mode: 0o700 });
   process.env.HOME = volume;
   delete process.env.XDG_CONFIG_HOME;
-  delete process.env.DUSK_SAVED_SECRETS_KEY_FILE;
+  delete process.env.MADANI_SAVED_SECRETS_KEY_FILE;
   // the platform's own folders, which a backup leaves out
   mkdirSync(join(volume, "config"));
   writeFileSync(join(volume, "config", "platform.json"), "{}");

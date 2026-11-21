@@ -541,7 +541,7 @@ function MailTile({ mail, brevo, now }: { mail: OpsSpend["mail"]; brevo: OpsSpen
 }
 const levelOf = (used: number, limit: number | null, projected: number | null): OpsLevel => !limit ? "unknown" : used >= limit ? "bad" : used >= limit * 0.8 || (projected ?? 0) >= limit ? "watch" : "ok";
 
-/** the month's usage and what it costs, one tile each: dusk cloud, emails, each node's traffic, cloudflare */
+/** the month's usage and what it costs, one tile each: madani cloud, emails, each node's traffic, cloudflare */
 function Glance({ data, relays }: { data: OpsAnswer | null; relays: OpsRelayCard[] | null }) {
   const spend = data?.spend, box = spend?.instabox.totals, brevo = spend?.brevo ?? null, workers = spend?.workers ?? null;
   const workersLine = spend?.lines.find((line) => line.provider === "workers");
@@ -550,7 +550,7 @@ function Glance({ data, relays }: { data: OpsAnswer | null; relays: OpsRelayCard
   const dash = <span className="text-ink-4">-</span>;
   return (
     <div className="grid grid-cols-5 gap-4 max-xl:grid-cols-3 max-md:grid-cols-2 max-sm:grid-cols-1">
-      <Tile id="ops-tile-cloud" title="dusk cloud" big={box ? `${n(Math.round(box.awakeHours))} h` : dash}
+      <Tile id="ops-tile-cloud" title="madani cloud" big={box ? `${n(Math.round(box.awakeHours))} h` : dash}
         sub={box ? <>machine-hours this month · instabox <span className="text-money">{usd(box.costCents)}</span>, <span className="text-money">{usd(box.projectedCents)}</span> at this pace</> : "not reported yet"} />
       <MailTile mail={spend?.mail ?? null} brevo={brevo} now={data?.now ?? 0} />
       {links.map((card) => {

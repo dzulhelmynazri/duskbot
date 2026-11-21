@@ -131,7 +131,7 @@ describe("Codex app-server pool", () => {
     pool.release(pool.adopt("key", asChild(child)));
     child.say({ jsonrpc: "2.0", id: 7, method: "item/commandExecution/requestApproval", params: {} });
     await flush();
-    expect(child.written).toEqual([{ jsonrpc: "2.0", id: 7, error: { code: -32603, message: "No dusk bot turn is running on this thread." } }]);
+    expect(child.written).toEqual([{ jsonrpc: "2.0", id: 7, error: { code: -32603, message: "No madani bot turn is running on this thread." } }]);
   });
 
   it("drops an app-server that exits while idle", () => {
@@ -174,6 +174,6 @@ describe("Codex warm launch key and idle time", () => {
 
   it("keeps an idle app-server five minutes unless the person configured another time", () => {
     expect(codexIdleMs({})).toBeLessThanOrEqual(CODEX_IDLE_MS);
-    expect(codexIdleMs({ DUSK_CODEX_SESSION_IDLE_MS: "900000" })).toBe(900_000);
+    expect(codexIdleMs({ MADANI_CODEX_SESSION_IDLE_MS: "900000" })).toBe(900_000);
   });
 });

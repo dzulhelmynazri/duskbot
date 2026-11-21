@@ -34,7 +34,7 @@ describe("claimsUnmadeChange", () => {
   it.each([
     "I've sent the email to your landlord.",
     "Your post is now live.",
-    "The folder has been renamed to dusk-bot.",
+    "The folder has been renamed to madani-bot.",
     "Posted.",
     "I cancelled your daily morning summary.",
     "Your daily summary has been successfully cancelled.",

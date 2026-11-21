@@ -112,9 +112,9 @@ describe("bounded growth, nothing lost", () => {
 });
 
 describe("near-duplicate pairs by meaning", () => {
-  const dir = process.env.DUSK_MODEL_DIR;
-  // Runs only where the model files were placed (DUSK_MODEL_DIR), so CI never downloads them.
-  it.skipIf(!dir || !existsSync(join(dir, "model_quantized.onnx")) || process.env.DUSK_MEMORY_EMBED !== "1")("pair a rewording, never two different numbers", async () => {
+  const dir = process.env.MADANI_MODEL_DIR;
+  // Runs only where the model files were placed (MADANI_MODEL_DIR), so CI never downloads them.
+  it.skipIf(!dir || !existsSync(join(dir, "model_quantized.onnx")) || process.env.MADANI_MEMORY_EMBED !== "1")("pair a rewording, never two different numbers", async () => {
     const { warmEmbedder, embedderSettled } = await import("./memory-embed.ts");
     warmEmbedder();
     expect(await embedderSettled()).toBe(true);

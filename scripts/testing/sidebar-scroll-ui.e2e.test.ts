@@ -7,15 +7,15 @@ import { fileURLToPath } from "node:url";
 import { expect, it } from "vitest";
 import { resolveAgentBrowserBinary } from "../../server/browser-engine.ts";
 import { waitForExit } from "../../server/testing/cleanup.ts";
-import { runControlDusk } from "../control-dusk.ts";
-import { UI_TOOLS_DIR } from "./control-dusk-ui.ts";
+import { runControlMadani } from "../control-madani.ts";
+import { UI_TOOLS_DIR } from "./control-madani-ui.ts";
 import { clickByName, settled } from "./grok-nav.ts";
 import { fixtureApi } from "./preview-fixture.ts";
 
 const ROOT = fileURLToPath(new URL("../..", import.meta.url));
 const binary = resolveAgentBrowserBinary({ dataDir: UI_TOOLS_DIR, env: process.env });
-const enabled = process.env.DUSK_UI_E2E === "1" || Boolean(binary);
-if (!enabled) console.info("skipping sidebar scroll UI e2e: set DUSK_UI_E2E=1 to install the pinned browser");
+const enabled = process.env.MADANI_UI_E2E === "1" || Boolean(binary);
+if (!enabled) console.info("skipping sidebar scroll UI e2e: set MADANI_UI_E2E=1 to install the pinned browser");
 
 type WireBot = { id: string; name: string; threadId: string; mainThreadId?: string; tasks?: Array<{ threadId: string; unread?: boolean }> };
 
@@ -24,7 +24,7 @@ type WireBot = { id: string; name: string; threadId: string; mainThreadId?: stri
   let info: { ui: string; url: string } | undefined;
   try {
     let stdout = "", stderr = "";
-    child = spawn(process.execPath, ["--experimental-strip-types", join(ROOT, "scripts/control-dusk.ts"), "ui", "launch"], {
+    child = spawn(process.execPath, ["--experimental-strip-types", join(ROOT, "scripts/control-madani.ts"), "ui", "launch"], {
       cwd: ROOT, env: process.env, stdio: ["ignore", "pipe", "pipe"],
     });
     child.stdout!.on("data", (chunk: Buffer) => { stdout += String(chunk); });
@@ -34,7 +34,7 @@ type WireBot = { id: string; name: string; threadId: string; mainThreadId?: stri
       if (child!.exitCode !== null || child!.signalCode !== null) throw new Error(`UI launcher exited: ${stderr}`);
       try { info = JSON.parse(stdout); return Boolean(info?.ui); } catch { return false; }
     }, { timeout: binary ? 180_000 : 600_000, interval: 250 }).toBe(true);
-    const ui = (verb: string, ...args: string[]) => runControlDusk(["ui", verb, "--ui", info!.ui, ...args]) as Promise<Record<string, any>>;
+    const ui = (verb: string, ...args: string[]) => runControlMadani(["ui", verb, "--ui", info!.ui, ...args]) as Promise<Record<string, any>>;
     const evaluate = async (js: string) => (await ui("eval", "--js", js)).result;
     const api = fixtureApi(info!.url);
 
@@ -57,7 +57,7 @@ type WireBot = { id: string; name: string; threadId: string; mainThreadId?: stri
     await clickByName(ui, /^Open Pepper's profile/, "button");
     await expect.poll(() => evaluate("Boolean(document.getElementById('bot-panel'))"), { timeout: 15_000 }).toBe(true);
     // the person's own order keeps these rows far down; by recent activity the unread ones would rise to the top
-    await evaluate(`localStorage.setItem("duskbot.sidebarBotOrder", "custom"); true`);
+    await evaluate(`localStorage.setItem("madanibot.sidebarBotOrder", "custom"); true`);
     await evaluate("location.reload(); true");
     await expect.poll(() => evaluate("document.querySelectorAll('[data-sidebar-bot-row]').length"), { timeout: 30_000 }).toBeGreaterThanOrEqual(25);
     await expect.poll(() => evaluate("Boolean(document.getElementById('bot-panel'))"), { timeout: 15_000 }).toBe(true);

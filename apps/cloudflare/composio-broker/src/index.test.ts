@@ -30,7 +30,7 @@ function session(id: string, userId: string, configured = true) {
   };
 }
 
-function testEnv(fetchCalls: Array<{ url: string; init?: RequestInit }>, userId = "dusk_stable") {
+function testEnv(fetchCalls: Array<{ url: string; init?: RequestInit }>, userId = "madani_stable") {
   const dbRuns: Array<{ sql: string; values: unknown[] }> = [];
   const env = {
     COMPOSIO_API_BASE: "https://backend.composio.dev/api/v3.1",
@@ -96,7 +96,7 @@ describe("connected-apps broker boundaries", () => {
   });
 
   it("hashes installation tokens before storage", async () => {
-    await expect(sha256("duskbot")).resolves.toBe("0eb17dc3de1e847704eac2dc493d263388e6071adc79a99359af8521ae882e5c");
+    await expect(sha256("madanibot")).resolves.toBe("0eb17dc3de1e847704eac2dc493d263388e6071adc79a99359af8521ae882e5c");
   });
 
   it("creates Sessions with explicit multi-account selection", async () => {
@@ -104,15 +104,15 @@ describe("connected-apps broker boundaries", () => {
     const { env } = testEnv(fetchCalls);
     vi.stubGlobal("fetch", async (input: string | URL | Request, init?: RequestInit) => {
       fetchCalls.push({ url: String(input), init });
-      return Response.json(session("trs_new", "dusk_user"), { status: 201 });
+      return Response.json(session("trs_new", "madani_user"), { status: 201 });
     });
 
-    await expect(createSession(env as never, "dusk_user")).resolves.toMatchObject({
+    await expect(createSession(env as never, "madani_user")).resolves.toMatchObject({
       sessionId: "trs_new",
       multiAccountConfigured: true,
     });
     expect(JSON.parse(String(fetchCalls[0].init?.body))).toMatchObject({
-      user_id: "dusk_user",
+      user_id: "madani_user",
       multi_account: multiAccount,
     });
   });
@@ -123,18 +123,18 @@ describe("connected-apps broker boundaries", () => {
     vi.stubGlobal("fetch", async (input: string | URL | Request, init?: RequestInit) => {
       const url = String(input);
       fetchCalls.push({ url, init });
-      if (init?.method === "POST") return Response.json(session("trs_new", "dusk_stable"), { status: 201 });
-      return Response.json(session("trs_legacy", "dusk_stable", false));
+      if (init?.method === "POST") return Response.json(session("trs_new", "madani_stable"), { status: 201 });
+      return Response.json(session("trs_legacy", "madani_stable", false));
     });
 
     await expect(ensureSession({
       id: "install-1",
-      composio_user_id: "dusk_stable",
+      composio_user_id: "madani_stable",
       session_id: "trs_legacy",
       disabled_at: null,
     }, env as never, ctx as never)).resolves.toMatchObject({ sessionId: "trs_new", multiAccountConfigured: true });
     const creation = fetchCalls.find((call) => call.init?.method === "POST");
-    expect(JSON.parse(String(creation?.init?.body))).toMatchObject({ user_id: "dusk_stable", multi_account: multiAccount });
+    expect(JSON.parse(String(creation?.init?.body))).toMatchObject({ user_id: "madani_stable", multi_account: multiAccount });
     expect(dbRuns.some((run) => run.values[0] === "trs_new" && run.values[2] === "install-1")).toBe(true);
   });
 
@@ -174,7 +174,7 @@ describe("connected-apps broker boundaries", () => {
       if (url.endsWith("/tool_router/session/trs_multi/link") && init?.method === "POST") {
         return Response.json({ redirect_url: "https://connect.composio.dev/link/gmail" }, { status: 201 });
       }
-      if (url.includes("/tool_router/session/trs_multi")) return Response.json(session("trs_multi", "dusk_stable"));
+      if (url.includes("/tool_router/session/trs_multi")) return Response.json(session("trs_multi", "madani_stable"));
       if (url.includes("/connected_accounts?") && !init?.method) {
         if (connectedAccountsUnavailable) {
           return Response.json({ error: "connected-account read not granted" }, { status: 403 });
@@ -193,7 +193,7 @@ describe("connected-apps broker boundaries", () => {
     });
     const installation = {
       id: "install-1",
-      composio_user_id: "dusk_stable",
+      composio_user_id: "madani_stable",
       session_id: "trs_multi",
       disabled_at: null,
     };
@@ -294,18 +294,18 @@ describe("connected-apps broker boundaries", () => {
     expect(JSON.parse(String(linkCall?.init?.body))).toEqual({ toolkit: "gmail", alias: "second" });
 
     const state = "s".repeat(40);
-    const returning = await authorize("gmail", { alias: "third", callbackUrl: `https://dusk.bot/connectors?connect=${state}` }, installation, env as never, ctx as never);
+    const returning = await authorize("gmail", { alias: "third", callbackUrl: `https://madani.bot/connectors?connect=${state}` }, installation, env as never, ctx as never);
     await expect(returning.json()).resolves.toEqual({ url: "https://connect.composio.dev/link/gmail", returnsHere: true });
     expect(JSON.parse(String(fetchCalls.filter((call) => call.url.endsWith("/tool_router/session/trs_multi/link")).at(-1)?.init?.body)))
-      .toEqual({ toolkit: "gmail", alias: "third", callback_url: `https://dusk.bot/connectors?connect=${state}` });
+      .toEqual({ toolkit: "gmail", alias: "third", callback_url: `https://madani.bot/connectors?connect=${state}` });
   });
 
-  it("sends a sign-in back only to dusk bot's own apps page", () => {
+  it("sends a sign-in back only to madani bot's own apps page", () => {
     const state = "a".repeat(40);
-    expect(brokerCallback(`https://dusk.bot/connectors?connect=${state}`)).toBe(`https://dusk.bot/connectors?connect=${state}`);
-    expect(brokerCallback(`https://preview.dusk.bot/account/connectors?connect=${state}`)).toBe(`https://preview.dusk.bot/account/connectors?connect=${state}`);
-    for (const other of [`https://evil.example/connectors?connect=${state}`, `https://dusk.bot.evil.example/connectors?connect=${state}`,
-      `http://dusk.bot/connectors?connect=${state}`, `https://dusk.bot/connectors?connect=${state}&next=https://evil.example`, `https://dusk.bot/connectors?connect=short`, undefined]) {
+    expect(brokerCallback(`https://madani.bot/connectors?connect=${state}`)).toBe(`https://madani.bot/connectors?connect=${state}`);
+    expect(brokerCallback(`https://preview.madani.bot/account/connectors?connect=${state}`)).toBe(`https://preview.madani.bot/account/connectors?connect=${state}`);
+    for (const other of [`https://evil.example/connectors?connect=${state}`, `https://madani.bot.evil.example/connectors?connect=${state}`,
+      `http://madani.bot/connectors?connect=${state}`, `https://madani.bot/connectors?connect=${state}&next=https://evil.example`, `https://madani.bot/connectors?connect=short`, undefined]) {
       expect(brokerCallback(other)).toBeUndefined();
     }
   });
@@ -345,7 +345,7 @@ describe("connected-apps broker boundaries", () => {
         const response = await fixture.authorize();
         expect(response.status, status).toBe(200);
         await expect(response.json()).resolves.toEqual({ url: "https://connect.composio.dev/link/gmail" });
-        expect(fixture.links().at(-1)).toEqual({ toolkit: "gmail", alias: expect.stringMatching(/^dusk-retry-[0-9a-f-]{36}$/) });
+        expect(fixture.links().at(-1)).toEqual({ toolkit: "gmail", alias: expect.stringMatching(/^madani-retry-[0-9a-f-]{36}$/) });
       }
     }
     expect(new Set(fixture.links().map((body) => body.alias)).size).toBe(14);
@@ -470,7 +470,7 @@ describe("connected-apps broker boundaries", () => {
                 run: async () => {},
                 first: async () => (
                   sql.includes("FROM installations")
-                    ? { id: "install-1", composio_user_id: "dusk_user", session_id: "trs_test", disabled_at: null }
+                    ? { id: "install-1", composio_user_id: "madani_user", session_id: "trs_test", disabled_at: null }
                     : null
                 ),
               };
@@ -485,7 +485,7 @@ describe("connected-apps broker boundaries", () => {
       if (url.endsWith("/link")) return Response.json({ redirect_url: "https://connect.composio.dev/link/_1password" });
       if (url.includes("/connected_accounts")) return Response.json({ items: [] });
       if (url.includes("/toolkits")) return Response.json({ items: [] });
-      return Response.json(session("trs_test", "dusk_user"));
+      return Response.json(session("trs_test", "madani_user"));
     });
 
     const response = await worker.fetch(
@@ -513,7 +513,7 @@ describe("MCP relay Session reuse", () => {
    *  writes, and a Composio stub that logs each upstream call in order. */
   function relayHarness(sessionId: string, lastSeenAt = 0) {
     const token = "b".repeat(64);
-    const row = { id: `install-${sessionId}`, composio_user_id: "dusk_relay", session_id: sessionId, disabled_at: null, last_seen_at: lastSeenAt };
+    const row = { id: `install-${sessionId}`, composio_user_id: "madani_relay", session_id: sessionId, disabled_at: null, last_seen_at: lastSeenAt };
     const calls: string[] = [];
     const mcpBodies: string[] = [];
     const lastSeenWrites: number[] = [];
@@ -565,9 +565,9 @@ describe("MCP relay Session reuse", () => {
       calls.push(`${method} ${path}`);
       const lookup = path.match(/^\/tool_router\/session\/([^/]+)$/)?.[1];
       if (method === "GET" && lookup) {
-        return gone.has(lookup) ? Response.json({ error: "not found" }, { status: 404 }) : Response.json(session(lookup, "dusk_relay"));
+        return gone.has(lookup) ? Response.json({ error: "not found" }, { status: 404 }) : Response.json(session(lookup, "madani_relay"));
       }
-      if (method === "POST" && path === "/tool_router/session") return Response.json(session(`${sessionId}_new`, "dusk_relay"), { status: 201 });
+      if (method === "POST" && path === "/tool_router/session") return Response.json(session(`${sessionId}_new`, "madani_relay"), { status: 201 });
       if (path.endsWith("/link")) return Response.json({ redirect_url: "https://connect.composio.dev/link/gmail" });
       if (path.includes("/toolkits")) return Response.json({ items: [{ slug: "gmail", connected_account: { id: "ca_relay", status: "ACTIVE" } }] });
       if (path.includes("/connected_accounts")) return Response.json({ items: [{ id: "ca_relay", toolkit: { slug: "gmail" }, status: "ACTIVE" }] });
@@ -738,7 +738,7 @@ describe("project auth configs", () => {
       echoAuthConfigs: true,
       creations: () => fetchCalls.filter((call) => call.init?.method === "POST").map((call) => JSON.parse(String(call.init?.body)) as Record<string, unknown>),
       authConfigReads: () => fetchCalls.filter((call) => call.url.includes("/auth_configs")),
-      install: (sessionId: string | null) => ({ id: "install-1", composio_user_id: "dusk_stable", session_id: sessionId, disabled_at: null }),
+      install: (sessionId: string | null) => ({ id: "install-1", composio_user_id: "madani_stable", session_id: sessionId, disabled_at: null }),
     };
     vi.stubGlobal("fetch", async (input: string | URL | Request, init?: RequestInit) => {
       const url = String(input);
@@ -788,7 +788,7 @@ describe("project auth configs", () => {
     });
     expect(harness.authConfigReads().map((call) => new URL(call.url).searchParams.get("is_composio_managed"))).toEqual(["false", "false"]);
     expect(harness.creations()).toEqual([expect.objectContaining({
-      user_id: "dusk_stable",
+      user_id: "madani_stable",
       multi_account: multiAccount,
       auth_configs: { highlevel_location: "ac_new", twitter: "ac_x" },
     })]);
@@ -799,12 +799,12 @@ describe("project auth configs", () => {
   it("recreates a Session that lacks the project's auth configs once, keeping the Composio user", async () => {
     const { ensureSession } = await freshBroker();
     const harness = projectHarness(() => Response.json({ items: [highlevel] }));
-    harness.sessions.set("trs_old", session("trs_old", "dusk_stable"));
+    harness.sessions.set("trs_old", session("trs_old", "madani_stable"));
     harness.echoAuthConfigs = false;
 
     const upgraded = await ensureSession(harness.install("trs_old"), harness.env as never, harness.ctx as never);
     expect(upgraded.sessionId).toBe("trs_new_1");
-    expect(harness.creations()).toEqual([expect.objectContaining({ user_id: "dusk_stable", auth_configs: { highlevel_location: "ac_new" } })]);
+    expect(harness.creations()).toEqual([expect.objectContaining({ user_id: "madani_stable", auth_configs: { highlevel_location: "ac_new" } })]);
     expect(harness.dbRuns.filter((run) => run.sql.includes("SET session_id")).map((run) => [run.values[0], run.values[2]])).toEqual([["trs_new_1", "install-1"]]);
 
     // Composio left auth_configs out of the echo: the upgrade is not retried.
@@ -812,7 +812,7 @@ describe("project auth configs", () => {
     expect(harness.creations()).toHaveLength(1);
 
     // A Session that echoes the config (in any slug case) is reused as is.
-    harness.sessions.set("trs_covered", { ...session("trs_covered", "dusk_stable"), config: { user_id: "dusk_stable", multi_account: multiAccount, auth_configs: { HighLevel_Location: "ac_new" } } });
+    harness.sessions.set("trs_covered", { ...session("trs_covered", "madani_stable"), config: { user_id: "madani_stable", multi_account: multiAccount, auth_configs: { HighLevel_Location: "ac_new" } } });
     await expect(ensureSession(harness.install("trs_covered"), harness.env as never, harness.ctx as never)).resolves.toMatchObject({ sessionId: "trs_covered" });
     expect(harness.creations()).toHaveLength(1);
     expect(harness.authConfigReads()).toHaveLength(1);
@@ -822,7 +822,7 @@ describe("project auth configs", () => {
     const { ensureSession } = await freshBroker();
     const errors = vi.spyOn(console, "error").mockImplementation(() => {});
     const harness = projectHarness(() => Response.json({ error: "auth configs unavailable" }, { status: 500 }));
-    harness.sessions.set("trs_ok", session("trs_ok", "dusk_stable"));
+    harness.sessions.set("trs_ok", session("trs_ok", "madani_stable"));
 
     await expect(ensureSession(harness.install("trs_ok"), harness.env as never, harness.ctx as never)).resolves.toMatchObject({ sessionId: "trs_ok" });
     expect(harness.creations()).toEqual([]);
@@ -868,7 +868,7 @@ describe("project auth configs", () => {
     vi.setSystemTime(new Date("2026-10-15T12:11:02Z"));
     await expect(verify("trs_new_1")).resolves.toMatchObject({ sessionId: "trs_new_2", authConfigs: { highlevel_location: "ac_new", twitter: "ac_x" } });
     expect(harness.authConfigReads()).toHaveLength(3);
-    expect(harness.creations().at(-1)).toEqual(expect.objectContaining({ user_id: "dusk_stable", auth_configs: { highlevel_location: "ac_new", twitter: "ac_x" } }));
+    expect(harness.creations().at(-1)).toEqual(expect.objectContaining({ user_id: "madani_stable", auth_configs: { highlevel_location: "ac_new", twitter: "ac_x" } }));
     errors.mockRestore();
   });
 });

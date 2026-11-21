@@ -1,8 +1,8 @@
 // The environment a boxed process gets: an allow-list, never the server's whole environment. The drivers already strip
-// the workspace credentials and every DUSK_CLOUD_ setting before a spawn (server/config.ts stripWorkspaceCredentialEnv);
+// the workspace credentials and every MADANI_CLOUD_ setting before a spawn (server/config.ts stripWorkspaceCredentialEnv);
 // this is the second gate, applied at the box boundary, so a name a driver forgot never reaches a bot's shell.
 
-/** Names a bot's engine, its tools and the proxies dusk bot starts inside the box may read. */
+/** Names a bot's engine, its tools and the proxies madani bot starts inside the box may read. */
 export const BOX_ENV_NAMES: ReadonlySet<string> = new Set([
   "PATH", "HOME", "USER", "LOGNAME", "SHELL", "HOSTNAME", "PWD",
   "LANG", "LANGUAGE", "TZ", "TERM", "COLORTERM", "TMPDIR", "NO_COLOR", "FORCE_COLOR", "CI", "DEBUG",
@@ -15,7 +15,7 @@ export const BOX_ENV_NAMES: ReadonlySet<string> = new Set([
 
 /** Prefixes of the engines' own settings and keys (T0b replaces the keys with per-turn broker tokens). */
 export const BOX_ENV_PREFIXES: readonly string[] = [
-  "LC_", "DUSK_", "DUSK_", "NPM_CONFIG_", "npm_config_",
+  "LC_", "MADANI_", "MADANI_", "NPM_CONFIG_", "npm_config_",
   "ANTHROPIC_", "CLAUDE_", "CODEX_", "OPENAI_", "OPENCODE_", "OPENROUTER_", "GEMINI_", "GOOGLE_", "GROK_", "XAI_",
   "MISTRAL_", "CEREBRAS_", "GROQ_", "GREENFERENCE_", "META_", "MINIMAX_", "KIMI_", "MOONSHOT_", "CURSOR_", "FACTORY_", "CLINE_", "HERMES_",
   "MUSE_", "PI_", "DWEB_", "UNSLOTH_", "FAKE_CLAUDE_", "MCP_", "ANTIGRAVITY_", "AGY_",
@@ -23,17 +23,17 @@ export const BOX_ENV_PREFIXES: readonly string[] = [
 
 /** Never, whatever the allow-list says: the control plane's settings and secrets, and the server's own placement. */
 export const BOX_ENV_NEVER: ReadonlySet<string> = new Set([
-  "DUSK_LICENSE_KEY", "DUSK_INSTALLATION_CREDENTIAL", "DUSK_LOOPBACK_TRUST", "DUSK_CLOUD_SECRETS_FD",
-  "DUSK_DATA_DIR", "DUSK_STATIC_DIR", "DUSK_DUCKDB_DIR", "DUSK_PORT", "DUSK_WEBHOOK_PORT",
+  "MADANI_LICENSE_KEY", "MADANI_INSTALLATION_CREDENTIAL", "MADANI_LOOPBACK_TRUST", "MADANI_CLOUD_SECRETS_FD",
+  "MADANI_DATA_DIR", "MADANI_STATIC_DIR", "MADANI_DUCKDB_DIR", "MADANI_PORT", "MADANI_WEBHOOK_PORT",
 ]);
-export const BOX_ENV_NEVER_PREFIXES: readonly string[] = ["DUSK_CLOUD_"];
+export const BOX_ENV_NEVER_PREFIXES: readonly string[] = ["MADANI_CLOUD_"];
 
 /** `allow` is what one spawn vouches for: the keys the person saved for its engine, under whatever name that engine reads
  * (NANO_GPT_API_KEY, OPENCODE_API_KEY). Security: it lifts the allow-list and `deny` for that process only, and never for
- * a name of dusk bot's own (`DUSK_`) or one on the never-list. */
+ * a name of madani bot's own (`MADANI_`) or one on the never-list. */
 export function boxEnvironmentAllows(name: string, deny: ReadonlySet<string> = new Set(), allow: ReadonlySet<string> = new Set()): boolean {
   if (BOX_ENV_NEVER.has(name) || BOX_ENV_NEVER_PREFIXES.some((prefix) => name.startsWith(prefix))) return false;
-  if (allow.has(name) && !name.startsWith("DUSK_")) return true;
+  if (allow.has(name) && !name.startsWith("MADANI_")) return true;
   if (deny.has(name)) return false;
   return BOX_ENV_NAMES.has(name) || BOX_ENV_PREFIXES.some((prefix) => name.startsWith(prefix));
 }

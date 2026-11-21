@@ -391,7 +391,7 @@ test("the keep-alive fetch reuses one socket across posts", { timeout: 3000 }, a
 
 for (const [side, factory] of [["app", keepAliveFetch], ["VPS", agentKeepAliveFetch]]) {
   test(`${side} keep-alive fetch resumes its tls session after a reset`, { timeout: 10_000 }, async (t) => {
-    const dir = mkdtempSync(join(tmpdir(), "dusk-tls-"));
+    const dir = mkdtempSync(join(tmpdir(), "madani-tls-"));
     try {
       execFileSync("openssl", ["req", "-x509", "-newkey", "ec", "-pkeyopt", "ec_paramgen_curve:prime256v1", "-nodes", "-days", "1", "-subj", "/CN=localhost", "-keyout", join(dir, "key.pem"), "-out", join(dir, "cert.pem")], { stdio: "ignore" });
     } catch { rmSync(dir, { recursive: true, force: true }); t.skip("no openssl here"); return; }

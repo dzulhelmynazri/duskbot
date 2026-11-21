@@ -1,7 +1,7 @@
 // Injected into a bot's page after the CSP meta: theme variables with light and dark defaults, and
-// `window.dusk`, a minimal MCP Apps View on the same bridge as @modelcontextprotocol/ext-apps `App`:
+// `window.madani`, a minimal MCP Apps View on the same bridge as @modelcontextprotocol/ext-apps `App`:
 //
-//   window.dusk = {
+//   window.madani = {
 //     send(text): Promise<void>,        // ui/message
 //     open(url): Promise<void>,         // ui/open-link
 //     setContext(text): Promise<void>,  // ui/update-model-context
@@ -9,7 +9,7 @@
 //   }
 //
 // A page pasted from an SDK build runs its own App beside this one: the helper's request ids are strings
-// ("dusk:1"), never the SDK's numeric ones, and it answers no host request but teardown, so it never
+// ("madani:1"), never the SDK's numeric ones, and it answers no host request but teardown, so it never
 // races the SDK's answer.
 import { LEGACY } from "../../electron/legacy-names.mjs";
 import { APP_PROTOCOL_VERSION } from "../app.ts";
@@ -36,7 +36,7 @@ export const APP_HELPER_SOURCE = `(function () {
   var post = function (message) { parent.postMessage(message, "*"); };
   var request = function (method, params) {
     return new Promise(function (resolve, reject) {
-      var id = "dusk:" + (++seq);
+      var id = "madani:" + (++seq);
       pending[id] = { resolve: resolve, reject: reject };
       post({ jsonrpc: "2.0", id: id, method: method, params: params });
     });
@@ -120,7 +120,7 @@ export const APP_HELPER_SOURCE = `(function () {
     report();
   };
   var ready = request("ui/initialize", {
-    appInfo: { name: "dusk-page", version: "1.0.0" },
+    appInfo: { name: "madani-page", version: "1.0.0" },
     appCapabilities: {},
     protocolVersion: "${APP_PROTOCOL_VERSION}"
   }).then(function (result) {
@@ -144,7 +144,7 @@ export const APP_HELPER_SOURCE = `(function () {
       return request("ui/update-model-context", { content: [{ type: "text", text: String(text) }] });
     }).then(function () {});
   };
-  Object.defineProperty(window, "dusk", { value: api, enumerable: true });
+  Object.defineProperty(window, "madani", { value: api, enumerable: true });
   // pages written before the rename call the same api by its old name
   Object.defineProperty(window, ${JSON.stringify(LEGACY.short)}, { value: api });
 })();`;

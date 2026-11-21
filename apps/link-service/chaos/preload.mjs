@@ -1,9 +1,9 @@
-// loaded into the agent and app processes of a chaos run: a moved clock (DUSK_CHAOS_SKEW_MS) and name lookups that fail
+// loaded into the agent and app processes of a chaos run: a moved clock (MADANI_CHAOS_SKEW_MS) and name lookups that fail
 // or answer one address family, switched over ipc ({ chaos: "dns", mode: "fail" | "v4" | "v6" | null })
 import dns from "node:dns";
 import { syncBuiltinESMExports } from "node:module";
 
-const skew = Number(process.env.DUSK_CHAOS_SKEW_MS || 0);
+const skew = Number(process.env.MADANI_CHAOS_SKEW_MS || 0);
 if (skew) {
   const real = Date.now;
   Date.now = () => real() + skew;
@@ -26,9 +26,9 @@ dns.lookup = function chaosLookup(host, options, callback) {
 syncBuiltinESMExports();
 process.on("message", (message) => { if (message?.chaos === "dns") mode = message.mode ?? null; });
 
-// DUSK_CHAOS_PORTS="443:9443,...": this process reaches a port through its own fault proxy, so a fault can hit only the
+// MADANI_CHAOS_PORTS="443:9443,...": this process reaches a port through its own fault proxy, so a fault can hit only the
 // app's network or only the server's
-const ports = new Map(String(process.env.DUSK_CHAOS_PORTS || "").split(",").filter(Boolean).map((pair) => pair.split(":").map(Number)));
+const ports = new Map(String(process.env.MADANI_CHAOS_PORTS || "").split(",").filter(Boolean).map((pair) => pair.split(":").map(Number)));
 if (ports.size) {
   const { Socket } = await import("node:net");
   const connect = Socket.prototype.connect;
@@ -42,5 +42,5 @@ if (ports.size) {
 }
 
 // a chaos run's processes end with it, however it ends
-const parent = Number(process.env.DUSK_CHAOS_PARENT || 0);
+const parent = Number(process.env.MADANI_CHAOS_PARENT || 0);
 if (parent) setInterval(() => { try { process.kill(parent, 0); } catch { process.exit(0); } }, 1000).unref();

@@ -5,11 +5,11 @@ import { createCloudMoveOffer, movable, offerStage, parseOffer } from "./cloud-m
 import { createOpenWhenAsked, installOneHome } from "./one-home-main.mjs";
 import { createOneHome } from "./one-home.mjs";
 
-const ORIGIN = "https://dusk-m-1.fly.dev";
+const ORIGIN = "https://madani-m-1.fly.dev";
 const READY = { origin: ORIGIN, account: "acct-1", ready: true, moves: true, ended: false };
 const WORK = { items: [{ kind: "bot", label: "Nova", talked: true }, { kind: "bot", label: "Quill" }, { kind: "setting", label: "profile" }] };
-// a fresh Mac: only what its first run brought in (the starter Dusk with imported notes, an imported skill), never talked with
-const IMPORTED = { items: [{ kind: "bot", label: "Dusk" }, { kind: "imported-skill", label: "review" }, { kind: "setting", label: "profile" }] };
+// a fresh Mac: only what its first run brought in (the starter Madani with imported notes, an imported skill), never talked with
+const IMPORTED = { items: [{ kind: "bot", label: "Madani" }, { kind: "imported-skill", label: "review" }, { kind: "setting", label: "profile" }] };
 const NOTHING = { items: [{ kind: "setting", label: "profile" }, { kind: "setting", label: "language" }] };
 const json = (value, status = 200) => new Response(JSON.stringify(value), { status });
 const memory = (value = null) => {
@@ -60,7 +60,7 @@ test("the ask goes sheet, then line, then Settings only, and never while there i
 test("saved choices belong to one Cloud: a new Cloud asks again", () => {
   const saved = { v: 1, key: "acct-1 " + ORIGIN, prompt: 5, banner: 6, accepted: { at: 7, from: "banner" } };
   assert.deepEqual(parseOffer(saved, "acct-1 " + ORIGIN), saved);
-  assert.deepEqual(parseOffer(saved, "acct-1 https://dusk-m-2.fly.dev"), { v: 1, key: "acct-1 https://dusk-m-2.fly.dev" });
+  assert.deepEqual(parseOffer(saved, "acct-1 https://madani-m-2.fly.dev"), { v: 1, key: "acct-1 https://madani-m-2.fly.dev" });
   assert.deepEqual(parseOffer({ ...saved, accepted: { at: 7, from: "somewhere" } }, saved.key), { v: 1, key: saved.key, prompt: 5, banner: 6 });
 });
 
@@ -257,7 +257,7 @@ test("rollback: a move that fails after this computer paused lifts the pause, de
   } finally { home.close(); }
 });
 
-test("once all moved, My Cloud opens on Open dusk cloud, or by itself when nobody presses it, and only once", (t) => {
+test("once all moved, My Cloud opens on Open madani cloud, or by itself when nobody presses it, and only once", (t) => {
   t.mock.timers.enable({ apis: ["setTimeout"] });
   const opened = [];
   const held = createOpenWhenAsked({ open: () => opened.push("cloud"), waitMs: 1_000 });

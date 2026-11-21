@@ -26,9 +26,9 @@ export interface SlackEdgeRequest {
 }
 
 export function createSlackEdgeHost(options: SlackEdgeHostOptions) {
-  const enabled = options.env.DUSK_SLACK_EDGE === "1";
-  if (enabled && !options.loopback && !options.env.DUSK_CLOUD_SEAL_KEY) throw new Error("DUSK_SLACK_EDGE needs DUSK_CLOUD_SEAL_KEY.");
-  const sealer = createSealer(options.env.DUSK_CLOUD_SEAL_KEY ? parseSealKey(options.env.DUSK_CLOUD_SEAL_KEY) : null);
+  const enabled = options.env.MADANI_SLACK_EDGE === "1";
+  if (enabled && !options.loopback && !options.env.MADANI_CLOUD_SEAL_KEY) throw new Error("MADANI_SLACK_EDGE needs MADANI_CLOUD_SEAL_KEY.");
+  const sealer = createSealer(options.env.MADANI_CLOUD_SEAL_KEY ? parseSealKey(options.env.MADANI_CLOUD_SEAL_KEY) : null);
   const api = createSlackApi({ env: options.env });
   const socket: EdgeSocketFactory = options.socket ?? (input => createSlackSocket({ api, appToken: () => input.appToken, onEvent: payload => input.onEvent(payload), onState: input.onState,
     log: () => {} }));

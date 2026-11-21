@@ -87,7 +87,7 @@ describe("lazyScreen", () => {
     const warnings = vi.spyOn(console, "warn").mockImplementation(() => {});
     const reload = vi.spyOn(window.location, "reload").mockImplementation(() => {});
     // the quiet reload already ran a moment ago, so this failure shows the notice
-    sessionStorage.setItem("duskbot.screenReload", String(Date.now()));
+    sessionStorage.setItem("madanibot.screenReload", String(Date.now()));
     const load = vi.fn((): Loaded => Promise.reject(new TypeError("Failed to fetch dynamically imported module")));
     const Screen = lazyScreen("TeamMapPage", load);
     await expect(Screen.preload()).rejects.toThrow(TypeError);
@@ -108,7 +108,7 @@ describe("lazyScreen", () => {
   it("reloads the window once on its own when a chunk first fails", async () => {
     vi.spyOn(console, "warn").mockImplementation(() => {});
     const reload = vi.spyOn(window.location, "reload").mockImplementation(() => {});
-    sessionStorage.removeItem("duskbot.screenReload");
+    sessionStorage.removeItem("madanibot.screenReload");
     const Screen = lazyScreen("InboxPanel", (): Loaded => Promise.reject(new TypeError("Failed to fetch dynamically imported module")));
     await expect(Screen.preload()).rejects.toThrow(TypeError);
     expect(reload).toHaveBeenCalledTimes(1);

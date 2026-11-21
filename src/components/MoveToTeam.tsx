@@ -1,7 +1,7 @@
 // "Move to Acme" on My Cloud, in the desktop app only: one item per team in a bot's menu, one confirm that names what
 // goes and what stays, the line that says how it goes (in CloudSendStrip), and the line a moved bot leaves in the
 // sidebar, which opens it in the team. Main runs the move (electron/team-move-main.mjs); the teams come from the
-// dusk cloud sign-in it verified, never from this page.
+// madani cloud sign-in it verified, never from this page.
 import { useEffect, useState, type ReactNode } from "react";
 import { ArrowRightLeft, Loader2 } from "../icons";
 import type { TeamMoveView } from "../../electron/team-move.mjs";
@@ -13,7 +13,7 @@ import { t } from "@/lib/i18n";
 type Team = { id: string; name: string; ready: boolean };
 type MenuItem = (icon: ReactNode, label: string, onClick?: () => void, opts?: { disabled?: boolean; hint?: string }) => ReactNode;
 
-const bridge = () => (!window.duskDesktop?.remoteClient?.active ? window.duskDesktop?.cloudSendPage : undefined);
+const bridge = () => (!window.madaniDesktop?.remoteClient?.active ? window.madaniDesktop?.cloudSendPage : undefined);
 
 /** The teams a bot of this Cloud can move into; none anywhere but My Cloud's own page in the app. */
 export function useMoveTeams(): Team[] {

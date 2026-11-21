@@ -11,7 +11,7 @@ afterEach(() => {
 });
 
 function scratch(): string {
-  const dir = mkdtempSync(path.join(tmpdir(), "dusk-voice-models-"));
+  const dir = mkdtempSync(path.join(tmpdir(), "madani-voice-models-"));
   dirs.push(dir);
   return dir;
 }
@@ -86,24 +86,24 @@ describe("ModelStore", () => {
     expect(store.has(file.path)).toBe(false);
   }, 20_000);
 
-  it("asks dusk.bot's copy first and falls back to the pinned upstream", async () => {
+  it("asks madani.bot's copy first and falls back to the pinned upstream", async () => {
     const dir = scratch();
     const asked: string[] = [];
     const fetchImpl = async (url: string) => {
       asked.push(url);
-      return url.startsWith("https://dusk.bot/") ? new Response("gone", { status: 404 }) : new Response(body, { status: 200 });
+      return url.startsWith("https://madani.bot/") ? new Response("gone", { status: 404 }) : new Response(body, { status: 200 });
     };
-    await new ModelStore({ dir, fetchImpl, files: [file], mirror: "https://dusk.bot/voice" }).ensure();
-    expect(asked).toEqual([`https://dusk.bot/voice/${file.sha256}/test.bin`, file.url]);
+    await new ModelStore({ dir, fetchImpl, files: [file], mirror: "https://madani.bot/voice" }).ensure();
+    expect(asked).toEqual([`https://madani.bot/voice/${file.sha256}/test.bin`, file.url]);
     expect(readFileSync(path.join(dir, file.path))).toEqual(body);
     expect(sourcesFor(file, null)).toEqual([file.url]);
-    expect(mirrorFromEnv({ DUSK_VOICE_MIRROR_URL: "off" })).toBeNull();
-    expect(mirrorFromEnv({})).toBe("https://dusk.bot/voice");
+    expect(mirrorFromEnv({ MADANI_VOICE_MIRROR_URL: "off" })).toBeNull();
+    expect(mirrorFromEnv({})).toBe("https://madani.bot/voice");
   });
 
   it("keeps models in the computer's cache, outside any workspace", () => {
-    expect(defaultModelDir({}, "darwin")).toMatch(/Library\/Caches\/bot\.dusk\.app\/voice$/);
-    expect(defaultModelDir({ XDG_CACHE_HOME: "/c" }, "linux")).toBe("/c/duskbot/voice");
-    expect(defaultModelDir({ DUSK_VOICE_MODELS_DIR: "/m" }, "linux")).toBe("/m");
+    expect(defaultModelDir({}, "darwin")).toMatch(/Library\/Caches\/bot\.madani\.app\/voice$/);
+    expect(defaultModelDir({ XDG_CACHE_HOME: "/c" }, "linux")).toBe("/c/madanibot/voice");
+    expect(defaultModelDir({ MADANI_VOICE_MODELS_DIR: "/m" }, "linux")).toBe("/m");
   });
 });

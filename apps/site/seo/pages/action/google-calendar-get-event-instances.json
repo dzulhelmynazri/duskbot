@@ -11,11 +11,11 @@
     "claude google calendar event instances",
     "ai find recurring meeting occurrences"
   ],
-  "answer": "**hand the trainer real dates instead of saying every tuesday.** the bot finds your recurring google calendar event and lists its occurrences within a chosen window. include cancellations so nobody travels for a skipped session. this only lists dates, but dusk classes the action as a write. give it read and write access limited to this job.",
+  "answer": "**hand the trainer real dates instead of saying every tuesday.** the bot finds your recurring google calendar event and lists its occurrences within a chosen window. include cancellations so nobody travels for a skipped session. this only lists dates, but madani classes the action as a write. give it read and write access limited to this job.",
   "updated": "2026-11-12",
   "review": {
     "status": "approved",
-    "by": "lead agent, after two independent reviewer passes, against dusk bot docs and the composio catalog",
+    "by": "lead agent, after two independent reviewer passes, against madani bot docs and the composio catalog",
     "at": "2026-11-12"
   },
   "tags": [
@@ -71,7 +71,7 @@
   "faq": [
     {
       "q": "will this change the repeating meeting?",
-      "a": "**no meetings change.** it only lists occurrences. dusk counts this action as a change, so read and write is still required."
+      "a": "**no meetings change.** it only lists occurrences. madani counts this action as a change, so read and write is still required."
     },
     {
       "q": "can it include the skipped dates?",
@@ -80,15 +80,15 @@
   ],
   "sources": [
     {
-      "label": "dusk bot docs: files and apps",
+      "label": "madani bot docs: files and apps",
       "url": "/docs/files-and-apps"
     },
     {
-      "label": "dusk bot docs: routines",
+      "label": "madani bot docs: routines",
       "url": "/docs/routines"
     },
     {
-      "label": "dusk bot docs: a bot's computer",
+      "label": "madani bot docs: a bot's computer",
       "url": "/docs/computer"
     }
   ],

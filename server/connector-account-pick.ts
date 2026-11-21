@@ -3,7 +3,7 @@
 // that leaves it out. No imports beyond zod: the proxy is its own small process.
 import { z } from "zod";
 
-export const CONNECTOR_ACCOUNTS_ENV = "DUSK_CONNECTOR_ACCOUNTS";
+export const CONNECTOR_ACCOUNTS_ENV = "MADANI_CONNECTOR_ACCOUNTS";
 export const ACCOUNT_ID = /^[A-Za-z0-9][A-Za-z0-9_-]{0,127}$/;
 // Composio puts an underscore before a slug that would start with a digit: 1Password is `_1password` and its tools are
 // `_1PASSWORD_GET_ITEM` and so on (docs.composio.dev/toolkits/_1password).

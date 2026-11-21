@@ -18,7 +18,7 @@ const node = (script, env = {}) => {
 
 // the windows app ships only its own adb, not this host's
 rmSync(join(root, "dist-native", "android-platform-tools"), { recursive: true, force: true });
-node("prepare-android-tools.mjs", { DUSK_ANDROID_TOOLS_PLATFORM: "win32" });
+node("prepare-android-tools.mjs", { MADANI_ANDROID_TOOLS_PLATFORM: "win32" });
 await prepareCloudflared({ root, platform: "win32", arch: "x64" });
 await stageBrowserTarget(root, "win32-x64");
 await stageDuckdb({ root, targets: [{ platform: "win32", arch: "x64" }], sign: false });

@@ -73,7 +73,7 @@ vi.mock("node:child_process", async (original) => {
 let cua;
 let localOriginModule;
 beforeEach(async () => {
-  fixture.home = mkdtempSync(join(tmpdir(), "dusk-cua-async-"));
+  fixture.home = mkdtempSync(join(tmpdir(), "madani-cua-async-"));
   fixture.script = "setTimeout(() => process.exit(0), 120)";
   fixture.socketReady = false;
   fixture.socketExists = false;
@@ -87,7 +87,7 @@ beforeEach(async () => {
   fixture.checked = [];
   fixture.packaged = false;
   fixture.handlers.clear();
-  vi.stubEnv("DUSK_CUA_EMBEDDED", "1");
+  vi.stubEnv("MADANI_CUA_EMBEDDED", "1");
   vi.stubEnv("CUA_DRIVER_PATH", "/fixture/cua-driver");
   vi.resetModules();
   cua = await import("./cua.mjs");
@@ -109,7 +109,7 @@ afterEach(async () => {
 
 describe.skipIf(process.platform !== "darwin")("async standalone CUA launch (isolated commands)", () => {
   it.each([false, true])("starts the development Mac helper automatically with an absent or stale socket: %s", async (stale) => {
-    vi.stubEnv("DUSK_CUA_EMBEDDED", "");
+    vi.stubEnv("MADANI_CUA_EMBEDDED", "");
     fixture.socketExists = stale;
     await expect(cua.startCua()).resolves.toMatchObject({ mode: "standalone", mcpCommand: "/fixture/cua-driver", mcpArgs: ["mcp"] });
     expect(fixture.calls).toHaveLength(1);
@@ -118,7 +118,7 @@ describe.skipIf(process.platform !== "darwin")("async standalone CUA launch (iso
   });
 
   it("keeps an already running development helper without launching another", async () => {
-    vi.stubEnv("DUSK_CUA_EMBEDDED", "");
+    vi.stubEnv("MADANI_CUA_EMBEDDED", "");
     fixture.socketReady = true;
     await expect(cua.startCua()).resolves.toMatchObject({ mode: "standalone" });
     expect(fixture.calls).toHaveLength(0);
@@ -126,10 +126,10 @@ describe.skipIf(process.platform !== "darwin")("async standalone CUA launch (iso
   });
 
   it("recovers a failed development launch through one coalesced retry without shell instructions", async () => {
-    vi.stubEnv("DUSK_CUA_EMBEDDED", "");
+    vi.stubEnv("MADANI_CUA_EMBEDDED", "");
     fixture.script = "process.stderr.write('fixture launch failure'); process.exit(4)";
     const failure = await cua.startCua();
-    expect(failure).toEqual({ mode: "unavailable", reason: "The computer helper (CuaDriver) did not answer. Press Retry; if it still fails, quit and reopen dusk bot." });
+    expect(failure).toEqual({ mode: "unavailable", reason: "The computer helper (CuaDriver) did not answer. Press Retry; if it still fails, quit and reopen madani bot." });
     fixture.script = "setTimeout(() => process.exit(0), 120)";
     const results = await Promise.all([cua.requestComputerUse(), cua.requestComputerUse()]);
     expect(results).toEqual([{ enabled: true, status: "ready", reasonCode: undefined, message: undefined }, { enabled: true, status: "ready", reasonCode: undefined, message: undefined }]);
@@ -137,7 +137,7 @@ describe.skipIf(process.platform !== "darwin")("async standalone CUA launch (iso
   });
 
   it("names the grant a waiting CuaDriver needs, then picks it up by itself once it is given", async () => {
-    vi.stubEnv("DUSK_CUA_EMBEDDED", "");
+    vi.stubEnv("MADANI_CUA_EMBEDDED", "");
     fixture.gated = true;
     fixture.ps = "/Applications/CuaDriver.app/Contents/MacOS/cua-driver serve --cua-internal-gate-engaged --cua-internal-gate-missing-screen-recording\n";
     const states = [];
@@ -189,7 +189,7 @@ describe.skipIf(process.platform !== "darwin")("async standalone CUA launch (iso
   });
 
   it.each([false, true])("cancels a pending launch without publishing a stale ready connection (development: %s)", async (development) => {
-    if (development) vi.stubEnv("DUSK_CUA_EMBEDDED", "");
+    if (development) vi.stubEnv("MADANI_CUA_EMBEDDED", "");
     fixture.script = "process.on('SIGTERM', () => {}); setInterval(() => {}, 1000)";
     const started = cua.startCua();
     const aborted = expect(started).rejects.toMatchObject({ name: "AbortError" });

@@ -8,7 +8,7 @@ import type { CloudDesktop } from "../data/contracts";
 
 const state = vi.hoisted(() => ({
   cloud: { clouds: null as CloudDesktop[] | null, billing: null, refresh: () => {} },
-  session: { account: { id: "fx-sid", email: "sid@duskbot.test" }, setAccount: (_account: null) => {}, toast: (_message: string) => {} },
+  session: { account: { id: "fx-sid", email: "sid@madanibot.test" }, setAccount: (_account: null) => {}, toast: (_message: string) => {} },
 }));
 vi.mock("../data/cloud", () => ({ useCloud: () => state.cloud }));
 vi.mock("../data/session", () => ({ useSession: () => state.session }));
@@ -46,7 +46,7 @@ test("the emailed link: token kept out of the URL, sign in again, confirm shows 
   const first = await render(createElement(DeleteDataPage, { id: "fx-cloud" }));
   expect(location.hash).toBe("");
   expect(location.pathname + location.search).toBe("/clouds/fx-cloud/delete?fixture=managed");
-  expect(sessionStorage.getItem("dusk-dash-delete-token:fx-cloud")).toBe(token);
+  expect(sessionStorage.getItem("madani-dash-delete-token:fx-cloud")).toBe(token);
   expect([...persisted.values()].some((value) => value.includes(token))).toBe(false);
   expect(first.host.querySelector("h1")?.textContent).toBe("delete the data on Sid's Cloud?");
 
@@ -59,7 +59,7 @@ test("the emailed link: token kept out of the URL, sign in again, confirm shows 
   await first.unmount();
 
   // signed back in: the page comes back with the token from this tab and finishes what was asked
-  const attempt = await api.start("sid@duskbot.test");
+  const attempt = await api.start("sid@madanibot.test");
   await api.verify(attempt.attempt, "12345678");
   const confirm = vi.spyOn(api, "confirmDeleteData");
   const second = await render(createElement(DeleteDataPage, { id: "fx-cloud" }));
@@ -67,7 +67,7 @@ test("the emailed link: token kept out of the URL, sign in again, confirm shows 
   expect(confirm).toHaveBeenCalledWith("fx-cloud", token);
   const scheduledAt = await confirm.mock.results[0]!.value.then((answer: { deleteScheduledAt: number }) => answer.deleteScheduledAt);
   expect(second.host.querySelector("h1")?.textContent).toBe(`deleting on ${longDate(scheduledAt)}`);
-  expect(sessionStorage.getItem("dusk-dash-delete-token:fx-cloud")).toBeNull();
+  expect(sessionStorage.getItem("madani-dash-delete-token:fx-cloud")).toBeNull();
 
   const cancel = vi.spyOn(api, "cancelDeleteData");
   await act(async () => button(second.host, "cancel deletion")!.click());

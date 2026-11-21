@@ -4,7 +4,7 @@
   "title": "Airtable AI assistant for record checks and intake work",
   "nav": "airtable",
   "h1": "an airtable assistant that learns the table before writing",
-  "description": "Review Airtable records, inspect fields and prepare intake work with dusk bot. Copy three routines and see why record edits need explicit limits.",
+  "description": "Review Airtable records, inspect fields and prepare intake work with madani bot. Copy three routines and see why record edits need explicit limits.",
   "answer": "**find the missing owner before the launch stalls.** an airtable bot can inspect your base, list records and open a row before handing you the gaps. name the base and table, then start read only. when the reports are right, you can allow intake rows, attachment uploads or corrections under rules you choose.",
   "tags": [
     "records",
@@ -95,7 +95,7 @@
     "**write with read-only access.** it cannot add rows, upload attachments or repair records. it can show proposed values in chat.",
     "**guess what blank means.** tell it whether an empty field means missing, unnecessary or waiting for a decision.",
     "**prove an item is new from its title.** give a matching rule. send unclear matches to you instead of overwriting.",
-    "**run on a sleeping computer.** local jobs need an awake machine and open dusk app. cloud keeps them available with your computer off."
+    "**run on a sleeping computer.** local jobs need an awake machine and open madani app. cloud keeps them available with your computer off."
   ],
   "sections": [
     {
@@ -110,7 +110,7 @@
   "faq": [
     {
       "q": "can chatgpt work with my airtable base?",
-      "a": "**yes, through a connected airtable account.** choose the bot's ai in dusk. name the base and ask for the missing owners in one table."
+      "a": "**yes, through a connected airtable account.** choose the bot's ai in madani. name the base and ask for the missing owners in one table."
     },
     {
       "q": "can it add records without changing the table structure?",
@@ -123,15 +123,15 @@
   ],
   "sources": [
     {
-      "label": "dusk bot docs: files and apps",
+      "label": "madani bot docs: files and apps",
       "url": "/docs/files-and-apps"
     },
     {
-      "label": "dusk bot docs: routines",
+      "label": "madani bot docs: routines",
       "url": "/docs/routines"
     },
     {
-      "label": "dusk bot docs: permissions and sending",
+      "label": "madani bot docs: permissions and sending",
       "url": "/docs/computer"
     }
   ],

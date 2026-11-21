@@ -15,8 +15,8 @@ import { createAcpDriver, type AcpSupport } from "./core.ts";
 
 const EMPTY: ModelCatalog = { default: "", options: [] };
 
-export const HERMES_DUSK_SCREENSHOT_COMPAT = "HERMES_DUSK_SCREENSHOT_COMPAT";
-export const HERMES_DUSK_SCREENSHOT_COMPAT_MODEL = "HERMES_DUSK_SCREENSHOT_COMPAT_MODEL";
+export const HERMES_MADANI_SCREENSHOT_COMPAT = "HERMES_MADANI_SCREENSHOT_COMPAT";
+export const HERMES_MADANI_SCREENSHOT_COMPAT_MODEL = "HERMES_MADANI_SCREENSHOT_COMPAT_MODEL";
 
 /** Hermes installs patched before the rename read these names; both are set so they keep working. */
 const HERMES_SCREENSHOT_COMPAT_BEFORE = "HERMES_OPENMAUS_SCREENSHOT_COMPAT";
@@ -26,14 +26,14 @@ export function bindHermesScreenshotCompat(
   env: Record<string, string | undefined>,
   modelId: string | null | undefined,
 ): void {
-  delete env[HERMES_DUSK_SCREENSHOT_COMPAT];
-  delete env[HERMES_DUSK_SCREENSHOT_COMPAT_MODEL];
+  delete env[HERMES_MADANI_SCREENSHOT_COMPAT];
+  delete env[HERMES_MADANI_SCREENSHOT_COMPAT_MODEL];
   delete env[HERMES_SCREENSHOT_COMPAT_BEFORE];
   delete env[HERMES_SCREENSHOT_COMPAT_MODEL_BEFORE];
   const inject = decodeInjectId(modelId);
   if (!inject) return;
-  env[HERMES_DUSK_SCREENSHOT_COMPAT] = "1";
-  env[HERMES_DUSK_SCREENSHOT_COMPAT_MODEL] = inject.model;
+  env[HERMES_MADANI_SCREENSHOT_COMPAT] = "1";
+  env[HERMES_MADANI_SCREENSHOT_COMPAT_MODEL] = inject.model;
   env[HERMES_SCREENSHOT_COMPAT_BEFORE] = "1";
   env[HERMES_SCREENSHOT_COMPAT_MODEL_BEFORE] = inject.model;
 }

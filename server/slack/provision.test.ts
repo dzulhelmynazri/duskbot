@@ -28,7 +28,7 @@ async function fixture(icon?: ProvisionDeps["icon"]) {
   let clock = Date.now();
   let transform: ((method: string, body: Record<string, unknown>) => Record<string, unknown>) | undefined;
   const api = createSlackApi({
-    env: { DUSK_SLACK_API_URL: fake.url }, minGapMs: 0,
+    env: { MADANI_SLACK_API_URL: fake.url }, minGapMs: 0,
     fetch: async (url, init) => {
       const response = await fetch(url, init);
       if (!transform) return response;

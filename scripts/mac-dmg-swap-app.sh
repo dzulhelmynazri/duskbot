@@ -5,13 +5,13 @@
 #   scripts/mac-dmg-swap-app.sh <dmg> <app> <identity or -> [keychain]
 set -euo pipefail
 dmg="$1"; app="$2"; identity="$3"; keychain="${4:-}"
-work="$(mktemp -d "${TMPDIR:-/tmp}/dusk-dmg.XXXXXX")"
+work="$(mktemp -d "${TMPDIR:-/tmp}/madani-dmg.XXXXXX")"
 mnt="$work/mnt"
 mounted=0
 cleanup() { if [ "$mounted" = 1 ]; then hdiutil detach "$mnt" -force -quiet 2>/dev/null || true; fi; rm -rf "$work"; }
 trap cleanup EXIT
 # lzma (ULMO, macOS 10.15+) is about 30% smaller than electron-builder's zlib dmg; electron-builder 26 cannot write it
-format="${DUSK_DMG_FORMAT:-ULMO}"
+format="${MADANI_DMG_FORMAT:-ULMO}"
 rw="$work/rw.dmg"
 hdiutil convert "$dmg" -format UDRW -o "$rw" -quiet
 # room for the ticket and any size drift: 20 MB more than the current size

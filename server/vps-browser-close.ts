@@ -23,7 +23,7 @@ def primary_owners():
             base = Path("/proc") / value
             command = (base / "cmdline").read_bytes().split(b"\\0")
             env = dict(item.split(b"=", 1) for item in (base / "environ").read_bytes().split(b"\\0") if b"=" in item)
-            if b"/usr/local/bin/omb-session" in command and env.get(b"DISPLAY") == b":1" and env.get(b"DUSK_SCREEN_MANAGED") != b"1": parents.append(current)
+            if b"/usr/local/bin/omb-session" in command and env.get(b"DISPLAY") == b":1" and env.get(b"MADANI_SCREEN_MANAGED") != b"1": parents.append(current)
         except OSError: pass
     if len(parents) != 1: raise RuntimeError("Cannot prove primary desktop session ownership")
     owners = parents[:]

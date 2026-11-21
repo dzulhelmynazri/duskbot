@@ -4,7 +4,7 @@ import { existsSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
-import { launchVerificationServer, runControlDusk } from "../scripts/control-dusk.ts";
+import { launchVerificationServer, runControlMadani } from "../scripts/control-madani.ts";
 import type { WireGroup } from "../shared/wire.ts";
 
 type Message = { id: string; at: number; role: string; kind: string; text?: string; from?: { botId: string } };
@@ -13,7 +13,7 @@ const POLL = { timeout: 30_000, interval: 50 };
 async function harness(env: Record<string, string>) {
   const fixture = await launchVerificationServer({ ...process.env, ...env });
   const { url } = fixture.info;
-  const control = (...args: string[]) => runControlDusk([...args, "--url", url]) as Promise<any>;
+  const control = (...args: string[]) => runControlMadani([...args, "--url", url]) as Promise<any>;
   // the browser app sends with its origin; a bare loopback call is stamped as a program's ("api") and never fans out
   const api = async (method: string, path: string, body?: unknown) => {
     const response = await fetch(url + path, {
@@ -48,7 +48,7 @@ async function harness(env: Record<string, string>) {
 
 describe.skipIf(process.platform === "win32")("a room message goes to everyone at once", () => {
   it("runs every member side by side, lands each reply on its own, targets @mentions, and stops them all", async () => {
-    const gateDir = mkdtempSync(join(tmpdir(), "dusk-everyone-at-once-"));
+    const gateDir = mkdtempSync(join(tmpdir(), "madani-everyone-at-once-"));
     const gate = join(gateDir, "finish.gate");
     const h = await harness({ FAKE_CLAUDE_MODE: "slow", FAKE_CLAUDE_SLOW_FINISH_GATE: gate });
     try {
@@ -104,7 +104,7 @@ describe.skipIf(process.platform === "win32")("a room message goes to everyone a
   }, 120_000);
 
   it("answers each member's own card while both are still answering", async () => {
-    const dir = mkdtempSync(join(tmpdir(), "dusk-everyone-cards-"));
+    const dir = mkdtempSync(join(tmpdir(), "madani-everyone-cards-"));
     const gate = join(dir, "finish.gate"), log = join(dir, "control.log");
     const h = await harness({
       FAKE_CLAUDE_MODE: "hang",
@@ -138,7 +138,7 @@ describe.skipIf(process.platform === "win32")("a room message goes to everyone a
   }, 120_000);
 
   it("a member's @mention brings in only that teammate, never the whole room", async () => {
-    const dir = mkdtempSync(join(tmpdir(), "dusk-everyone-chain-"));
+    const dir = mkdtempSync(join(tmpdir(), "madani-everyone-chain-"));
     const markers = join(dir, "markers.json");
     writeFileSync(markers, JSON.stringify({ "pass-it-on": "Over to @Zane for this one." }));
     const h = await harness({ FAKE_CLAUDE_MARKER_REPLIES: markers });
@@ -159,7 +159,7 @@ describe.skipIf(process.platform === "win32")("a room message goes to everyone a
     }
   }, 120_000);
   it("runs \"@X …, then @Y …\" in order: Y starts only once X's reply has landed, so it can build on it", async () => {
-    const gateDir = mkdtempSync(join(tmpdir(), "dusk-room-chain-"));
+    const gateDir = mkdtempSync(join(tmpdir(), "madani-room-chain-"));
     const gate = join(gateDir, "finish.gate");
     const h = await harness({ FAKE_CLAUDE_MODE: "slow", FAKE_CLAUDE_SLOW_FINISH_GATE: gate });
     try {

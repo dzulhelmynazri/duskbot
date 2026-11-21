@@ -1,7 +1,7 @@
 // The phone link: how the mobile app pairs with one workspace (a VPS or a Mac) and reaches it from anywhere.
 //
 // A desktop owner or admin opens a short-lived grant (POST /api/mobile/pairing). It is shown three ways: a QR of
-// `mobileLinkUrl(payload)`, the same `duskbot://pair?m=...` deep link, and a typed code. The phone redeems the
+// `mobileLinkUrl(payload)`, the same `madanibot://pair?m=...` deep link, and a typed code. The phone redeems the
 // grant once (POST /api/mobile/redeem) and from then on holds one workspace session token, the same credential on
 // every route: a direct HTTPS origin, the link relay (a VPS without public ingress) or the Mac's companion sidecar.
 //
@@ -24,7 +24,7 @@ import { qrEndpoints, type CompanionEndpoint, type CompanionEndpointKind } from 
 
 export const MOBILE_LINK_VERSION = 2;
 export const MOBILE_LOOKUP_SALT = "omb-mobile-v1";
-export const DEFAULT_MOBILE_RELAY = "https://link.dusk.bot";
+export const DEFAULT_MOBILE_RELAY = "https://link.madani.bot";
 /** A grant lives this long; the QR, the deep link and the typed code die together. */
 export const MOBILE_GRANT_TTL_MS = 10 * 60_000;
 export const MOBILE_PLATFORMS = ["ios", "android", "other"] as const;
@@ -90,7 +90,7 @@ export interface MobileDevice {
 }
 
 export interface MobileRedeemResponse {
-  /** The workspace session bearer token (`dusk_sess_...`), the phone's only workspace credential. */
+  /** The workspace session bearer token (`madani_sess_...`), the phone's only workspace credential. */
   token: string;
   device: MobileDevice;
   workspace: MobileLinkPayload["workspace"];
@@ -181,14 +181,14 @@ const fromBase64Url = (value: string): string => {
 };
 
 export function mobileLinkUrl(payload: MobileLinkPayload): string {
-  return `duskbot://pair?m=${toBase64Url(JSON.stringify(payload))}`;
+  return `madanibot://pair?m=${toBase64Url(JSON.stringify(payload))}`;
 }
 
 /** The payload a scanned QR or opened deep link carries, validated; null for anything else (an older link included). */
 export function parseMobileLink(link: string): MobileLinkPayload | null {
   try {
     const url = new URL(link);
-    if (url.protocol !== "duskbot:" || (url.host !== "pair" && url.pathname.replace(/^\/+/, "") !== "pair")) return null;
+    if (url.protocol !== "madanibot:" || (url.host !== "pair" && url.pathname.replace(/^\/+/, "") !== "pair")) return null;
     const encoded = url.searchParams.get("m");
     if (!encoded || encoded.length > 8192 || !B64URL.test(encoded)) return null;
     return parseMobilePayload(JSON.parse(fromBase64Url(encoded)));
@@ -280,14 +280,14 @@ export interface MobileConnectionRecord {
   capabilities: MobileCapabilities;
   /** Server identity pin (SPKI) recorded at pairing. */
   identityPin?: string;
-  /** The dusk bot account this place belongs to, as that account listed it while the phone was signed in to it. */
+  /** The madani bot account this place belongs to, as that account listed it while the phone was signed in to it. */
   account?: { id: string; email: string };
   addedAt: number;
   lastUsedAt: number;
 }
 
 /** A place in a workspace, opened by link in either direction. The desktop's own chat links
- * (duskbot://thread/..., duskbot://bot/...) open chats; this adds views and notification targets. */
+ * (madanibot://thread/..., madanibot://bot/...) open chats; this adds views and notification targets. */
 export interface MobileOpenTarget {
   environmentId?: string;
   botId?: string;
@@ -297,7 +297,7 @@ export interface MobileOpenTarget {
   view?: "chat" | "computer" | "profile" | "routines" | "settings" | "notifications";
 }
 
-const LEGACY_CREDENTIAL = /^(?:dusk|omb)_pair_[A-Za-z0-9_-]{43}$/;
+const LEGACY_CREDENTIAL = /^(?:madani|omb)_pair_[A-Za-z0-9_-]{43}$/;
 const VIEWS = new Set<NonNullable<MobileOpenTarget["view"]>>(["chat", "computer", "profile", "routines", "settings", "notifications"]);
 
 /** The phone's view of a v2 payload: the first direct origin and the relay route pulled out of `via`. */
@@ -333,14 +333,14 @@ function legacyOrigin(value: string | null): string | undefined {
   }
 }
 
-/** A scanned QR or opened pairing link: a v2 link first, else an older `duskbot://pair?address=&token=` link from
+/** A scanned QR or opened pairing link: a v2 link first, else an older `madanibot://pair?address=&token=` link from
  * the server pairing card or the companion. Null when it is neither or anything required is malformed. */
 export function parseMobilePairingLink(link: string): MobilePairingPayload | null {
   const payload = parseMobileLink(link.trim());
   if (payload) return pairingFromPayload(payload);
   let url: URL;
   try { url = new URL(link.trim()); } catch { return null; }
-  if (url.protocol !== "duskbot:" || (url.hostname || url.pathname.replace(/^\/+/, "")) !== "pair") return null;
+  if (url.protocol !== "madanibot:" || (url.hostname || url.pathname.replace(/^\/+/, "")) !== "pair") return null;
   const q = url.searchParams;
   const credential = q.get("token") ?? "";
   if (!LEGACY_CREDENTIAL.test(credential)) return null;
@@ -358,25 +358,25 @@ export function parseMobilePairingLink(link: string): MobilePairingPayload | nul
   };
 }
 
-/** `duskbot://open?...`: a view or notification target on the phone. */
+/** `madanibot://open?...`: a view or notification target on the phone. */
 export function mobileOpenLink(target: MobileOpenTarget): string {
   const fields: Array<[string, string | undefined]> = [
     ["env", target.environmentId], ["bot", target.botId], ["group", target.groupId],
     ["thread", target.threadId], ["message", target.messageId], ["view", target.view],
   ];
   const query = fields.filter(([, value]) => value).map(([key, value]) => `${key}=${encodeURIComponent(value!)}`).join("&");
-  return `duskbot://open${query ? `?${query}` : ""}`;
+  return `madanibot://open${query ? `?${query}` : ""}`;
 }
 
 /** The hosts whose `/m/` pages the phone app opens itself (the app's associated domains). */
-export const UNIVERSAL_LINK_HOSTS: readonly string[] = ["dusk.bot"];
+export const UNIVERSAL_LINK_HOSTS: readonly string[] = ["madani.bot"];
 
 /** The account sign-in a signed-in desktop's pairing QR carries beside the pairing: its phone sign-in code (`a=`,
  * shared/account-api.ts PhoneSignInGrant), the account's email (`ae=`) and its service (`as=`). The phone logs in to that
  * account and pairs in one step; apps that predate it pair alone. */
 export type PairSignIn = { code: string; email: string; service?: SignInService };
 
-/** The desktop's one QR: `https://dusk.bot/m/pair#m=...&c=CODE`. With the app, iOS opens it there (the `m` pairs); without
+/** The desktop's one QR: `https://madani.bot/m/pair#m=...&c=CODE`. With the app, iOS opens it there (the `m` pairs); without
  * it, the site's page sends them to the store and shows the typed code. Both ride after the `#`, which no server sees. */
 export function universalPairLink(deepLink: string, code: string | null, signIn?: { code: string; email: string; serviceOrigin?: string | null } | null): string {
   let query = "";
@@ -394,7 +394,7 @@ export function pairSignIn(link: string): PairSignIn | null {
   const app = appLinkFromUniversal(link) ?? link.trim();
   let url: URL;
   try { url = new URL(app); } catch { return null; }
-  if (url.protocol !== "duskbot:" || (url.hostname || url.pathname.replace(/^\/+/, "")) !== "pair") return null;
+  if (url.protocol !== "madanibot:" || (url.hostname || url.pathname.replace(/^\/+/, "")) !== "pair") return null;
   const code = (url.searchParams.get("a") ?? "").toUpperCase();
   const email = (url.searchParams.get("ae") ?? "").trim();
   const service = url.searchParams.get("as");
@@ -402,15 +402,15 @@ export function pairSignIn(link: string): PairSignIn | null {
   return { code, email, ...(service === "production" || service === "preview" ? { service } : {}) };
 }
 
-/** A dusk cloud's QR: `https://dusk.bot/m/signin#c=CODE&email=...`. `c`, a desktop's phone sign-in code
- * (shared/account-api.ts PhoneSignInGrant), logs the app in; without it the app opens its dusk cloud sign-in with the email
+/** A madani cloud's QR: `https://madani.bot/m/signin#c=CODE&email=...`. `c`, a desktop's phone sign-in code
+ * (shared/account-api.ts PhoneSignInGrant), logs the app in; without it the app opens its madani cloud sign-in with the email
  * filled in, as an app too old to know `c` does. */
 /** The account service a sign-in link's code belongs to, as the link names it (`s=`): a code from one is unknown to the other. */
 export type SignInService = "production" | "preview";
-const SIGN_IN_SERVICES: Record<string, SignInService> = { "https://dusk.bot": "production", "https://preview.dusk.bot": "preview" };
+const SIGN_IN_SERVICES: Record<string, SignInService> = { "https://madani.bot": "production", "https://preview.madani.bot": "preview" };
 
-/** A dusk cloud's own address (`o=`): the cloud a QR drawn on it opens once the phone is logged in. */
-const CLOUD_ORIGIN = /^https:\/\/d[0-9a-f]{20}\.dusk\.bot$/;
+/** A madani cloud's own address (`o=`): the cloud a QR drawn on it opens once the phone is logged in. */
+const CLOUD_ORIGIN = /^https:\/\/d[0-9a-f]{20}\.madani\.bot$/;
 
 export function universalSignInLink(email?: string | null, code?: string | null, serviceOrigin?: string | null, cloudOrigin?: string | null): string {
   const value = email?.trim(), typed = code?.replace(/[^a-z]/gi, "").toUpperCase();
@@ -421,13 +421,13 @@ export function universalSignInLink(email?: string | null, code?: string | null,
   return `https://${UNIVERSAL_LINK_HOSTS[0]}/m/signin${fields.length ? `#${fields.join("&")}` : ""}`;
 }
 
-/** `duskbot://signin?c=...&email=...` (or the https link it stands for): the email to sign in with ("" when it names none)
+/** `madanibot://signin?c=...&email=...` (or the https link it stands for): the email to sign in with ("" when it names none)
  * and the phone sign-in code it carries, if any. */
 export function parseSignInLink(link: string): { email: string; code?: string; service?: SignInService; cloud?: string } | null {
   const app = appLinkFromUniversal(link) ?? link.trim();
   let url: URL;
   try { url = new URL(app); } catch { return null; }
-  if (url.protocol !== "duskbot:" || (url.hostname || url.pathname.replace(/^\/+/, "")) !== "signin") return null;
+  if (url.protocol !== "madanibot:" || (url.hostname || url.pathname.replace(/^\/+/, "")) !== "signin") return null;
   const email = (url.searchParams.get("email") ?? "").trim();
   const code = (url.searchParams.get("c") ?? "").toUpperCase();
   const service = url.searchParams.get("s");
@@ -436,7 +436,7 @@ export function parseSignInLink(link: string): { email: string; code?: string; s
     ...(service === "production" || service === "preview" ? { service } : {}), ...(CLOUD_ORIGIN.test(cloud) ? { cloud } : {}) };
 }
 
-/** `https://dusk.bot/m/open?...`, `https://dusk.bot/m/pair#...` and `https://dusk.bot/m/signin#...` as the `duskbot://`
+/** `https://madani.bot/m/open?...`, `https://madani.bot/m/pair#...` and `https://madani.bot/m/signin#...` as the `madanibot://`
  * link each stands for, or null for any other address. A pairing link carries its secret after the `#`, which a browser
  * never sends to the site. */
 export function appLinkFromUniversal(link: string): string | null {
@@ -446,17 +446,17 @@ export function appLinkFromUniversal(link: string): string | null {
   const fragment = url.hash.slice(1);
   if (url.pathname === "/m/open") {
     const query = url.search.slice(1) || fragment;
-    return `duskbot://open${query ? `?${query}` : ""}`;
+    return `madanibot://open${query ? `?${query}` : ""}`;
   }
-  if (url.pathname === "/m/pair" && fragment && !url.search) return `duskbot://pair?${fragment}`;
-  if (url.pathname === "/m/signin" && !url.search) return `duskbot://signin${fragment ? `?${fragment}` : ""}`;
+  if (url.pathname === "/m/pair" && fragment && !url.search) return `madanibot://pair?${fragment}`;
+  if (url.pathname === "/m/signin" && !url.search) return `madanibot://signin${fragment ? `?${fragment}` : ""}`;
   return null;
 }
 
 export function parseMobileOpenLink(link: string): MobileOpenTarget | null {
   let url: URL;
   try { url = new URL(link.trim()); } catch { return null; }
-  if (url.protocol !== "duskbot:" || (url.hostname || url.pathname.replace(/^\/+/, "")) !== "open") return null;
+  if (url.protocol !== "madanibot:" || (url.hostname || url.pathname.replace(/^\/+/, "")) !== "open") return null;
   const q = url.searchParams;
   const id = (key: string) => { const value = q.get(key); return value && /^[A-Za-z0-9_.:-]{1,200}$/.test(value) ? value : undefined; };
   const view = q.get("view") as MobileOpenTarget["view"] | null;

@@ -1,7 +1,7 @@
 // Refuses a deploy whose managed home package settings disagree, before anything ships: the file on the server, its
-// signature and DUSK_MANAGED_HOME_PACKAGE_SHA256 must name the same package, or the service refuses to start
+// signature and MADANI_MANAGED_HOME_PACKAGE_SHA256 must name the same package, or the service refuses to start
 // ("Release signature is for another artifact") and the site is down. Reads the built env file; looks at the files on
-// the deploy host over ssh (DUSK_PACKAGE_SSH_HOST, default contabo). Prints names and short hashes only, never a value
+// the deploy host over ssh (MADANI_PACKAGE_SSH_HOST, default contabo). Prints names and short hashes only, never a value
 // of anything secret.
 //
 //   node deploy/account/check-home-package.mjs <env file>
@@ -12,12 +12,12 @@ const file = process.argv[2];
 if (!file) { console.error("usage: check-home-package.mjs <env file>"); process.exit(2); }
 const env = Object.fromEntries(readFileSync(file, "utf8").split("\n").map((line) => /^([A-Z0-9_]+)=(.*)$/.exec(line.trim())).filter(Boolean)
   .map((m) => [m[1], m[2].replace(/^["']|["']$/g, "")]));
-const pkg = env.DUSK_MANAGED_HOME_PACKAGE_FILE, sigFile = env.DUSK_MANAGED_HOME_PACKAGE_SIGNATURE_FILE, sha = env.DUSK_MANAGED_HOME_PACKAGE_SHA256;
+const pkg = env.MADANI_MANAGED_HOME_PACKAGE_FILE, sigFile = env.MADANI_MANAGED_HOME_PACKAGE_SIGNATURE_FILE, sha = env.MADANI_MANAGED_HOME_PACKAGE_SHA256;
 if (!pkg && !sigFile && !sha) { console.log("home package: none configured"); process.exit(0); }
-const fail = (why) => { console.error(`refusing to deploy: the home package settings disagree (${why}). Fix DUSK_MANAGED_HOME_PACKAGE_* in dusk.env.`); process.exit(1); };
+const fail = (why) => { console.error(`refusing to deploy: the home package settings disagree (${why}). Fix MADANI_MANAGED_HOME_PACKAGE_* in madani.env.`); process.exit(1); };
 if (!pkg || !sha) fail("FILE and SHA256 go together");
 if (!/^[0-9a-f]{64}$/.test(sha)) fail("SHA256 is not a sha256");
-const host = process.env.DUSK_PACKAGE_SSH_HOST || "contabo";
+const host = process.env.MADANI_PACKAGE_SSH_HOST || "contabo";
 const quote = (value) => `'${String(value).replace(/'/g, "'\\''")}'`;
 let remote;
 try {

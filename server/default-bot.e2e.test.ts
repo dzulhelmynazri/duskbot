@@ -1,12 +1,12 @@
-// Dusk on a real server in an isolated fixture: a new install's first bot, never deleted or archived, taken off the
+// Madani on a real server in an isolated fixture: a new install's first bot, never deleted or archived, taken off the
 // sidebar by its switch, and still holding a Chief's tools once another bot is the Chief. The fake engine holds its turn
 // open so this test can start the agents server that turn was handed and call create_bot the way the engine would.
 import { spawn } from "node:child_process";
 import { existsSync, readFileSync, rmSync } from "node:fs";
 import { expect, it } from "vitest";
-import { launchVerificationServer, runControlDusk } from "../scripts/control-dusk.ts";
+import { launchVerificationServer, runControlMadani } from "../scripts/control-madani.ts";
 import { waitForExit } from "./testing/cleanup.ts";
-import { childEnv } from "./testing/dusk-env.ts";
+import { childEnv } from "./testing/madani-env.ts";
 
 type McpServer = { command: string; args: string[]; env: Record<string, string> };
 type Answer = { id: number; result?: { content?: Array<{ text: string }>; isError?: boolean }; error?: { code: number; message: string } };
@@ -30,18 +30,18 @@ async function callTool(server: McpServer, name: string, args: unknown): Promise
   }
 }
 
-it("makes Dusk a new install's first bot, never deleted, hidden by its switch, with a Chief's tools after the Chief moves on", async () => {
+it("makes Madani a new install's first bot, never deleted, hidden by its switch, with a Chief's tools after the Chief moves on", async () => {
   const fixture = await launchVerificationServer({ ...process.env, FAKE_CLAUDE_MODE: "hang" });
   const api = async (method: string, path: string, body?: unknown) => {
     const response = await fetch(`${fixture.info.url}${path}`, { method, headers: { "content-type": "application/json" },
       ...(body === undefined ? {} : { body: JSON.stringify(body) }), signal: AbortSignal.timeout(10_000) });
     return { status: response.status, body: await response.json() as any };
   };
-  const control = (args: string[]) => runControlDusk([...args, "--url", fixture.info.url]) as Promise<any>;
+  const control = (args: string[]) => runControlMadani([...args, "--url", fixture.info.url]) as Promise<any>;
   const bots = async () => (await api("GET", "/api/bots")).body.bots as any[];
   try {
     const [maus] = await bots();
-    // The fixture renames its starter; it is still the new install's Dusk.
+    // The fixture renames its starter; it is still the new install's Madani.
     expect(maus).toMatchObject({ color: "chrome", chiefOfStaff: true, defaultBot: {} });
     expect(maus.messages.map((message: any) => [message.kind, message.helperIntro])).toEqual([["options", true]]);
 
@@ -64,7 +64,7 @@ it("makes Dusk a new install's first bot, never deleted, hidden by its switch, w
     const launched = JSON.parse(readFileSync(fixture.fixtureDumpPath, "utf8")) as { systemPrompt: string; mcpConfig: { mcpServers: Record<string, McpServer> } };
     rmSync(fixture.fixtureDumpPath, { force: true });
     const agents = launched.mcpConfig.mcpServers.agents!;
-    expect(agents.env.DUSK_CHIEF_OF_STAFF).toBe("1");
+    expect(agents.env.MADANI_CHIEF_OF_STAFF).toBe("1");
     expect(launched.systemPrompt).toContain("You are also this person's helper");
     expect(launched.systemPrompt).toContain("but you are not the Chief");
     const created = await callTool(agents, "create_bot", { name: "Scout", role: "Researcher", instructions: "Find what the person asks for." });
@@ -80,10 +80,10 @@ it("makes Dusk a new install's first bot, never deleted, hidden by its switch, w
   }
 }, 120_000);
 
-it("lets Dusk read the unread notifications and mark finished work read, not once sign-in members share the workspace, and gives no other bot the tools", async () => {
+it("lets Madani read the unread notifications and mark finished work read, not once sign-in members share the workspace, and gives no other bot the tools", async () => {
   const fixture = await launchVerificationServer({ ...process.env, FAKE_CLAUDE_MODE: "hang" });
   const api = async (path: string) => (await (await fetch(`${fixture.info.url}${path}`, { signal: AbortSignal.timeout(10_000) })).json()) as any;
-  const control = (args: string[]) => runControlDusk([...args, "--url", fixture.info.url]) as Promise<any>;
+  const control = (args: string[]) => runControlMadani([...args, "--url", fixture.info.url]) as Promise<any>;
   const launch = async (botId: string) => {
     await control(["send", "--bot", botId, "--text", "Stay active."]);
     await expect.poll(() => existsSync(fixture.fixtureDumpPath), { timeout: 30_000 }).toBe(true);
@@ -95,7 +95,7 @@ it("lets Dusk read the unread notifications and mark finished work read, not onc
   try {
     const [maus] = (await api("/api/bots")).bots as any[];
     const agents = await launch(maus.id);
-    expect(agents.env.DUSK_DEFAULT_BOT).toBe("1");
+    expect(agents.env.MADANI_DEFAULT_BOT).toBe("1");
 
     const unread = await callTool(agents, "list_unread_notifications", {});
     expect(unread.result?.isError, text(unread)).toBeFalsy();
@@ -120,7 +120,7 @@ it("lets Dusk read the unread notifications and mark finished work read, not onc
 
     const { bot: clive } = await control(["new-bot", "--name", "Clive"]);
     const other = await launch(clive.id);
-    expect(other.env.DUSK_DEFAULT_BOT).toBe("0");
+    expect(other.env.MADANI_DEFAULT_BOT).toBe("0");
     expect((await callTool(other, "list_unread_notifications", {})).result?.isError ?? true).toBe(true);
     expect((await callTool(other, "mark_notifications_read", { ids: ["no-such-notification"] })).result?.isError ?? true).toBe(true);
     await control(["interrupt", "--bot", maus.id]);

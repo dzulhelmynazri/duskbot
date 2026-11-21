@@ -1,48 +1,48 @@
 #!/bin/sh
-# duskbot vps uninstaller: takes off this server everything apps/link-service/install.sh put on it, so the install line
+# madanibot vps uninstaller: takes off this server everything apps/link-service/install.sh put on it, so the install line
 # can be pasted again on a clean box.
-#   curl -fsSL https://link.dusk.bot/uninstall | sh                 shows what it removes, asks on the terminal
-#   curl -fsSL https://link.dusk.bot/uninstall | sh -s -- --yes     no question (also DUSK_UNINSTALL_YES=1)
+#   curl -fsSL https://link.madani.bot/uninstall | sh                 shows what it removes, asks on the terminal
+#   curl -fsSL https://link.madani.bot/uninstall | sh -s -- --yes     no question (also MADANI_UNINSTALL_YES=1)
 # flags: --yes, --no-backup (no tarball of the bots' data first), --all (also the packages install.sh added, from its
 # manifest), --dry-run (only show what it would remove). with no terminal to ask on and no --yes it only shows.
 # safe to run again, and when nothing or only part is installed: every step looks before it removes.
-# knobs (env): LINK_BASE; NO_COLOR, DUSK_ASCII=1, DUSK_PLAIN=1, DUSK_NO_ANIM=1 (terminal).
+# knobs (env): LINK_BASE; NO_COLOR, MADANI_ASCII=1, MADANI_PLAIN=1, MADANI_NO_ANIM=1 (terminal).
 set -eu
 
 PLACEHOLDER_BASE="__LINK""_BASE__"
 BAKED_BASE="__LINK_BASE__"
 if [ -z "${LINK_BASE:-}" ]; then
-  if [ "$BAKED_BASE" = "$PLACEHOLDER_BASE" ]; then LINK_BASE="https://link.dusk.bot"; else LINK_BASE="$BAKED_BASE"; fi
+  if [ "$BAKED_BASE" = "$PLACEHOLDER_BASE" ]; then LINK_BASE="https://link.madani.bot"; else LINK_BASE="$BAKED_BASE"; fi
 fi
 LINK_BASE=${LINK_BASE%/}
 
-SVC_USER=dusk
-SVC_HOME=/home/dusk
-DATA=$SVC_HOME/.duskbot
-STATE=/var/lib/duskbot-link
-LOGS_DIR=/var/log/duskbot-link
-OPT=/opt/duskbot-link
-MANIFEST=/var/lib/duskbot/install-manifest
+SVC_USER=madani
+SVC_HOME=/home/madani
+DATA=$SVC_HOME/.madanibot
+STATE=/var/lib/madanibot-link
+LOGS_DIR=/var/log/madanibot-link
+OPT=/opt/madanibot-link
+MANIFEST=/var/lib/madanibot/install-manifest
 FENCE=/usr/local/sbin/omb-host-fence
-CLI=/usr/local/bin/duskbot
+CLI=/usr/local/bin/madanibot
 UNITS=/etc/systemd/system
-OUR_UNITS="duskbot-server-update.timer duskbot-server-update.service duskbot-link.service duskbot-cloudflared.service duskbot.service duskbot-engines.path duskbot-restart.service duskbot-handoff.service omb-docker-gate.service omb-box-fence.service"
+OUR_UNITS="madanibot-server-update.timer madanibot-server-update.service madanibot-link.service madanibot-cloudflared.service madanibot.service madanibot-engines.path madanibot-restart.service madanibot-handoff.service omb-docker-gate.service omb-box-fence.service"
 # the accounts install.sh splits the server into (link agent, docker gate) and their files
 LINK_USER=omb-link
 LINK_HOME=/var/lib/omb-link
 GATE_USER=omb-docker
 GATE_GROUP=omb-dockergate
-LIB=/usr/local/lib/duskbot
-ETC=/etc/duskbot
-BWRAP_PROFILE=/etc/apparmor.d/duskbot-bwrap
+LIB=/usr/local/lib/madanibot
+ETC=/etc/madanibot
+BWRAP_PROFILE=/etc/apparmor.d/madanibot-bwrap
 NETWORK=openmausbot-desktops
 BRIDGE=omb-desk0
 DAEMON=/etc/docker/daemon.json
-CADDY_NAME=duskbot
-LINK_CONF=duskbot-link
+CADDY_NAME=madanibot
+LINK_CONF=madanibot-link
 # a server set up before the rename and not installed again since keeps the old names (install.sh moves them)
 OLD=openmausbot
-if ! id "$SVC_USER" >/dev/null 2>&1 && id maus >/dev/null 2>&1; then SVC_USER=maus SVC_HOME=/home/maus DATA=/home/maus/.duskbot; fi
+if ! id "$SVC_USER" >/dev/null 2>&1 && id maus >/dev/null 2>&1; then SVC_USER=maus SVC_HOME=/home/maus DATA=/home/maus/.madanibot; fi
 if [ ! -d "$STATE" ] && { [ -d "/var/lib/$OLD-link" ] || [ -e "$UNITS/$OLD.service" ]; }; then
   DATA=$SVC_HOME/.$OLD STATE=/var/lib/$OLD-link LOGS_DIR=/var/log/$OLD-link OPT=/opt/$OLD-link MANIFEST=/var/lib/$OLD/install-manifest
   OUR_UNITS="$OLD-link.service $OLD.service $OLD-engines.path $OLD-restart.service $OLD-handoff.service omb-docker-gate.service omb-box-fence.service"
@@ -53,7 +53,7 @@ KEEP_PKGS="curl ca-certificates"
 export DEBIAN_FRONTEND=noninteractive
 
 YES=0 BACKUP=1 ALL=0 DRY=0
-[ "${DUSK_UNINSTALL_YES:-}" = 1 ] && YES=1
+[ "${MADANI_UNINSTALL_YES:-}" = 1 ] && YES=1
 ARGS="$*"
 for arg in "$@"; do
   case "$arg" in
@@ -61,7 +61,7 @@ for arg in "$@"; do
     --no-backup) BACKUP=0 ;;
     --all) ALL=1 ;;
     --dry-run) DRY=1 ;;
-    -h|--help) printf '%s\n' "usage: curl -fsSL $LINK_BASE/uninstall | sh [-s -- options]" "  --yes        remove without asking (or DUSK_UNINSTALL_YES=1)" \
+    -h|--help) printf '%s\n' "usage: curl -fsSL $LINK_BASE/uninstall | sh [-s -- options]" "  --yes        remove without asking (or MADANI_UNINSTALL_YES=1)" \
       "  --no-backup  don't save the bots' data to /root first" "  --all        also remove the packages the install added (Docker, Node, Caddy, gVisor)" \
       "  --dry-run    only show what it would remove"; exit 0 ;;
     *) printf 'unknown option: %s (try --yes, --no-backup, --all, --dry-run)\n' "$arg" >&2; exit 2 ;;
@@ -75,7 +75,7 @@ ESC=$(printf '\033')
 UI=plain DEPTH=0 ASCII=1 COLS=80 ROWS=24 LIST=0 MS=1 TICK=0.12 MASCOT=0 MASCOT_COL=61 TICKS=0
 R="" BOLD="" DIM="" OK="" ACC="" WARN="" ERR="" SHADOW="" FAINT="" EL=""
 ui_init() {
-  if [ -t 1 ] && [ "${TERM:-dumb}" != dumb ] && [ "${DUSK_PLAIN:-}" != 1 ]; then UI="tty"; fi
+  if [ -t 1 ] && [ "${TERM:-dumb}" != dumb ] && [ "${MADANI_PLAIN:-}" != 1 ]; then UI="tty"; fi
   size=$( { stty size </dev/tty; } 2>/dev/null || true)
   case "$size" in
     [0-9]*' '[0-9]*) ROWS=${size% *}; COLS=${size#* } ;;
@@ -85,7 +85,7 @@ ui_init() {
   case "$(date +%s%N 2>/dev/null)" in *N*|'') MS=0 ;; esac
   [ "$UI" = tty ] || return 0
   ASCII=0
-  [ "${DUSK_ASCII:-}" = 1 ] && ASCII=1
+  [ "${MADANI_ASCII:-}" = 1 ] && ASCII=1
   EL="${ESC}[K"
   if [ -z "${NO_COLOR:-}" ]; then
     case "${COLORTERM:-}" in
@@ -149,12 +149,12 @@ EOF
 banner() {
   say ""
   if [ "$UI" != tty ] || [ "$ASCII" = 1 ] || [ "$COLS" -lt 80 ]; then
-    say "  ${ACC}${BOLD}dusk bot${R}  ${DIM}uninstall${R}"
+    say "  ${ACC}${BOLD}madani bot${R}  ${DIM}uninstall${R}"
     say ""
     MASCOT=0
     return 0
   fi
-  anim=0; [ "$DEPTH" -ge 8 ] && [ "${DUSK_NO_ANIM:-}" != 1 ] && anim=1
+  anim=0; [ "$DEPTH" -ge 8 ] && [ "${MADANI_NO_ANIM:-}" != 1 ] && anim=1
   banner_art | awk -v depth="$DEPTH" -v esc="$ESC" -v shade="$SHADOW" -v reset="$R" -v anim="$anim" '
     function lerp(a, b, t) { return int(a + (b - a) * t + 0.5) }
     function code(r, g, b) {
@@ -201,7 +201,7 @@ banner() {
       for (f = 0; f <= S; f++) { frame(f); if (f < S) system("sleep 0.05") }
     }'
   say ""
-  printf '  %s%-58s%s%s<:3 )~%s\n' "$DIM" "taking dusk bot off this server" "$R" "$ACC" "$R"
+  printf '  %s%-58s%s%s<:3 )~%s\n' "$DIM" "taking madani bot off this server" "$R" "$ACC" "$R"
   MASCOT_COL=61 MASCOT=1
   [ "$DEPTH" -gt 0 ] || MASCOT=0
   say ""
@@ -253,13 +253,13 @@ become_root() {
   say "Asking for administrator rights..."
   # shellcheck disable=SC2086
   if [ -r "$0" ] && [ "${0##*/}" != "sh" ] && [ "${0##*/}" != "dash" ]; then
-    exec sudo env LINK_BASE="$LINK_BASE" DUSK_UNINSTALL_YES="${DUSK_UNINSTALL_YES:-}" COLORTERM="${COLORTERM:-}" NO_COLOR="${NO_COLOR:-}" \
-      DUSK_ASCII="${DUSK_ASCII:-}" DUSK_PLAIN="${DUSK_PLAIN:-}" DUSK_NO_ANIM="${DUSK_NO_ANIM:-}" sh "$0" $ARGS
+    exec sudo env LINK_BASE="$LINK_BASE" MADANI_UNINSTALL_YES="${MADANI_UNINSTALL_YES:-}" COLORTERM="${COLORTERM:-}" NO_COLOR="${NO_COLOR:-}" \
+      MADANI_ASCII="${MADANI_ASCII:-}" MADANI_PLAIN="${MADANI_PLAIN:-}" MADANI_NO_ANIM="${MADANI_NO_ANIM:-}" sh "$0" $ARGS
   fi
   # piped: the script is gone from stdin, so fetch it again for root
   # shellcheck disable=SC2086
-  curl -fsSL --retry 3 "$LINK_BASE/uninstall" | sudo env LINK_BASE="$LINK_BASE" DUSK_UNINSTALL_YES="${DUSK_UNINSTALL_YES:-}" \
-    COLORTERM="${COLORTERM:-}" NO_COLOR="${NO_COLOR:-}" DUSK_ASCII="${DUSK_ASCII:-}" DUSK_PLAIN="${DUSK_PLAIN:-}" DUSK_NO_ANIM="${DUSK_NO_ANIM:-}" sh -s -- $ARGS
+  curl -fsSL --retry 3 "$LINK_BASE/uninstall" | sudo env LINK_BASE="$LINK_BASE" MADANI_UNINSTALL_YES="${MADANI_UNINSTALL_YES:-}" \
+    COLORTERM="${COLORTERM:-}" NO_COLOR="${NO_COLOR:-}" MADANI_ASCII="${MADANI_ASCII:-}" MADANI_PLAIN="${MADANI_PLAIN:-}" MADANI_NO_ANIM="${MADANI_NO_ANIM:-}" sh -s -- $ARGS
   exit $?
 }
 
@@ -280,7 +280,7 @@ our_containers() {
   { for _l in com.openmausbot.bot-desktop com.openmausbot.vps com.openmausbot.cua-driver com.openmausbot.container; do
       docker ps -aq --no-trunc --filter "label=$_l"
     done
-    docker ps -a --no-trunc --format '{{.ID}} {{.Names}}' | awk '$2 ~ /^duskbot-/ { print $1 }'
+    docker ps -a --no-trunc --format '{{.ID}} {{.Names}}' | awk '$2 ~ /^madanibot-/ { print $1 }'
   } 2>/dev/null | sort -u
 }
 our_volumes() {
@@ -294,7 +294,7 @@ our_networks() {
 our_images() {
   { for _l in com.openmausbot.bot-desktop com.openmausbot.cua-base com.openmausbot.image-layer; do docker images -q --no-trunc --filter "label=$_l"; done
     docker images --no-trunc --format '{{.Repository}} {{.ID}}' |
-      awk '$1 ~ /^(ghcr\.io\/duskbotai\/dusk-desktop|ghcr\.io\/duskbotai\/bot-desktop|ghcr\.io\/sidddevz\/omb-bot-desktop|omb-bot-desktop|(docker\.io\/)?trycua\/xfce-cua)$/ { print $2 }'
+      awk '$1 ~ /^(ghcr\.io\/madanibotai\/madani-desktop|ghcr\.io\/madanibotai\/bot-desktop|ghcr\.io\/sidddevz\/omb-bot-desktop|omb-bot-desktop|(docker\.io\/)?trycua\/xfce-cua)$/ { print $2 }'
     _img=$(state_get desktop-image)
     [ -n "$_img" ] && docker image inspect -f '{{.Id}}' "$_img"
   } 2>/dev/null | sort -u
@@ -317,7 +317,7 @@ our_paths() {
   cli_ours && printf '%s\n' "$CLI"
   return 0
 }
-cli_ours() { grep -qs "managed by duskbot-link" "$CLI"; }
+cli_ours() { grep -qs "managed by madanibot-link" "$CLI"; }
 # packages install.sh added that are still installed (the ones --all takes away)
 our_pkgs() {
   _have=$(dpkg-query -W -f '${db:Status-Abbrev} ${Package}\n' 2>/dev/null | awk '$1 ~ /^ii/ { print $2 }')
@@ -374,9 +374,9 @@ survey() {
 BACKUP_FILE=""
 plan() {
   glyph dot; _d=$G
-  printf '  %sThis takes dusk bot off %s%s%s:%s\n\n' "$BOLD" "$ACC" "$NAME" "$R$BOLD" "$R"
+  printf '  %sThis takes madani bot off %s%s%s:%s\n\n' "$BOLD" "$ACC" "$NAME" "$R$BOLD" "$R"
   item() { printf '    %s%s%s %s\n' "$DIM" "$_d" "$R" "$*"; }
-  [ -n "$S_UNITS" ] && item "the dusk bot server and its link to your app ($(count "$S_UNITS") services)"
+  [ -n "$S_UNITS" ] && item "the madani bot server and its link to your app ($(count "$S_UNITS") services)"
   _nc=$(count "$S_CONTAINERS") _nv=$(count "$S_VOLUMES")
   if [ "$_nc" -gt 0 ] || [ "$_nv" -gt 0 ]; then item "$(plural "$_nc" "bot computer" "bot computers") and $(plural "$_nv" "saved home" "saved homes") of bot computers"; fi
   if [ -n "$S_IMAGES" ] && [ -n "$S_NETWORKS" ]; then item "the bot computer image and network"
@@ -426,7 +426,7 @@ PHASES="unlink stop computer home packages"
 phase_title() {
   case "$1" in
     unlink) say "Unlinking from your app" ;;
-    stop) say "Stopping dusk bot" ;;
+    stop) say "Stopping madani bot" ;;
     computer) say "Clearing the bot computers" ;;
     home) say "Removing your bots' home" ;;
     packages) say "Removing what it installed" ;;
@@ -524,8 +524,8 @@ failure_panel() {
   done
   glyph arrow
   printf '\n  %s%s%s %s\n' "$ACC" "$G" "$R" "$(failure_words "$1")"
-  cat "$TMP"/logs/*.log > /root/duskbot-uninstall.log 2>/dev/null || true
-  printf '    %sfull log: /root/duskbot-uninstall.log%s\n\n' "$DIM" "$R"
+  cat "$TMP"/logs/*.log > /root/madanibot-uninstall.log 2>/dev/null || true
+  printf '    %sfull log: /root/madanibot-uninstall.log%s\n\n' "$DIM" "$R"
 }
 
 # ---------- steps ----------
@@ -722,7 +722,7 @@ do_caddy() {
   caddy_ours || { echo "no Caddy site"; return 10; }
   main=/etc/caddy/Caddyfile
   if [ -f /etc/caddy/$CADDY_NAME.caddy ]; then x rm -f /etc/caddy/$CADDY_NAME.caddy; fi
-  if [ -f "$main" ] && grep -q "managed by duskbot-link" "$main"; then
+  if [ -f "$main" ] && grep -q "managed by madanibot-link" "$main"; then
     if [ -f "$main.omb-before" ]; then x mv -f "$main.omb-before" "$main"; else x rm -f "$main"; fi
   elif [ -f "$main" ] && grep -q "import /etc/caddy/$CADDY_NAME.caddy" "$main"; then
     show sed -i "\\#import /etc/caddy/$CADDY_NAME.caddy#d" "$main"
@@ -740,7 +740,7 @@ do_caddy() {
   echo "Caddy no longer serves this server's address"
 }
 
-# 0 only when tailnet https port 443 still proxies to the dusk bot server alone; a status that cannot be read is not ours
+# 0 only when tailnet https port 443 still proxies to the madani bot server alone; a status that cannot be read is not ours
 ts_443_ours() {
   _status=$(tailscale serve status --json 2>/dev/null) || return 1
   _js='const s=JSON.parse(process.argv[1]);const w=Object.entries(s.Web??{}).find(([k])=>k.endsWith(":443"));const h=w?.[1].Handlers??{};process.exit(Object.keys(h).join()==="/"&&h["/"].Proxy==="http://127.0.0.1:8799"?0:1)'
@@ -758,12 +758,12 @@ do_files() {
     command -v apparmor_parser >/dev/null 2>&1 && apparmor_parser -R "$BWRAP_PROFILE" >/dev/null 2>&1 || true
     x rm -f "$BWRAP_PROFILE"; removed="$removed $BWRAP_PROFILE"
   fi
-  # the tailnet address this server served dusk bot at
+  # the tailnet address this server served madani bot at
   if in_manifest "tailscale-serve 443" && command -v tailscale >/dev/null 2>&1; then
     if ts_443_ours; then x tailscale serve --https=443 off 2>&1 || true
     else echo "tailnet https port 443 serves something else now; leaving it alone"; fi
   fi
-  for path in "$OPT" "$LOGS_DIR" "$STATE" "$FENCE" "$LIB" "$ETC" /etc/duskbot-address.json /etc/duskbot-cloudflared; do
+  for path in "$OPT" "$LOGS_DIR" "$STATE" "$FENCE" "$LIB" "$ETC" /etc/madanibot-address.json /etc/madanibot-cloudflared; do
     if [ -e "$path" ]; then x rm -rf "$path"; removed="$removed $path"; fi
   done
   if cli_ours; then x rm -f "$CLI"; removed="$removed $CLI"; fi
@@ -866,7 +866,7 @@ finale() {
   glyph sep
   if [ "$LEFT" -eq 0 ]; then
     glyph ok; _ok=$G; glyph sep
-    printf '\n  %s%s %sRemoved dusk bot from %s%s  %s%s %s%s\n' "$OK" "$_ok" "$BOLD" "$NAME" "$R" "$DIM" "$G" "$total" "$R"
+    printf '\n  %s%s %sRemoved madani bot from %s%s  %s%s %s%s\n' "$OK" "$_ok" "$BOLD" "$NAME" "$R" "$DIM" "$G" "$total" "$R"
     if [ -f "$BACKUP_FILE" ]; then printf '    %syour bots are saved in %s%s\n' "$DIM" "$BACKUP_FILE" "$R"; fi
     printf '\n  %s%sAll clean. Paste the install line from the app whenever you want it back.%s\n\n' "$ACC" "$BOLD" "$R"
   else
@@ -890,12 +890,12 @@ on_stop() {
 }
 
 # the lock install.sh holds while it runs: never remove what an install is still writing
-INSTALL_LOCK=/run/duskbot-install.lock
+INSTALL_LOCK=/run/madanibot-install.lock
 take_lock() {
   command -v flock >/dev/null 2>&1 && ( : >>"$INSTALL_LOCK" ) 2>/dev/null || return 0
   exec 9>>"$INSTALL_LOCK"
   flock -n 9 && return 0
-  printf '\nSomeone is installing dusk bot on this server right now (another terminal, or one whose connection dropped). Wait for it to finish, then run this again.\n\n' >&2
+  printf '\nSomeone is installing madani bot on this server right now (another terminal, or one whose connection dropped). Wait for it to finish, then run this again.\n\n' >&2
   exit 1
 }
 
@@ -911,14 +911,14 @@ main() {
   [ "$UI" = tty ] && printf '%s[?25l' "$ESC"
   NAME=$(hostname -s 2>/dev/null | tr -cd 'A-Za-z0-9.-' | cut -c1-40)
   [ -n "$NAME" ] || NAME="this server"
-  BACKUP_FILE="/root/duskbot-backup-$(date +%Y%m%d-%H%M%S).tgz"
+  BACKUP_FILE="/root/madanibot-backup-$(date +%Y%m%d-%H%M%S).tgz"
   RUN_T0=$(now_ms)
 
   banner
   survey
   if [ "$S_ANY" = 0 ]; then
     glyph ok
-    printf '  %s%s %sNo dusk bot on %s.%s\n' "$OK" "$G" "$BOLD" "$NAME" "$R"
+    printf '  %s%s %sNo madani bot on %s.%s\n' "$OK" "$G" "$BOLD" "$NAME" "$R"
     leftovers
     printf '\n  %sPaste the install line from the app to set it up.%s\n\n' "$DIM" "$R"
     return 0

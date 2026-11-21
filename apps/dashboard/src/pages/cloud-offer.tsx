@@ -11,7 +11,7 @@ import { useSession } from "../data/session";
 import { Button, ButtonLink, cx } from "../ui/kit";
 import { planSelection, type PaidPlan } from "./plan-sheet";
 
-/** what dusk cloud does for someone, said the same way everywhere it is offered */
+/** what madani cloud does for someone, said the same way everywhere it is offered */
 export const CLOUD_POINTS = [
   "always available, even with your laptop shut",
   "routines run on time, day and night",
@@ -35,7 +35,7 @@ export const CHECKOUT_SOON = "paid plans open soon. your account is ready, and w
 
 /** the checkout button while a first plan starts free, else null */
 export const trialAction = (catalog: Pick<PlanCatalog, "trialDays"> | null) => (catalog?.trialDays ? `start ${catalog.trialDays}-day free trial` : null);
-export const checkoutDone = (catalog: Pick<PlanCatalog, "trialDays"> | null) => (catalog?.trialDays ? "your free trial started. your dusk cloud is being set up." : "paid. your dusk cloud is being set up.");
+export const checkoutDone = (catalog: Pick<PlanCatalog, "trialDays"> | null) => (catalog?.trialDays ? "your free trial started. your madani cloud is being set up." : "paid. your madani cloud is being set up.");
 
 /** checkout for a plan in one click: monthly, the first region, personal use; the plans page has every option */
 export function useQuickCheckout(source: CheckoutSource) {
@@ -76,7 +76,7 @@ export function CloudHero({ source = "dash_home" }: { source?: CheckoutSource })
           {error && <p role="alert" className="mt-4 text-14 text-bad">{error}</p>}
           <div className="mt-6 flex flex-wrap gap-2">
             <Button variant="primary" onClick={() => void buy("starter")} disabled={busy || !catalog}>
-              {busy ? <><LoaderCircle size={17} strokeWidth={2} className="spin" aria-hidden />opening checkout</> : trialAction(catalog) ?? "get dusk cloud"}
+              {busy ? <><LoaderCircle size={17} strokeWidth={2} className="spin" aria-hidden />opening checkout</> : trialAction(catalog) ?? "get madani cloud"}
             </Button>
             <ButtonLink to="/billing">compare plans</ButtonLink>
           </div>

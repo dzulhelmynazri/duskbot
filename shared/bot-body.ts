@@ -3,19 +3,19 @@
 import { z } from "zod";
 
 import {
-  DEFAULT_BOT_BODY, DUSK_BODY_IDS, HALLOWEEN_BODY_IDS, LEGACY_BODY_IDS, duskBody, migrateBodyId, type DuskBodyId, type HalloweenBodyId, type LegacyBodyId,
+  DEFAULT_BOT_BODY, MADANI_BODY_IDS, HALLOWEEN_BODY_IDS, LEGACY_BODY_IDS, madaniBody, migrateBodyId, type MadaniBodyId, type HalloweenBodyId, type LegacyBodyId,
 } from "./body-migration.ts";
 import type { MausColor } from "./wire.ts";
 
 export { DEFAULT_BOT_BODY };
 
-export type BotBodyId = DuskBodyId | HalloweenBodyId;
+export type BotBodyId = MadaniBodyId | HalloweenBodyId;
 
 /** A body id as stored or synced: one this version saves, or an older one still to be read through the migration. */
 export type StoredBodyId = BotBodyId | LegacyBodyId;
 
 /** The bodies a picker offers and a new bot saves. */
-export const BOT_BODY_IDS = [...DUSK_BODY_IDS, ...HALLOWEEN_BODY_IDS] as [BotBodyId, ...BotBodyId[]];
+export const BOT_BODY_IDS = [...MADANI_BODY_IDS, ...HALLOWEEN_BODY_IDS] as [BotBodyId, ...BotBodyId[]];
 
 export function isHalloweenBody(value: unknown): value is HalloweenBodyId {
   return (HALLOWEEN_BODY_IDS as readonly unknown[]).includes(value);
@@ -35,12 +35,12 @@ export function botBodyId(value: unknown): BotBodyId {
 }
 
 /** The one of our bodies a stored id draws as; Halloween costumes are drawn on their own. */
-export const bodyShapeFor = duskBody;
+export const bodyShapeFor = madaniBody;
 
 /** Whether a bot wearing `current` draws as `id`, so a picker marks an older id as the body it now looks like. */
 export function wearsBody(current: unknown, id: BotBodyId): boolean {
   if (isHalloweenBody(id)) return current === id;
-  return duskBody(current) === duskBody(id);
+  return madaniBody(current) === madaniBody(id);
 }
 
 /** The costume each bot colour wears (ten costumes, so brown keeps its own body) when "Dress my bots up" is on with the Halloween skin. */

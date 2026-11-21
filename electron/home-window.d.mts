@@ -1,5 +1,5 @@
 /** What this computer's screen says while the window can't show the place. `reason`: the Admin's words on why My Cloud
- * doesn't answer; `machine`: a plan problem's state; `other`: another dusk cloud account is signed in; `name`: the
+ * doesn't answer; `machine`: a plan problem's state; `other`: another madani cloud account is signed in; `name`: the
  * team whose Cloud is being opened (absent for My Cloud). */
 export type HomeView = { name?: string } & (
   | { screen: "opening" | "waking" | "moving" }
@@ -28,7 +28,7 @@ export interface HomeBridge {
   retry(): Promise<HomeView>;
   /** This computer's screen only, once the person said yes there: the Cloud it shows leaves their list (absent: an older app). */
   remove?(): Promise<import("./cloud-account.mjs").CloudRemoveOutcome>;
-  /** This device's dusk cloud sign-in, again; on My Cloud's page only from the person's click. */
+  /** This device's madani cloud sign-in, again; on My Cloud's page only from the person's click. */
   signIn(): Promise<void>;
   /** My Cloud's own page only: its session ended, so the app signs it in again by itself. */
   repair(): Promise<void>;

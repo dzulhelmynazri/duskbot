@@ -8,8 +8,8 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { createInterface } from "node:readline";
 
-const root = mkdtempSync(join(tmpdir(), "dusk-chatgpt-plan-"));
-process.env.DUSK_DATA_DIR = join(root, "dusk");
+const root = mkdtempSync(join(tmpdir(), "madani-chatgpt-plan-"));
+process.env.MADANI_DATA_DIR = join(root, "madani");
 const { chatgptPlanCodexArgs } = await import("../server/drivers/codex.ts");
 const home = join(root, "home");
 const cwd = join(root, "workspace");
@@ -44,7 +44,7 @@ async function start() {
   child = spawn(process.env.PROBE_CODEX ?? "codex", ["app-server", ...chatgptPlanCodexArgs(),
     // Fixture override only; the production endpoint is fixed HTTPS.
     "-c", `model_providers.openai_chatgpt_plan.base_url=${JSON.stringify(endpoint)}`,
-  ], { env: { PATH: process.env.PATH, HOME: home, CODEX_HOME: home, DUSK_CHATGPT_TOKEN: token }, stdio: ["pipe", "pipe", "pipe"] });
+  ], { env: { PATH: process.env.PATH, HOME: home, CODEX_HOME: home, MADANI_CHATGPT_TOKEN: token }, stdio: ["pipe", "pipe", "pipe"] });
   child.stderr.on("data", chunk => { stderr = (stderr + chunk).slice(-8000); });
   createInterface({ input: child.stdout }).on("line", line => {
     let message; try { message = JSON.parse(line); } catch { return; }
@@ -56,7 +56,7 @@ async function start() {
     }
     else if (message.method === "turn/completed") completions?.(message.params);
   });
-  await rpc("initialize", { clientInfo: { name: "duskbot", title: "dusk bot", version: "fixture" } });
+  await rpc("initialize", { clientInfo: { name: "madanibot", title: "madani bot", version: "fixture" } });
   child.stdin.write(JSON.stringify({ method: "initialized" }) + "\n");
 }
 function rpc(method, params) {

@@ -1,7 +1,7 @@
 import { useSyncExternalStore } from "react";
 import type { MobilePlatform } from "./platform";
 
-const LIVE_ACTIVITY_KEY = "dusk.mobile.liveActivity";
+const LIVE_ACTIVITY_KEY = "madani.mobile.liveActivity";
 let platform: MobilePlatform | null = null;
 let enabled = true;
 const listeners = new Set<() => void>();

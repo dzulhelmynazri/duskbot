@@ -1,4 +1,4 @@
-// Per-bot workspaces (~/.duskbot/workspaces/<botId>/) that double as file-based memory.
+// Per-bot workspaces (~/.madanibot/workspaces/<botId>/) that double as file-based memory.
 import { closeSync, constants, existsSync, fstatSync, lstatSync, mkdirSync, openSync, readdirSync, readFileSync, statSync, unlinkSync } from "node:fs";
 import { join } from "node:path";
 

@@ -92,7 +92,7 @@ beforeEach(() => {
   fixture.endCall.mockClear();
   fixture.track.mockClear();
   fixture.dispatch.mockClear();
-  vi.stubGlobal("window", { duskDesktop: { speechStart: () => {} } });
+  vi.stubGlobal("window", { madaniDesktop: { speechStart: () => {} } });
 });
 afterEach(() => {
   resetLiveMedia();

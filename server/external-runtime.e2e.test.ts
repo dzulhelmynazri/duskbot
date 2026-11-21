@@ -7,7 +7,7 @@ import { join } from "node:path";
 import { createInterface } from "node:readline";
 import { fileURLToPath } from "node:url";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
-import { launchVerificationServer, verificationServerEnvironment, type VerificationServer } from "../scripts/control-dusk.ts";
+import { launchVerificationServer, verificationServerEnvironment, type VerificationServer } from "../scripts/control-madani.ts";
 import { ENVELOPE_MARK } from "./runtime/envelope.ts";
 import { waitForExit } from "./testing/cleanup.ts";
 import { readHandoffs } from "./testing/handoff-rows.ts";
@@ -80,8 +80,8 @@ async function delayedBody(path: string, body: unknown) {
 function bridge(botId: string, threadId: string) {
   const child = spawn(process.execPath, [fileURLToPath(new URL("./drivers/agents-proxy.ts", import.meta.url))], {
     env: { ...verificationServerEnvironment({}, data, Number(new URL(base).port)),
-      DUSK_HARNESS_URL: base, DUSK_BOT_ID: botId, DUSK_THREAD_ID: threadId,
-      DUSK_COMMS_TOKEN: TOKEN, DUSK_EXTERNAL_RUNTIME: "1" },
+      MADANI_HARNESS_URL: base, MADANI_BOT_ID: botId, MADANI_THREAD_ID: threadId,
+      MADANI_COMMS_TOKEN: TOKEN, MADANI_EXTERNAL_RUNTIME: "1" },
     stdio: ["pipe", "pipe", "pipe"],
   });
   child.stderr.resume();

@@ -19,7 +19,7 @@ const here = dirname(fileURLToPath(import.meta.url));
 const { values } = parseArgs({ options: {
   repo: { type: "string", default: resolve(here, "..", "..") },
   label: { type: "string", default: "live" },
-  model: { type: "string", default: process.env.DUSK_EVAL_MODEL ?? "gpt-6.1-terra" },
+  model: { type: "string", default: process.env.MADANI_EVAL_MODEL ?? "gpt-6.1-terra" },
   keep: { type: "boolean", default: false },
 } });
 const gateway = gatewayFromEnv(values.model!);

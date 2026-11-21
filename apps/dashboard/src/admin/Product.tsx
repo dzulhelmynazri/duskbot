@@ -80,7 +80,7 @@ const lift = (value: number | null) => value === null ? <span className="text-in
 /** the list of fixes, numbered, each with the number behind it */
 export function ImproveList({ items, limit }: { items: Improvement[]; limit?: number }) {
   const shown = limit ? items.slice(0, limit) : items;
-  if (!shown.length) return <p className="rounded-[18px] bg-card px-4 py-6 text-center text-14 text-ink-3">nothing stands out yet. this fills in as more people use dusk bot.</p>;
+  if (!shown.length) return <p className="rounded-[18px] bg-card px-4 py-6 text-center text-14 text-ink-3">nothing stands out yet. this fills in as more people use madani bot.</p>;
   return (
     <ol className="flex flex-col gap-1.5 overflow-hidden rounded-[20px]">
       {shown.map((item, i) => (
@@ -163,7 +163,7 @@ function ImproveView({ data }: { data: ProductAnswer }) {
                 const first = Math.max(1, ...data.appFirstRun!.filter((one) => one.path === "all").map((one) => one.reached));
                 return (
                   <tr key={`${row.path}:${row.step}`} className="hover-row">
-                    <Td className="text-ink-3">{row.path === "all" ? "everyone" : row.path === "mac" ? "this computer" : "dusk cloud"}</Td>
+                    <Td className="text-ink-3">{row.path === "all" ? "everyone" : row.path === "mac" ? "this computer" : "madani cloud"}</Td>
                     <Td className="text-ink">{words(row.step)}</Td>
                     <Td className="text-end font-mono num">{n(row.reached)}</Td>
                     <Td className="text-end font-mono num">{Math.round((row.reached / first) * 100)}%</Td>

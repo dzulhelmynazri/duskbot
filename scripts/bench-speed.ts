@@ -7,7 +7,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { parseArgs } from "node:util";
-import { verificationServerEnvironment } from "./control-dusk.ts";
+import { verificationServerEnvironment } from "./control-madani.ts";
 import { removeTempDir, waitForExit } from "../server/testing/cleanup.ts";
 import { freePortBlock } from "../server/testing/ports.ts";
 
@@ -19,7 +19,7 @@ const { values: opts } = parseArgs({
     replies: { type: "string", default: "5" },
     bots: { type: "string", default: "50" },
     "cpu-prof": { type: "string" },
-    playwright: { type: "string", default: process.env.DUSK_BENCH_PLAYWRIGHT ?? "" },
+    playwright: { type: "string", default: process.env.MADANI_BENCH_PLAYWRIGHT ?? "" },
     only: { type: "string", default: "start,ui,reply" },
     json: { type: "string" },
     cold: { type: "boolean", default: false },
@@ -56,7 +56,7 @@ async function startFixture(dataDir: string | null, cpuProf?: string, server = o
   const port = await freePortBlock([0, 1], 21_000, 2_000);
   const url = `http://127.0.0.1:${port}`;
   const fresh = !dataDir;
-  const dir = dataDir ?? mkdtempSync(join(tmpdir(), "duskbot-bench-"));
+  const dir = dataDir ?? mkdtempSync(join(tmpdir(), "madanibot-bench-"));
   const { cli, stampFile } = engineWrapper(dir);
   if (fresh) {
     mkdirSync(join(dir, "tmp"), { recursive: true });
@@ -65,11 +65,11 @@ async function startFixture(dataDir: string | null, cpuProf?: string, server = o
       instances: { claude: { driver: "claudeAgent", displayName: "Bench fixture", config: { cli } } },
     }, null, 2));
   }
-  const env = { ...verificationServerEnvironment(process.env, dir, port), DUSK_STATIC_DIR: join(ROOT, "dist"), DUSK_DEV_TRUST_LOCAL_BROWSER: "1" };
+  const env = { ...verificationServerEnvironment(process.env, dir, port), MADANI_STATIC_DIR: join(ROOT, "dist"), MADANI_DEV_TRUST_LOCAL_BROWSER: "1" };
   const entry = server === "ts"
     ? ["--experimental-strip-types", join(ROOT, "server", "index.ts")]
     : [join(ROOT, "dist-server", "desktop-entry.mjs")];
-  if (server !== "ts") env.DUSK_SERVER_COMPILE_CACHE = join(tmpdir(), "duskbot-bench-compile-cache");
+  if (server !== "ts") env.MADANI_SERVER_COMPILE_CACHE = join(tmpdir(), "madanibot-bench-compile-cache");
   const args = [...(cpuProf ? ["--cpu-prof", `--cpu-prof-dir=${cpuProf}`] : []), ...entry];
   const t0 = performance.now();
   const child = spawn(process.execPath, args, { cwd: ROOT, env, stdio: ["ignore", "pipe", "pipe"] });
@@ -79,7 +79,7 @@ async function startFixture(dataDir: string | null, cpuProf?: string, server = o
     for (const line of String(chunk).split("\n")) {
       if (!line) continue;
       log.push(`${round(performance.now() - t0)} ${line}`);
-      if (line.includes("duskbot server on") && marks.listening === undefined) marks.listening = performance.now() - t0;
+      if (line.includes("madanibot server on") && marks.listening === undefined) marks.listening = performance.now() - t0;
     }
   };
   child.stdout!.on("data", onLine);
@@ -136,11 +136,11 @@ async function coldStart() {
   const listening: number[] = [], health: number[] = [], bots: number[] = [], restartHealth: number[] = [];
   for (let run = 0; run < runs; run += 1) {
     const fixture = await startFixture(null, run === 0 ? opts["cpu-prof"] : undefined);
-    if (process.env.DUSK_BENCH_TRACE) console.log(fixture.log.filter((line) => line.includes(process.env.DUSK_BENCH_TRACE!)).join("\n"));
+    if (process.env.MADANI_BENCH_TRACE) console.log(fixture.log.filter((line) => line.includes(process.env.MADANI_BENCH_TRACE!)).join("\n"));
     listening.push(fixture.marks.listening); health.push(fixture.marks.health); bots.push(fixture.marks.bots);
     await stop(fixture, true);
     const again = await startFixture(fixture.dataDir, run === 0 ? opts["cpu-prof"] : undefined);
-    if (process.env.DUSK_BENCH_TRACE) console.log(again.log.filter((line) => line.includes(process.env.DUSK_BENCH_TRACE!)).join("\n"));
+    if (process.env.MADANI_BENCH_TRACE) console.log(again.log.filter((line) => line.includes(process.env.MADANI_BENCH_TRACE!)).join("\n"));
     restartHealth.push(again.marks.health);
     await stop(again);
   }
@@ -177,7 +177,7 @@ async function ui() {
     const routes = new Map<string, number[]>();
     for (let run = 0; run < Number(opts.runs); run += 1) {
       const context = await browser.newContext({ viewport: { width: 1440, height: 900 } });
-      await context.addInitScript((storage: Record<string, string>) => { for (const [key, value] of Object.entries(storage)) localStorage.setItem(key, value); }, { "dusk-analytics-opt-out": "1", "dusk-email-gate": "skipped", "dusk-simple-mode-prompt": "1", "grok-move-2026-11": "1" });
+      await context.addInitScript((storage: Record<string, string>) => { for (const [key, value] of Object.entries(storage)) localStorage.setItem(key, value); }, { "madani-analytics-opt-out": "1", "madani-email-gate": "skipped", "madani-simple-mode-prompt": "1", "grok-move-2026-11": "1" });
       const page = await context.newPage();
       const started = new Map<any, number>();
       page.on("request", (request: any) => started.set(request, performance.now()));
@@ -191,7 +191,7 @@ async function ui() {
       await page.goto(fixture.url, { waitUntil: "commit" });
       await page.waitForFunction(() => performance.getEntriesByName("first-contentful-paint").length > 0, null, { timeout: 30_000, polling: 5 });
       firstPaint.push(await page.evaluate(() => performance.getEntriesByName("first-contentful-paint")[0].startTime));
-      await page.locator(`[data-sidebar-bot-row="${fleet[fleet.length - 1].id}"]`).first().waitFor({ timeout: 30_000 }).catch(async (error: unknown) => { if (process.env.DUSK_BENCH_SHOT) await page.screenshot({ path: process.env.DUSK_BENCH_SHOT }); console.log("rows", await page.locator("[data-sidebar-bot-row]").count()); throw error; });
+      await page.locator(`[data-sidebar-bot-row="${fleet[fleet.length - 1].id}"]`).first().waitFor({ timeout: 30_000 }).catch(async (error: unknown) => { if (process.env.MADANI_BENCH_SHOT) await page.screenshot({ path: process.env.MADANI_BENCH_SHOT }); console.log("rows", await page.locator("[data-sidebar-bot-row]").count()); throw error; });
       sidebar.push(performance.now() - t0);
       await page.locator("textarea").first().waitFor({ state: "visible", timeout: 30_000 });
       composer.push(performance.now() - t0);
@@ -282,8 +282,8 @@ async function reply() {
       spawned.push(at("spawn")); firstEngineText.push(at("first-text"));
       firstFrame.push(marks.frame - t0); done.push(marks.done - t0);
       overhead.push(at("stdin")); delivered.push(marks.frame - t0 - at("first-text"));
-      if (process.env.DUSK_BENCH_TRACE) {
-        console.log(fixture.log.filter((line) => line.includes(process.env.DUSK_BENCH_TRACE!)).join("\n"));
+      if (process.env.MADANI_BENCH_TRACE) {
+        console.log(fixture.log.filter((line) => line.includes(process.env.MADANI_BENCH_TRACE!)).join("\n"));
         console.log(`stamps: ${stamps.map((stamp) => `${stamp.event}@${stamp.at - wall0}`).join(" ")} frame@${round(marks.frame - t0)} sent@${round(t0 - fixture.t0)} accepted@${round(marks.accepted - fixture.t0)}`);
         fixture.log.length = 0;
       }

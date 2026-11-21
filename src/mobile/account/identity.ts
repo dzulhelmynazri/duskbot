@@ -3,8 +3,8 @@ import { placeKind } from "../connection/connection-notice";
 import type { MobileAccount } from "./account-client";
 
 /** Who the phone is, as Settings says it: one answer from the account session and the places the phone links.
- * `account`: signed in to that dusk bot account, from its session or, without one, from a dusk cloud it lists;
- * `cloud`: linked to a dusk cloud whose account the phone has not learned yet (still that account's, never signed out);
+ * `account`: signed in to that madani bot account, from its session or, without one, from a madani cloud it lists;
+ * `cloud`: linked to a madani cloud whose account the phone has not learned yet (still that account's, never signed out);
  * `computer`: only computers paired with their own QR or code, which need no account; `none`: nothing linked. */
 export type PhoneIdentity =
   | { kind: "account"; email: string; session: boolean }

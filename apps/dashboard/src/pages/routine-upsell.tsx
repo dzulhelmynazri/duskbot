@@ -10,8 +10,8 @@ import { Mascot } from "../ui/Mascot";
 import { AnimatePresence } from "../ui/motion";
 import { PlanSheet } from "./plan-sheet";
 
-const SEEN = "dusk-dash-routines-seen";
-const SHOWN = "dusk-dash-routine-upsell-at";
+const SEEN = "madani-dash-routines-seen";
+const SHOWN = "madani-dash-routine-upsell-at";
 
 export function RoutineUpsell() {
   const { account, workspaces } = useSession();
@@ -57,11 +57,11 @@ export function RoutineUpsell() {
   const notNow = () => { trackUpsell("dismiss", "dash_routines"); close(); };
   return (
     <>
-      <AnimatePresence>{routine && free && <Modal key="routine" open onClose={notNow} wide title={`routines stop when your ${routine.workspace.kind === "mac" ? "Mac" : "computer"} sleeps`} footer={<><Button onClick={notNow}>not now</Button><Button variant="primary" onClick={() => { trackUpsell("click", "dash_routines"); close(); setPlan(true); }}>see dusk cloud</Button></>}>
-        <p>"{routine.routine.name}" runs on {routine.workspace.name}. dusk cloud keeps it running, even when your computer is off.</p>
+      <AnimatePresence>{routine && free && <Modal key="routine" open onClose={notNow} wide title={`routines stop when your ${routine.workspace.kind === "mac" ? "Mac" : "computer"} sleeps`} footer={<><Button onClick={notNow}>not now</Button><Button variant="primary" onClick={() => { trackUpsell("click", "dash_routines"); close(); setPlan(true); }}>see madani cloud</Button></>}>
+        <p>"{routine.routine.name}" runs on {routine.workspace.name}. madani cloud keeps it running, even when your computer is off.</p>
         <dl className="mt-5 text-13">
           <div className="flex items-center gap-3 py-3"><Mascot color="silver" size={24} state="sleeping" /><dt className="min-w-0 flex-1 truncate text-ink-2">{routine.workspace.name}</dt><dd className="shrink-0">stops while asleep</dd></div>
-          <div className="flex items-center gap-3 py-3"><span className="size-6 shrink-0" aria-hidden /><dt className="min-w-0 flex-1 truncate text-ink-2">dusk cloud</dt><dd className="shrink-0">always available</dd></div>
+          <div className="flex items-center gap-3 py-3"><span className="size-6 shrink-0" aria-hidden /><dt className="min-w-0 flex-1 truncate text-ink-2">madani cloud</dt><dd className="shrink-0">always available</dd></div>
         </dl>
       </Modal>}</AnimatePresence>
       <AnimatePresence>{plan && <PlanSheet key="plan" start="starter" source="dash_routines" onClose={() => setPlan(false)} />}</AnimatePresence>

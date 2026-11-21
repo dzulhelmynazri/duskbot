@@ -5,7 +5,7 @@ const fine = matchMedia('(hover: hover) and (pointer: fine)').matches;
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => [...r.querySelectorAll(s)];
 const later = (ms, fn) => setTimeout(fn, ms);
-const bots = () => window.duskBots;
+const bots = () => window.madaniBots;
 // runs fn the first time enough of el is on screen
 function once(el, fn, threshold = 0.4) {
   if (!el || !('IntersectionObserver' in window)) return;
@@ -36,7 +36,7 @@ const dl = $('[data-dl-page]');
 if (dl) {
   const go = $('[data-dl-go]', dl), label = $('[data-dl-label]', dl), note = $('[data-dl-note]', dl), mark = $('.dl-os', dl);
   const version = note?.textContent.split(' · ').pop();
-  window.duskBuild?.().then((key) => {
+  window.madaniBuild?.().then((key) => {
     if (!go) return;
     if (key === 'phone') {
       // on a phone: the iphone app first, and the computer download sent to yourself for later
@@ -47,7 +47,7 @@ if (dl) {
       form.addEventListener('submit', (e) => {
         e.preventDefault();
         const to = form.email.value.trim(), link = `${location.origin}/download`;
-        location.href = `mailto:${encodeURIComponent(to).replace('%40', '@')}?subject=${encodeURIComponent('dusk bot for your computer')}&body=${encodeURIComponent(`download dusk bot on your computer: ${link}`)}`;
+        location.href = `mailto:${encodeURIComponent(to).replace('%40', '@')}?subject=${encodeURIComponent('madani bot for your computer')}&body=${encodeURIComponent(`download madani bot on your computer: ${link}`)}`;
       });
       return;
     }
@@ -131,7 +131,7 @@ addEventListener('load', () => {
 
 
 // the footer knows what time it is
-const dusk = $('[data-dusk]'), hour = new Date().getHours();
-if (dusk && hour >= 17 && hour < 20) dusk.textContent = "it's dusk where you are. the bots are just getting started.";
-else if (dusk && hour < 5) dusk.textContent = "it's late. the bots are still up, you don't have to be.";
+const madani = $('[data-madani]'), hour = new Date().getHours();
+if (madani && hour >= 17 && hour < 20) madani.textContent = "it's madani where you are. the bots are just getting started.";
+else if (madani && hour < 5) madani.textContent = "it's late. the bots are still up, you don't have to be.";
 }

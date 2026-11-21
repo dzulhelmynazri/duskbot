@@ -13,8 +13,8 @@ plaintext credential exclusion from the service's saved JSON. The service clock
 advances across email resend limits; desktop polling is driven explicitly.
 
 For a manual fixture, run `node apps/dashboard/scripts/fixture.ts --port 7480`, then
-`DUSK_CLOUD_ORIGIN=http://127.0.0.1:7480 pnpm dev:app` in another terminal. The
-fixture prints email codes and uses fake providers. Add `DUSK_ALLOW_SIGNED_OUT=1`
+`MADANI_CLOUD_ORIGIN=http://127.0.0.1:7480 pnpm dev:app` in another terminal. The
+fixture prints email codes and uses fake providers. Add `MADANI_ALLOW_SIGNED_OUT=1`
 to the desktop command to skip the account gate. Open the phone web preview
 with `?account=1&accountOrigin=http://127.0.0.1:7480`. Stop the fixture with
 Ctrl-C to remove its temporary service data. These tests exercise HTTP and

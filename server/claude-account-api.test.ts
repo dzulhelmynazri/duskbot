@@ -57,8 +57,8 @@ async function idle(id: string) {
 }
 
 beforeAll(async () => {
-  home = mkdtempSync(join(tmpdir(), "dusk-claude-account-api-"));
-  dataDir = join(home, ".duskbot");
+  home = mkdtempSync(join(tmpdir(), "madani-claude-account-api-"));
+  dataDir = join(home, ".madanibot");
   mkdirSync(dataDir, { recursive: true });
   cli = join(home, "fixture-claude.mjs");
   // The official-style auth probe stays synthetic; turns reuse the repository
@@ -107,8 +107,8 @@ await import(${JSON.stringify(pathToFileURL(join(SERVER_DIR, "testing", "fake-cl
       PATH: process.env.PATH,
       ...(process.env.PATHEXT ? { PATHEXT: process.env.PATHEXT } : {}),
       ...(process.env.SystemRoot ? { SystemRoot: process.env.SystemRoot } : {}),
-      HOME: home, USERPROFILE: home, DUSK_DATA_DIR: dataDir,
-      DUSK_PORT: String(port), DUSK_WEBHOOK_PORT: String(port + 1), DUSK_SSE_HEARTBEAT_MS: "50",
+      HOME: home, USERPROFILE: home, MADANI_DATA_DIR: dataDir,
+      MADANI_PORT: String(port), MADANI_WEBHOOK_PORT: String(port + 1), MADANI_SSE_HEARTBEAT_MS: "50",
     },
     stdio: ["ignore", "pipe", "pipe"],
   });

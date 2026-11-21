@@ -4,7 +4,7 @@ import { connect, type Socket } from "node:net";
 import { join } from "node:path";
 import { expect, it } from "vitest";
 
-import { launchVerificationServer } from "../scripts/control-dusk.ts";
+import { launchVerificationServer } from "../scripts/control-madani.ts";
 import { hostTimeout } from "./testing/host-timeout.ts";
 
 it("keeps a real routine waiting until both concurrent broker approvals settle and cancels it once", async () => {
@@ -38,7 +38,7 @@ it("keeps a real routine waiting until both concurrent broker approvals settle a
     const run = async () => (await api("GET", "/api/routines")).runs.find((candidate: any) => candidate.routineId === routine.id);
     await expect.poll(() => existsSync(dump), { timeout: hostTimeout(15_000) }).toBe(true);
     const launch = JSON.parse(readFileSync(dump, "utf8"));
-    socket = connect(launch.mcpConfig.mcpServers.dusk.args.at(-1));
+    socket = connect(launch.mcpConfig.mcpServers.madani.args.at(-1));
     await new Promise<void>((resolve, reject) => { socket!.once("connect", resolve); socket!.once("error", reject); });
     const answers: Array<{ id: string; behavior: string }> = [];
     let buffer = "";

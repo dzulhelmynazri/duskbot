@@ -87,7 +87,7 @@ describe("daily tool-call budget", () => {
 });
 
 describe("registration limits", () => {
-  const register = (h: ReturnType<typeof brokerHarness>, ip: string, agent = "dusk") =>
+  const register = (h: ReturnType<typeof brokerHarness>, ip: string, agent = "madani") =>
     h.fetch("/v1/installations", { method: "POST", body: "{}", headers: { "cf-connecting-ip": ip, "user-agent": agent } });
 
   it("caps new installations per address per day, whatever the user agent", async () => {

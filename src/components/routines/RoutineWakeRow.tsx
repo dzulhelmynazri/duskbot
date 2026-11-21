@@ -5,7 +5,7 @@ import { Card, SwitchRow } from "../ListRows";
 
 /** While a Mac sleeps no schedule runs: the shell can hold it awake the hour before one is due, plugged in only. */
 export function RoutineWakeRow() {
-  const bridge = typeof window !== "undefined" ? window.duskDesktop?.routines : undefined;
+  const bridge = typeof window !== "undefined" ? window.madaniDesktop?.routines : undefined;
   const [state, setState] = useState<DesktopRoutineWake | null>(null);
   const [busy, setBusy] = useState(false);
   useEffect(() => {

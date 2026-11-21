@@ -4,7 +4,7 @@
   "title": "Outlook AI assistant for meeting mail and follow-ups",
   "nav": "outlook",
   "h1": "an outlook bot for the mail around your meetings",
-  "description": "Use dusk bot with Outlook to prepare meeting context, find promised replies and review folders. See the actual actions and where approvals apply.",
+  "description": "Use madani bot with Outlook to prepare meeting context, find promised replies and review folders. See the actual actions and where approvals apply.",
   "keyword": "claude outlook",
   "keywords": [
     "outlook mcp",
@@ -102,11 +102,11 @@
       "output": "unsent reply drafts after approval, plus missing decisions"
     }
   ],
-  "asks": "**keep the reply ready while you decide what to say.** a new email draft stays a draft. **create draft reply** counts as a send in dusk because its name includes reply. it follows sending controls even though it saves a draft.\n\n- sends show **Allow** and **Deny** by default\n- a daily amount can allow sends without individual approval\n\ncareful with **Full access**: a bot there with no sending rule can send up to 25 a day without asking. give it **Ask every time**.\n\nfolder moves and calendar changes skip sending approval. keep a background reader read only. for supervised writes, say \"ask me before you change anything\".",
+  "asks": "**keep the reply ready while you decide what to say.** a new email draft stays a draft. **create draft reply** counts as a send in madani because its name includes reply. it follows sending controls even though it saves a draft.\n\n- sends show **Allow** and **Deny** by default\n- a daily amount can allow sends without individual approval\n\ncareful with **Full access**: a bot there with no sending rule can send up to 25 a day without asking. give it **Ask every time**.\n\nfolder moves and calendar changes skip sending approval. keep a background reader read only. for supervised writes, say \"ask me before you change anything\".",
   "cannot": [
     "**save outlook drafts while read only.** it can read and report in chat. a saved draft needs write access.",
-    "**read a mailbox you have not connected.** signing in elsewhere does not connect it to dusk. connect each account you want it to use.",
-    "**prepare an early brief on a sleeping computer.** local routines need dusk open and the computer awake. cloud can run the job before you wake."
+    "**read a mailbox you have not connected.** signing in elsewhere does not connect it to madani. connect each account you want it to use.",
+    "**prepare an early brief on a sleeping computer.** local routines need madani open and the computer awake. cloud can run the job before you wake."
   ],
   "sections": [
     {
@@ -129,24 +129,24 @@
     },
     {
       "q": "how do i use the assistant from my phone?",
-      "a": "**pair your phone to the bot's host.** your computer must stay on with dusk running. pairing to dusk cloud works with your computer off."
+      "a": "**pair your phone to the bot's host.** your computer must stay on with madani running. pairing to madani cloud works with your computer off."
     }
   ],
   "sources": [
     {
-      "label": "dusk bot docs: connected accounts",
+      "label": "madani bot docs: connected accounts",
       "url": "/docs/files-and-apps"
     },
     {
-      "label": "dusk bot docs: routines",
+      "label": "madani bot docs: routines",
       "url": "/docs/routines"
     },
     {
-      "label": "dusk bot docs: sending permission",
+      "label": "madani bot docs: sending permission",
       "url": "/docs/computer"
     },
     {
-      "label": "dusk bot docs: phone pairing",
+      "label": "madani bot docs: phone pairing",
       "url": "/docs/phone"
     }
   ],
@@ -165,7 +165,7 @@
     },
     {
       "mistake": "assuming every saved draft uses the same controls",
-      "fix": "outlook draft replies count as sends in dusk. set sending to ask every time."
+      "fix": "outlook draft replies count as sends in madani. set sending to ask every time."
     }
   ],
   "tip": {

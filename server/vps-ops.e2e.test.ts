@@ -1,6 +1,6 @@
 import { expect, it } from "vitest";
 
-import { launchVerificationServer } from "../scripts/control-dusk.ts";
+import { launchVerificationServer } from "../scripts/control-madani.ts";
 import { collectVpsOpsStatus, type VpsOpsOptions } from "./vps-ops.ts";
 
 it("reads the isolated server's real health and still returns service diagnostics after it stops", async () => {

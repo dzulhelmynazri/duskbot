@@ -4,7 +4,7 @@ import { useStore } from "@/state/store";
 import { t } from "@/lib/i18n";
 import { serverHas } from "@/lib/server-compat";
 
-const SEEN_KEY = "dusk-egress-fallback-seen";
+const SEEN_KEY = "madani-egress-fallback-seen";
 const POLL_MS = 60_000;
 
 /** Once ever: a quiet note when "Route traffic through this computer" is on and the person's computer is offline. */

@@ -3,8 +3,8 @@ import { closeSync, readFileSync } from "node:fs";
 
 /** Never in a child's environment (/proc/<pid>/environ stays readable by the same user): the launcher hands them to the
  * server over an inherited pipe named by CLOUD_SECRETS_FD_ENV. */
-export const CLOUD_HOME_SECRET_KEYS = ["DUSK_CLOUD_BOOTSTRAP_SECRET", "DUSK_CLOUD_VOICE_TOKEN", "DUSK_CLOUD_DECIDER_TOKEN", "DUSK_CLOUD_CONNECTED_APPS_GRANT", "DUSK_CLOUD_X_TOKEN"] as const;
-export const CLOUD_SECRETS_FD_ENV = "DUSK_CLOUD_SECRETS_FD";
+export const CLOUD_HOME_SECRET_KEYS = ["MADANI_CLOUD_BOOTSTRAP_SECRET", "MADANI_CLOUD_VOICE_TOKEN", "MADANI_CLOUD_DECIDER_TOKEN", "MADANI_CLOUD_CONNECTED_APPS_GRANT", "MADANI_CLOUD_X_TOKEN"] as const;
+export const CLOUD_SECRETS_FD_ENV = "MADANI_CLOUD_SECRETS_FD";
 
 export function cloudHomeSecrets(env: NodeJS.ProcessEnv): Record<string, string> {
   return Object.fromEntries(CLOUD_HOME_SECRET_KEYS.flatMap((key) => env[key] ? [[key, env[key]!]] : []));

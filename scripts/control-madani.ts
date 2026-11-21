@@ -1,5 +1,5 @@
 #!/usr/bin/env -S node --experimental-strip-types
-// The duskbot headless verbs for verifying an isolated fixture. A verb that
+// The madanibot headless verbs for verifying an isolated fixture. A verb that
 // changes something never runs on a server it merely found.
 import { spawn, type ChildProcess } from "node:child_process";
 import { closeSync, mkdirSync, mkdtempSync, openSync, readFileSync, writeFileSync } from "node:fs";
@@ -11,7 +11,7 @@ import { parseArgs, type ParseArgsOptionsConfig } from "node:util";
 import { EXIT, HeadlessError } from "../server/headless/args.ts";
 import { runHeadlessCommand } from "../server/headless/main.ts";
 import type { handleToolCall, request } from "./mcp-server.ts";
-import { launchUi, runControlDuskUi } from "./testing/control-dusk-ui.ts";
+import { launchUi, runControlMadaniUi } from "./testing/control-madani-ui.ts";
 import { removeTempDir, waitForExit } from "../server/testing/cleanup.ts";
 import { hostTimeout } from "../server/testing/host-timeout.ts";
 import { freePortBlock } from "../server/testing/ports.ts";
@@ -22,20 +22,20 @@ const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 export const FIXTURE_STARTER_BOT_NAME = "Fixture Starter";
 const FAKE_CLI = join(ROOT, "server", "testing", "fake-claude-cli.ts");
 
-export class ControlDuskError extends HeadlessError {
+export class ControlMadaniError extends HeadlessError {
   constructor(message: string, hint?: string) {
     super(message, EXIT.failed, hint);
   }
 }
 
-export interface ControlDuskDependencies {
+export interface ControlMadaniDependencies {
   callTool?: typeof handleToolCall;
   request?: typeof request;
   env?: NodeJS.ProcessEnv;
 }
 
 export const HELP_UI = `renderer (needs a ui launch handle; every verb takes --ui HANDLE, never discovery):
-  node --experimental-strip-types scripts/control-dusk.ts ui launch [--entry threads] [--tool-calls JSON] [--script JSON] [--mode happy] [--engine codex]
+  node --experimental-strip-types scripts/control-madani.ts ui launch [--entry threads] [--tool-calls JSON] [--script JSON] [--mode happy] [--engine codex]
   ui snapshot --ui HANDLE [--interactive]
   ui click --ui HANDLE (--ref @eN | --name NAME)
   ui type --ui HANDLE (--ref @eN | --name NAME) --text TEXT
@@ -47,7 +47,7 @@ export const HELP_UI = `renderer (needs a ui launch handle; every verb takes --u
   ui wait-settle --ui HANDLE [--timeout 30]
   ui help`;
 
-export const HELP = `control-dusk — the duskbot headless verbs (docs/headless-cli.md), for verifying a fixture
+export const HELP = `control-madani — the madanibot headless verbs (docs/headless-cli.md), for verifying a fixture
 
 read-only (every verb also takes --url URL):
   doctor
@@ -61,7 +61,7 @@ read-only (every verb also takes --url URL):
   export --thread ID --out DIR
   events --job THREAD_ID --until-settled
 
-mutating (an explicit --url or DUSK_URL/DUSK_PORT is required):
+mutating (an explicit --url or MADANI_URL/MADANI_PORT is required):
   new-bot --name NAME [--section TEAM]
   new-channel --name NAME --members ID,ID
   send --bot ID --text TEXT [--task ID] [--dry-run]
@@ -76,7 +76,7 @@ mutating (an explicit --url or DUSK_URL/DUSK_PORT is required):
 ${HELP_UI}
 
 isolated fixture:
-  node --experimental-strip-types scripts/control-dusk.ts launch
+  node --experimental-strip-types scripts/control-madani.ts launch
 
 Output is JSON. wait defaults to 30 seconds here. launch and ui launch own a temporary fake-engine server until interrupted.`;
 
@@ -97,21 +97,21 @@ export function parse(
       allowPositionals: false,
     }).values as Record<string, unknown> & { url?: string };
   } catch (error) {
-    throw new ControlDuskError(
+    throw new ControlMadaniError(
       error instanceof Error ? error.message : String(error),
-      `run control-dusk help for the ${command} syntax`,
+      `run control-madani help for the ${command} syntax`,
     );
   }
 }
 
-export async function runControlDusk(
+export async function runControlMadani(
   argv: string[],
-  dependencies: ControlDuskDependencies = {},
+  dependencies: ControlMadaniDependencies = {},
 ): Promise<unknown> {
   const [command = "help", ...args] = argv;
   if (command === "help" || command === "--help" || command === "-h") return HELP;
-  if (command === "launch") throw new ControlDuskError("launch is available only from the executable CLI");
-  if (command === "ui") return runControlDuskUi(args);
+  if (command === "launch") throw new ControlMadaniError("launch is available only from the executable CLI");
+  if (command === "ui") return runControlMadaniUi(args);
   return runHeadlessCommand(argv, {
     env: dependencies.env ?? process.env,
     ...(dependencies.callTool ? { callTool: dependencies.callTool } : {}),
@@ -122,7 +122,7 @@ export async function runControlDusk(
 }
 
 export function verificationHome(parentEnv: NodeJS.ProcessEnv, dataDir: string): string {
-  return parentEnv.DUSK_VERIFY_HOME_OUTSIDE === "1" ? `${dataDir}-home` : dataDir;
+  return parentEnv.MADANI_VERIFY_HOME_OUTSIDE === "1" ? `${dataDir}-home` : dataDir;
 }
 
 export interface VerificationServer {
@@ -132,7 +132,7 @@ export interface VerificationServer {
   close(): Promise<void>;
 }
 
-/** A temporary home in `dataDir` (beside it, as on a person's computer, with DUSK_VERIFY_HOME_OUTSIDE=1: a workspace
+/** A temporary home in `dataDir` (beside it, as on a person's computer, with MADANI_VERIFY_HOME_OUTSIDE=1: a workspace
  * backup refuses a home inside the folder it backs up), the fake engine's knobs from `parentEnv`, node on PATH, and
  * nothing else from the parent shell or this machine's CLIs. */
 export function verificationServerEnvironment(parentEnv: NodeJS.ProcessEnv, dataDir: string, port: number): NodeJS.ProcessEnv {
@@ -156,9 +156,9 @@ export function verificationServerEnvironment(parentEnv: NodeJS.ProcessEnv, data
     TMP: fixtureTemp,
     TMPDIR: fixtureTemp,
     HERMES_HOME: join(home, ".hermes"),
-    DUSK_DATA_DIR: dataDir,
-    DUSK_PORT: String(port),
-    DUSK_WEBHOOK_PORT: String(port + 1),
+    MADANI_DATA_DIR: dataDir,
+    MADANI_PORT: String(port),
+    MADANI_WEBHOOK_PORT: String(port + 1),
     // A caller's FAKE_CLAUDE_MODE overrides this below to drive failure paths.
     FAKE_CLAUDE_MODE: parentEnv.FAKE_CLAUDE_MODE || "happy",
     FAKE_CLAUDE_DUMP: join(dataDir, "fake-claude-dump.json"),
@@ -167,7 +167,7 @@ export function verificationServerEnvironment(parentEnv: NodeJS.ProcessEnv, data
     PATH: dirname(process.execPath),
     // Without it the server also scans /opt/homebrew/bin, /usr/local/bin and the
     // login shell's PATH, finding a developer's own engine CLIs that CI lacks.
-    DUSK_TEST_SEALED_PATH: "1",
+    MADANI_TEST_SEALED_PATH: "1",
   });
   // The fake engines' knobs are the one thing a caller may script into the child.
   for (const [key, value] of Object.entries(parentEnv)) {
@@ -175,90 +175,90 @@ export function verificationServerEnvironment(parentEnv: NodeJS.ProcessEnv, data
     if ((key.startsWith("FAKE_CLAUDE_") || key.startsWith("FAKE_CODEX_TEXT_") || key.startsWith("FAKE_CODEX_COMMAND") || key === "FAKE_ACP_HANG_ON") && key !== "FAKE_CLAUDE_DUMP" && value) childEnv[key] = value;
   }
   // Enables POST /api/testing/org-library; the route does not exist without it.
-  if (parentEnv.DUSK_TEST_ORG_LIBRARY_KEY) childEnv.DUSK_TEST_ORG_LIBRARY_KEY = parentEnv.DUSK_TEST_ORG_LIBRARY_KEY;
+  if (parentEnv.MADANI_TEST_ORG_LIBRARY_KEY) childEnv.MADANI_TEST_ORG_LIBRARY_KEY = parentEnv.MADANI_TEST_ORG_LIBRARY_KEY;
   // One log line per browser call and preview frame.
-  if (parentEnv.DUSK_BROWSER_TIMING === "1") childEnv.DUSK_BROWSER_TIMING = "1";
+  if (parentEnv.MADANI_BROWSER_TIMING === "1") childEnv.MADANI_BROWSER_TIMING = "1";
   // Warm summaries' minutes as seconds (server/warm-summary.ts), and the switch that turns them off.
-  for (const key of ["DUSK_WARM_SUMMARY_TIME_SCALE", "DUSK_WARM_SUMMARY", "DUSK_CODEX_WARM"]) if (parentEnv[key]) childEnv[key] = parentEnv[key];
+  for (const key of ["MADANI_WARM_SUMMARY_TIME_SCALE", "MADANI_WARM_SUMMARY", "MADANI_CODEX_WARM"]) if (parentEnv[key]) childEnv[key] = parentEnv[key];
   // The built-in voice's downloaded models, so a fixture with a throwaway home does not fetch them again.
-  if (parentEnv.DUSK_VOICE_MODELS_DIR) childEnv.DUSK_VOICE_MODELS_DIR = parentEnv.DUSK_VOICE_MODELS_DIR;
+  if (parentEnv.MADANI_VOICE_MODELS_DIR) childEnv.MADANI_VOICE_MODELS_DIR = parentEnv.MADANI_VOICE_MODELS_DIR;
   // A loopback fake only: the key never reaches a real provider.
-  const liveUrl = parentEnv.DUSK_OPENAI_LIVE_URL?.trim() ?? "";
+  const liveUrl = parentEnv.MADANI_OPENAI_LIVE_URL?.trim() ?? "";
   if (/^http:\/\/127\.0\.0\.1:\d{1,5}$/.test(liveUrl)) {
-    childEnv.DUSK_OPENAI_LIVE_URL = liveUrl;
-    if (parentEnv.DUSK_OPENAI_LIVE_KEY) childEnv.DUSK_OPENAI_LIVE_KEY = parentEnv.DUSK_OPENAI_LIVE_KEY;
+    childEnv.MADANI_OPENAI_LIVE_URL = liveUrl;
+    if (parentEnv.MADANI_OPENAI_LIVE_KEY) childEnv.MADANI_OPENAI_LIVE_KEY = parentEnv.MADANI_OPENAI_LIVE_KEY;
   }
-  // A loopback account service only (apps/dashboard/scripts/fixture.ts): a fixture's reports and feedback never reach dusk.bot.
-  const reportUrl = parentEnv.DUSK_BUG_REPORT_URL?.trim() ?? "";
-  if (/^http:\/\/127\.0\.0\.1:\d{1,5}\/api\/bug-reports$/.test(reportUrl)) childEnv.DUSK_BUG_REPORT_URL = reportUrl;
+  // A loopback account service only (apps/dashboard/scripts/fixture.ts): a fixture's reports and feedback never reach madani.bot.
+  const reportUrl = parentEnv.MADANI_BUG_REPORT_URL?.trim() ?? "";
+  if (/^http:\/\/127\.0\.0\.1:\d{1,5}\/api\/bug-reports$/.test(reportUrl)) childEnv.MADANI_BUG_REPORT_URL = reportUrl;
   // A loopback connected-apps service only (server/testing/broker-fake.ts): its token never reaches the real one.
-  const brokerUrl = parentEnv.DUSK_COMPOSIO_BROKER_URL?.trim() ?? "";
-  if (/^http:\/\/127\.0\.0\.1:\d{1,5}$/.test(brokerUrl) && parentEnv.DUSK_COMPOSIO_BROKER_TOKEN) {
-    childEnv.DUSK_COMPOSIO_BROKER_URL = brokerUrl;
-    childEnv.DUSK_COMPOSIO_BROKER_TOKEN = parentEnv.DUSK_COMPOSIO_BROKER_TOKEN;
+  const brokerUrl = parentEnv.MADANI_COMPOSIO_BROKER_URL?.trim() ?? "";
+  if (/^http:\/\/127\.0\.0\.1:\d{1,5}$/.test(brokerUrl) && parentEnv.MADANI_COMPOSIO_BROKER_TOKEN) {
+    childEnv.MADANI_COMPOSIO_BROKER_URL = brokerUrl;
+    childEnv.MADANI_COMPOSIO_BROKER_TOKEN = parentEnv.MADANI_COMPOSIO_BROKER_TOKEN;
   }
   // Research against loopback stubs only (server/x-research.e2e.test.ts): the relay token crosses only with its stub,
   // and a treg stand-in replaces treg.to, so no test reaches a real relay or treg.
-  const xUrl = parentEnv.DUSK_CLOUD_X_URL?.trim() ?? "";
+  const xUrl = parentEnv.MADANI_CLOUD_X_URL?.trim() ?? "";
   if (/^http:\/\/127\.0\.0\.1:\d{1,5}(?:\/[A-Za-z0-9_-]+)*$/.test(xUrl)) {
-    childEnv.DUSK_CLOUD_X_URL = xUrl;
-    if (parentEnv.DUSK_CLOUD_X_TOKEN) childEnv.DUSK_CLOUD_X_TOKEN = parentEnv.DUSK_CLOUD_X_TOKEN;
+    childEnv.MADANI_CLOUD_X_URL = xUrl;
+    if (parentEnv.MADANI_CLOUD_X_TOKEN) childEnv.MADANI_CLOUD_X_TOKEN = parentEnv.MADANI_CLOUD_X_TOKEN;
   }
-  // @devs reports reach a loopback fake only, else a closed port: never the Dusk team.
-  const bugReportUrl = parentEnv.DUSK_BUG_REPORT_URL?.trim() ?? "";
-  childEnv.DUSK_BUG_REPORT_URL = /^http:\/\/127\.0\.0\.1:\d{1,5}\/[A-Za-z0-9/_-]*$/.test(bugReportUrl) ? bugReportUrl : "http://127.0.0.1:9/api/bug-reports";
+  // @devs reports reach a loopback fake only, else a closed port: never the Madani team.
+  const bugReportUrl = parentEnv.MADANI_BUG_REPORT_URL?.trim() ?? "";
+  childEnv.MADANI_BUG_REPORT_URL = /^http:\/\/127\.0\.0\.1:\d{1,5}\/[A-Za-z0-9/_-]*$/.test(bugReportUrl) ? bugReportUrl : "http://127.0.0.1:9/api/bug-reports";
   // A Vault key file a test made outside the fixture's data folder (the default sits inside it there, so none is used).
-  const keyFile = parentEnv.DUSK_SAVED_SECRETS_KEY_FILE?.trim() ?? "";
-  if (isAbsolute(keyFile) && relative(dataDir, keyFile).startsWith("..")) childEnv.DUSK_SAVED_SECRETS_KEY_FILE = keyFile;
+  const keyFile = parentEnv.MADANI_SAVED_SECRETS_KEY_FILE?.trim() ?? "";
+  if (isAbsolute(keyFile) && relative(dataDir, keyFile).startsWith("..")) childEnv.MADANI_SAVED_SECRETS_KEY_FILE = keyFile;
   // Slack reaches a loopback fake only (server/testing/fake-slack.ts), else a closed port: a fixture never talks to slack.com.
-  const slackUrl = parentEnv.DUSK_SLACK_API_URL?.trim() ?? "";
-  childEnv.DUSK_SLACK_API_URL = /^http:\/\/127\.0\.0\.1:\d{1,5}$/.test(slackUrl) ? slackUrl : "http://127.0.0.1:9";
+  const slackUrl = parentEnv.MADANI_SLACK_API_URL?.trim() ?? "";
+  childEnv.MADANI_SLACK_API_URL = /^http:\/\/127\.0\.0\.1:\d{1,5}$/.test(slackUrl) ? slackUrl : "http://127.0.0.1:9";
   // Routine probe checks may read this one loopback page server (server/host/routine-quiet-host.ts), and nothing else local.
-  const probeOrigin = parentEnv.DUSK_PROBE_LOOPBACK_ORIGIN?.trim() ?? "";
-  if (/^http:\/\/127\.0\.0\.1:\d{1,5}$/.test(probeOrigin)) childEnv.DUSK_PROBE_LOOPBACK_ORIGIN = probeOrigin;
-  const tregUrl = parentEnv.DUSK_TREG_URL?.trim() ?? "";
-  if (/^http:\/\/127\.0\.0\.1:\d{1,5}$/.test(tregUrl)) childEnv.DUSK_TREG_URL = tregUrl;
+  const probeOrigin = parentEnv.MADANI_PROBE_LOOPBACK_ORIGIN?.trim() ?? "";
+  if (/^http:\/\/127\.0\.0\.1:\d{1,5}$/.test(probeOrigin)) childEnv.MADANI_PROBE_LOOPBACK_ORIGIN = probeOrigin;
+  const tregUrl = parentEnv.MADANI_TREG_URL?.trim() ?? "";
+  if (/^http:\/\/127\.0\.0\.1:\d{1,5}$/.test(tregUrl)) childEnv.MADANI_TREG_URL = tregUrl;
   // Loopback only, for harness mechanics: a fake ElevenLabs the measurement
   // substrate can drive without a key. Never a real address.
-  const elevenApi = parentEnv.DUSK_ELEVENLABS_API?.trim() ?? "";
-  if (/^http:\/\/127\.0\.0\.1:\d{1,5}$/.test(elevenApi)) childEnv.DUSK_ELEVENLABS_API = elevenApi;
+  const elevenApi = parentEnv.MADANI_ELEVENLABS_API?.trim() ?? "";
+  if (/^http:\/\/127\.0\.0\.1:\d{1,5}$/.test(elevenApi)) childEnv.MADANI_ELEVENLABS_API = elevenApi;
   // Live calls need Pro; without it the fixture refuses a call with 402 needsPro.
-  if (parentEnv.DUSK_PRO_PLAN?.trim() === "1") childEnv.DUSK_PRO_PLAN = "1";
+  if (parentEnv.MADANI_PRO_PLAN?.trim() === "1") childEnv.MADANI_PRO_PLAN = "1";
   // Arms the one-shot audio-append failure inside the fixture server.
-  if (parentEnv.DUSK_TEST_FAIL_AUDIO_APPEND_ONCE) {
-    childEnv.DUSK_TEST_FAIL_AUDIO_APPEND_ONCE = parentEnv.DUSK_TEST_FAIL_AUDIO_APPEND_ONCE;
+  if (parentEnv.MADANI_TEST_FAIL_AUDIO_APPEND_ONCE) {
+    childEnv.MADANI_TEST_FAIL_AUDIO_APPEND_ONCE = parentEnv.MADANI_TEST_FAIL_AUDIO_APPEND_ONCE;
   }
   // The Claude broker's approval deadline fires on a marker file, not after 15 minutes.
-  if (parentEnv.DUSK_TEST_APPROVAL_CLOCK === "1") childEnv.DUSK_TEST_APPROVAL_CLOCK = "1";
+  if (parentEnv.MADANI_TEST_APPROVAL_CLOCK === "1") childEnv.MADANI_TEST_APPROVAL_CLOCK = "1";
   // The stall watchdog fires on a marker file, not after 20 minutes of silence.
-  if (parentEnv.DUSK_TEST_STALL_CLOCK === "1") childEnv.DUSK_TEST_STALL_CLOCK = "1";
+  if (parentEnv.MADANI_TEST_STALL_CLOCK === "1") childEnv.MADANI_TEST_STALL_CLOCK = "1";
   // Date.now() jumps when a marker file says so, as it does when a suspended machine wakes; timers don't.
-  if (parentEnv.DUSK_TEST_RESUME_CLOCK === "1") childEnv.DUSK_TEST_RESUME_CLOCK = "1";
+  if (parentEnv.MADANI_TEST_RESUME_CLOCK === "1") childEnv.MADANI_TEST_RESUME_CLOCK = "1";
   // The memory gate runs here too, on the memory a fixture file says this machine has.
-  if (parentEnv.DUSK_TEST_MEMORY_GATE === "1") childEnv.DUSK_TEST_MEMORY_GATE = "1";
-  if (parentEnv.DUSK_TEST_VPS_IDLE_CLOCK === "1") childEnv.DUSK_TEST_VPS_IDLE_CLOCK = "1";
-  if (/^[1-9][0-9]?$/.test(parentEnv.DUSK_VPS_MAX_DESKTOPS ?? "")) childEnv.DUSK_VPS_MAX_DESKTOPS = parentEnv.DUSK_VPS_MAX_DESKTOPS;
-  if (parentEnv.DUSK_TEST_LOCAL_BROWSER_GUARD === "1") childEnv.DUSK_TEST_LOCAL_BROWSER_GUARD = "1";
+  if (parentEnv.MADANI_TEST_MEMORY_GATE === "1") childEnv.MADANI_TEST_MEMORY_GATE = "1";
+  if (parentEnv.MADANI_TEST_VPS_IDLE_CLOCK === "1") childEnv.MADANI_TEST_VPS_IDLE_CLOCK = "1";
+  if (/^[1-9][0-9]?$/.test(parentEnv.MADANI_VPS_MAX_DESKTOPS ?? "")) childEnv.MADANI_VPS_MAX_DESKTOPS = parentEnv.MADANI_VPS_MAX_DESKTOPS;
+  if (parentEnv.MADANI_TEST_LOCAL_BROWSER_GUARD === "1") childEnv.MADANI_TEST_LOCAL_BROWSER_GUARD = "1";
   // The first-reply rescue's delay in ms, so a check need not sit through 20 s of silence.
-  if (/^\d{1,6}$/.test(parentEnv.DUSK_FIRST_REPLY_NOTICE_MS ?? "")) childEnv.DUSK_FIRST_REPLY_NOTICE_MS = parentEnv.DUSK_FIRST_REPLY_NOTICE_MS;
+  if (/^\d{1,6}$/.test(parentEnv.MADANI_FIRST_REPLY_NOTICE_MS ?? "")) childEnv.MADANI_FIRST_REPLY_NOTICE_MS = parentEnv.MADANI_FIRST_REPLY_NOTICE_MS;
   // How long a tool call may hold the person's message unread, in ms, so a check need not sit through a minute.
-  if (/^\d{1,6}$/.test(parentEnv.DUSK_PERSON_FIRST_MS ?? "")) childEnv.DUSK_PERSON_FIRST_MS = parentEnv.DUSK_PERSON_FIRST_MS;
+  if (/^\d{1,6}$/.test(parentEnv.MADANI_PERSON_FIRST_MS ?? "")) childEnv.MADANI_PERSON_FIRST_MS = parentEnv.MADANI_PERSON_FIRST_MS;
   // How often @devs reports are asked about, in ms, so a check sees a fix arrive without an hour's wait.
-  if (/^\d{1,7}$/.test(parentEnv.DUSK_DEVS_STATUS_MS ?? "")) childEnv.DUSK_DEVS_STATUS_MS = parentEnv.DUSK_DEVS_STATUS_MS;
+  if (/^\d{1,7}$/.test(parentEnv.MADANI_DEVS_STATUS_MS ?? "")) childEnv.MADANI_DEVS_STATUS_MS = parentEnv.MADANI_DEVS_STATUS_MS;
   // The quiet-status knobs in ms, so a long tool call shows its sign of life without a minute's wait.
-  for (const knob of ["DUSK_ACP_QUIET_NOTICE_MS", "DUSK_ACP_QUIET_TICK_MS"] as const) {
+  for (const knob of ["MADANI_ACP_QUIET_NOTICE_MS", "MADANI_ACP_QUIET_TICK_MS"] as const) {
     if (/^\d{1,7}$/.test(parentEnv[knob] ?? "")) childEnv[knob] = parentEnv[knob];
   }
-  // The UI checks drive this fixture from a real browser, as `pnpm dev` does; DUSK_DEV_TRUST_LOCAL_BROWSER=0 tests the sign-in.
-  if (parentEnv.DUSK_DEV_TRUST_LOCAL_BROWSER !== "0") childEnv.DUSK_DEV_TRUST_LOCAL_BROWSER = "1";
+  // The UI checks drive this fixture from a real browser, as `pnpm dev` does; MADANI_DEV_TRUST_LOCAL_BROWSER=0 tests the sign-in.
+  if (parentEnv.MADANI_DEV_TRUST_LOCAL_BROWSER !== "0") childEnv.MADANI_DEV_TRUST_LOCAL_BROWSER = "1";
   // Desktop mode: the owner capability the app would hand the server.
-  if (parentEnv.DUSK_TEST_DESKTOP_OWNER_TOKEN) {
-    childEnv.DUSK_TEST_DESKTOP_OWNER_TOKEN = parentEnv.DUSK_TEST_DESKTOP_OWNER_TOKEN;
-    childEnv.DUSK_DESKTOP_PARENT = "1";
-    if (parentEnv.DUSK_TEST_DESKTOP_PAGES_ACCESS) childEnv.DUSK_TEST_DESKTOP_PAGES_ACCESS = parentEnv.DUSK_TEST_DESKTOP_PAGES_ACCESS;
+  if (parentEnv.MADANI_TEST_DESKTOP_OWNER_TOKEN) {
+    childEnv.MADANI_TEST_DESKTOP_OWNER_TOKEN = parentEnv.MADANI_TEST_DESKTOP_OWNER_TOKEN;
+    childEnv.MADANI_DESKTOP_PARENT = "1";
+    if (parentEnv.MADANI_TEST_DESKTOP_PAGES_ACCESS) childEnv.MADANI_TEST_DESKTOP_PAGES_ACCESS = parentEnv.MADANI_TEST_DESKTOP_PAGES_ACCESS;
   }
   // The driver record the app hands its own server: without it, no server may use this computer.
-  if (parentEnv.DUSK_TEST_DESKTOP_CUA_CONNECTION) childEnv.DUSK_TEST_DESKTOP_CUA_CONNECTION = parentEnv.DUSK_TEST_DESKTOP_CUA_CONNECTION;
+  if (parentEnv.MADANI_TEST_DESKTOP_CUA_CONNECTION) childEnv.MADANI_TEST_DESKTOP_CUA_CONNECTION = parentEnv.MADANI_TEST_DESKTOP_CUA_CONNECTION;
   return childEnv;
 }
 
@@ -267,14 +267,14 @@ export function verificationServerArgs(childEnv: NodeJS.ProcessEnv): string[] {
   const hook = (file: string) => ["--import", pathToFileURL(join(ROOT, "server", "testing", file)).href];
   return [
     "--experimental-strip-types",
-    ...(childEnv.DUSK_TEST_FAIL_AUDIO_APPEND_ONCE === "1" ? hook("fail-audio-append-once.mjs") : []),
-    ...(childEnv.DUSK_TEST_DESKTOP_OWNER_TOKEN || childEnv.DUSK_TEST_DESKTOP_CUA_CONNECTION ? hook("desktop-parent.mjs") : []),
-    ...(childEnv.DUSK_TEST_APPROVAL_CLOCK === "1" ? hook("approval-clock-hooks.mjs") : []),
-    ...(childEnv.DUSK_TEST_STALL_CLOCK === "1" ? hook("stall-clock-hooks.mjs") : []),
-    ...(childEnv.DUSK_TEST_RESUME_CLOCK === "1" ? hook("resume-clock-hooks.mjs") : []),
-    ...(childEnv.DUSK_TEST_MEMORY_GATE === "1" ? hook("memory-gate-hooks.mjs") : []),
-    ...(childEnv.DUSK_TEST_VPS_IDLE_CLOCK === "1" ? hook("vps-idle-clock-hooks.mjs") : []),
-    ...(childEnv.DUSK_TEST_LOCAL_BROWSER_GUARD === "1" ? hook("local-browser-guard.mjs") : []),
+    ...(childEnv.MADANI_TEST_FAIL_AUDIO_APPEND_ONCE === "1" ? hook("fail-audio-append-once.mjs") : []),
+    ...(childEnv.MADANI_TEST_DESKTOP_OWNER_TOKEN || childEnv.MADANI_TEST_DESKTOP_CUA_CONNECTION ? hook("desktop-parent.mjs") : []),
+    ...(childEnv.MADANI_TEST_APPROVAL_CLOCK === "1" ? hook("approval-clock-hooks.mjs") : []),
+    ...(childEnv.MADANI_TEST_STALL_CLOCK === "1" ? hook("stall-clock-hooks.mjs") : []),
+    ...(childEnv.MADANI_TEST_RESUME_CLOCK === "1" ? hook("resume-clock-hooks.mjs") : []),
+    ...(childEnv.MADANI_TEST_MEMORY_GATE === "1" ? hook("memory-gate-hooks.mjs") : []),
+    ...(childEnv.MADANI_TEST_VPS_IDLE_CLOCK === "1" ? hook("vps-idle-clock-hooks.mjs") : []),
+    ...(childEnv.MADANI_TEST_LOCAL_BROWSER_GUARD === "1" ? hook("local-browser-guard.mjs") : []),
     join(ROOT, "server", "index.ts"),
   ];
 }
@@ -294,23 +294,23 @@ export async function launchVerificationServer(
   if (localVm) {
     const endpoint = new URL(localVm.host);
     if (endpoint.protocol !== "ssh:" || endpoint.hostname !== "127.0.0.1" || endpoint.password) {
-      throw new ControlDuskError("Local VM verification requires an explicit loopback Podman machine");
+      throw new ControlMadaniError("Local VM verification requires an explicit loopback Podman machine");
     }
   }
-  // DUSK_TEST_PORTS=19975-19999 keeps a recipe's fixture in a range of its own.
-  const range = /^(\d+)-(\d+)$/.exec((parentEnv.DUSK_TEST_PORTS ?? process.env.DUSK_TEST_PORTS)?.trim() ?? "");
+  // MADANI_TEST_PORTS=19975-19999 keeps a recipe's fixture in a range of its own.
+  const range = /^(\d+)-(\d+)$/.exec((parentEnv.MADANI_TEST_PORTS ?? process.env.MADANI_TEST_PORTS)?.trim() ?? "");
   const port = range ? await freePortBlock([0, 1], Number(range[1]), Number(range[2]) - Number(range[1])) : await freePortBlock([0, 1]);
-  if (signal?.aborted) throw new ControlDuskError("verification launch cancelled");
+  if (signal?.aborted) throw new ControlMadaniError("verification launch cancelled");
   const url = `http://127.0.0.1:${port}`;
   // Native browser daemons use UNIX sockets, and a macOS temp home can exceed
   // their path limit.
-  const dataDir = mkdtempSync(join(browser && process.platform !== "win32" ? "/tmp" : tmpdir(), "duskbot-verify-data-"));
+  const dataDir = mkdtempSync(join(browser && process.platform !== "win32" ? "/tmp" : tmpdir(), "madanibot-verify-data-"));
   const fixtureTemp = join(dataDir, "tmp");
   const fixtureDumpPath = join(dataDir, "fake-claude-dump.json");
   mkdirSync(fixtureTemp, { recursive: true });
   const home = verificationHome(parentEnv, dataDir);
   mkdirSync(home, { recursive: true });
-  const evidenceDir = join(tmpdir(), "duskbot-verification-evidence");
+  const evidenceDir = join(tmpdir(), "madanibot-verification-evidence");
   mkdirSync(evidenceDir, { recursive: true });
   const logPath = join(evidenceDir, `server-${Date.now()}-${process.pid}.log`);
   writeFileSync(join(dataDir, "config.json"), JSON.stringify({
@@ -359,17 +359,17 @@ export async function launchVerificationServer(
   // Opt-in live Local VM fixture: keep the temporary home and fake engine,
   // granting only the explicitly selected machine connection and static UI.
   if (localVm) Object.assign(childEnv, {
-    DUSK_EXTRA_PATH: [localVm.binDir, ...(process.platform === "win32" ? [join(childEnv.SYSTEMROOT || "C:\\Windows", "System32")] : [])].join(delimiter),
+    MADANI_EXTRA_PATH: [localVm.binDir, ...(process.platform === "win32" ? [join(childEnv.SYSTEMROOT || "C:\\Windows", "System32")] : [])].join(delimiter),
     CONTAINER_HOST: localVm.host,
     CONTAINER_SSHKEY: localVm.sshKey,
-    DUSK_STATIC_DIR: localVm.staticDir,
-    ...(localVm.vpsDesktop === "cua" ? { DUSK_VPS_DESKTOP: "cua" } : {}),
+    MADANI_STATIC_DIR: localVm.staticDir,
+    ...(localVm.vpsDesktop === "cua" ? { MADANI_VPS_DESKTOP: "cua" } : {}),
   });
   if (browser) Object.assign(childEnv, {
-    DUSK_AGENT_BROWSER_PATH: browser.binaryPath,
+    MADANI_AGENT_BROWSER_PATH: browser.binaryPath,
     AGENT_BROWSER_EXECUTABLE_PATH: browser.executablePath,
   });
-  if (staticDir) childEnv.DUSK_STATIC_DIR = staticDir;
+  if (staticDir) childEnv.MADANI_STATIC_DIR = staticDir;
   const child = spawn(process.execPath, verificationServerArgs(childEnv), {
     cwd: ROOT,
     env: childEnv,
@@ -388,7 +388,7 @@ export async function launchVerificationServer(
   const deadline = Date.now() + hostTimeout(20_000);
   try {
     for (;;) {
-      if (signal?.aborted) throw new ControlDuskError("verification launch cancelled");
+      if (signal?.aborted) throw new ControlMadaniError("verification launch cancelled");
       if (child.exitCode !== null || child.signalCode !== null) {
         throw new Error(`verification server exited before it was ready; see ${logPath}${logTail()}`);
       }
@@ -398,7 +398,7 @@ export async function launchVerificationServer(
           signal: signal ? AbortSignal.any([signal, timeout]) : timeout,
         });
         const body = response.ok ? await response.json() as { app?: string } : null;
-        if (body?.app === "duskbot") break;
+        if (body?.app === "madanibot") break;
       } catch {
       }
       if (Date.now() >= deadline) throw new Error(`verification server did not become ready; see ${logPath}${logTail()}`);
@@ -463,10 +463,10 @@ export function controlResultSucceeded(command: string, result: unknown): boolea
 
 /** pnpm swallows Ctrl-C; a launcher that owns processes must get the signal itself. */
 function requireForegroundTerminal(command: string): void {
-  if (process.env.npm_lifecycle_event === "control:dusk") {
-    throw new ControlDuskError(
+  if (process.env.npm_lifecycle_event === "control:madani") {
+    throw new ControlMadaniError(
       `${command} must own the terminal directly so Ctrl-C can clean up its children`,
-      `run \`node --experimental-strip-types scripts/control-dusk.ts ${command}\``,
+      `run \`node --experimental-strip-types scripts/control-madani.ts ${command}\``,
     );
   }
 }
@@ -515,7 +515,7 @@ async function main() {
     });
     return;
   }
-  const result = await runControlDusk(process.argv.slice(2));
+  const result = await runControlMadani(process.argv.slice(2));
   process.stdout.write(typeof result === "string" ? `${result}\n` : `${JSON.stringify(result, null, 2)}\n`);
   if (!controlResultSucceeded(command, result)) process.exitCode = 1;
 }

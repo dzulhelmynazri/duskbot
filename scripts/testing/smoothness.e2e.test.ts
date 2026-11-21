@@ -3,22 +3,22 @@
 // opening, closing and coming back mid-close. Each flow records every animation frame's boxes and animated styles,
 // a screencast of its frames and the page's layout shifts. Nothing in the chat or the composer may move or resize
 // unless the flow itself asks it to, and the mic's swap lands at once.
-// Evidence goes to DUSK_UI_EVIDENCE_DIR/smoothness (default .dusk-scratch/verify-evidence/smoothness).
+// Evidence goes to MADANI_UI_EVIDENCE_DIR/smoothness (default .madani-scratch/verify-evidence/smoothness).
 //
-//   DUSK_UI_E2E=1 pnpm exec vitest run scripts/testing/smoothness.e2e.test.ts
+//   MADANI_UI_E2E=1 pnpm exec vitest run scripts/testing/smoothness.e2e.test.ts
 import { spawn, type ChildProcess } from "node:child_process";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { expect, it } from "vitest";
-import { launchVerificationServer, type VerificationServer } from "../control-dusk.ts";
+import { launchVerificationServer, type VerificationServer } from "../control-madani.ts";
 import { waitForExit } from "../../server/testing/cleanup.ts";
-import { ensureUiBrowser } from "./control-dusk-ui.ts";
+import { ensureUiBrowser } from "./control-madani-ui.ts";
 import { fixtureApi, mountPreview, REPO_ROOT, type MountedPreview } from "./preview-fixture.ts";
 import { connect } from "./chat-gallery/cdp.ts";
 import { NOTICES } from "../../src/lib/notices.ts";
 
-const enabled = process.env.DUSK_UI_E2E === "1";
-if (!enabled) console.log("skipping the smoothness check: set DUSK_UI_E2E=1 for isolated browser qualification");
+const enabled = process.env.MADANI_UI_E2E === "1";
+if (!enabled) console.log("skipping the smoothness check: set MADANI_UI_E2E=1 for isolated browser qualification");
 
 type Box = { laid: string; x: number; y: number; w: number; h: number; opacity: string; transform: string; bg: string } | null;
 type Frame = { t: number } & Record<string, Box | number>;
@@ -31,7 +31,7 @@ const COMPOSER = { pill: ".composer-pill", row: "[data-composer-row]", mic: "[da
   let preview: MountedPreview | undefined;
   let chrome: ChildProcess | undefined;
   let cdp: Awaited<ReturnType<typeof connect>> | undefined;
-  const evidence = join(process.env.DUSK_UI_EVIDENCE_DIR || join(REPO_ROOT, ".dusk-scratch", "verify-evidence"), "smoothness", process.env.DUSK_SMOOTH_LABEL ?? "run");
+  const evidence = join(process.env.MADANI_UI_EVIDENCE_DIR || join(REPO_ROOT, ".madani-scratch", "verify-evidence"), "smoothness", process.env.MADANI_SMOOTH_LABEL ?? "run");
   mkdirSync(evidence, { recursive: true });
   const report: Record<string, unknown> = {};
   try {

@@ -101,7 +101,7 @@ describe("bot desktop run flags", () => {
     expect(strict).toContain("--read-only");
     expect(flag(strict, "--cap-add").sort()).toEqual(["NET_ADMIN", "SETGID", "SETUID"]);
     expect(flag(strict, "--security-opt")).toEqual(["no-new-privileges"]);
-    expect(flag(strict, "-e")).toEqual(["DUSK_MODE=strict", "DUSK_BROWSER_AT_START=off", `VNC_PW=${SECRET}`, "DUSK_BLOCK_EXTRA=203.0.113.7"]);
+    expect(flag(strict, "-e")).toEqual(["MADANI_MODE=strict", "MADANI_BROWSER_AT_START=off", `VNC_PW=${SECRET}`, "MADANI_BLOCK_EXTRA=203.0.113.7"]);
     expect(strict).not.toContain("--runtime");
   });
 
@@ -112,7 +112,7 @@ describe("bot desktop run flags", () => {
     for (const cap of ["NET_ADMIN", "NET_RAW", "SYS_ADMIN", "SYS_PTRACE", "SYS_MODULE", "MKNOD", "DAC_READ_SEARCH", "SETFCAP"]) {
       expect(flag(free, "--cap-add")).not.toContain(cap);
     }
-    expect(flag(free, "-e")).toEqual(["DUSK_MODE=free", "DUSK_BROWSER_AT_START=off", `VNC_PW=${SECRET}`]);
+    expect(flag(free, "-e")).toEqual(["MADANI_MODE=free", "MADANI_BROWSER_AT_START=off", `VNC_PW=${SECRET}`]);
     expect(flag(free, "--runtime")).toEqual(["runsc"]);
     expect(flag(free, "--label")).toContain(`${BOT_DESKTOP_MODE_LABEL}=free`);
   });
@@ -165,12 +165,12 @@ describe("bot desktop isolation checks", () => {
   });
 
   it("judges a box only as the mode its label and environment agree on", () => {
-    expect(containerBotDesktopMode({ [BOT_DESKTOP_MODE_LABEL]: "free" }, ["DUSK_MODE=free"])).toBe("free");
+    expect(containerBotDesktopMode({ [BOT_DESKTOP_MODE_LABEL]: "free" }, ["MADANI_MODE=free"])).toBe("free");
     expect(containerBotDesktopMode({ [BOT_DESKTOP_MODE_LABEL]: "strict" }, ["VNC_PW=x"])).toBe("strict");
-    expect(containerBotDesktopMode({ [BOT_DESKTOP_MODE_LABEL]: "free" }, ["DUSK_MODE=strict"])).toBeUndefined();
+    expect(containerBotDesktopMode({ [BOT_DESKTOP_MODE_LABEL]: "free" }, ["MADANI_MODE=strict"])).toBeUndefined();
     expect(containerBotDesktopMode({}, [])).toBeUndefined();
     expect(containerBotDesktopMode({ [BOT_DESKTOP_MODE_LABEL]: "free" }, ["OMB_MODE=free"])).toBe("free");
-    expect(containerBotDesktopMode({ [BOT_DESKTOP_MODE_LABEL]: "free" }, ["DUSK_MODE=strict", "OMB_MODE=free"])).toBeUndefined();
+    expect(containerBotDesktopMode({ [BOT_DESKTOP_MODE_LABEL]: "free" }, ["MADANI_MODE=strict", "OMB_MODE=free"])).toBeUndefined();
     expect(containerBotDesktopMode({ [BOT_DESKTOP_MODE_LABEL]: "strict" }, ["OMB_MODE=free"])).toBeUndefined();
     expect(botDesktopIsHardened(freeInspected(), undefined)).toBe(false);
     expect(botDesktopIsHardened(freeInspected(), "strict")).toBe(false);
@@ -196,30 +196,30 @@ describe("bot desktop isolation checks", () => {
     const plain = hostIsolation('{"Runtimes":{"runc":{}},"SecurityOptions":["name=seccomp,profile=builtin"]}', {});
     expect(gvisor).toEqual({ runtime: "runsc", userns: false });
     expect(remapped).toEqual({ runtime: null, userns: true });
-    expect(hostIsolation('{"Runtimes":{"runsc":{}}}', { DUSK_VPS_GVISOR: "off" }).runtime).toBeNull();
+    expect(hostIsolation('{"Runtimes":{"runsc":{}}}', { MADANI_VPS_GVISOR: "off" }).runtime).toBeNull();
     expect(hostIsolation("not json", {})).toEqual({ runtime: null, userns: false });
     expect(botDesktopMode(true, gvisor, {})).toBe("free");
     expect(botDesktopMode(true, remapped, {})).toBe("free");
     expect(botDesktopMode(true, plain, {})).toBe("strict");
     expect(botDesktopMode(false, gvisor, {})).toBe("strict");
-    expect(botDesktopMode(true, gvisor, { DUSK_VPS_BOX: "strict" })).toBe("strict");
+    expect(botDesktopMode(true, gvisor, { MADANI_VPS_BOX: "strict" })).toBe("strict");
   });
 
   it("reads host addresses and the desktop kind defensively", () => {
     expect(parseHostAddresses("2: eth0    inet 203.0.113.7/24 brd x scope global eth0\n2: eth0    inet6 2001:db8::7/64 scope global\nnoise")).toEqual(["203.0.113.7", "2001:db8::7"]);
     expect(preferredVpsDesktop({})).toBe("bot-desktop");
-    expect(preferredVpsDesktop({ DUSK_VPS_DESKTOP: "cua" })).toBe("cua");
+    expect(preferredVpsDesktop({ MADANI_VPS_DESKTOP: "cua" })).toBe("cua");
     expect(containerDesktopKind({ [BOT_DESKTOP_LABEL]: "1" })).toBe("bot-desktop");
     expect(containerDesktopKind({})).toBe("cua");
   });
 
   it("keeps build.sh's fallback tag and host-fence.sh's bridge in step with the constants", () => {
     const script = readFileSync(new URL("../deploy/bot-desktop/build.sh", import.meta.url), "utf8");
-    expect(script).toContain(`image="\${image:-ghcr.io/duskbotai/dusk-desktop:v$version}"`);
+    expect(script).toContain(`image="\${image:-ghcr.io/madanibotai/madani-desktop:v$version}"`);
     expect(script).toContain(`version="\${version:-${BOT_DESKTOP_VERSION}}"`);
     expect(readFileSync(new URL("../deploy/bot-desktop/Dockerfile", import.meta.url), "utf8")).toContain(`ARG BOT_DESKTOP_VERSION=${BOT_DESKTOP_VERSION}\n`);
-    expect(readFileSync(new URL("../deploy/bot-desktop/rootfs/usr/local/bin/omb-session", import.meta.url), "utf8")).toContain('${DUSK_BROWSER_AT_START:-off}');
-    expect(BOT_DESKTOP_IMAGE).toBe(`ghcr.io/duskbotai/dusk-desktop:v${BOT_DESKTOP_VERSION}`);
+    expect(readFileSync(new URL("../deploy/bot-desktop/rootfs/usr/local/bin/omb-session", import.meta.url), "utf8")).toContain('${MADANI_BROWSER_AT_START:-off}');
+    expect(BOT_DESKTOP_IMAGE).toBe(`ghcr.io/madanibotai/madani-desktop:v${BOT_DESKTOP_VERSION}`);
     expect(readFileSync(new URL("../deploy/bot-desktop/host-fence.sh", import.meta.url), "utf8")).toContain("BRIDGE=omb-desk0\n");
   });
 
@@ -231,8 +231,8 @@ describe("bot desktop isolation checks", () => {
     expect(workflow).toContain('-t "$IMAGE-$ARCH" --push deploy/bot-desktop');
     expect(workflow).toContain('imagetools create -t "$IMAGE" "$IMAGE-amd64" "$IMAGE-arm64"');
     expect(workflow).toContain("node scripts/check-bot-desktop-published.mjs");
-    // GITHUB_TOKEN of DuskBotAI/duskbot can push only under ghcr.io/duskbotai
-    expect(BOT_DESKTOP_IMAGE).toMatch(/^ghcr\.io\/duskbotai\/[a-z0-9-]+:v\d+$/);
+    // GITHUB_TOKEN of dzulhelmynazri/madani-bot can push only under ghcr.io/madanibotai
+    expect(BOT_DESKTOP_IMAGE).toMatch(/^ghcr\.io\/madanibotai\/[a-z0-9-]+:v\d+$/);
     const gate = readFileSync(new URL("../apps/link-service/docker-gate.mjs", import.meta.url), "utf8");
     expect(/^export const DEFAULT_PULL = (\[.*\]);$/m.exec(gate)?.[1]).toContain(`"${BOT_DESKTOP_IMAGE.slice(0, BOT_DESKTOP_IMAGE.lastIndexOf(":"))}"`);
     // a server build and a release refuse an image nobody can pull
@@ -270,14 +270,14 @@ describe("bot desktop provisioning", () => {
     expect(steps(fake.calls)).toEqual([`pull ${BOT_DESKTOP_IMAGE}`, "image inspect", "network inspect", "info --format", "probe /usr/local/bin/omb-host-fence", "network create", "probe ip", "run -d"]);
     const started = fake.calls.at(-1)!;
     expect(started.at(-1)).toBe(IMAGE_ID);
-    expect(started).toEqual(expect.arrayContaining(["--read-only", "--runtime", "runsc", "DUSK_MODE=strict", "DUSK_BLOCK_EXTRA=198.51.100.4"]));
+    expect(started).toEqual(expect.arrayContaining(["--read-only", "--runtime", "runsc", "MADANI_MODE=strict", "MADANI_BLOCK_EXTRA=198.51.100.4"]));
   });
 
   it("behind the host fence with gVisor: a free box, no address probe needed", async () => {
     const fake = host({ runsc: true, network: true, fenced: true });
     expect(await provisionBotDesktop(fake.run, input)).toBe("free");
     expect(steps(fake.calls)).toEqual([`pull ${BOT_DESKTOP_IMAGE}`, "image inspect", "network inspect", "info --format", "probe /usr/local/bin/omb-host-fence", "run -d"]);
-    expect(fake.calls.at(-1)).toEqual(expect.arrayContaining(["--runtime", "runsc", "DUSK_MODE=free"]));
+    expect(fake.calls.at(-1)).toEqual(expect.arrayContaining(["--runtime", "runsc", "MADANI_MODE=free"]));
     expect(fake.calls.at(-1)).not.toContain("--read-only");
   });
 
@@ -298,7 +298,7 @@ describe("bot desktop provisioning", () => {
   });
 
   it("refuses with a clear reason, creating nothing, when the image can be neither pulled nor built", async () => {
-    vi.stubEnv("DUSK_BOT_DESKTOP_KIT", join(tmpdir(), "dusk-no-such-kit"));
+    vi.stubEnv("MADANI_BOT_DESKTOP_KIT", join(tmpdir(), "madani-no-such-kit"));
     try {
       const fake = host({ pull: false, network: true });
       await expect(provisionBotDesktop(fake.run, input)).rejects.toMatchObject({ status: 409, code: "bot_desktop_unavailable", message: BOT_DESKTOP_SETUP_LATER });
@@ -311,11 +311,11 @@ describe("bot desktop provisioning", () => {
   });
 
   it("never tries to build behind the docker gate, which forwards no build", async () => {
-    expect(dockerHostBuilds({ DOCKER_HOST: "unix:///run/duskbot-docker/docker.sock" })).toBe(false);
+    expect(dockerHostBuilds({ DOCKER_HOST: "unix:///run/madanibot-docker/docker.sock" })).toBe(false);
     expect(dockerHostBuilds({ DOCKER_HOST: "unix:///run/openmausbot-docker/docker.sock" })).toBe(false);
     expect(dockerHostBuilds({ DOCKER_HOST: "unix:///var/run/docker.sock" })).toBe(true);
     expect(dockerHostBuilds({})).toBe(true);
-    vi.stubEnv("DOCKER_HOST", "unix:///run/duskbot-docker/docker.sock");
+    vi.stubEnv("DOCKER_HOST", "unix:///run/madanibot-docker/docker.sock");
     try {
       const gated = host({ pull: false, network: true });
       await expect(provisionBotDesktop(gated.run, input)).rejects.toMatchObject({ code: "bot_desktop_unavailable", message: BOT_DESKTOP_SETUP_LATER });
@@ -324,7 +324,7 @@ describe("bot desktop provisioning", () => {
   });
 
   describe("on a managed cloud home, whose own machine builds the image", () => {
-    const status = () => join(mkdtempSync(join(tmpdir(), "dusk-host-build-")), "desktop-image");
+    const status = () => join(mkdtempSync(join(tmpdir(), "madani-host-build-")), "desktop-image");
     /** the registry refuses; `image inspect` answers once the machine's build has finished `afterChecks` checks later */
     function building(afterChecks: number) {
       let checks = 0;
@@ -342,7 +342,7 @@ describe("bot desktop provisioning", () => {
     it("waits for the machine's build instead of building through the gate, and reports it as building", async () => {
       const file = status();
       writeFileSync(file, "building\n");
-      vi.stubEnv("DUSK_BOT_DESKTOP_HOST_BUILD", file);
+      vi.stubEnv("MADANI_BOT_DESKTOP_HOST_BUILD", file);
       try {
         const fake = building(3), progress: string[] = [];
         expect(await provisionBotDesktop(fake.run, { ...input, onProgress: step => progress.push(step) })).toBe("strict");
@@ -355,7 +355,7 @@ describe("bot desktop provisioning", () => {
     it("refuses at once with a clear reason when the machine's build failed, creating nothing", async () => {
       const file = status();
       writeFileSync(file, "failed\n");
-      vi.stubEnv("DUSK_BOT_DESKTOP_HOST_BUILD", file);
+      vi.stubEnv("MADANI_BOT_DESKTOP_HOST_BUILD", file);
       try {
         const fake = building(Number.POSITIVE_INFINITY);
         await expect(provisionBotDesktop(fake.run, input)).rejects.toMatchObject({ status: 409, code: "bot_desktop_unavailable", message: expect.stringContaining("could not build") });
@@ -364,7 +364,7 @@ describe("bot desktop provisioning", () => {
     });
 
     it("gives up after its limit with a try-again message while the build still runs", async () => {
-      vi.stubEnv("DUSK_BOT_DESKTOP_HOST_BUILD", status());
+      vi.stubEnv("MADANI_BOT_DESKTOP_HOST_BUILD", status());
       Object.assign(hostBuildTiming, { pollMs: 5, limitMs: 30 });
       try {
         await expect(provisionBotDesktop(building(Number.POSITIVE_INFINITY).run, input)).rejects.toMatchObject({ code: "bot_desktop_unavailable", message: expect.stringContaining("still building") });
@@ -373,19 +373,19 @@ describe("bot desktop provisioning", () => {
   });
 
   it("only offers a kit that builds exactly this app's desktop version, outside any asar archive", () => {
-    const directory = mkdtempSync(join(tmpdir(), "dusk-kit-"));
+    const directory = mkdtempSync(join(tmpdir(), "madani-kit-"));
     try {
       const kit = join(directory, "bot-desktop");
       mkdirSync(kit);
       writeFileSync(join(kit, "Dockerfile"), `FROM debian\nARG BOT_DESKTOP_VERSION=${Number(BOT_DESKTOP_VERSION) - 1}\n`);
-      expect(botDesktopKit({ DUSK_BOT_DESKTOP_KIT: kit })).toBeNull();
+      expect(botDesktopKit({ MADANI_BOT_DESKTOP_KIT: kit })).toBeNull();
       writeFileSync(join(kit, "Dockerfile"), `FROM debian\nARG BOT_DESKTOP_VERSION=${BOT_DESKTOP_VERSION}\n`);
-      expect(botDesktopKit({ DUSK_BOT_DESKTOP_KIT: kit })).toBe(kit);
+      expect(botDesktopKit({ MADANI_BOT_DESKTOP_KIT: kit })).toBe(kit);
       const packed = join(directory, "app.asar", "deploy", "bot-desktop");
       mkdirSync(packed, { recursive: true });
       writeFileSync(join(packed, "Dockerfile"), `ARG BOT_DESKTOP_VERSION=${BOT_DESKTOP_VERSION}\n`);
-      expect(botDesktopKit({ DUSK_BOT_DESKTOP_KIT: packed })).toBeNull();
-      expect(botDesktopKit({ DUSK_BOT_DESKTOP_KIT: join(directory, "missing") })).toBeNull();
+      expect(botDesktopKit({ MADANI_BOT_DESKTOP_KIT: packed })).toBeNull();
+      expect(botDesktopKit({ MADANI_BOT_DESKTOP_KIT: join(directory, "missing") })).toBeNull();
     } finally { rmSync(directory, { recursive: true, force: true }); }
   });
 
@@ -415,7 +415,7 @@ describe("bot desktop provisioning", () => {
   });
 
   it("keeps preparation separate across hosts and lets a failed pull retry", async () => {
-    vi.stubEnv("DUSK_BOT_DESKTOP_KIT", join(tmpdir(), "dusk-no-such-kit"));
+    vi.stubEnv("MADANI_BOT_DESKTOP_KIT", join(tmpdir(), "madani-no-such-kit"));
     const unavailable = host({ pull: false });
     const available = host({ runsc: true, network: true, fenced: true });
     expect(await Promise.all([
@@ -430,7 +430,7 @@ describe("bot desktop provisioning", () => {
 
 
 describe("bot desktop on the VPS path", () => {
-  beforeEach(() => { vi.stubEnv("DUSK_VPS_DESKTOP", ""); });
+  beforeEach(() => { vi.stubEnv("MADANI_VPS_DESKTOP", ""); });
   const CONFIG: AppConfig = { vps: { sshAlias: "production-vps" } };
   const BOT = "bot-desktop-1";
   const name = vpsContainerName(BOT);
@@ -501,7 +501,7 @@ describe("bot desktop on the VPS path", () => {
       }
       if (command === "exec") {
         if (docker.at(-1) === "--version") return { stdout: `cua-driver ${CUA_DRIVER_VERSION}\n`, stderr: "" };
-        if (docker.includes("dusk-desktop-probe") || docker.includes("health_report")) return { stdout: JSON.stringify({ schema_version: "1", overall: "ok", checks: [] }), stderr: "" };
+        if (docker.includes("madani-desktop-probe") || docker.includes("health_report")) return { stdout: JSON.stringify({ schema_version: "1", overall: "ok", checks: [] }), stderr: "" };
         return { stdout: "{}\n", stderr: "" };
       }
       throw new Error(`unexpected docker ${command}`);
@@ -630,7 +630,7 @@ describe("bot desktop on the VPS path", () => {
     expect(fake.calls.some(args => args.some(arg => arg.includes("cua-local-vm")))).toBe(false);
 
     const refused = daemon();
-    vi.stubEnv("DUSK_BOT_DESKTOP_KIT", join(tmpdir(), "dusk-no-such-kit"));
+    vi.stubEnv("MADANI_BOT_DESKTOP_KIT", join(tmpdir(), "madani-no-such-kit"));
     const offline: VpsCommandRunner = async (args, options) => {
       if (args[2] === "pull") throw new Error("manifest unknown");
       return refused.runner(args, options);
@@ -638,7 +638,7 @@ describe("bot desktop on the VPS path", () => {
     try {
       await expect(vpsComputerAction("provision", CONFIG, `${BOT}-offline`, offline)).rejects.toMatchObject({ status: 409, code: "bot_desktop_unavailable" });
       expect(refused.calls.some(args => ["build", "run", "network"].includes(args[0]!))).toBe(false);
-    } finally { vi.stubEnv("DUSK_BOT_DESKTOP_KIT", undefined); }
+    } finally { vi.stubEnv("MADANI_BOT_DESKTOP_KIT", undefined); }
   });
 
   it("pins an in-box browser to its observed container and SSH host", async () => {

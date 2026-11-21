@@ -10,12 +10,12 @@ const preview = process.argv.includes("--preview") ? process.argv[process.argv.i
 if (preview) mkdirSync(preview, { recursive: true });
 
 const KIT = { body: C.cloud, eyes: "#212121" };
-const DUSK = { sky0: "#2e2c86", sky1: "#4744e2", sky2: "#7a5ae8", sky3: "#b896f2", glow: "#ffc4dd", ground: "#7fb51c", groundDeep: "#73a618" };
+const MADANI = { sky0: "#2e2c86", sky1: "#4744e2", sky2: "#7a5ae8", sky3: "#b896f2", glow: "#ffc4dd", ground: "#7fb51c", groundDeep: "#73a618" };
 
 /** NSIS welcome and finish pages: a tall sky with kit on the grass, the page's words sit to its right */
 function sidebar({ bye = false } = {}) {
   const s = scene(164, 314, { cell: 4, seed: bye ? 5 : 3 });
-  if (bye) s.sky([[DUSK.sky0, 0], [DUSK.sky1, 14], [DUSK.sky2, 30], [DUSK.sky3, 44], [DUSK.glow, 56]]);
+  if (bye) s.sky([[MADANI.sky0, 0], [MADANI.sky1, 14], [MADANI.sky2, 30], [MADANI.sky3, 44], [MADANI.glow, 56]]);
   else s.sky([[C.sky0, 0], [C.sky1, 10], [C.sky2, 28], [C.sky3, 46], [C.canvas, 56]]);
   s.cloud(44, 6, 12, bye ? C.lilac : C.pink).cloud(126, 15, 8, C.lemon);
   s.ground(64, { flowers: 4, speckle: 0.06 });
@@ -36,14 +36,14 @@ function header() {
   return s.svg();
 }
 
-/** the phone's launch screen: kit on the hill in the middle, light by day and a dusk sky in dark mode */
+/** the phone's launch screen: kit on the hill in the middle, light by day and a madani sky in dark mode */
 function splash(W, H, dark) {
   const short = Math.min(W, H);
   const cell = Math.max(4, Math.round(short / 40));
   const s = scene(W, H, { cell, seed: 21 });
   const rows = Math.ceil(H / cell);
   const g = Math.round(rows * 0.64);
-  const p = dark ? DUSK : null;
+  const p = dark ? MADANI : null;
   s.sky(dark
     ? [[p.sky0, 0], [p.sky1, Math.round(g * 0.25)], [p.sky2, Math.round(g * 0.55)], [p.sky3, Math.round(g * 0.78)], [p.glow, g - 4]]
     : [[C.sky0, 0], [C.sky1, Math.round(g * 0.18)], [C.sky2, Math.round(g * 0.5)], [C.sky3, Math.round(g * 0.75)], [C.canvas, g - 4]]);
@@ -69,7 +69,7 @@ export function botCard({ name, body, colour, line }) {
   s.bot("mochi", C.pinkBot, 250, 500, 4).bot("loaf", C.tangerine, 960, 500, 4).bot("goo", C.mint, 1040, 500, 3.5);
   s.bubble(600, 266, `hi, i'm ${name}!`, { size: 34, pad: 22, u: 4 });
   s.text(600, 572, line, { size: 26, anchor: "middle" });
-  s.text(600, 606, "made with dusk bot", { size: 18, fill: C.inkSoft, anchor: "middle" });
+  s.text(600, 606, "made with madani bot", { size: 18, fill: C.inkSoft, anchor: "middle" });
   return s.svg();
 }
 

@@ -1,5 +1,5 @@
 [Unit]
-Description=run the dusk.bot seo release gate every morning
+Description=run the madani.bot seo release gate every morning
 
 [Timer]
 OnCalendar=*-*-* 07:00:00

@@ -74,7 +74,7 @@ let root: Root;
 beforeAll(async () => {
   vi.stubGlobal("fetch", () => new Promise(() => {}));
   const shell = document.createElement("div");
-  shell.className = "dusk-mobile";
+  shell.className = "madani-mobile";
   shell.innerHTML = "<div data-mobile-chat></div>";
   document.body.append(shell);
   root = createRoot(shell.firstElementChild!);

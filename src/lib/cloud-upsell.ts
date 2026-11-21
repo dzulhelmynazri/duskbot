@@ -8,7 +8,7 @@ import { buyOfferAllowed, type CloudPlanView, type CloudSource } from "./cloud-p
 type Usage = { turns: number } | null | undefined;
 type BotFacts = { hidden?: boolean; movedTo?: unknown; tasks?: ReadonlyArray<{ usage?: Usage }> };
 
-/** what this computer knows about how much someone uses dusk bot: their bots, the turns they and their rooms had, routines */
+/** what this computer knows about how much someone uses madani bot: their bots, the turns they and their rooms had, routines */
 export function investedFacts(state: {
   bots: readonly BotFacts[]; groups: ReadonlyArray<{ usage?: Usage }>; routines?: readonly unknown[];
 }): InvestedFacts {
@@ -25,7 +25,7 @@ const stored = (key: string): string | null => { try { return localStorage.getIt
 const store = (key: string, value: string) => { try { localStorage.setItem(key, value); } catch {} };
 
 /** the 24/7 pitch, inline in a routine's form or after one is made: one cooldown, so it is never said twice in a row */
-export const ALWAYS_ON_KEY = "dusk-routine-cloud-upsell-at";
+export const ALWAYS_ON_KEY = "madani-routine-cloud-upsell-at";
 export const ALWAYS_ON_COOLDOWN = 30 * 86_400_000;
 export function alwaysOnCooling(now = Date.now()): boolean {
   const last = Number(stored(ALWAYS_ON_KEY)) || 0;
@@ -61,7 +61,7 @@ export function useUpsellShown(source: UpsellSource): void {
   useEffect(() => watchUpsell(source), [source]);
 }
 
-/** may this page offer dusk cloud: only this computer's own page, to someone who could buy it (signed out or free) and is not
+/** may this page offer madani cloud: only this computer's own page, to someone who could buy it (signed out or free) and is not
  * in an organization; null while the plan or the organization is still loading */
 export function cloudUpsellAllowed({ here, view, managed }: { here: boolean; view: CloudPlanView | null; managed: boolean | null }): boolean | null {
   if (!here || !view || managed === true) return false;

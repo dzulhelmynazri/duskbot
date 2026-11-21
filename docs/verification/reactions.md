@@ -80,17 +80,17 @@ with two scripted replies:
 ```sh
 FAKE_CLAUDE_REPLIES='["I drafted the email to Sam about Friday. Shall I send it?","Sent it to Sam."]' \
 FAKE_CLAUDE_REPLY_STATE=/tmp/reactions-reply-state \
-  node --experimental-strip-types scripts/control-dusk.ts ui launch --tool-calls '[]'
+  node --experimental-strip-types scripts/control-madani.ts ui launch --tool-calls '[]'
 ```
 
 Then, with the printed handle:
 
 ```sh
-H=/tmp/duskbot-verify-data-XXXXXX/ui.json
-pnpm control:dusk ui type --ui $H --name "Message Pepper" --text "Draft an email to Sam about Friday."
-pnpm control:dusk ui press --ui $H --keys Enter
-pnpm control:dusk ui wait-settle --ui $H --timeout 60
-pnpm control:dusk ui snapshot --ui $H --interactive
+H=/tmp/madanibot-verify-data-XXXXXX/ui.json
+pnpm control:madani ui type --ui $H --name "Message Pepper" --text "Draft an email to Sam about Friday."
+pnpm control:madani ui press --ui $H --keys Enter
+pnpm control:madani ui wait-settle --ui $H --timeout 60
+pnpm control:madani ui snapshot --ui $H --interactive
 ```
 
 The question's action row holds **Add reaction**; the snapshot lists one per
@@ -99,12 +99,12 @@ keyboard focus; hover it first with `ui eval` (a `pointerenter` with
 `pointerType: "mouse"` on its `[data-message-row]`), then:
 
 ```sh
-pnpm control:dusk ui click --ui $H --ref @eN
-pnpm control:dusk ui screenshot --ui $H --out .dusk-scratch/verify-evidence/reactions-open.png
-pnpm control:dusk ui click --ui $H --name "Thumbs up: yes, go ahead"
-pnpm control:dusk ui wait-settle --ui $H --timeout 60
-pnpm control:dusk ui snapshot --ui $H
-pnpm control:dusk ui console --ui $H
+pnpm control:madani ui click --ui $H --ref @eN
+pnpm control:madani ui screenshot --ui $H --out .madani-scratch/verify-evidence/reactions-open.png
+pnpm control:madani ui click --ui $H --name "Thumbs up: yes, go ahead"
+pnpm control:madani ui wait-settle --ui $H --timeout 60
+pnpm control:madani ui snapshot --ui $H
+pnpm control:madani ui console --ui $H
 ```
 
 Expected: the open row is a toolbar named `Reactions` with six toggle buttons,

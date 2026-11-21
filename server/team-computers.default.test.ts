@@ -8,7 +8,7 @@ import { teamComputerVpsTarget } from "./team-computer-vps.ts";
 
 const directories: string[] = [];
 const fixture = () => {
-  const directory = mkdtempSync(join(tmpdir(), "dusk-default-computer-"));
+  const directory = mkdtempSync(join(tmpdir(), "madani-default-computer-"));
   directories.push(directory);
   const file = join(directory, "team-computers.json");
   const environmentId = randomUUID();

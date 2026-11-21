@@ -2,7 +2,7 @@
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { expect, it } from "vitest";
-import { launchVerificationServer, runControlDusk } from "../scripts/control-dusk.ts";
+import { launchVerificationServer, runControlMadani } from "../scripts/control-madani.ts";
 import { handleToolCall, request } from "../scripts/mcp-server.ts";
 
 // A Chief's level reached the teammate it handed work to and stopped there: Clive on Approve for me, Ada ran at auto,
@@ -23,7 +23,7 @@ it("carries a Chief's level down every hop it hands out, in threads and in a roo
     expect(response.status, `${method} ${path}: ${JSON.stringify(result)}`).toBe(status);
     return result;
   };
-  const cli = (...args: string[]) => runControlDusk([...args, "--url", url]) as Promise<any>;
+  const cli = (...args: string[]) => runControlMadani([...args, "--url", url]) as Promise<any>;
   const tool = (name: string, args: Record<string, unknown>) =>
     handleToolCall(name, args, (path, options) => request(path, options, url)) as Promise<any>;
   const bots = async () => (await api("GET", "/api/bots")).bots as any[];

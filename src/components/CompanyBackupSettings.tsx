@@ -8,7 +8,7 @@ import { textFieldCls } from "./ui/GrokDialog";
 import { WorkspaceBackupRestartNotice, WorkspaceBackupSummaryView } from "./WorkspaceBackupSettings";
 import { ArtState } from "./ui/Art";
 
-type BackupBridge = NonNullable<NonNullable<Window["duskDesktop"]>["companyBackups"]>;
+type BackupBridge = NonNullable<NonNullable<Window["madaniDesktop"]>["companyBackups"]>;
 type BackupList = Awaited<ReturnType<BackupBridge["list"]>>;
 type Dialog = { kind: "create" | "schedule" } | { kind: "restore" | "delete"; entry: CompanyBackupEntry };
 const inputClass = `mt-1 ${textFieldCls}`;
@@ -25,8 +25,8 @@ const dateLabel = (entry: CompanyBackupEntry) => {
 
 /** Security: local connection snapshots are allowed here; cloud calls start only below the capability gate. */
 export function CompanyBackupSettings() {
-  const organization = window.duskDesktop?.remoteClient?.active ? undefined : window.duskDesktop?.organization;
-  const bridge = organization ? window.duskDesktop?.companyBackups : undefined;
+  const organization = window.madaniDesktop?.remoteClient?.active ? undefined : window.madaniDesktop?.organization;
+  const bridge = organization ? window.madaniDesktop?.companyBackups : undefined;
   const [connection, setConnection] = useState<ManagedDesktopState | null>(null);
   const generation = useRef(0);
   const revision = useRef(0);

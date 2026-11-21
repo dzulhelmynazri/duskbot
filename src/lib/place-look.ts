@@ -8,7 +8,7 @@ let started = false;
 const listeners = new Set<(look: PlaceLook | null) => void>();
 
 function bridge() {
-  const workspaces = typeof window === "undefined" || window.duskDesktop?.remoteClient?.active ? undefined : window.duskDesktop?.workspaces;
+  const workspaces = typeof window === "undefined" || window.madaniDesktop?.remoteClient?.active ? undefined : window.madaniDesktop?.workspaces;
   return workspaces?.look ? workspaces : undefined;
 }
 

@@ -174,7 +174,7 @@ const bridges = new Map<string, VoiceBridge>();
 /** One bridge per service and settings, so listeners and a running session survive re-renders. */
 export function providerBridge(provider: VoiceProvider, prefs: VoicePrefs): VoiceBridge | null {
   const phone = phoneVoice();
-  const desktop = typeof window === "undefined" ? undefined : window.duskDesktop?.voiceInput;
+  const desktop = typeof window === "undefined" ? undefined : window.madaniDesktop?.voiceInput;
   if (!phone && !desktop) return null;
   const cacheKey = JSON.stringify([phone ? "phone" : "desktop", provider, prefs.language, prefs.models[provider] ?? "", prefs.realtime, prefs.compatBaseUrl, prefs.whisperCpp]);
   let bridge = bridges.get(cacheKey);

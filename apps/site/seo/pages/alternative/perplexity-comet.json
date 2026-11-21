@@ -4,13 +4,13 @@
   "title": "Perplexity Comet alternatives: browser or bot computer?",
   "nav": "perplexity comet",
   "h1": "perplexity comet alternatives beyond your browser",
-  "description": "Compare Comet with dusk bot: a browser assistant versus a bot with its own computer, including free-plan limits and a dated safety disclosure.",
+  "description": "Compare Comet with madani bot: a browser assistant versus a bot with its own computer, including free-plan limits and a dated safety disclosure.",
   "keyword": "perplexity comet alternative",
   "keywords": [
     "perplexity comet review",
     "perplexity comet vs chatgpt atlas"
   ],
-  "answer": "**want help with the tabs in front of you? comet fits that job.** it researches and acts on pages inside your browser. dusk gives named bots their own ongoing work, files, memory and routines, with a separate browser and desktop available. choose dusk when you want the helper to keep its own workspace while you keep yours.",
+  "answer": "**want help with the tabs in front of you? comet fits that job.** it researches and acts on pages inside your browser. madani gives named bots their own ongoing work, files, memory and routines, with a separate browser and desktop available. choose madani when you want the helper to keep its own workspace while you keep yours.",
   "updated": "2026-11-12",
   "review": {
     "status": "approved",
@@ -48,7 +48,7 @@
       "**you want familiar browser tools.** import your setup and use most chrome extensions.",
       "**you want models within one service.** perplexity handles the routing through its plans."
     ],
-    "dusk": [
+    "madani": [
       "**you want a separate work area.** give the bot its own browser and desktop.",
       "**you want to watch and step in.** use screen, take control, then hand control back.",
       "**you want the job to stay with a bot.** keep its files, memory and ongoing conversations together."
@@ -59,7 +59,7 @@
     "intro": "**budget for the assistant you need after the download.** as of 12 november 2026, comet’s free plan leaves browser agent queries out. we did no browser-speed or task-success test.",
     "cols": [
       "perplexity comet",
-      "dusk bot"
+      "madani bot"
     ],
     "rows": [
       {
@@ -78,7 +78,7 @@
         "label": "browser setup",
         "cells": [
           "import from another browser; supports most chrome extensions",
-          "a separate bot computer on dusk cloud or your own server; mac can also use your screen on purpose"
+          "a separate bot computer on madani cloud or your own server; mac can also use your screen on purpose"
         ],
         "src": [
           1,
@@ -123,7 +123,7 @@
         "label": "paid hosting or access",
         "cells": [
           "pro and max have monthly browser agent query limits",
-          "dusk cloud plus $20/month or pro $50/month; hosted computer plus separate ai bill"
+          "madani cloud plus $20/month or pro $50/month; hosted computer plus separate ai bill"
         ],
         "src": [
           4,
@@ -145,19 +145,19 @@
       }
     ]
   },
-  "method": "**use this comparison to choose where you want the work to happen.** we make dusk bot. perplexity’s plan and product details are from 12 november 2026; brave’s safety disclosure has its own date.\n\nwe did not run matching tasks, time either browser or retest the vulnerability. plan access and working arrangements are what we can compare here.",
+  "method": "**use this comparison to choose where you want the work to happen.** we make madani bot. perplexity’s plan and product details are from 12 november 2026; brave’s safety disclosure has its own date.\n\nwe did not run matching tasks, time either browser or retest the vulnerability. plan access and working arrangements are what we can compare here.",
   "sections": [
     {
       "h": "which browser do you want it working in?",
-      "md": "**comet helps in the browser you use every day.** it is a chromium browser for research and page actions.[^1] import another browser’s setup and keep most chrome extensions.[^1]\n\ndusk keeps the bot’s work together. each cloud bot gets a desktop; a server bot can have a private one there. using your own mac screen is a deliberate choice.[^6]\n\nif you want the bot to have its own working area, read [ai that controls a computer](/ai-agent-that-controls-your-computer). you can keep your everyday browser as it is."
+      "md": "**comet helps in the browser you use every day.** it is a chromium browser for research and page actions.[^1] import another browser’s setup and keep most chrome extensions.[^1]\n\nmadani keeps the bot’s work together. each cloud bot gets a desktop; a server bot can have a private one there. using your own mac screen is a deliberate choice.[^6]\n\nif you want the bot to have its own working area, read [ai that controls a computer](/ai-agent-that-controls-your-computer). you can keep your everyday browser as it is."
     },
     {
       "h": "price the assistant, not the download",
-      "md": "**comet’s free download gets you the browser. agent queries need a paid plan.** as of 12 november 2026, free has no browser agent queries; pro and max have monthly limits.[^4] read the current pro offer before subscribing.\n\ndusk’s personal desktop app is free, with ai billed by your provider. cloud hosting is $20 monthly for plus or $50 for pro, with ai separate.[^8][^9]\n\ncompare the bill for the setup you will actually use. for a signed-in ai in dusk, read your provider’s current terms too."
+      "md": "**comet’s free download gets you the browser. agent queries need a paid plan.** as of 12 november 2026, free has no browser agent queries; pro and max have monthly limits.[^4] read the current pro offer before subscribing.\n\nmadani’s personal desktop app is free, with ai billed by your provider. cloud hosting is $20 monthly for plus or $50 for pro, with ai separate.[^8][^9]\n\ncompare the bill for the setup you will actually use. for a signed-in ai in madani, read your provider’s current terms too."
     },
     {
       "h": "a web page can contain instructions aimed at the bot",
-      "md": "**a page can try to give your bot orders.** brave disclosed an indirect prompt-injection flaw in comet page summarisation on 20 august 2025.[^13] its current fix status is unverified here.\n\nkeep page content separate from your instructions in either tool. in dusk, watch with screen, take control for sign-ins and stop the bot when needed.[^6]\n\nstart with a reading task that ends before submitting forms. the [computer-control safety guide](/guides/is-it-safe-to-let-ai-control-your-computer) explains the access choices."
+      "md": "**a page can try to give your bot orders.** brave disclosed an indirect prompt-injection flaw in comet page summarisation on 20 august 2025.[^13] its current fix status is unverified here.\n\nkeep page content separate from your instructions in either tool. in madani, watch with screen, take control for sign-ins and stop the bot when needed.[^6]\n\nstart with a reading task that ends before submitting forms. the [computer-control safety guide](/guides/is-it-safe-to-let-ai-control-your-computer) explains the access choices."
     },
     {
       "h": "give the trial a stopping point",
@@ -174,8 +174,8 @@
       "a": "**keep the first job to reading public pages.** brave disclosed a prompt-injection flaw on 20 august 2025.[^13] we have not retested it; its current fix status remains unverified here."
     },
     {
-      "q": "can a dusk bot use a browser separate from mine?",
-      "a": "**yes, on its own computer.** dusk cloud gives each bot a desktop. your own server can host a private desktop too. watch with screen and take control when needed. your mac screen is a separate choice.[^6]"
+      "q": "can a madani bot use a browser separate from mine?",
+      "a": "**yes, on its own computer.** madani cloud gives each bot a desktop. your own server can host a private desktop too. watch with screen and take control when needed. your mac screen is a separate choice.[^6]"
     }
   ],
   "sources": [
@@ -200,35 +200,35 @@
       "checked": "2026-11-12"
     },
     {
-      "label": "dusk bot: getting started",
+      "label": "madani bot: getting started",
       "url": "/docs/getting-started"
     },
     {
-      "label": "dusk bot: computer",
+      "label": "madani bot: computer",
       "url": "/docs/computer"
     },
     {
-      "label": "dusk bot: phone",
+      "label": "madani bot: phone",
       "url": "/docs/phone"
     },
     {
-      "label": "dusk bot: billing",
+      "label": "madani bot: billing",
       "url": "/docs/account-and-billing"
     },
     {
-      "label": "dusk bot: dusk cloud",
-      "url": "/docs/dusk-cloud"
+      "label": "madani bot: madani cloud",
+      "url": "/docs/madani-cloud"
     },
     {
-      "label": "dusk bot: files and apps",
+      "label": "madani bot: files and apps",
       "url": "/docs/files-and-apps"
     },
     {
-      "label": "dusk bot: memory",
+      "label": "madani bot: memory",
       "url": "/docs/memory"
     },
     {
-      "label": "dusk bot: routines",
+      "label": "madani bot: routines",
       "url": "/docs/routines"
     },
     {

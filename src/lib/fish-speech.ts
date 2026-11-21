@@ -1,10 +1,10 @@
 // Take turns and dictation where the Mac's speech helper does not exist: the page records the mic, trims silence, and
-// the harness sends each clip to Fish Audio. It speaks the same five-method contract as window.duskDesktop's speech bridge.
+// the harness sends each clip to Fish Audio. It speaks the same five-method contract as window.madaniDesktop's speech bridge.
 import { api, ApiError } from "@/state/api";
 import { t } from "./i18n";
 
 export type SpeechBridge = Required<
-  Pick<NonNullable<Window["duskDesktop"]>, "speechStart" | "speechStop" | "speechFinish" | "onSpeechTranscript" | "onSpeechEnd">
+  Pick<NonNullable<Window["madaniDesktop"]>, "speechStart" | "speechStop" | "speechFinish" | "onSpeechTranscript" | "onSpeechEnd">
 >;
 type Line = Parameters<Parameters<SpeechBridge["onSpeechTranscript"]>[0]>[0];
 type End = Parameters<Parameters<SpeechBridge["onSpeechEnd"]>[0]>[0];

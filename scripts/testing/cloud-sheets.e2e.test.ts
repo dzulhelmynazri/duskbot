@@ -1,33 +1,33 @@
 // The cloud and server sheets for the gallery: the move offer (asked, as a banner, in Settings), the move on its way,
 // failing and done, and a new Cloud's welcome, in the real app on a fake-engine server with the desktop bridge played in
 // the page (cloud-move-preview.tsx, cloud-welcome-preview.tsx), light and dark, desktop and the smallest window. Each
-// open modal also gets the cover check. Screenshots go to DUSK_GALLERY_DIR beside the other galleries'.
+// open modal also gets the cover check. Screenshots go to MADANI_GALLERY_DIR beside the other galleries'.
 //
-//   DUSK_UI_E2E=1 pnpm exec vitest run scripts/testing/cloud-sheets.e2e.test.ts   (DUSK_CLOUD_SKIP=move=done leaves states out)
+//   MADANI_UI_E2E=1 pnpm exec vitest run scripts/testing/cloud-sheets.e2e.test.ts   (MADANI_CLOUD_SKIP=move=done leaves states out)
 import { spawn, type ChildProcess } from "node:child_process";
 import type { IncomingMessage, ServerResponse } from "node:http";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { expect, it } from "vitest";
-import { launchVerificationServer, runControlDusk, type VerificationServer } from "../control-dusk.ts";
+import { launchVerificationServer, runControlMadani, type VerificationServer } from "../control-madani.ts";
 import { waitForExit } from "../../server/testing/cleanup.ts";
-import { ensureUiBrowser } from "./control-dusk-ui.ts";
+import { ensureUiBrowser } from "./control-madani-ui.ts";
 import { fixtureApi, mountPreview, REPO_ROOT, type MountedPreview } from "./preview-fixture.ts";
 import { connect } from "./chat-gallery/cdp.ts";
 import { NOTICES } from "../../src/lib/notices.ts";
 
-const enabled = process.env.DUSK_UI_E2E === "1";
+const enabled = process.env.MADANI_UI_E2E === "1";
 const VIEWPORTS = [
   { id: "desktop", width: 1280, height: 860 },
   { id: "min", width: 768, height: 520 },
 ] as const;
-const SKINS = (process.env.DUSK_SURFACES_SKINS ?? "grok,grok-dark").split(",");
-const SKIP = process.env.DUSK_CLOUD_SKIP?.split(",") ?? [];
+const SKINS = (process.env.MADANI_SURFACES_SKINS ?? "grok,grok-dark").split(",");
+const SKIP = process.env.MADANI_CLOUD_SKIP?.split(",") ?? [];
 const MOVE = ["offer=prompt", "offer=banner", "offer=settings", "move=copy", "move=failing", "move=done"].filter((query) => !SKIP.includes(query));
 const WELCOME = ["", "desktop=1&move=copy", "desktop=1&move=done"];
 
 (enabled ? it : it.skip)("draws the cloud and server sheets, each modal covering the whole window", async () => {
-  const evidence = process.env.DUSK_GALLERY_DIR || join(REPO_ROOT, ".dusk-scratch", "verify-evidence", "chat-gallery");
+  const evidence = process.env.MADANI_GALLERY_DIR || join(REPO_ROOT, ".madani-scratch", "verify-evidence", "chat-gallery");
   mkdirSync(evidence, { recursive: true });
   let fixture: VerificationServer | undefined;
   const previews: MountedPreview[] = [];
@@ -43,7 +43,7 @@ const WELCOME = ["", "desktop=1&move=copy", "desktop=1&move=done"];
     const api = fixtureApi(base);
     await api("PATCH", "/api/config", { language: "en" });
     for (const bot of (await api("GET", "/api/bots")).bots.filter((one: { defaultBot?: unknown }) => one.defaultBot)) await api("PATCH", `/api/bots/${bot.id}`, { welcomed: true });
-    await runControlDusk(["new-bot", "--name", "Pepper", "--url", base]);
+    await runControlMadani(["new-bot", "--name", "Pepper", "--url", base]);
     for (const one of (await api("GET", "/api/bots")).bots) await api("PATCH", `/api/bots/${one.id}`, { color: one.name === "Pepper" ? "orange" : "silver" });
     const relay = (change: (body: Record<string, unknown>) => Record<string, unknown>) => async (req: IncomingMessage, res: ServerResponse) => {
       const response = await fetch(`${base}${req.url}`, { headers: { accept: "application/json", cookie: req.headers.cookie ?? "" } });
@@ -88,7 +88,7 @@ const WELCOME = ["", "desktop=1&move=copy", "desktop=1&move=done"];
       // and the app itself in: the bot list loaded, neither the connecting screen nor the first-run welcome showing
       const name = `cloud-${shot.id}-${viewport.id}${skin === "grok" ? "" : `-${skin}`}`;
       await expect.poll(() => evaluate(`!document.querySelector("[data-boot-cover]:not([data-boot-cover=closing])") && document.readyState === "complete"
-        && document.body.textContent.includes("Pepper") && !/Connecting to your bots|Meet dusk bot/.test(document.body.innerText)`), { timeout: 30_000 }).toBe(true)
+        && document.body.textContent.includes("Pepper") && !/Connecting to your bots|Meet madani bot/.test(document.body.innerText)`), { timeout: 30_000 }).toBe(true)
         .catch(() => { problems.push(`${name}: the app never finished loading (still connecting, or the first-run welcome)`); });
       await evaluate(`document.fonts.ready.then(() => new Promise((done) => setTimeout(done, 1200)))`);
       writeFileSync(join(evidence, `${name}.png`), Buffer.from((await request("Page.captureScreenshot", { format: "png" })).data, "base64"));

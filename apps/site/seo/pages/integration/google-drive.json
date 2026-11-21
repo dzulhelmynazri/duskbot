@@ -4,7 +4,7 @@
   "title": "Google Drive AI assistant for file finding and tidy reviews",
   "nav": "google drive",
   "h1": "a google drive assistant that finds the right file",
-  "description": "Find files, inspect sharing and plan folder moves with dusk bot and Google Drive. Copy three routines that keep the first review read only.",
+  "description": "Find files, inspect sharing and plan folder moves with madani bot and Google Drive. Copy three routines that keep the first review read only.",
   "answer": "**walk into the meeting with the approved packet, not the newer notes beside it.** a google drive bot finds files, reads their details and inspects sharing. connect drive, choose its ai and start read only. it can hand you candidates and filing proposals. folder creation and moves need write access and an ask-first instruction if you want review.",
   "tags": [
     "files",
@@ -91,12 +91,12 @@
       "output": "a filing proposal, with ambiguous destinations left open"
     }
   ],
-  "asks": "**plan the tidy-up with read-only access.** dusk blocks folder creation, moves and sharing changes before they reach drive. a filing proposal needs none of them.\n\nif you later allow moves, write \"ask me before you change anything\". moves and sharing changes skip sending approval.[^3]\n\n- allow only the lookups, move file and create folder actions the job needs\n- broad write access can also allow deletion, emptying trash and public sharing without asking\n- comments and replies count as sends; those ask unless you allow a daily amount\n\ncareful with **Full access**: a bot there with no sending rule can send up to 25 a day without asking. give it **Ask every time**.",
+  "asks": "**plan the tidy-up with read-only access.** madani blocks folder creation, moves and sharing changes before they reach drive. a filing proposal needs none of them.\n\nif you later allow moves, write \"ask me before you change anything\". moves and sharing changes skip sending approval.[^3]\n\n- allow only the lookups, move file and create folder actions the job needs\n- broad write access can also allow deletion, emptying trash and public sharing without asking\n- comments and replies count as sends; those ask unless you allow a daily amount\n\ncareful with **Full access**: a bot there with no sending rule can send up to 25 a day without asking. give it **Ask every time**.",
   "cannot": [
     "**move files while read only.** the same limit blocks renaming and sharing changes. a filing proposal needs none of them.",
-    "**export a google doc, sheet or slide while read only.** dusk counts that export as a change. allow only that action if needed.",
+    "**export a google doc, sheet or slide while read only.** madani counts that export as a change. allow only that action if needed.",
     "**choose the approved copy without your rule.** give a naming rule or reference list. if several files fit, the bot should show the choices.",
-    "**run while its local host sleeps.** dusk cloud keeps scheduled reviews running when your computer is off."
+    "**run while its local host sleeps.** madani cloud keeps scheduled reviews running when your computer is off."
   ],
   "sections": [
     {
@@ -119,20 +119,20 @@
     },
     {
       "q": "can i keep work and personal drive separate?",
-      "a": "**yes. label each account and name the label in the routine.** dusk supports up to five usable accounts per app. choose app access separately for each bot."
+      "a": "**yes. label each account and name the label in the routine.** madani supports up to five usable accounts per app. choose app access separately for each bot."
     }
   ],
   "sources": [
     {
-      "label": "dusk bot docs: files and apps",
+      "label": "madani bot docs: files and apps",
       "url": "/docs/files-and-apps"
     },
     {
-      "label": "dusk bot docs: routines",
+      "label": "madani bot docs: routines",
       "url": "/docs/routines"
     },
     {
-      "label": "dusk bot docs: permissions and sends",
+      "label": "madani bot docs: permissions and sends",
       "url": "/docs/computer"
     }
   ],

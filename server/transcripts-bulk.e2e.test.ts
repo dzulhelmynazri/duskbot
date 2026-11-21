@@ -1,6 +1,6 @@
 import { gzipSync } from "node:zlib";
 import { expect, it } from "vitest";
-import { launchVerificationServer } from "../scripts/control-dusk.ts";
+import { launchVerificationServer } from "../scripts/control-madani.ts";
 import type { BackupTask, TeamBackup } from "../shared/team-backup.ts";
 import type { WireBot, WireGroup, WireMessage } from "../shared/wire.ts";
 
@@ -26,7 +26,7 @@ it("sends every conversation's newest page in one reply, and only the ones asked
   };
   try {
     const backup: TeamBackup = {
-      format: "dusk.backup", version: 1, name: "Bulk fixture", exportedAt: 1, warnings: [], routines: [],
+      format: "madani.backup", version: 1, name: "Bulk fixture", exportedAt: 1, warnings: [], routines: [],
       bots: Array.from({ length: 12 }, (_, index) => ({
         key: `bot-${index}`, name: `Fixture ${index}`, title: "", description: "", color: "green", chiefOfStaff: false,
         hidden: false, playbooks: [], activeTask: `bot-${index}-main`, tasks: [history(`bot-${index}-main`, index % 2 ? 120 : 8)],

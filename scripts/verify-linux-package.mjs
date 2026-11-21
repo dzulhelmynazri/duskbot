@@ -138,7 +138,7 @@ function verifyCompliance(licenses, label) {
   const registryIds = new Set();
   for (const component of registry) {
     const packageId = component.properties?.find(
-      (property) => property.name === "duskbot:cargo:package-id",
+      (property) => property.name === "madanibot:cargo:package-id",
     )?.value;
     if (typeof packageId !== "string" || !packageId.startsWith("registry+")) {
       fail(`${label} SBOM registry component has no exact Cargo package ID`);
@@ -372,7 +372,7 @@ function verifyCloudflaredResources(resources, label, { directoryMode = 0o755 } 
 const appImage = exactlyOne(".AppImage");
 const deb = exactlyOne(".deb");
 const unpacked = path.join(releaseDir, "linux-unpacked");
-const executable = path.join(unpacked, "duskbot");
+const executable = path.join(unpacked, "madanibot");
 const resources = path.join(unpacked, "resources");
 
 requireExecutable(appImage);
@@ -395,9 +395,9 @@ const fields = execFileSync(
   { encoding: "utf8" },
 );
 for (const expected of [
-  "Package: duskbot",
+  "Package: madanibot",
   "Architecture: amd64",
-  "Maintainer: dusk bot <hello@dusk.bot>",
+  "Maintainer: madani bot <hello@madani.bot>",
   "Section: utils",
   "Priority: optional",
 ]) {
@@ -405,17 +405,17 @@ for (const expected of [
 }
 
 // Chromium splits the setuid sandbox's path on spaces, so an install folder with a space crashes every launch on
-// Ubuntu 24.04 ("failed to execvp: /opt/Dusk"). package:linux sets a space-free productName for this.
+// Ubuntu 24.04 ("failed to execvp: /opt/Madani"). package:linux sets a space-free productName for this.
 const debPaths = execFileSync("dpkg-deb", ["--contents", deb], { encoding: "utf8" })
   .split("\n").map((line) => line.replace(/^.*?\s\.\//, "/").replace(/ -> .*$/, "")).filter((entry) => entry.startsWith("/opt/") && entry !== "/opt/");
 if (!debPaths.length) fail("DEB installs nothing under /opt");
-for (const entry of debPaths) if (!entry.startsWith("/opt/dusk-bot/")) fail(`DEB installs outside /opt/dusk-bot: ${entry}`);
+for (const entry of debPaths) if (!entry.startsWith("/opt/madani-bot/")) fail(`DEB installs outside /opt/madani-bot: ${entry}`);
 if (debPaths.some((entry) => /\s/.test(entry.split("/")[2] ?? ""))) fail("the DEB install folder has a space in it");
 
-const extracted = mkdtempSync(path.join(tmpdir(), "dusk-deb-verify-"));
+const extracted = mkdtempSync(path.join(tmpdir(), "madani-deb-verify-"));
 try {
   execFileSync("dpkg-deb", ["--extract", deb, extracted]);
-  const debAppRoot = path.join(extracted, "opt", "dusk-bot");
+  const debAppRoot = path.join(extracted, "opt", "madani-bot");
   requireDirectoryMode(debAppRoot, 0o755);
   const debResources = path.join(debAppRoot, "resources");
   const debHashes = verifyCuaResources(debResources, "DEB");
@@ -432,7 +432,7 @@ try {
     "usr",
     "share",
     "applications",
-    "bot.dusk.app.desktop",
+    "bot.madani.app.desktop",
   );
   const scalableIcon = path.join(
     extracted,
@@ -442,16 +442,16 @@ try {
     "hicolor",
     "scalable",
     "apps",
-    "duskbot.svg",
+    "madanibot.svg",
   );
   requireFile(desktopFile);
   requireFile(scalableIcon);
   const desktop = readFileSync(desktopFile, "utf8");
   for (const expected of [
-    "Name=dusk bot",
-    "Exec=/opt/dusk-bot/duskbot %U",
-    "Icon=duskbot",
-    "StartupWMClass=bot.dusk.app",
+    "Name=madani bot",
+    "Exec=/opt/madani-bot/madanibot %U",
+    "Icon=madanibot",
+    "StartupWMClass=bot.madani.app",
     "Categories=Utility;",
   ]) {
     if (!desktop.includes(expected)) fail(`desktop entry is missing ${JSON.stringify(expected)}`);
@@ -461,7 +461,7 @@ try {
   rmSync(extracted, { recursive: true, force: true });
 }
 
-const appImageExtracted = mkdtempSync(path.join(tmpdir(), "dusk-appimage-verify-"));
+const appImageExtracted = mkdtempSync(path.join(tmpdir(), "madani-appimage-verify-"));
 try {
   const offset = execFileSync(appImage, ["--appimage-offset"], {
     encoding: "utf8",

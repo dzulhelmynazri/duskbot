@@ -1,4 +1,4 @@
-// dusk pixel engine: draws PixelCore bots into canvases on one shared frame loop that sleeps while every bot is still
+// madani pixel engine: draws PixelCore bots into canvases on one shared frame loop that sleeps while every bot is still
 import { BODY, EYE, PixelCore, setReduced, type CoreOptions, type PixelReaction, type PixelState } from "./core.ts";
 
 export { PIXEL_STATES, stillFrame, stillSvgPaths, type PixelReaction, type PixelState } from "./core.ts";

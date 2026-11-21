@@ -1,7 +1,7 @@
-// A new dusk cloud opened from this computer runs the app's first run there, with what this computer already knows: the
+// A new madani cloud opened from this computer runs the app's first run there, with what this computer already knows: the
 // person's name, picture and About me fill what the cloud lacks, the AIs signed in here are named so the cloud can
 // offer the same ones, and the AI keys saved here go along sealed, so those AIs work there without asking again (CLI
-// logins go through the Admin's hold instead). The cloud's own "welcome to dusk cloud" is marked done, since the first
+// logins go through the Admin's hold instead). The cloud's own "welcome to madani cloud" is marked done, since the first
 // run replaces it. All of it goes over this window's own signed-in session with the cloud, once; the hints the
 // cloud already has are kept. A cloud whose welcome already ended is left alone.
 import { cloudSealer } from "./cloud-seal.mjs";

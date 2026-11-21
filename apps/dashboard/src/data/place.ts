@@ -5,7 +5,7 @@ import type { CloudDesktop } from "./contracts.ts";
 export type PlaceTone = "good" | "warn" | "quiet" | "accent" | "bad";
 export interface PlaceState { label: string; tone: PlaceTone; live: boolean }
 
-/** how a workspace reads to its owner. a dusk cloud follows the cloud itself: one we put to sleep to save cost
+/** how a workspace reads to its owner. a madani cloud follows the cloud itself: one we put to sleep to save cost
  *  reads online (any use wakes it), and only its owner's own pause reads stopped. a mac or server that went
  *  quiet just says when it was last seen, never an alarming "offline" */
 export function placeState(freshness: Freshness, at: number | null, now: number, cloud?: CloudDesktop | null): PlaceState {
@@ -28,7 +28,7 @@ export const TONE_TEXT: Record<PlaceTone, string> = { good: "text-good", warn: "
 /** the freshness bots should wake or sleep by: a running cloud's bots are awake even before its first report lands */
 export const botFreshness = (freshness: Freshness, cloud?: CloudDesktop | null): Freshness | undefined => (cloud?.status === "running" ? undefined : freshness);
 
-/** whether an action for a workspace can go now: "ready"; "wake" for a dusk cloud we put to sleep (the action wakes it
+/** whether an action for a workspace can go now: "ready"; "wake" for a madani cloud we put to sleep (the action wakes it
  *  first, as any use does); "away" only for a cloud its owner stopped, or a mac or server that went quiet */
 export type Reach = "ready" | "wake" | "away";
 export function reachOf(freshness: Freshness, cloud?: CloudDesktop | null): Reach {
@@ -42,10 +42,10 @@ export function reachOf(freshness: Freshness, cloud?: CloudDesktop | null): Reac
 /** what to say when an action can't go now, in the place's own terms */
 export function awayLine(ws: { name: string; kind: string }, cloud?: CloudDesktop | null): string {
   if (cloud) {
-    if (cloud.awaitingPayment) return `${ws.name} is waiting for payment. finish it in dusk cloud, then try again.`;
+    if (cloud.awaitingPayment) return `${ws.name} is waiting for payment. finish it in madani cloud, then try again.`;
     if (cloud.status === "provisioning") return `${ws.name} is still being set up. try again in a few minutes.`;
-    if (cloud.status === "error") return `${ws.name} needs attention. open dusk cloud to see why.`;
-    return `${ws.name} is turned off. turn it on in dusk cloud, then try again.`;
+    if (cloud.status === "error") return `${ws.name} needs attention. open madani cloud to see why.`;
+    return `${ws.name} is turned off. turn it on in madani cloud, then try again.`;
   }
-  return ws.kind === "vps" ? `${ws.name} is not answering. check that dusk bot is running there, then try again.` : `${ws.name} is asleep. open dusk bot on it, then try again.`;
+  return ws.kind === "vps" ? `${ws.name} is not answering. check that madani bot is running there, then try again.` : `${ws.name} is asleep. open madani bot on it, then try again.`;
 }

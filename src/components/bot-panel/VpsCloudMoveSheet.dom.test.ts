@@ -45,7 +45,7 @@ function desktop(view: VpsCloudMoveView | null) {
     cloudAdd: { state: vi.fn(async () => ({ signedIn: true, hasCloud: false, supported: true, canAdd: true, offer: OFFER, count: 0 })) },
     ...(vpsCloudMove ? { vpsCloudMove } : {}),
   };
-  (window as unknown as { duskDesktop: unknown }).duskDesktop = bridges;
+  (window as unknown as { madaniDesktop: unknown }).madaniDesktop = bridges;
   return { bridges, vps: vpsCloudMove!, tell: (next: VpsCloudMoveView) => flushSync(() => listener?.(next)) };
 }
 
@@ -67,11 +67,11 @@ afterEach(() => {
   flushSync(() => root.unmount());
   host.remove();
   document.body.innerHTML = "";
-  delete (window as unknown as { duskDesktop?: unknown }).duskDesktop;
+  delete (window as unknown as { madaniDesktop?: unknown }).madaniDesktop;
   vi.unstubAllGlobals();
 });
 
-describe("move a VPS's bots to dusk cloud", () => {
+describe("move a VPS's bots to madani cloud", () => {
   it("an older app without the bridge: still says to switch to this computer", async () => {
     desktop(null);
     await render();
@@ -87,9 +87,9 @@ describe("move a VPS's bots to dusk cloud", () => {
     expect(text()).toContain(`All 3 bots move straight from ${PLACE}`);
     expect(text(), "the cheapest plan, named with its price, before the browser opens").toContain("Plus: $20/month + tax where applicable.");
     expect(text()).toContain(`After you pay, your bots move from ${PLACE} by themselves.`);
-    button("Get dusk cloud")!.click();
+    button("Get madani cloud")!.click();
     await settle();
-    expect(vps.buy, "Get dusk cloud buys Plus, not Pro").toHaveBeenCalledWith("plus");
+    expect(vps.buy, "Get madani cloud buys Plus, not Pro").toHaveBeenCalledWith("plus");
     expect(stage()).toBe("vps-buying");
   });
 
@@ -104,9 +104,9 @@ describe("move a VPS's bots to dusk cloud", () => {
   it("signed out: buy's refusal opens the sign-in, from this source", async () => {
     const { bridges, vps } = desktop({ stage: "none", cloud: "signed-out" });
     Object.assign(bridges, { cloudAccount: { state: vi.fn(async () => ({ status: "signed-out" })), onState: vi.fn(() => () => {}) } });
-    vps.buy.mockRejectedValueOnce(new Error("Error invoking remote method 'vps-cloud-move:buy': Error: Sign in to dusk cloud first."));
+    vps.buy.mockRejectedValueOnce(new Error("Error invoking remote method 'vps-cloud-move:buy': Error: Sign in to madani cloud first."));
     await render();
-    button("Get dusk cloud")!.click();
+    button("Get madani cloud")!.click();
     await settle();
     expect(fixture.dispatch).toHaveBeenCalledWith({ type: "openCloudAdd", source: "app_computer_move", signIn: true });
     expect(onClose).toHaveBeenCalled();
@@ -117,9 +117,9 @@ describe("move a VPS's bots to dusk cloud", () => {
     const { vps, bridges } = desktop({ stage: "none", cloud: "signed-out" });
     const open = vi.fn(async () => {});
     (bridges as Record<string, unknown>).accountSheet = { open, offered: vi.fn(async () => true) };
-    vps.buy.mockRejectedValueOnce(new Error("Sign in to dusk cloud first."));
+    vps.buy.mockRejectedValueOnce(new Error("Sign in to madani cloud first."));
     await render();
-    button("Get dusk cloud")!.click();
+    button("Get madani cloud")!.click();
     await settle();
     expect(open).toHaveBeenCalledTimes(1);
     expect(document.body.querySelector("[role='alert']")).toBeNull();
@@ -174,7 +174,7 @@ describe("move a VPS's bots to dusk cloud", () => {
     tell({ stage: "moving", place: PLACE, route: "direct", phase: "wait", retrying: true, error: "the server didn't answer." });
     expect(document.body.querySelector("[role='status']")?.textContent).toBe("Waiting for a quiet moment");
     expect(text()).toContain("trying again by itself");
-    expect(button("Get dusk cloud")).toBeUndefined();
+    expect(button("Get madani cloud")).toBeUndefined();
   });
 
   it("fallback: goes via this computer, which restarts once", async () => {
@@ -182,24 +182,24 @@ describe("move a VPS's bots to dusk cloud", () => {
     await render();
     expect(stage()).toBe("vps-fallback");
     expect(text()).toContain("Going via this Mac");
-    expect(text()).toContain("come back to this Mac first, then move on to dusk cloud by themselves");
+    expect(text()).toContain("come back to this Mac first, then move on to madani cloud by themselves");
     expect(text()).toContain("The app restarts once on the way.");
   });
 
   it("failed: says why, and try again retries", async () => {
-    const { vps } = desktop({ stage: "failed", place: PLACE, route: "direct", error: "dusk cloud didn't answer." });
+    const { vps } = desktop({ stage: "failed", place: PLACE, route: "direct", error: "madani cloud didn't answer." });
     await render();
-    expect(document.body.querySelector("[role='alert']")?.textContent).toBe("dusk cloud didn't answer.");
+    expect(document.body.querySelector("[role='alert']")?.textContent).toBe("madani cloud didn't answer.");
     button("Try again")!.click();
     await settle();
     expect(vps.retry).toHaveBeenCalledTimes(1);
   });
 
   it("done: what moved, and what stays on the server", async () => {
-    const stays = `Saved logins, 1Password and app keys stay on ${PLACE}. Connect them again on dusk cloud.`;
+    const stays = `Saved logins, 1Password and app keys stay on ${PLACE}. Connect them again on madani cloud.`;
     desktop({ stage: "done", place: PLACE, route: "direct", counts: { bots: 3, chats: 142, routines: 4 }, stays });
     await render();
-    expect(text()).toContain("Your bots are on dusk cloud");
+    expect(text()).toContain("Your bots are on madani cloud");
     expect(text()).toContain(`Moved from ${PLACE}: 3 bots, 142 chats, and 4 routines.`);
     expect(document.body.querySelector("[data-vps-move-stays]")?.textContent).toBe(stays);
   });

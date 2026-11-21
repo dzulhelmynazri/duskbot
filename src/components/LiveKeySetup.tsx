@@ -24,8 +24,8 @@ export function LiveKeySetup({ onSaved, compact = false }: { onSaved: () => void
     setSaving(true);
     setError(null);
     try {
-      const status: ConfigStatus = window.duskDesktop?.setCredential
-        ? await window.duskDesktop.setCredential("openaiLiveKey", value)
+      const status: ConfigStatus = window.madaniDesktop?.setCredential
+        ? await window.madaniDesktop.setCredential("openaiLiveKey", value)
         : await putConfig({ live: { key: value } });
       dispatch({ type: "configStatus", config: status });
       // The save may finish after the prompt was dismissed; never turn it into a call the user already cancelled.

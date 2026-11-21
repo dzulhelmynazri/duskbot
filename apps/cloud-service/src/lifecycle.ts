@@ -31,17 +31,17 @@ export const VIEW_FRESH_MS = 2 * 60_000;
 const MINUTE = 60_000, HOUR = 3_600_000, BACKUP_RETRY_MS = 10 * MINUTE, SETUP_TRIES = 3, RESTORE_TRIES = 3, SETUP_PATIENCE_MS = 6 * HOUR, SETUP_ERROR_RETRY_MS = 6 * HOUR;
 
 export interface ManagedSettings {
-  /** the shortest idle before any stop, in minutes (DUSK_MANAGED_IDLE_MINUTES); the power policy decides past it */
+  /** the shortest idle before any stop, in minutes (MADANI_MANAGED_IDLE_MINUTES); the power policy decides past it */
   idleMinutes: number;
-  /** the provider's own auto-stop, extended while the home is up: a dead-man switch if this service stops (DUSK_MANAGED_LEASE_HOURS) */
+  /** the provider's own auto-stop, extended while the home is up: a dead-man switch if this service stops (MADANI_MANAGED_LEASE_HOURS) */
   leaseSeconds: number;
-  /** a backup at most this often (DUSK_MANAGED_BACKUP_HOURS) */
+  /** a backup at most this often (MADANI_MANAGED_BACKUP_HOURS) */
   backupEveryMs: number;
-  /** days whose newest generation is kept per cloud, besides the long-held oldest (DUSK_MANAGED_BACKUP_KEEP), at least 2 */
+  /** days whose newest generation is kept per cloud, besides the long-held oldest (MADANI_MANAGED_BACKUP_KEEP), at least 2 */
   backupKeep: number;
   retentionDays: number;
   deleteDelayDays: number;
-  /** after a retention deletion the backups stay this long more (DUSK_MANAGED_BACKUP_TAIL_DAYS) */
+  /** after a retention deletion the backups stay this long more (MADANI_MANAGED_BACKUP_TAIL_DAYS) */
   backupTailMs: number;
   /** a routine's run wakes its home this long before */
   wakeLeadMs: number;
@@ -65,7 +65,7 @@ export const DEFAULT_MANAGED_SETTINGS: ManagedSettings = {
   deleteDelayDays: DEFAULT_DELETE_DELAY_DAYS, backupTailMs: 30 * DAY_MS, wakeLeadMs: 2 * MINUTE, edgeWakesPerHour: 20, powerReadMs: MINUTE, package: null, requireSigned: false, publicDomain: null, claims: false, maxBackupBytes: 4 * 1024 ** 3, lostAfterMs: 30 * MINUTE,
 };
 
-/** settings from DUSK_MANAGED_* */
+/** settings from MADANI_MANAGED_* */
 export function managedSettingsFromEnv(env: NodeJS.ProcessEnv, options: { loopback?: boolean } = {}): ManagedSettings {
   const number = (name: string, min: number, max: number, fallback: number) => {
     const raw = env[name];
@@ -74,29 +74,29 @@ export function managedSettingsFromEnv(env: NodeJS.ProcessEnv, options: { loopba
     if (!Number.isFinite(value) || value < min || value > max) throw new Error(`Invalid ${name}.`);
     return value;
   };
-  const sha256 = env.DUSK_MANAGED_HOME_PACKAGE_SHA256;
-  const pkg = env.DUSK_MANAGED_HOME_PACKAGE_URL || env.DUSK_MANAGED_HOME_PACKAGE_FILE
-    ? { sha256: sha256 && /^[a-f0-9]{64}$/.test(sha256) ? sha256 : (() => { throw new Error("Invalid DUSK_MANAGED_HOME_PACKAGE_SHA256."); })(),
-      ...(env.DUSK_MANAGED_HOME_PACKAGE_URL ? { url: env.DUSK_MANAGED_HOME_PACKAGE_URL } : { file: env.DUSK_MANAGED_HOME_PACKAGE_FILE }) }
+  const sha256 = env.MADANI_MANAGED_HOME_PACKAGE_SHA256;
+  const pkg = env.MADANI_MANAGED_HOME_PACKAGE_URL || env.MADANI_MANAGED_HOME_PACKAGE_FILE
+    ? { sha256: sha256 && /^[a-f0-9]{64}$/.test(sha256) ? sha256 : (() => { throw new Error("Invalid MADANI_MANAGED_HOME_PACKAGE_SHA256."); })(),
+      ...(env.MADANI_MANAGED_HOME_PACKAGE_URL ? { url: env.MADANI_MANAGED_HOME_PACKAGE_URL } : { file: env.MADANI_MANAGED_HOME_PACKAGE_FILE }) }
     : null;
-  const signature = env.DUSK_MANAGED_HOME_PACKAGE_SIGNATURE || (env.DUSK_MANAGED_HOME_PACKAGE_SIGNATURE_FILE ? readFileSync(env.DUSK_MANAGED_HOME_PACKAGE_SIGNATURE_FILE, "utf8").trim() : "");
+  const signature = env.MADANI_MANAGED_HOME_PACKAGE_SIGNATURE || (env.MADANI_MANAGED_HOME_PACKAGE_SIGNATURE_FILE ? readFileSync(env.MADANI_MANAGED_HOME_PACKAGE_SIGNATURE_FILE, "utf8").trim() : "");
   if (signature && pkg) Object.assign(pkg, { signature });
-  const publicDomain = env.DUSK_MANAGED_PUBLIC_DOMAIN || null;
-  if (publicDomain !== null && !/^(?=.{4,200}$)([a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,63}$/.test(publicDomain)) throw new Error("Invalid DUSK_MANAGED_PUBLIC_DOMAIN.");
-  if (!pkg) throw new Error("A managed cloud needs DUSK_MANAGED_HOME_PACKAGE_URL (or _FILE) with DUSK_MANAGED_HOME_PACKAGE_SHA256.");
+  const publicDomain = env.MADANI_MANAGED_PUBLIC_DOMAIN || null;
+  if (publicDomain !== null && !/^(?=.{4,200}$)([a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,63}$/.test(publicDomain)) throw new Error("Invalid MADANI_MANAGED_PUBLIC_DOMAIN.");
+  if (!pkg) throw new Error("A managed cloud needs MADANI_MANAGED_HOME_PACKAGE_URL (or _FILE) with MADANI_MANAGED_HOME_PACKAGE_SHA256.");
   return { ...DEFAULT_MANAGED_SETTINGS, package: pkg, publicDomain,
     requireSigned: !options.loopback, claims: !options.loopback,
-    idleMinutes: number("DUSK_MANAGED_IDLE_MINUTES", 1, 24 * 60, 15),
-    leaseSeconds: number("DUSK_MANAGED_LEASE_HOURS", 1, 720, 2) * 3600,
-    backupEveryMs: number("DUSK_MANAGED_BACKUP_HOURS", 1, 24 * 7, 24) * HOUR,
-    backupKeep: number("DUSK_MANAGED_BACKUP_KEEP", 2, 30, 2),
-    wakeLeadMs: number("DUSK_MANAGED_WAKE_LEAD_MINUTES", 1, 30, 2) * MINUTE,
-    edgeWakesPerHour: number("DUSK_MANAGED_EDGE_WAKES_PER_HOUR", 1, 60, 20),
-    retentionDays: number("DUSK_MANAGED_RETENTION_DAYS", DEFAULT_RETENTION_DAYS, 3650, DEFAULT_RETENTION_DAYS),
-    deleteDelayDays: number("DUSK_MANAGED_DELETE_DELAY_DAYS", DEFAULT_DELETE_DELAY_DAYS, 90, DEFAULT_DELETE_DELAY_DAYS),
-    backupTailMs: number("DUSK_MANAGED_BACKUP_TAIL_DAYS", 7, 365, 30) * DAY_MS,
-    maxBackupBytes: number("DUSK_MANAGED_BACKUP_MAX_MB", 64, 64 * 1024, 4096) * 1024 * 1024,
-    lostAfterMs: number("DUSK_MANAGED_LOST_AFTER_MINUTES", 2, 24 * 60, 30) * MINUTE };
+    idleMinutes: number("MADANI_MANAGED_IDLE_MINUTES", 1, 24 * 60, 15),
+    leaseSeconds: number("MADANI_MANAGED_LEASE_HOURS", 1, 720, 2) * 3600,
+    backupEveryMs: number("MADANI_MANAGED_BACKUP_HOURS", 1, 24 * 7, 24) * HOUR,
+    backupKeep: number("MADANI_MANAGED_BACKUP_KEEP", 2, 30, 2),
+    wakeLeadMs: number("MADANI_MANAGED_WAKE_LEAD_MINUTES", 1, 30, 2) * MINUTE,
+    edgeWakesPerHour: number("MADANI_MANAGED_EDGE_WAKES_PER_HOUR", 1, 60, 20),
+    retentionDays: number("MADANI_MANAGED_RETENTION_DAYS", DEFAULT_RETENTION_DAYS, 3650, DEFAULT_RETENTION_DAYS),
+    deleteDelayDays: number("MADANI_MANAGED_DELETE_DELAY_DAYS", DEFAULT_DELETE_DELAY_DAYS, 90, DEFAULT_DELETE_DELAY_DAYS),
+    backupTailMs: number("MADANI_MANAGED_BACKUP_TAIL_DAYS", 7, 365, 30) * DAY_MS,
+    maxBackupBytes: number("MADANI_MANAGED_BACKUP_MAX_MB", 64, 64 * 1024, 4096) * 1024 * 1024,
+    lostAfterMs: number("MADANI_MANAGED_LOST_AFTER_MINUTES", 2, 24 * 60, 30) * MINUTE };
 }
 
 export function freshManagedState(): HomeLifecycleState {
@@ -124,7 +124,7 @@ export interface LifecycleDeps {
   removeWorkspace(workspaceId: string): void;
   now(): number;
   save(cloud: StoredCloud): void;
-  /** this service's backup secret (DUSK_MANAGED_BACKUP_KEY, or derived from DUSK_CLOUD_SEAL_KEY); never on a home */
+  /** this service's backup secret (MADANI_MANAGED_BACKUP_KEY, or derived from MADANI_CLOUD_SEAL_KEY); never on a home */
   backupSecret: Buffer;
   /** the cloud's record as stored on disk now, re-read right before anything irreversible */
   stored(cloudId: string): StoredCloud | null;
@@ -685,7 +685,7 @@ export function createLifecycle(deps: LifecycleDeps) {
       }
     }
   }
-  const snapshotName = (serverId: string) => `dusk-${serverId.slice(2)}`;
+  const snapshotName = (serverId: string) => `madani-${serverId.slice(2)}`;
 
   /** a plan that ended, with its final backup taken: the home saved whole as a provider snapshot (free) and its machine
    *  deleted, so the retention months cost no disk; a new plan in time boots a machine from it */

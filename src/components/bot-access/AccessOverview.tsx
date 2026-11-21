@@ -24,7 +24,7 @@ const STACK_SHOWN = 4;
 const ROW = cn(rowCls, "w-full min-w-0 text-start");
 const PRESS = "cursor-pointer hover:bg-ink/[0.035] outline-none focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-focus";
 
-/** The team's bots a person shares: each person's own Dusk is theirs alone and stays out. */
+/** The team's bots a person shares: each person's own Madani is theirs alone and stays out. */
 export const sharedBots = (bots: readonly Bot[]): Bot[] =>
   bots.filter((bot) => !bot.hidden && !bot.defaultBot?.person).sort((a, b) => a.name.localeCompare(b.name));
 

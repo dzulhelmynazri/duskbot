@@ -1,17 +1,17 @@
 // The open notch as Chromium really lays it out: the real page and stylesheet at the island window's size, 40 bots, a
 // fake bridge. Catches what DOM tests cannot see: cells spread apart, names or states not drawn, a row cut in half.
-// Headless only. `node src/ambient/notch-layout.check.mjs` (DUSK_VERIFY_PLAYWRIGHT: a playwright module to load,
-// DUSK_VERIFY_BROWSER_CHROME: a Chromium to use, DUSK_NOTCH_SHOT: where to save a screenshot).
+// Headless only. `node src/ambient/notch-layout.check.mjs` (MADANI_VERIFY_PLAYWRIGHT: a playwright module to load,
+// MADANI_VERIFY_BROWSER_CHROME: a Chromium to use, MADANI_NOTCH_SHOT: where to save a screenshot).
 import assert from "node:assert/strict";
 import { fileURLToPath } from "node:url";
 import { createServer } from "vite";
 
 const root = fileURLToPath(new URL("../..", import.meta.url));
-const { chromium } = await import(process.env.DUSK_VERIFY_PLAYWRIGHT || "playwright");
-const server = await createServer({ root, cacheDir: `${root}/.dusk-scratch/vite-notch-layout`, configFile: `${root}/vite.config.ts`, logLevel: "error", server: { host: "127.0.0.1", port: 0, strictPort: false } });
+const { chromium } = await import(process.env.MADANI_VERIFY_PLAYWRIGHT || "playwright");
+const server = await createServer({ root, cacheDir: `${root}/.madani-scratch/vite-notch-layout`, configFile: `${root}/vite.config.ts`, logLevel: "error", server: { host: "127.0.0.1", port: 0, strictPort: false } });
 await server.listen();
 const { port } = server.httpServer.address();
-const browser = await chromium.launch({ executablePath: process.env.DUSK_VERIFY_BROWSER_CHROME || undefined, headless: true, args: ["--use-mock-keychain", "--password-store=basic"] });
+const browser = await chromium.launch({ executablePath: process.env.MADANI_VERIFY_BROWSER_CHROME || undefined, headless: true, args: ["--use-mock-keychain", "--password-store=basic"] });
 
 // electron/ambient-geometry.mjs: the island window, and a 14-inch MacBook Pro's notch
 const WINDOW = { width: 560, height: 680 };
@@ -95,7 +95,7 @@ try {
   const after = await measure();
   assert.ok(after.scrollTop > 0, "the grid did not scroll");
   check(after, "scrolled");
-  if (process.env.DUSK_NOTCH_SHOT) await page.screenshot({ path: process.env.DUSK_NOTCH_SHOT, clip: { x: 40, y: 0, width: 480, height: 420 } });
+  if (process.env.MADANI_NOTCH_SHOT) await page.screenshot({ path: process.env.MADANI_NOTCH_SHOT, clip: { x: 40, y: 0, width: 480, height: 420 } });
   assert.deepEqual(errors, []);
   console.log(`notch layout ok: ${before.cells.filter((cell) => Math.abs(cell.y - before.cells[0].y) < 1).length} to a row, scrolled to ${after.scrollTop}px`);
 } finally {

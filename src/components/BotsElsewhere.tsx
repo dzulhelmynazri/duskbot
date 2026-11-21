@@ -51,7 +51,7 @@ function listed(rail: RailPlace[], here: ElsewherePlace[]): RailPlace[] {
 
 export function BotsElsewhere() {
   const { state, dispatch } = useStore();
-  const bridge = typeof window === "undefined" ? undefined : window.duskDesktop?.elsewhere;
+  const bridge = typeof window === "undefined" ? undefined : window.madaniDesktop?.elsewhere;
   const rail = usePlaces();
   const simulated = useSimulatedFreshInstall();
   const [view, setView] = useState<ElsewhereView | null>(null);
@@ -102,7 +102,7 @@ export function BotsElsewhere() {
   // an answer that reaches this page means the window stayed here, so the screen is itself again
   const open = (id: string) => {
     if (opening) return;
-    const workspaces = window.duskDesktop?.workspaces;
+    const workspaces = window.madaniDesktop?.workspaces;
     const go = rail.places.some((place) => place.id === id) && workspaces?.open ? workspaces.open(id) : bridge?.open(id);
     if (!go) return;
     setOpening(id);
@@ -119,7 +119,7 @@ export function BotsElsewhere() {
 
   const places = listed(rail.places, [screen.place, ...screen.others]);
   const hasCloud = places.some((place) => place.kind === "cloud" || place.kind === "team");
-  const canBuy = Boolean(window.duskDesktop?.cloudAccount) && window.duskDesktop?.remoteClient?.active !== true;
+  const canBuy = Boolean(window.madaniDesktop?.cloudAccount) && window.madaniDesktop?.remoteClient?.active !== true;
   const ownHere = state.bots.filter((bot) => !bot.defaultBot && !bot.hidden).length;
   return (
     <PlacesHub
@@ -137,7 +137,7 @@ export function BotsElsewhere() {
 }
 
 /** The bots-on screen: a short heading and every place as one selectable row, how many bots it has and whether it is up,
- * then getting dusk cloud (or moving to it) and adding a place. `lit`: the
+ * then getting madani cloud (or moving to it) and adding a place. `lit`: the
  * place main says holds the bots, marked when no count says otherwise. */
 export function PlacesHub({ places, counts, lit, opening = null, failed = null, simulated = false, onOpen, getCloud, onAdd }: {
   places: RailPlace[]; counts: Record<string, number>; lit: string; opening?: string | null; failed?: string | null; simulated?: boolean;
@@ -209,7 +209,7 @@ function PlaceRow({ place, count, lit, opening, busy, onOpen }: {
   );
 }
 
-/** A fresh install whose account set up dusk bot elsewhere: connect there, or set this computer up instead. */
+/** A fresh install whose account set up madani bot elsewhere: connect there, or set this computer up instead. */
 export function SetUpOnCard({ screen, simulated = false, opening = null, onConnect, onStay }: {
   screen: Extract<ElsewhereScreen, { kind: "set-up-on" }>; simulated?: boolean; opening?: string | null; onConnect: () => void; onStay: () => void;
 }) {

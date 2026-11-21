@@ -43,7 +43,7 @@ function callAtlas() {
 
 beforeEach(() => {
   fixture.bots = [atlas];
-  vi.stubGlobal("window", { duskDesktop: { speechStop: vi.fn(async () => {}) } });
+  vi.stubGlobal("window", { madaniDesktop: { speechStop: vi.fn(async () => {}) } });
 });
 afterEach(() => {
   resetLiveMedia();

@@ -1,6 +1,6 @@
 // A real full disk under a fake-engine fixture: run with TMPDIR on a small volume (a RAM disk), fill it, send messages,
 // free it again and restart. The server must stay up, say plainly what failed, keep what it had, and recover.
-//   TMPDIR=/Volumes/DuskFull node --experimental-strip-types scripts/stress/disk-full.ts
+//   TMPDIR=/Volumes/MadaniFull node --experimental-strip-types scripts/stress/disk-full.ts
 import { closeSync, openSync, rmSync, statfsSync, writeSync } from "node:fs";
 import { join } from "node:path";
 import { tmpdir } from "node:os";

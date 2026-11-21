@@ -99,7 +99,7 @@ beforeAll(async () => {
   vps = await createTeamVpsFixture();
   fx = await launchCloudSendFixture({ onePasswordToken: "ops_fake-running-turn", broker, team: { id: "team-acme-1", name: "Acme", engine: ENGINE, env: {
     FIXTURE_ADMIN_STAND_IN: `http://127.0.0.1:${(adminServer.address() as AddressInfo).port}`,
-    DUSK_EXTRA_PATH: [vps.localVm.binDir].join(delimiter), CONTAINER_HOST: vps.localVm.host, CONTAINER_SSHKEY: vps.localVm.sshKey,
+    MADANI_EXTRA_PATH: [vps.localVm.binDir].join(delimiter), CONTAINER_HOST: vps.localVm.host, CONTAINER_SSHKEY: vps.localVm.sshKey,
   } } });
   team = fx.team!;
   writeFileSync(join(team.home, "reply.txt"), FINISHED);

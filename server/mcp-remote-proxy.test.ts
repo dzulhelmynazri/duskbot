@@ -174,7 +174,7 @@ describe("scoped remote MCP subprocess", () => {
   it("stops waiting for a call the remote server never answers, with an error the model can act on", async () => {
     fixture = await remoteFixture("http");
     const gated = gateServer({ name: "notes", server: fixture.spec, budget: 0, threadId: "fixture", toolScope: { allow: ["mcp:notes:read"] } })!;
-    start({ ...gated, env: { ...gated.env, DUSK_REMOTE_MCP_CALL_MS: "1500" } });
+    start({ ...gated, env: { ...gated.env, MADANI_REMOTE_MCP_CALL_MS: "1500" } });
     await initialize();
     const cancelled = once(fixture.events, "cancelled");
     send({ id: 2, method: "tools/call", params: { name: "read", arguments: { hold: true } } });
@@ -228,13 +228,13 @@ describe("scoped remote MCP subprocess", () => {
 
   it("runs the shipped helpers without a TypeScript source tree", async () => {
     fixture = await remoteFixture("http");
-    scratch = mkdtempSync(join(tmpdir(), "dusk-remote-bundle-"));
+    scratch = mkdtempSync(join(tmpdir(), "madani-remote-bundle-"));
     await build({ entryPoints: ["mcp-gate.ts", "mcp-remote-proxy.ts"].map((name) => join(SERVER_ROOT, name)), outdir: scratch, bundle: true, platform: "node", format: "esm", logLevel: "silent" });
     const gated = gateServer({ name: "notes", server: fixture.spec, budget: 0, threadId: "fixture", toolScope: { allow: ["mcp:notes:read"] } })!;
     gated.args = [join(scratch, "mcp-gate.js")];
-    const upstream = JSON.parse(gated.env.DUSK_GATE_UPSTREAM);
+    const upstream = JSON.parse(gated.env.MADANI_GATE_UPSTREAM);
     upstream.args = [join(scratch, "mcp-remote-proxy.js")];
-    gated.env.DUSK_GATE_UPSTREAM = JSON.stringify(upstream);
+    gated.env.MADANI_GATE_UPSTREAM = JSON.stringify(upstream);
     start(gated);
     await initialize();
     send({ id: 2, method: "tools/call", params: { name: "read", arguments: { large: true } } });
@@ -354,7 +354,7 @@ describe("remote MCP tool directory", () => {
     const [small, page] = (await request("tools/list")).result.tools;
     expect(small).toEqual(tools[0]);
     expect(schemaBytes(page.inputSchema)).toBeLessThanOrEqual(12_000);
-    expect(page.description).toContain("dusk bot shortened this tool's parameters to fit Kimi's size limit");
+    expect(page.description).toContain("madani bot shortened this tool's parameters to fit Kimi's size limit");
     const closed = once(child!, "close"); child!.kill(); await closed;
 
     start(mcpStdioServer(spec(fake.url))!);
@@ -476,7 +476,7 @@ describe("remote MCP tool directory", () => {
     fake = await startFakeHttpMcp({ tools: padded, callResult: () => ({ content: [{ type: "text", text: "r".repeat(5_000) }] }) });
     const gated = gateServer({ name: "whop", server: spec(fake.url), threadId: "directory-fixture", budget: 600,
       toolScope: { allow: selected.map((name) => `mcp:whop:${name}`) }, directory: true });
-    expect(gated!.env.DUSK_GATE_DIRECTORY).toBe("1");
+    expect(gated!.env.MADANI_GATE_DIRECTORY).toBe("1");
     start(gated!);
     await initialize();
     const listed = (await request("tools/list")).result.tools;
@@ -494,7 +494,7 @@ describe("remote MCP tool directory", () => {
     expect(described.result.content[0].text.length).toBeGreaterThan(600);
     expect(JSON.parse(described.result.content[0].text).inputSchema).toEqual(padded.find((tool) => tool.name === "payments_list")!.inputSchema);
     const ran = (await call(CALL_TOOL, { name: "payments_list", arguments: { company_id: "biz_1" } })).result.content[0].text;
-    expect(ran).toContain("⚠️ TRUNCATED by dusk bot:");
+    expect(ran).toContain("⚠️ TRUNCATED by madani bot:");
     expect(fake.calls).toEqual([{ name: "payments_list", arguments: { company_id: "biz_1" } }]);
   });
 
@@ -512,7 +512,7 @@ describe("remote MCP tool directory", () => {
 
   it("reads its settings from a private record when mounts share one environment", async () => {
     fake = await startFakeHttpMcp({ tools: catalog });
-    const record = `DUSK_REMOTE_MCP_CONFIG_${"a".repeat(64)}`;
+    const record = `MADANI_REMOTE_MCP_CONFIG_${"a".repeat(64)}`;
     const descriptor = mcpStdioServer(spec(fake.url), { directory: { name: "whop" }, configEnvName: record })!;
     expect(descriptor.args!.slice(1)).toEqual(["--config-env", record]);
     expect(Object.keys(descriptor.env!)).toEqual([record]);
@@ -525,7 +525,7 @@ describe("remote MCP tool directory", () => {
   const withoutProxies = () => Object.fromEntries(Object.entries(process.env).filter(([name]) => !/^(https?_proxy|no_proxy|node_use_env_proxy)$/i.test(name)));
 
   // A throwaway certificate for an https:// fake, trusted by the proxy child via NODE_EXTRA_CA_CERTS; undefined without openssl.
-  const tlsDir = mkdtempSync(join(tmpdir(), "dusk-remote-proxy-tls-"));
+  const tlsDir = mkdtempSync(join(tmpdir(), "madani-remote-proxy-tls-"));
   const tls = makeTestTls(tlsDir);
   afterAll(() => removeTempDir(tlsDir));
 
@@ -647,7 +647,7 @@ describe("remote MCP tool directory", () => {
 
   it("runs from the shipped bundle, schema checks included", async () => {
     fake = await startFakeHttpMcp({ tools: catalog });
-    const scratch = mkdtempSync(join(tmpdir(), "dusk-directory-bundle-"));
+    const scratch = mkdtempSync(join(tmpdir(), "madani-directory-bundle-"));
     try {
       await build({ entryPoints: [join(SERVER_ROOT, "mcp-remote-proxy.ts")], outdir: scratch, bundle: true, platform: "node", format: "esm", logLevel: "silent" });
       const descriptor = mcpStdioServer(spec(fake.url), { directory: { name: "whop" } })!;
@@ -665,7 +665,7 @@ describe("remote MCP tool directory", () => {
   it("refuses to start on tool directory settings it cannot read", async () => {
     fake = await startFakeHttpMcp({ tools: catalog });
     const descriptor = mcpStdioServer(spec(fake.url))!;
-    start({ ...descriptor, env: { ...descriptor.env, DUSK_REMOTE_MCP_DIRECTORY: JSON.stringify({ name: "whop", toolScope: { allow: null } }) } });
+    start({ ...descriptor, env: { ...descriptor.env, MADANI_REMOTE_MCP_DIRECTORY: JSON.stringify({ name: "whop", toolScope: { allow: null } }) } });
     const [code] = await once(child!, "close");
     expect(code).toBe(1);
     expect(fake.seenHeaders).toEqual([]);

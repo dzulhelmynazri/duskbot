@@ -27,7 +27,7 @@ The command exited with code 0. Stdout:
 Stderr:
 
 Log:
-file:///Users/jsmhh/.duskbot/providers/antigravity/ac0a3dfd6dddb20962cecff6ee5fe65e19d3923be20e52c5ab52ff877f7e4c32/antigravity-acp/brain/a3cf0f98-46dc-449c-9867-68dfa3d6d3db/.system_generated/tasks/task-1457.log </SYSTEM_MESSAGE>`;
+file:///Users/jsmhh/.madanibot/providers/antigravity/ac0a3dfd6dddb20962cecff6ee5fe65e19d3923be20e52c5ab52ff877f7e4c32/antigravity-acp/brain/a3cf0f98-46dc-449c-9867-68dfa3d6d3db/.system_generated/tasks/task-1457.log </SYSTEM_MESSAGE>`;
 
     expect(stripLeakedSystemHarnessMessages(leaked)).toBe("");
     expect(isPureLeakedSystemHarnessMessage(leaked)).toBe(true);
@@ -58,11 +58,11 @@ Everything compiled successfully and all tests pass!`;
   });
 
   it("strips an earlier-turn recap the bot copied into its reply, keeping the reply", () => {
-    const recap = "[What Dusky did in an earlier turn: · tools: agents_coordinate_bots ×1 (from tool previews) · reply: I've sent Luna to check [the docs] first.]";
+    const recap = "[What Madaniy did in an earlier turn: · tools: agents_coordinate_bots ×1 (from tool previews) · reply: I've sent Luna to check [the docs] first.]";
     expect(botTextForDisplay(`${recap}\nLuna found the prompt loop.`)).toBe("Luna found the prompt loop.");
     expect(botTextForDisplay(`Done. ${recap}`)).toBe("Done.");
     expect(botTextForDisplay(`${recap} And now the answer.`)).toBe("And now the answer.");
-    expect(botTextForDisplay("[What Dusky did in an earlier turn: · reply: cut off")).toBe("");
+    expect(botTextForDisplay("[What Madaniy did in an earlier turn: · reply: cut off")).toBe("");
     expect(isPureLeakedBotText(recap)).toBe(true);
     expect(isPureLeakedBotText(`${recap} And now the answer.`)).toBe(false);
     expect(isPureLeakedBotText("<SYSTEM_MESSAGE>x</SYSTEM_MESSAGE>")).toBe(true);

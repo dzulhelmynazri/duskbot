@@ -1,7 +1,7 @@
 import type { MobilePlatform } from "../platform";
 import { createConnectionStore } from "../connection/connections";
 
-export const INSTALLED_KEY = "dusk.mobile.installed";
+export const INSTALLED_KEY = "madani.mobile.installed";
 
 const claims = new WeakMap<MobilePlatform, Promise<boolean>>();
 

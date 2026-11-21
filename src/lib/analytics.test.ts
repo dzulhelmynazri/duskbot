@@ -10,7 +10,7 @@ it("does no telemetry work even when an older install saved an opt-in", () => {
   vi.stubGlobal("fetch", request);
   vi.stubGlobal("setInterval", setInterval);
   vi.stubGlobal("localStorage", { getItem: () => "0", setItem });
-  vi.stubGlobal("window", { duskDesktop: { desktopAnalytics: { enabled: () => true, set: request } } });
+  vi.stubGlobal("window", { madaniDesktop: { desktopAnalytics: { enabled: () => true, set: request } } });
   track("app_opened", { platform: "desktop" });
   expect(request).not.toHaveBeenCalled();
   expect(setInterval).not.toHaveBeenCalled();
@@ -22,7 +22,7 @@ it("preserves the local legacy onboarding flag", () => {
   vi.stubGlobal("localStorage", { getItem: (key: string) => values.get(key), setItem: (key: string, value: string) => values.set(key, value) });
   expect(emailGateDone()).toBe(false);
   setEmailGateDone("submitted");
-  expect(values.get("dusk-email-gate")).toBe("submitted");
+  expect(values.get("madani-email-gate")).toBe("submitted");
   expect(emailGateDone()).toBe(true);
 });
 

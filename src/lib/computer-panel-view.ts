@@ -11,7 +11,7 @@ export function resolveComputerPanelView(view: ComputerPanelView, context: Panel
   return computerPanelTabs(context).includes(view) ? view : "computer";
 }
 
-const STORAGE_PREFIX = "dusk-computer-panel-view";
+const STORAGE_PREFIX = "madani-computer-panel-view";
 
 function storageKey(botId: string): string {
   return `${STORAGE_PREFIX}:${botId}`;

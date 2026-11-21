@@ -4,14 +4,14 @@
   "title": "Claude Code from your phone: remote control or bot chat",
   "nav": "claude code from your phone",
   "h1": "claude code from your phone: three ways in",
-  "description": "Compare Claude Remote Control, cloud sessions and a dusk bot you text, with pairing steps and a clear account of what must stay on.",
+  "description": "Compare Claude Remote Control, cloud sessions and a madani bot you text, with pairing steps and a clear account of what must stay on.",
   "keyword": "claude code mobile",
   "keywords": [
     "claude code on phone",
     "claude code from phone",
     "claude code remote control"
   ],
-  "answer": "**leave the desk and keep the conversation going from your phone.** remote control reaches claude code on your computer. anthropic cloud sessions run elsewhere. dusk lets you text a named bot using claude code. as of 12 november 2026, all three routes exist. pick where the work lives so you know whether the laptop can come with you.",
+  "answer": "**leave the desk and keep the conversation going from your phone.** remote control reaches claude code on your computer. anthropic cloud sessions run elsewhere. madani lets you text a named bot using claude code. as of 12 november 2026, all three routes exist. pick where the work lives so you know whether the laptop can come with you.",
   "updated": "2026-11-12",
   "review": {
     "status": "approved",
@@ -40,7 +40,7 @@
   "og_line": "your phone reaches the work.",
   "table": {
     "h": "which computer is doing the work?",
-    "intro": "**choose the host that will still be on when you need it.** anthropic details are as of 12 november 2026. dusk access depends on which host you pair with.",
+    "intro": "**choose the host that will still be on when you need it.** anthropic details are as of 12 november 2026. madani access depends on which host you pair with.",
     "cols": [
       "option",
       "where the session lives",
@@ -68,10 +68,10 @@
         ]
       },
       {
-        "label": "dusk paired with your computer",
+        "label": "madani paired with your computer",
         "cells": [
-          "the computer running dusk bot",
-          "a chat with your bot while that computer is on and dusk is running"
+          "the computer running madani bot",
+          "a chat with your bot while that computer is on and madani is running"
         ],
         "src": [
           3,
@@ -79,9 +79,9 @@
         ]
       },
       {
-        "label": "dusk paired with dusk cloud",
+        "label": "madani paired with madani cloud",
         "cells": [
-          "your hosted dusk computer",
+          "your hosted madani computer",
           "your bots with your own computer off"
         ],
         "src": [
@@ -101,8 +101,8 @@
       "md": "**close the laptop and let a cloud session keep working.** anthropic hosts it elsewhere, so you can read or steer it from another device.[^2]\n\nstart from the mobile **code** tab, claude.ai/code, desktop or `claude --cloud`. usage counts toward your plan limits. as of 12 november 2026, plans include pro, max, ultra, team and eligible enterprise seats.[^2]\n\ntry this for a coding session while travelling before renting another machine. repeating work is a separate decision; see the [claude schedules guide](/guides/claude-scheduled-tasks)."
     },
     {
-      "h": "dusk gives the work a named bot",
-      "md": "**text the same teammate tomorrow, with its memory intact.** a dusk bot has a name, a job, its own chats and memory, and the ai you choose.[^4]\n\nchoose claude code and dusk runs that official command-line app where the bot lives. you complete the sign-in yourself.[^6]\n\nkeep planning and document review as separate jobs, with different memories or ais. changing a bot's ai keeps its chats, files and memory.[^4]\n\nchoose dusk for continuing work with a teammate you text. use remote control to reach a particular session."
+      "h": "madani gives the work a named bot",
+      "md": "**text the same teammate tomorrow, with its memory intact.** a madani bot has a name, a job, its own chats and memory, and the ai you choose.[^4]\n\nchoose claude code and madani runs that official command-line app where the bot lives. you complete the sign-in yourself.[^6]\n\nkeep planning and document review as separate jobs, with different memories or ais. changing a bot's ai keeps its chats, files and memory.[^4]\n\nchoose madani for continuing work with a teammate you text. use remote control to reach a particular session."
     },
     {
       "h": "phone access does not change provider terms",
@@ -110,25 +110,25 @@
     },
     {
       "h": "pair once, then text it from the couch",
-      "md": "**scan the code and send your first message from the phone.** alternatives include a six-digit code, the nearby wi-fi list or tailscale. no account is needed.[^3]\n\niphone and android use the paired browser version today. add it to the home screen. store apps are on their way; this browser version sends no notifications.[^3]\n\nyour paired computer needs dusk running. **settings**, **remote access**, **keep this computer awake** helps it stay reachable. pair to dusk cloud for access with your own computer off.[^3][^5]\n\n[overnight hosting](/run-claude-code-24-7) covers that choice. [telegram, discord and slack](/guides/claude-code-telegram-discord-slack) covers separate chat channels."
+      "md": "**scan the code and send your first message from the phone.** alternatives include a six-digit code, the nearby wi-fi list or tailscale. no account is needed.[^3]\n\niphone and android use the paired browser version today. add it to the home screen. store apps are on their way; this browser version sends no notifications.[^3]\n\nyour paired computer needs madani running. **settings**, **remote access**, **keep this computer awake** helps it stay reachable. pair to madani cloud for access with your own computer off.[^3][^5]\n\n[overnight hosting](/run-claude-code-24-7) covers that choice. [telegram, discord and slack](/guides/claude-code-telegram-discord-slack) covers separate chat channels."
     },
     {
       "h": "use the small screen for small decisions",
-      "md": "**get the next small decision off your desk.** ask for two assumptions to revisit in an attached proposal. have the bot leave the file alone. save the whole-document review for a bigger screen.\n\ndusk approval cards can reach your phone. allow apps per bot, read only where enough. for app writes, say 'ask me before you change anything'.[^8]\n\nread the preview before allowing a command or file change.[^8] if the phone makes it hard to read, wait until you can see it properly."
+      "md": "**get the next small decision off your desk.** ask for two assumptions to revisit in an attached proposal. have the bot leave the file alone. save the whole-document review for a bigger screen.\n\nmadani approval cards can reach your phone. allow apps per bot, read only where enough. for app writes, say 'ask me before you change anything'.[^8]\n\nread the preview before allowing a command or file change.[^8] if the phone makes it hard to read, wait until you can see it properly."
     }
   ],
   "faq": [
     {
       "q": "how are people running claude code from their phone?",
-      "a": "**three routes serve different jobs.** as of 12 november 2026, remote control reaches a local session, cloud sessions run remotely, and dusk offers chat with a named bot. the host decides whether your laptop can sleep.[^1][^2][^3]"
+      "a": "**three routes serve different jobs.** as of 12 november 2026, remote control reaches a local session, cloud sessions run remotely, and madani offers chat with a named bot. the host decides whether your laptop can sleep.[^1][^2][^3]"
     },
     {
       "q": "why does it stop working when i leave my laptop?",
-      "a": "**the local host paused when you left it.** remote control needs the computer and claude process running. dusk paired to that computer needs dusk open too.[^1][^3]"
+      "a": "**the local host paused when you left it.** remote control needs the computer and claude process running. madani paired to that computer needs madani open too.[^1][^3]"
     },
     {
-      "q": "do i need an app store download to pair dusk?",
-      "a": "**use the paired browser version today.** store apps are on their way. add dusk to the home screen and remember that this version has no notifications.[^3]"
+      "q": "do i need an app store download to pair madani?",
+      "a": "**use the paired browser version today.** store apps are on their way. add madani to the home screen and remember that this version has no notifications.[^3]"
     }
   ],
   "sources": [
@@ -143,19 +143,19 @@
       "checked": "2026-11-12"
     },
     {
-      "label": "dusk bot: phone pairing",
+      "label": "madani bot: phone pairing",
       "url": "/docs/phone"
     },
     {
-      "label": "dusk bot: bots",
+      "label": "madani bot: bots",
       "url": "/docs/bots"
     },
     {
-      "label": "dusk bot: dusk cloud",
-      "url": "/docs/dusk-cloud"
+      "label": "madani bot: madani cloud",
+      "url": "/docs/madani-cloud"
     },
     {
-      "label": "dusk bot: getting started",
+      "label": "madani bot: getting started",
       "url": "/docs/getting-started"
     },
     {
@@ -164,13 +164,13 @@
       "checked": "2026-11-12"
     },
     {
-      "label": "dusk bot: computer and approvals",
+      "label": "madani bot: computer and approvals",
       "url": "/docs/computer"
     }
   ],
   "quick": {
     "steps": [
-      "keep dusk open on the host computer",
+      "keep madani open on the host computer",
       "scan its phone-pairing code",
       "ask the bot a short question from your phone",
       "see which computer you paired with and leave it awake"
@@ -193,11 +193,11 @@
       ],
       [
         "ongoing chats with separate named bots",
-        "dusk phone pairing"
+        "madani phone pairing"
       ],
       [
-        "dusk bots with your own computer off",
-        "pair with dusk cloud"
+        "madani bots with your own computer off",
+        "pair with madani cloud"
       ]
     ]
   },

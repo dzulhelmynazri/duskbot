@@ -1,5 +1,5 @@
 // This computer's server, started as the desktop app starts it (its private port emulated over Node's IPC), and servers of
-// the person's own (`duskbot serve`, nothing of dusk cloud), each paired with this app as a pairing link pairs it.
+// the person's own (`madanibot serve`, nothing of madani cloud), each paired with this app as a pairing link pairs it.
 // Main's own wiring for the move to such a server (electron/own-home-main.mjs) sits between them, its requests carrying
 // the pairing's session as the window's would. Disposable homes and a synthetic Claude CLI; no network.
 import { randomBytes } from "node:crypto";
@@ -55,13 +55,13 @@ export interface OwnHomeFixture {
 }
 
 export async function launchOwnHomeFixture({ env = {} }: { env?: NodeJS.ProcessEnv } = {}): Promise<OwnHomeFixture> {
-  const root = mkdtempSync(join(tmpdir(), "dusk-own-home-"));
+  const root = mkdtempSync(join(tmpdir(), "madani-own-home-"));
   const children = new Set<ChildProcess>();
   let logs = "";
 
   async function start(name: string, own: NodeJS.ProcessEnv, port: number, extra: string[] = [], ipc = false): Promise<ChildProcess> {
     const home = join(root, name);
-    const dataDir = join(home, ".duskbot");
+    const dataDir = join(home, ".madanibot");
     mkdirSync(dataDir, { recursive: true });
     const cli = join(home, "fixture-claude.mjs");
     writeFileSync(cli, `#!/usr/bin/env node
@@ -79,8 +79,8 @@ await import(${JSON.stringify(pathToFileURL(join(SERVER_DIR, "testing", "fake-cl
     const offline = `data:text/javascript,${encodeURIComponent('const real = globalThis.fetch; globalThis.fetch = async (url, init) => String(url).startsWith("http://127.0.0.1:") ? real(url, init) : new Response("offline fixture", { status: 503 });')}`;
     const child = spawn(process.execPath, ["--import", offline, ...extra, join(SERVER_DIR, "index.ts")], {
       cwd: join(SERVER_DIR, ".."),
-      env: { PATH: process.env.PATH, ...(process.env.SystemRoot ? { SystemRoot: process.env.SystemRoot } : {}), HOME: home, USERPROFILE: home, DUSK_DATA_DIR: dataDir,
-        DUSK_PORT: String(port), DUSK_WEBHOOK_PORT: String(port + 1), ...env, ...own },
+      env: { PATH: process.env.PATH, ...(process.env.SystemRoot ? { SystemRoot: process.env.SystemRoot } : {}), HOME: home, USERPROFILE: home, MADANI_DATA_DIR: dataDir,
+        MADANI_PORT: String(port), MADANI_WEBHOOK_PORT: String(port + 1), ...env, ...own },
       stdio: ["ignore", "pipe", "pipe", ...(ipc ? ["ipc" as const] : [])],
     });
     children.add(child);
@@ -109,13 +109,13 @@ await import(${JSON.stringify(pathToFileURL(join(SERVER_DIR, "testing", "fake-cl
   const desktopPort = await freePortBlock([0, 1]);
   const desktopBase = `http://127.0.0.1:${desktopPort}`;
   const startDesktop = async () => {
-    const child = await start("desktop", { DUSK_DESKTOP_PARENT: "1", DUSK_ENVIRONMENT_LABEL: "Work laptop" }, desktopPort, ["--import", parentPort], true);
-    child.send({ type: "duskbot:desktop-mutation-token", token: capability });
+    const child = await start("desktop", { MADANI_DESKTOP_PARENT: "1", MADANI_ENVIRONMENT_LABEL: "Work laptop" }, desktopPort, ["--import", parentPort], true);
+    child.send({ type: "madanibot:desktop-mutation-token", token: capability });
     return child;
   };
   let desktop = await startDesktop();
   const local: Side = async (method, path, body) => {
-    const response = await fetch(`${desktopBase}${path}`, { method, headers: { "x-dusk-desktop-owner": capability, ...(body === undefined ? {} : { "content-type": "application/json" }) },
+    const response = await fetch(`${desktopBase}${path}`, { method, headers: { "x-madani-desktop-owner": capability, ...(body === undefined ? {} : { "content-type": "application/json" }) },
       ...(body === undefined ? {} : { body: JSON.stringify(body) }) });
     return { status: response.status, body: parse(await response.text()) };
   };
@@ -133,11 +133,11 @@ await import(${JSON.stringify(pathToFileURL(join(SERVER_DIR, "testing", "fake-cl
   async function addServer(name: string, more: NodeJS.ProcessEnv = {}): Promise<OwnServer> {
     const port = await freePortBlock([0, 1]);
     const base = `http://127.0.0.1:${port}`;
-    await start(`server-${servers.length + 1}`, { DUSK_ENVIRONMENT_LABEL: name, ...more }, port);
-    // `duskbot pair` on that server, then the link opened in this app: a session of the admin scope.
+    await start(`server-${servers.length + 1}`, { MADANI_ENVIRONMENT_LABEL: name, ...more }, port);
+    // `madanibot pair` on that server, then the link opened in this app: a session of the admin scope.
     const minted = await fetch(`${base}/api/auth/pairing`, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ label: "My desktop" }) });
     const code = (await minted.json() as { code: string }).code;
-    const paired = await fetch(`${base}/api/auth/pair`, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ code, label: "dusk bot app" }) });
+    const paired = await fetch(`${base}/api/auth/pair`, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ code, label: "madani bot app" }) });
     const token = (await paired.json() as { token: string }).token;
     if (typeof token !== "string") throw new Error(`could not pair with ${name}`);
     const as: Side = async (method, path, body) => {
@@ -145,7 +145,7 @@ await import(${JSON.stringify(pathToFileURL(join(SERVER_DIR, "testing", "fake-cl
         ...(body === undefined ? {} : { body: JSON.stringify(body) }) });
       return { status: response.status, body: parse(await response.text()) };
     };
-    const server: OwnServer = { name, base, dataDir: join(root, `server-${servers.length + 1}`, ".duskbot"), token, as,
+    const server: OwnServer = { name, base, dataDir: join(root, `server-${servers.length + 1}`, ".madanibot"), token, as,
       place: { id: `place-${servers.length + 1}`, kind: "remote", name, origin: base } };
     servers.push(server);
     return server;
@@ -161,7 +161,7 @@ await import(${JSON.stringify(pathToFileURL(join(SERVER_DIR, "testing", "fake-cl
   const asks = createLoginHandoffClient();
   const port = { postMessage: (message: unknown) => { desktop.send(message as object); } };
   const wire = () => installOwnHome({
-    localRequest: (route, init = {}) => fetch(`${desktopBase}${route}`, { ...init, headers: { ...init.headers as Record<string, string>, "x-dusk-desktop-owner": capability } }),
+    localRequest: (route, init = {}) => fetch(`${desktopBase}${route}`, { ...init, headers: { ...init.headers as Record<string, string>, "x-madani-desktop-owner": capability } }),
     fetch: windowFetch,
     environments: () => servers.map((server) => server.place),
     handoff: (what) => asks.request(port, what as never),
@@ -181,7 +181,7 @@ await import(${JSON.stringify(pathToFileURL(join(SERVER_DIR, "testing", "fake-cl
   listen();
 
   return {
-    root, desktopBase, desktopDataDir: join(root, "desktop", ".duskbot"), ownerCapability: capability, local, addServer, journalFile, spies, windowFetch, logs: () => logs,
+    root, desktopBase, desktopDataDir: join(root, "desktop", ".madanibot"), ownerCapability: capability, local, addServer, journalFile, spies, windowFetch, logs: () => logs,
     get main() { return main; },
     get beforeJournalWrite() { return fixture.beforeJournalWrite; },
     set beforeJournalWrite(hook) { fixture.beforeJournalWrite = hook; },

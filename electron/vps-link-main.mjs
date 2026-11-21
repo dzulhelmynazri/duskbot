@@ -27,7 +27,7 @@ import { serverRequests } from "./own-home-main.mjs";
 import { createHomeEgressLink } from "./home-egress-link.mjs";
 import { proxyFromPac } from "./vps-link-protocol.mjs";
 
-export const DEFAULT_LINK_BASE = "https://link.dusk.bot";
+export const DEFAULT_LINK_BASE = "https://link.madani.bot";
 
 /**
  * a linked server's page is http://vps-<id>.localhost, and every request it makes crosses the tunnel. chromium gives a
@@ -155,15 +155,15 @@ export function installVpsLink(deps) {
   const unprotect = unprotectWith(encryption);
   const ownHomeFiles = ["own-home.json", "own-home-choice.json", "own-home-send.json"].map((name) => jsonFile(path.join(userData, name)));
 
-  const base = (deps.base || process.env.DUSK_LINK_BASE || DEFAULT_LINK_BASE).replace(/\/+$/, "");
+  const base = (deps.base || process.env.MADANI_LINK_BASE || DEFAULT_LINK_BASE).replace(/\/+$/, "");
   // the link service tells this computer the public address it connects from, so its home router stays out of reach
   // the linked server's bots reach this mac through the app's own session there (mac-control.mjs)
-  // DUSK_LINK_KEEP_AWAKE=off lets this mac sleep even while its server's bots use it
-  const awake = deps.powerSaveBlocker && process.env.DUSK_LINK_KEEP_AWAKE !== "off"
+  // MADANI_LINK_KEEP_AWAKE=off lets this mac sleep even while its server's bots use it
+  const awake = deps.powerSaveBlocker && process.env.MADANI_LINK_KEEP_AWAKE !== "off"
     ? createLinkAwake({ blocker: deps.powerSaveBlocker, onBattery: () => deps.powerMonitor?.isOnBatteryPower?.() === true, log })
     : null;
   const execute = createMacExecutor({ log });
-  const macHost = process.env.DUSK_MAC_CONTROL === "off" ? null
+  const macHost = process.env.MADANI_MAC_CONTROL === "off" ? null
     : createMacControlHost({ fetch: (...args) => session.defaultSession.fetch(...args), name: deps.label, execute: (job, io) => (awake ? awake.busy(execute(job, io)) : execute(job, io)), log });
   const followMac = (view) => macHost?.follow(view?.server?.origin ?? null);
   const link = createVpsLink({
@@ -236,8 +236,8 @@ export function installVpsLink(deps) {
     },
     relaunch: deps.relaunch,
     dataSize: async () => { const dir = deps.dataDir(); return dir ? folderSize(dir) : null; },
-    // the direct path to a relay-linked server, over ssh or https on 443, then the cloud relay (vps-link-direct.mjs); DUSK_LINK_DIRECT=off keeps every link on the relay
-    ...(process.env.DUSK_LINK_DIRECT === "off" ? {} : { direct: { newKey: newDirectKey, connector: sshConnector, wssConnector, cloud: { url: cloudRelayUrl(), connector: cloudConnector, register: cloudRegister }, rtc: rtcWay(deps.screenIce) } }),
+    // the direct path to a relay-linked server, over ssh or https on 443, then the cloud relay (vps-link-direct.mjs); MADANI_LINK_DIRECT=off keeps every link on the relay
+    ...(process.env.MADANI_LINK_DIRECT === "off" ? {} : { direct: { newKey: newDirectKey, connector: sshConnector, wssConnector, cloud: { url: cloudRelayUrl(), connector: cloudConnector, register: cloudRegister }, rtc: rtcWay(deps.screenIce) } }),
     onChange: (view) => { deps.tell(view); followMac(view); },
     log,
   });
@@ -286,9 +286,9 @@ export function installVpsLink(deps) {
     for (const event of ["on-ac", "on-battery"]) deps.powerMonitor?.on(event, () => awake?.check());
     return link.resume();
   }).then(() => followMac(link.view())).catch((error) => log(`vps link: ${error?.message ?? error}`));
-  // the person's dusk cloud home (My Cloud) has no link agent: it gets this computer's connection over its own https,
+  // the person's madani cloud home (My Cloud) has no link agent: it gets this computer's connection over its own https,
   // for the sites that block it, while it is awake (home-egress-link.mjs)
-  const homeEgress = deps.myCloud && process.env.DUSK_HOME_EGRESS !== "off" ? createHomeEgressLink({
+  const homeEgress = deps.myCloud && process.env.MADANI_HOME_EGRESS !== "off" ? createHomeEgressLink({
     origin: () => deps.myCloud?.() ?? null,
     awake: () => deps.cloudAwake?.() !== false,
     cookie: async (origin) => {

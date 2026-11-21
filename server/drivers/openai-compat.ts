@@ -15,14 +15,14 @@ import {
 const DRIVER_KIND = "openai-compat";
 const DEFAULT_IDLE_TIMEOUT_MS = 180_000;
 const idleTimeoutMs = () => {
-  const raw = process.env.DUSK_OPENAI_COMPAT_IDLE_TIMEOUT_MS;
+  const raw = process.env.MADANI_OPENAI_COMPAT_IDLE_TIMEOUT_MS;
   if (!raw) return DEFAULT_IDLE_TIMEOUT_MS;
   const value = Number(raw);
   return Number.isSafeInteger(value) && value >= 1_000 && value <= 2_147_483_647 ? value : DEFAULT_IDLE_TIMEOUT_MS;
 };
 const LIVENESS_EVERY_MS = 30_000;
 const livenessEveryMs = () => {
-  const value = Number(process.env.DUSK_OPENAI_COMPAT_PROBE_MS);
+  const value = Number(process.env.MADANI_OPENAI_COMPAT_PROBE_MS);
   return Number.isSafeInteger(value) && value >= 100 ? value : LIVENESS_EVERY_MS;
 };
 /** Ollama, LM Studio or llama.cpp on this machine or a home or office network: asking it for its models is free. */
@@ -42,7 +42,7 @@ const DEFAULT_MODELS: ModelCatalog = {
 const DEFAULT_KEY_ENV = "OPENAI_COMPAT_API_KEY";
 /** A provider's own key: such an instance never falls back to the workspace OpenAI-compatible key, URL,
  * model or routing. */
-const OWN_KEY_ENVS = new Set(["DUSK_OPENAI_API_KEY", "DUSK_OPENROUTER_API_KEY"]);
+const OWN_KEY_ENVS = new Set(["MADANI_OPENAI_API_KEY", "MADANI_OPENROUTER_API_KEY"]);
 
 const OPENAI_MODELS: ModelCatalog = {
   default: "gpt-5",

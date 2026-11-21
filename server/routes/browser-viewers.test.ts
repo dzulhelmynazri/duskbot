@@ -79,7 +79,7 @@ async function serve({ attach, current = () => true, download, audience = () => 
   audience?: (threadId: string | null) => Audience | null;
   close?: BrowserViewerRouteDeps["close"];
 } = {}): Promise<Fixture> {
-  const fixture = { origin: "", attachments: [], inputs: [], answers: [], pickerChecks: 0, resumes: [], people: [], sizes: [], opened: [], checked: [], dataDir: mkdtempSync(join(tmpdir(), "dusk-browser-viewers-")) } as unknown as Fixture;
+  const fixture = { origin: "", attachments: [], inputs: [], answers: [], pickerChecks: 0, resumes: [], people: [], sizes: [], opened: [], checked: [], dataDir: mkdtempSync(join(tmpdir(), "madani-browser-viewers-")) } as unknown as Fixture;
   folders.push(fixture.dataDir);
   const viewer = { id: "viewer", input: async (message: unknown) => { fixture.inputs.push(message); }, close: async () => {} } as unknown as Viewer;
   const service = {
@@ -122,7 +122,7 @@ async function serve({ attach, current = () => true, download, audience = () => 
     audience: (_auth, threadId) => audience(threadId),
     browser: async (botId, opened) => {
       fixture.opened.push(opened);
-      return botId === "pepper" ? { botId, session: "bot-pepper", spec: { command: "dusk-cdp", args: ["bot:pepper"], env: {} } } : { status: 404, error: "no such bot" };
+      return botId === "pepper" ? { botId, session: "bot-pepper", spec: { command: "madani-cdp", args: ["bot:pepper"], env: {} } } : { status: 404, error: "no such bot" };
     },
     authorize: async () => null,
     current: (_botId, _session, _auth, checked) => { fixture.checked.push(checked); return current(); },
@@ -418,7 +418,7 @@ describe("the page's file picker and downloads", () => {
   });
 
   it("serves a finished download as an attachment, and nothing else", async () => {
-    const folder = mkdtempSync(join(tmpdir(), "dusk-download-"));
+    const folder = mkdtempSync(join(tmpdir(), "madani-download-"));
     folders.push(folder);
     const path = join(folder, "Q3 report.csv");
     writeFileSync(path, "report contents");

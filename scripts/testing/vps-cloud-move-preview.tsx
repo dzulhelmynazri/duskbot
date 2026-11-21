@@ -11,7 +11,7 @@ import "../../src/styles.css";
 
 const params = new URLSearchParams(location.search);
 const PLACE = "hetzner-box";
-const STAYS = `Saved logins, 1Password and app keys stay on ${PLACE}. Connect them again on dusk cloud.`;
+const STAYS = `Saved logins, 1Password and app keys stay on ${PLACE}. Connect them again on madani cloud.`;
 const COUNTS = { bots: 1, chats: 142, routines: 4, skills: 5 };
 const STATES: Record<string, VpsCloudMoveView> = {
   "no-cloud": { stage: "none", cloud: "none" },
@@ -22,12 +22,12 @@ const STATES: Record<string, VpsCloudMoveView> = {
   waiting: { stage: "waiting", place: PLACE, route: "direct" },
   "moving-chats": { stage: "moving", place: PLACE, route: "direct", phase: "copy", chats: { done: 58, total: 142 } },
   "moving-wait": { stage: "moving", place: PLACE, route: "direct", phase: "wait", waitingFor: "Quill" },
-  "moving-retry": { stage: "moving", place: PLACE, route: "direct", phase: "copy", chats: { done: 96, total: 142 }, retrying: true, error: "dusk cloud didn't answer." },
+  "moving-retry": { stage: "moving", place: PLACE, route: "direct", phase: "copy", chats: { done: 96, total: 142 }, retrying: true, error: "madani cloud didn't answer." },
   "done-direct": { stage: "done", place: PLACE, route: "direct", counts: COUNTS, stays: STAYS },
   fallback: { stage: "fallback", place: PLACE, route: "via-mac", why: "vps_failing" },
   "fallback-progress": { stage: "fallback", place: PLACE, route: "via-mac", why: "outdated", phase: "copy" },
   "done-via-mac": { stage: "done", place: PLACE, route: "via-mac", counts: COUNTS },
-  failed: { stage: "failed", place: PLACE, route: "direct", error: "dusk cloud didn't answer." },
+  failed: { stage: "failed", place: PLACE, route: "direct", error: "madani cloud didn't answer." },
 };
 const OFFER = { plans: [{ tier: "pro", amount: 4900, label: "Pro" }, { tier: "plus", amount: 1900, label: "Plus" }], recommended: "pro" };
 
@@ -38,7 +38,7 @@ const calls: string[] = [];
 const signedOut = view.stage === "none" && view.cloud === "signed-out";
 const signInSheet = params.get("signin") === "sheet";
 
-window.duskDesktop = {
+window.madaniDesktop = {
   platform: "darwin",
   app: { version: "preview", ownPage: false },
   getCapabilities: async () => initialDesktopCapabilities(),
@@ -58,14 +58,14 @@ window.duskDesktop = {
     start: async () => { calls.push("start"); return tell(STATES["moving-chats"]!); },
     buy: async (plan?: string) => {
       calls.push(`buy:${plan}`);
-      if (signedOut) throw new Error("Sign in to dusk cloud first.");
+      if (signedOut) throw new Error("Sign in to madani cloud first.");
       return tell(STATES.buying!);
     },
     retry: async () => { calls.push("retry"); return tell(STATES["moving-chats"]!); },
     cancel: async () => { calls.push("cancel"); return tell(STATES["no-cloud"]!); },
     onChange: (listener: (next: VpsCloudMoveView) => void) => { listeners.add(listener); return () => { listeners.delete(listener); }; },
   },
-} as unknown as typeof window.duskDesktop;
+} as unknown as typeof window.madaniDesktop;
 Object.assign(window, { vpsMoveCalls: calls, vpsMoveOpen: () => openCloudMove("cloud"), vpsMoveSet: (name: string) => tell(STATES[name]!) });
 
 applySkin((params.get("skin") ?? "midnight") as SkinId);

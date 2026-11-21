@@ -551,7 +551,7 @@ export interface ProviderInstance {
   readonly models: ModelCatalog;
   /** True while the catalog is the driver's fixed list or a failed read's leftover, not a list the engine gave. */
   readonly modelsUnconfirmed?: boolean;
-  /** The engine in dusk.bot's model catalog (server/model-catalog/dusk-models.json) whose names and additions apply to
+  /** The engine in madani.bot's model catalog (server/model-catalog/madani-models.json) whose names and additions apply to
    * `models`; unset where the list is fixed by someone else (a company's models, a ChatGPT plan's own list). */
   readonly modelCatalogKey?: string;
   /** False while the sign-in can refuse a model its catalog lists (Codex on a ChatGPT account): a short message and background text then stay on the bot's own model. */

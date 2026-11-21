@@ -24,7 +24,7 @@ beforeEach(() => {
 
 describe("restore", () => {
   it("validates a saved session with an isolated bearer request", async () => {
-    secrets.set("dusk.account", JSON.stringify(stored())); fetcher.mockResolvedValue(response({}));
+    secrets.set("madani.account", JSON.stringify(stored())); fetcher.mockResolvedValue(response({}));
     expect(await client.restore()).toEqual(grant().account);
     const [url, init] = fetcher.mock.calls[0];
     expect(url).toBe(`${origin}/api/cloud/desktop/session`);
@@ -32,42 +32,42 @@ describe("restore", () => {
     expect(init?.signal).toBeInstanceOf(AbortSignal);
   });
   it("removes invalid tokens", async () => {
-    secrets.set("dusk.account", JSON.stringify(stored())); fetcher.mockResolvedValue(response({ error: "invalid_token" }, 401));
-    expect(await client.restore()).toBeNull(); expect(secrets.has("dusk.account")).toBe(false);
+    secrets.set("madani.account", JSON.stringify(stored())); fetcher.mockResolvedValue(response({ error: "invalid_token" }, 401));
+    expect(await client.restore()).toBeNull(); expect(secrets.has("madani.account")).toBe(false);
   });
   it("ignores a grant for another origin", async () => {
-    secrets.set("dusk.account", JSON.stringify(stored({ origin: "https://other.example" })));
-    expect(await client.restore()).toBeNull(); expect(fetcher).not.toHaveBeenCalled(); expect(secrets.has("dusk.account")).toBe(true);
+    secrets.set("madani.account", JSON.stringify(stored({ origin: "https://other.example" })));
+    expect(await client.restore()).toBeNull(); expect(fetcher).not.toHaveBeenCalled(); expect(secrets.has("madani.account")).toBe(true);
   });
   it.each([true, false])("offline grace requires a future expiry: %s", async future => {
-    secrets.set("dusk.account", JSON.stringify(stored({ expiresAt: Date.now() + (future ? 60_000 : -60_000) })));
+    secrets.set("madani.account", JSON.stringify(stored({ expiresAt: Date.now() + (future ? 60_000 : -60_000) })));
     fetcher.mockRejectedValue(new TypeError("offline"));
     expect(await client.restore()).toEqual(future ? grant().account : null);
   });
   it.each([[503, { error: "failed" }], [429, { error: "rate_limited" }], [502, "<html>bad gateway</html>"]])("keeps a session that has not run out through a %s from the service", async (status, body) => {
-    secrets.set("dusk.account", JSON.stringify(stored()));
+    secrets.set("madani.account", JSON.stringify(stored()));
     fetcher.mockResolvedValue(typeof body === "string" ? new Response(body, { status }) : response(body, status));
-    expect(await client.restore()).toEqual(grant().account); expect(secrets.has("dusk.account")).toBe(true);
+    expect(await client.restore()).toEqual(grant().account); expect(secrets.has("madani.account")).toBe(true);
   });
   it("keeps a session through a captive portal's page that answers 200 with html", async () => {
-    secrets.set("dusk.account", JSON.stringify(stored())); fetcher.mockResolvedValue(new Response("<html>sign in to wifi</html>", { status: 200 }));
+    secrets.set("madani.account", JSON.stringify(stored())); fetcher.mockResolvedValue(new Response("<html>sign in to wifi</html>", { status: 200 }));
     expect(await client.restore()).toEqual(grant().account);
   });
   it("saves the end the service slid the session to, so it stays signed in past the first sign-in's end", async () => {
-    secrets.set("dusk.account", JSON.stringify(stored()));
+    secrets.set("madani.account", JSON.stringify(stored()));
     const later = Date.now() + 90 * 86_400_000;
     fetcher.mockResolvedValue(response({ ...grant(), expiresAt: later }));
     await client.restore();
-    expect(JSON.parse(secrets.get("dusk.account")!).expiresAt).toBe(later);
+    expect(JSON.parse(secrets.get("madani.account")!).expiresAt).toBe(later);
   });
   it("reads the saved sign-in at once without the network", async () => {
-    secrets.set("dusk.account", JSON.stringify(stored()));
+    secrets.set("madani.account", JSON.stringify(stored()));
     expect(await client.cached()).toEqual(grant().account); expect(client.account()).toEqual(grant().account); expect(fetcher).not.toHaveBeenCalled();
-    secrets.set("dusk.account", JSON.stringify(stored({ origin: "https://other.example" })));
+    secrets.set("madani.account", JSON.stringify(stored({ origin: "https://other.example" })));
     expect(await createMobileAccount({ platform, origin, fetch: fetcher }).cached()).toBeNull();
   });
   it("rejects malformed stored tokens", async () => {
-    secrets.set("dusk.account", JSON.stringify(stored({ token: "bad" })));
+    secrets.set("madani.account", JSON.stringify(stored({ token: "bad" })));
     expect(await client.restore()).toBeNull(); expect(fetcher).not.toHaveBeenCalled();
   });
 });
@@ -79,7 +79,7 @@ describe("Email sign-in", () => {
     fetcher.mockResolvedValueOnce(response(grant()));
     expect(await client.emailVerify("1234 5678")).toEqual({ outcome: "signed-in" });
     expect(JSON.parse(String(fetcher.mock.calls[1][1]?.body))).toEqual({ attempt: "a".repeat(43), code: "12345678" });
-    expect(JSON.parse(secrets.get("dusk.account")!)).toMatchObject({ origin, token, deviceId: "phone", account: grant().account });
+    expect(JSON.parse(secrets.get("madani.account")!)).toMatchObject({ origin, token, deviceId: "phone", account: grant().account });
   });
   it("uses linux for a browser and preserves a valid app version", async () => {
     platform.kind = "web"; platform.appVersion = "1.2.3-beta+1"; await start();
@@ -105,7 +105,7 @@ describe("Email sign-in", () => {
   });
   it.each([{ cloudContractVersion: 2 }, { accessToken: "bad" }, { expiresAt: 1 }, { device: {} }, { account: { id: "", email: "bad" } }])("refuses malformed grants %j", async extra => {
     await start(); fetcher.mockResolvedValueOnce(response({ ...grant(), ...extra }));
-    expect(await client.emailVerify("12345678")).toEqual({ outcome: "failed" }); expect(secrets.has("dusk.account")).toBe(false);
+    expect(await client.emailVerify("12345678")).toEqual({ outcome: "failed" }); expect(secrets.has("madani.account")).toBe(false);
   });
   it("caps streamed and declared responses at 64 KB", async () => {
     fetcher.mockResolvedValueOnce(new Response(" ".repeat(65_537)));
@@ -122,50 +122,50 @@ describe("Email sign-in", () => {
 describe("browser sign-in", () => {
   it("opens a PKCE S256 URL whose challenge matches the secret verifier", async () => {
     await client.oauthStart("google");
-    const pending = JSON.parse(secrets.get("dusk.account.pending")!);
+    const pending = JSON.parse(secrets.get("madani.account.pending")!);
     const url = new URL(vi.mocked(platform.openExternal).mock.calls[0][0]);
     expect(url.origin + url.pathname).toBe(`${origin}/v1/auth/app/start`);
-    expect(Object.fromEntries(url.searchParams)).toMatchObject({ provider: "google", code_challenge_method: "S256", redirect_uri: "duskbot://auth", landing: "page", state: pending.state,
+    expect(Object.fromEntries(url.searchParams)).toMatchObject({ provider: "google", code_challenge_method: "S256", redirect_uri: "madanibot://auth", landing: "page", state: pending.state,
       code_challenge: createHash("sha256").update(pending.verifier).digest("base64url") });
     expect(pending.verifier).toHaveLength(43); expect(pending.state).toHaveLength(32);
   });
   it("leaves pairing links to the connection gate", async () => {
-    expect(await client.handleAuthUrl("duskbot://pair?code=abc")).toBe(false);
-    expect(isAccountAuthUrl("https://auth")).toBe(false); expect(isAccountAuthUrl("duskbot://auth/other")).toBe(false);
+    expect(await client.handleAuthUrl("madanibot://pair?code=abc")).toBe(false);
+    expect(isAccountAuthUrl("https://auth")).toBe(false); expect(isAccountAuthUrl("madanibot://auth/other")).toBe(false);
   });
   it("refuses a state mismatch and clears the pending attempt", async () => {
     await client.oauthStart("apple");
-    expect(await client.handleAuthUrl("duskbot://auth?code=abc&state=wrong")).toEqual({ outcome: "invalid-state" });
-    expect(fetcher).not.toHaveBeenCalled(); expect(secrets.has("dusk.account.pending")).toBe(false);
+    expect(await client.handleAuthUrl("madanibot://auth?code=abc&state=wrong")).toEqual({ outcome: "invalid-state" });
+    expect(fetcher).not.toHaveBeenCalled(); expect(secrets.has("madani.account.pending")).toBe(false);
   });
   it("refuses an old attempt", async () => {
-    await client.oauthStart("google"); const pending = JSON.parse(secrets.get("dusk.account.pending")!); pending.at -= 15 * 60_000;
-    secrets.set("dusk.account.pending", JSON.stringify(pending));
-    expect(await client.handleAuthUrl(`duskbot://auth?code=abc&state=${pending.state}`)).toEqual({ outcome: "invalid-state" }); expect(fetcher).not.toHaveBeenCalled();
+    await client.oauthStart("google"); const pending = JSON.parse(secrets.get("madani.account.pending")!); pending.at -= 15 * 60_000;
+    secrets.set("madani.account.pending", JSON.stringify(pending));
+    expect(await client.handleAuthUrl(`madanibot://auth?code=abc&state=${pending.state}`)).toEqual({ outcome: "invalid-state" }); expect(fetcher).not.toHaveBeenCalled();
   });
   it("exchanges a matching code and persists the grant", async () => {
-    await client.oauthStart("google"); const pending = JSON.parse(secrets.get("dusk.account.pending")!);
+    await client.oauthStart("google"); const pending = JSON.parse(secrets.get("madani.account.pending")!);
     fetcher.mockResolvedValueOnce(response(grant()));
-    expect(await client.handleAuthUrl(`duskbot://auth?code=abc&state=${pending.state}`)).toEqual({ outcome: "signed-in" });
+    expect(await client.handleAuthUrl(`madanibot://auth?code=abc&state=${pending.state}`)).toEqual({ outcome: "signed-in" });
     expect(JSON.parse(String(fetcher.mock.calls[0][1]?.body))).toMatchObject({ code: "abc", codeVerifier: pending.verifier, platform: "ios" });
-    expect(client.account()).toEqual(grant().account); expect(secrets.has("dusk.account.pending")).toBe(false); expect(secrets.has("dusk.account")).toBe(true);
+    expect(client.account()).toEqual(grant().account); expect(secrets.has("madani.account.pending")).toBe(false); expect(secrets.has("madani.account")).toBe(true);
   });
   it.each(["oauth_denied", "oauth_failed", "oauth_expired", "provider_unavailable", "signup_closed", "identity_taken"])("surfaces provider error %s", async error => {
-    await client.oauthStart("google"); const pending = JSON.parse(secrets.get("dusk.account.pending")!);
-    expect(await client.handleAuthUrl(`duskbot://auth?error=${error}&state=${pending.state}`)).toEqual({ outcome: error });
-    expect(secrets.has("dusk.account.pending")).toBe(false); expect(fetcher).not.toHaveBeenCalled();
+    await client.oauthStart("google"); const pending = JSON.parse(secrets.get("madani.account.pending")!);
+    expect(await client.handleAuthUrl(`madanibot://auth?error=${error}&state=${pending.state}`)).toEqual({ outcome: error });
+    expect(secrets.has("madani.account.pending")).toBe(false); expect(fetcher).not.toHaveBeenCalled();
   });
   it("clears a pending attempt when code exchange fails", async () => {
-    await client.oauthStart("google"); const pending = JSON.parse(secrets.get("dusk.account.pending")!); fetcher.mockRejectedValue(new Error("offline"));
-    expect(await client.handleAuthUrl(`duskbot://auth?code=abc&state=${pending.state}`)).toEqual({ outcome: "failed" }); expect(secrets.has("dusk.account.pending")).toBe(false);
+    await client.oauthStart("google"); const pending = JSON.parse(secrets.get("madani.account.pending")!); fetcher.mockRejectedValue(new Error("offline"));
+    expect(await client.handleAuthUrl(`madanibot://auth?code=abc&state=${pending.state}`)).toEqual({ outcome: "failed" }); expect(secrets.has("madani.account.pending")).toBe(false);
   });
 });
 
 describe("signed-in actions", () => {
-  const restore = async () => { secrets.set("dusk.account", JSON.stringify(stored())); fetcher.mockResolvedValueOnce(response({})); await client.restore(); };
+  const restore = async () => { secrets.set("madani.account", JSON.stringify(stored())); fetcher.mockResolvedValueOnce(response({})); await client.restore(); };
   it("clears local secrets even when sign-out cannot reach the service", async () => {
     await restore(); fetcher.mockRejectedValueOnce(new Error("offline"));
-    await client.signOut(); expect(client.account()).toBeNull(); expect(secrets.has("dusk.account")).toBe(false);
+    await client.signOut(); expect(client.account()).toBeNull(); expect(secrets.has("madani.account")).toBe(false);
     expect(fetcher.mock.calls[1]).toMatchObject([`${origin}/api/cloud/desktop/session`, { method: "DELETE", body: "{}", headers: { authorization: `Bearer ${token}` } }]);
   });
   it.each([`${origin}/dashboard`, "https://other.example/dashboard", `${origin}/dashboard?ok=1`])("validates enrollment destination %s", async dashboardUrl => {
@@ -179,8 +179,8 @@ describe("signed-in actions", () => {
 });
 
 describe("own clouds", () => {
-  const signIn = async () => { secrets.set("dusk.account", JSON.stringify(stored())); fetcher.mockResolvedValueOnce(response({})); await client.restore(); fetcher.mockClear(); };
-  const listed = (extra = {}) => ({ id: "c0123456789abcdef01234567", name: "Studio", role: "owner", teamId: null, managed: true, status: "ready", origin: "https://d0123456789abcdef0123.dusk.bot", primary: true, ...extra });
+  const signIn = async () => { secrets.set("madani.account", JSON.stringify(stored())); fetcher.mockResolvedValueOnce(response({})); await client.restore(); fetcher.mockClear(); };
+  const listed = (extra = {}) => ({ id: "c0123456789abcdef01234567", name: "Studio", role: "owner", teamId: null, managed: true, status: "ready", origin: "https://d0123456789abcdef0123.madani.bot", primary: true, ...extra });
   it("lists the account's own clouds from the session, primary first, team and signed-in servers left out", async () => {
     await signIn();
     fetcher.mockResolvedValueOnce(response({ clouds: [listed({ id: "second", primary: false, power: { state: "asleep" } }), listed(), listed({ id: "team", teamId: "t1" }), listed({ id: "server", managed: false }), listed({ id: "member", role: "member" })] }));
@@ -190,7 +190,7 @@ describe("own clouds", () => {
   });
   it("drops an origin that is not plain https", async () => {
     await signIn();
-    fetcher.mockResolvedValueOnce(response({ clouds: [listed({ origin: "http://d1.dusk.bot" })] }));
+    fetcher.mockResolvedValueOnce(response({ clouds: [listed({ origin: "http://d1.madani.bot" })] }));
     expect((await client.clouds())?.[0]?.origin).toBeNull();
   });
   it("answers null when signed out or the session cannot be read", async () => {
@@ -200,7 +200,7 @@ describe("own clouds", () => {
   });
   it("pairs with a bearer request for that cloud and checks the grant", async () => {
     await signIn();
-    const cloud = { id: "c1", origin: "https://d1.dusk.bot" };
+    const cloud = { id: "c1", origin: "https://d1.madani.bot" };
     fetcher.mockResolvedValueOnce(response({ cloudContractVersion: 1, origin: cloud.origin, code: "ABCD-EFGH-JKLM", expiresAt: Date.now() + 300_000 }));
     expect(await client.pairCloud(cloud)).toMatchObject({ outcome: "paired", grant: { origin: cloud.origin, code: "ABCD-EFGH-JKLM" } });
     const [url, init] = fetcher.mock.calls[0];
@@ -208,27 +208,27 @@ describe("own clouds", () => {
     expect(init).toMatchObject({ method: "POST", body: JSON.stringify({ cloudId: "c1" }), headers: { authorization: `Bearer ${token}` } });
   });
   it.each([
-    [{ cloudContractVersion: 1, origin: "https://elsewhere.dusk.bot", code: "ABCD-EFGH-JKLM", expiresAt: Date.now() + 300_000 }],
-    [{ cloudContractVersion: 1, origin: "https://d1.dusk.bot", code: "ABCDEFGHJKLM", expiresAt: Date.now() + 300_000 }],
-    [{ cloudContractVersion: 1, origin: "https://d1.dusk.bot", code: "ABCD-EFGH-JKLM", expiresAt: Date.now() + 3_600_000 }],
+    [{ cloudContractVersion: 1, origin: "https://elsewhere.madani.bot", code: "ABCD-EFGH-JKLM", expiresAt: Date.now() + 300_000 }],
+    [{ cloudContractVersion: 1, origin: "https://d1.madani.bot", code: "ABCDEFGHJKLM", expiresAt: Date.now() + 300_000 }],
+    [{ cloudContractVersion: 1, origin: "https://d1.madani.bot", code: "ABCD-EFGH-JKLM", expiresAt: Date.now() + 3_600_000 }],
   ])("refuses a grant that does not match: %j", async (answer) => {
     await signIn(); fetcher.mockResolvedValueOnce(response(answer));
-    expect(await client.pairCloud({ id: "c1", origin: "https://d1.dusk.bot" })).toEqual({ outcome: "failed" });
+    expect(await client.pairCloud({ id: "c1", origin: "https://d1.madani.bot" })).toEqual({ outcome: "failed" });
   });
   it.each([
     [409, "not_running", "asleep"], [409, "unavailable", "unavailable"], [404, "not_found", "unavailable"], [401, "invalid_token", "signed-out"], [500, "failed", "failed"],
   ])("maps %i %s to %s", async (status, error, outcome) => {
     await signIn(); fetcher.mockResolvedValueOnce(response({ error }, status));
-    expect(await client.pairCloud({ id: "c1", origin: "https://d1.dusk.bot" })).toEqual({ outcome });
+    expect(await client.pairCloud({ id: "c1", origin: "https://d1.madani.bot" })).toEqual({ outcome });
   });
   it("lists the account's own clouds and its teams' clouds from one session read, and its computers beside it", async () => {
     await signIn();
     fetcher.mockImplementation(async (url) => String(url).endsWith("/v1/app/computers")
       ? response({ v: 1, computers: [{ id: "ws_mac", name: "Studio Mac", kind: "mac", presence: "asleep", lastSeenAt: 1, environmentId: "env-1" }, { id: "../x", name: "bad", kind: "mac", presence: "online" }] })
-      : response({ clouds: [listed()], teams: [{ id: "t0123", name: "Acme team", role: "member", machine: { state: "ready", origin: "https://t0123.dusk.bot", power: { state: "asleep" } } }, { id: "bad id!", machine: { state: "ready" } }] }));
+      : response({ clouds: [listed()], teams: [{ id: "t0123", name: "Acme team", role: "member", machine: { state: "ready", origin: "https://t0123.madani.bot", power: { state: "asleep" } } }, { id: "bad id!", machine: { state: "ready" } }] }));
     expect(await client.places()).toEqual({
       clouds: [expect.objectContaining({ id: "c0123456789abcdef01234567" })],
-      teams: [{ id: "t0123", name: "Acme team", status: "ready", origin: "https://t0123.dusk.bot", asleep: true }],
+      teams: [{ id: "t0123", name: "Acme team", status: "ready", origin: "https://t0123.madani.bot", asleep: true }],
       computers: [{ id: "ws_mac", name: "Studio Mac", kind: "mac", presence: "asleep", environmentId: "env-1" }],
     });
     // a service without the computers list still lists the clouds
@@ -238,7 +238,7 @@ describe("own clouds", () => {
   });
   it("asks a computer for its pairing link, and reads why it could not", async () => {
     await signIn();
-    const link = "duskbot://pair?m=eyJ2IjoyfQ";
+    const link = "madanibot://pair?m=eyJ2IjoyfQ";
     fetcher.mockResolvedValueOnce(response({ v: 1, link, expiresAt: Date.now() + 300_000 }));
     expect(await client.pairComputer({ id: "ws_mac" })).toEqual({ outcome: "paired", link });
     expect(fetcher.mock.calls.at(-1)![0]).toBe(`${origin}/v1/app/computers/ws_mac/pair`);
@@ -251,11 +251,11 @@ describe("own clouds", () => {
   });
   it("pairs with a team's cloud through that team's pairing route", async () => {
     await signIn();
-    fetcher.mockResolvedValueOnce(response({ cloudContractVersion: 1, origin: "https://t1.dusk.bot", code: "ABCD-EFGH-JKLM", expiresAt: Date.now() + 300_000 }));
-    expect(await client.pairTeamCloud({ id: "t1", origin: "https://t1.dusk.bot" })).toMatchObject({ outcome: "paired" });
+    fetcher.mockResolvedValueOnce(response({ cloudContractVersion: 1, origin: "https://t1.madani.bot", code: "ABCD-EFGH-JKLM", expiresAt: Date.now() + 300_000 }));
+    expect(await client.pairTeamCloud({ id: "t1", origin: "https://t1.madani.bot" })).toMatchObject({ outcome: "paired" });
     expect(fetcher.mock.calls[0][0]).toBe(`${origin}/api/cloud/desktop/teams/t1/pairing`);
     fetcher.mockResolvedValueOnce(response({ error: "not_found" }, 404));
-    expect(await client.pairTeamCloud({ id: "t1", origin: "https://t1.dusk.bot" })).toEqual({ outcome: "unavailable" });
+    expect(await client.pairTeamCloud({ id: "t1", origin: "https://t1.madani.bot" })).toEqual({ outcome: "unavailable" });
   });
   it("wakes the primary cloud with a click intent", async () => {
     expect(await client.wakeCloud()).toBe(false);
@@ -266,7 +266,7 @@ describe("own clouds", () => {
 });
 
 describe("delete account", () => {
-  const signedIn = async () => { secrets.set("dusk.account", JSON.stringify(stored())); fetcher.mockResolvedValueOnce(response({})); await client.restore(); };
+  const signedIn = async () => { secrets.set("madani.account", JSON.stringify(stored())); fetcher.mockResolvedValueOnce(response({})); await client.restore(); };
   it("asks the service to delete with this sign-in and the account's email, then forgets the sign-in", async () => {
     await signedIn();
     fetcher.mockResolvedValueOnce(response({ ok: true }));
@@ -275,18 +275,18 @@ describe("delete account", () => {
     expect(url).toBe(`${origin}/v1/app/delete-account`);
     expect(init).toMatchObject({ method: "POST", headers: { authorization: `Bearer ${token}` } });
     expect(JSON.parse(String(init?.body))).toEqual({ email: "person@example.com" });
-    expect(client.account()).toBeNull(); expect(secrets.has("dusk.account")).toBe(false);
+    expect(client.account()).toBeNull(); expect(secrets.has("madani.account")).toBe(false);
   });
   it("keeps everything when the service could not delete, and forgets a sign-in the service no longer knows", async () => {
     await signedIn();
     fetcher.mockResolvedValueOnce(response({ error: "failed" }, 503));
     expect(await client.deleteAccount()).toBe("failed");
-    expect(client.account()).toEqual(grant().account); expect(secrets.has("dusk.account")).toBe(true);
+    expect(client.account()).toEqual(grant().account); expect(secrets.has("madani.account")).toBe(true);
     fetcher.mockRejectedValueOnce(new TypeError("offline"));
     expect(await client.deleteAccount()).toBe("failed");
     fetcher.mockResolvedValueOnce(response({ error: "invalid_token" }, 401));
     expect(await client.deleteAccount()).toBe("signed-out");
-    expect(client.account()).toBeNull(); expect(secrets.has("dusk.account")).toBe(false);
+    expect(client.account()).toBeNull(); expect(secrets.has("madani.account")).toBe(false);
   });
   it("does nothing signed out", async () => {
     expect(await client.deleteAccount()).toBe("signed-out"); expect(fetcher).not.toHaveBeenCalled();
@@ -319,7 +319,7 @@ describe("sign in with Apple, native", () => {
     expect(sent).toEqual({ identityToken: credential.identityToken, authorizationCode: credential.authorizationCode, nonce: sent.nonce, givenName: "Sam", deviceName: "p".repeat(100), platform: "ios", appVersion: "0.0.0" });
     expect(appleSignIn.mock.calls[0][0]).toBe(createHash("sha256").update(sent.nonce).digest("hex"));
     expect(client.account()).toEqual(grant().account);
-    expect(JSON.parse(secrets.get("dusk.account")!)).toMatchObject({ origin, token, account: grant().account });
+    expect(JSON.parse(secrets.get("madani.account")!)).toMatchObject({ origin, token, account: grant().account });
   });
 
   it("says nothing when the person closes Apple's sheet, and asks nothing of the service", async () => {
@@ -335,7 +335,7 @@ describe("sign in with Apple, native", () => {
     withApple(async () => credential);
     fetcher.mockResolvedValueOnce(response({ error }, status));
     expect(await client.appleNative()).toEqual({ outcome });
-    expect(client.account()).toBeNull(); expect(secrets.has("dusk.account")).toBe(false);
+    expect(client.account()).toBeNull(); expect(secrets.has("madani.account")).toBe(false);
   });
 
   it("tells apart no connection, a failed sheet and a phone without the native sheet", async () => {
@@ -367,10 +367,10 @@ describe("phone code", () => {
     expect(url).toBe(`${origin}/api/cloud/app/sign-in/phone`);
     expect(JSON.parse(String(init?.body))).toMatchObject({ code: "ABCDEFGH", platform: "ios", appVersion: "0.0.0" });
     expect(client.account()).toEqual(grant().account);
-    expect(secrets.has("dusk.account")).toBe(true);
+    expect(secrets.has("madani.account")).toBe(true);
   });
   it("ends the sign-in this phone held before once the new one is kept", async () => {
-    secrets.set("dusk.account", JSON.stringify(stored({ token: `omc_${"o".repeat(43)}` })));
+    secrets.set("madani.account", JSON.stringify(stored({ token: `omc_${"o".repeat(43)}` })));
     await client.cached();
     fetcher.mockResolvedValueOnce(response(grant())).mockResolvedValueOnce(response({ ok: true }));
     expect((await client.phoneCode("ABCDEFGH")).outcome).toBe("signed-in");
@@ -399,9 +399,9 @@ describe("two accounts on one phone", () => {
   const grantFor = (who: typeof alice, accessToken: string) => ({ ...grant(), accessToken, account: who });
   const storedFor = (who: typeof alice, at: string) => stored({ token: at, account: who });
   const authOf = (call: Parameters<typeof fetch>) => (call[1]?.headers as Record<string, string> | undefined)?.authorization;
-  const others = () => (JSON.parse(secrets.get("dusk.account.others") ?? "[]") as { account: { id: string } }[]).map((one) => one.account.id);
+  const others = () => (JSON.parse(secrets.get("madani.account.others") ?? "[]") as { account: { id: string } }[]).map((one) => one.account.id);
   const signedInAsBoth = async () => {
-    secrets.set("dusk.account", JSON.stringify(storedFor(alice, tokenA)));
+    secrets.set("madani.account", JSON.stringify(storedFor(alice, tokenA)));
     await client.cached();
     fetcher.mockResolvedValueOnce(response(grantFor(bob, tokenB)));
     expect((await client.phoneCode("ABCDEFGH")).outcome).toBe("signed-in");
@@ -430,7 +430,7 @@ describe("two accounts on one phone", () => {
     await signedInAsBoth();
     expect(await client.switchAccount("alice")).toEqual(alice);
     expect(client.account()).toEqual(alice);
-    expect(JSON.parse(secrets.get("dusk.account")!).account.id).toBe("alice");
+    expect(JSON.parse(secrets.get("madani.account")!).account.id).toBe("alice");
     expect(others()).toEqual(["bob"]);
     expect(await client.switchAccount("nobody")).toBeNull();
     expect(client.account()).toEqual(alice);
@@ -449,19 +449,19 @@ describe("two accounts on one phone", () => {
 
   it("a launch checks every kept session: one the service forgot leaves, the other stays", async () => {
     const tokenC = `omc_${"c".repeat(43)}`;
-    secrets.set("dusk.account", JSON.stringify(storedFor(bob, tokenB)));
-    secrets.set("dusk.account.others", JSON.stringify([storedFor(alice, tokenA), storedFor({ id: "carol", email: "carol@example.com" }, tokenC)]));
+    secrets.set("madani.account", JSON.stringify(storedFor(bob, tokenB)));
+    secrets.set("madani.account.others", JSON.stringify([storedFor(alice, tokenA), storedFor({ id: "carol", email: "carol@example.com" }, tokenC)]));
     fetcher.mockImplementation(async (_url, init) => (init?.headers as Record<string, string> | undefined)?.authorization === `Bearer ${tokenC}` ? response({ error: "invalid_token" }, 401) : response({}));
     expect(await client.restore()).toEqual(bob);
     await vi.waitFor(() => expect(others()).toEqual(["alice"]));
   });
 
   it("the account in use that the service forgot hands over to the next one", async () => {
-    secrets.set("dusk.account", JSON.stringify(storedFor(bob, tokenB)));
-    secrets.set("dusk.account.others", JSON.stringify([storedFor(alice, tokenA)]));
+    secrets.set("madani.account", JSON.stringify(storedFor(bob, tokenB)));
+    secrets.set("madani.account.others", JSON.stringify([storedFor(alice, tokenA)]));
     fetcher.mockImplementation(async (_url, init) => (init?.headers as Record<string, string> | undefined)?.authorization === `Bearer ${tokenB}` ? response({ error: "invalid_token" }, 401) : response({}));
     expect(await client.restore()).toEqual(alice);
-    expect(JSON.parse(secrets.get("dusk.account")!).account.id).toBe("alice");
+    expect(JSON.parse(secrets.get("madani.account")!).account.id).toBe("alice");
   });
 });
 
@@ -478,12 +478,12 @@ describe("the platform analytics counts a phone as", () => {
 
 describe("a pairing grant on a phone whose clock is off", () => {
   const at = 1_900_000_000_000;
-  const cloudGrant = (expiresAt: number) => ({ cloudContractVersion: 1, origin: "https://d1.dusk.bot", code: "ABCD-EFGH-JKLM", expiresAt });
-  const computerPair = (expiresAt: number) => ({ v: 1, link: "duskbot://pair?m=abc", expiresAt });
+  const cloudGrant = (expiresAt: number) => ({ cloudContractVersion: 1, origin: "https://d1.madani.bot", code: "ABCD-EFGH-JKLM", expiresAt });
+  const computerPair = (expiresAt: number) => ({ v: 1, link: "madanibot://pair?m=abc", expiresAt });
   it("takes a fresh grant with the phone minutes ahead or behind, and refuses nonsense", () => {
     for (const skew of [-8 * 60_000, 8 * 60_000]) {
       expect(parsePairGrant(cloudGrant(at + 5 * 60_000), null, at + skew)).not.toBeNull();
-      expect(parseComputerPair(computerPair(at + 5 * 60_000), at + skew)).toBe("duskbot://pair?m=abc");
+      expect(parseComputerPair(computerPair(at + 5 * 60_000), at + skew)).toBe("madanibot://pair?m=abc");
     }
     expect(parsePairGrant(cloudGrant(at + 24 * 60 * 60_000), null, at)).toBeNull();
     expect(parsePairGrant(cloudGrant(at - 60 * 60_000), null, at)).toBeNull();

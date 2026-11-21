@@ -107,7 +107,7 @@ const lightTile = (name: string, from: string): AvatarTile => ({ name, family: n
 const deepTile = (name: string, family: string, from: string): AvatarTile => ({ name, family: `deep-${family}`, color: oklch(0.36, 0.08, hueOf(from)) });
 export const AVATAR_TILES: readonly AvatarTile[] = [
   lightTile("lilac", "#b99af2"), lightTile("sky", "#7cc6f2"), lightTile("lime", "#a6dd6c"), lightTile("peach", "#f6b183"), lightTile("rose", "#f4a0c4"), lightTile("lemon", "#f6dc62"),
-  deepTile("dusk", "lilac", "#b99af2"), deepTile("sea", "sky", "#7cc6f2"), deepTile("moss", "lime", "#a6dd6c"), deepTile("plum", "rose", "#f4a0c4"),
+  deepTile("madani", "lilac", "#b99af2"), deepTile("sea", "sky", "#7cc6f2"), deepTile("moss", "lime", "#a6dd6c"), deepTile("plum", "rose", "#f4a0c4"),
 ];
 /** A head reads on its tile: never its own hue family, clearly apart from it, and its face clearly apart from its skin. */
 export function avatarReadable(head: AvatarSkin, tile: AvatarTile): boolean {

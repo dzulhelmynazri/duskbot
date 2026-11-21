@@ -1,4 +1,4 @@
-# Self-hosting the dusk bot server
+# Self-hosting the madani bot server
 
 Run the harness server on an always-on Linux box (a VPS, a home server, a
 Mac mini in a closet) and pair browsers, the desktop app, or phones with it.
@@ -14,7 +14,7 @@ The npm CLI supports a managed public tunnel, Tailscale, or your own proxy.
 > session. If several people use one server, read
 > [Loopback trust](#loopback-trust-owner-or-service) below.
 
-Step by step, for a server you do not have yet: [Deploy dusk bot on a
+Step by step, for a server you do not have yet: [Deploy madani bot on a
 VPS](deploy-vps.md) walks through the three ways in (public address, own
 domain, Tailscale), signing engines in, pairing, keeping it running,
 updating and backups. This page is the reference behind it.
@@ -23,34 +23,34 @@ updating and backups. This page is the reference behind it.
 
 The app's **add a place > your own server** sheet gives one line to paste on a
 fresh Ubuntu 20.04+ or Debian 11+ server (as root, or a user with sudo). It
-installs dusk bot as a systemd service, links it to the app through
-link.dusk.bot (which also carries its live progress), and sets up the way you
+installs madani bot as a systemd service, links it to the app through
+link.madani.bot (which also carries its live progress), and sets up the way you
 picked. Nothing is typed back into the app: no address, no code, no password.
 Cloudflare is the recommended way and the first one the sheet offers.
 
 ```sh
-curl -fsSL https://dusk.bot/s/<code>/cloudflare | sh   # a quick Cloudflare tunnel (recommended)
-curl -fsSL https://dusk.bot/s/<code> | sh              # the relay
-curl -fsSL https://dusk.bot/s/<code>/tailscale | sh    # your tailnet
-curl -fsSL https://dusk.bot/s/<code>/ssh | sh          # over your SSH port
+curl -fsSL https://madani.bot/s/<code>/cloudflare | sh   # a quick Cloudflare tunnel (recommended)
+curl -fsSL https://madani.bot/s/<code> | sh              # the relay
+curl -fsSL https://madani.bot/s/<code>/tailscale | sh    # your tailnet
+curl -fsSL https://madani.bot/s/<code>/ssh | sh          # over your SSH port
 ```
 
 `<code>` is the setup's own code, which only the app's sheet shows (copying these examples gives a 404): 7 characters, good only for that setup while it waits for the server or installs,
 and gone once the server is linked, the setup is cancelled or two hours pass. Wrong codes are counted, and an address
-that keeps guessing is refused for the hour. dusk.bot (behind Cloudflare) answers with a tiny script that fetches the
-whole installer from link.dusk.bot and runs it: five tries 2 s apart, every other one over IPv4, the installer run only
+that keeps guessing is refused for the hour. madani.bot (behind Cloudflare) answers with a tiny script that fetches the
+whole installer from link.madani.bot and runs it: five tries 2 s apart, every other one over IPv4, the installer run only
 once it arrived whole, and a plain message with exit 1 when every try fails.
 
 The longer form an older app shows still works the same way:
-`curl -fsSL https://link.dusk.bot/i/<token> | sh -s -- --cloudflare`, or its retry loop,
+`curl -fsSL https://link.madani.bot/i/<token> | sh -s -- --cloudflare`, or its retry loop,
 `(for f in "" -4 "" -4 ""; do s=$(curl -fsSL $f …) && … done; echo '…; exit 1') | sh -s -- --cloudflare`.
 
 | Way | What it needs | What the line does |
 |---|---|---|
-| `--cloudflare` | nothing | Installs `cloudflared` from Cloudflare's apt repository and runs a quick tunnel (`*.trycloudflare.com`, no account or sign-in) as `duskbot-cloudflared.service`. Its name changes when the tunnel restarts; the link agent tells the app the new one inside the sealed tunnel and the app follows it. When the link service hands the server a tunnel of its own, that one runs instead. |
+| `--cloudflare` | nothing | Installs `cloudflared` from Cloudflare's apt repository and runs a quick tunnel (`*.trycloudflare.com`, no account or sign-in) as `madanibot-cloudflared.service`. Its name changes when the tunnel restarts; the link agent tells the app the new one inside the sealed tunnel and the app follows it. When the link service hands the server a tunnel of its own, that one runs instead. |
 | relay (no option) | nothing | Links through the private relay. Nothing inbound is opened. |
-| `--tailscale` | Tailscale on the computer you use | Installs Tailscale if missing, prints the sign-in link (also shown in the app), then runs `tailscale serve` for HTTPS; if HTTPS is off for the tailnet it prints the one admin link that turns it on, and carries on by itself once it is on. Without `/dev/net/tun` it uses Tailscale's userspace networking. `--tailscale-key KEY` (or `DUSK_TAILSCALE_KEY`) signs in with an auth key instead. |
-| `--ssh` | SSH on port 22 | Links through the relay; the app then talks over the server's own sshd with a restricted key, the relay only as a backup. It also prints `ssh -N -L 8790:127.0.0.1:8799 <user>@<ip>` for opening dusk bot in a browser on your computer. |
+| `--tailscale` | Tailscale on the computer you use | Installs Tailscale if missing, prints the sign-in link (also shown in the app), then runs `tailscale serve` for HTTPS; if HTTPS is off for the tailnet it prints the one admin link that turns it on, and carries on by itself once it is on. Without `/dev/net/tun` it uses Tailscale's userspace networking. `--tailscale-key KEY` (or `MADANI_TAILSCALE_KEY`) signs in with an auth key instead. |
+| `--ssh` | SSH on port 22 | Links through the relay; the app then talks over the server's own sshd with a restricted key, the relay only as a backup. It also prints `ssh -N -L 8790:127.0.0.1:8799 <user>@<ip>` for opening madani bot in a browser on your computer. |
 
 The line no longer takes `--domain`, `--direct` or `--cloudflare-token`: an old
 line with one of them prints a short note and sets up a Cloudflare tunnel
@@ -66,14 +66,14 @@ through the relay. Running the install again with `--repair` and another way mov
 the server to it; the app follows. The line is single use and expires after 30
 minutes; [the link service](../apps/link-service/README.md) has the details.
 
-The line also puts `duskbot` on the server's PATH for every login (a small
-`/usr/local/bin/duskbot` that runs the server account's own build as that
-account), so `duskbot pair --label desktop` there makes a code for another
+The line also puts `madanibot` on the server's PATH for every login (a small
+`/usr/local/bin/madanibot` that runs the server account's own build as that
+account), so `madanibot pair --label desktop` there makes a code for another
 computer. A server installed before this has it after its next update; until
-then run `sudo -u dusk /home/dusk/.local/bin/duskbot pair --label desktop`.
+then run `sudo -u madani /home/madani/.local/bin/madanibot pair --label desktop`.
 
-Already running dusk bot? The sheet's last choice takes what
-`duskbot pair --label desktop` (or `npx duskbot pair --label desktop`, for a
+Already running madani bot? The sheet's last choice takes what
+`madanibot pair --label desktop` (or `npx madanibot pair --label desktop`, for a
 server started with npx) prints on it: paste the whole output into the first
 field and the app picks the server's public pairing link out of it. With no
 public address it prints only a code; then enter the address and that code.
@@ -95,7 +95,7 @@ Runs fully on a server:
 - text-to-speech (with a key), the web UI (the server serves it itself)
 
 - a browser for bots, once the engine is installed on the server
-  (`npx duskbot browser install`, or nothing to do in the Docker image,
+  (`npx madanibot browser install`, or nothing to do in the Docker image,
   which ships it): each bot gets its own isolated, persistent session.
   Watching it live from the app is the next step.
   It reaches the public internet and the dev servers a bot starts itself,
@@ -111,7 +111,7 @@ Desktop-only for now (needs the Mac/Linux app):
 On any machine with Node 24 or newer (a VPS, a Mac mini, a Raspberry Pi):
 
 ```sh
-npx duskbot start
+npx madanibot start
 ```
 
 First launch asks you to choose AI access, connect an account or API key,
@@ -120,38 +120,38 @@ Codex also offers device-code login for SSH. API-key connections currently
 support chat, not agent tools or computer use. The [setup guide](cli-onboarding.md)
 explains the choices, key storage, and how to run setup again safely.
 
-It then starts the server and keeps your data in `~/.duskbot`. If you
+It then starts the server and keeps your data in `~/.madanibot`. If you
 choose phone access, it prints a pairing link and QR code only after checking
 the HTTPS connection. Choosing **Skip for now** keeps the workspace local-only
-and creates no pairing invitation. Use `npx duskbot setup` to configure without starting, or
-`npx duskbot serve` to start non-interactively with your existing config
+and creates no pairing invitation. Use `npx madanibot setup` to configure without starting, or
+`npx madanibot serve` to start non-interactively with your existing config
 (for services and scripts).
 
 The npm package does not include engine CLIs (`claude`, `codex`, …); setup
 can offer to install and sign in supported engines on this machine.
 Run setup, engine authentication, and the server as the same unprivileged
 operating-system user. Engine credentials live in that user's CLI-specific
-directories, not all under `.duskbot`.
+directories, not all under `.madanibot`.
 
 For a Linux service, the [VPS guide](deploy-vps.md#before-you-start) shows the
 account setup, engine installation, and browser dependency installation.
 After installing browser libraries as administrator, also run
-`npx duskbot browser install` as the service user so that user's browser
+`npx madanibot browser install` as the service user so that user's browser
 is present. Three ways to make the server reachable from elsewhere:
 
 - **On your Tailscale network, no domain needed:**
-  `npx duskbot serve --tailscale`. Tailscale terminates HTTPS with its
+  `npx madanibot serve --tailscale`. Tailscale terminates HTTPS with its
   own certificate and the link uses this machine's MagicDNS name, so only
   devices on your tailnet can reach it. Needs Tailscale signed in and HTTPS
   certificates enabled for the tailnet (admin console → DNS).
 - **A public address, no domain, no proxy, no open port:**
 
   ```sh
-  npx duskbot login          # once: an emailed code signs this machine in
-  npx duskbot serve --tunnel
+  npx madanibot login          # once: an emailed code signs this machine in
+  npx madanibot serve --tunnel
   ```
 
-  `login` reserves an address like `https://c-….cloud.dusk.bot` for this
+  `login` reserves an address like `https://c-….cloud.madani.bot` for this
   machine; `serve --tunnel` connects it through a Cloudflare tunnel (the same
   one the desktop app uses for its companion) and prints the pairing link at
   that address. The first run downloads `cloudflared` (pinned version and
@@ -160,13 +160,13 @@ is present. Three ways to make the server reachable from elsewhere:
   the server treats as "through a proxy", never as the owner. That listener
   also gzips JSON replies of 1 KB or more when the client accepts gzip, since
   the hop to Cloudflare runs on this machine's upload uncompressed; the
-  loopback port never compresses. `npx duskbot logout` releases the
+  loopback port never compresses. `npx madanibot logout` releases the
   address. The account credentials live in
-  `~/.duskbot/tunnel-account.json` (mode 0600).
+  `~/.madanibot/tunnel-account.json` (mode 0600).
 - **Your own domain, still one command:**
 
   ```sh
-  npx duskbot serve --domain maus.example.com
+  npx madanibot serve --domain maus.example.com
   ```
 
   Point the domain's A record at this machine and open ports 80 and 443.
@@ -175,13 +175,13 @@ is present. Three ways to make the server reachable from elsewhere:
   and renews the certificate from Let's Encrypt. On Linux, binding ports 80
   and 443 as a normal user needs one privilege grant; when Caddy reports the
   refusal, `serve` prints the exact `setcap` command to run once.
-- **Behind your own proxy or domain:** `npx duskbot serve --public-url
+- **Behind your own proxy or domain:** `npx madanibot serve --public-url
   https://maus.example.com`, with the proxy rules from "Putting a proxy in
   front".
 
-Later: `npx duskbot pair --label "Kitchen iPad"` for another device
+Later: `npx madanibot pair --label "Kitchen iPad"` for another device
 (`--client` for one that may chat but not change settings), and
-`npx duskbot sessions` to see or revoke them. `duskbot serve` is a
+`npx madanibot sessions` to see or revoke them. `madanibot serve` is a
 plain foreground process. For unattended use, follow the
 [systemd example](deploy-vps.md#keep-it-running), which installs a chosen
 release and runs its binary directly. Restarting that service does not
@@ -190,14 +190,14 @@ implicitly download a new release.
 ## Connect ChatGPT from the browser
 
 A browser paired with Full access can connect an installed Codex CLI without opening a
-terminal: **Settings → Engines → Codex → Connect ChatGPT**. dusk bot starts
+terminal: **Settings → Engines → Codex → Connect ChatGPT**. madani bot starts
 `codex login --device-auth` on the server and shows a one-time code. Choose
 **Open ChatGPT sign-in**, enter the code on OpenAI's page, and complete sign-in
-with your own account. dusk bot checks for completion and refreshes the model list.
+with your own account. madani bot checks for completion and refreshes the model list.
 You can cancel or request a fresh code after it expires.
 
 The server still needs Codex installed and runs it as the same operating-system
-user as dusk bot. Your password never goes through dusk bot; Codex stores its credentials
+user as madani bot. Your password never goes through madani bot; Codex stores its credentials
 on the server. Treat server access and backups as sensitive. Device-code login
 may need enabling in ChatGPT security settings or by your workspace admin; see
 [OpenAI's headless authentication guide](https://learn.chatgpt.com/docs/auth#login-on-headless-devices).
@@ -206,7 +206,7 @@ other providers retain their existing sign-in methods.
 
 Once connected, Settings shows the account email when Codex can report it.
 To switch accounts, open **Manage account and sign-in** under that line
-and choose **Sign out of ChatGPT**: dusk bot runs `codex logout` on the server as
+and choose **Sign out of ChatGPT**: madani bot runs `codex logout` on the server as
 the same user and confirms with `codex login status`. New ChatGPT tasks need
 a connected account. Stop running Codex tasks before switching: sign-out does
 not cancel work already in progress. API-key logins are not removed by this
@@ -217,11 +217,11 @@ pulled away; finish or cancel it first.
 
 Give a self-hosted server its own domain when you start it:
 
-- `duskbot serve --domain bots.yourcompany.com` runs a pinned Caddy beside the
+- `madanibot serve --domain bots.yourcompany.com` runs a pinned Caddy beside the
   server, which gets the certificate itself. Point the domain's DNS **A** record
   at the server's public IPv4 and open ports 80 and 443.
 - Behind a reverse proxy of your own, start it with
-  `duskbot serve --public-url https://bots.yourcompany.com`. Keep dusk bot on
+  `madanibot serve --public-url https://bots.yourcompany.com`. Keep madani bot on
   loopback, forward the original Host and proxy headers, and keep event streams
   unbuffered; the [supplied Caddyfile](../deploy/Caddyfile) is the reference.
 
@@ -235,18 +235,18 @@ One tenant = one container for the server plus Caddy for HTTPS.
 Requirements: Docker with Compose, a DNS name pointing at the machine, and
 ports 80/443 open. Also open UDP 30000-30063 if you can: the live screen of a
 bot's computer then goes straight to the app (WebRTC) instead of through a
-relay. The image sets that range as `DUSK_SCREEN_DIRECT_PORTS` and the compose
+relay. The image sets that range as `MADANI_SCREEN_DIRECT_PORTS` and the compose
 file publishes it; with it closed, screens still work over the relay.
 
 ```sh
-git clone https://github.com/DuskBotAI/duskbot && cd duskbot/deploy
+git clone https://github.com/dzulhelmynazri/madani-bot && cd madanibot/deploy
 cp .env.example .env            # set DOMAIN
-docker compose pull dusk && docker compose up -d
+docker compose pull madani && docker compose up -d
 ```
 
 That uses the image published for each release
-(`ghcr.io/duskbotai/duskbot`, tagged `v…` and `latest`, for amd64 and
-arm64, with Claude Code and Codex installed). Set `DUSK_IMAGE` in `.env` to
+(`ghcr.io/madanibotai/madanibot`, tagged `v…` and `latest`, for amd64 and
+arm64, with Claude Code and Codex installed). Set `MADANI_IMAGE` in `.env` to
 pin a version. To build from your checkout instead, with the engines
 `ENGINES` lists: `docker compose up -d --build`.
 
@@ -255,15 +255,15 @@ the `data` volume, so they survive restarts and image upgrades) and mint a
 pairing code for your first device:
 
 ```sh
-docker compose exec dusk claude                       # each CLI you listed in ENGINES
-docker compose exec dusk node dist-server/duskbot.js pair # prints a code, a link and a QR
+docker compose exec madani claude                       # each CLI you listed in ENGINES
+docker compose exec madani node dist-server/madanibot.js pair # prints a code, a link and a QR
 ```
 
 Open the link (`https://<DOMAIN>/pair#code=…`) in a browser and it is
 paired; see "Using it from your computer" for what a session is. Webhook
 URLs (`https://<DOMAIN>/hooks/wh_…`) work without a session, and that is the
 base the app prints on new hooks because the stack sets
-`DUSK_WEBHOOK_PUBLIC_URL`.
+`MADANI_WEBHOOK_PUBLIC_URL`.
 
 What the stack does, so you can adapt it:
 
@@ -279,7 +279,7 @@ What the stack does, so you can adapt it:
   own pairing is the login. A shared-password `basic_auth` block is there,
   commented out, if you want a second wall in front of pairing.
 
-Upgrade with `docker compose pull dusk && docker compose up -d` (or
+Upgrade with `docker compose pull madani && docker compose up -d` (or
 `git pull && docker compose up -d --build`). State (chats, routines,
 engine logins, paired sessions) is on the `data` volume; back that up.
 
@@ -289,7 +289,7 @@ installed first, because those layers sit beneath the app and stay cached
 across code changes. To pick up the current ones, rebuild with a new tag:
 
 ```sh
-docker compose build --build-arg CHROME_CACHE_TAG=$(date +%F) dusk && docker compose up -d
+docker compose build --build-arg CHROME_CACHE_TAG=$(date +%F) madani && docker compose up -d
 ```
 
 ## From source
@@ -298,27 +298,27 @@ Requirements: Node 24+, pnpm, and at least one agent CLI installed and
 signed in on the server.
 
 ```sh
-git clone https://github.com/DuskBotAI/duskbot && cd duskbot
+git clone https://github.com/dzulhelmynazri/madani-bot && cd madanibot
 pnpm install
 
 # choose where data lives and start the server
-DUSK_DATA_DIR="$HOME/.duskbot" DUSK_PORT=8799 \
+MADANI_DATA_DIR="$HOME/.madanibot" MADANI_PORT=8799 \
   node --experimental-strip-types server/index.ts
 ```
 
 For something durable, let the CLI write the service for you:
 
 ```sh
-npx duskbot service install --domain maus.example.com   # or --tunnel, --tailscale, or nothing
+npx madanibot service install --domain maus.example.com   # or --tunnel, --tailscale, or nothing
 ```
 
 It renders a systemd unit (Linux) or a launchd agent (macOS) that runs the
-same `duskbot serve …` with your options, restarts it if it stops, and,
+same `madanibot serve …` with your options, restarts it if it stops, and,
 for `--domain`, grants the unit the capability to bind ports 80 and 443
 without root. The file is written next to your data and the two commands
 that install and start it are printed (they need `sudo` on Linux).
-`duskbot service uninstall` prints the reverse. Install the package
-permanently first (`npm install -g duskbot`): a service must not point
+`madanibot service uninstall` prints the reverse. Install the package
+permanently first (`npm install -g madanibot`): a service must not point
 at an `npx` cache that npm may prune.
 
 Engine CLIs read their logins from the service user's home: sign them in
@@ -329,10 +329,10 @@ rely on routines running unattended.
 
 Engines whose installer is an npm package (Claude Code, Codex, OpenCode,
 MiniMax, pi) can be installed and updated from **Settings → Engines** when
-npm is on the server's PATH. dusk bot runs `npm install -g` as its own user into
+npm is on the server's PATH. madani bot runs `npm install -g` as its own user into
 `<data dir>/tools/npm`, so nothing needs sudo and nothing touches a global
 prefix; that folder goes ahead of everything else on the engines' PATH, so
-the copy dusk bot installed is the one bots run. The package name comes from the
+the copy madani bot installed is the one bots run. The package name comes from the
 engine's own install descriptor, never from the browser. Engines installed
 by a `curl | bash` script still need the command on the server.
 
@@ -348,7 +348,7 @@ that makes one read-only request to the provider from the server.
   to sign in, and Settings → Engines shows "workspace API key" instead of a
   person. Remove the key to go back to personal logins. The server's own
   `ANTHROPIC_API_KEY` environment variable is deliberately ignored; use the
-  page, `config.json`, or `DUSK_ANTHROPIC_API_KEY`.
+  page, `config.json`, or `MADANI_ANTHROPIC_API_KEY`.
 - **OpenAI-compatible API key and base URL**: OpenRouter by default, or Groq,
   Together, a gateway, or `https://api.openai.com/v1` for OpenAI itself. This
   powers the OpenAI-compatible engine. Codex has no key path by design and
@@ -364,7 +364,7 @@ Like `opencode` in a terminal, it reads provider keys from its environment
 (`ANTHROPIC_API_KEY`, `OPENAI_API_KEY`, `GEMINI_API_KEY`, `GOOGLE_API_KEY`,
 `KIMI_API_KEY`, `MOONSHOT_API_KEY`, `MINIMAX_API_KEY`) and offers those
 providers' models, billed to that key. It does so only where the server's
-environment is one person's own: never on dusk cloud, an organisation-managed desktop, or a server whose sign-in list
+environment is one person's own: never on madani cloud, an organisation-managed desktop, or a server whose sign-in list
 lets other people in (users, more than one admin, or a whole domain).
 Providers added with `opencode auth login` work everywhere.
 
@@ -393,14 +393,14 @@ Pair once, then use the server from any browser on any machine that can
 reach it. On the server:
 
 ```sh
-duskbot pair                             # the app's one-line install
-npx duskbot pair                         # npm install
-pnpm dusk pair                                # from a checkout
-docker compose exec dusk node dist-server/duskbot.js pair   # Docker
+madanibot pair                             # the app's one-line install
+npx madanibot pair                         # npm install
+pnpm madani pair                                # from a checkout
+docker compose exec madani node dist-server/madanibot.js pair   # Docker
 ```
 
 It prints a 12-character code (single use, five minutes) and, when the
-server knows its public address (`DUSK_PUBLIC_URL`, set by the Docker stack),
+server knows its public address (`MADANI_PUBLIC_URL`, set by the Docker stack),
 a link like `https://maus.example.com/pair#code=XXXX-XXXX-XXXX`. Open the
 link, or open `/pair` on the address you use and type the code. The browser
 gets a session cookie (30 days, renewed on use up to 180 days from pairing, revocable) and the app loads. Sessions are
@@ -411,7 +411,7 @@ From the **desktop app**, use the server dropdown above Search → **Connect
 to a server…**, or **Settings → Servers**. Enter the server's
 HTTPS address or full pairing link, with an optional name. Custom domains and
 Cloudflare tunnel addresses work; Tailscale is not required. Generate a fresh
-link for each device: `duskbot pair --label "My desktop"` (with `npx` in front on an npm install) creates an
+link for each device: `madanibot pair --label "My desktop"` (with `npx` in front on an npm install) creates an
 owner link without the phone wizard; add `--client` for chat-only access.
 A code already used by your phone cannot also pair your desktop.
 
@@ -464,7 +464,7 @@ To move by hand instead, export a backup from this computer in **Settings →
 Backups → Export backup**, then import it on the server in **Settings → Backups
 → Import backup**. API keys, engine sign-ins and paired devices stay where they
 are on both sides; routines arrive paused. An older desktop app's **Copy this
-computer here** is answered with "Update dusk bot to bring your bots here by
+computer here** is answered with "Update madani bot to bring your bots here by
 itself."
 
 Only conversations you start yourself on that server can use what you share;
@@ -494,7 +494,7 @@ and take a 5-minute ticket from `POST /api/auth/stream-ticket` for the
 event stream, because `EventSource` cannot set headers:
 `GET /api/events?ticket=…`.
 
-`GET /.well-known/duskbot/environment` is public and tells a client what
+`GET /.well-known/madanibot/environment` is public and tells a client what
 it is talking to: a stable `environmentId`, the label, the version and
 capabilities. Saved connections check the id so a reused address that now
 points at a different server is refused loudly.
@@ -504,7 +504,7 @@ address of its own:
 
 ```sh
 ssh -N -L 8790:127.0.0.1:8799 you@your-server
-# then run `npx duskbot pair` on the server and type its code at http://127.0.0.1:8790/pair
+# then run `npx madanibot pair` on the server and type its code at http://127.0.0.1:8790/pair
 ```
 
 Port 8790 on this side keeps clear of the desktop app's own server on 8799.
@@ -524,7 +524,7 @@ server, even when it runs on the same machine. Programs are unaffected: the
 CLI, scripts, `curl` and the companion send neither header.
 
 So the first time you open the web UI in a browser on the server's own
-machine, it shows the sign-in page. `duskbot serve` and `duskbot pair`
+machine, it shows the sign-in page. `madanibot serve` and `madanibot pair`
 print a link for it:
 
 ```
@@ -532,17 +532,17 @@ this computer: http://127.0.0.1:8799/pair#code=XXXX-XXXX-XXXX
 ```
 
 Open it and choose **Connect** (or type the code on the sign-in page); the browser
-keeps its session cookie from then on. `duskbot` (the guided start) prints
+keeps its session cookie from then on. `madanibot` (the guided start) prints
 the same link when it opens the browser. The desktop app is unaffected:
 its window adds the app's own per-launch owner header to every request and
 WebSocket it sends to its server, and no other Electron session may reach the
 server at all.
 
-For development, `pnpm dev:server` sets `DUSK_DEV_TRUST_LOCAL_BROWSER=1`, so a
+For development, `pnpm dev:server` sets `MADANI_DEV_TRUST_LOCAL_BROWSER=1`, so a
 browser on Vite's dev page (`pnpm dev`) is the owner as before. The server
 honours it only when it runs from source with owner trust, logs a warning, and
-ignores it in a build, the desktop app and dusk cloud.
-Run `DUSK_DEV_TRUST_LOCAL_BROWSER=0 pnpm dev:server` to try the sign-in.
+ignores it in a build, the desktop app and madani cloud.
+Run `MADANI_DEV_TRUST_LOCAL_BROWSER=0 pnpm dev:server` to try the sign-in.
 
 ### Loopback trust: owner or service
 
@@ -555,13 +555,13 @@ loopback request **without a session** is trusted, and logs it:
 
 ```
 local requests: owner trust (self-hosted default)
-local requests: service trust (DUSK_LOOPBACK_TRUST); without a session, loopback may use only health, the Slack worker's guarded routes and bot capability routes
+local requests: service trust (MADANI_LOOPBACK_TRUST); without a session, loopback may use only health, the Slack worker's guarded routes and bot capability routes
 ```
 
 | Trust | Default for | A session-less loopback request may |
 |---|---|---|
 | `owner` | a self-hosted server, the desktop app | do everything, as today |
-| `service` | dusk cloud; any server with `DUSK_LOOPBACK_TRUST=service` | read health, who-am-I, the bot list, a thread's messages and a bot's picture; open a thread; send through the guarded route; watch and stop its exact request; withdraw a queued line; **decline** a card; use the bots' own capability routes (`/api/internal/*`, which check their own per-turn token) |
+| `service` | madani cloud; any server with `MADANI_LOOPBACK_TRUST=service` | read health, who-am-I, the bot list, a thread's messages and a bot's picture; open a thread; send through the guarded route; watch and stop its exact request; withdraw a queued line; **decline** a card; use the bots' own capability routes (`/api/internal/*`, which check their own per-turn token) |
 
 Under `service`, everything else from loopback needs a real session and
 answers 403: settings and keys (`/api/config`), instances, MCP servers,
@@ -569,26 +569,26 @@ webhooks, sessions and pairing, people and sign-in lists, usage, budgets,
 the decision log, workspace backups, creating or loosening bots, and
 approving or answering any card. Email sign-in and paired sessions keep their own scopes.
 
-Set `DUSK_LOOPBACK_TRUST=service` on a self-hosted server people share (with
-an email sign-in list, say). `DUSK_LOOPBACK_TRUST=owner` grants local callers owner access. Any other value
+Set `MADANI_LOOPBACK_TRUST=service` on a self-hosted server people share (with
+an email sign-in list, say). `MADANI_LOOPBACK_TRUST=owner` grants local callers owner access. Any other value
 means `service`. The desktop app ignores the setting: its local changes
-already need the app's own per-launch capability. dusk cloud ignores
+already need the app's own per-launch capability. madani cloud ignores
 it too and is always `service` (docs/cloud-pro.md).
 
 With `service` on a self-hosted server:
 
-- `duskbot serve` still prints the first pairing code. It hands the
+- `madanibot serve` still prints the first pairing code. It hands the
   server it starts a one-off secret over the server's stdin (never its
   environment, which every engine inherits), and that secret opens the
   pairing route for that CLI alone. Pass `--no-pair` to skip the code; if
   the server refuses one anyway, `serve` says why and keeps running.
-- `duskbot pair` and `duskbot sessions`, run later from another
+- `madanibot pair` and `madanibot sessions`, run later from another
   terminal, are refused like any other admin change and say so. Pair from
   Settings → Remote access while signed in as an admin, or let people sign
-  in with their email (`duskbot access add you@example.com`, which edits
+  in with their email (`madanibot access add you@example.com`, which edits
   the sign-in list on disk).
 - A browser on an SSH tunnel gets the sign-in page instead of the app.
-- The MCP server script works with `DUSK_TOKEN` set to a paired session.
+- The MCP server script works with `MADANI_TOKEN` set to a paired session.
 
 **What `service` does not close yet.** Any bot's shell can still do
 everything the Slack worker does, and on a shared workspace that is a real
@@ -612,8 +612,8 @@ people use every day, let them sign in with an emailed code instead: set an
 allow-list, and `/pair` on your server offers "Sign in with your email" first.
 
 ```sh
-DUSK_SIGNIN_EMAILS="her@yourcompany.com, @yourcompany.com"   # full access
-DUSK_SIGNIN_MEMBER_EMAILS="freelancer@example.com"          # chat and approvals only
+MADANI_SIGNIN_EMAILS="her@yourcompany.com, @yourcompany.com"   # full access
+MADANI_SIGNIN_MEMBER_EMAILS="freelancer@example.com"          # chat and approvals only
 ```
 
 Signed in as an admin? Settings → Remote access → **Who can sign in with an
@@ -622,25 +622,25 @@ npm package, the same thing from the command line, with the server running
 or not, no restart needed:
 
 ```sh
-npx duskbot access add her@yourcompany.com
-npx duskbot access add freelancer@example.com --chat-only
-npx duskbot access list
+npx madanibot access add her@yourcompany.com
+npx madanibot access add freelancer@example.com --chat-only
+npx madanibot access list
 ```
 
 An entry is an address or `@domain` (everyone at that domain). Admins get
-the same access as a pairing code from `duskbot serve`; users get the
-chat-only scope, the same as `duskbot pair --client`. The same lists live
+the same access as a pairing code from `madanibot serve`; users get the
+chat-only scope, the same as `madanibot pair --client`. The same lists live
 in `config.json` under `signIn.admins` and `signIn.members` and can be changed
 through the settings API without a restart; the environment variables win
 when set, which is how a container or a service unit is bootstrapped.
 
-The code itself comes from `dusk.bot`, the dusk bot
+The code itself comes from `madani.bot`, the madani bot
 account service, so your server needs no email credentials. Your server asks
 it to send the code, checks the answer, and then issues its own session
 cookie: the browser only ever talks to your server, and who is welcome is
 decided only by your allow-list. Wrong codes count against the same lockout
 as pairing codes. Sessions from a sign-in show the email in
-`duskbot sessions` and can be revoked the same way.
+`madanibot sessions` and can be revoked the same way.
 
 ### Inviting people
 
@@ -653,7 +653,7 @@ Roles change with one click; removing someone stops new sign-ins.
 
 ### Who may answer a card
 
-Approval cards are the provider's own (see the approval modes); dusk bot
+Approval cards are the provider's own (see the approval modes); madani bot
 adds none. On a workspace several people share, an email sign-in list that
 names users narrows only whose answer counts, and only when the card can
 be traced to a person:
@@ -754,8 +754,8 @@ Files people attach, and pictures a bot shows inline, live in the
 `attachments` folder of the data directory. Nothing there is deleted, since
 old messages still point at it, so the server stops taking new files once the
 folder holds 512 MB. A team fills that sooner: set
-`DUSK_ATTACHMENTS_MAX_BYTES` in the server's environment and restart, for
-example `DUSK_ATTACHMENTS_MAX_BYTES=4294967296` for 4 GB.
+`MADANI_ATTACHMENTS_MAX_BYTES` in the server's environment and restart, for
+example `MADANI_ATTACHMENTS_MAX_BYTES=4294967296` for 4 GB.
 
 ## Putting a proxy in front
 
@@ -772,8 +772,8 @@ Any reverse proxy works, given three things:
 3. **Do not buffer** the event stream (`flush_interval -1` in Caddy,
    `proxy_buffering off` in nginx); the UI streams events over SSE.
 
-Plus one convenience: set `DUSK_PUBLIC_URL=https://your.domain` so pairing
-links, and `DUSK_WEBHOOK_PUBLIC_URL=https://your.domain` so hook URLs, are
+Plus one convenience: set `MADANI_PUBLIC_URL=https://your.domain` so pairing
+links, and `MADANI_WEBHOOK_PUBLIC_URL=https://your.domain` so hook URLs, are
 printed with the public address. [`deploy/Caddyfile`](../deploy/Caddyfile)
 is the reference implementation.
 
@@ -781,7 +781,7 @@ is the reference implementation.
 
 In a paired admin browser, as in the desktop app, **Take control** turns the
 Computer panel's picture into the live desktop for Local VMs and your own VPS,
-through the same address as dusk bot; **Full screen** fills the window with
+through the same address as madani bot; **Full screen** fills the window with
 the same session. Shared, per-bot and pool Local VMs connect through their
 managed container's loopback port. VPS desktops connect
 through an SSH tunnel opened by the server. Neither needs an additional public
@@ -817,22 +817,22 @@ creates a one-time code with a QR right in the browser, and lists every
 paired device with a sign-out button. Nobody needs the command line.
 
 The iOS app pairs with a server the same way a laptop does: scan the QR
-code that `duskbot serve` (or `duskbot pair`) prints, paste the
+code that `madanibot serve` (or `madanibot pair`) prints, paste the
 whole `https://host/pair#code=…` link into the address field on the pairing
 screen, or type the address and then the code. The phone gets a session of
-its own, listed and revocable with `duskbot sessions`. What it may do is
-the code's scope: a code from `duskbot pair` carries `admin` and the app
-shows everything; a code from `duskbot pair --client` (also what the
+its own, listed and revocable with `madanibot sessions`. What it may do is
+the code's scope: a code from `madanibot pair` carries `admin` and the app
+shows everything; a code from `madanibot pair --client` (also what the
 guided phone setup mints) can chat, approve and read, and the app hides
 creating bots and sections, changing models, generating avatars, connecting
 apps and cloud desktops — those stay with the owner. A server reinstalled at
 the same address has a new identity; the app then asks to pair again rather
 than present the old session to it.
 
-Both native apps pair this way. `duskbot pair --phone android` prints the
+Both native apps pair this way. `madanibot pair --phone android` prints the
 app-scheme QR that Android's scanner needs, and the iOS app accepts either
 that QR or the web link. Pass `--phone` whenever nothing is watching the
-terminal, such as `docker compose exec dusk node dist-server/duskbot.js
+terminal, such as `docker compose exec madani node dist-server/madanibot.js
 pair --phone android --public-url https://your-domain`, since a scripted run
 never reaches the question the interactive command asks. Nothing extra to install, and the phone becomes a
 session like any other.
@@ -840,7 +840,7 @@ session like any other.
 Older way, still supported, and only useful on a LAN or a tailnet: run the
 companion sidecar next to the harness and pair by its own QR. It advertises
 on your private networks (Tailscale-aware) and issues its own per-device
-credentials, which are **not** `duskbot sessions` and are revoked from
+credentials, which are **not** `madanibot sessions` and are revoked from
 its own page at the `127.0.0.1:8811/#token=…` link it prints. It also serves phones over cleartext HTTP
 on port 8810, so do not expose it from a public server. It ships only in a
 git checkout: neither the npm package nor the Docker image contains it.
@@ -909,7 +909,7 @@ it in plain words. It is a usage limit when its words say so, or when it is a
 a shorter wait is a rate limit to try again after. A reply that only quotes
 such an error among other words stays a reply.
 
-This is on by default. Start the server with `DUSK_QUOTA_SWITCH=0` to switch it
+This is on by default. Start the server with `MADANI_QUOTA_SWITCH=0` to switch it
 off: then only the backups Automatic recovery names take over, and the
 notification says the bot waits. Any other value, or none, leaves it on. It
 has no setting in `config.json` yet.
@@ -936,7 +936,7 @@ unless its status still says signed out.
 
 ### Which engine a new bot uses
 
-A saved default model (Settings, `duskbot setup`, or the New Bot
+A saved default model (Settings, `madanibot setup`, or the New Bot
 defaults) always wins. Without one, new bots get the first engine that can
 run, in this order: a Claude account, a ChatGPT plan, Gemini, Grok, then the
 rest in the order of `instances`; OpenCode running only Zen's free no-login
@@ -961,7 +961,7 @@ or picks a model for it or one of its conversations: it moves only after a
 test result, only to an engine that answered, and only away from one whose
 latest test missed or that is signed out or turned off, or up to a better
 one. A status read that timed out moves nothing. No other bot ever moves. To stop the
-background test messages, start the server with `DUSK_AI_CHECKS=0`.
+background test messages, start the server with `MADANI_AI_CHECKS=0`.
 
 ### The decision log
 
@@ -971,7 +971,7 @@ device label, `loopback` for the owner, `worker` for a session-less local
 service) — is appended to `<data dir>/decisions/YYYY-MM.ndjson` (0600,
 credentials redacted). Month files are kept for at least 180 days; set
 `decisions.retentionDays` in `config.json` (or through `PUT /api/config`),
-or `DUSK_DECISION_RETENTION_DAYS`, to keep them longer or shorter (1–3650
+or `MADANI_DECISION_RETENTION_DAYS`, to keep them longer or shorter (1–3650
 days; the environment wins). A month is deleted only once all of it is older
 than the window. An older server's `decisions.ndjson` and `.1` are still read
 and age out the same way. Admins can read it back:
@@ -998,7 +998,7 @@ a filesystem in an image file or on a loop device is not on it.
 
 It is off unless you switch it on: set `safetyFloor.enabled` to `true` in
 `config.json` (or through `PUT /api/config`), or start the server with
-`DUSK_SAFETY_FLOOR=1`, which turns it on whatever the file says.
+`MADANI_SAFETY_FLOOR=1`, which turns it on whatever the file says.
 `GET /api/config` reports whether it is in force as `safetyFloor.enabled`.
 
 **It is not applied on a Windows server yet.** There the setting is accepted
@@ -1046,15 +1046,15 @@ not as a sandbox.
 On a workspace with an email sign-in list naming more than one person or a
 whole `@domain`, or a device paired (or a pairing code open) with chat-only
 access, every admin change is recorded beside the decision log, in `<data dir>/admin-activity/YYYY-MM.ndjson` (0600), and kept for the
-same window (`decisions.retentionDays` / `DUSK_DECISION_RETENTION_DAYS`; a
+same window (`decisions.retentionDays` / `MADANI_DECISION_RETENTION_DAYS`; a
 quiet server prunes on a timer, and pending rows are written out at
 shutdown): settings
 (which keys changed), sign-in lists and people, pairing codes and revoked
 sessions, webhooks, MCP servers, engines and keys, bots created, deleted or
 given different permissions, and who can see a bot.
 Each row names who acted — the session's email or device label, `This
-computer` for the owner, `Command line` for `duskbot` commands such as
-`duskbot access add` — and the values before and after. Values are
+computer` for the owner, `Command line` for `madanibot` commands such as
+`madanibot access add` — and the values before and after. Values are
 redacted: anything under a key that names a credential, every value in a
 headers or environment map, the value after a flag such as `--api-key` or
 `-k`, URL parameters such as `?key=`, a token before a URL's host
@@ -1105,8 +1105,8 @@ umask 077
 BOT_ID=your-bot-id
 THREAD_ID=your-existing-thread-id
 TOKEN=$(openssl rand -hex 32)
-printf '{ "%s": {"token":"%s","threadId":"%s"} }\n' "$BOT_ID" "$TOKEN" "$THREAD_ID" > ~/.duskbot/external-runtimes.json
-chmod 600 ~/.duskbot/external-runtimes.json
+printf '{ "%s": {"token":"%s","threadId":"%s"} }\n' "$BOT_ID" "$TOKEN" "$THREAD_ID" > ~/.madanibot/external-runtimes.json
+chmod 600 ~/.madanibot/external-runtimes.json
 ```
 
 Keep the file private (`600` on Unix; restrict its Windows file permissions).
@@ -1121,8 +1121,8 @@ The runtime runs the bundled MCP bridge from the source checkout with the same
 bot, thread and token (replace the port with your server's actual address):
 
 ```sh
-DUSK_HARNESS_URL=http://127.0.0.1:8799 DUSK_BOT_ID=$BOT_ID DUSK_THREAD_ID=$THREAD_ID \
-  DUSK_COMMS_TOKEN=$TOKEN DUSK_EXTERNAL_RUNTIME=1 \
+MADANI_HARNESS_URL=http://127.0.0.1:8799 MADANI_BOT_ID=$BOT_ID MADANI_THREAD_ID=$THREAD_ID \
+  MADANI_COMMS_TOKEN=$TOKEN MADANI_EXTERNAL_RUNTIME=1 \
   node --experimental-strip-types server/drivers/agents-proxy.ts
 ```
 
@@ -1160,14 +1160,14 @@ and 20 times in one turn. That notice only tells you. The loop guard, which is
 off by default, also tells the bot:
 
 - Set `loopGuard.enabled` to `true` in `config.json` (or through
-  `PUT /api/config`), or start the server with `DUSK_LOOP_GUARD=1`. When the
+  `PUT /api/config`), or start the server with `MADANI_LOOP_GUARD=1`. When the
   same whole shell command fails the same way five times in a row
   (`loopGuard.steerAt`, 2-1000), the server puts one short note into the
   running turn saying so. A command that succeeds, or that fails differently,
   ends the count, so a turn that re-runs its tests after each edit or polls a
   build is left alone.
 - Stopping the turn is a separate choice. Set `loopGuard.stopAt` (2-1000), or
-  `DUSK_LOOP_GUARD_STOP_AT`, and the turn is stopped at that many identical
+  `MADANI_LOOP_GUARD_STOP_AT`, and the turn is stopped at that many identical
   failures in a row, with a line in the chat that names the command and offers
   Retry. Leave it unset and the guard never stops a turn. A wait that fails
   until something is ready (`curl -f` against a server that is still starting)
@@ -1188,15 +1188,15 @@ that succeed. A tool call that was denied is never sent back.
 ## A turn that goes silent
 
 The server stops a turn that has sent it nothing for 20 minutes
-(`DUSK_TURN_STALL_MS`) and says why in the chat. Engines report a tool only
+(`MADANI_TURN_STALL_MS`) and says why in the chat. Engines report a tool only
 when it starts and when it ends, so while one of the turn's tools is still
-running the turn may stay silent for up to `DUSK_TOOL_STALL_MS` (default 2
+running the turn may stay silent for up to `MADANI_TOOL_STALL_MS` (default 2
 hours). Any event from the turn starts the silence over, and time spent waiting
 on a person or a computer never counts. Either way the turn stops with "no
 activity for N minutes".
 
-Both take whole milliseconds. `DUSK_TURN_STALL_MS` is never below 60000 (one
-minute) and `DUSK_TOOL_STALL_MS` never below `DUSK_TURN_STALL_MS`. A value that
+Both take whole milliseconds. `MADANI_TURN_STALL_MS` is never below 60000 (one
+minute) and `MADANI_TOOL_STALL_MS` never below `MADANI_TURN_STALL_MS`. A value that
 is not a positive finite number (empty, `65m`, `0`, a negative number,
 `Infinity`, `1e309`) leaves the default. Set them in the server's environment
 and restart it; the restart stops every running turn.
@@ -1212,12 +1212,12 @@ settings do not change it.
 
 For the npm service, [install the chosen new version](deploy-vps.md#update)
 as the service user while the server is stopped, then start it again.
-For a foreground invocation, `npx --yes duskbot@X.Y.Z serve --tunnel`
+For a foreground invocation, `npx --yes madanibot@X.Y.Z serve --tunnel`
 selects a particular published release; replace `X.Y.Z` with that version.
 
 ```sh
-docker compose -f deploy/docker-compose.yml pull dusk && docker compose -f deploy/docker-compose.yml up -d   # Docker
-git pull && pnpm install && sudo systemctl restart duskbot          # from source
+docker compose -f deploy/docker-compose.yml pull madani && docker compose -f deploy/docker-compose.yml up -d   # Docker
+git pull && pnpm install && sudo systemctl restart madanibot          # from source
 ```
 
 Routines and queued work survive restarts. A teammate turn in flight runs

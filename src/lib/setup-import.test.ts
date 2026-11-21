@@ -63,13 +63,13 @@ describe("looking for another AI tool's setup without holding up the welcome flo
   });
 
   it("looks only from the desktop app's own window on its own server", () => {
-    vi.stubGlobal("window", { duskDesktop: { remoteClient: { active: false } } });
+    vi.stubGlobal("window", { madaniDesktop: { remoteClient: { active: false } } });
     expect(localSetupImport(false)).toBe(true);
     expect(localSetupImport(true)).toBe(false);
-    vi.stubGlobal("window", { duskDesktop: { remoteClient: { active: true } } });
+    vi.stubGlobal("window", { madaniDesktop: { remoteClient: { active: true } } });
     expect(localSetupImport(false)).toBe(false);
     // A server page the desktop app opened gets a bridge without remoteClient, like a browser.
-    vi.stubGlobal("window", { duskDesktop: {} });
+    vi.stubGlobal("window", { madaniDesktop: {} });
     expect(localSetupImport(false)).toBe(false);
     vi.stubGlobal("window", {});
     expect(localSetupImport(false)).toBe(false);

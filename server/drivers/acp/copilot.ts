@@ -288,14 +288,14 @@ const SUPPORT: AcpSupport = {
  * the request when that name is one of its own: "Function 'browser.browser-agent_browser_back' is not allowed in
  * reserved namespace 'browser'" (Copilot CLI 1.0, 2026-11). */
 const OPENAI_RESERVED_NAMESPACES = new Set(["browser"]);
-export const copilotMcpName = (name: string) => OPENAI_RESERVED_NAMESPACES.has(name) ? `duskbot_${name}` : name;
+export const copilotMcpName = (name: string) => OPENAI_RESERVED_NAMESPACES.has(name) ? `madanibot_${name}` : name;
 
 export const CopilotAgentDriver = {
   ...createAcpDriver(SUPPORT),
   /** Creates an instance with thread-isolated launcher config files, removed when the instance is disposed. */
   async create(input: Parameters<ReturnType<typeof createAcpDriver>["create"]>[0]) {
     // Copilot CLI 1.0.105 rejects stdio servers from ACP clients; --additional-mcp-config accepts them from its launcher.
-    const directory = await mkdtemp(join(tmpdir(), "dusk-copilot-mcp-"));
+    const directory = await mkdtemp(join(tmpdir(), "madani-copilot-mcp-"));
     const cleanup = () => rm(directory, { recursive: true, force: true, maxRetries: 5, retryDelay: 100 });
     try {
       const instance = await createAcpDriver({
@@ -308,10 +308,10 @@ export const CopilotAgentDriver = {
             : { type: server.type, url: server.url,
               headers: Object.fromEntries(server.headers.map(({ name, value }) => [name, value])), tools: ["*"] }]));
           writeFileAtomicIfChanged(path, JSON.stringify({ mcpServers: servers }), { mode: 0o600, durable: false });
-          env.DUSK_COPILOT_MCP_CONFIG = path;
+          env.MADANI_COPILOT_MCP_CONFIG = path;
         },
         resolveCommand(env, config) {
-          const path = env.DUSK_COPILOT_MCP_CONFIG;
+          const path = env.MADANI_COPILOT_MCP_CONFIG;
           if (!path) throw new Error("GitHub Copilot's tool configuration was not prepared.");
           return Promise.resolve({ command: config.cli, args: ["--additional-mcp-config", `@${path}`] });
         },

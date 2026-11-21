@@ -30,7 +30,7 @@ describe("webhook credential storage", () => {
 
   it("ignores malformed entries and removes deleted webhooks", () => {
     const store = memoryStore();
-    store.setItem("dusk-webhook-credentials", JSON.stringify({ broken: { url: 3 }, "hook-1": credential }));
+    store.setItem("madani-webhook-credentials", JSON.stringify({ broken: { url: 3 }, "hook-1": credential }));
     expect(loadWebhookCredentials(store)).toEqual({ "hook-1": credential });
     removeWebhookCredential(store, "hook-1");
     expect(loadWebhookCredentials(store)).toEqual({});

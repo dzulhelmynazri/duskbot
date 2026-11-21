@@ -32,7 +32,7 @@ export const DEFAULT_VOICE_PREFS: VoicePrefs = {
   firstRunSeen: false,
 };
 
-export const VOICE_PREFS_KEY = "duskbot.voice-input.v1";
+export const VOICE_PREFS_KEY = "madanibot.voice-input.v1";
 const LANGUAGE = /^[A-Za-z]{2,3}(?:-[A-Za-z0-9]{2,8})*$/;
 
 const text = (value: unknown, max = 500) => (typeof value === "string" ? value.trim().slice(0, max) : "");

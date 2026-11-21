@@ -10,7 +10,7 @@
     "claude code for marketing agency",
     "claude code for marketing automation"
   ],
-  "answer": "**the draft sounds great. the delivery promise is made up.** give a claude code bot the approved facts and ask it to find those gaps before customers do. it can review briefs, compare copy with approved claims and organise a content inventory. in dusk bot, attach the files and text the job. repeat a useful review as a routine.[^1][^2][^3]",
+  "answer": "**the draft sounds great. the delivery promise is made up.** give a claude code bot the approved facts and ask it to find those gaps before customers do. it can review briefs, compare copy with approved claims and organise a content inventory. in madani bot, attach the files and text the job. repeat a useful review as a routine.[^1][^2][^3]",
   "updated": "2026-11-12",
   "review": {
     "status": "approved",
@@ -42,7 +42,7 @@
   "sections": [
     {
       "h": "the brief comes before the copy",
-      "md": "**give it the brief you would give a writer.** attach the product facts, audience, offer, deadline and writing rules. ask what is missing before asking for copy. a missing price should come back as a question.\n\nin dusk, drop files into chat or choose attach files. the work appears in chat and lives in the bot’s folder or your chosen project folder.[^2]\n\nkeep the source packet beside the draft so you can trace each promise."
+      "md": "**give it the brief you would give a writer.** attach the product facts, audience, offer, deadline and writing rules. ask what is missing before asking for copy. a missing price should come back as a question.\n\nin madani, drop files into chat or choose attach files. the work appears in chat and lives in the bot’s folder or your chosen project folder.[^2]\n\nkeep the source packet beside the draft so you can trace each promise."
     },
     {
       "h": "pick one job you can inspect",
@@ -50,15 +50,15 @@
     },
     {
       "h": "get the friday review without remembering to ask",
-      "md": "**a routine can bring you the claims that need a human decision.** name the folder, time and destination. say when to stay quiet and what to do if a file is missing.\n\ntry: \"every friday, read new briefs in the campaign folder. list claims missing from approved-facts.md here. ask before changing anything.\"\n\ndescribe that job in chat to create a dusk routine. its card has edit, pause, undo and next runs. automations holds the calendar and run history.[^3] keep the final send separate, as in the [newsletter workflow](/use-cases/newsletter)."
+      "md": "**a routine can bring you the claims that need a human decision.** name the folder, time and destination. say when to stay quiet and what to do if a file is missing.\n\ntry: \"every friday, read new briefs in the campaign folder. list claims missing from approved-facts.md here. ask before changing anything.\"\n\ndescribe that job in chat to create a madani routine. its card has edit, pause, undo and next runs. automations holds the calendar and run history.[^3] keep the final send separate, as in the [newsletter workflow](/use-cases/newsletter)."
     },
     {
       "h": "claude code has a separate cloud scheduler",
-      "md": "**you may already have the scheduler you need.** as of 12 november 2026, claude code calls its routines cloud scheduled tasks. each saves a prompt, repositories and connectors.\n\nthey can start on a schedule, an api call or a github event. anthropic’s infrastructure runs them, and runs count against plan usage.[^4]\n\nthat may suit a marketing site you manage as code. a dusk routine uses a different setup. the [scheduled-task explainer](/guides/claude-code-routines) separates cloud tasks, local desktop tasks and /loop."
+      "md": "**you may already have the scheduler you need.** as of 12 november 2026, claude code calls its routines cloud scheduled tasks. each saves a prompt, repositories and connectors.\n\nthey can start on a schedule, an api call or a github event. anthropic’s infrastructure runs them, and runs count against plan usage.[^4]\n\nthat may suit a marketing site you manage as code. a madani routine uses a different setup. the [scheduled-task explainer](/guides/claude-code-routines) separates cloud tasks, local desktop tasks and /loop."
     },
     {
       "h": "approval belongs at the point of publishing",
-      "md": "**get the copy ready before giving it a way to publish.** reviewing files needs no social account. connect an app only when the job needs it, with access chosen for that bot.\n\ndusk reads and drafts freely. sends ask first unless you set a daily amount. careful with **Full access**: a bot there with no sending rule can send up to 25 a day without asking. give it **Ask every time**.[^5][^2]\n\npage edits follow different rules. keep access read only or say \"ask me before you change anything\". [social posting](/use-cases/social-media-posting) covers publication."
+      "md": "**get the copy ready before giving it a way to publish.** reviewing files needs no social account. connect an app only when the job needs it, with access chosen for that bot.\n\nmadani reads and drafts freely. sends ask first unless you set a daily amount. careful with **Full access**: a bot there with no sending rule can send up to 25 a day without asking. give it **Ask every time**.[^5][^2]\n\npage edits follow different rules. keep access read only or say \"ask me before you change anything\". [social posting](/use-cases/social-media-posting) covers publication."
     },
     {
       "h": "good writing can still make a bad promise",
@@ -68,7 +68,7 @@
   "faq": [
     {
       "q": "can a non-developer use claude code for marketing?",
-      "a": "**yes, attach a draft and the approved facts.** choose the bot’s ai in dusk and ask it to flag unsupported claims. you can judge the answer against those files.[^1][^2]"
+      "a": "**yes, attach a draft and the approved facts.** choose the bot’s ai in madani and ask it to flag unsupported claims. you can judge the answer against those files.[^1][^2]"
     },
     {
       "q": "will a marketing bot publish without asking?",
@@ -76,20 +76,20 @@
     },
     {
       "q": "will the weekly review run with my laptop shut?",
-      "a": "**local dusk routines stop when the laptop sleeps.** dusk cloud keeps them running. claude code’s own cloud tasks also run away from your laptop, through a separate setup.[^3][^4]"
+      "a": "**local madani routines stop when the laptop sleeps.** madani cloud keeps them running. claude code’s own cloud tasks also run away from your laptop, through a separate setup.[^3][^4]"
     }
   ],
   "sources": [
     {
-      "label": "dusk bot docs: ai and getting started",
+      "label": "madani bot docs: ai and getting started",
       "url": "/docs/getting-started"
     },
     {
-      "label": "dusk bot docs: files and apps",
+      "label": "madani bot docs: files and apps",
       "url": "/docs/files-and-apps"
     },
     {
-      "label": "dusk bot docs: routines",
+      "label": "madani bot docs: routines",
       "url": "/docs/routines"
     },
     {
@@ -98,7 +98,7 @@
       "checked": "2026-11-12"
     },
     {
-      "label": "dusk bot docs: computer",
+      "label": "madani bot docs: computer",
       "url": "/docs/computer"
     }
   ],

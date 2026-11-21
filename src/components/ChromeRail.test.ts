@@ -13,7 +13,7 @@ it("the rail's page draws no places, only what a sheet needs, in the skin of the
   const places = { places: [{ id: "local", name: "This computer", color: null, kind: "computer", opens: true, active: true }, { id: "vps", name: "Office", color: null, kind: "server", opens: true }],
     add: { cloud: false, link: true, address: false } };
   const applySkin = vi.fn(async () => true);
-  Object.assign(window, { duskDesktop: { applySkin, workspaces: { places: vi.fn(async () => places), open: vi.fn(), add: vi.fn(), onChanged: () => () => {} },
+  Object.assign(window, { madaniDesktop: { applySkin, workspaces: { places: vi.fn(async () => places), open: vi.fn(), add: vi.fn(), onChanged: () => () => {} },
     rail: { expand: vi.fn(async () => {}), onSkin: (callback: (skin: string) => void) => { skinOf = callback; return () => {}; } } } });
   const { ChromeRail } = await import("./ChromeRail");
   const { refreshPlaces } = await import("@/lib/places");

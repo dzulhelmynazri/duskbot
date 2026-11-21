@@ -4,7 +4,7 @@
   "title": "An AI agent that uses a computer: how to start",
   "nav": "a bot's computer",
   "h1": "an ai agent that controls a computer for you",
-  "description": "Give a dusk bot its own desktop, watch it work and take the mouse when needed. A practical first task, platform limits and the approval settings explained.",
+  "description": "Give a madani bot its own desktop, watch it work and take the mouse when needed. A practical first task, platform limits and the approval settings explained.",
   "keyword": "ai that can control my computer",
   "keywords": [
     "ai agent to control my pc",
@@ -13,7 +13,7 @@
     "computer use ai agent",
     "ai agent for windows"
   ],
-  "answer": "**hand over the clicking and keep the mouse within reach.** a dusk bot can work through its own browser and desktop on cloud or your server. open screen to watch, take control for a step that needs you, then hand it back. on a mac, you can choose your own screen too. try a public-page lookup first.",
+  "answer": "**hand over the clicking and keep the mouse within reach.** a madani bot can work through its own browser and desktop on cloud or your server. open screen to watch, take control for a step that needs you, then hand it back. on a mac, you can choose your own screen too. try a public-page lookup first.",
   "updated": "2026-11-12",
   "review": {
     "status": "approved",
@@ -93,11 +93,11 @@
     },
     {
       "h": "choose the computer before the access",
-      "md": "**give it a separate desktop, or choose your mac screen on purpose.** dusk runs on macos 12 or later, windows 10 or 11 in 64-bit, and ubuntu 24.04 in beta. only mac offers own-screen control.[^1]\n\nfor a separate desktop:\n\n- dusk cloud: a desktop for each bot. plus keeps a good amount awake; pro is for heavy workloads\n- your own server: a private desktop there\n\nbots, files and memory live there too. work after the lid closes needs an awake host. compare the [places bots can live](/agents-when-laptop-closed)."
+      "md": "**give it a separate desktop, or choose your mac screen on purpose.** madani runs on macos 12 or later, windows 10 or 11 in 64-bit, and ubuntu 24.04 in beta. only mac offers own-screen control.[^1]\n\nfor a separate desktop:\n\n- madani cloud: a desktop for each bot. plus keeps a good amount awake; pro is for heavy workloads\n- your own server: a private desktop there\n\nbots, files and memory live there too. work after the lid closes needs an awake host. compare the [places bots can live](/agents-when-laptop-closed)."
     },
     {
       "h": "watch the first run",
-      "md": "**watch the first answer come together.** choose new bot and give it one job. sign in to the ai you already use. dusk has no model of its own; your provider's terms and bill still apply.\n\nstart on ask for approval. send the public-page request and open screen. replies stream in; a line shows each tool in use.[^1][^3]\n\nwrong page? send a correction. cmd . or ctrl . stops the bot. read the answer beside the page before giving it more work."
+      "md": "**watch the first answer come together.** choose new bot and give it one job. sign in to the ai you already use. madani has no model of its own; your provider's terms and bill still apply.\n\nstart on ask for approval. send the public-page request and open screen. replies stream in; a line shows each tool in use.[^1][^3]\n\nwrong page? send a correction. cmd . or ctrl . stops the bot. read the answer beside the page before giving it more work."
     },
     {
       "h": "take control for sign-ins",
@@ -109,13 +109,13 @@
     },
     {
       "h": "graduate to a file you can replace",
-      "md": "**a proposed filing plan is a better next step than your whole home folder.** attach a copy or drop it in chat. bot output appears there too. locally it lives in the bot's folder or your chosen project folder. cloud copies come down to documents/dusk bot.[^4]\n\ntry [file organisation](/use-cases/file-organizer) as a proposal first. decide what should move after reading it.\n\nschedule a job only once its input and finish are clear. local routines stop during sleep or while dusk is closed. seeing the screen isn't understanding it. look at the answer before you use it."
+      "md": "**a proposed filing plan is a better next step than your whole home folder.** attach a copy or drop it in chat. bot output appears there too. locally it lives in the bot's folder or your chosen project folder. cloud copies come down to documents/madani bot.[^4]\n\ntry [file organisation](/use-cases/file-organizer) as a proposal first. decide what should move after reading it.\n\nschedule a job only once its input and finish are clear. local routines stop during sleep or while madani is closed. seeing the screen isn't understanding it. look at the answer before you use it."
     }
   ],
   "faq": [
     {
       "q": "can an ai agent control my windows pc?",
-      "a": "**use a separate bot desktop with the windows app.** dusk cloud or your server provides it. the app supports windows 10 and 11, 64-bit; own-screen control is mac-only."
+      "a": "**use a separate bot desktop with the windows app.** madani cloud or your server provides it. the app supports windows 10 and 11, 64-bit; own-screen control is mac-only."
     },
     {
       "q": "can i watch the bot and click something myself?",
@@ -132,27 +132,27 @@
   ],
   "sources": [
     {
-      "label": "dusk bot docs: desktop control and approval levels",
+      "label": "madani bot docs: desktop control and approval levels",
       "url": "/docs/computer"
     },
     {
-      "label": "dusk bot docs: supported operating systems and ai sign-in",
+      "label": "madani bot docs: supported operating systems and ai sign-in",
       "url": "/docs/getting-started"
     },
     {
-      "label": "dusk bot docs: creating and steering a bot",
+      "label": "madani bot docs: creating and steering a bot",
       "url": "/docs/bots"
     },
     {
-      "label": "dusk bot docs: attached files and connected apps",
+      "label": "madani bot docs: attached files and connected apps",
       "url": "/docs/files-and-apps"
     },
     {
-      "label": "dusk bot docs: cloud computers",
-      "url": "/docs/dusk-cloud"
+      "label": "madani bot docs: cloud computers",
+      "url": "/docs/madani-cloud"
     },
     {
-      "label": "dusk bot docs: scheduled jobs",
+      "label": "madani bot docs: scheduled jobs",
       "url": "/docs/routines"
     }
   ],

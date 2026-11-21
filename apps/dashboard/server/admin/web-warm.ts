@@ -14,7 +14,7 @@ export const NOW_SLACK_MS = 10 * 60_000;
 const VIEWER_KEEP_MS = 7 * DAY;
 const VIEWER_WRITE_MS = 60 * 60_000;
 
-/** one reader of the panel: its clock (Date#getTimezoneOffset minutes) and its data switches (x-dusk-admin-* headers) */
+/** one reader of the panel: its clock (Date#getTimezoneOffset minutes) and its data switches (x-madani-admin-* headers) */
 export interface WarmViewer { tz: number; data: string; tests: string; money: string }
 export interface WarmStore {
   viewers(since: number): Promise<Array<{ viewer: WarmViewer; seen: number }>>;

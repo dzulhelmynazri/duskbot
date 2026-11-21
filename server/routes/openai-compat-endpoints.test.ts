@@ -71,12 +71,12 @@ describe("added OpenAI-compatible servers", () => {
     expect(requiredScope("DELETE", "/api/instances/openai-compat-1")).toBe("admin");
   });
 
-  it("on dusk cloud, refuses an address only the person's own computer or network reaches, and keeps a public one", async () => {
+  it("on madani cloud, refuses an address only the person's own computer or network reaches, and keeps a public one", async () => {
     const { cfg, persisted, call } = await serve({ cloudHome: true });
     for (const url of ["http://localhost:11434/v1", "http://127.0.0.1:1234/v1", "http://192.168.1.20:8080/v1", "http://my-mac.local:11434/v1"]) {
       const refused = await call("POST", "/api/instances/openai-compat", { ...add, url });
       expect(refused.status, url).toBe(400);
-      expect(refused.body.error).toBe("dusk cloud can't reach an address on your own computer or network. Use a public address.");
+      expect(refused.body.error).toBe("madani cloud can't reach an address on your own computer or network. Use a public address.");
     }
     expect(persisted).toHaveLength(0);
     expect(Object.keys(cfg.instances ?? {}).some((id) => id.startsWith("openai-compat-"))).toBe(false);

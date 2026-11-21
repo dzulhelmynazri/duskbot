@@ -5,7 +5,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { afterAll, beforeAll, expect, it } from "vitest";
-import { launchVerificationServer, runControlDusk } from "../scripts/control-dusk.ts";
+import { launchVerificationServer, runControlMadani } from "../scripts/control-madani.ts";
 import type { WireBot } from "../shared/wire.ts";
 import { HABIT_REMINDER } from "./habit-reminder.ts";
 import { HANDOFF_BRIEF_RULE } from "./handoff-brief.ts";
@@ -17,7 +17,7 @@ type Fixture = Awaited<ReturnType<typeof launchVerificationServer>>;
 let fixture: Fixture, scratch = "", prompts = "", toolCalls = "";
 
 beforeAll(async () => {
-  scratch = mkdtempSync(join(tmpdir(), "dusk-turn-context-"));
+  scratch = mkdtempSync(join(tmpdir(), "madani-turn-context-"));
   prompts = join(scratch, "prompts.jsonl");
   toolCalls = join(scratch, "tool-calls.json");
   // the server's own clock is India time; the person's app says New York
@@ -36,7 +36,7 @@ const api = async <T = any>(path: string, method = "GET", body?: unknown): Promi
   });
   return { status: response.status, body: await response.json() as T };
 };
-const control = (...args: string[]) => runControlDusk([...args, "--url", fixture.info.url]);
+const control = (...args: string[]) => runControlMadani([...args, "--url", fixture.info.url]);
 const sent = (): string[] => {
   try {
     return readFileSync(prompts, "utf8").trim().split("\n").filter(Boolean)

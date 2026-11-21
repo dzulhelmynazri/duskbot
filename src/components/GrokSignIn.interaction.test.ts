@@ -47,7 +47,7 @@ beforeEach(() => {
   vi.clearAllMocks();
   fixture.values = [];
   setLocale("en");
-  vi.stubGlobal("window", { setTimeout, clearTimeout, duskDesktop: { openExternal: fixture.openExternal } });
+  vi.stubGlobal("window", { setTimeout, clearTimeout, madaniDesktop: { openExternal: fixture.openExternal } });
 });
 afterEach(() => { vi.useRealTimers(); vi.unstubAllGlobals(); });
 

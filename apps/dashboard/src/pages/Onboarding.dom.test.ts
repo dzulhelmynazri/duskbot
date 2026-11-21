@@ -16,7 +16,7 @@ vi.mock("../data/cloud", () => ({
   useCloud: () => ({ account: { profile: { name: "Sam", onboarded: false } }, catalog: { ...fixtureCatalog, checkoutOpen: true }, billing: null, clouds: [],
     checkout: state.checkout, updateProfile: async () => {}, finishOnboarding: state.finish }),
 }));
-vi.mock("../data/session", () => ({ useSession: () => ({ account: { id: "a", email: "sam@qa.dusk.test" }, setAccount: () => {}, toast: () => {} }) }));
+vi.mock("../data/session", () => ({ useSession: () => ({ account: { id: "a", email: "sam@qa.madani.test" }, setAccount: () => {}, toast: () => {} }) }));
 vi.mock("../lib/router", () => ({ useLocation: () => ({ path: "/welcome", query: new URLSearchParams(state.query) }), navigate: (path: string) => void state.moved.push(path) }));
 vi.mock("../lib/analytics", () => ({ track: () => {}, trackOnboardingStep: () => {} }));
 vi.mock("../ui/Frame", () => ({ SplitFrame: ({ children }: { children: ReactNode }) => createElement("div", null, children) }));
@@ -38,7 +38,7 @@ async function open() {
 const press = (host: HTMLElement, label: string) => [...host.querySelectorAll("button")].find((b) => b.textContent?.includes(label))!;
 
 test("sent by the app, this computer ends the website's steps on the way back to the app and says so to the account", async () => {
-  sessionStorage.setItem("dusk.fromApp", "1");
+  sessionStorage.setItem("madani.fromApp", "1");
   const host = await open();
   await act(async () => host.querySelector<HTMLInputElement>("#home-free")!.click());
   await act(async () => press(host, "continue with free").click());
@@ -46,8 +46,8 @@ test("sent by the app, this computer ends the website's steps on the way back to
   expect(state.moved.at(-1)).toBe("/app-signed-in?set=1");
 });
 
-test("a plan picked records dusk cloud before the checkout opens, so the app can wait on the payment", async () => {
-  sessionStorage.setItem("dusk.fromApp", "1");
+test("a plan picked records madani cloud before the checkout opens, so the app can wait on the payment", async () => {
+  sessionStorage.setItem("madani.fromApp", "1");
   const host = await open();
   await act(async () => press(host, "checkout").click());
   expect(state.finish).toHaveBeenCalledWith("cloud");

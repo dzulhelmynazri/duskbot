@@ -4,13 +4,13 @@
   "title": "Genspark alternatives: workspace or a team of bots?",
   "nav": "genspark",
   "h1": "genspark alternatives for people who want ongoing bots",
-  "description": "Compare Genspark's workspace and Claw with dusk bot: shared credits, the promotional cloud fee, local mode, chat channels and what each product is for.",
+  "description": "Compare Genspark's workspace and Claw with madani bot: shared credits, the promotional cloud fee, local mode, chat channels and what each product is for.",
   "keyword": "genspark alternative",
   "keywords": [
     "genspark review",
     "genspark alternatives"
   ],
-  "answer": "**keep genspark if its editors are what save you the afternoon.** it brings slides, sheets, documents and media tools together with claw, an assistant in chat apps. dusk fits ongoing jobs with separate memory and ai choices. both offer local and hosted routes. choose around the work you keep doing, then add up the computer and ai bills.[^1][^2][^3][^4]",
+  "answer": "**keep genspark if its editors are what save you the afternoon.** it brings slides, sheets, documents and media tools together with claw, an assistant in chat apps. madani fits ongoing jobs with separate memory and ai choices. both offer local and hosted routes. choose around the work you keep doing, then add up the computer and ai bills.[^1][^2][^3][^4]",
   "updated": "2026-11-12",
   "review": {
     "status": "approved",
@@ -49,7 +49,7 @@
       "**you make things in its workspace.** slides, sheets, documents and media tools belong together for you.",
       "**you want claw in existing chats.** choose its cloud computer or desktop local mode."
     ],
-    "dusk": [
+    "madani": [
       "**you want helpers with distinct jobs.** name each bot and pick its ai.",
       "**you want to choose where memory lives.** pay the ai provider separately from the computer host."
     ]
@@ -59,7 +59,7 @@
     "intro": "**claw’s cheap computer still needs credits to do the work.** prices are as of 12 november 2026. the cloud starting rate is promotional; read the current offer before paying.",
     "cols": [
       "genspark and claw",
-      "dusk bot"
+      "madani bot"
     ],
     "rows": [
       {
@@ -77,7 +77,7 @@
         "label": "places to run",
         "cells": [
           "dedicated always-on cloud computer, or local mode in the desktop app",
-          "your computer, your own server or dusk cloud"
+          "your computer, your own server or madani cloud"
         ],
         "src": [
           1,
@@ -112,7 +112,7 @@
         "label": "cloud fee",
         "cells": [
           "claw cloud computer from $9.99 monthly, promotional; work also uses shared credits",
-          "dusk cloud plus $20 or pro $50 monthly; ai charged separately"
+          "madani cloud plus $20 or pro $50 monthly; ai charged separately"
         ],
         "src": [
           2,
@@ -125,7 +125,7 @@
         "label": "where you message",
         "cells": [
           "claw supports whatsapp, slack, teams, telegram and more, with its own email address",
-          "dusk desktop chats and paired phone browser"
+          "madani desktop chats and paired phone browser"
         ],
         "src": [
           1,
@@ -157,19 +157,19 @@
       }
     ]
   },
-  "method": "**compare a job you do every week before moving your workspace.** we make dusk bot. this comparison uses genspark’s workspace and claw information from 12 november 2026. we did not run matching decks, reports or scheduled jobs.\n\n70+ models tells you the menu, not which one will fix your deck. shared credits and the promotional computer rate also need a real workload before you can price them. renewal pricing remains unknown.",
+  "method": "**compare a job you do every week before moving your workspace.** we make madani bot. this comparison uses genspark’s workspace and claw information from 12 november 2026. we did not run matching decks, reports or scheduled jobs.\n\n70+ models tells you the menu, not which one will fix your deck. shared credits and the promotional computer rate also need a real workload before you can price them. renewal pricing remains unknown.",
   "sections": [
     {
       "h": "what would you miss if you left?",
-      "md": "**if you spend your day in genspark’s editors, keep them.** slides, spreadsheets, documents and media tools sit alongside its agents.[^1] dusk does not have those same editors. [manus alternatives](/alternatives/manus) is another comparison if finished deliverables drive the choice.\n\ndusk is for work that stays with a bot: its job, conversations and memory. change the ai later without starting over.[^10]\n\ntry attaching two planning notes and asking where their dates conflict. you get a file review in chat.[^9] [ai teammates](/ai-teammates) explains how to keep that role going."
+      "md": "**if you spend your day in genspark’s editors, keep them.** slides, spreadsheets, documents and media tools sit alongside its agents.[^1] madani does not have those same editors. [manus alternatives](/alternatives/manus) is another comparison if finished deliverables drive the choice.\n\nmadani is for work that stays with a bot: its job, conversations and memory. change the ai later without starting over.[^10]\n\ntry attaching two planning notes and asking where their dates conflict. you get a file review in chat.[^9] [ai teammates](/ai-teammates) explains how to keep that role going."
     },
     {
       "h": "try local mode before paying for another cloud",
-      "md": "**claw already works without a cloud computer subscription.** its macos and windows desktop app has local mode.[^1] if hosting cost is the whole problem, try that before switching.\n\nlocal mode can reach your files. genspark’s help centre suggests choosing a workspace folder.[^1] in dusk, attach the files or choose a project folder, and keep connected apps read only for inspection.[^9] give either agent a clear working area."
+      "md": "**claw already works without a cloud computer subscription.** its macos and windows desktop app has local mode.[^1] if hosting cost is the whole problem, try that before switching.\n\nlocal mode can reach your files. genspark’s help centre suggests choosing a workspace folder.[^1] in madani, attach the files or choose a project folder, and keep connected apps read only for inspection.[^9] give either agent a clear working area."
     },
     {
       "h": "the cheap computer is only one part of the bill",
-      "md": "**the computer fee is the start of the calculation.** as of 12 november 2026, genspark’s monthly prices include:\n\n- plus from $24.99, with 10,000 monthly credits\n- pro from $249.99, with 125,000 monthly credits\n- claw cloud from a promotional $9.99 monthly, charged separately[^12]\n\nclaw jobs spend those shared credits too.[^2] run your recurring job and look at its credit use before calling the computer cheap.\n\ndusk cloud charges for the computer; your ai provider bills the work.[^4][^5] if that ai allowance runs out, wait for the reset or change ai.[^10]\n\nput both totals into the [agent cost guide](/guides/how-much-does-an-ai-agent-cost). that gives you a bill for your job instead of a contest between headline prices."
+      "md": "**the computer fee is the start of the calculation.** as of 12 november 2026, genspark’s monthly prices include:\n\n- plus from $24.99, with 10,000 monthly credits\n- pro from $249.99, with 125,000 monthly credits\n- claw cloud from a promotional $9.99 monthly, charged separately[^12]\n\nclaw jobs spend those shared credits too.[^2] run your recurring job and look at its credit use before calling the computer cheap.\n\nmadani cloud charges for the computer; your ai provider bills the work.[^4][^5] if that ai allowance runs out, wait for the reset or change ai.[^10]\n\nput both totals into the [agent cost guide](/guides/how-much-does-an-ai-agent-cost). that gives you a bill for your job instead of a contest between headline prices."
     }
   ],
   "faq": [
@@ -182,7 +182,7 @@
       "a": "**scheduled runs consume credits.** a free workspace allowance has limits, and choosing a cloud computer adds its own fee.[^1][^2]"
     },
     {
-      "q": "does dusk offer ai teammates?",
+      "q": "does madani offer ai teammates?",
       "a": "**yes, bots hand work over with mentions in group chats.** use that for ongoing roles with separate jobs and memory.[^11] keep genspark for its workspace editors if those are what you need."
     }
   ],
@@ -198,39 +198,39 @@
       "checked": "2026-11-12"
     },
     {
-      "label": "dusk desktop and ai setup",
+      "label": "madani desktop and ai setup",
       "url": "/docs/getting-started"
     },
     {
-      "label": "dusk personal use and ai billing",
+      "label": "madani personal use and ai billing",
       "url": "/docs/account-and-billing"
     },
     {
-      "label": "dusk cloud machine and plans",
-      "url": "/docs/dusk-cloud"
+      "label": "madani cloud machine and plans",
+      "url": "/docs/madani-cloud"
     },
     {
-      "label": "dusk license faq",
+      "label": "madani license faq",
       "url": "/docs/faq"
     },
     {
-      "label": "dusk phone browser",
+      "label": "madani phone browser",
       "url": "/docs/phone"
     },
     {
-      "label": "dusk routine schedule cards",
+      "label": "madani routine schedule cards",
       "url": "/docs/routines"
     },
     {
-      "label": "dusk files and app permissions",
+      "label": "madani files and app permissions",
       "url": "/docs/files-and-apps"
     },
     {
-      "label": "dusk bots and ai allowance",
+      "label": "madani bots and ai allowance",
       "url": "/docs/bots"
     },
     {
-      "label": "dusk group handoffs",
+      "label": "madani group handoffs",
       "url": "/docs/group-chats"
     },
     {
@@ -243,7 +243,7 @@
     "steps": [
       "name the genspark tool you use most",
       "choose one small task with files you can inspect",
-      "try that same task with one dusk bot",
+      "try that same task with one madani bot",
       "compare corrections needed and the separate bills"
     ]
   },
@@ -264,11 +264,11 @@
       ],
       [
         "separate bot roles and an ai choice for each",
-        "dusk bot"
+        "madani bot"
       ],
       [
         "avoiding a cloud computer subscription",
-        "claw local mode or dusk on your computer"
+        "claw local mode or madani on your computer"
       ]
     ]
   },

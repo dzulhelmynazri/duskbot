@@ -3,7 +3,7 @@ import { syncHelpImprove } from "./help-improve";
 import { configure, feature, screen } from "./product-analytics";
 
 export function startDesktopAnalytics(): void {
-  const bridge = window.duskDesktop;
+  const bridge = window.madaniDesktop;
   if (!bridge) return;
   const platform = bridge.platform;
   if (platform !== "darwin" && platform !== "win32" && platform !== "linux") return;
@@ -14,7 +14,7 @@ export function startDesktopAnalytics(): void {
     return;
   }
   const apply = (staging = false) => configure({
-    origin: import.meta.env.VITE_DUSK_ACCOUNT_ORIGIN || (staging ? "https://preview.dusk.bot" : "https://dusk.bot"),
+    origin: import.meta.env.VITE_MADANI_ACCOUNT_ORIGIN || (staging ? "https://preview.madani.bot" : "https://madani.bot"),
     token: null, platform, version: bridge.app?.version || __APP_VERSION__, kind: "desktop",
   });
   if (bridge.cloudAccount) void bridge.cloudAccount.state().then(state => apply(state.staging === true), () => apply());

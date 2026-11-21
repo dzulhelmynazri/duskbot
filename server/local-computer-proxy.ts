@@ -4,11 +4,11 @@ import { augmentedPath } from "./env-path.ts";
 import { localComputerCallQuery, localComputerRelay, localComputerResultLine } from "./local-computer-guidance.ts";
 
 const {
-  DUSK_CUA_COMMAND: command,
-  DUSK_CUA_ARGS: encodedArgs,
-  DUSK_CUA_PLATFORM: platform,
-  DUSK_CONTROL_URL: url,
-  DUSK_CONTROL_TOKEN: token,
+  MADANI_CUA_COMMAND: command,
+  MADANI_CUA_ARGS: encodedArgs,
+  MADANI_CUA_PLATFORM: platform,
+  MADANI_CONTROL_URL: url,
+  MADANI_CONTROL_TOKEN: token,
   ...childEnv
 } = process.env;
 

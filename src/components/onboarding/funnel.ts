@@ -9,15 +9,15 @@ export type FunnelStep = BeatId;
 export type FunnelPath = "mac" | "cloud";
 
 export interface FunnelFacts {
-  /** a dusk bot account can be signed in to from this window, and isn't yet */
+  /** a madani bot account can be signed in to from this window, and isn't yet */
   account: boolean;
-  /** this is the desktop app's own window, where bots can live on this Mac, in dusk cloud or on a server */
+  /** this is the desktop app's own window, where bots can live on this Mac, in madani cloud or on a server */
   desktop: boolean;
   /** this window can bring in what other AI apps left on this computer (and offer the prompt for ones online) */
   bring?: boolean;
-  /** where the person put the bots; dusk cloud signs in, picks a plan and pays in the browser, then ends on the cloud */
+  /** where the person put the bots; madani cloud signs in, picks a plan and pays in the browser, then ends on the cloud */
   path?: FunnelPath | null;
-  /** the hello screen; false for a server opened from the desktop app, whose person has already met dusk bot there */
+  /** the hello screen; false for a server opened from the desktop app, whose person has already met madani bot there */
   hello?: boolean;
   /** the phone app is offered (phoneAppEnabled) */
   phone?: boolean;
@@ -30,7 +30,7 @@ export interface FunnelFacts {
 }
 
 /** The screens this person gets, in order: the hello, an AI, then the account (when there is none yet), then on the
- * desktop app where the bots live. This Mac goes on to what to bring and, last, the Mac's permissions; dusk cloud goes to
+ * desktop app where the bots live. This Mac goes on to what to bring and, last, the Mac's permissions; madani cloud goes to
  * the browser for its plan and checkout, the AI, what to bring (the cloud's move carries it there), then the cloud being made. */
 export function funnelSteps(facts: FunnelFacts): FunnelStep[] {
   const cloud = facts.desktop && facts.path === "cloud";
@@ -54,14 +54,14 @@ export function nextStep(steps: readonly FunnelStep[], at: FunnelStep): FunnelSt
   return index >= 0 && index + 1 < steps.length ? steps[index + 1]! : null;
 }
 
-/** Back goes one screen back; once dusk cloud is paid for there is no way back to the purchase. */
+/** Back goes one screen back; once madani cloud is paid for there is no way back to the purchase. */
 export function previousStep(steps: readonly FunnelStep[], at: FunnelStep, { paid = false }: { paid?: boolean } = {}): FunnelStep | null {
   const index = steps.indexOf(at);
   const back = index > 0 ? steps[index - 1]! : null;
   return paid && back === "checkout" ? null : back;
 }
 
-/** dusk cloud is paid for: the account's own Cloud is being made, made, or its payment is linking. */
+/** madani cloud is paid for: the account's own Cloud is being made, made, or its payment is linking. */
 export function cloudBought(account: { purchase?: unknown; machine?: { status: string }; clouds?: Array<{ primary: boolean; runsOn: string; status: string }> } | null): boolean {
   if (!account) return false;
   if (account.purchase) return true;
@@ -69,7 +69,7 @@ export function cloudBought(account: { purchase?: unknown; machine?: { status: s
   return account.machine?.status === "provisioning" || account.machine?.status === "ready";
 }
 
-/** The signed-in account already has dusk cloud (bought, or a plan running or on trial that it pays for itself), so the
+/** The signed-in account already has madani cloud (bought, or a plan running or on trial that it pays for itself), so the
  * first run skips where the bots live and its checkout. */
 export function cloudOwned(account: Parameters<typeof cloudBought>[0] & {
   status?: string; entitlement?: { plan: string; status: string }; renewal?: unknown; trial?: unknown;

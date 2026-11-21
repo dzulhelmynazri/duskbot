@@ -49,9 +49,9 @@ export class AdminError extends Error {
 type Auth = ReturnType<typeof createAuth>;
 type Billing = ReturnType<typeof createBilling>;
 export interface AdminOptions {
-  /** DUSK_ADMIN_EMAILS: the accounts allowed in, by email; empty lets nobody in */
+  /** MADANI_ADMIN_EMAILS: the accounts allowed in, by email; empty lets nobody in */
   emails: string[];
-  /** DUSK_GROWTH_ADMIN_EMAILS: accounts that get the growth role without a grant from the panel */
+  /** MADANI_GROWTH_ADMIN_EMAILS: accounts that get the growth role without a grant from the panel */
   growthEmails?: string[];
   auth: Auth;
   billing: Billing;
@@ -63,7 +63,7 @@ export interface AdminOptions {
   /** the slack edge's measured cloud wake times by desktop kind */
   wakeStats?: () => Partial<Record<string, { medianMs: number; p90Ms: number; samples: number }>>;
   waitlist: WaitlistSource | null;
-  /** another service's analytics, read only, shown by default (preview's admin reads dusk.bot's); x-dusk-admin-data: own shows this service's */
+  /** another service's analytics, read only, shown by default (preview's admin reads madani.bot's); x-madani-admin-data: own shows this service's */
   live?: LiveData | null;
   now: () => number;
   fetch?: typeof fetch;
@@ -111,11 +111,11 @@ export function createAdmin(options: AdminOptions) {
   const allowed = new Set(options.emails.map(email => email.toLowerCase()));
   const growthByEmail = new Set((options.growthEmails ?? []).map(email => email.toLowerCase()));
   const env = options.env ?? process.env;
-  const brevo = brevoChecker({ apiKey: env.DUSK_BREVO_API_KEY, listId: env.DUSK_BREVO_WAITLIST_LIST_ID, fetch: options.fetch, now });
-  const targets = healthTargets(env.DUSK_ADMIN_HEALTH_URLS);
+  const brevo = brevoChecker({ apiKey: env.MADANI_BREVO_API_KEY, listId: env.MADANI_BREVO_WAITLIST_LIST_ID, fetch: options.fetch, now });
+  const targets = healthTargets(env.MADANI_ADMIN_HEALTH_URLS);
   const actor = (id: string) => auth.directory().accounts.find(account => account.id === id)?.email ?? null;
   const deep = createAnalyticsRoutes({ auth, billing, analytics, workspaces: options.workspaces, now, actor });
-  const reviewEmail = env.DUSK_REVIEW_EMAIL?.trim().toLowerCase() || null;
+  const reviewEmail = env.MADANI_REVIEW_EMAIL?.trim().toLowerCase() || null;
 
   /** which data the analytics pages read: this service's, or the live service's (its events, daily counts and accounts;
    *  no money, clouds, devices or workspaces, which stay on its own admin). the waitlist pairs with the live site only. */
@@ -176,10 +176,10 @@ export function createAdmin(options: AdminOptions) {
     billing: { store: { state: NO_MONEY }, operator: { provider: "none" }, service: { setAttribution() { /* never writes the live service's billing */ } } } as unknown as Billing,
     analytics: { ...analytics, sink, presence: { ...analytics.presence, list: () => [] } }, workspaces: () => [], now,
     actor: id => liveDirectory.accounts.find(account => account.id === id)?.email ?? null }));
-  /** test accounts stay out unless the panel asks for them (x-dusk-admin-tests: show) */
-  const showTests = (req: IncomingMessage) => req.headers["x-dusk-admin-tests"] === "show";
+  /** test accounts stay out unless the panel asks for them (x-madani-admin-tests: show) */
+  const showTests = (req: IncomingMessage) => req.headers["x-madani-admin-tests"] === "show";
   const serverMode = () => billing.operator.mode ?? "live";
-  /** the view with only one mode's money in it (x-dusk-admin-money, live by default), so test checkouts never read as revenue */
+  /** the view with only one mode's money in it (x-madani-admin-money, live by default), so test checkouts never read as revenue */
   const moneyViews = new Map<string, View>();
   function inMoney(base: View, key: string, money: MoneyView): View {
     const cached = moneyViews.get(`${key}:${money}`);
@@ -190,18 +190,18 @@ export function createAdmin(options: AdminOptions) {
     moneyViews.set(`${key}:${money}`, view);
     return view;
   }
-  const ownViewOf = (req: IncomingMessage, money: MoneyView = moneyViewOf(req.headers["x-dusk-admin-money"])) =>
+  const ownViewOf = (req: IncomingMessage, money: MoneyView = moneyViewOf(req.headers["x-madani-admin-money"])) =>
     showTests(req) ? inMoney(ownView, "own", money) : inMoney(ownClean, "clean", money);
   async function viewOf(req: IncomingMessage): Promise<View> {
-    if (!liveView || req.headers["x-dusk-admin-data"] === "own") return ownViewOf(req);
+    if (!liveView || req.headers["x-madani-admin-data"] === "own") return ownViewOf(req);
     liveDirectory = { accounts: await live!.accounts(), identities: [], sessions: [] };
     return showTests(req) ? liveView : liveClean!;
   }
 
-  /** what the v2 routes read: the live service's (preview reading dusk.bot, read only) unless the panel asked for its own */
+  /** what the v2 routes read: the live service's (preview reading madani.bot, read only) unless the panel asked for its own */
   async function sourceOf(req: IncomingMessage): Promise<V2Source> {
     const tests = showTests(req);
-    if (live && req.headers["x-dusk-admin-data"] !== "own") {
+    if (live && req.headers["x-madani-admin-data"] !== "own") {
       const [accounts, identities, money] = await Promise.all([live.accounts(), live.identities?.() ?? Promise.resolve([]), live.money?.() ?? Promise.resolve(NO_MONEY as Money)]);
       const hidden: ReadonlySet<string> = tests ? NONE : new Set([...testAccountIds(accounts, reviewEmail), ...testBuyerIds(money.checkouts, reviewEmail)]);
       liveDirectory = { accounts, identities: [], sessions: [] };
@@ -218,7 +218,7 @@ export function createAdmin(options: AdminOptions) {
     try {
       const source = await sourceOf(req), time = now();
       if (route === "/v2/overview") return await overviewV2(source, url, time);
-      if (route === "/v2/people") return await peopleV2(source, url, time, moneyViewOf(req.headers["x-dusk-admin-money"]));
+      if (route === "/v2/people") return await peopleV2(source, url, time, moneyViewOf(req.headers["x-madani-admin-money"]));
       if (route === "/v2/payments") return paymentsV2(source, url, time);
       const person = /^\/v2\/people\/([^/]{1,100})$/.exec(route);
       if (person) {
@@ -234,7 +234,7 @@ export function createAdmin(options: AdminOptions) {
     throw new AdminError(404, "not_found", "Route not found.");
   }
 
-  /** a full admin by DUSK_ADMIN_EMAILS, or the limited role the owner granted on the account */
+  /** a full admin by MADANI_ADMIN_EMAILS, or the limited role the owner granted on the account */
   function roleOf(account: Pick<Account, "email" | "adminRole">): PanelRole | null {
     if (allowed.has(account.email.toLowerCase())) return "owner";
     if (growthByEmail.has(account.email.toLowerCase())) return "growth";
@@ -582,7 +582,7 @@ export function createAdmin(options: AdminOptions) {
   }
   const switchesOf = (req: IncomingMessage) => {
     const header = (name: string) => String(req.headers[name] ?? "");
-    return { data: header("x-dusk-admin-data"), tests: header("x-dusk-admin-tests"), money: header("x-dusk-admin-money") };
+    return { data: header("x-madani-admin-data"), tests: header("x-madani-admin-tests"), money: header("x-madani-admin-money") };
   };
   /** one question: the path, its query (a `to` within 10 minutes of now reads as now, so every "until now" view shares one answer) and the panel's switches */
   function readKey(url: URL, switches: { data: string; tests: string; money: string }) {
@@ -593,12 +593,12 @@ export function createAdmin(options: AdminOptions) {
     return `${url.pathname}?${new URLSearchParams(params as Array<[string, string]>)}|${switches.data}|${switches.tests}|${switches.money}`;
   }
   const requestWith = (switches: { data: string; tests: string; money: string }) => ({ headers: Object.fromEntries(
-    Object.entries({ "x-dusk-admin-data": switches.data, "x-dusk-admin-tests": switches.tests, "x-dusk-admin-money": switches.money }).filter(([, value]) => value)) }) as unknown as IncomingMessage;
+    Object.entries({ "x-madani-admin-data": switches.data, "x-madani-admin-tests": switches.tests, "x-madani-admin-money": switches.money }).filter(([, value]) => value)) }) as unknown as IncomingMessage;
   const warmer = options.warm ? createWebWarmer({ store: options.warm.store, reads, now, everyMs: options.warm.everyMs ?? 10 * 60_000, keepMs: (options.readCacheMs ?? 30_000) + STALE_MS,
     keyOf: (viewer, url) => readKey(url, viewer), answer: async (viewer, urls) => (await viewOf(requestWith(viewer))).deep.webMany(urls) }) : null;
   void warmer?.start();
   /** the view whose live numbers (online now) a request reads, without reloading the live service's accounts */
-  const onlineViewOf = (req: IncomingMessage) => !liveView || req.headers["x-dusk-admin-data"] === "own" ? ownViewOf(req) : showTests(req) ? liveView : liveClean!;
+  const onlineViewOf = (req: IncomingMessage) => !liveView || req.headers["x-madani-admin-data"] === "own" ? ownViewOf(req) : showTests(req) ? liveView : liveClean!;
 
   async function handle(req: IncomingMessage, res: ServerResponse, url: URL): Promise<boolean> {
     const path = url.pathname, method = req.method ?? "GET";
@@ -670,7 +670,7 @@ export function createAdmin(options: AdminOptions) {
         if (!options.waitlist) throw new AdminError(404, "not_found", "The waitlist is not connected.");
         const entries = await options.waitlist.all();
         await audit(owner.id, "waitlist.export", null, { rows: entries.length });
-        res.writeHead(200, { "content-type": "text/csv; charset=utf-8", "cache-control": "no-store", "content-disposition": `attachment; filename="dusk-waitlist-${dayKey(now())}.csv"`, "x-content-type-options": "nosniff" });
+        res.writeHead(200, { "content-type": "text/csv; charset=utf-8", "cache-control": "no-store", "content-disposition": `attachment; filename="madani-waitlist-${dayKey(now())}.csv"`, "x-content-type-options": "nosniff" });
         res.end(waitlistCsv(entries));
         return true;
       }

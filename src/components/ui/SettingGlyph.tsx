@@ -2,7 +2,7 @@ import { cn } from "@/lib/cn";
 
 /* Settings' row and rail marks: pixel glyphs on a 12 by 12 grid, drawn at 2px a cell. Each has its own silhouette and its own
    brand colour (lilac, pink, lemon, lime, sky, peach): "#" is the deep line, and any empty cell the line closes in is filled
-   with the soft tint, like dusk's pixel art. A row is a string; "#" is ink, "." is empty. */
+   with the soft tint, like madani's pixel art. A row is a string; "#" is ink, "." is empty. */
 const GLYPHS = {
   import: [
     "............",

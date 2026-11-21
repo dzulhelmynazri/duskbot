@@ -33,7 +33,7 @@
     "src",
     "vite.config.ts",
     "capacitor.config.ts",
-    "../../src/types/duskDesktop.d.ts",
+    "../../src/types/madaniDesktop.d.ts",
     "../../src/novnc.d.ts"
   ]
 }

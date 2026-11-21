@@ -36,7 +36,7 @@ export function BuiltInBrowserRow() {
   const browser = builtInBrowserEnabled(state.config);
   const desktopBrowser = browserAvailable(state.config);
   const browserInstallable = state.config?.browserEngine?.installable === true;
-  const browserBlockedOnWindows = window.duskDesktop?.platform === "win32" && !desktopBrowser && !browserInstallable;
+  const browserBlockedOnWindows = window.madaniDesktop?.platform === "win32" && !desktopBrowser && !browserInstallable;
   const { saving, error, save } = useConfigSave();
 
   return (
@@ -63,7 +63,7 @@ export function BuiltInBrowserRow() {
 }
 
 /** Self-hosted servers only, for the owner: browserEngine.egress.localNetwork lets bots' browsers open this server's
- * own sites and its local network. dusk bot's own ports, cloud metadata and link-local addresses stay closed. */
+ * own sites and its local network. madani bot's own ports, cloud metadata and link-local addresses stay closed. */
 export function ServerSitesRow() {
   const { state } = useStore();
   const owner = useOwnerOrAdmin();

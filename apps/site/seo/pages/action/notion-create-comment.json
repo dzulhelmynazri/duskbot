@@ -11,11 +11,11 @@
     "claude notion discussion reply",
     "ai post notion review comment"
   ],
-  "answer": "**put the review question where the document owner will actually see it.** the bot can leave a notion page comment or reply in an existing discussion. it cannot start a new inline thread on a block. draft the wording in dusk chat, choose the page or thread, and keep sending on **Ask every time** so posting waits for you.",
+  "answer": "**put the review question where the document owner will actually see it.** the bot can leave a notion page comment or reply in an existing discussion. it cannot start a new inline thread on a block. draft the wording in madani chat, choose the page or thread, and keep sending on **Ask every time** so posting waits for you.",
   "updated": "2026-11-12",
   "review": {
     "status": "approved",
-    "by": "lead agent, after two independent reviewer passes, against dusk bot docs and the composio catalog",
+    "by": "lead agent, after two independent reviewer passes, against madani bot docs and the composio catalog",
     "at": "2026-11-12"
   },
   "tags": [
@@ -73,20 +73,20 @@
     },
     {
       "q": "can i keep the feedback private until i approve?",
-      "a": "**prepare it in dusk chat first.** set sending to ask every time. posting is the step that puts the note in notion."
+      "a": "**prepare it in madani chat first.** set sending to ask every time. posting is the step that puts the note in notion."
     }
   ],
   "sources": [
     {
-      "label": "dusk bot docs: files and apps",
+      "label": "madani bot docs: files and apps",
       "url": "/docs/files-and-apps"
     },
     {
-      "label": "dusk bot docs: routines",
+      "label": "madani bot docs: routines",
       "url": "/docs/routines"
     },
     {
-      "label": "dusk bot docs: a bot's computer",
+      "label": "madani bot docs: a bot's computer",
       "url": "/docs/computer"
     }
   ],

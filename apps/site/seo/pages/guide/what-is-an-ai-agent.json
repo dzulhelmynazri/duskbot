@@ -53,12 +53,12 @@
       "md": "**tell it what finished looks like.** 'help me get organised' leaves almost every decision open. try this brief instead.\n\n- **goal:** make a reading index\n- **material:** use this exact folder\n- **boundary:** leave originals alone and report unreadable files\n- **result:** group source names by subject in the chat\n\nnow you can compare the index with the folder. if a source is missing, ask why. keep the first result small enough to read in a few minutes."
     },
     {
-      "h": "where dusk fits",
-      "md": "**keep a bot that remembers the job for next time.** dusk is a desktop app for a small team you text like teammates. each bot has its own job and memory; you choose its name and ai.[^1]\n\ndusk has no model of its own. it runs vendors' official command-line apps where your bots live. your chosen ai does the thinking.[^1][^2]\n\ndrop files into chat or use **attach files**. results appear there and live in the bot's folder or your chosen project folder.[^2] start with a folder. don't hand it your inbox on day one."
+      "h": "where madani fits",
+      "md": "**keep a bot that remembers the job for next time.** madani is a desktop app for a small team you text like teammates. each bot has its own job and memory; you choose its name and ai.[^1]\n\nmadani has no model of its own. it runs vendors' official command-line apps where your bots live. your chosen ai does the thinking.[^1][^2]\n\ndrop files into chat or use **attach files**. results appear there and live in the bot's folder or your chosen project folder.[^2] start with a folder. don't hand it your inbox on day one."
     },
     {
       "h": "access is one choice; repetition is another",
-      "md": "**a useful first job can live inside one folder.** add an app when the task needs it, then look at the actions its connection gives the bot.\n\nthe [mcp guide](/guides/what-is-mcp) explains one way apps connect to tools. every extra permission should have a job to do.\n\nin dusk, a routine repeats a job you describe once. local routines stop when the app closes or the computer sleeps.[^3] [scheduled ai tasks](/scheduled-ai-tasks) covers hosting. a finished reading index may never need a weekly schedule."
+      "md": "**a useful first job can live inside one folder.** add an app when the task needs it, then look at the actions its connection gives the bot.\n\nthe [mcp guide](/guides/what-is-mcp) explains one way apps connect to tools. every extra permission should have a job to do.\n\nin madani, a routine repeats a job you describe once. local routines stop when the app closes or the computer sleeps.[^3] [scheduled ai tasks](/scheduled-ai-tasks) covers hosting. a finished reading index may never need a weekly schedule."
     },
     {
       "h": "read the result beside the source",
@@ -81,15 +81,15 @@
   ],
   "sources": [
     {
-      "label": "dusk bot docs: getting started and the ai",
+      "label": "madani bot docs: getting started and the ai",
       "url": "/docs/getting-started"
     },
     {
-      "label": "dusk bot docs: files and apps",
+      "label": "madani bot docs: files and apps",
       "url": "/docs/files-and-apps"
     },
     {
-      "label": "dusk bot docs: routines",
+      "label": "madani bot docs: routines",
       "url": "/docs/routines"
     }
   ],

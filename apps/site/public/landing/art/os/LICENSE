@@ -3,7 +3,7 @@ platform marks in this folder
 apple.svg: simple-icons (https://simpleicons.org), cc0 1.0
 windows.svg, linux.svg, android.svg: gilbarbara/logos (https://github.com/gilbarbara/logos), cc0 1.0
 
-the marks themselves are trademarks of their owners and are used only to name the platforms dusk bot runs on.
+the marks themselves are trademarks of their owners and are used only to name the platforms madani bot runs on.
 
 linux-mono.svg, android-mono.svg: simple-icons (https://simpleicons.org), cc0 1.0, single colour for the hero pill
 windows-mono.svg: windows.svg with its fill dropped, so it takes the text colour

@@ -7,7 +7,7 @@ order: 4
 art: s-server
 ---
 
-if you would rather not use [dusk cloud](/docs/dusk-cloud) and you're comfortable with a server, your bots can live on one you rent. it's free; you pay only for the server, and the updates, backups and bill are yours.
+if you would rather not use [madani cloud](/docs/madani-cloud) and you're comfortable with a server, your bots can live on one you rent. it's free; you pay only for the server, and the updates, backups and bill are yours.
 
 ## what you need
 
@@ -30,25 +30,25 @@ stopped half way? paste the same line again; it picks up where it left off. line
 
 ## another computer
 
-on the server, run `duskbot pair --label desktop`. in the app on the other computer, choose **add a cloud or your own server**, then **already running dusk bot?**, and paste everything it printed. a server set up before this command existed gets it with its next update; until then use `sudo -u dusk /home/dusk/.local/bin/duskbot pair --label desktop`.
+on the server, run `madanibot pair --label desktop`. in the app on the other computer, choose **add a cloud or your own server**, then **already running madani bot?**, and paste everything it printed. a server set up before this command existed gets it with its next update; until then use `sudo -u madani /home/madani/.local/bin/madanibot pair --label desktop`.
 
 if it prints only a code and no link, the server has no address of its own (it's linked through the private relay). then make a line in the other computer's app and paste it on the server instead: the server moves its link to that computer, and the first one stops reaching it.
 
 ## read it before you run it
 
 ```sh
-curl -fsSLo install.sh https://dusk.bot/install.sh
-curl -fsSL https://dusk.bot/install.sh.sha256
+curl -fsSLo install.sh https://madani.bot/install.sh
+curl -fsSL https://madani.bot/install.sh.sha256
 shasum -a 256 install.sh
 less install.sh
 ```
 
-the two fingerprints should match. your app and server talk through a relay at `link.dusk.bot`, sealed with a key only they hold, and directly where they can.
+the two fingerprints should match. your app and server talk through a relay at `link.madani.bot`, sealed with a key only they hold, and directly where they can.
 
 ## removing it
 
 move your bots back or export a [backup](/docs/privacy-and-data#backups) first, then:
 
 ```sh
-curl -fsSL https://link.dusk.bot/uninstall | sh
+curl -fsSL https://link.madani.bot/uninstall | sh
 ```

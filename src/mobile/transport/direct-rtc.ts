@@ -2,10 +2,10 @@
 // server's link agent, carrying the same sealed byte stream as the desktop's direct paths (direct-records.ts). the offer
 // and answer travel as one sealed control op ("direct-rtc") over the phone's relay channel, so the dtls fingerprints in
 // them come from the two ends that hold the channel key; the agent then reads only frames sealed with that key. stun
-// finds the way, plus cloudflare's turn when the phone is signed in to its dusk account. no port is opened anywhere.
+// finds the way, plus cloudflare's turn when the phone is signed in to its madani account. no port is opened anywhere.
 
 /** shared with electron/vps-link-rtc.mjs and apps/link-service/agent.mjs */
-export const RTC_LABEL = "dusk-link";
+export const RTC_LABEL = "madani-link";
 /** a write goes out in messages this size: every webrtc stack takes 64 KB */
 export const RTC_PIECE = 64 * 1024;
 export const RTC_STUN = ["stun:stun.cloudflare.com:3478", "stun:stun.l.google.com:19302"];

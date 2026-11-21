@@ -27,7 +27,7 @@ export interface CallPrefs {
   transcript: boolean;
 }
 
-const KEY = "duskbot.voiceCall.v1";
+const KEY = "madanibot.voiceCall.v1";
 const DEFAULTS: CallPrefs = { voices: {}, speed: 1, transcript: true };
 
 function read(): CallPrefs {

@@ -1,19 +1,19 @@
 // The person's journey with app events in a real browser against a real server (temporary home, scripted engine, the
 // connected-apps service's code behind a fake Composio): set one up from chat and from + New, see its sentence, its
 // events and what it skipped, pause, resume, reconnect and delete. Runs where a Chromium and playwright-core are named:
-//   DUSK_UI_CHROMIUM=<chrome or headless shell> DUSK_UI_PLAYWRIGHT_CORE=<playwright-core dir> DUSK_UI_DIST=<vite build dir>
-//   [DUSK_UI_SHOTS=<folder for screenshots>] vitest run server/app-events.ui.e2e.test.ts
+//   MADANI_UI_CHROMIUM=<chrome or headless shell> MADANI_UI_PLAYWRIGHT_CORE=<playwright-core dir> MADANI_UI_DIST=<vite build dir>
+//   [MADANI_UI_SHOTS=<folder for screenshots>] vitest run server/app-events.ui.e2e.test.ts
 import { createRequire } from "node:module";
 import { mkdirSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterAll, beforeAll, expect, it, vi } from "vitest";
 import { WELCOME_VERSION } from "../electron/onboarding-record.mjs";
-import { launchVerificationServer, runControlDusk } from "../scripts/control-dusk.ts";
+import { launchVerificationServer, runControlMadani } from "../scripts/control-madani.ts";
 import { startBrokerFake, type BrokerFake } from "./testing/broker-fake.ts";
 
-const { DUSK_UI_CHROMIUM: chromiumPath, DUSK_UI_PLAYWRIGHT_CORE: playwrightPath, DUSK_UI_DIST: dist } = process.env;
-const shots = process.env.DUSK_UI_SHOTS ?? join(tmpdir(), "duskbot-verification-evidence", "automations-app-events");
+const { MADANI_UI_CHROMIUM: chromiumPath, MADANI_UI_PLAYWRIGHT_CORE: playwrightPath, MADANI_UI_DIST: dist } = process.env;
+const shots = process.env.MADANI_UI_SHOTS ?? join(tmpdir(), "madanibot-verification-evidence", "automations-app-events");
 const ready = Boolean(chromiumPath && playwrightPath && dist);
 
 let broker: BrokerFake;
@@ -30,7 +30,7 @@ beforeAll(async () => {
   owner = await broker.install();
   gmail = broker.account(owner.userId, "gmail", "sales");
   broker.account(owner.userId, "slack");
-  fixture = await launchVerificationServer({ ...process.env, DUSK_COMPOSIO_BROKER_URL: broker.url, DUSK_COMPOSIO_BROKER_TOKEN: owner.token },
+  fixture = await launchVerificationServer({ ...process.env, MADANI_COMPOSIO_BROKER_URL: broker.url, MADANI_COMPOSIO_BROKER_TOKEN: owner.token },
     undefined, undefined, undefined, { scripted: true }, [], dist);
   const { chromium } = createRequire(join(playwrightPath!, "package.json"))("playwright-core");
   // A mock keychain keeps the test browser from asking the person's macOS keychain for anything.
@@ -46,7 +46,7 @@ afterAll(async () => {
 });
 
 it.skipIf(!ready)("sets one up from chat and from + New, shows its sentence and events, pauses, resumes, asks to reconnect and deletes", async () => {
-  const cli = (...args: string[]) => runControlDusk([...args, "--url", fixture.info.url]) as Promise<any>;
+  const cli = (...args: string[]) => runControlMadani([...args, "--url", fixture.info.url]) as Promise<any>;
   const api = async (method: string, path: string, body?: unknown) => (await fetch(`${fixture.info.url}${path}`, {
     method, headers: { "content-type": "application/json", origin: fixture.info.url }, ...(body === undefined ? {} : { body: JSON.stringify(body) }),
   })).json() as Promise<any>;

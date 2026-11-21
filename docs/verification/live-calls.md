@@ -29,9 +29,9 @@ workspace. Nothing here touches audio, a real OpenAI key or a phone.
 
 Live calls need no plan, from any client: the desktop app, a web browser, or a
 phone through the companion. Each call uses the person's own OpenAI key: the
-separate Live key when one is saved (`live.key`, `DUSK_OPENAI_LIVE_KEY`, or the
+separate Live key when one is saved (`live.key`, `MADANI_OPENAI_LIVE_KEY`, or the
 desktop credential `openaiLiveKey`), else the OpenAI API key from Settings →
-API keys (`openai.key`, `DUSK_OPENAI_API_KEY`); `liveCallKey` in
+API keys (`openai.key`, `MADANI_OPENAI_API_KEY`); `liveCallKey` in
 `server/live-settings.ts`. `GET /api/config` reports `live.configured` and
 `live.keySource` (`live` or `openai`), never the key. Without either key,
 `POST /api/live/session` answers
@@ -53,16 +53,16 @@ then wins; neither key appears in the config or the log.
 
 ## Azure OpenAI as the Live provider
 
-With `live.provider: "azure"` (`DUSK_LIVE_PROVIDER=azure`) a call creates its
+With `live.provider: "azure"` (`MADANI_LIVE_PROVIDER=azure`) a call creates its
 GPT-Live session on the person's Azure OpenAI / Foundry resource:
 `POST {endpoint}/openai/v1/live/sessions` with the deployment name
-(`live.azureDeployment`, `DUSK_AZURE_OPENAI_LIVE_DEPLOYMENT`, default
+(`live.azureDeployment`, `MADANI_AZURE_OPENAI_LIVE_DEPLOYMENT`, default
 `gpt-live-1`) as `session.model`, and the sideband attaches to
 `wss://{endpoint}/openai/v1/live/sessions/{id}/attach`. Both send the resource
 key as `api-key`, never as a bearer token, and the session request refuses a
 redirect, since `fetch` would carry `api-key` to another host. The key is only
 `live.key`; the OpenAI API key is never used for Azure. `live.azureEndpoint`
-(`DUSK_AZURE_OPENAI_LIVE_ENDPOINT`) must be `https` on an Azure OpenAI host
+(`MADANI_AZURE_OPENAI_LIVE_ENDPOINT`) must be `https` on an Azure OpenAI host
 (`azureOpenAiRoot` in `server/live-call.ts`), and `PATCH /api/live/settings`
 refuses any other.
 
@@ -74,8 +74,8 @@ Service or changing the endpoint's host, through `PATCH /api/live/settings` or
 back (`liveSavePatch`). A new path or deployment on the same host keeps it.
 `keyFor` is never taken from a request. A key saved with Azure chosen and no
 endpoint answers `400`. A key with no `keyFor` is from before Azure was offered,
-so OpenAI's. In the environment, `DUSK_OPENAI_LIVE_KEY` with `DUSK_LIVE_PROVIDER=azure`
-and `DUSK_AZURE_OPENAI_LIVE_ENDPOINT` is the operator's own pairing, unless the
+so OpenAI's. In the environment, `MADANI_OPENAI_LIVE_KEY` with `MADANI_LIVE_PROVIDER=azure`
+and `MADANI_AZURE_OPENAI_LIVE_ENDPOINT` is the operator's own pairing, unless the
 file already says where the key may go. So a key the app forgot stays forgotten
 until one is saved again, including the desktop's copy in the OS store, and a
 different key in the environment takes no pairing from the file.
@@ -157,17 +157,17 @@ standalone fake cannot be scripted from the shell, so nothing is asked on it:
 node --experimental-strip-types server/testing/fake-openai-live.ts
 # terminal 2: the renderer fixture, pointed at it (the key only ever reaches
 # the fake)
-DUSK_OPENAI_LIVE_URL=http://127.0.0.1:FAKE_PORT DUSK_OPENAI_LIVE_KEY=sk-fake \
-  node --experimental-strip-types scripts/control-dusk.ts ui launch
+MADANI_OPENAI_LIVE_URL=http://127.0.0.1:FAKE_PORT MADANI_OPENAI_LIVE_KEY=sk-fake \
+  node --experimental-strip-types scripts/control-madani.ts ui launch
 # terminal 3, with the url, botId and ui handle it prints
-pnpm control:dusk messages --bot BOT_ID --url http://127.0.0.1:PORT
+pnpm control:madani messages --bot BOT_ID --url http://127.0.0.1:PORT
 curl -s -X POST http://127.0.0.1:PORT/api/live/session -H 'content-type: application/json' \
   -d '{"botId":"BOT_ID","sdp":"v=0\r\no=- 1 1 IN IP4 127.0.0.1\r\n","client":"desktop"}'
 curl -s http://127.0.0.1:PORT/api/live/call
 curl -s -X POST http://127.0.0.1:PORT/api/live/call/end -H 'content-type: application/json' \
   -d '{"callId":"CALL_ID"}'
-pnpm control:dusk ui wait-settle --ui /tmp/duskbot-verify-data-XXXXXX/ui.json --timeout 60
-pnpm control:dusk ui snapshot --ui /tmp/duskbot-verify-data-XXXXXX/ui.json
+pnpm control:madani ui wait-settle --ui /tmp/madanibot-verify-data-XXXXXX/ui.json --timeout 60
+pnpm control:madani ui snapshot --ui /tmp/madanibot-verify-data-XXXXXX/ui.json
 curl -s "http://127.0.0.1:PORT/api/threads/THREAD_ID/messages?limit=20"
 ```
 
@@ -182,7 +182,7 @@ no `title`, because nothing was asked; and the snapshot's transcript has
 
 ## Gotchas
 
-- `pnpm control:dusk messages` projects a fixed set of fields: it shows the
+- `pnpm control:madani messages` projects a fixed set of fields: it shows the
   row's `kind` and its text, but not `via`, `callId` or `call`. Read the last
   command above for those.
 - Only generated thread titles name a call (`features.llmThreadTitles`; see
@@ -196,9 +196,9 @@ no `title`, because nothing was asked; and the snapshot's transcript has
   upgrade and the retry is accepted.
 - Only one call runs at a time: while one is open, another start answers `409`.
   End a call a failed run left open, or restart the fixture.
-- `DUSK_OPENAI_LIVE_URL` crosses into a fixture only when it is a loopback
-  `http://127.0.0.1:PORT`, and `DUSK_OPENAI_LIVE_KEY` only with it.
-- Without `DUSK_OPENAI_LIVE_KEY` the fixture answers every start with `409`
+- `MADANI_OPENAI_LIVE_URL` crosses into a fixture only when it is a loopback
+  `http://127.0.0.1:PORT`, and `MADANI_OPENAI_LIVE_KEY` only with it.
+- Without `MADANI_OPENAI_LIVE_KEY` the fixture answers every start with `409`
   `needsKey`, and the desktop shows "Live calls use your own OpenAI key" with
   **Open API keys** under the call button. That is the way to see it by hand.
 
@@ -214,7 +214,7 @@ no `title`, because nothing was asked; and the snapshot's transcript has
   Electron shell. The e2e is POSIX-only (its fakes are shebang scripts), so
   Windows is not exercised.
 - Phone builds read the same wire fields and, when they do not know the kind,
-  the row's text; their own record is verified in SupaMaus/dusk-mobile.
+  the row's text; their own record is verified in SupaMaus/madani-mobile.
 - Approval lines in a record ("Allowed", "Denied", "Expired", "by voice"), a
   hang-up while a turn is still working, a step that never reported how it went
   (running only while the chat works) and a call that began before the loaded

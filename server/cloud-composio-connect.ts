@@ -1,4 +1,4 @@
-// Connecting an app on a dusk cloud with no Composio key: the same Composio Connect the desktop app uses by default
+// Connecting an app on a madani cloud with no Composio key: the same Composio Connect the desktop app uses by default
 // (composio-connect.ts). A cloud has no browser, so the person's own browser (the tab the dashboard opened) signs in to
 // Composio once, with the cloud's public address as the OAuth redirect (mcp-oauth.ts, a remote browser); that callback
 // then sends the same tab on to the app's own sign-in page. After the first time it goes straight to the app's page.
@@ -52,7 +52,7 @@ export async function removeViaConnect(spec: RemoteMcpSpec, slug: string): Promi
   const signal = AbortSignal.timeout(30_000);
   const client = new RemoteMcpClient(spec, { maxBytes: MAX_REMOTE_MCP_BYTES });
   try {
-    await client.initialize("dusk bot", signal);
+    await client.initialize("madani bot", signal);
     const action = removeActionOf(await client.request("tools/list", {}, signal));
     if (!action) return false;
     const result = await client.request("tools/call", { name: "COMPOSIO_MANAGE_CONNECTIONS", arguments: { toolkits: [{ name: slug, action }] } }, signal);
@@ -126,7 +126,7 @@ export function createCloudComposioConnect(deps: CloudComposioConnectDeps) {
         if (answer.status === "started") {
           const url = trustedLink(answer.url);
           if (url) return { url };
-          throw new CloudConnectError("Composio sent back a sign-in page dusk bot does not trust.", 502);
+          throw new CloudConnectError("Composio sent back a sign-in page madani bot does not trust.", 502);
         }
         if (answer.status === "connected") throw new CloudConnectError(`${slug} is connected already.`);
         if (answer.status === "failed") throw new CloudConnectError(answer.message, 502);

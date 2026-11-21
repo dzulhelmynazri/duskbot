@@ -49,7 +49,7 @@ describe("the bot's name pill", () => {
 describe("a sheet's scrim", () => {
   it("closes only for a press that began on it, never for the lift of the press that opened the sheet", () => {
     const onClose = vi.fn();
-    mount(createElement("div", { className: "dusk-mobile" }, createElement(Sheet, { open: true, onClose, title: "Nova", children: "body" })));
+    mount(createElement("div", { className: "madani-mobile" }, createElement(Sheet, { open: true, onClose, title: "Nova", children: "body" })));
     const scrim = document.querySelector<HTMLElement>(".mobile-sheet-layer > [aria-hidden]")!;
     scrim.click();
     expect(onClose).not.toHaveBeenCalled();

@@ -24,7 +24,7 @@ test("a pairing link keeps its code in the hash; a code anywhere else is refused
 });
 
 test("self-hosted pairing supports custom HTTPS and Cloudflare names without Tailscale", () => {
-  for (const origin of ["https://bots.example.com", "https://example.trycloudflare.com", "https://c-example.cloud.dusk.bot"]) {
+  for (const origin of ["https://bots.example.com", "https://example.trycloudflare.com", "https://c-example.cloud.madani.bot"]) {
     const link = `${origin}/pair#code=ABCD-EFGH-JKLM`;
     assert.deepEqual(env.parsePairingLink(link), {
       origin, code: "ABCD-EFGH-JKLM", url: link,
@@ -147,47 +147,47 @@ test("native workspace choices use saved IDs and connect opens settings without 
 });
 
 test("Add a Cloud… sits just under the saved servers only where main offers it, and My Cloud's line can say Always on", () => {
-  const state = { environments: [{ id: "cloud", name: "My Cloud", origin: "https://dusk-u-1.fly.dev" }, { id: "office", name: "Office", origin: "https://office.example" }], activeId: "local" };
+  const state = { environments: [{ id: "cloud", name: "My Cloud", origin: "https://madani-u-1.fly.dev" }, { id: "office", name: "Office", origin: "https://office.example" }], activeId: "local" };
   const calls = [];
   const base = { onSwitch: (id) => calls.push(["switch", id]), onConnect: () => calls.push(["settings"]), onForget: () => {} };
   const plain = env.workspaceMenuTemplate(state, base);
   assert.equal(plain.some(item => item.id === "workspace-add-cloud"), false);
-  assert.deepEqual(plain.filter(item => item.sublabel).map(item => item.sublabel), ["Your server · dusk-u-1.fly.dev", "Your server · office.example"]);
+  assert.deepEqual(plain.filter(item => item.sublabel).map(item => item.sublabel), ["Your server · madani-u-1.fly.dev", "Your server · office.example"]);
   const items = env.workspaceMenuTemplate(state, { ...base, onAddCloud: () => calls.push(["add-cloud"]), sublabels: { cloud: "Free trial until 15 Oct" } });
   assert.deepEqual(items.map(item => item.id ?? item.type), ["workspace-local", "workspace-cloud", "workspace-office", "workspace-add-cloud", "separator", "workspace-connect"]);
   const add = items.find(item => item.id === "workspace-add-cloud");
-  assert.deepEqual([add.label, add.sublabel, add.type], ["Add dusk cloud…", "Keeps your bots running 24/7", undefined]);
+  assert.deepEqual([add.label, add.sublabel, add.type], ["Add madani cloud…", "Keeps your bots running 24/7", undefined]);
   add.click();
   assert.deepEqual(items.find(item => item.id === "workspace-cloud").sublabel, "Free trial until 15 Oct");
   assert.deepEqual(items.find(item => item.id === "workspace-office").sublabel, "Your server · office.example");
   assert.deepEqual(calls, [["add-cloud"]]);
 });
 
-test("the server on screen, the person's own, offers its move to dusk cloud in the menu (no rail to ask)", () => {
+test("the server on screen, the person's own, offers its move to madani cloud in the menu (no rail to ask)", () => {
   const state = { environments: [{ id: "vps", name: "Office", origin: "https://office.example" }], activeId: "vps" };
   const calls = [];
   const base = { onSwitch() {}, onConnect() {}, onForget() {}, onAddCloud: () => calls.push(["add"]) };
   assert.equal(env.workspaceMenuTemplate(state, base).some(item => item.id === "workspace-cloud-move"), false);
   const items = env.workspaceMenuTemplate(state, { ...base, onCloudMove: (id) => calls.push(["move", id]) });
   const move = items.find(item => item.id === "workspace-cloud-move");
-  assert.equal(move.label, "Move “Office” to dusk cloud…");
+  assert.equal(move.label, "Move “Office” to madani cloud…");
   assert.equal(items.some(item => item.id === "workspace-add-cloud"), false);
   move.click();
-  const home = env.workspaceMenuTemplate(state, { ...base, onCloudMove: (id) => calls.push(["move", id]), homeOrigin: "https://dusk-u-1.fly.dev" });
+  const home = env.workspaceMenuTemplate(state, { ...base, onCloudMove: (id) => calls.push(["move", id]), homeOrigin: "https://madani-u-1.fly.dev" });
   home.find(item => item.id === "workspace-cloud-move").click();
   assert.deepEqual(calls, [["move", "vps"], ["move", "vps"]]);
 });
 
 test("Windows and Linux menus clip a sublabel, so the popup there has none: status joins the name", () => {
-  const state = { environments: [{ id: "cloud", name: "My Cloud", origin: "https://dusk-u-1.fly.dev" }, { id: "office", name: "Office", origin: "https://office.example" }], activeId: "local" };
+  const state = { environments: [{ id: "cloud", name: "My Cloud", origin: "https://madani-u-1.fly.dev" }, { id: "office", name: "Office", origin: "https://office.example" }], activeId: "local" };
   const items = env.workspaceMenuTemplate(state, { onSwitch() {}, onConnect() {}, onForget() {}, onAddCloud() {}, foldSublabels: true, sublabels: { cloud: "Free trial until 15 Oct" } });
   assert.deepEqual(items.filter(item => "sublabel" in item).map(item => item.id), []);
   assert.equal(items.find(item => item.id === "workspace-cloud").label, "My Cloud · Free trial until 15 Oct");
-  assert.equal(items.find(item => item.id === "workspace-add-cloud").label, "Add dusk cloud…");
+  assert.equal(items.find(item => item.id === "workspace-add-cloud").label, "Add madani cloud…");
 });
 
 test("with My Cloud, the switcher says first which side has which bots, and under My Cloud what is not on it yet, with Send", async () => {
-  const state = { environments: [{ id: "cloud", name: "My Cloud", origin: "https://dusk-u-1.fly.dev" }], activeId: "cloud" };
+  const state = { environments: [{ id: "cloud", name: "My Cloud", origin: "https://madani-u-1.fly.dev" }], activeId: "cloud" };
   const clicked = [];
   const send = { waiting: { bots: 2, total: 2 }, onSend: () => clicked.push("send"), onOpen: () => clicked.push("open") };
   const options = await env.placesMenuOptions({ cloud: state.environments[0], home: true, platform: "win32", send,
@@ -195,22 +195,22 @@ test("with My Cloud, the switcher says first which side has which bots, and unde
   const items = env.workspaceMenuTemplate(state, { onSwitch() {}, onConnect() {}, onForget() {}, sublabels: { cloud: "Always on" }, ...options });
   assert.deepEqual(items.map((item) => item.id ?? item.type), ["workspace-places", "separator", "workspace-local", "workspace-cloud", "workspace-copy-to-cloud", "separator", "workspace-connect", "workspace-forget"]);
   const places = items.find((item) => item.id === "workspace-places");
-  assert.deepEqual([places.label, places.enabled], ["Your bots live on dusk cloud. This computer has its own: Ember.", false]);
+  assert.deepEqual([places.label, places.enabled], ["Your bots live on madani cloud. This computer has its own: Ember.", false]);
   // Windows and Linux menus show no sublabels: My Cloud's status joins its name rather than vanishing.
-  assert.equal(items.find((item) => item.id === "workspace-cloud").label, "dusk cloud · Always on");
+  assert.equal(items.find((item) => item.id === "workspace-cloud").label, "madani cloud · Always on");
   const line = items.find((item) => item.id === "workspace-copy-to-cloud");
-  assert.equal(line.label, "2 bots not on dusk cloud · Send");
+  assert.equal(line.label, "2 bots not on madani cloud · Send");
   line.click();
   assert.deepEqual(clicked, ["send"]);
   const mac = env.workspaceMenuTemplate(state, { onSwitch() {}, onConnect() {}, onForget() {}, sublabels: { cloud: "Always on" },
     ...await env.placesMenuOptions({ cloud: state.environments[0], platform: "darwin", send: { ...send, waiting: { bots: 0, total: 0 } }, localBots: async () => ({ bots: [] }) }) });
-  assert.equal(mac.find((item) => item.id === "workspace-cloud").label, "dusk cloud");
+  assert.equal(mac.find((item) => item.id === "workspace-cloud").label, "madani cloud");
   assert.equal(mac.find((item) => item.id === "workspace-local").label, "This Mac");
   assert.equal(items.find((item) => item.id === "workspace-local").label, "This computer");
   assert.equal(mac.find((item) => item.id === "workspace-cloud").sublabel, "Always on");
-  assert.equal(mac.find((item) => item.id === "workspace-places").label, "This Mac has no bots of its own yet. dusk cloud has its own.");
+  assert.equal(mac.find((item) => item.id === "workspace-places").label, "This Mac has no bots of its own yet. madani cloud has its own.");
   const open = mac.find((item) => item.id === "workspace-copy-to-cloud");
-  assert.equal(open.label, "This Mac and dusk cloud…");
+  assert.equal(open.label, "This Mac and madani cloud…");
   open.click();
   assert.deepEqual(clicked, ["send", "open"]);
 });
@@ -218,24 +218,24 @@ test("with My Cloud, the switcher says first which side has which bots, and unde
 test("someone who has not moved hears their bots live on this computer, even with My Cloud open in the window", async () => {
   // Seen in the real app on Oct 22: moves not on yet, My Cloud opened from the switcher, and it said "Your bots live on My Cloud".
   const options = await env.placesMenuOptions({ cloud: { id: "cloud", name: "My Cloud" }, platform: "linux", localBots: async () => ({ bots: [{ name: "Scout" }, { name: "Quill" }] }) });
-  assert.equal(options.places, "These bots live on this computer: Scout and Quill. dusk cloud has its own.");
+  assert.equal(options.places, "These bots live on this computer: Scout and Quill. madani cloud has its own.");
   const moved = await env.placesMenuOptions({ cloud: { id: "cloud", name: "My Cloud" }, home: true, platform: "linux", localBots: async () => ({ bots: [{ name: "Scout" }] }) });
-  assert.equal(moved.places, "Your bots live on dusk cloud. This computer has its own: Scout.");
+  assert.equal(moved.places, "Your bots live on madani cloud. This computer has its own: Scout.");
 });
 
 test("the send line counts bots first, then everything else, and is absent when nothing waits", () => {
-  assert.equal(env.sendLine({ waiting: { bots: 1, total: 1 } }), "1 bot not on dusk cloud · Send");
+  assert.equal(env.sendLine({ waiting: { bots: 1, total: 1 } }), "1 bot not on madani cloud · Send");
   assert.equal(env.sendLine({ cloudName: "Studio Cloud", waiting: { bots: 1, total: 4 } }), "1 bot and 3 more not on Studio Cloud · Send");
-  assert.equal(env.sendLine({ waiting: { bots: 0, total: 1 } }), "1 change not on dusk cloud · Send");
-  assert.equal(env.sendLine({ waiting: { bots: 0, total: 3 } }), "3 changes not on dusk cloud · Send");
+  assert.equal(env.sendLine({ waiting: { bots: 0, total: 1 } }), "1 change not on madani cloud · Send");
+  assert.equal(env.sendLine({ waiting: { bots: 0, total: 3 } }), "3 changes not on madani cloud · Send");
   assert.equal(env.sendLine({ waiting: null }), null);
 });
 
 test("the places line names this computer's bots briefly, says nothing when its server does not answer, and is absent without a Cloud", async () => {
-  assert.equal(env.placesLine({ onCloud: true, localBots: ["Ember", "Juno"] }), "Your bots live on dusk cloud. This computer has its own: Ember and Juno.");
-  assert.equal(env.placesLine({ onCloud: true, localBots: ["Ember", "Juno", "Kit", "Lark"] }), "Your bots live on dusk cloud. This computer has its own: Ember, Juno and 2 more.");
+  assert.equal(env.placesLine({ onCloud: true, localBots: ["Ember", "Juno"] }), "Your bots live on madani cloud. This computer has its own: Ember and Juno.");
+  assert.equal(env.placesLine({ onCloud: true, localBots: ["Ember", "Juno", "Kit", "Lark"] }), "Your bots live on madani cloud. This computer has its own: Ember, Juno and 2 more.");
   assert.equal(env.placesLine({ onCloud: false, cloudName: "Studio Cloud", localBots: ["Ember"] }), "These bots live on this computer: Ember. Studio Cloud has its own.");
-  assert.equal(env.placesLine({ onCloud: true, localBots: [] }), "Your bots live on dusk cloud. This computer has none of its own.");
+  assert.equal(env.placesLine({ onCloud: true, localBots: [] }), "Your bots live on madani cloud. This computer has none of its own.");
   const quiet = await env.placesMenuOptions({ cloud: { id: "cloud", name: "My Cloud" }, home: true, platform: "win32", send: { waiting: null, onSend() {}, onOpen() {} }, localBots: async () => { throw new Error("timeout"); } });
   assert.equal("places" in quiet, false);
   assert.ok(quiet.copyToCloud);
@@ -244,9 +244,9 @@ test("the places line names this computer's bots briefly, says nothing when its 
 
 test("native window identity distinguishes hosted HTML, companion data, and the local workspace", () => {
   const state = { environments: [{ id: "old", name: "Old team", origin: "https://old.example" }], activeId: "old" };
-  assert.equal(env.workspaceWindowTitle(state), "dusk bot · Hosted: Old team (old.example)");
-  assert.equal(env.workspaceWindowTitle(state, { serverName: "Office", endpoint: "https://c-office.cloud.dusk.bot" }), "dusk bot · Connected to: Office (c-office.cloud.dusk.bot)");
-  assert.equal(env.workspaceWindowTitle(env.withActive(state, "local")), "dusk bot");
+  assert.equal(env.workspaceWindowTitle(state), "madani bot · Hosted: Old team (old.example)");
+  assert.equal(env.workspaceWindowTitle(state, { serverName: "Office", endpoint: "https://c-office.cloud.madani.bot" }), "madani bot · Connected to: Office (c-office.cloud.madani.bot)");
+  assert.equal(env.workspaceWindowTitle(env.withActive(state, "local")), "madani bot");
 });
 
 test("a version 1 file parses as all-remote with kind stamped and activeId preserved, and serializes back as version 2", () => {
@@ -268,17 +268,17 @@ test("version 2 keeps locals with an absolute dataDir and drops relative, dir-le
   const parsed = env.parseEnvironments(JSON.stringify({
     version: 2,
     environments: [
-      { id: "l1", kind: "local", name: "APRS Chat", dataDir: "/Users/me/.duskbot-aprs" },
+      { id: "l1", kind: "local", name: "APRS Chat", dataDir: "/Users/me/.madanibot-aprs" },
       { id: "l2", kind: "local", name: "relative", dataDir: "bots/relative" },
       { id: "l3", kind: "local", name: "no dir at all" },
       { id: "r1", kind: "remote", name: "Office", origin: "https://box.example" },
-      { id: "l4", kind: "local", name: "same dir again", dataDir: "/Users/me/.duskbot-aprs" },
+      { id: "l4", kind: "local", name: "same dir again", dataDir: "/Users/me/.madanibot-aprs" },
     ],
     activeId: "l1",
   }));
   assert.deepEqual(parsed, {
     environments: [
-      { id: "l1", kind: "local", name: "APRS Chat", dataDir: "/Users/me/.duskbot-aprs" },
+      { id: "l1", kind: "local", name: "APRS Chat", dataDir: "/Users/me/.madanibot-aprs" },
       { id: "r1", kind: "remote", name: "Office", origin: "https://box.example" },
     ],
     activeId: "l1",
@@ -288,57 +288,57 @@ test("version 2 keeps locals with an absolute dataDir and drops relative, dir-le
 });
 
 test("withLocalEnvironment registers absolute, non-default, non-nested directories only", () => {
-  const DEFAULT = "/Users/me/.duskbot";
-  const added = env.withLocalEnvironment({ environments: [], activeId: "local" }, { name: "APRS Chat", dataDir: "/Users/me/.duskbot-aprs" }, () => "id1", DEFAULT);
+  const DEFAULT = "/Users/me/.madanibot";
+  const added = env.withLocalEnvironment({ environments: [], activeId: "local" }, { name: "APRS Chat", dataDir: "/Users/me/.madanibot-aprs" }, () => "id1", DEFAULT);
   assert.equal(added.ok, true);
-  assert.deepEqual(added.state.environments, [{ id: "id1", kind: "local", name: "APRS Chat", dataDir: "/Users/me/.duskbot-aprs" }]);
+  assert.deepEqual(added.state.environments, [{ id: "id1", kind: "local", name: "APRS Chat", dataDir: "/Users/me/.madanibot-aprs" }]);
   assert.equal(added.state.activeId, "local");
   const error = (name, dataDir) => env.withLocalEnvironment(added.state, { name, dataDir }, () => "unused", DEFAULT).error;
   assert.equal(error("APRS", "bots/relative"), "path");
-  assert.equal(error("   ", "/Users/me/.duskbot-x"), "name");
-  assert.equal(error("x".repeat(61), "/Users/me/.duskbot-x"), "name");
+  assert.equal(error("   ", "/Users/me/.madanibot-x"), "name");
+  assert.equal(error("x".repeat(61), "/Users/me/.madanibot-x"), "name");
   assert.equal(error("Same as default", DEFAULT), "nested");
   assert.equal(error("Inside default", `${DEFAULT}/nested`), "nested");
-  assert.equal(error("Same as entry", "/Users/me/.duskbot-aprs"), "duplicate");
-  assert.equal(error("Same entry with a slash", "/Users/me/.duskbot-aprs/"), "duplicate");
-  assert.equal(error("Inside the entry", "/Users/me/.duskbot-aprs/sub"), "nested");
-  assert.equal(error("Almost a sibling", "/Users/me/.duskbot-aprsx"), undefined);
+  assert.equal(error("Same as entry", "/Users/me/.madanibot-aprs"), "duplicate");
+  assert.equal(error("Same entry with a slash", "/Users/me/.madanibot-aprs/"), "duplicate");
+  assert.equal(error("Inside the entry", "/Users/me/.madanibot-aprs/sub"), "nested");
+  assert.equal(error("Almost a sibling", "/Users/me/.madanibot-aprsx"), undefined);
 });
 
 test("activeLocalDataDir reports only an active local environment's directory", () => {
-  const DEFAULT = "/Users/me/.duskbot";
+  const DEFAULT = "/Users/me/.madanibot";
   const state = {
     environments: [
-      { id: "l1", kind: "local", name: "APRS", dataDir: "/Users/me/.duskbot-aprs" },
+      { id: "l1", kind: "local", name: "APRS", dataDir: "/Users/me/.madanibot-aprs" },
       { id: "r1", kind: "remote", name: "Office", origin: "https://box.example" },
     ],
     activeId: "l1",
   };
-  assert.equal(env.activeLocalDataDir(state, DEFAULT), "/Users/me/.duskbot-aprs");
+  assert.equal(env.activeLocalDataDir(state, DEFAULT), "/Users/me/.madanibot-aprs");
   assert.equal(env.activeLocalDataDir({ ...state, activeId: "local" }, DEFAULT), null);
   assert.equal(env.activeLocalDataDir({ ...state, activeId: "r1" }, DEFAULT), null);
 });
 
 test("startupEnvironmentDir boots on the active local dir and falls back to the default", () => {
-  const DEFAULT = "/Users/me/.duskbot";
+  const DEFAULT = "/Users/me/.madanibot";
   const state = {
     environments: [
-      { id: "l1", kind: "local", name: "APRS", dataDir: "/Users/me/.duskbot-aprs" },
+      { id: "l1", kind: "local", name: "APRS", dataDir: "/Users/me/.madanibot-aprs" },
       { id: "r1", kind: "remote", name: "Office", origin: "https://box.example" },
     ],
     activeId: "l1",
   };
-  assert.equal(env.startupEnvironmentDir(state, DEFAULT), "/Users/me/.duskbot-aprs");
+  assert.equal(env.startupEnvironmentDir(state, DEFAULT), "/Users/me/.madanibot-aprs");
   assert.equal(env.startupEnvironmentDir({ ...state, activeId: "r1" }, DEFAULT), DEFAULT);
   assert.equal(env.startupEnvironmentDir({ environments: [], activeId: "local" }, DEFAULT), DEFAULT);
 });
 
 test("bootEnvironmentDir refuses to boot onto a missing named env dir: the default dir instead, flagged", () => {
-  const DEFAULT = "/Users/me/.duskbot";
-  const gone = { environments: [{ id: "l1", kind: "local", name: "APRS", dataDir: "/Volumes/gone/.duskbot-aprs", missing: true }], activeId: "l1" };
-  assert.deepEqual(env.bootEnvironmentDir(gone, DEFAULT), { dataDir: DEFAULT, fellBack: true, missingDir: "/Volumes/gone/.duskbot-aprs" });
+  const DEFAULT = "/Users/me/.madanibot";
+  const gone = { environments: [{ id: "l1", kind: "local", name: "APRS", dataDir: "/Volumes/gone/.madanibot-aprs", missing: true }], activeId: "l1" };
+  assert.deepEqual(env.bootEnvironmentDir(gone, DEFAULT), { dataDir: DEFAULT, fellBack: true, missingDir: "/Volumes/gone/.madanibot-aprs" });
   const present = { environments: [{ ...gone.environments[0], missing: false }], activeId: "l1" };
-  assert.deepEqual(env.bootEnvironmentDir(present, DEFAULT), { dataDir: "/Volumes/gone/.duskbot-aprs", fellBack: false, missingDir: null });
+  assert.deepEqual(env.bootEnvironmentDir(present, DEFAULT), { dataDir: "/Volumes/gone/.madanibot-aprs", fellBack: false, missingDir: null });
   assert.deepEqual(env.bootEnvironmentDir({ environments: [], activeId: "local" }, DEFAULT), { dataDir: DEFAULT, fellBack: false, missingDir: null });
   const remote = { environments: [{ id: "r1", kind: "remote", name: "Office", origin: "https://box.example", missing: false }], activeId: "r1" };
   assert.deepEqual(env.bootEnvironmentDir(remote, DEFAULT), { dataDir: DEFAULT, fellBack: false, missingDir: null });
@@ -350,16 +350,16 @@ test("data dirs are absolute in POSIX, drive-letter and UNC shape; relative and 
     environments: [{ id: "l1", kind: "local", name: "n", dataDir }],
     activeId: "local",
   })).environments.length;
-  for (const good of ["/Users/me/.duskbot-aprs", "C:\\Users\\me\\.duskbot-aprs", "D:/envs/aprs", "\\\\nas\\share\\.duskbot-x"]) {
+  for (const good of ["/Users/me/.madanibot-aprs", "C:\\Users\\me\\.madanibot-aprs", "D:/envs/aprs", "\\\\nas\\share\\.madanibot-x"]) {
     assert.equal(kept(good), 1, good);
   }
-  for (const bad of ["bots/relative", "C:bots", "~/.duskbot-x", "\\single\\backslash", "./x", ""]) {
+  for (const bad of ["bots/relative", "C:bots", "~/.madanibot-x", "\\single\\backslash", "./x", ""]) {
     assert.equal(kept(bad), 0, bad);
   }
 });
 
 test("withLocalEnvironment rejects a candidate that contains a registered local dir, accepts siblings", () => {
-  const DEFAULT = "/Users/me/.duskbot";
+  const DEFAULT = "/Users/me/.madanibot";
   const added = env.withLocalEnvironment({ environments: [], activeId: "local" }, { name: "APRS", dataDir: "/Users/me/bots/aprs" }, () => "id1", DEFAULT);
   assert.equal(added.ok, true);
   const error = (dataDir) => env.withLocalEnvironment(added.state, { name: "x", dataDir }, () => "unused", DEFAULT).error;
@@ -373,11 +373,11 @@ test("withLocalEnvironment rejects a candidate that contains a registered local 
 });
 
 test("a named local environment is this computer with its path, and gets its own menu row", () => {
-  const localEntry = { id: "l1", kind: "local", name: "APRS Chat", dataDir: "/Users/me/.duskbot-aprs" };
+  const localEntry = { id: "l1", kind: "local", name: "APRS Chat", dataDir: "/Users/me/.madanibot-aprs" };
   const state = { environments: [localEntry, { id: "r1", kind: "remote", name: "Office", origin: "https://box.example" }], activeId: "l1" };
-  assert.deepEqual(env.workspaceSummary(state), { local: true, name: "APRS Chat", localPath: "/Users/me/.duskbot-aprs", missing: false });
+  assert.deepEqual(env.workspaceSummary(state), { local: true, name: "APRS Chat", localPath: "/Users/me/.madanibot-aprs", missing: false });
   assert.deepEqual(env.workspaceSummary({ ...state, environments: [{ ...localEntry, missing: true }, ...state.environments.slice(1)] }),
-    { local: true, name: "APRS Chat", localPath: "/Users/me/.duskbot-aprs", missing: true });
+    { local: true, name: "APRS Chat", localPath: "/Users/me/.madanibot-aprs", missing: true });
   assert.deepEqual(env.workspaceSummary({ ...state, activeId: "local" }), { local: true, name: "This computer" });
   assert.deepEqual(env.workspaceSummary({ ...state, activeId: "r1" }), { local: false, name: "Office", origin: "https://box.example" });
   const calls = [];
@@ -394,71 +394,71 @@ test("a named local environment is this computer with its path, and gets its own
 
 
 test("withLocalEnvironment compares Windows-shaped paths by separators and case", () => {
-  const winDefault = "C:\\Users\\me\\.duskbot";
+  const winDefault = "C:\\Users\\me\\.madanibot";
   const state = env.withLocalEnvironment({ environments: [], activeId: "local" }, { name: "Site", dataDir: "C:\\Bots\\Site" }, () => "site", winDefault);
   assert.equal(state.ok, true);
   const again = (name, dataDir) => env.withLocalEnvironment(state.state, { name, dataDir }, () => "x", winDefault).error;
   assert.equal(again("Copy", "c:/bots/site/"), "duplicate");
   assert.equal(again("Child", "C:\\Bots\\Site\\sub"), "nested");
   assert.equal(again("Child2", "C:/BOTS/SITE/sub"), "nested");
-  assert.equal(again("Inside default", "c:\\users\\me\\.duskbot\\envs\\x"), "nested");
-  const unc = env.withLocalEnvironment({ environments: [], activeId: "local" }, { name: "Share", dataDir: "\\\\NAS\\dusk" }, () => "share", "\\\\nas\\other");
+  assert.equal(again("Inside default", "c:\\users\\me\\.madanibot\\envs\\x"), "nested");
+  const unc = env.withLocalEnvironment({ environments: [], activeId: "local" }, { name: "Share", dataDir: "\\\\NAS\\madani" }, () => "share", "\\\\nas\\other");
   assert.equal(unc.ok, true);
-  assert.equal(env.withLocalEnvironment(unc.state, { name: "Under", dataDir: "\\\\NAS\\dusk\\deep" }, () => "x", "\\\\NAS\\elsewhere").error, "nested");
+  assert.equal(env.withLocalEnvironment(unc.state, { name: "Under", dataDir: "\\\\NAS\\madani\\deep" }, () => "x", "\\\\NAS\\elsewhere").error, "nested");
 });
 
 test("parseEnvironments dedups local dirs on the same normalized key", () => {
   const parse = (entries) => env.parseEnvironments(JSON.stringify({ version: 2, environments: entries, activeId: "local" })).environments;
   assert.deepEqual(parse([
-    { id: "l1", kind: "local", name: "A", dataDir: "/Users/me/.duskbot-aprs" },
-    { id: "l2", kind: "local", name: "B", dataDir: "/Users/me/.duskbot-aprs/" },
+    { id: "l1", kind: "local", name: "A", dataDir: "/Users/me/.madanibot-aprs" },
+    { id: "l2", kind: "local", name: "B", dataDir: "/Users/me/.madanibot-aprs/" },
   ]).map((entry) => entry.id), ["l1"]);
   assert.deepEqual(parse([
     { id: "l1", kind: "local", name: "A", dataDir: "C:\\Bots\\Site" },
     { id: "l2", kind: "local", name: "B", dataDir: "c:/bots/site" },
   ]).map((entry) => entry.id), ["l1"]);
   assert.equal(parse([
-    { id: "l1", kind: "local", name: "A", dataDir: "/Users/me/.duskbot-a" },
-    { id: "l2", kind: "local", name: "B", dataDir: "/Users/me/.duskbot-b" },
+    { id: "l1", kind: "local", name: "A", dataDir: "/Users/me/.madanibot-a" },
+    { id: "l2", kind: "local", name: "B", dataDir: "/Users/me/.madanibot-b" },
   ]).length, 2);
 });
 
 test("once My Cloud is home the switcher lists whole places only: My Cloud first, then each saved server, never this computer", () => {
-  const home = "https://dusk-t-1.fly.dev";
+  const home = "https://madani-t-1.fly.dev";
   const state = { environments: [{ id: "o", kind: "remote", name: "Office", origin: "https://office.example.test" }, { id: "c", kind: "remote", name: "My Cloud", origin: home },
     { id: "l", kind: "local", name: "Lab", dataDir: "/lab" }], activeId: "c" };
   const switched = [], forgot = [];
   const items = env.workspaceMenuTemplate(state, { onSwitch: (id) => switched.push(id), onConnect() {}, onForget: (id) => forgot.push(id), onAddCloud() {}, places: "x", copyToCloud: { label: "Send" }, homeOrigin: home });
-  assert.deepEqual(items.map((item) => [item.label, item.checked]), [["dusk cloud", true], ["Office", false]]);
+  assert.deepEqual(items.map((item) => [item.label, item.checked]), [["madani cloud", true], ["Office", false]]);
   items[1].click();
   assert.deepEqual(switched, ["o"]);
   const away = env.workspaceMenuTemplate({ ...state, activeId: "o" }, { onSwitch() {}, onConnect() {}, onForget: (id) => forgot.push(id), homeOrigin: home });
-  assert.deepEqual(away.map((item) => item.label ?? item.type), ["dusk cloud", "Office", "separator", "Forget “Office”…"]);
+  assert.deepEqual(away.map((item) => item.label ?? item.type), ["madani cloud", "Office", "separator", "Forget “Office”…"]);
   away.at(-1).click();
   assert.deepEqual(forgot, ["o"]);
   assert.equal(env.otherPlaces(state, home), 1);
   assert.equal(env.otherPlaces({ ...state, environments: state.environments.filter((entry) => entry.id !== "o") }, home), 0, "My Cloud alone: no switcher");
-  assert.equal(env.workspaceWindowTitle(state, null, home), "dusk bot · My Cloud", "with another place besides, the window names the one it shows");
-  assert.equal(env.workspaceWindowTitle({ ...state, environments: state.environments.filter((entry) => entry.id !== "o") }, null, home), "dusk bot", "the window onto home alone is simply the app");
-  assert.equal(env.workspaceWindowTitle({ ...state, activeId: "o" }, null, home), "dusk bot · Hosted: Office (office.example.test)");
+  assert.equal(env.workspaceWindowTitle(state, null, home), "madani bot · My Cloud", "with another place besides, the window names the one it shows");
+  assert.equal(env.workspaceWindowTitle({ ...state, environments: state.environments.filter((entry) => entry.id !== "o") }, null, home), "madani bot", "the window onto home alone is simply the app");
+  assert.equal(env.workspaceWindowTitle({ ...state, activeId: "o" }, null, home), "madani bot · Hosted: Office (office.example.test)");
 });
 
-const TEAM = "https://dusk-u-acme.fly.dev";
+const TEAM = "https://madani-u-acme.fly.dev";
 const acme = (extra = {}) => ({ id: "team-acme", name: "Acme", role: "admin", machine: { status: "ready", origin: TEAM }, ...extra });
 
 test("the switcher lists My Cloud first, then each team from the session with this person's role, then saved servers; a team has no Forget", () => {
-  const home = "https://dusk-t-1.fly.dev";
+  const home = "https://madani-t-1.fly.dev";
   const state = { environments: [{ id: "o", kind: "remote", name: "Office", origin: "https://office.example.test" }, { id: "t", kind: "remote", name: "Acme", origin: TEAM, team: { id: "team-acme", role: "owner" } },
     { id: "c", kind: "remote", name: "My Cloud", origin: home, home: true }], activeId: "t" };
   const items = env.workspaceMenuTemplate(state, { onSwitch() {}, onConnect() {}, onForget() {}, homeOrigin: home });
-  assert.deepEqual(items.map((item) => [item.label, item.sublabel, item.checked]), [["dusk cloud", "dusk-t-1.fly.dev", false], ["Acme", "Super admin", true], ["Office", "Your server · office.example.test", false]]);
-  assert.deepEqual(env.workspaceMenuTemplate(state, { onSwitch() {}, onConnect() {}, onForget() {}, homeOrigin: home, foldSublabels: true }).map((item) => item.label), ["dusk cloud", "Acme · Super admin", "Office"]);
+  assert.deepEqual(items.map((item) => [item.label, item.sublabel, item.checked]), [["madani cloud", "madani-t-1.fly.dev", false], ["Acme", "Super admin", true], ["Office", "Your server · office.example.test", false]]);
+  assert.deepEqual(env.workspaceMenuTemplate(state, { onSwitch() {}, onConnect() {}, onForget() {}, homeOrigin: home, foldSublabels: true }).map((item) => item.label), ["madani cloud", "Acme · Super admin", "Office"]);
   for (const [role, label] of [["owner", "Super admin"], ["admin", "Admin"], ["member", "User"], ["other", "User"]]) assert.equal(env.teamRoleLabel(role), label, role);
-  assert.equal(env.workspaceWindowTitle(state, null, home), "dusk bot · Acme");
+  assert.equal(env.workspaceWindowTitle(state, null, home), "madani bot · Acme");
   assert.deepEqual(env.workspaceSummary(state), { local: false, name: "Acme", origin: TEAM, role: "Super admin" });
   // Before the move (or a Team Owner, whose home is this computer): This computer, then each team with its role (no Forget), then servers as saved.
   const before = env.workspaceMenuTemplate(state, { onSwitch() {}, onConnect() {}, onForget() {} });
-  assert.deepEqual(before.filter((item) => item.type === "radio").map((item) => [item.label, item.sublabel]), [["This computer", undefined], ["dusk cloud", "dusk-t-1.fly.dev"], ["Acme", "Super admin"], ["Office", "Your server · office.example.test"]]);
+  assert.deepEqual(before.filter((item) => item.type === "radio").map((item) => [item.label, item.sublabel]), [["This computer", undefined], ["madani cloud", "madani-t-1.fly.dev"], ["Acme", "Super admin"], ["Office", "Your server · office.example.test"]]);
   assert.equal(before.some((item) => item.id === "workspace-forget"), false, "a team is the Admin's to remove");
   assert.equal(env.otherPlaces(state, home), 2);
   const serialized = env.parseEnvironments(env.serializeEnvironments(state));
@@ -468,7 +468,7 @@ test("the switcher lists My Cloud first, then each team from the session with th
 });
 
 test("the session's teams become saved places, named and roled as the Admin says; one it no longer lists is gone, with its name, and the window falls back to My Cloud", () => {
-  const home = "https://dusk-t-1.fly.dev";
+  const home = "https://madani-t-1.fly.dev";
   let ids = 0;
   const makeId = () => `id-${++ids}`;
   const base = { environments: [{ id: "c", kind: "remote", name: "My Cloud", origin: home, home: true }, { id: "o", kind: "remote", name: "Office", origin: "https://office.example.test" }], activeId: "c" };
@@ -495,7 +495,7 @@ test("with My Cloud as home, the menu still folds its status line into the name 
   for (const [platform, folded] of [["linux", true], ["win32", true], ["darwin", false]]) {
     const options = await env.placesMenuOptions({ homeOrigin: "https://me.example", cloud: state.environments[0], platform, localBots: async () => { throw new Error("home lists no local bots"); } });
     const [item] = env.workspaceMenuTemplate(state, { onSwitch() {}, sublabels: { c: "Always on" }, ...options });
-    assert.equal(item.label, folded ? "dusk cloud · Always on" : "dusk cloud", platform);
+    assert.equal(item.label, folded ? "madani cloud · Always on" : "madani cloud", platform);
   }
 });
 
@@ -518,17 +518,17 @@ test("the places popup wears each place's kind as its icon where main has them (
     { id: "o", kind: "remote", name: "Office", origin: "https://office.example", color: "red" }], activeId: "o", localColor: "blue" };
   const base = { onSwitch() {}, onConnect() {}, onForget() {}, myCloudId: "c" };
   const kinds = env.workspaceMenuTemplate(state, { ...base, iconFor: (color) => `dot:${color}`, kindIcon: (kind) => `kind:${kind}` }).filter((item) => item.type === "radio");
-  assert.deepEqual(kinds.map((item) => [item.label, item.icon, item.checked]), [["This computer", "kind:computer", false], ["dusk cloud", "kind:cloud", false], ["Acme", "kind:cloud", false], ["Office", "kind:server", true]]);
+  assert.deepEqual(kinds.map((item) => [item.label, item.icon, item.checked]), [["This computer", "kind:computer", false], ["madani cloud", "kind:cloud", false], ["Acme", "kind:cloud", false], ["Office", "kind:server", true]]);
   const dots = env.workspaceMenuTemplate(state, { ...base, iconFor: (color) => `dot:${color}` }).filter((item) => item.type === "radio");
   assert.deepEqual(dots.map((item) => item.icon), ["dot:blue", "dot:teal", undefined, "dot:red"]);
 });
 
 test("with My Cloud home, this computer still leads the switcher and opens on its own handler", () => {
-  const home = "https://dusk-t-1.fly.dev";
+  const home = "https://madani-t-1.fly.dev";
   const state = { environments: [{ id: "c", kind: "remote", name: "My Cloud", origin: home, home: true }], activeId: null };
   let opened = 0;
   const items = env.workspaceMenuTemplate(state, { onSwitch() {}, onConnect() {}, onForget() {}, homeOrigin: home, platform: "darwin", onLocal: () => { opened += 1; } });
-  assert.deepEqual(items.map((item) => [item.label, item.checked]), [["This Mac", false], ["dusk cloud", false]]);
+  assert.deepEqual(items.map((item) => [item.label, item.checked]), [["This Mac", false], ["madani cloud", false]]);
   items[0].click();
   assert.equal(opened, 1);
   assert.equal(env.workspaceMenuTemplate(state, { onSwitch() {}, onConnect() {}, onForget() {}, homeOrigin: home, onLocal() {}, localShown: true })[0].checked, true);
@@ -541,8 +541,8 @@ test("a pasted link to this app's own server is told apart from an SSH tunnel to
   assert.equal(env.isThisAppsServer("https://bots.company.com:8799", 8799), false);
 });
 
-test("a person who already has dusk cloud is never offered Add dusk cloud…", () => {
-  const state = { environments: [{ id: "cloud", name: "My Cloud", origin: "https://dusk-u-1.fly.dev" }], activeId: "local" };
+test("a person who already has madani cloud is never offered Add madani cloud…", () => {
+  const state = { environments: [{ id: "cloud", name: "My Cloud", origin: "https://madani-u-1.fly.dev" }], activeId: "local" };
   const items = env.workspaceMenuTemplate(state, { onSwitch() {}, onConnect() {}, onForget() {}, onAddCloud() {}, myCloudId: "cloud" });
   assert.equal(items.some(item => item.id === "workspace-add-cloud"), false);
 });

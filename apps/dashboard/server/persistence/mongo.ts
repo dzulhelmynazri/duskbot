@@ -41,11 +41,11 @@ async function load(db: Db, layouts: Record<string, StoreLayout>): Promise<Loade
 /**
  * The account service's state in MongoDB. One process writes at a time: it holds a lease in `locks` (renewed every
  * 10 s, 30 s long) and every write checks the lease inside its transaction, so a process that lost it can never write.
- * Transactions need a replica set (mongod-dusk runs as the one-node set rs-dusk).
+ * Transactions need a replica set (mongod-madani runs as the one-node set rs-madani).
  */
 export async function openMongoBackend(options: { uri: string; db: string; layouts?: Record<string, StoreLayout>; acquireWaitMs?: number; onLeaseLost?: (error: LeaseLostError) => void; log?: (line: string) => void }) {
   const layouts = options.layouts ?? STORE_LAYOUTS, log = options.log ?? (line => console.warn(`persistence: ${line}`));
-  const client = new MongoClient(options.uri, { ignoreUndefined: true, maxPoolSize: 10, serverSelectionTimeoutMS: 10_000, appName: "dusk-account" });
+  const client = new MongoClient(options.uri, { ignoreUndefined: true, maxPoolSize: 10, serverSelectionTimeoutMS: 10_000, appName: "madani-account" });
   await client.connect();
   const db = client.db(options.db);
   const hello = await db.admin().command({ hello: 1 });

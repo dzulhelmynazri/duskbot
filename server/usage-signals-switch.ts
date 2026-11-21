@@ -6,8 +6,8 @@ import { writeFileAtomic } from "./atomic.ts";
 
 export interface UsageSignalsChoice { enabled: boolean }
 
-/** the one "help improve dusk bot" switch: usage counts, the scrubbed notes about how sessions went, and (on the
- * desktop) crash reports. on unless the person turns it off (or DUSK_USAGE_SIGNALS=off).
+/** the one "help improve madani bot" switch: usage counts, the scrubbed notes about how sessions went, and (on the
+ * desktop) crash reports. on unless the person turns it off (or MADANI_USAGE_SIGNALS=off).
  *
  * It is the account's switch too. A change made here is kept as `push` until a report to the account service gets
  * through, and the account's own state comes back on every report answer: the account turned off turns this off, the
@@ -27,7 +27,7 @@ export function createUsageSignalsSwitch(dataDir: string, env: NodeJS.ProcessEnv
     if (typeof saved.seen === "boolean") seen = saved.seen;
   } catch {}
   const write = () => writeFileAtomic(file, JSON.stringify({ enabled: on, salt, ...(push !== null ? { push } : {}), ...(seen !== null ? { seen } : {}) }), { mode: 0o600 });
-  const enabled = () => on && env.DUSK_USAGE_SIGNALS !== "off";
+  const enabled = () => on && env.MADANI_USAGE_SIGNALS !== "off";
   return {
     enabled,
     choice: (): UsageSignalsChoice => ({ enabled: enabled() }),

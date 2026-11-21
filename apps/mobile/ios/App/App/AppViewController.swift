@@ -71,7 +71,7 @@ class AppViewController: CAPBridgeViewController {
         bridge?.registerPluginInstance(OrientationPlugin())
         bridge?.registerPluginInstance(TurnActivityPlugin())
         bridge?.registerPluginInstance(PhoneNotificationsPlugin())
-        bridge?.registerPluginInstance(DuskHapticsPlugin())
+        bridge?.registerPluginInstance(MadaniHapticsPlugin())
         bridge?.registerPluginInstance(PickerPlugin())
         // iOS 26 gives the web view's scroll view a top edge effect that draws a pale band under the status bar; the
         // page scrolls inside itself, so the effect never tracks its content
@@ -100,7 +100,7 @@ class AppViewController: CAPBridgeViewController {
 @objc(OrientationPlugin)
 public class OrientationPlugin: CAPPlugin, CAPBridgedPlugin {
     public let identifier = "OrientationPlugin"
-    public let jsName = "DuskOrientation"
+    public let jsName = "MadaniOrientation"
     public let pluginMethods: [CAPPluginMethod] = [
         CAPPluginMethod(name: "allowLandscape", returnType: CAPPluginReturnPromise),
         CAPPluginMethod(name: "rotate", returnType: CAPPluginReturnPromise),

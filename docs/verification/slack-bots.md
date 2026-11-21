@@ -3,7 +3,7 @@
 Each bot can join a Slack workspace as its own Slack app, with its own name, avatar, @handle and DMs. All Slack
 traffic goes between the harness and Slack directly over Socket Mode; nothing hosted sees a message or a token. The
 one hosted piece is the stateless `GET /slack/callback` page on the link service, which only turns Slack's OAuth
-return into a `duskbot://slack/oauth` link.
+return into a `madanibot://slack/oauth` link.
 
 ## What to verify without Slack
 
@@ -14,8 +14,8 @@ the Web API, private file URLs, pre-signed uploads and the Socket Mode websocket
 pnpm exec vitest run server/slack-bots.e2e.test.ts
 ```
 
-It starts the fake, sets `DUSK_SLACK_API_URL` to it (a fixture only ever reaches a loopback Slack: anything else
-becomes a closed port, see `scripts/control-dusk.ts`) and `DUSK_SAVED_SECRETS_KEY_FILE` to a key file outside the
+It starts the fake, sets `MADANI_SLACK_API_URL` to it (a fixture only ever reaches a loopback Slack: anything else
+becomes a closed port, see `scripts/control-madani.ts`) and `MADANI_SAVED_SECRETS_KEY_FILE` to a key file outside the
 fixture's data folder (the default key sits inside a fixture's folder, so the encrypted store would stay unavailable),
 then launches the usual fake-engine fixture and drives it over HTTP:
 
@@ -33,7 +33,7 @@ then launches the usual fake-engine fixture and drives it over HTTP:
   a `+1` on the bot's reply becomes a 👍 on the reply in the conversation;
 - a turn whose engine calls `slack_post`, `slack_read`, `slack_react`, `slack_upload` and `attach_file` through the
   agents server: the post, the reaction and both uploads (the tool's and the reply's attachment) reach the fake, and
-  the agents server was launched with `DUSK_SLACK=1`;
+  the agents server was launched with `MADANI_SLACK=1`;
 - the socket dropped by Slack: the bot reads `offline`, reconnects and reads `online` again;
 - no token, refresh token, client secret or signing secret appears in the server log, the engine's launch dump, or any
   file in the data folder other than `slack-secrets.json.enc`;

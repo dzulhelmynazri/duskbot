@@ -44,7 +44,7 @@
   "watch": [
     "**the first batch may be incomplete.** ask for all matches when the count matters.",
     "**connect the account that can see the conversation.** search cannot reveal private messages outside its access.",
-    "**a sleeping laptop cannot start the search.** leave dusk running on an awake machine or use dusk cloud."
+    "**a sleeping laptop cannot start the search.** leave madani running on an awake machine or use madani cloud."
   ],
   "faq": [
     {
@@ -63,7 +63,7 @@
   "updated": "2026-11-12",
   "review": {
     "status": "approved",
-    "by": "lead agent, after two independent reviewer passes, against dusk bot docs and the composio catalog",
+    "by": "lead agent, after two independent reviewer passes, against madani bot docs and the composio catalog",
     "at": "2026-11-12"
   },
   "connectors": [
@@ -84,15 +84,15 @@
   },
   "sources": [
     {
-      "label": "dusk bot docs: files and apps",
+      "label": "madani bot docs: files and apps",
       "url": "/docs/files-and-apps"
     },
     {
-      "label": "dusk bot docs: routines",
+      "label": "madani bot docs: routines",
       "url": "/docs/routines"
     },
     {
-      "label": "dusk bot docs: a bot's computer",
+      "label": "madani bot docs: a bot's computer",
       "url": "/docs/computer"
     }
   ],

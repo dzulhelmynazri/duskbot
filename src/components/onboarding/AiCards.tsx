@@ -103,7 +103,7 @@ function useFocusOnConnect(connectedIds: readonly string[]) {
     const now = new Set(key ? key.split(",") : []);
     const before = seen.current;
     seen.current = now;
-    if (before && [...now].some((id) => !before.has(id))) void window.duskDesktop?.focusWindow?.().catch(() => {});
+    if (before && [...now].some((id) => !before.has(id))) void window.madaniDesktop?.focusWindow?.().catch(() => {});
   }, [key]);
 }
 
@@ -119,7 +119,7 @@ export function AiCards({ onMore, className, onConnected, suggested = [], staysH
   onConnected?: (tile: AiTileId) => void;
   /** cards marked as used on the person's computer */
   suggested?: readonly AiTileId[];
-  /** connected cards whose sign-in stays on this computer when the person's dusk cloud is made */
+  /** connected cards whose sign-in stays on this computer when the person's madani cloud is made */
   staysHere?: readonly AiTileId[] }) {
   const { state, refreshInstances } = useStore();
   const [picked, setPicked] = useState<AiTileId | null>(null);

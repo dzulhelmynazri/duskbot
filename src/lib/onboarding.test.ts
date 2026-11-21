@@ -88,7 +88,7 @@ describe("welcomeViewer", () => {
   });
 });
 
-describe("first run on a dusk bot Cloud home", () => {
+describe("first run on a madani bot Cloud home", () => {
   const connected = welcomeViewer({ kind: "session", scopes: ["admin", "client"], via: "cookie", cloudHome: true });
   const engine = (id: string, authenticated: boolean | undefined, state = "available") => ({ id, state, authenticated });
   const ready = (instance: ReturnType<typeof engine>) => instance.state === "available" && instance.authenticated !== false;
@@ -251,7 +251,7 @@ describe("persistence patches", () => {
 });
 
 describe("the first run's screens", () => {
-  it("is the welcome, the AI, the account, where bots live, dusk cloud's checkout, bringing things in, the phone, the cloud being made and the permissions, in that order", () => {
+  it("is the welcome, the AI, the account, where bots live, madani cloud's checkout, bringing things in, the phone, the cloud being made and the permissions, in that order", () => {
     expect(BEAT_ORDER).toEqual(["welcome", "account", "place", "checkout", "ai", "bring", "phone", "making", "permissions"]);
   });
 

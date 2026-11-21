@@ -6,7 +6,7 @@ import { join } from "node:path";
 import { DatabaseSync } from "node:sqlite";
 import { fileURLToPath } from "node:url";
 import { afterEach, expect, it } from "vitest";
-import { runControlDusk, verificationServerEnvironment } from "../scripts/control-dusk.ts";
+import { runControlMadani, verificationServerEnvironment } from "../scripts/control-madani.ts";
 import { removeTempDir, waitForExit } from "./testing/cleanup.ts";
 import { freePortBlock } from "./testing/ports.ts";
 
@@ -22,7 +22,7 @@ afterEach(async () => {
 });
 
 function freshHome(more: Record<string, unknown> = {}): string {
-  const home = mkdtempSync(join(tmpdir(), "dusk-boot-readiness-"));
+  const home = mkdtempSync(join(tmpdir(), "madani-boot-readiness-"));
   homes.push(home);
   mkdirSync(join(home, "tmp"), { recursive: true });
   writeFileSync(join(home, "config.json"), JSON.stringify({
@@ -52,7 +52,7 @@ async function boot(home: string, knobs: Record<string, string> = {}) {
     expect(response.status).toBe(200);
     return response.json() as Promise<any>;
   };
-  const control = (...args: string[]) => runControlDusk([...args, "--url", base]) as Promise<any>;
+  const control = (...args: string[]) => runControlMadani([...args, "--url", base]) as Promise<any>;
   const stop = () => waitForExit(child, { signal: "SIGTERM" });
   return { get, control, stop };
 }
@@ -102,7 +102,7 @@ it("answers on a later start while an engine CLI is still being probed, and runs
 }, 60_000);
 
 it.skipIf(process.platform === "win32")("runs a turn on a later start once its own engine has answered, while another engine's CLI is still being probed", async () => {
-  const scratch = mkdtempSync(join(tmpdir(), "dusk-boot-slow-engine-"));
+  const scratch = mkdtempSync(join(tmpdir(), "madani-boot-slow-engine-"));
   homes.push(scratch);
   const slowProbes = join(scratch, "probes.log"), slowRelease = join(scratch, "release-version");
   const slowCli = join(scratch, "slow-claude");

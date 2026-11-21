@@ -99,5 +99,5 @@
   .wl-col > *, .wl-ticket, .wl-msg { animation: none; }
 }
 
-/* the one-page dusk.bot has no header, so the scene fills the whole window */
+/* the one-page madani.bot has no header, so the scene fills the whole window */
 .solo .wl { min-height: max(620px, 100dvh); }

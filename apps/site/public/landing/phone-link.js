@@ -12,7 +12,7 @@
     const email = (params.get('email') || '').trim();
     const ok = email.length <= 254 && /^[^\s@]+@[^\s@]+$/.test(email);
     if (ok) { value.textContent = email; has.hidden = false; }
-    open.href = ok ? `duskbot://signin?email=${encodeURIComponent(email)}` : 'duskbot://signin';
+    open.href = ok ? `madanibot://signin?email=${encodeURIComponent(email)}` : 'madanibot://signin';
     return;
   }
   const code = (params.get('c') || '').replace(/[^a-z0-9]/gi, '').toUpperCase();
@@ -33,7 +33,7 @@
     setTimeout(tick, 15000);
   };
   tick();
-  if (params.get('m')) { open.href = `duskbot://pair?m=${params.get('m')}`; open.hidden = false; }
+  if (params.get('m')) { open.href = `madanibot://pair?m=${params.get('m')}`; open.hidden = false; }
   const copy = page.querySelector('[data-pl-copy]');
   copy.addEventListener('click', async () => {
     try { await navigator.clipboard.writeText(code); copy.textContent = 'copied'; } catch { copy.textContent = 'press and hold the code to copy it'; }

@@ -15,7 +15,7 @@ import { ClaudeMark, CodexMark, CursorMark, GeminiMark, HermesMark } from "./Pro
 import { OpenClawMark } from "./OpenClawMark";
 import { PixelIcon } from "./ui/PixelIcon";
 
-/** The app's own mark, by the find's tool or app name; dusk bot's earlier self is its mascot. */
+/** The app's own mark, by the find's tool or app name; madani bot's earlier self is its mascot. */
 function FindMark({ find, size = 18 }: { find: LocalFind; size?: number }) {
   const name = `${find.source ?? ""} ${find.bots?.from.key ?? ""} ${find.app}`.toLowerCase();
   if (/claude/.test(name)) return <ClaudeMark size={size} />;
@@ -24,7 +24,7 @@ function FindMark({ find, size = 18 }: { find: LocalFind; size?: number }) {
   if (/gemini/.test(name)) return <GeminiMark size={size} />;
   if (/codex/.test(name)) return <CodexMark size={size} />;
   if (/cursor/.test(name)) return <CursorMark size={size} />;
-  if (/dusk|openmausbot|opengrokbot/.test(name)) return <MausAvatar color="chrome" size={size + 4} trackPointer={false} animated={false} label="" />;
+  if (/madani|openmausbot|opengrokbot/.test(name)) return <MausAvatar color="chrome" size={size + 4} trackPointer={false} animated={false} label="" />;
   if (/grok/.test(name)) return <GrokBotMark size={size} />;
   return <PixelIcon name="laptop" size={size} />;
 }
@@ -170,7 +170,7 @@ export function BringPrompt({ grokWaiting, folded = false, titled = false }: { g
         <button type="button" data-bring-see="" aria-expanded={open} aria-controls={`${promptId}-text`} onClick={() => setOpen((was) => !was)}
           className="flex min-h-9 items-center gap-1 rounded-full px-2.5 text-[13px] leading-[18px] text-ink-tertiary transition-colors duration-150 ease-[ease] hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus motion-reduce:transition-none">
           <span>{open ? t("bring.hidePrompt") : t("bring.seePrompt")}</span>
-          <ChevronDown size={14} aria-hidden="true" className={cn("transition-transform duration-200 ease-[var(--dusk-ease-out)] motion-reduce:transition-none", open && "rotate-180")} />
+          <ChevronDown size={14} aria-hidden="true" className={cn("transition-transform duration-200 ease-[var(--madani-ease-out)] motion-reduce:transition-none", open && "rotate-180")} />
         </button>
       </div>
       {copy !== "idle" && (
@@ -178,7 +178,7 @@ export function BringPrompt({ grokWaiting, folded = false, titled = false }: { g
           {copy === "failed" ? t("bring.copyFailed") : t("bring.copied")}
         </p>
       )}
-      <div id={`${promptId}-text`} inert={!open} className={cn("grid transition-[grid-template-rows,opacity] duration-[240ms] ease-[var(--dusk-ease-out)] motion-reduce:transition-none", open ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0")}>
+      <div id={`${promptId}-text`} inert={!open} className={cn("grid transition-[grid-template-rows,opacity] duration-[240ms] ease-[var(--madani-ease-out)] motion-reduce:transition-none", open ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0")}>
         <div className="min-h-0 overflow-hidden">
           <pre tabIndex={open ? 0 : -1} aria-label={t("bring.promptLabel")}
             className="m-0 mt-3 max-h-[200px] overflow-y-auto overscroll-contain whitespace-pre-wrap break-words rounded-[12px] bg-app px-3.5 py-3 font-mono text-[12px] leading-[18px] text-ink-secondary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus">
@@ -202,11 +202,11 @@ export function BringPrompt({ grokWaiting, folded = false, titled = false }: { g
           <button type="button" id={`${promptId}-label`} data-bring-online="" aria-expanded={unfolded} aria-controls={`${promptId}-steps`} onClick={() => setUnfolded((was) => !was)}
             className="flex min-h-9 w-full items-center gap-1 rounded-full px-1 text-start text-[12px] font-normal leading-4 text-ink-tertiary transition-colors duration-150 ease-[ease] hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus motion-reduce:transition-none">
             <span className="min-w-0">{t("bring.onlineLabel")}</span>
-            <ChevronDown size={14} aria-hidden="true" className={cn("shrink-0 transition-transform duration-200 ease-[var(--dusk-ease-out)] motion-reduce:transition-none", unfolded && "rotate-180")} />
+            <ChevronDown size={14} aria-hidden="true" className={cn("shrink-0 transition-transform duration-200 ease-[var(--madani-ease-out)] motion-reduce:transition-none", unfolded && "rotate-180")} />
           </button>
         </h2>
       ) : <h2 id={`${promptId}-label`} className={titled ? "m-0 mb-2 px-1 text-[12px] font-normal leading-4 text-ink-tertiary" : "sr-only"}>{t("bring.onlineLabel")}</h2>}
-      <div id={`${promptId}-steps`} inert={!shown} className={cn("grid transition-[grid-template-rows,opacity] duration-[240ms] ease-[var(--dusk-ease-out)] motion-reduce:transition-none", shown ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0")}>
+      <div id={`${promptId}-steps`} inert={!shown} className={cn("grid transition-[grid-template-rows,opacity] duration-[240ms] ease-[var(--madani-ease-out)] motion-reduce:transition-none", shown ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0")}>
         <div className={cn("min-h-0 overflow-hidden", folded && "pt-1")}>{steps}</div>
       </div>
       {notes.said && <StatusLine data-bring-notes={notes.said.state} state={notes.said.state} line={notes.said.line} />}

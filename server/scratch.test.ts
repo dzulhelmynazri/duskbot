@@ -7,7 +7,7 @@ import { guardDisk, listScratch, ScratchLedger, SCRATCH_MAX_AGE_MS, sweepScratch
 
 const made: string[] = [];
 function place(): { root: string; scratch: string; outside: string } {
-  const root = mkdtempSync(join(tmpdir(), "dusk-scratch-"));
+  const root = mkdtempSync(join(tmpdir(), "madani-scratch-"));
   made.push(root);
   const scratch = join(root, "browser", "screenshots");
   const outside = join(root, "workspace");

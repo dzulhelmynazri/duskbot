@@ -1,5 +1,5 @@
 // what keeps the relay from being a free pipe or a memory sink: a tunnel's byte budget, unread frames expiring, one cap
-// on every queue together, setup sessions only for a signed dusk account (and a few tunnels each), and per-address limits
+// on every queue together, setup sessions only for a signed madani account (and a few tunnels each), and per-address limits
 import { generateKeyPairSync, sign } from "node:crypto";
 import { mkdtempSync, rmSync } from "node:fs";
 import { createServer } from "node:http";
@@ -27,7 +27,7 @@ function grant({ who = acct, iat = time, exp = time + 5 * 60_000, kid = "test-1"
 }
 
 async function start(options = {}, keep = false) {
-  if (!keep) { time = Date.now(); dir = mkdtempSync(join(tmpdir(), "dusk-relay-guards-")); }
+  if (!keep) { time = Date.now(); dir = mkdtempSync(join(tmpdir(), "madani-relay-guards-")); }
   waits = [];
   // a held post's wait passes on the test clock at once
   service = createLinkService({ base: "http://link.test", dataDir: dir, scriptPath: join(root, "install.sh"), agentPath: join(root, "agent.mjs"), trustProxy: true, now: () => time,
@@ -368,7 +368,7 @@ describe("queued frames", () => {
   });
 });
 
-describe("setup sessions need a dusk account", () => {
+describe("setup sessions need a madani account", () => {
   it("refuses a session without a valid grant", async () => {
     await start({ grantKeys: keys });
     for (const bad of [undefined, "nope", grant({ exp: time - 10 * 60_000, iat: time - 20 * 60_000 }), grant({ kid: "other" }),

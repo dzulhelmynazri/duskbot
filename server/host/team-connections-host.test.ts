@@ -35,7 +35,7 @@ const ROSTER = [
 ];
 
 function setup(options: { team?: boolean; requester?: Record<string, string>; servers?: Record<string, unknown>; roster?: typeof ROSTER } = {}) {
-  const dataDir = mkdtempSync(join(homedir(), "dusk-team-connections-"));
+  const dataDir = mkdtempSync(join(homedir(), "madani-team-connections-"));
   const requester = { "ada-chat": ADA, "cleo-chat": CLEO, "room-chat": ADA, "main-chat": ADA, "work-chat": ADA, "ada-work": ADA, "cleo-work": CLEO, ...options.requester };
   const cfg = { mcpServers: options.servers ?? {
     mail: { type: "http", url: "https://mail.example/mcp", headers: { Authorization: "Bearer team-mail-key" }, enabled: true },

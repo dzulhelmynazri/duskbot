@@ -112,7 +112,7 @@ function useScrollThumb(scroller: RefObject<HTMLDivElement | null>, key: string)
 export function SettingsModal() {
   const { state, dispatch } = useStore();
   const present = useIsPresent();
-  const remoteActive = window.duskDesktop?.remoteClient?.active === true;
+  const remoteActive = window.madaniDesktop?.remoteClient?.active === true;
   const ownerOrAdmin = useOwnerOrAdmin();
   const cloudHome = state.config?.cloudHome === true;
 
@@ -120,11 +120,11 @@ export function SettingsModal() {
     general: true, appearance: true, texting: true, companion: true, remote: true, computer: true, logins: true, updates: true,
     advanced: true, apps: true, looks: true, bots: true, data: true, builder: true, about: true, engines: true, connections: true,
     skills: true, usage: true, backups: true, import: true, experimental: true, voice: true, transfer: vpsLinkAvailable(),
-    desktopWorkspaces: Boolean(window.duskDesktop?.environments),
-    organization: Boolean(window.duskDesktop?.organization),
-    cloudAccount: Boolean(window.duskDesktop?.cloudAccount || (window.duskDesktop?.cloudPlan && cloudHome)),
-    people: !window.duskDesktop && !cloudHome,
-    activity: !window.duskDesktop && ownerOrAdmin === true,
+    desktopWorkspaces: Boolean(window.madaniDesktop?.environments),
+    organization: Boolean(window.madaniDesktop?.organization),
+    cloudAccount: Boolean(window.madaniDesktop?.cloudAccount || (window.madaniDesktop?.cloudPlan && cloudHome)),
+    people: !window.madaniDesktop && !cloudHome,
+    activity: !window.madaniDesktop && ownerOrAdmin === true,
     botAccess: Boolean(state.config?.team) && ownerOrAdmin === true,
     permissions: false,
   };

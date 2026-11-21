@@ -140,8 +140,8 @@ export function createOutboundHold(deps: OutboundHoldDeps): OutboundHold {
     return {
       ok: false,
       text: answer === "timeout"
-        ? `dusk bot did not ${what}: nobody answered the approval in time. Ask the user before trying again.`
-        : `dusk bot did not ${what}: the user declined. Do not retry it; ask the user what they would like instead.`,
+        ? `madani bot did not ${what}: nobody answered the approval in time. Ask the user before trying again.`
+        : `madani bot did not ${what}: the user declined. Do not retry it; ask the user what they would like instead.`,
     };
   }
 
@@ -164,11 +164,11 @@ export function createOutboundHold(deps: OutboundHoldDeps): OutboundHold {
       const allowance = outboundDailyCap(currentSender.outbound, fullAccess, opaque, ask);
       const { app, calls, summary } = outboundCard(outboundCalls);
       const capNote = (count: number, full: boolean) =>
-        `dusk bot did not send this. ${currentSender.name} has reached its daily limit of ${count} outbound action${count === 1 ? "" : "s"}${full ? " at Full access" : ""}. Tell the user it was not sent, and ask them to ${full ? "set a sending rule" : "raise the limit"} under the bot's Permissions before trying again.`;
+        `madani bot did not send this. ${currentSender.name} has reached its daily limit of ${count} outbound action${count === 1 ? "" : "s"}${full ? " at Full access" : ""}. Tell the user it was not sent, and ask them to ${full ? "set a sending rule" : "raise the limit"} under the bot's Permissions before trying again.`;
       if (allowance) {
         let today: number;
         try { today = outboundCounts.today(currentSender.id); }
-        catch { return refuseOutbound("dusk bot did not send this: the daily allowance could not be read. Nothing was sent."); }
+        catch { return refuseOutbound("madani bot did not send this: the daily allowance could not be read. Nothing was sent."); }
         if (today + outboundCalls.length > allowance.cap) {
           appendDecision(DATA_DIR, {
             threadId, botId: currentSender.id, botName: currentSender.name,
@@ -188,7 +188,7 @@ export function createOutboundHold(deps: OutboundHoldDeps): OutboundHold {
           : { title: SEND_TITLE, subtitle: summary, options: ["Allow", "Deny"], outboundRequest };
       const asked = await askOnCard(currentSender, threadId, outboundTool, summary, active, card);
       if (!asked.ok) return refuseOutbound(asked.text);
-      if (ask.kind === "draft" && asked.edits) return refuseOutbound("dusk bot did not send this: a saved draft goes out as saved, and the person changed it on the card. Update the draft with their changes first, then send it again.");
+      if (ask.kind === "draft" && asked.edits) return refuseOutbound("madani bot did not send this: a saved draft goes out as saved, and the person changed it on the card. Update the draft with their changes first, then send it again.");
       if (ask.kind === "email" && asked.edits) applyEdits(threadId, asked.messageId, outboundCalls[0]!, ask.email, asked.edits);
       return { ok: true, approved: true };
     },

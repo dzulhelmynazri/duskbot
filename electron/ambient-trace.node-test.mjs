@@ -4,9 +4,9 @@ import { createTrace, traceFolder, traceWanted } from "./ambient-trace.mjs";
 
 test("the trace is off unless asked for, and writes one timed line per event to the logs folder", () => {
   assert.equal(traceWanted({}, null), false);
-  assert.equal(traceWanted({ DUSK_AMBIENT_TRACE: "1" }, null), true);
+  assert.equal(traceWanted({ MADANI_AMBIENT_TRACE: "1" }, null), true);
   assert.equal(traceWanted({}, { trace: true }), true);
-  assert.match(traceFolder("darwin"), /Library\/Logs\/Dusk Bot$/);
+  assert.match(traceFolder("darwin"), /Library\/Logs\/Madani Bot$/);
   const lines = [];
   let clock = Date.UTC(2026, 10, 10, 9, 30, 0, 120);
   const trace = createTrace({ folder: "/tmp/x", now: () => clock, write: (file, line) => lines.push([file, line]) });

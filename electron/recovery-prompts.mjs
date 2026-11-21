@@ -1,12 +1,12 @@
 const RETRY_LOAD_MS = 2000;
 
-/** The background server could not come back by itself: one plain sentence, and one button restarts dusk bot. */
+/** The background server could not come back by itself: one plain sentence, and one button restarts madani bot. */
 export function offerRestart({ dialog, app }) {
   return dialog.showMessageBox({
     type: "error",
     message: "The bot server stopped",
-    detail: "Restart dusk bot to bring it back.",
-    buttons: ["Restart dusk bot", "Not now"],
+    detail: "Restart madani bot to bring it back.",
+    buttons: ["Restart madani bot", "Not now"],
     defaultId: 0,
     cancelId: 1,
   }).then(({ response }) => {

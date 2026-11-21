@@ -1,6 +1,6 @@
 import { useCallback, useState } from "react";
 
-const COLLAPSED_KEY = "dusk.mobile.home.collapsedFolders";
+const COLLAPSED_KEY = "madani.mobile.home.collapsedFolders";
 
 export type Folder<T> = { name: string; entries: T[]; unread: number };
 

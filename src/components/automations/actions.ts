@@ -43,7 +43,7 @@ export function useAutomationActions() {
 
   const runNow = (automation: Automation) => attempt(`run:${automation.id}`, () => automation.kind === "schedule"
     ? new Promise<void>((resolve, reject) => dispatch({ type: "runRoutine", routineId: automation.id, onStarted: () => resolve(), onError: reject }))
-    : api(`/api/webhooks/${automation.id}/test`, { method: "POST", body: JSON.stringify({ event: "dusk.test", message: "A test run from Automations" }) }));
+    : api(`/api/webhooks/${automation.id}/test`, { method: "POST", body: JSON.stringify({ event: "madani.test", message: "A test run from Automations" }) }));
 
   /** Asks once (a person deleting their own automation), then deletes it; `null` when the caller already asked. */
   const remove = async (automation: Automation, question: string | null): Promise<boolean> => {

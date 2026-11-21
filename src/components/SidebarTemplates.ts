@@ -1,4 +1,4 @@
-const OPEN_TEMPLATES = "dusk:open-templates";
+const OPEN_TEMPLATES = "madani:open-templates";
 let hosts = 0;
 let handoffAt = 0;
 

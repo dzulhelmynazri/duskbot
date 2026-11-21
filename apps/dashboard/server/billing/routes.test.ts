@@ -30,11 +30,11 @@ async function listen(server: Server) {
   return `http://127.0.0.1:${address.port}`;
 }
 function dataDirectory() {
-  const dir = mkdtempSync(join(tmpdir(), "dusk-billing-routes-"));
+  const dir = mkdtempSync(join(tmpdir(), "madani-billing-routes-"));
   cleanup.push(() => rmSync(dir, { recursive: true, force: true })); return dir;
 }
 async function fixture() {
-  for (const key of ["DUSK_BILLING_PROVIDER", "DUSK_CLOUD_PROVIDER", "DUSK_POOL_DRIVER", "DUSK_CLOUD_SEAL_KEY", "DUSK_DODO_PRODUCTS"]) vi.stubEnv(key, undefined);
+  for (const key of ["MADANI_BILLING_PROVIDER", "MADANI_CLOUD_PROVIDER", "MADANI_POOL_DRIVER", "MADANI_CLOUD_SEAL_KEY", "MADANI_DODO_PRODUCTS"]) vi.stubEnv(key, undefined);
   const dir = dataDirectory(), mailer = memoryMailer(), csrf = new Map<string, string>();
   let time = Date.now();
   const app = createDashboardApp({ dataDir: dir, publicUrl: "http://127.0.0.1", mailer, staticDir: null, now: () => time });
@@ -52,7 +52,7 @@ async function fixture() {
     const start = await answer<{ attempt: string }>("/v1/auth/start", { email });
     const res = await page("/v1/auth/verify", { attempt: start.attempt, code: mailer.outbox.findLast(item => item.to === email && /\b\d{8}\b/.test(item.text))?.text.match(/\b\d{8}\b/)?.[0] }); expect(res.status).toBe(200);
     const { account, csrfToken } = await read<{ account: { id: string; email: string }; csrfToken: string }>(res);
-    const cookie = res.headers.getSetCookie().find(value => value.startsWith("dusk_dash="))!.split(";")[0];
+    const cookie = res.headers.getSetCookie().find(value => value.startsWith("madani_dash="))!.split(";")[0];
     csrf.set(cookie, csrfToken);
     return { cookie, account, csrfToken };
   }
@@ -104,7 +104,7 @@ it("separates cookie and app credentials and preserves billing origin and CORS b
     const response = await fetch(`${f.origin}/api/cloud/desktop/license`, { headers: { cookie: owner.cookie, ...(token ? { authorization: `Bearer ${token}` } : {}) } });
     expect(response.status).toBe(401); expect(await response.json()).toEqual({ error: "invalid_token" });
   }
-  for (const cookie of [undefined, `dusk_dash=${grant.accessToken}`, `dusk_dash=${grant.accessToken.slice(4)}`]) {
+  for (const cookie of [undefined, `madani_dash=${grant.accessToken}`, `madani_dash=${grant.accessToken.slice(4)}`]) {
     const response = await fetch(`${f.origin}/v1/billing/overview`, { headers: { authorization: `Bearer ${grant.accessToken}`, ...(cookie ? { cookie } : {}) } });
     expect(response.status).toBe(401); expect(await response.json()).toMatchObject({ code: "signed_out" });
   }
@@ -152,7 +152,7 @@ it("runs the dashboard billing lifecycle over HTTP, including signed workspace r
   expect(link.workspaceId).toBe(cloud.workspaceId); expect(bootstrap.files[0].mode).toBe(0o600);
   const raw = JSON.stringify({ v: 1, seq: 1, at: f.now(), workspace: { name: "Paid fixture", kind: "vps", version: "1.0.0", platform: "linux" } });
   const signature = sign(null, Buffer.from(signedPayload("POST", "/v1/report", f.now(), createHash("sha256").update(raw).digest("hex"))), createPrivateKey({ key: Buffer.from(link.privateKey, "base64"), format: "der", type: "pkcs8" })).toString("base64");
-  const report = await fetch(`${f.origin}/v1/report`, { method: "POST", headers: { "content-type": "application/json", "x-dusk-workspace": link.workspaceId, "x-dusk-time": String(f.now()), "x-dusk-signature": signature }, body: raw }); expect(report.status).toBe(200);
+  const report = await fetch(`${f.origin}/v1/report`, { method: "POST", headers: { "content-type": "application/json", "x-madani-workspace": link.workspaceId, "x-madani-time": String(f.now()), "x-madani-signature": signature }, body: raw }); expect(report.status).toBe(200);
   cloud = (await f.answer<{ cloud: CloudDesktopView }>(`/v1/clouds/${cloud.id}`, undefined, cookie)).cloud; expect(cloud.lastReportAt).toBe(f.now());
   expect(await f.answer(`/v1/clouds/${cloud.id}`, { name: "Paid Cloud", color: "blue", ignored: true }, cookie, "PATCH")).toMatchObject({ cloud: { name: "Paid Cloud", color: "blue" } });
   expect(await f.answer(`/v1/clouds/${cloud.id}/power`, { action: "off" }, cookie)).toMatchObject({ cloud: { status: "stopped" } });
@@ -263,24 +263,24 @@ it("keeps billing off outside loopback, checks startup configuration, and never 
   expect((await fetch(`${origin}/v1/billing/quote`, { method: "POST", body: JSON.stringify({ cart: bundle("starter") }) })).status).toBe(400);
   expect((await fetch(`${origin}/v1/billing/quote`, { method: "POST", body: JSON.stringify({ cart: { ...bundle("starter"), desktop: { kind: "shared_s", region: "us-west-2" } } }) })).status).toBe(200);
   expect((await fetch(`${origin}/v1/billing/overview`)).status).toBe(503);
-  const env = { DUSK_BILLING_PROVIDER: "dodo", DUSK_DODO_API_KEY: "fixture-key", DUSK_DODO_WEBHOOK_SECRET: `whsec_${Buffer.alloc(32).toString("base64")}`, DUSK_DODO_PRODUCTS: JSON.stringify({ "license_solo:month": "fixture-product" }) };
-  for (const key of ["DUSK_DODO_API_KEY", "DUSK_DODO_WEBHOOK_SECRET", "DUSK_DODO_PRODUCTS"] as const) expect(() => createBilling(options({ env: { ...env, [key]: undefined } }))).toThrow(key);
+  const env = { MADANI_BILLING_PROVIDER: "dodo", MADANI_DODO_API_KEY: "fixture-key", MADANI_DODO_WEBHOOK_SECRET: `whsec_${Buffer.alloc(32).toString("base64")}`, MADANI_DODO_PRODUCTS: JSON.stringify({ "license_solo:month": "fixture-product" }) };
+  for (const key of ["MADANI_DODO_API_KEY", "MADANI_DODO_WEBHOOK_SECRET", "MADANI_DODO_PRODUCTS"] as const) expect(() => createBilling(options({ env: { ...env, [key]: undefined } }))).toThrow(key);
   const dodo = createBilling(options({ env })); cleanup.push(() => dodo.close());
   expect(dodo.fake).toBeNull();
   const dodoOrigin = await listen(createServer(async (req, res) => { if (!await dodo.handle(req, res, new URL(req.url!, "https://dashboard.example.test"))) { res.writeHead(404); res.end(); } }));
   expect((await fetch(`${dodoOrigin}/v1/billing/fake/complete`, { method: "POST", body: "{}" })).status).toBe(404);
-  for (const key of ["DUSK_HETZNER_TOKEN", "DUSK_CLOUD_SEAL_KEY", "DUSK_CLOUD_HOME_IMAGE"] as const) {
-    const cloudEnv = { DUSK_CLOUD_PROVIDER: "hetzner", DUSK_HETZNER_TOKEN: "fixture-token", DUSK_CLOUD_SEAL_KEY: Buffer.alloc(32, 1).toString("base64url"), DUSK_CLOUD_HOME_IMAGE: "ghcr.io/example/home:fixture", [key]: undefined };
+  for (const key of ["MADANI_HETZNER_TOKEN", "MADANI_CLOUD_SEAL_KEY", "MADANI_CLOUD_HOME_IMAGE"] as const) {
+    const cloudEnv = { MADANI_CLOUD_PROVIDER: "hetzner", MADANI_HETZNER_TOKEN: "fixture-token", MADANI_CLOUD_SEAL_KEY: Buffer.alloc(32, 1).toString("base64url"), MADANI_CLOUD_HOME_IMAGE: "ghcr.io/example/home:fixture", [key]: undefined };
     expect(() => createBilling(options({ env: cloudEnv }))).toThrow(key);
   }
-  const noClouds = createBilling(options({ env: { DUSK_BILLING_PROVIDER: "fake" } })); cleanup.push(() => noClouds.close());
+  const noClouds = createBilling(options({ env: { MADANI_BILLING_PROVIDER: "fake" } })); cleanup.push(() => noClouds.close());
   const checkout = await noClouds.service.checkout({ id: "a", email: "a@example.test" }, { kind: "cart", cart: { ...managedRegionConfig(BILLING_CONFIG).bundles[1].cart, interval: "month" } });
   for (const delivery of noClouds.fake!.complete([...noClouds.fake!.sessions.keys()][0])) noClouds.service.handleWebhook(delivery.headers, delivery.body);
-  await noClouds.clouds.reconcile(); expect(noClouds.clouds.get(checkout.cloudId!)!).toMatchObject({ status: "provisioning", error: "dusk cloud is not configured." });
+  await noClouds.clouds.reconcile(); expect(noClouds.clouds.get(checkout.cloudId!)!).toMatchObject({ status: "provisioning", error: "madani cloud is not configured." });
 });
 
 it("never mounts fake completion at a public origin even when fake mode is explicitly configured", async () => {
-  const billing = createBilling(options({ env: { DUSK_BILLING_PROVIDER: "fake" } })); cleanup.push(() => billing.close());
+  const billing = createBilling(options({ env: { MADANI_BILLING_PROVIDER: "fake" } })); cleanup.push(() => billing.close());
   const origin = await listen(createServer(async (req, res) => { if (!await billing.handle(req, res, new URL(req.url!, "https://dashboard.example.test"))) { res.writeHead(404); res.end(); } }));
   expect((await fetch(`${origin}/v1/billing/fake/complete`, { method: "POST", body: "{}" })).status).toBe(404);
 });
@@ -292,7 +292,7 @@ it("refuses deletion with both billing blockers before changing the account or b
   const before = f.saved(), clouds = readFileSync(join(f.dir, "clouds.json"), "utf8");
   const response = await f.page("/v1/account/delete", { email: owner.account.email }, owner.cookie);
   expect(response.status).toBe(409);
-  expect(await response.json()).toEqual({ error: "Cancel your plan and dusk cloud before deleting your account.", code: "billing_active", blockers: [
+  expect(await response.json()).toEqual({ error: "Cancel your plan and madani cloud before deleting your account.", code: "billing_active", blockers: [
     { kind: "subscription", id: before.subscriptions[0].id, label: BILLING_CONFIG.bundles.find(b => b.id === "starter")!.label, status: "active" },
     { kind: "cloud_desktop", id: checkout.cloudId, label: "My desktop", status: "running" },
   ] });
@@ -420,21 +420,21 @@ it("deletes accounts with no billing and recovers a crash between account deleti
   expect(empty.app.auth.account(free.account.id)).toBeNull(); expect(empty.saved().closures![0].steps).toContain("scrubbed");
 });
 
-it("shows the operator's checkout funnel only with DUSK_OPS_TOKEN, and refuses a short token at startup", async () => {
+it("shows the operator's checkout funnel only with MADANI_OPS_TOKEN, and refuses a short token at startup", async () => {
   const token = "ops-fixture-token-0123456789abcdef";
-  expect(() => createBilling(options({ env: { DUSK_OPS_TOKEN: "short" } }))).toThrow("DUSK_OPS_TOKEN");
-  for (const env of [{}, { DUSK_OPS_TOKEN: token }]) {
+  expect(() => createBilling(options({ env: { MADANI_OPS_TOKEN: "short" } }))).toThrow("MADANI_OPS_TOKEN");
+  for (const env of [{}, { MADANI_OPS_TOKEN: token }]) {
     const billing = createBilling(options({ env })); cleanup.push(() => billing.close());
     const origin = await listen(createServer(async (req, res) => { if (!await billing.handle(req, res, new URL(req.url!, "https://dashboard.example.test"))) { res.writeHead(404); res.end(); } }));
     const read = (auth?: string, query = "") => fetch(`${origin}/v1/billing/ops/funnel${query}`, auth ? { headers: { authorization: auth } } : {});
     expect((await read()).status).toBe(404);
     expect((await read(`Bearer ${token}x`)).status).toBe(404);
-    if (!("DUSK_OPS_TOKEN" in env)) { expect((await read(`Bearer ${token}`)).status).toBe(404); continue; }
+    if (!("MADANI_OPS_TOKEN" in env)) { expect((await read(`Bearer ${token}`)).status).toBe(404); continue; }
     const answer = await read(`Bearer ${token}`, "?days=7");
     expect(answer.status).toBe(200);
     expect(await answer.json()).toMatchObject({ v: 1, rows: [], totals: { started: 0, paid: 0, active: 0 } });
     expect((await read(`Bearer ${token}`, "?days=0")).status).toBe(400);
-    // ending a package trial early is preview's (or DUSK_OPS_END_TRIAL's): elsewhere the route does not exist
+    // ending a package trial early is preview's (or MADANI_OPS_END_TRIAL's): elsewhere the route does not exist
     const end = await fetch(`${origin}/v1/billing/ops/clouds/c${"0".repeat(24)}/end-trial`, { method: "POST", headers: { "content-type": "application/json", authorization: `Bearer ${token}` }, body: JSON.stringify({ reason: "test_cloud" }) });
     expect(end.status).toBe(404);
   }
@@ -442,8 +442,8 @@ it("shows the operator's checkout funnel only with DUSK_OPS_TOKEN, and refuses a
 
 it("preview billing: checkout says it opens soon, and only the operator's token grants a plan through the same webhook path", async () => {
   const token = "o".repeat(40);
-  expect(() => createBilling(options({ env: { DUSK_BILLING_PROVIDER: "preview" } }))).toThrow("DUSK_OPS_TOKEN");
-  const billing = createBilling(options({ env: { DUSK_BILLING_PROVIDER: "preview", DUSK_OPS_TOKEN: token }, findAccount: email => email === "a@example.test" ? { id: "a", email } : null }));
+  expect(() => createBilling(options({ env: { MADANI_BILLING_PROVIDER: "preview" } }))).toThrow("MADANI_OPS_TOKEN");
+  const billing = createBilling(options({ env: { MADANI_BILLING_PROVIDER: "preview", MADANI_OPS_TOKEN: token }, findAccount: email => email === "a@example.test" ? { id: "a", email } : null }));
   cleanup.push(() => billing.close());
   const origin = await listen(createServer(async (req, res) => { if (!await billing.handle(req, res, new URL(req.url!, "https://dashboard.example.test"))) { res.writeHead(404); res.end(); } }));
   const post = (path: string, data: unknown, auth?: string) => fetch(`${origin}${path}`, { method: "POST", headers: { "content-type": "application/json", ...(auth ? { authorization: `Bearer ${auth}` } : {}) }, body: JSON.stringify(data) });
@@ -465,11 +465,11 @@ it("dodo test mode: the operator's grant opens a real test-mode checkout for a h
   const token = "o".repeat(40), calls: string[] = [];
   const fetchStub = (async (url: string | URL) => { calls.push(String(url));
     return new Response(JSON.stringify({ session_id: "cks_fixture", checkout_url: "https://test.checkout.dodopayments.com/session/cks_fixture" }), { status: 200, headers: { "content-type": "application/json" } }); }) as typeof fetch;
-  const env = { DUSK_BILLING_PROVIDER: "dodo", DUSK_DODO_API_KEY: "fixture-key", DUSK_DODO_WEBHOOK_SECRET: `whsec_${Buffer.alloc(32).toString("base64")}`,
-    DUSK_DODO_PRODUCTS: JSON.stringify({ "desktop_shared_s:month": "fixture-product" }), DUSK_OPS_TOKEN: token };
+  const env = { MADANI_BILLING_PROVIDER: "dodo", MADANI_DODO_API_KEY: "fixture-key", MADANI_DODO_WEBHOOK_SECRET: `whsec_${Buffer.alloc(32).toString("base64")}`,
+    MADANI_DODO_PRODUCTS: JSON.stringify({ "desktop_shared_s:month": "fixture-product" }), MADANI_OPS_TOKEN: token };
   const findAccount = (email: string) => email === "a@example.test" ? { id: "a", email } : null;
   for (const mode of ["test", "live"]) {
-    const billing = createBilling(options({ env: { ...env, DUSK_DODO_MODE: mode }, findAccount, fetch: fetchStub })); cleanup.push(() => billing.close());
+    const billing = createBilling(options({ env: { ...env, MADANI_DODO_MODE: mode }, findAccount, fetch: fetchStub })); cleanup.push(() => billing.close());
     const origin = await listen(createServer(async (req, res) => { if (!await billing.handle(req, res, new URL(req.url!, "https://dashboard.example.test"))) { res.writeHead(404); res.end(); } }));
     const grant = (auth: string) => fetch(`${origin}/v1/billing/ops/grant`, { method: "POST", headers: { "content-type": "application/json", authorization: `Bearer ${auth}` }, body: JSON.stringify({ email: "a@example.test", bundle: "starter" }) });
     expect((await grant("x".repeat(40))).status).toBe(404);
@@ -485,9 +485,9 @@ it("dodo test mode: the operator's grant opens a real test-mode checkout for a h
 it("the operator marks App Review's demo account only, and only with its token, also where billing is off", async () => {
   const token = "o".repeat(40);
   const findAccount = (email: string) => ["review@example.test", "a@example.test"].includes(email) ? { id: email === "a@example.test" ? "a" : "r", email } : null;
-  const unset = createBilling(options({ env: { DUSK_BILLING_PROVIDER: "preview", DUSK_OPS_TOKEN: token }, findAccount })); cleanup.push(() => unset.close());
-  const billing = createBilling(options({ env: { DUSK_BILLING_PROVIDER: "preview", DUSK_OPS_TOKEN: token, DUSK_REVIEW_EMAIL: "Review@example.test" }, findAccount })); cleanup.push(() => billing.close());
-  const off = createBilling(options({ env: { DUSK_OPS_TOKEN: token, DUSK_REVIEW_EMAIL: "review@example.test" }, findAccount })); cleanup.push(() => off.close());
+  const unset = createBilling(options({ env: { MADANI_BILLING_PROVIDER: "preview", MADANI_OPS_TOKEN: token }, findAccount })); cleanup.push(() => unset.close());
+  const billing = createBilling(options({ env: { MADANI_BILLING_PROVIDER: "preview", MADANI_OPS_TOKEN: token, MADANI_REVIEW_EMAIL: "Review@example.test" }, findAccount })); cleanup.push(() => billing.close());
+  const off = createBilling(options({ env: { MADANI_OPS_TOKEN: token, MADANI_REVIEW_EMAIL: "review@example.test" }, findAccount })); cleanup.push(() => off.close());
   const serve = async (b: typeof billing) => listen(createServer(async (req, res) => { if (!await b.handle(req, res, new URL(req.url!, "https://dashboard.example.test"))) { res.writeHead(404); res.end(); } }));
   const [none, origin, billingOff] = await Promise.all([serve(unset), serve(billing), serve(off)]);
   const mark = (at: string, data: unknown, auth = token) => fetch(`${at}/v1/billing/ops/review`, { method: "POST", headers: { "content-type": "application/json", authorization: `Bearer ${auth}` }, body: JSON.stringify(data) });
@@ -513,10 +513,10 @@ it("the operator marks App Review's demo account only, and only with its token, 
 it("App Review's grant never touches the payment provider, works with billing off and live, and nothing is for sale before launch", async () => {
   const token = "o".repeat(40), reviewer = { id: "r", email: "review@example.test" }, bearer = `omc_${"a".repeat(43)}`, calls: string[] = [];
   const fetchStub = (async (url: string | URL) => { calls.push(String(url)); return new Response("{}", { status: 500 }); }) as typeof fetch;
-  const live = { DUSK_BILLING_PROVIDER: "dodo", DUSK_DODO_MODE: "live", DUSK_DODO_API_KEY: "fixture-key", DUSK_DODO_WEBHOOK_SECRET: `whsec_${Buffer.alloc(32).toString("base64")}`,
-    DUSK_DODO_PRODUCTS: JSON.stringify({ "desktop_shared_s:month": "fixture-product" }), DUSK_PRELAUNCH_WAITLIST_ONLY: "1" };
+  const live = { MADANI_BILLING_PROVIDER: "dodo", MADANI_DODO_MODE: "live", MADANI_DODO_API_KEY: "fixture-key", MADANI_DODO_WEBHOOK_SECRET: `whsec_${Buffer.alloc(32).toString("base64")}`,
+    MADANI_DODO_PRODUCTS: JSON.stringify({ "desktop_shared_s:month": "fixture-product" }), MADANI_PRELAUNCH_WAITLIST_ONLY: "1" };
   for (const env of [{}, live]) {
-    const billing = createBilling(options({ env: { ...env, DUSK_OPS_TOKEN: token, DUSK_REVIEW_EMAIL: reviewer.email }, fetch: fetchStub,
+    const billing = createBilling(options({ env: { ...env, MADANI_OPS_TOKEN: token, MADANI_REVIEW_EMAIL: reviewer.email }, fetch: fetchStub,
       findAccount: email => email === reviewer.email ? reviewer : null, accounts: { fromCookie: () => reviewer, fromBearer: () => reviewer } }));
     cleanup.push(() => billing.close());
     const origin = await listen(createServer(async (req, res) => { if (!await billing.handle(req, res, new URL(req.url!, "https://dashboard.example.test"))) { res.writeHead(404); res.end(); } }));
@@ -547,7 +547,7 @@ it("App Review's grant never touches the payment provider, works with billing of
     expect(billing.clouds.get(answer.granted.cloudId)!.review).toBeUndefined();
   }
   expect(calls.filter(url => /dodopayments/.test(url))).toEqual([]);
-  const closed = createBilling(options({ env: { DUSK_OPS_TOKEN: token } })); cleanup.push(() => closed.close());
+  const closed = createBilling(options({ env: { MADANI_OPS_TOKEN: token } })); cleanup.push(() => closed.close());
   expect(closed.appRoutes).toBe(false);
 });
 

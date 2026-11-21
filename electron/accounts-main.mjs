@@ -140,7 +140,7 @@ export function installAccounts({ ipcMain, ownPage, placePage, ownPlace = () => 
     view,
     tell,
     /** The sheet over whatever page is on screen, as the rail's page keeps it: signed out, it is the sign-in (main asks,
-     *  for a step that needs the account: a server's move to dusk cloud). */
+     *  for a step that needs the account: a server's move to madani cloud). */
     openSheet() { sheetPending = true; holdSheet(true); tellSheet(); },
     /** Settings' Sign out, which is the You menu's: answers the sign-in's state. */
     async signOutActive() {

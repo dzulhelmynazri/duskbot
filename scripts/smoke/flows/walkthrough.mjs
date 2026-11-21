@@ -4,7 +4,7 @@
 // person's action and the time between steps under each, and a short video per surface. Then every test account it made
 // is deleted (its clouds with it), every throwaway server is gone, and index.html (plus index.pdf) is written.
 //
-// Sink addresses only (*@qa.dusk.test), Dodo TEST mode only, throwaway InstaBox machines (deleted), the smoke app only
+// Sink addresses only (*@qa.madani.test), Dodo TEST mode only, throwaway InstaBox machines (deleted), the smoke app only
 // through the never-visible shim, headless Chrome with a mock keychain. The owner's own app is checked untouched after.
 //
 //   node scripts/smoke/flows/walkthrough.mjs [--out DIR] [--only 1,3] [--parallel 3] [--report-only]
@@ -25,7 +25,7 @@ const here = dirname(fileURLToPath(import.meta.url));
 const root = resolve(here, "..", "..", "..");
 const args = process.argv.slice(2);
 const option = (key, fallback = null) => { const at = args.indexOf(key); return at === -1 ? fallback : args[at + 1] ?? fallback; };
-const out = resolve(option("--out", join(root, ".dusk-scratch", "walkthrough")));
+const out = resolve(option("--out", join(root, ".madani-scratch", "walkthrough")));
 const only = option("--only") ? new Set(option("--only").split(",").map((id) => id.trim())) : null;
 const parallel = Math.max(1, Number(option("--parallel", "3")) || 3);
 const reportOnly = args.includes("--report-only");
@@ -33,18 +33,18 @@ const stamp = new Date().toISOString().replace(/[-:T.]/g, "").slice(4, 12);
 const log = (line) => console.log(`[walkthrough ${new Date().toISOString().slice(11, 19)}] ${line}`);
 const sleep = (ms) => new Promise((done) => setTimeout(done, ms));
 
-/** the flows, in the order a person meets them; `account`: it makes a dusk bot account (deleted after) */
+/** the flows, in the order a person meets them; `account`: it makes a madani bot account (deleted after) */
 const SECTIONS = [
   { id: "1", slug: "first-run", title: "Fresh install, first launch", script: "onboarding.mjs", args: ["--path", "mac", "--tour"], account: false,
-    blurb: "A new person opens the app: where the bots live, this Mac's sheet, connecting an AI (the cards and the full list), bringing notes from another AI, then the first chat with dusk bot, its working row and first reply (with no AI connected, the Connect your AI card)." },
+    blurb: "A new person opens the app: where the bots live, this Mac's sheet, connecting an AI (the cards and the full list), bringing notes from another AI, then the first chat with madani bot, its working row and first reply (with no AI connected, the Connect your AI card)." },
   { id: "2", slug: "account", title: "Sign in and your account", script: "account-entry.mjs", args: [], account: true,
     blurb: "The account menu signed out, sign-in continuing in the browser (the website's sign-up, the approve page, the app signing itself in), billing, the signed-in account card and menu, and signing in again from the menu." },
   { id: "3", slug: "own-server", title: "Your own server (VPS)", script: "add-server.mjs", args: ["--signed-out"], account: true, vm: true,
     blurb: "Use your own server: the account in the browser, the short install line, the install's steps in the app while it runs on a throwaway Linux server, linked, the bots moved there, and a chat on the server." },
-  { id: "4", slug: "server-to-cloud", title: "Getting dusk cloud from a server-linked app", script: "server-to-cloud.mjs", args: ["--move-first"], account: true, vm: true,
-    blurb: "A server linked and the bots moved onto it, the app signed out: Get dusk cloud from the server's chat (the Server menu, the bot panel's Computer tab if that fails), continue in the browser, the website's plans, Dodo's TEST-mode checkout with the test card, you're all set, the app picking it up, the move (buying, copying, finishing, done), then the bots in the cloud's chat." },
-  { id: "5", slug: "cloud-onboarding", title: "Getting dusk cloud from the first run", script: "onboarding.mjs", args: ["--path", "cloud", "--tour"], account: true,
-    blurb: "The welcome's dusk cloud: straight to the browser (sign-up, approve, plans, TEST-mode checkout), the app noticing the payment, connecting an AI while the cloud is made, the cloud's chat and a reply (with no AI connected, the Connect your AI card)." },
+  { id: "4", slug: "server-to-cloud", title: "Getting madani cloud from a server-linked app", script: "server-to-cloud.mjs", args: ["--move-first"], account: true, vm: true,
+    blurb: "A server linked and the bots moved onto it, the app signed out: Get madani cloud from the server's chat (the Server menu, the bot panel's Computer tab if that fails), continue in the browser, the website's plans, Dodo's TEST-mode checkout with the test card, you're all set, the app picking it up, the move (buying, copying, finishing, done), then the bots in the cloud's chat." },
+  { id: "5", slug: "cloud-onboarding", title: "Getting madani cloud from the first run", script: "onboarding.mjs", args: ["--path", "cloud", "--tour"], account: true,
+    blurb: "The welcome's madani cloud: straight to the browser (sign-up, approve, plans, TEST-mode checkout), the app noticing the payment, connecting an AI while the cloud is made, the cloud's chat and a reply (with no AI connected, the Connect your AI card)." },
   { id: "6", slug: "connect-later", title: "Connect apps and an AI later", script: "connect-later.mjs", args: [], account: false,
     blurb: "After the first run: the sidebar's connect apps sheet and Gmail on it (stopping before Google's own sign-in), then Settings > Models with one AI opened." },
 ];
@@ -57,13 +57,13 @@ function runSection(section) {
   const dir = sectionDir(section);
   rmSync(dir, { recursive: true, force: true });
   mkdirSync(dir, { recursive: true });
-  const email = `wt${section.id}-${stamp}@qa.dusk.test`;
+  const email = `wt${section.id}-${stamp}@qa.madani.test`;
   const logFile = createWriteStream(join(dir, "run.log"));
   const started = Date.now();
   log(`${section.id} ${section.title}: started (${email})`);
   return new Promise((done) => {
     const child = spawn(process.execPath, [join(here, section.script), ...section.args, "--out", join(dir, "flow"), "--email", email], {
-      cwd: root, env: { ...process.env, DUSK_WALKTHROUGH_DIR: dir, DUSK_WALKTHROUGH_SECTION: section.id }, stdio: ["ignore", "pipe", "pipe"],
+      cwd: root, env: { ...process.env, MADANI_WALKTHROUGH_DIR: dir, MADANI_WALKTHROUGH_SECTION: section.id }, stdio: ["ignore", "pipe", "pipe"],
     });
     for (const stream of [child.stdout, child.stderr]) stream.on("data", (chunk) => {
       logFile.write(chunk);
@@ -127,7 +127,7 @@ async function cleanup(sections) {
     log(`cleanup: ${manifest.email}`);
     const result = await deleteTestAccount(manifest.email, dir).catch((error) => ({ outcome: `failed: ${error.message}`, clouds: [] }));
     items.push({ kind: "test account", id: manifest.email, section: section.id, outcome: result.outcome });
-    for (const cloud of result.clouds) items.push({ kind: "dusk cloud (preview, test mode)", id: `${cloud.name ?? "cloud"} ${cloud.id}`, section: section.id, origin: cloud.origin, outcome: result.outcome === "deleted" ? `ended with the account (was ${cloud.status})` : `still there (${cloud.status})` });
+    for (const cloud of result.clouds) items.push({ kind: "madani cloud (preview, test mode)", id: `${cloud.name ?? "cloud"} ${cloud.id}`, section: section.id, origin: cloud.origin, outcome: result.outcome === "deleted" ? `ended with the account (was ${cloud.status})` : `still there (${cloud.status})` });
   }
   // a machine a killed flow left behind
   let left = [];
@@ -227,7 +227,7 @@ function buildPage(cleanupItems, ownerProblems) {
       <div class="videos">${videos || "<p class=\"dim\">no video</p>"}</div>${steps}</section>`;
   }).join("\n");
 
-  const html = `<!doctype html><html lang="en"><head><meta charset="utf-8"><title>dusk bot walkthrough</title><meta name="viewport" content="width=device-width,initial-scale=1">
+  const html = `<!doctype html><html lang="en"><head><meta charset="utf-8"><title>madani bot walkthrough</title><meta name="viewport" content="width=device-width,initial-scale=1">
 <style>
 :root { color-scheme: light; --ink: #1d1d1f; --dim: #6e6e73; --line: #e5e5ea; --warn: #b25000; --bg: #fafafa; }
 * { box-sizing: border-box; } body { margin: 0; font: 14px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; color: var(--ink); background: var(--bg); }
@@ -248,8 +248,8 @@ nav ol { padding-left: 20px; } .toc a { color: inherit; }
 table { border-collapse: collapse; background: #fff; } td, th { text-align: left; padding: 4px 10px; border-bottom: 1px solid var(--line); font-size: 13px; vertical-align: top; }
 @media print { body { background: #fff; } main { max-width: none; padding: 0; } .video video { display: none; } .print-only { display: inline; font-size: 11px; } .shot { box-shadow: none; border: 1px solid var(--line); padding: 6px; margin-bottom: 10px; } .shot img { width: auto; max-width: 100%; max-height: 4.3in; margin: 0 auto; } h2 { break-before: page; } }
 </style></head><body><main>
-<h1>dusk bot, every flow as a new person sees it</h1>
-<p class="dim">Generated ${esc(new Date().toISOString().replace("T", " ").slice(0, 16))} UTC from <code>${esc(commit)}</code> by <code>node scripts/smoke/flows/walkthrough.mjs</code>. App window at its normal size (1040x760, light), browser pages at 1280x860. Accounts are *@qa.dusk.test sink addresses on preview; payments are Dodo TEST mode with the test card.</p>
+<h1>madani bot, every flow as a new person sees it</h1>
+<p class="dim">Generated ${esc(new Date().toISOString().replace("T", " ").slice(0, 16))} UTC from <code>${esc(commit)}</code> by <code>node scripts/smoke/flows/walkthrough.mjs</code>. App window at its normal size (1040x760, light), browser pages at 1280x860. Accounts are *@qa.madani.test sink addresses on preview; payments are Dodo TEST mode with the test card.</p>
 <nav class="toc"><ol>${SECTIONS.map((section) => { const entry = sections.find((item) => item.section === section); return `<li><a href="#s${section.id}">${esc(section.title)}</a> <span class="dim">${entry.missing ? "not recorded" : `${entry.captures.length} screens`}</span></li>`; }).join("")}</ol></nav>
 <h2 id="issues">⚠ What looks broken, confusing or off-brand (${issues.length})</h2>
 <div class="issues"><ul>${issues.map(issueLine).join("") || "<li>none</li>"}</ul></div>
@@ -275,7 +275,7 @@ async function printPdf() {
   } finally { await browser.close(); }
 }
 
-const PROFILES = join(process.env.HOME ?? "", ".cache", "dusk-smoke", "flows");
+const PROFILES = join(process.env.HOME ?? "", ".cache", "madani-smoke", "flows");
 const profilesNow = () => (existsSync(PROFILES) ? readdirSync(PROFILES) : []);
 const profilesBefore = new Set(profilesNow());
 
@@ -289,7 +289,7 @@ if (!reportOnly) {
   const fresh = await cleanup(chosen);
   cleanupItems = [...cleanupItems.filter((item) => !chosen.some((section) => section.id === item.section) && item.kind !== "check"), ...fresh];
   writeFileSync(join(out, "cleanup.json"), `${JSON.stringify(cleanupItems, null, 2)}\n`);
-  ownerProblems = compare(before, [...results.map((result) => result.email), "dusk-smoke-srv", "dusk-smoke-s2c"]);
+  ownerProblems = compare(before, [...results.map((result) => result.email), "madani-smoke-srv", "madani-smoke-s2c"]);
 }
 const { issues } = buildPage(cleanupItems, ownerProblems);
 log(`page: ${join(out, "index.html")} (${issues.length} ⚠)`);

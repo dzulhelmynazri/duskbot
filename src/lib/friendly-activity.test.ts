@@ -65,7 +65,7 @@ describe("Simple mode's working line", () => {
     expect(said(null, running("mcp__playwright__browser_snapshot"))).toEqual(["Browsing"]);
     expect(said(null, running("mcp__computer__screenshot"))).toEqual(["Looking at the screen"]);
     expect(said(null, running("computer"))).toEqual(["Using the computer"]);
-    expect(said(null, running("mcp__dusk__search_memory"))).toEqual(["Remembering"]);
+    expect(said(null, running("mcp__madani__search_memory"))).toEqual(["Remembering"]);
     expect(said(null, running("delegate_bot"))).toEqual(["Asking a teammate"]);
   });
 
@@ -88,7 +88,7 @@ describe("Simple mode's working line", () => {
     expect(toolService("mcp__composio__GMAIL_SEND_EMAIL")).toBe("Gmail");
     expect(toolService("mcp__github__create_pull_request"), "a known app keeps its own spelling").toBe("GitHub");
     expect(toolService("mcp__composio__HUBSPOT_SEARCH")).toBe("HubSpot");
-    expect(toolService("mcp__dusk__ask_user")).toBeNull();
+    expect(toolService("mcp__madani__ask_user")).toBeNull();
     expect(toolService("Bash")).toBeNull();
     expect(friendlyNowPhrases(null, running("mcp__notion__search")).phrases).toEqual(["Working in Notion"]);
   });

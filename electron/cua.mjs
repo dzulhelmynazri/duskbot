@@ -1,4 +1,4 @@
-// Packaged: an embedded cua-driver daemon, so macOS TCC grants attribute to dusk bot; dev attaches to CuaDriver.app.
+// Packaged: an embedded cua-driver daemon, so macOS TCC grants attribute to madani bot; dev attaches to CuaDriver.app.
 // Agents use the stdio MCP proxy, which executes nothing; the host-owned daemon does.
 
 import { app, ipcMain, systemPreferences } from "electron";
@@ -36,7 +36,7 @@ const STANDALONE_SOCKET = path.join(
   app.getPath("home"),
   "Library/Caches/cua-driver/cua-driver.sock",
 );
-const HOST_BUNDLE_ID = "bot.dusk.app";
+const HOST_BUNDLE_ID = "bot.madani.app";
 const CUA_ENV = { CUA_DRIVER_RS_TELEMETRY_ENABLED: "0" };
 const execFileAsync = promisify(execFile);
 process.env.CUA_DRIVER_RS_TELEMETRY_ENABLED ??= "0";
@@ -157,7 +157,7 @@ export function resolveEmbeddedDriverBinary(binary) {
   if (process.platform !== "win32" || !app.isPackaged || process.env.CUA_DRIVER_PATH ||
       binary !== path.join(process.resourcesPath, "cua-driver.exe")) return binary;
   const background = path.join(process.resourcesPath, "cua-driver-background.exe");
-  if (!fs.existsSync(background)) throw new Error("Packaged background CUA driver is missing; reinstall dusk bot");
+  if (!fs.existsSync(background)) throw new Error("Packaged background CUA driver is missing; reinstall madani bot");
   return background;
 }
 
@@ -188,7 +188,7 @@ async function loadEmbeddedSdk() {
     return { ...embedded, ...permissions };
   }
   const isWindows = process.platform === "win32";
-  process.env.DUSK_CUA_SDK_LIBRARY = path.join(
+  process.env.MADANI_CUA_SDK_LIBRARY = path.join(
     process.resourcesPath,
     "cua-sdk",
     "native",
@@ -295,7 +295,7 @@ async function startEmbedded(binary, signal, { ask }) {
         !permissionStatus.accessibility && "Accessibility",
         !permissionStatus.screenRecording && "Screen Recording",
       ].filter(Boolean).join(" and ");
-      throw new Error(`${missing || "macOS permissions"} required; grant access in System Settings and restart dusk bot`);
+      throw new Error(`${missing || "macOS permissions"} required; grant access in System Settings and restart madani bot`);
     }
   }
   // The native SDK owns the child lifecycle but exposes no windowsHide option.
@@ -340,7 +340,7 @@ export async function startCua({ attempt = 0, ask = false } = {}) {
   }
 
   const wantEmbedded =
-    process.platform === "win32" || app.isPackaged || process.env.DUSK_CUA_EMBEDDED === "1";
+    process.platform === "win32" || app.isPackaged || process.env.MADANI_CUA_EMBEDDED === "1";
   let nextConnection;
 
   if (wantEmbedded) {
@@ -383,7 +383,7 @@ export async function startCua({ attempt = 0, ask = false } = {}) {
     }
     nextConnection ??= {
       mode: "unavailable",
-      reason: "The computer helper (CuaDriver) did not answer. Press Retry; if it still fails, quit and reopen dusk bot.",
+      reason: "The computer helper (CuaDriver) did not answer. Press Retry; if it still fails, quit and reopen madani bot.",
     };
   }
 

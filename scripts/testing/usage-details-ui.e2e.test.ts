@@ -5,20 +5,20 @@ import { fileURLToPath } from "node:url";
 import { expect, it } from "vitest";
 import { resolveAgentBrowserBinary } from "../../server/browser-engine.ts";
 import { waitForExit } from "../../server/testing/cleanup.ts";
-import { runControlDusk } from "../control-dusk.ts";
-import { agentBrowser, sessionEnv, UI_TOOLS_DIR, type UiHandle } from "./control-dusk-ui.ts";
+import { runControlMadani } from "../control-madani.ts";
+import { agentBrowser, sessionEnv, UI_TOOLS_DIR, type UiHandle } from "./control-madani-ui.ts";
 import { clickByName, openPanelMenu, settled as stillFrames } from "./grok-nav.ts";
 
 const ROOT = fileURLToPath(new URL("../..", import.meta.url));
-const enabled = process.env.DUSK_UI_E2E === "1" || Boolean(resolveAgentBrowserBinary({ dataDir: UI_TOOLS_DIR, env: process.env }));
-if (!enabled) console.log("skipping usage details UI: set DUSK_UI_E2E=1 to install the pinned browser");
+const enabled = process.env.MADANI_UI_E2E === "1" || Boolean(resolveAgentBrowserBinary({ dataDir: UI_TOOLS_DIR, env: process.env }));
+if (!enabled) console.log("skipping usage details UI: set MADANI_UI_E2E=1 to install the pinned browser");
 
 (enabled ? it : it.skip)("renders separate cached input, uncached input and output after a real fixture turn", async () => {
   let child: ChildProcess | undefined;
   let info: { ui: string; url: string; botId: string; logPath: string } | undefined;
   try {
     let stdout = "", stderr = "";
-    child = spawn(process.execPath, ["--experimental-strip-types", join(ROOT, "scripts/control-dusk.ts"), "ui", "launch"], {
+    child = spawn(process.execPath, ["--experimental-strip-types", join(ROOT, "scripts/control-madani.ts"), "ui", "launch"], {
       cwd: ROOT, env: process.env, stdio: ["ignore", "pipe", "pipe"],
     });
     child.stdout!.on("data", chunk => { stdout += String(chunk); });
@@ -28,7 +28,7 @@ if (!enabled) console.log("skipping usage details UI: set DUSK_UI_E2E=1 to insta
       try { info = JSON.parse(stdout); return Boolean(info?.ui); } catch { return false; }
     }, { timeout: 600_000, interval: 250 }).toBe(true);
     const handle = info!;
-    const ui = (verb: string, ...args: string[]) => runControlDusk(["ui", verb, "--ui", handle.ui, ...args]) as Promise<Record<string, any>>;
+    const ui = (verb: string, ...args: string[]) => runControlMadani(["ui", verb, "--ui", handle.ui, ...args]) as Promise<Record<string, any>>;
     const evaluate = async (js: string) => (await ui("eval", "--js", js)).result;
     const browser = JSON.parse(readFileSync(handle.ui, "utf8")) as UiHandle;
     const viewport = async (width: number) => {
@@ -129,7 +129,7 @@ if (!enabled) console.log("skipping usage details UI: set DUSK_UI_E2E=1 to insta
   let info: { ui: string; url: string; botId: string; logPath: string } | undefined;
   try {
     let stdout = "", stderr = "";
-    child = spawn(process.execPath, ["--experimental-strip-types", join(ROOT, "scripts/control-dusk.ts"), "ui", "launch"], {
+    child = spawn(process.execPath, ["--experimental-strip-types", join(ROOT, "scripts/control-madani.ts"), "ui", "launch"], {
       cwd: ROOT, env: process.env, stdio: ["ignore", "pipe", "pipe"],
     });
     child.stdout!.on("data", chunk => { stdout += String(chunk); });
@@ -139,7 +139,7 @@ if (!enabled) console.log("skipping usage details UI: set DUSK_UI_E2E=1 to insta
       try { info = JSON.parse(stdout); return Boolean(info?.ui); } catch { return false; }
     }, { timeout: 600_000, interval: 250 }).toBe(true);
     const handle = info!;
-    const ui = (verb: string, ...args: string[]) => runControlDusk(["ui", verb, "--ui", handle.ui, ...args]) as Promise<Record<string, any>>;
+    const ui = (verb: string, ...args: string[]) => runControlMadani(["ui", verb, "--ui", handle.ui, ...args]) as Promise<Record<string, any>>;
     const evaluate = async (js: string) => (await ui("eval", "--js", js)).result;
     const menuOpen = () => evaluate("Boolean(document.querySelector('[data-panel-share-menu]'))");
     await ui("type", "--name", "Message Pepper", "--text", "Check the fixture usage");

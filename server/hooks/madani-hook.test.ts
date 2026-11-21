@@ -8,8 +8,8 @@ import { afterAll, describe, expect, it } from "vitest";
 
 import { removeTempDir } from "../testing/cleanup.ts";
 
-const HELPER = join(dirname(fileURLToPath(import.meta.url)), "dusk-hook.ts");
-const dir = mkdtempSync(join(tmpdir(), "dusk-hook-"));
+const HELPER = join(dirname(fileURLToPath(import.meta.url)), "madani-hook.ts");
+const dir = mkdtempSync(join(tmpdir(), "madani-hook-"));
 const tokenFile = join(dir, "token");
 writeFileSync(tokenFile, "secret-token-123\n", { mode: 0o600 });
 const servers: Server[] = [];
@@ -46,12 +46,12 @@ function listen(handler: Parameters<typeof createServer>[1]): Promise<string> {
   });
 }
 
-describe("dusk-hook helper", () => {
+describe("madani-hook helper", () => {
   it.each(["context", "hookSpecificOutput"])("flushes large %s replies before exiting", async (field) => {
     const context = "A long restored note 🐭\n".repeat(20_000);
     const body = field === "context" ? { context } : { hookSpecificOutput: { hookEventName: "SessionStart", additionalContext: context } };
     const url = await listen((_req, res) => res.end(JSON.stringify(body)));
-    const result = await run(JSON.stringify({ hook_event_name: "SessionStart" }), { DUSK_HOOK_URL: url, DUSK_HOOK_TOKEN_FILE: tokenFile });
+    const result = await run(JSON.stringify({ hook_event_name: "SessionStart" }), { MADANI_HOOK_URL: url, MADANI_HOOK_TOKEN_FILE: tokenFile });
     expect(result.code).toBe(0);
     expect(result.stdout).toBe(field === "context" ? context : JSON.stringify(body));
     expect(result.stderr).toBe("");
@@ -60,7 +60,7 @@ describe("dusk-hook helper", () => {
   it("does not forward oversized hook input", async () => {
     let requests = 0;
     const url = await listen((_req, res) => { requests++; res.end("{}"); });
-    const result = await run(JSON.stringify({ hook_event_name: "PostToolUse", tool_response: "x".repeat(1024 * 1024) }), { DUSK_HOOK_URL: url, DUSK_HOOK_TOKEN_FILE: tokenFile });
+    const result = await run(JSON.stringify({ hook_event_name: "PostToolUse", tool_response: "x".repeat(1024 * 1024) }), { MADANI_HOOK_URL: url, MADANI_HOOK_TOKEN_FILE: tokenFile });
     expect(result.code).toBe(0);
     expect(result.stdout).toBe("");
     expect(requests).toBe(0);
@@ -70,14 +70,14 @@ describe("dusk-hook helper", () => {
     let forwarded = 0;
     const destination = await listen((_req, res) => { forwarded++; res.end("{}"); });
     const url = await listen((_req, res) => { res.writeHead(307, { location: destination }); res.end(); });
-    const result = await run(JSON.stringify({ hook_event_name: "PostToolUse", tool_response: "private output" }), { DUSK_HOOK_URL: url, DUSK_HOOK_TOKEN_FILE: tokenFile });
+    const result = await run(JSON.stringify({ hook_event_name: "PostToolUse", tool_response: "private output" }), { MADANI_HOOK_URL: url, MADANI_HOOK_TOKEN_FILE: tokenFile });
     expect(result.code).toBe(0);
     expect(result.stdout).toBe("");
     expect(forwarded).toBe(0);
   });
 
   it("exits 0 quietly on garbage input and no harness", async () => {
-    const r = run("not json at all", { DUSK_HOOK_URL: "http://127.0.0.1:1", DUSK_HOOK_TOKEN_FILE: tokenFile });
+    const r = run("not json at all", { MADANI_HOOK_URL: "http://127.0.0.1:1", MADANI_HOOK_TOKEN_FILE: tokenFile });
     const result = await r;
     expect(result.code).toBe(0);
     expect(result.stdout).toBe("");
@@ -95,7 +95,7 @@ describe("dusk-hook helper", () => {
       });
     });
     const payload = { hook_event_name: "PostToolUse", session_id: "s1", tool_name: "Bash", tool_use_id: "tu-1", tool_input: { command: "ls" }, tool_response: "a\nb" };
-    const result = await run(JSON.stringify(payload), { DUSK_HOOK_URL: url, DUSK_HOOK_TOKEN_FILE: tokenFile });
+    const result = await run(JSON.stringify(payload), { MADANI_HOOK_URL: url, MADANI_HOOK_TOKEN_FILE: tokenFile });
     expect(result.code).toBe(0);
     expect(seen).toHaveLength(1);
     expect(seen[0]!.auth).toBe("Bearer secret-token-123");
@@ -105,7 +105,7 @@ describe("dusk-hook helper", () => {
 
   it("gives up within its budget when the harness never answers, still exiting 0", async () => {
     const url = await listen(() => { /* never respond */ });
-    const result = await run(JSON.stringify({ hook_event_name: "Stop" }), { DUSK_HOOK_URL: url, DUSK_HOOK_TOKEN_FILE: tokenFile, DUSK_HOOK_TIMEOUT_MS: "800" });
+    const result = await run(JSON.stringify({ hook_event_name: "Stop" }), { MADANI_HOOK_URL: url, MADANI_HOOK_TOKEN_FILE: tokenFile, MADANI_HOOK_TIMEOUT_MS: "800" });
     expect(result.code).toBe(0);
     expect(result.stdout).toBe("");
     expect(result.ms).toBeLessThan(5_000);
@@ -113,19 +113,19 @@ describe("dusk-hook helper", () => {
 
   it("prints nothing when the harness returns no hookSpecificOutput", async () => {
     const url = await listen((_req, res) => { res.setHeader("content-type", "application/json"); res.end(JSON.stringify({ ok: true })); });
-    const result = await run(JSON.stringify({ hook_event_name: "PostToolUse", tool_use_id: "x" }), { DUSK_HOOK_URL: url, DUSK_HOOK_TOKEN_FILE: tokenFile });
+    const result = await run(JSON.stringify({ hook_event_name: "PostToolUse", tool_use_id: "x" }), { MADANI_HOOK_URL: url, MADANI_HOOK_TOKEN_FILE: tokenFile });
     expect(result.code).toBe(0);
     expect(result.stdout).toBe("");
   }, 15_000);
 });
 
-describe("dusk-hook helper: SessionStart context", () => {
+describe("madani-hook helper: SessionStart context", () => {
   it("prints the harness's plain-text context on SessionStart, because Claude Code reads stdout as context there", async () => {
     const url = await listen((_req, res) => {
       res.setHeader("content-type", "application/json");
       res.end(JSON.stringify({ ok: true, context: "[What Dev did in an earlier turn: tools: Bash ×3 · files: changed retry.ts]" }));
     });
-    const result = await run(JSON.stringify({ hook_event_name: "SessionStart", source: "compact", session_id: "s1" }), { DUSK_HOOK_URL: url, DUSK_HOOK_TOKEN_FILE: tokenFile });
+    const result = await run(JSON.stringify({ hook_event_name: "SessionStart", source: "compact", session_id: "s1" }), { MADANI_HOOK_URL: url, MADANI_HOOK_TOKEN_FILE: tokenFile });
     expect(result.code).toBe(0);
     expect(result.stdout).toBe("[What Dev did in an earlier turn: tools: Bash ×3 · files: changed retry.ts]");
   }, 15_000);
@@ -135,7 +135,7 @@ describe("dusk-hook helper: SessionStart context", () => {
       res.setHeader("content-type", "application/json");
       res.end(JSON.stringify({ ok: true, context: "should not be printed" }));
     });
-    const result = await run(JSON.stringify({ hook_event_name: "PostToolUse", tool_use_id: "t" }), { DUSK_HOOK_URL: url, DUSK_HOOK_TOKEN_FILE: tokenFile });
+    const result = await run(JSON.stringify({ hook_event_name: "PostToolUse", tool_use_id: "t" }), { MADANI_HOOK_URL: url, MADANI_HOOK_TOKEN_FILE: tokenFile });
     expect(result.code).toBe(0);
     expect(result.stdout).toBe("");
   }, 15_000);

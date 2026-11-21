@@ -13,7 +13,7 @@ test("exit codes read the way Windows names them", () => {
 
 test("a process name becomes one analytics word", () => {
   assert.equal(serviceWord("Network Service"), "network_service");
-  assert.equal(serviceWord("dusk bot server"), "dusk_bot_server");
+  assert.equal(serviceWord("madani bot server"), "madani_bot_server");
   assert.equal(serviceWord(""), null);
   assert.equal(serviceWord(undefined), null);
 });

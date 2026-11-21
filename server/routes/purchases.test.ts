@@ -32,7 +32,7 @@ describe("confirm_purchase", () => {
 
   it("a Cancel leaves the browser refusing", async () => {
     purchaseGate.observe("route-s1", checkout);
-    const { done, sent } = call({ summary }, [], { ok: false, text: "dusk bot did not buy this: the user declined." });
+    const { done, sent } = call({ summary }, [], { ok: false, text: "madani bot did not buy this: the user declined." });
     await done;
     expect(sent[0]).toMatchObject({ status: 409 });
     expect(purchaseGate.check("route-s1", "agent_browser_click", { ref: "e9" })).toBe(PURCHASE_REFUSAL);

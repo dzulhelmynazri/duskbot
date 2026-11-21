@@ -29,11 +29,11 @@ if (argv.includes("--version") || argv.includes("-v")) {
 
 if (process.env.FAKE_PI_DUMP) {
   try {
-    // Read DUSK_MCP_CONFIG now: the driver deletes the temp file when the turn settles.
+    // Read MADANI_MCP_CONFIG now: the driver deletes the temp file when the turn settles.
     let mcpConfig: unknown = null;
-    if (process.env.DUSK_MCP_CONFIG) {
+    if (process.env.MADANI_MCP_CONFIG) {
       try {
-        mcpConfig = JSON.parse(readFileSync(process.env.DUSK_MCP_CONFIG, "utf8"));
+        mcpConfig = JSON.parse(readFileSync(process.env.MADANI_MCP_CONFIG, "utf8"));
       } catch {}
     }
     appendFileSync(
@@ -54,7 +54,7 @@ if (argv[0] === "update" && argv.includes("--models")) {
 }
 
 if (mode === "exit-early") {
-  process.stderr.write("dusk bot Pi MCP configuration could not be read\n");
+  process.stderr.write("madani bot Pi MCP configuration could not be read\n");
   process.exit(1);
 }
 

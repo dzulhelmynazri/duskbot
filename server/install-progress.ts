@@ -150,7 +150,7 @@ export function watchFolder(folder: string, baseline: number, total: Promise<num
 }
 
 export async function emptyPrefix(platform: NodeJS.Platform = process.platform): Promise<{ path: string; remove: () => Promise<void> }> {
-  const path = await mkdtemp(join(tmpdir(), "dusk-npm-plan-"));
+  const path = await mkdtemp(join(tmpdir(), "madani-npm-plan-"));
   // npm 11 refuses a POSIX global prefix with no lib/ folder
   if (platform !== "win32") await mkdir(join(path, "lib"));
   return { path, remove: () => rm(path, { recursive: true, force: true }).catch(() => {}) };

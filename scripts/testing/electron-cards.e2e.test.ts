@@ -3,7 +3,7 @@
 // (FAKE_CLAUDE_MCP_TOOLS), so the server posts real secret, login, sign-in and widget cards; the chat-gallery layout
 // check then runs in the app's own window. Screenshots go beside the gallery's.
 //
-//   DUSK_ELECTRON_E2E=1 pnpm exec vitest run scripts/testing/electron-cards.e2e.test.ts
+//   MADANI_ELECTRON_E2E=1 pnpm exec vitest run scripts/testing/electron-cards.e2e.test.ts
 import { spawn, type ChildProcess } from "node:child_process";
 import { existsSync, mkdirSync, mkdtempSync, readFileSync, realpathSync, writeFileSync } from "node:fs";
 import { createServer as createNetServer } from "node:net";
@@ -12,15 +12,15 @@ import { join } from "node:path";
 import { createRequire } from "node:module";
 import { expect, it } from "vitest";
 import { createServer, type ViteDevServer } from "vite";
-import { launchVerificationServer, runControlDusk, type VerificationServer } from "../control-dusk.ts";
+import { launchVerificationServer, runControlMadani, type VerificationServer } from "../control-madani.ts";
 import { waitForExit } from "../../server/testing/cleanup.ts";
 import { REPO_ROOT } from "./preview-fixture.ts";
 import { auditLayout, type LayoutIssue } from "./chat-gallery/layout-audit.ts";
 import { WIDGET_SAMPLES } from "../../shared/widget-samples.ts";
 import { NOTICES } from "../../src/lib/notices.ts";
 
-const enabled = process.env.DUSK_ELECTRON_E2E === "1";
-if (!enabled) console.log("skipping the hidden desktop run: set DUSK_ELECTRON_E2E=1");
+const enabled = process.env.MADANI_ELECTRON_E2E === "1";
+if (!enabled) console.log("skipping the hidden desktop run: set MADANI_ELECTRON_E2E=1");
 const OWNER_PORTS = new Set([5199, 8799, 8800, 5299, 8899, 8900, 9335]);
 
 async function freePort(): Promise<number> {
@@ -41,8 +41,8 @@ const CARD_TOOLS = [
 ];
 
 (enabled ? it : it.skip)("draws the real cards in the desktop app without overlap or clipping", async () => {
-  const dataDir = mkdtempSync(join(tmpdir(), "duskbot-electron-cards-"));
-  const evidence = process.env.DUSK_GALLERY_DIR || join(REPO_ROOT, ".dusk-scratch", "verify-evidence", "chat-gallery");
+  const dataDir = mkdtempSync(join(tmpdir(), "madanibot-electron-cards-"));
+  const evidence = process.env.MADANI_GALLERY_DIR || join(REPO_ROOT, ".madani-scratch", "verify-evidence", "chat-gallery");
   mkdirSync(evidence, { recursive: true });
   let vite: ViteDevServer | undefined;
   let electron: ChildProcess | undefined;
@@ -54,19 +54,19 @@ const CARD_TOOLS = [
     const port = Number(new URL(fixture.info.url).port);
     if (OWNER_PORTS.has(port)) throw new Error(`the fixture landed on the developer's port ${port}`);
     const uiPort = await freePort();
-    // vite.config.ts reads DUSK_PORT for its /api proxy when it loads
-    process.env.DUSK_PORT = String(port);
-    vite = await createServer({ root: REPO_ROOT, logLevel: "warn", cacheDir: join(REPO_ROOT, ".dusk-scratch", "vite-electron-cards"), server: { host: "127.0.0.1", port: uiPort, strictPort: true, hmr: false, fs: { allow: [REPO_ROOT, realpathSync(join(REPO_ROOT, "node_modules"))] } } });
+    // vite.config.ts reads MADANI_PORT for its /api proxy when it loads
+    process.env.MADANI_PORT = String(port);
+    vite = await createServer({ root: REPO_ROOT, logLevel: "warn", cacheDir: join(REPO_ROOT, ".madani-scratch", "vite-electron-cards"), server: { host: "127.0.0.1", port: uiPort, strictPort: true, hmr: false, fs: { allow: [REPO_ROOT, realpathSync(join(REPO_ROOT, "node_modules"))] } } });
     await vite.listen();
     const home = join(dataDir, "home");
     mkdirSync(home, { recursive: true });
     const env = {
       PATH: process.env.PATH, HOME: home, USERPROFILE: home, TMPDIR: dataDir,
-      DUSK_PORT: String(port),
+      MADANI_PORT: String(port),
       ELECTRON_START_URL: `http://127.0.0.1:${uiPort}`,
       NODE_OPTIONS: `--require ${join(REPO_ROOT, "scripts", "testing", "electron-hidden.cjs")}`,
-      DUSK_ERROR_REPORTS: "0",
-      DUSK_ANALYTICS: "0",
+      MADANI_ERROR_REPORTS: "0",
+      MADANI_ANALYTICS: "0",
     };
     const userData = join(dataDir, "electron");
     const binary = createRequire(join(REPO_ROOT, "package.json"))("electron") as unknown as string;
@@ -94,8 +94,8 @@ const CARD_TOOLS = [
       return reply.result?.result?.value;
     };
     // a returning person: no email gate or one-time notices between the run and its chat
-    await runControlDusk(["new-bot", "--name", "Pepper", "--url", fixture.info.url]).catch(() => undefined);
-    await evaluate(`localStorage.setItem("dusk-email-gate", "skipped"); for (const notice of ${JSON.stringify(NOTICES)}) localStorage.setItem(notice, "1"); location.reload(); true`).catch(() => undefined);
+    await runControlMadani(["new-bot", "--name", "Pepper", "--url", fixture.info.url]).catch(() => undefined);
+    await evaluate(`localStorage.setItem("madani-email-gate", "skipped"); for (const notice of ${JSON.stringify(NOTICES)}) localStorage.setItem(notice, "1"); location.reload(); true`).catch(() => undefined);
     await expect.poll(() => evaluate(`Boolean(document.querySelector('textarea[aria-label^="Message"]'))`).catch(() => false), { timeout: 120_000 }).toBe(true);
     await send("Emulation.setDeviceMetricsOverride", { width: 1280, height: 900, deviceScaleFactor: 1, mobile: false });
     await evaluate(`(() => { const box = document.querySelector('textarea[aria-label^="Message"]'); box.focus(); return true; })()`);

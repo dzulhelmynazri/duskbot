@@ -9,7 +9,7 @@ const COLORS: Record<string, string> = {
 };
 
 const ART = {
-  // dusk cloud: a cloud at dusk, the moon coming up behind it
+  // madani cloud: a cloud at madani, the moon coming up behind it
   cloud: [
     ".......444.",
     "......4yyy4",
@@ -37,7 +37,7 @@ const ART = {
     ".2VVVVVgV2.",
     ".222222222.",
   ],
-  // the dusk relay: the mascot carrying a parcel across
+  // the madani relay: the mascot carrying a parcel across
   relay: [
     "..1.....1..",
     "..11...11..",

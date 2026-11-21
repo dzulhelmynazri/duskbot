@@ -20,7 +20,7 @@ const ChatMarkdown = lazy(() => import("../ChatMarkdown").then((module) => ({ de
 
 type Draft = { text: string } | { grid: string[][] };
 
-const pill = "dusk-press inline-flex h-8 shrink-0 cursor-pointer items-center justify-center gap-1.5 rounded-full px-3 text-[13px] font-medium leading-5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus disabled:cursor-not-allowed disabled:opacity-50 pointer-coarse:h-11";
+const pill = "madani-press inline-flex h-8 shrink-0 cursor-pointer items-center justify-center gap-1.5 rounded-full px-3 text-[13px] font-medium leading-5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus disabled:cursor-not-allowed disabled:opacity-50 pointer-coarse:h-11";
 const quietPill = cn(pill, "bg-ink/[0.06] text-ink hover:bg-ink/[0.1]");
 const primaryPill = cn(pill, "bg-ink text-app hover:bg-ink/90");
 

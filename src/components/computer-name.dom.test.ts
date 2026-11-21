@@ -6,7 +6,7 @@ import { useComputerName } from "./SidebarProfileMenu";
 (globalThis as { IS_REACT_ACT_ENVIRONMENT?: boolean }).IS_REACT_ACT_ENVIRONMENT = true;
 
 it("stops standing in with the computer's name once the profile has its own (an account signed in)", async () => {
-  (window as unknown as { duskDesktop: unknown }).duskDesktop = { desktopProfile: { systemName: async () => "Sam Mac" } };
+  (window as unknown as { madaniDesktop: unknown }).madaniDesktop = { desktopProfile: { systemName: async () => "Sam Mac" } };
   const seen: Array<string | null> = [];
   const Probe = ({ enabled }: { enabled: boolean }) => { seen.push(useComputerName(enabled)); return null; };
   const host = document.createElement("div");

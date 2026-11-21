@@ -134,7 +134,7 @@ describe("an OpenAI-compatible provider that refuses large requests", () => {
     });
     await instance.refreshModels?.();
     const recorder = recordEvents(instance.adapter);
-    const directory = mkdtempSync(join(tmpdir(), "dusk-size-limit-"));
+    const directory = mkdtempSync(join(tmpdir(), "madani-size-limit-"));
     cleanups.push(async () => {
       recorder.stop();
       await instance.dispose();

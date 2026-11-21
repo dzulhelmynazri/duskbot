@@ -14,7 +14,7 @@ import { PRIMARY, SECONDARY, StepArt, StepFrame } from "./FunnelSteps";
 import type { WelcomeAiNow } from "./welcome-ai";
 
 /** `onNext` says how the person went on (an AI connected, the free model, or later), for the funnel's numbers. `cloud`:
- * the person's dusk cloud is being made meanwhile, which the line says, with the AIs whose sign-in goes along. `auto`:
+ * the person's madani cloud is being made meanwhile, which the line says, with the AIs whose sign-in goes along. `auto`:
  * an AI that already works is used without asking; off: the person always picks an AI here, never a "found" screen. */
 export function AiStep({ tested, cloud = false, computerAis = [], onNext }: { tested: WelcomeAiNow | null; cloud?: boolean; auto?: boolean;
   /** on a cloud the desktop app set up: the AIs signed in on that computer, by instance id */
@@ -81,19 +81,19 @@ export function AiStep({ tested, cloud = false, computerAis = [], onNext }: { te
 
 const list = (tiles: readonly { label: string }[]) => new Intl.ListFormat(activeLocale(), { style: "long", type: "conjunction" }).format(tiles.map((tile) => tile.label));
 
-/** On the way to dusk cloud: which of the AIs connected here go along, and which the cloud asks for once more. */
+/** On the way to madani cloud: which of the AIs connected here go along, and which the cloud asks for once more. */
 function carriedLine(connected: readonly { id: AiTileId; label: string }[], staysHere: readonly AiTileId[]): string {
   const stay = connected.filter((tile) => staysHere.includes(tile.id));
   if (!stay.length) return t("funnel.ai.subCarry");
   return t(stay.length === connected.length ? "funnel.ai.subCarryNone" : "funnel.ai.subCarrySome", { ais: list(stay) });
 }
 
-/** The grid's AIs whose sign-in on this computer goes along to the person's dusk cloud, asked again as `connected`
+/** The grid's AIs whose sign-in on this computer goes along to the person's madani cloud, asked again as `connected`
  * changes; null until known, or where this app can't say. */
 function useCarriedTiles(on: boolean, connected: string): AiTileId[] | null {
   const { state } = useStore();
   const [ids, setIds] = useState<string[] | null>(null);
-  const bridge = window.duskDesktop?.cloudAccount;
+  const bridge = window.madaniDesktop?.cloudAccount;
   useEffect(() => {
     if (!on || !bridge?.carriedAis) return;
     let live = true;

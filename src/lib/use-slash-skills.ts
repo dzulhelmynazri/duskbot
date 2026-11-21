@@ -7,7 +7,7 @@ interface SkillsResponse {
 }
 
 /** Skills that live in another AI tool's folder: the engine's own (`native`) and copies brought in from those tools
- * (`imported`). Everything else was made or added in dusk bot. */
+ * (`imported`). Everything else was made or added in madani bot. */
 const FROM_TOOLS = new Set(["native", "imported"]);
 
 export function enabledSlashSkills(body: SkillsResponse | null | undefined): SlashSkill[] {

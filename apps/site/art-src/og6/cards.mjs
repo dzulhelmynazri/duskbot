@@ -69,7 +69,7 @@ const crew = (list, f) => list.map(([s, c, p, z, x, o = {}]) => bot(s, c, p, z, 
 // rest of the team evenly spaced on the hill, no chat
 { const G = 540, hl = [hill(600, 560, 40)], f = footOn(G, hl);
   const kit = botSvg('kit', 'violet', 'open', { grid: 26 }).svg(100).replace(/viewBox="[^"]*"/, 'viewBox="0 0 26 26"').replace(/width="[^"]*" height="[^"]*"/, 'width="0.8em" height="0.8em"').replace('style="', 'style="display:inline-block;vertical-align:-0.11em;margin:0 0.06em;overflow:visible;');
-  S.home = page({ G, hills: hl, seed: 'home-b', title: `meet ${kit} dusk bot`, line: 'your own team of ai bots, in a chat app.', size: 128, top: 92,
+  S.home = page({ G, hills: hl, seed: 'home-b', title: `meet ${kit} madani bot`, line: 'your own team of ai bots, in a chat app.', size: 128, top: 92,
     body: crew([['pip', 'blue', 'wink', 116, 270], ['mochi', 'pink', 'heart', 116, 435], ['loaf', 'tangerine', 'happy', 132, 600], ['starry', 'sun', 'happy', 116, 765], ['goo', 'mint', 'wink', 116, 930]], f) }); }
 // 2 pricing: the whole crew gathered round the sign
 { const G = 540, hl = [hill(600, 560, 44)], f = footOn(G, hl);
@@ -101,8 +101,8 @@ const crew = (list, f) => list.map(([s, c, p, z, x, o = {}]) => bot(s, c, p, z, 
     body: stack + crew([['mochi', 'pink', 'heart', 104, 330], ['goo', 'mint', 'happy', 96, 450], ['hoot', 'violet', 'big', 100, 760], ['starry', 'sun', 'happy', 100, 880, { rot: -8 }]], f) }); }
 // 7 contact: a bot on the old pink desk phone, taking your call
 { const G = 540, hl = [hill(620, 360, 44)], f = footOn(G, hl);
-  S.contact = page({ G, hills: hl, seed: 'contact', title: 'a human reads every message', line: 'write to hello@dusk.bot.', size: 100,
-    body: img('s-phone.webp', 170, 700, f(700), 520, 387) + bot('drip', 'blue', 'happy', 150, 520, f(520)) + bub('you', 'hello? anyone there?', 'left', '#fff3a0', 410) + bub('dusk bot', 'yes. a real person.', 'right', '#d0cefb', 410) }); }
+  S.contact = page({ G, hills: hl, seed: 'contact', title: 'a human reads every message', line: 'write to hello@madani.bot.', size: 100,
+    body: img('s-phone.webp', 170, 700, f(700), 520, 387) + bot('drip', 'blue', 'happy', 150, 520, f(520)) + bub('you', 'hello? anyone there?', 'left', '#fff3a0', 410) + bub('madani bot', 'yes. a real person.', 'right', '#d0cefb', 410) }); }
 // 8 404: night, the moon, the crew asleep and one awake
 { const G = 540, hl = [hill(600, 520, 40)], f = footOn(G, hl);
   const moon = `<svg class="fx" style="left:1060px;top:262px" width="72" height="84" shape-rendering="crispEdges" fill="#fff3a0">${['..###.', '.##...', '##....', '##....', '##....', '.##...', '..###.'].map((row, y) => [...row].map((c, x) => c === '#' ? `<rect x="${x * 12}" y="${y * 12}" width="12" height="12"/>` : '').join('')).join('')}</svg>`;
@@ -133,7 +133,7 @@ const crew = (list, f) => list.map(([s, c, p, z, x, o = {}]) => bot(s, c, p, z, 
     body: jobs.map(([s, c, p, file, w0, h0], i) => { const x = 230 + i * 245; return img(file, 112, x + 82, f(x + 82), w0, h0) + bot(s, c, p, 140, x, f(x)); }).join('') }); }
 // 14 /run-claude-code-24-7: sunset; a closed laptop, one bot still at work beside it
 { const G = 540, hl = [hill(600, 460, 40)], f = footOn(G, hl);
-  S['claude-code'] = page({ mood: 'dusk', G, hills: hl, seed: 'claude-code', title: 'claude code, even while you sleep', line: 'keep it working with your laptop shut.', size: 96,
+  S['claude-code'] = page({ mood: 'madani', G, hills: hl, seed: 'claude-code', title: 'claude code, even while you sleep', line: 'keep it working with your laptop shut.', size: 96,
     body: img('kit/p-laptop.webp', 150, 470, f(470), 420, 404) + bot('boxo', 'cyan', 'focus', 150, 690, f(690)) + bot('goo', 'mint', 'sleepy', 90, 850, f(850)) }); }
 // 15 /integrations/gmail: the gmail tile and kit side by side on the hill, kit reporting in
 { const G = 540, hl = [hill(600, 460, 40)], f = footOn(G, hl), ts = 150, tx = 440, ty = f(tx + ts / 2) - ts - 6;
@@ -143,7 +143,7 @@ const crew = (list, f) => list.map(([s, c, p, z, x, o = {}]) => bot(s, c, p, z, 
 
 // which pages each card is for, and what it shows
 const META = {
-  home: { core: ['home', 'waitlist'], alt: 'meet dusk bot, with the purple cat bot standing in the title between the words, and five pixel bots on a hill under a blue pixel sky' },
+  home: { core: ['home', 'waitlist'], alt: 'meet madani bot, with the purple cat bot standing in the title between the words, and five pixel bots on a hill under a blue pixel sky' },
   pricing: { core: ['pricing'], alt: 'a whole ai team, free on your laptop: six pixel bots on a hill around a sign saying "free. really."' },
   download: { core: ['download'], alt: 'your new coworkers are ready: five pixel bots popping up from the bottom of a blue pixel sky' },
   docs: { core: ['docs'], alt: 'everything your bots can do: a blue pixel bot reading over a big open notebook, a yellow bot sitting on a stack of books, a magnifying glass' },
@@ -244,7 +244,7 @@ function shortTitle(r) {
     case 'integration': return `${app}, handled by your bots`;
     case 'action': return words(`${nav} in ${app}`) <= 6 ? `${nav} in ${app}` : nav;
     case 'alternative': return /alternative/.test(r.h1) && r.art?.label ? `tried ${lower(r.art.label)}? read this first` : words(p) <= 6 ? p : nav;
-    case 'comparison': return / vs /.test(p) && words(p) <= 6 ? p : `${lower(r.art?.label || nav)} vs dusk bot`;
+    case 'comparison': return / vs /.test(p) && words(p) <= 6 ? p : `${lower(r.art?.label || nav)} vs madani bot`;
     case 'role': return `an ai team for ${nav}`;
     case 'routine': return words(p) <= 6 ? p : `${nav}, on repeat`;
     case 'use-case': return words(p) <= 6 ? p : `${nav}, handed to a bot`;
@@ -272,12 +272,12 @@ const HUB = {
 for (const [at, [kind, title, line, props]] of Object.entries(HUB)) { if (handSeo.has(at) || !Object.values(HUBS).some((h) => h.at === at)) continue; const c = familyCard(kind, { seed: at, title, line, props }); const id = sceneId(at); S[id] = c.html; META[id] = { seo: at, alt: c.alt }; }
 // docs: each page's own title and line, its topic's picture
 const DOC_ART = { 'getting-started': ['s-signpost', 'happy', 180], bots: ['p-bubbles', 'wink'], 'group-chats': ['p-bubbles', 'happy'], tips: ['p-mug', 'wink'], computer: ['s-computer', 'focus', 160], 'files-and-apps': ['p-folder', 'focus'],
-  'dusk-cloud': ['cloud', 'happy'], phone: ['s-mobile', 'happy', 160], 'your-own-server': ['s-server', 'focus', 90], routines: ['s-clock', 'sleepy'], memory: ['s-notebook', 'focus', 120], 'privacy-and-data': ['p-shield', 'focus'],
+  'madani-cloud': ['cloud', 'happy'], phone: ['s-mobile', 'happy', 160], 'your-own-server': ['s-server', 'focus', 90], routines: ['s-clock', 'sleepy'], memory: ['s-notebook', 'focus', 120], 'privacy-and-data': ['p-shield', 'focus'],
   'account-and-billing': ['s-key', 'happy', 100], troubleshooting: ['p-magnifier', 'big'], faq: ['p-magnifier', 'look'] };
 // each docs card's line, ten words at most (the page's own description is longer)
 const DOC_LINES = {
   'account-and-billing': 'what is free, and how to change or cancel.', bots: 'make a bot, pick its ai, talk to it.',
-  computer: 'its own browser and desktop. take the mouse anytime.', 'dusk-cloud': 'a computer we host, so bots work with the lid shut.',
+  computer: 'its own browser and desktop. take the mouse anytime.', 'madani-cloud': 'a computer we host, so bots work with the lid shut.',
   faq: 'the short answers, with a link to the long one.', 'files-and-apps': 'give it files, and plug it into your apps.',
   'getting-started': 'from nothing to a bot doing real work.', 'group-chats': 'several bots in one thread, handing work along.',
   memory: 'plain notes you can read, edit and delete.', phone: 'text your bots and hear back, from anywhere.',
@@ -295,9 +295,9 @@ for (const f of fs.readdirSync(path.join(D, 'pages', 'docs')).filter((x) => x.en
 }
 // brand and the legal pages
 { const sw = ['#c9f63f', '#fff3a0', '#ffc4dd', '#d0cefb', '#1b1b1f'].map((c, i) => `<div class="tile" style="left:${612 + i * 58}px;top:${f0(700) - 52}px;width:46px;height:46px;border-radius:10px;background:${c}"></div>`).join('');
-  S.brand = page({ G: G0, hills: hl0, seed: 'brand', title: 'the bots, the mark, the colours', line: 'everything you need to write about dusk bot.', size: 100,
+  S.brand = page({ G: G0, hills: hl0, seed: 'brand', title: 'the bots, the mark, the colours', line: 'everything you need to write about madani bot.', size: 100,
     body: `<div style="position:absolute;inset:0;transform:scale(${K});transform-origin:600px ${f0(600)}px">${tile(`<img src="${A}/mark-320.webp" alt="">`, 96, 352, f0(400) - 102) + bot('kit', 'violet', 'wink', 130, 530, f0(530)) + sw}</div>` });
-  META.brand = { core: ['brand'], alt: 'the bots, the mark, the colours: the dusk bot mark, a purple cat bot winking and five colour swatches, on a hill under a blue pixel sky' }; }
+  META.brand = { core: ['brand'], alt: 'the bots, the mark, the colours: the madani bot mark, a purple cat bot winking and five colour swatches, on a hill under a blue pixel sky' }; }
 { const c = familyCard('topic', { seed: '/legal', title: 'the fine print, in plain words', line: 'terms, privacy, license and security.', props: ['p-shield'], pose: 'focus' });
   S.legal = c.html; META.legal = { core: ['legal', 'terms', 'privacy', 'license', 'security', 'delete-account'], alt: c.alt }; }
 

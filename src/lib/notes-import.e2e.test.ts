@@ -13,7 +13,7 @@ import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
 // never reaches into server code
 interface VerificationServer { info: { url: string; dataDir: string }; close(): Promise<void> }
 const serverSide = async <T,>(path: string): Promise<T> => await import(/* @vite-ignore */ new URL(path, import.meta.url).href) as T;
-const launcher = () => serverSide<{ launchVerificationServer(env: NodeJS.ProcessEnv): Promise<VerificationServer> }>("../../scripts/control-dusk.ts");
+const launcher = () => serverSide<{ launchVerificationServer(env: NodeJS.ProcessEnv): Promise<VerificationServer> }>("../../scripts/control-madani.ts");
 const planters = () => serverSide<{ plantHermes(home: string): string[]; plantOpenClawList(home: string): string[] }>("../../server/testing/agent-app-fixtures.ts");
 
 const server = vi.hoisted(() => ({ url: "", owner: "", answers: [] as Array<{ path: string; status: number; body: Record<string, unknown> }> }));
@@ -23,7 +23,7 @@ vi.mock("@/state/store", async (original) => {
   const api = async (path: string, init: RequestInit & { timeoutMs?: number } = {}) => {
     const { timeoutMs: _timeout, ...rest } = init;
     const response = await fetch(`${server.url}${path}`, {
-      ...rest, headers: { "content-type": "application/json", origin: server.url, "x-dusk-desktop-owner": server.owner },
+      ...rest, headers: { "content-type": "application/json", origin: server.url, "x-madani-desktop-owner": server.owner },
     });
     const body = await response.json().catch(() => ({}));
     server.answers.push({ path, status: response.status, body });
@@ -48,7 +48,7 @@ interface ServerRoutine { id: string; botId: string; name: string; prompt: strin
 describe("bringing in what other AIs and agent apps hold, on a real server", () => {
   let fixture: VerificationServer;
   const get = async <T,>(path: string): Promise<T> => {
-    const response = await fetch(`${fixture.info.url}${path}`, { headers: { origin: fixture.info.url, "x-dusk-desktop-owner": server.owner } });
+    const response = await fetch(`${fixture.info.url}${path}`, { headers: { origin: fixture.info.url, "x-madani-desktop-owner": server.owner } });
     expect(response.status, path).toBe(200);
     return await response.json() as T;
   };
@@ -89,8 +89,8 @@ describe("bringing in what other AIs and agent apps hold, on a real server", () 
     vi.stubGlobal("localStorage", { getItem: (k: string) => store.get(k) ?? null, setItem: (k: string, v: string) => void store.set(k, v), removeItem: (k: string) => void store.delete(k) });
     server.owner = randomBytes(32).toString("base64url");
     // as the desktop app runs it: every request carries the app's owner capability, the launcher's own included
-    globalThis.fetch = (input, init = {}) => realFetch(input, { ...init, headers: { ...Object.fromEntries(new Headers(init.headers)), "x-dusk-desktop-owner": server.owner } });
-    fixture = await (await launcher()).launchVerificationServer({ ...process.env, DUSK_TEST_DESKTOP_OWNER_TOKEN: server.owner });
+    globalThis.fetch = (input, init = {}) => realFetch(input, { ...init, headers: { ...Object.fromEntries(new Headers(init.headers)), "x-madani-desktop-owner": server.owner } });
+    fixture = await (await launcher()).launchVerificationServer({ ...process.env, MADANI_TEST_DESKTOP_OWNER_TOKEN: server.owner });
     server.url = fixture.info.url;
     first = (await bots())[0]!;
   }, 120_000);
@@ -175,7 +175,7 @@ describe("bringing in what other AIs and agent apps hold, on a real server", () 
     expect(await copyNotesPrompt()).toBe(true);
     const downloads = join(fixture.info.dataDir, "Downloads");
     mkdirSync(downloads, { recursive: true });
-    const file = join(downloads, "dusk-bot-notes.md");
+    const file = join(downloads, "madani-bot-notes.md");
     writeFileSync(file, exported("grok-bot.md"));
     const later = new Date(Date.now() + 1_000);
     utimesSync(file, later, later);

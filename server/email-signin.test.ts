@@ -87,12 +87,12 @@ async function openEvents(cookie: string) {
 
 beforeAll(async () => {
   stub = await startControlPlaneStub();
-  home = mkdtempSync(join(tmpdir(), "dusk-email-signin-"));
+  home = mkdtempSync(join(tmpdir(), "madani-email-signin-"));
   const staticDir = join(home, "static");
-  mkdirSync(join(home, ".duskbot"), { recursive: true });
+  mkdirSync(join(home, ".madanibot"), { recursive: true });
   mkdirSync(join(staticDir, "assets"), { recursive: true });
   writeFileSync(join(staticDir, "index.html"), "<!doctype html><title>Served UI</title>");
-  writeFileSync(join(home, ".duskbot", "config.json"), JSON.stringify({
+  writeFileSync(join(home, ".madanibot", "config.json"), JSON.stringify({
     instances: { fixture: { driver: "email-signin-test-shadow" } },
     signIn: { admins: ["her@example.test", "@agentada.test"], members: ["staff@example.test"] },
   }));
@@ -103,14 +103,14 @@ beforeAll(async () => {
       ...(process.env.SystemRoot ? { SystemRoot: process.env.SystemRoot } : {}),
       HOME: home,
       USERPROFILE: home,
-      DUSK_PORT: String(PORT),
-      DUSK_WEBHOOK_PORT: String(PORT + 1),
-      DUSK_STATIC_DIR: staticDir,
-      DUSK_PUBLIC_URL: `https://${HOST}`,
-      DUSK_ENVIRONMENT_LABEL: "agentada",
-      DUSK_BROWSER_CONNECTION: join(home, "browser-test-connection.json"),
-      DUSK_CONTROL_PLANE_URL: stub.url,
-      DUSK_SSE_HEARTBEAT_MS: "50",
+      MADANI_PORT: String(PORT),
+      MADANI_WEBHOOK_PORT: String(PORT + 1),
+      MADANI_STATIC_DIR: staticDir,
+      MADANI_PUBLIC_URL: `https://${HOST}`,
+      MADANI_ENVIRONMENT_LABEL: "agentada",
+      MADANI_BROWSER_CONNECTION: join(home, "browser-test-connection.json"),
+      MADANI_CONTROL_PLANE_URL: stub.url,
+      MADANI_SSE_HEARTBEAT_MS: "50",
     },
     stdio: ["ignore", "pipe", "pipe"],
   });
@@ -135,7 +135,7 @@ afterAll(async () => {
 
 describe("sign in with your email on a hosted server", () => {
   it("advertises the option in the public descriptor", async () => {
-    const descriptor = await call("/.well-known/duskbot/environment");
+    const descriptor = await call("/.well-known/madanibot/environment");
     expect(descriptor.status).toBe(200);
     expect(descriptor.body.capabilities.emailSignIn).toBe(true);
   });
@@ -171,7 +171,7 @@ describe("sign in with your email on a hosted server", () => {
     expect(right.body.session).toMatchObject({ label: "Her iPad", scopes: ["admin", "client"], email: "her@example.test" });
     expect(right.body.environment.environmentId).toBeTruthy();
     const cookie = cookieOf(right);
-    expect(cookie).toMatch(/^dusk_session_/);
+    expect(cookie).toMatch(/^madani_session_/);
     expect(String(right.headers["set-cookie"])).toMatch(/HttpOnly/);
 
     const me = await call("/api/auth/session", { headers: { cookie, origin: `https://${HOST}` } });
@@ -257,7 +257,7 @@ describe("sign in with your email on a hosted server", () => {
   it("ends an idle email stream after an external allow-list removal and never revives the old cookie", async () => {
     const cookie = await signIn("staff@example.test");
     const stream = await openEvents(cookie);
-    const configPath = join(home, ".duskbot", "config.json");
+    const configPath = join(home, ".madanibot", "config.json");
     const config = JSON.parse(readFileSync(configPath, "utf8"));
     try {
       // The fleet agent and CLI update this file outside the running server.

@@ -1,9 +1,9 @@
-// "Let my cloud bots use this Mac" (docs/cloud-uses-mac.md): this app serves its own dusk cloud's bots through the
+// "Let my cloud bots use this Mac" (docs/cloud-uses-mac.md): this app serves its own madani cloud's bots through the
 // same poller and executor a linked VPS uses (mac-control.mjs), with every job sealed to this Mac and signed by the
 // cloud's link key, and checked here against the person's switch and allowed folders before it runs.
 //
 // Security invariants: off until the person turns it on on this Mac; only the app's own My Cloud is followed; a job
-// that is not signed by that cloud's link key (from dusk.bot, never from the cloud's address), not sealed to this run's
+// that is not signed by that cloud's link key (from madani.bot, never from the cloud's address), not sealed to this run's
 // key, expired, repeated or outside the cloud's tools never runs. Once on, cloud bots act as the person; the person's
 // limits (Auto asks for risky actions, or every action, or never; "Only these folders") are enforced here too.
 import { createCipheriv, createDecipheriv, createPublicKey, diffieHellman, generateKeyPairSync, hkdfSync, randomBytes, verify } from "node:crypto";
@@ -16,14 +16,14 @@ import { createMacControlHost } from "./mac-control.mjs";
 import { createMacExecutor, folderName, jobSummary, macLogFile, resolveMacPath } from "./mac-control-tools.mjs";
 
 export const CLOUD_MAC_TOOLS = Object.freeze(["mac_exec", "mac_read_file", "mac_write_file", "mac_list", "mac_open", "mac_download"]);
-export const DEFAULT_CWD = "~/dusk bot";
+export const DEFAULT_CWD = "~/madani bot";
 export const DEFAULT_FOLDERS = Object.freeze(["~/Downloads", DEFAULT_CWD]);
 const OPEN_SCHEMES = new Set(["https:", "http:", "mailto:"]);
 const CONNECTED_MS = 60_000;
 const KEY_RETRY_MS = 10 * 60_000;
 
-export const CLOUD_MAC_SEAL_INFO = "dusk cloud mac v1";
-export const cloudMacSignedBytes = (envelope) => `dusk-mac-job-v1\n${envelope.mac}\n${envelope.eph}\n${envelope.iv}\n${envelope.data}`;
+export const CLOUD_MAC_SEAL_INFO = "madani cloud mac v1";
+export const cloudMacSignedBytes = (envelope) => `madani-mac-job-v1\n${envelope.mac}\n${envelope.eph}\n${envelope.iv}\n${envelope.data}`;
 export const cloudMacJobAad = (mac, eph) => `job\n${mac}\n${eph}`;
 export const cloudMacOutcomeAad = (jobId) => `outcome\n${jobId}`;
 
@@ -181,8 +181,8 @@ export function createCloudMac(deps) {
     const place = deps.cloud();
     const cloud = !place.origin ? "none" : !place.awake ? "asleep" : refused ? "refused" : now() - lastOkAt < CONNECTED_MS ? "connected" : "connecting";
     const problem = !enabled ? null
-      : cloud === "none" ? "You have no dusk cloud on this account yet."
-        : cloud === "asleep" ? "Your dusk cloud is asleep; it reaches this Mac again once it wakes."
+      : cloud === "none" ? "You have no madani cloud on this account yet."
+        : cloud === "asleep" ? "Your madani cloud is asleep; it reaches this Mac again once it wakes."
           : cloud === "refused" ? refused : null;
     return { enabled, mode, limitFolders, folders: [...folders], cloud, problem, busy: [...busy.values()].map((entry) => entry.work) };
   };
@@ -216,7 +216,7 @@ export function createCloudMac(deps) {
     open: (body) => seal.open(body?.sealed, linkKey),
     state: (state, why) => {
       if (state === "connected") { lastOkAt = now(); if (refused) { refused = null; changed(); } }
-      else if (state === "refused") { refused = why || "Your dusk cloud does not take this Mac's work yet; it may need an update."; changed(); }
+      else if (state === "refused") { refused = why || "Your madani cloud does not take this Mac's work yet; it may need an update."; changed(); }
     },
   });
 
@@ -236,7 +236,7 @@ export function createCloudMac(deps) {
       const key = await deps.linkKey().catch(() => null);
       if (keyOrigin !== target) return;
       if (isLinkKey(key)) { linkKey = key; refused = null; }
-      else refused = "Your dusk cloud needs an update before it can use this Mac.";
+      else refused = "Your madani cloud needs an update before it can use this Mac.";
       changed();
     }
     if (origin && origin !== target) {

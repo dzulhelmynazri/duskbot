@@ -32,9 +32,9 @@ const account: CloudAccountState = {
 const idle: StartFreshView = { phase: "idle", steps: [
   { id: "signout", kind: "signout", label: "Sign this computer out of sam@example.test", status: "pending" },
   { id: "ai", kind: "ai", label: "Remove the saved AI keys", status: "pending" },
-  { id: "local", kind: "local", label: "Wipe this computer's dusk bot data on restart", status: "pending" },
+  { id: "local", kind: "local", label: "Wipe this computer's madani bot data on restart", status: "pending" },
 ] };
-window.duskDesktop = {
+window.madaniDesktop = {
   platform: "darwin",
   getCapabilities: async () => ({ ...initialDesktopCapabilities(), windowChrome: "mac-inset" }),
   cloudAccount: { state: async () => account, onState: () => () => {} },
@@ -42,7 +42,7 @@ window.duskDesktop = {
     available: async () => true, preview: async () => idle, run: async () => idle, retry: async () => idle, finish: async () => idle,
     onChanged: () => () => {},
   },
-} as unknown as typeof window.duskDesktop;
+} as unknown as typeof window.madaniDesktop;
 
 const plans = [
   { tier: "starter", label: "Plus", amount: 1500, trialDays: 3 },
@@ -58,7 +58,7 @@ function View() {
     case "plans": return <CloudAddSheet kind="offer" staging={false} onClose={() => {}}>
       <ChooseScreen offer={{ plans, recommended: "pro", refundDays: 14 }} busy={false} signedOut={false} notice={null} onStart={() => {}} onSignIn={() => {}} />
     </CloudAddSheet>;
-    case "start-fresh": return <StartFreshDialog bridge={window.duskDesktop!.startFresh!} onClose={() => {}} />;
+    case "start-fresh": return <StartFreshDialog bridge={window.madaniDesktop!.startFresh!} onClose={() => {}} />;
     case "settings": return <div className="mx-auto max-w-[640px] p-8"><CloudAccountSettings /></div>;
     default: return null;
   }

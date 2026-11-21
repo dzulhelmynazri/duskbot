@@ -14,7 +14,7 @@ export interface ServerCompat {
 }
 
 /** Servers from before the rename describe themselves at the old name. */
-const DESCRIPTORS = ["/.well-known/duskbot/environment", "/.well-known/openmausbot/environment"];
+const DESCRIPTORS = ["/.well-known/madanibot/environment", "/.well-known/openmausbot/environment"];
 
 let reading: Promise<ServerCompat> | null = null;
 let described: Omit<ServerCompat, "missing"> | null = null;

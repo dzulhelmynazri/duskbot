@@ -25,10 +25,10 @@ const GLASS = `(() => {
     onEvent: (fn) => { window.__glassEmit = fn; return () => {}; } };
 })()`;
 
-const out = join(tmpdir(), `dusk-header-build-${process.pid}`);
-const build = spawnSync(join(repoRoot, "node_modules/.bin/vite"), ["build", "--config", "apps/mobile/store/perf.vite.config.ts", "--logLevel", "error"], { cwd: repoRoot, env: { ...process.env, DUSK_PERF_OUT: out }, stdio: "inherit" });
+const out = join(tmpdir(), `madani-header-build-${process.pid}`);
+const build = spawnSync(join(repoRoot, "node_modules/.bin/vite"), ["build", "--config", "apps/mobile/store/perf.vite.config.ts", "--logLevel", "error"], { cwd: repoRoot, env: { ...process.env, MADANI_PERF_OUT: out }, stdio: "inherit" });
 if (build.status !== 0) process.exit(1);
-process.env.DUSK_PERF_OUT = out;
+process.env.MADANI_PERF_OUT = out;
 
 const stage = await startStage({ args: ["preview", "--config", "apps/mobile/store/perf.vite.config.ts"], ready: "Local" });
 try {
@@ -41,7 +41,7 @@ try {
   // the page's header at rest, drawn over where the glass is, at the phone's own scale: its glyphs against the buttons
   const still = await stage.page.evaluate(`(() => {
     const style = document.head.appendChild(document.createElement("style"));
-    style.textContent = "html[data-native-glass-header] .dusk-mobile [data-glass-nav] [data-glass] { opacity: 1 !important }";
+    style.textContent = "html[data-native-glass-header] .madani-mobile [data-glass-nav] [data-glass] { opacity: 1 !important }";
     const nav = document.querySelector("[data-glass-nav]").getBoundingClientRect();
     return { style: true, x: nav.left, y: nav.top, width: nav.width, height: nav.height };
   })()`);

@@ -5,7 +5,7 @@ import { appendFileSync, existsSync, mkdtempSync, readFileSync, writeFileSync } 
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
-import { launchVerificationServer, runControlDusk } from "../scripts/control-dusk.ts";
+import { launchVerificationServer, runControlMadani } from "../scripts/control-madani.ts";
 
 type Message = { id: string; at: number; role: string; kind: string; text?: string; from?: { botId: string }; tool?: { name?: string } };
 type Turn = { botId: string; turnIndex: number; system: string; prompt: unknown };
@@ -21,7 +21,7 @@ async function room(plan: (ids: { ada: string; ben: string; cal: string }) => Re
 } = {}) {
   const session = await launchVerificationServer({ ...process.env, ...options.env }, undefined, undefined, undefined, { scripted: true });
   const { url, dataDir } = session.info;
-  const control = (...args: string[]) => runControlDusk([...args, "--url", url]) as Promise<any>;
+  const control = (...args: string[]) => runControlMadani([...args, "--url", url]) as Promise<any>;
   const api = async (method: string, path: string, body?: unknown) => {
     const response = await fetch(url + path, {
       method,
@@ -128,7 +128,7 @@ describe.skipIf(process.platform === "win32")("a room of three bots works a task
   }, 90_000);
 
   it("a room with a long history still knows what was settled before the window", async () => {
-    const routes = join(mkdtempSync(join(tmpdir(), "dusk-room-teamwork-")), "text-routes.json");
+    const routes = join(mkdtempSync(join(tmpdir(), "madani-room-teamwork-")), "text-routes.json");
     writeFileSync(routes, JSON.stringify({ "Current ask": "Current ask: name the project.\nExact details: the project codename is Bluebird." }));
     const r = await room((ids) => ({
       [ids.ada]: { reply: "Bluebird." },

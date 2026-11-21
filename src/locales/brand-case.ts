@@ -23,7 +23,7 @@ export const KEEP_PHRASES: readonly string[] = [
   "Screen Recording", "Speech Recognition", "Microphone and Speech Recognition", "Dictation in System Settings → Keyboard", "Dictation in System Settings",
   "Authorization: Bearer", "Authorization, with Bearer", "Gmail, Calendar",
   "Home Screen", "App Store", "Google Play", "Apple Pay", "Google Pay", "G Pay", "Mac mini",
-  "Dusk Bot", "Claude Code", "Hermes Agent", "Kimi Code", "Fish Audio", "LM Studio", "Google AI Studio", "Hacker News", "Vercel AI Gateway",
+  "Madani Bot", "Claude Code", "Hermes Agent", "Kimi Code", "Fish Audio", "LM Studio", "Google AI Studio", "Hacker News", "Vercel AI Gateway",
   "Cloudflare Workers AI", "OpenCode Zen, Go", "OpenCode Zen and Go", "DeepSeek Harness", "Grok Imagine", "Muse Wonder", "Wispr Flow",
   "Cua Driver", "VS Code", "Node.js", "Wi-Fi", "Gmail, Calendar or Drive", "Outlook, Calendar or OneDrive", "Google Drive",
   "1Password", "AirPods Pro", "Google Calendar", "Google Sheets", "Google Docs", "Google Meet", "Microsoft Teams", "X Developer",
@@ -60,7 +60,7 @@ function caseRun(text: string): string {
     .replace(WORD, caseWord);
 }
 
-/** Dusk writes its own words in lowercase; other companies' names keep the case they write them in. */
+/** Madani writes its own words in lowercase; other companies' names keep the case they write them in. */
 export function brandCase(text: string): string {
   let out = "";
   let last = 0;
@@ -95,11 +95,11 @@ export function isFragment(key: string): boolean {
 }
 
 /** lowercase words a string may start with: other companies' own lowercase names and commands typed as written */
-export const LOWERCASE_STARTS: readonly string[] = ["dusk bot", "dusk cloud", "npm", "pnpm", "npx", "noVNC", "iPhone", "iPad", "iOS", "macOS", "x.com", "e.g."];
+export const LOWERCASE_STARTS: readonly string[] = ["madani bot", "madani cloud", "npm", "pnpm", "npx", "noVNC", "iPhone", "iPad", "iOS", "macOS", "x.com", "e.g."];
 
 const ABBREVIATION_BEFORE = /\b(?:e\.g|i\.e|etc|vs|approx)\.\s*$/i;
 
-/** capitalises the first letter of each sentence, and the pronoun I; names, placeholders, code, links and "dusk" stay as they are */
+/** capitalises the first letter of each sentence, and the pronoun I; names, placeholders, code, links and "madani" stay as they are */
 export function sentenceCase(text: string): string {
   const spans = [...text.matchAll(PROTECT)].map((m) => [m.index as number, (m.index as number) + m[0].length] as const);
   const protectedAt = (index: number) => spans.some(([from, to]) => index >= from && index < to);
@@ -118,7 +118,7 @@ export function sentenceCase(text: string): string {
     const at = start + lead;
     if (protectedAt(at)) continue;
     const word = text.slice(at).match(/^[a-z][a-z'’]*(?![A-Za-z0-9_@/]|:\S)/)?.[0];
-    if (!word || word === "dusk" || LOWERCASE_STARTS.some((start) => text.startsWith(start, at))) continue;
+    if (!word || word === "madani" || LOWERCASE_STARTS.some((start) => text.startsWith(start, at))) continue;
     chars[at] = chars[at].toUpperCase();
   }
   const out = chars.join("");
@@ -137,7 +137,7 @@ export const QUOTED_BUTTONS: readonly string[] = ["Take over", "Take control", "
 const QUOTED_BUTTON = new RegExp(`(?<![\\w'’])(?:${[...QUOTED_BUTTONS].sort((a, b) => b.length - a.length).map((name) => name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")).join("|")})(?![\\w'’])`, "g");
 
 /** the policy for one English entry: sentence case everywhere (labels, buttons, titles, messages), other companies' names keep
- * their own case, "dusk bot" and "dusk cloud" stay lowercase, and the fragments filled into another line stay lowercase */
+ * their own case, "madani bot" and "madani cloud" stay lowercase, and the fragments filled into another line stay lowercase */
 export function entryCase(key: string, value: string): string {
   if (EXEMPT_KEYS.some((pattern) => pattern.test(key))) return value;
   if (isFragment(key)) return brandCase(value);

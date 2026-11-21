@@ -5,11 +5,11 @@ import { mkdtempSync, readFileSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { expect, it } from "vitest";
-import { launchVerificationServer, runControlDusk } from "../scripts/control-dusk.ts";
+import { launchVerificationServer, runControlMadani } from "../scripts/control-madani.ts";
 import { continueNote } from "./host/finish-guard.ts";
 
 it("carries on a turn that announced a step it never took, once, and the person gets the result", async () => {
-  const scratch = mkdtempSync(join(tmpdir(), "dusk-finish-guard-"));
+  const scratch = mkdtempSync(join(tmpdir(), "madani-finish-guard-"));
   const prompts = join(scratch, "prompts.jsonl");
   const fixture = await launchVerificationServer({
     ...process.env,
@@ -18,7 +18,7 @@ it("carries on a turn that announced a step it never took, once, and the person 
     FAKE_CLAUDE_TOOL_CALLS: JSON.stringify([{ name: "WebSearch", input: { query: "best-selling budget keyboards" } }]),
     FAKE_CLAUDE_PROMPTS: prompts,
   });
-  const cli = (...args: string[]) => runControlDusk([...args, "--url", fixture.info.url]) as Promise<any>;
+  const cli = (...args: string[]) => runControlMadani([...args, "--url", fixture.info.url]) as Promise<any>;
   const texts = async (threadId: string) => {
     const response = await fetch(`${fixture.info.url}/api/threads/${encodeURIComponent(threadId)}/messages?limit=100`);
     return (((await response.json()) as { messages: unknown }).messages as Array<{ role: string; kind: string; text?: string; tool?: { name: string } }>);

@@ -9,10 +9,10 @@ const flat = (value: unknown) => JSON.stringify(value);
 describe("redactSecrets", () => {
   it("omits private MCP descriptors even when a credential uses an ordinary header name", () => {
     const descriptor = JSON.stringify({ url: "https://example.test/mcp", headers: { "x-tenant": "private-synthetic-value" } });
-    const record = `DUSK_REMOTE_MCP_CONFIG_${"0".repeat(64)}`;
-    const logged = redactSecrets({ params: { mcpServers: [{ env: [{ name: "DUSK_GATE_UPSTREAM", value: descriptor }] }] }, env: { DUSK_REMOTE_MCP_SERVER: descriptor, [record]: JSON.stringify({ DUSK_REMOTE_MCP_SERVER: descriptor }) } });
+    const record = `MADANI_REMOTE_MCP_CONFIG_${"0".repeat(64)}`;
+    const logged = redactSecrets({ params: { mcpServers: [{ env: [{ name: "MADANI_GATE_UPSTREAM", value: descriptor }] }] }, env: { MADANI_REMOTE_MCP_SERVER: descriptor, [record]: JSON.stringify({ MADANI_REMOTE_MCP_SERVER: descriptor }) } });
     expect(flat(logged)).not.toContain("private-synthetic-value");
-    expect(flat(logged)).toContain("DUSK_GATE_UPSTREAM");
+    expect(flat(logged)).toContain("MADANI_GATE_UPSTREAM");
     expect(flat(logged)).toContain(record);
   });
   it("masks the tokens in an ACP session/new, keeping the shape", () => {
@@ -28,8 +28,8 @@ describe("redactSecrets", () => {
             command: "/usr/bin/node",
             args: ["/app/agents-proxy.js"],
             env: [
-              { name: "DUSK_BOT_ID", value: "bot-123" },
-              { name: "DUSK_COMMS_TOKEN", value: "s3cret-comms-token-value" },
+              { name: "MADANI_BOT_ID", value: "bot-123" },
+              { name: "MADANI_COMMS_TOKEN", value: "s3cret-comms-token-value" },
             ],
           },
           {
@@ -37,8 +37,8 @@ describe("redactSecrets", () => {
             command: "/usr/bin/node",
             args: ["/app/computer-proxy.js"],
             env: [
-              { name: "DUSK_BOX_ID", value: "retired-9" },
-              { name: "DUSK_BOX_TOKEN", value: "box_live_abcdefghijklmnop" },
+              { name: "MADANI_BOX_ID", value: "retired-9" },
+              { name: "MADANI_BOX_TOKEN", value: "box_live_abcdefghijklmnop" },
             ],
           },
         ],
@@ -50,8 +50,8 @@ describe("redactSecrets", () => {
     expect(out).not.toContain("s3cret-comms-token-value");
     expect(out).not.toContain("box_live_abcdefghijklmnop");
     expect(out).toContain("session/new");
-    expect(out).toContain("DUSK_COMMS_TOKEN");
-    expect(out).toContain("DUSK_BOX_TOKEN");
+    expect(out).toContain("MADANI_COMMS_TOKEN");
+    expect(out).toContain("MADANI_BOX_TOKEN");
     expect(out).toContain("bot-123");
     expect(out).toContain("retired-9");
     expect(out).toContain("/app/agents-proxy.js");
@@ -81,7 +81,7 @@ describe("redactSecrets", () => {
           url: "https://app.composio.dev/tool_router/v3/trs_test/mcp",
           headers: { "x-api-key": "ak_live_supersecret" },
         },
-        computer: { env: { ELECTRON_RUN_AS_NODE: "1", DUSK_BOX_TOKEN: "box_live_zzz" } },
+        computer: { env: { ELECTRON_RUN_AS_NODE: "1", MADANI_BOX_TOKEN: "box_live_zzz" } },
       },
     };
 
@@ -258,7 +258,7 @@ describe("redactSecretsInText", () => {
 
   it("masks an assignment to any name ending in KEY, whatever the value looks like", () => {
     expect(redactSecretsInText(`OPENAI_API_KEY=sk-${"a".repeat(20)} pnpm test`)).toBe("OPENAI_API_KEY=«redacted 23 chars» pnpm test");
-    expect(redactSecretsInText("X_KEY=value pnpm control:dusk doctor")).toBe("X_KEY=«redacted 5 chars» pnpm control:dusk doctor");
+    expect(redactSecretsInText("X_KEY=value pnpm control:madani doctor")).toBe("X_KEY=«redacted 5 chars» pnpm control:madani doctor");
     expect(redactSecretsInText("export xai-key='abc.def'")).toBe("export xai-key='«redacted 7 chars»'");
   });
 
@@ -307,7 +307,7 @@ describe("redactSecretsInText", () => {
   it("is idempotent for structurally identified credentials", () => {
     const input = {
       apiKey: "abcdefgh12345678",
-      env: [{ name: "DUSK_COMMS_TOKEN", value: "abcdefghijklmnop" }],
+      env: [{ name: "MADANI_COMMS_TOKEN", value: "abcdefghijklmnop" }],
     };
     const once = redactSecrets(input);
 
@@ -315,13 +315,13 @@ describe("redactSecretsInText", () => {
   });
 });
 
-describe("dusk's own credentials in text", () => {
+describe("madani's own credentials in text", () => {
   it("masks a workspace session, a stream ticket, a pairing credential and a pairing link's payload", () => {
-    const session = `dusk_sess_${"a".repeat(43)}`;
-    const ticket = `dusk_tick_${"b".repeat(32)}`;
+    const session = `madani_sess_${"a".repeat(43)}`;
+    const ticket = `madani_tick_${"b".repeat(32)}`;
     const pairing = `omb_pair_${"c".repeat(43)}`;
-    const deep = `duskbot://pair?m=${"d".repeat(64)}`;
-    const universal = `https://dusk.bot/m/pair#m=${"e".repeat(64)}&c=ABCD1234`;
+    const deep = `madanibot://pair?m=${"d".repeat(64)}`;
+    const universal = `https://madani.bot/m/pair#m=${"e".repeat(64)}&c=ABCD1234`;
 
     const out = redactSecretsInText([session, ticket, pairing, deep, universal].join("\n"));
 
@@ -329,8 +329,8 @@ describe("dusk's own credentials in text", () => {
       expect(out).not.toContain(value);
     }
     expect((out.match(/«redacted/g) ?? []).length).toBe(6);
-    expect(out).toContain("duskbot://pair?m=«redacted");
-    expect(out).toContain("https://dusk.bot/m/pair#m=«redacted");
+    expect(out).toContain("madanibot://pair?m=«redacted");
+    expect(out).toContain("https://madani.bot/m/pair#m=«redacted");
     expect(out).toContain("&c=«redacted");
   });
 });

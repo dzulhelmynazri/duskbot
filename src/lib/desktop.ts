@@ -30,7 +30,7 @@ let cached: DesktopCapabilities | null = null;
 let cacheRevision = 0;
 
 export function initialDesktopCapabilities(): DesktopCapabilities {
-  const platform = typeof window === "undefined" ? undefined : window.duskDesktop?.platform;
+  const platform = typeof window === "undefined" ? undefined : window.madaniDesktop?.platform;
   if (!platform) return browserCapabilities;
   const isMac = platform === "darwin";
   const isWindows = platform === "win32";
@@ -55,11 +55,11 @@ export function initialDesktopCapabilities(): DesktopCapabilities {
 
 export async function loadDesktopCapabilities(): Promise<DesktopCapabilities> {
   if (cached) return cached;
-  if (!window.duskDesktop?.getCapabilities) return browserCapabilities;
+  if (!window.madaniDesktop?.getCapabilities) return browserCapabilities;
   const revisionAtStart = cacheRevision;
   let loaded: DesktopCapabilities;
   try {
-    loaded = await window.duskDesktop.getCapabilities();
+    loaded = await window.madaniDesktop.getCapabilities();
   } catch {
     loaded = browserCapabilities;
   }
@@ -82,5 +82,5 @@ export function cacheDesktopCapabilities(capabilities: DesktopCapabilities): Des
 /** The desktop bridge that saves a switch with its approval reset to Ask. A paired desktop has none: its own app runs no
  * server behind that bridge, so the host takes the switch over HTTP. */
 export function askResetBridge() {
-  return typeof window === "undefined" || window.duskDesktop?.remoteClient?.active ? undefined : window.duskDesktop?.approvals;
+  return typeof window === "undefined" || window.madaniDesktop?.remoteClient?.active ? undefined : window.madaniDesktop?.approvals;
 }

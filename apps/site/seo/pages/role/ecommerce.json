@@ -102,7 +102,7 @@
     },
     {
       "q": "can it reply to customers without touching orders?",
-      "a": "**it can prepare replies while store access stays read only.** keep drafts in dusk chat and copy them yourself. saving gmail drafts needs the specific drafting actions."
+      "a": "**it can prepare replies while store access stays read only.** keep drafts in madani chat and copy them yourself. saving gmail drafts needs the specific drafting actions."
     },
     {
       "q": "will it automatically issue refunds?",
@@ -111,15 +111,15 @@
   ],
   "sources": [
     {
-      "label": "dusk bot docs: files and apps",
+      "label": "madani bot docs: files and apps",
       "url": "/docs/files-and-apps"
     },
     {
-      "label": "dusk bot docs: routines",
+      "label": "madani bot docs: routines",
       "url": "/docs/routines"
     },
     {
-      "label": "dusk bot docs: account and billing",
+      "label": "madani bot docs: account and billing",
       "url": "/docs/account-and-billing"
     },
     {

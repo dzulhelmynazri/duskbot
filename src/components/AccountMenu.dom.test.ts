@@ -15,7 +15,7 @@ const bridge = {
 };
 let host: HTMLDivElement, root: Root;
 beforeEach(() => {
-  (window as unknown as { duskDesktop: unknown }).duskDesktop = { accounts: bridge, app: { ownPage: true } };
+  (window as unknown as { madaniDesktop: unknown }).madaniDesktop = { accounts: bridge, app: { ownPage: true } };
   host = document.createElement("div");
   document.body.append(host);
   root = createRoot(host);
@@ -26,11 +26,11 @@ afterEach(() => { act(() => root.unmount()); host.remove(); vi.clearAllMocks(); 
 const dialog = () => [...document.body.querySelectorAll<HTMLElement>("[role=alertdialog], [role=dialog][aria-modal=true]:not([data-accounts-sheet])")].find((el) => !el.closest("[data-leaving]")) ?? null;
 const button = (label: string) => [...document.body.querySelectorAll<HTMLButtonElement>("button")].find((node) => node.textContent?.trim() === label);
 
-it("the accounts sheet asks before signing out of dusk cloud, with art and what happens; cancel keeps the account", async () => {
+it("the accounts sheet asks before signing out of madani cloud, with art and what happens; cancel keeps the account", async () => {
   await act(async () => { root.render(createElement(AccountsSheet, { onClose: vi.fn() })); });
   await act(async () => { host.querySelector<HTMLButtonElement>("[data-accounts-sign-out]")!.click(); });
   expect(bridge.signOut).not.toHaveBeenCalled();
-  expect(dialog()?.textContent).toContain("Sign out of dusk cloud?");
+  expect(dialog()?.textContent).toContain("Sign out of madani cloud?");
   expect(dialog()?.textContent).toContain("Your plan and your cloud bots keep going.");
   expect(dialog()?.querySelector("svg, canvas, img, [data-pixel-icon]")).not.toBeNull();
   await act(async () => { (button("Cancel") ?? button("Cancel")!).click(); });
@@ -48,7 +48,7 @@ it("the You menu and settings sign out through the same question", async () => {
   await act(async () => { root.render(createElement(Probe)); });
   await act(async () => { access!.signOut("a"); });
   expect(bridge.signOut).not.toHaveBeenCalled();
-  expect(dialog()?.textContent).toContain("Sign out of dusk cloud?");
+  expect(dialog()?.textContent).toContain("Sign out of madani cloud?");
   const confirm = [...dialog()!.querySelectorAll<HTMLButtonElement>("button")].find((node) => node.textContent?.trim() === "Sign out")!;
   await act(async () => { confirm.click(); });
   expect(bridge.signOut).toHaveBeenCalledWith("a");
@@ -59,13 +59,13 @@ it("the account card shows the photo, name, address and plan, and Open dashboard
   const at = Date.UTC(2026, 11, 14, 12);
   bridge.list.mockResolvedValueOnce({ active: { id: "a", email: "a@example.test", name: "Ada Lovelace", avatarUrl: "https://photos.example.test/ada.png", plan: { status: "active", tier: "pro", renewsAt: at } } } as never);
   const openPage = vi.fn(async () => ({ opened: true })), openDashboard = vi.fn(async () => {});
-  (window as unknown as { duskDesktop: Record<string, unknown> }).duskDesktop.cloudAccount = { openPage, openDashboard };
+  (window as unknown as { madaniDesktop: Record<string, unknown> }).madaniDesktop.cloudAccount = { openPage, openDashboard };
   await act(async () => { root.render(createElement(AccountsSheet, { onClose: vi.fn() })); });
   const card = host.querySelector<HTMLElement>("[data-accounts-active]")!;
   expect(card.querySelector("img")?.getAttribute("src")).toBe("https://photos.example.test/ada.png");
   expect(card.textContent).toContain("Ada Lovelace");
   expect(card.textContent).toContain("a@example.test");
-  expect(card.querySelector("[data-accounts-plan]")?.textContent).toBe("dusk cloud · Pro");
+  expect(card.querySelector("[data-accounts-plan]")?.textContent).toBe("madani cloud · Pro");
   expect(card.textContent).not.toContain("Signed in as");
   await act(async () => { button("Open dashboard")!.click(); });
   expect(openDashboard).toHaveBeenCalled();
@@ -92,8 +92,8 @@ it("without a photo the card shows the avatar drawn from the account id; a photo
 it("the plan line names the plan only, never a renewal or end date", async () => {
   const at = Date.UTC(2026, 11, 14, 12);
   const { accountPlanText } = await import("./AccountMenu");
-  expect(accountPlanText({ status: "active", tier: "pro", renewsAt: at })).toBe("dusk cloud · Pro");
-  expect(accountPlanText({ status: "active", tier: "pro", endsAt: at, cancelled: true })).toBe("dusk cloud · Pro");
+  expect(accountPlanText({ status: "active", tier: "pro", renewsAt: at })).toBe("madani cloud · Pro");
+  expect(accountPlanText({ status: "active", tier: "pro", endsAt: at, cancelled: true })).toBe("madani cloud · Pro");
   expect(accountPlanText({ status: "free" })).toBe("Free");
 });
 

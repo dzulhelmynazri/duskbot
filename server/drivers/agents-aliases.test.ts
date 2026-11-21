@@ -11,8 +11,8 @@ import type { Json } from "./agents-client.ts";
 import { agentsMcp } from "./agents-mcp.ts";
 
 const EVERYTHING = {
-  DUSK_BOT_ID: "bot-alias", DUSK_CHIEF_OF_STAFF: "1", DUSK_SKILL_AUTHORING_ENABLED: "1",
-  DUSK_VOICE_NOTES: "1", DUSK_X_RESEARCH: "1", DUSK_RESEARCH: "1", DUSK_TEAM_PEOPLE: "1", DUSK_DEFAULT_BOT: "1", DUSK_SLACK: "1",
+  MADANI_BOT_ID: "bot-alias", MADANI_CHIEF_OF_STAFF: "1", MADANI_SKILL_AUTHORING_ENABLED: "1",
+  MADANI_VOICE_NOTES: "1", MADANI_X_RESEARCH: "1", MADANI_RESEARCH: "1", MADANI_TEAM_PEOPLE: "1", MADANI_DEFAULT_BOT: "1", MADANI_SLACK: "1",
 };
 const LISTED = new Set(availableTools(catalogProfileFromEnv(EVERYTHING)).map((tool) => tool.name));
 
@@ -26,9 +26,9 @@ const CALLS: Record<string, Json> = {
   session_read: { thread_id: "thread-old", message_id: "message-old" },
   update_widget: { widget_id: "m7", widget: WIDGET_SAMPLES.buildStatus },
   update_html: { app_id: "m9", html: "<p>v2</p>" },
-  x_user_posts: { handle: "@duskbot", limit: 5 },
-  x_post: { post: "https://x.bot/dusk/status/123", replies: true },
-  x_profile: { handle: "duskbot" },
+  x_user_posts: { handle: "@madanibot", limit: 5 },
+  x_post: { post: "https://x.bot/madani/status/123", replies: true },
+  x_profile: { handle: "madanibot" },
 };
 
 /** What a call sends to the harness, and what the model reads back. */
@@ -85,11 +85,11 @@ describe("the agents tools' aliases", () => {
   });
 
   it("run only where the action tool is listed, as the proxy's unknown-tool check sees them", async () => {
-    const call = (env: Record<string, string>, name: string) => agentsMcp({ ...EVERYTHING, DUSK_HARNESS_URL: "http://127.0.0.1:9", ...env })(
+    const call = (env: Record<string, string>, name: string) => agentsMcp({ ...EVERYTHING, MADANI_HARNESS_URL: "http://127.0.0.1:9", ...env })(
       { jsonrpc: "2.0", id: 1, method: "tools/call", params: { name, arguments: CALLS[name] } } as Json,
     );
-    expect(await call({ DUSK_CHIEF_OF_STAFF: "0" }, "create_room")).toMatchObject({ error: { code: -32602, message: "Unknown tool: create_room" } });
-    expect(await call({ DUSK_X_RESEARCH: "0" }, "x_profile")).toMatchObject({ error: { message: "Unknown tool: x_profile" } });
+    expect(await call({ MADANI_CHIEF_OF_STAFF: "0" }, "create_room")).toMatchObject({ error: { code: -32602, message: "Unknown tool: create_room" } });
+    expect(await call({ MADANI_X_RESEARCH: "0" }, "x_profile")).toMatchObject({ error: { message: "Unknown tool: x_profile" } });
     const reached = await call({}, "create_room") as { result?: { isError: boolean } };
     expect(reached.result?.isError).toBe(true);
   });

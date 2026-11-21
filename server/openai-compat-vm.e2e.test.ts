@@ -88,7 +88,7 @@ const nativeToolNames = (threadId: string): string[] => {
 const idle = (botId: string) => until(() => api("GET", "/api/bots?messages=0"), s => !s.bots.find((b: any) => b.id === botId)?.busy);
 
 beforeAll(async () => {
-  fixtureHome = mkdtempSync(join(tmpdir(), "dusk-openai-vm-"));
+  fixtureHome = mkdtempSync(join(tmpdir(), "madani-openai-vm-"));
   stateFile = join(fixtureHome, "vm.json");
   dumpFile = join(fixtureHome, "dump.json");
   vmState({ containers: [] });
@@ -149,13 +149,13 @@ beforeAll(async () => {
     cwd: ROOT,
     env: {
       PATH: [fakebin, dirname(process.execPath), "/usr/bin", "/bin"].join(delimiter),
-      HOME: fixtureHome, USERPROFILE: fixtureHome, DUSK_DATA_DIR: data,
-      DUSK_AGENTS_TOOL_BRIDGE: "0",
+      HOME: fixtureHome, USERPROFILE: fixtureHome, MADANI_DATA_DIR: data,
+      MADANI_AGENTS_TOOL_BRIDGE: "0",
       APPDATA: join(fixtureHome, "appdata"), LOCALAPPDATA: join(fixtureHome, "localappdata"),
       TEMP: fixtureHome, TMP: fixtureHome, TMPDIR: fixtureHome,
-      DUSK_PORT: String(port), DUSK_WEBHOOK_PORT: String(port + 1), DUSK_STATIC_DIR: ui,
-      DUSK_TEST_VM_STATE: stateFile, DUSK_EXTRA_PATH: fakebin,
-      DUSK_USER_DATA: join(fixtureHome, "user-data"),
+      MADANI_PORT: String(port), MADANI_WEBHOOK_PORT: String(port + 1), MADANI_STATIC_DIR: ui,
+      MADANI_TEST_VM_STATE: stateFile, MADANI_EXTRA_PATH: fakebin,
+      MADANI_USER_DATA: join(fixtureHome, "user-data"),
       ...(process.env.SystemRoot ? { SystemRoot: process.env.SystemRoot } : {}),
     },
     stdio: ["ignore", "pipe", "pipe"],
@@ -257,6 +257,6 @@ describe("openai-compat Local VM tools", () => {
     }, Boolean);
     await idle(bot.id);
     expect(dump!.mcpConfig?.mcpServers?.computer).toBeTruthy();
-    expect(String(dump!.mcpConfig!.mcpServers!.computer.env?.DUSK_CONTROL_URL ?? "")).toContain("127.0.0.1");
+    expect(String(dump!.mcpConfig!.mcpServers!.computer.env?.MADANI_CONTROL_URL ?? "")).toContain("127.0.0.1");
   }, 60_000);
 });

@@ -1,6 +1,6 @@
 // The phone integration's per-turn pieces: the mount, the prompt part and the internal MCP handler (owner check, per-bot
 // verdict, decision rows, the phone job, write activity). A send waits on the person's Send tap on the phone, never on a
-// card of dusk bot's own.
+// card of madani bot's own.
 import { isOutboundTool } from "../../shared/outbound.ts";
 import { PHONE_MCP_SERVER, phoneToolCapability, type PhoneCapability, type PhoneToolName } from "../../shared/phone-apps.ts";
 import { appendDecision } from "../decision-log.ts";
@@ -65,7 +65,7 @@ const denied = (name: string, text: string, rule: string, summary: string): Phon
 export function deviceMount(mint: () => string, harnessUrl: string): { command: string; args: string[]; env: Record<string, string> } {
   return {
     command: process.execPath, args: [SPAWNED_PROXIES.harnessMcp, PHONE_MCP_SERVER],
-    env: { ...AGENTS_NODE_FLAG, [harnessMcpTokenEnv("device")]: mint(), DUSK_HARNESS_URL: harnessUrl },
+    env: { ...AGENTS_NODE_FLAG, [harnessMcpTokenEnv("device")]: mint(), MADANI_HARNESS_URL: harnessUrl },
   };
 }
 
@@ -136,7 +136,7 @@ export function createPhoneHost(deps: PhoneHostDeps): PhoneHost {
           };
           const outcome = await jobs.request(phone.key, name, args, {
             active, timeoutMs: isOutboundTool(name) ? PHONE_SEND_TIMEOUT_MS : PHONE_JOB_TIMEOUT_MS,
-            offlineText: `${phone.name} is offline. Open the dusk bot app on it.`, online: () => registry.online(phone.key),
+            offlineText: `${phone.name} is offline. Open the madani bot app on it.`, online: () => registry.online(phone.key),
           });
           if (outcome.ok) registry.used(phone.key);
           return outcome;

@@ -4,7 +4,7 @@
 // tunnel the moment it moves there, even while the node it came from is dead. setup sessions stay on the node that made
 // them. a tunnel's queues live only on its home node: the server and the app both talk to that one.
 //
-// LINK_NODES="contabo=https://link.dusk.bot@eu,oracle-in=https://link-in.dusk.bot@asia" is the same on every node; the
+// LINK_NODES="contabo=https://link.madani.bot@eu,oracle-in=https://link-in.madani.bot@asia" is the same on every node; the
 // first is the default home (tunnels from before nodes existed, and the fallback). LINK_NODE_ID says which one this is.
 import { createHash, timingSafeEqual } from "node:crypto";
 import { mkdirSync, readFileSync, renameSync, writeFileSync } from "node:fs";

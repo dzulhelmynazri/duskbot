@@ -60,7 +60,7 @@ const tools: MacTool[] = [
 
 /** Catalog in MAC_TOOL_NAMES order. */
 export const MAC_TOOLS: ReadonlyArray<MacTool> = MAC_TOOL_NAMES.map((name) => tools.find((entry) => entry.name === name)!);
-/** A dusk cloud's catalog, in CLOUD_MAC_TOOL_NAMES order. */
+/** A madani cloud's catalog, in CLOUD_MAC_TOOL_NAMES order. */
 export const CLOUD_MAC_TOOLS: ReadonlyArray<MacTool> = CLOUD_MAC_TOOL_NAMES.map((name) => tools.find((entry) => entry.name === name)!);
 
 let validators: Map<string, ValidateFunction> | undefined;

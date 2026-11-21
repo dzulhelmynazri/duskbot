@@ -7,7 +7,7 @@ import { RUN_MARKER, stallPhase, startRunHealth, uncleanExitLine } from "./run-h
 
 const dirs: string[] = [];
 afterEach(() => { for (const dir of dirs.splice(0)) rmSync(dir, { recursive: true, force: true }); });
-const folder = () => { const dir = mkdtempSync(join(tmpdir(), "dusk-run-health-")); dirs.push(dir); return dir; };
+const folder = () => { const dir = mkdtempSync(join(tmpdir(), "madani-run-health-")); dirs.push(dir); return dir; };
 const T = Date.parse("2026-11-09T10:00:00Z");
 
 describe("the run marker", () => {

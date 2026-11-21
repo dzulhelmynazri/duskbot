@@ -193,7 +193,7 @@ function RoomContextMenu({
   const motion = useHeldMenuMotion(menu);
   const shown = motion.value;
   const { state, dispatch } = useStore();
-  const remoteClient = window.duskDesktop?.remoteClient?.active === true;
+  const remoteClient = window.madaniDesktop?.remoteClient?.active === true;
   const group = shown ? state.groups.find((g) => g.id === shown.groupId) : undefined;
   const [renaming, setRenaming] = useState(false);
   const [describing, setDescribing] = useState(false);
@@ -503,7 +503,7 @@ export const ROW_PRESS = "[--row-ease:cubic-bezier(.22,1,.36,1)] [transition:tra
 export const BotListItem = memo(function BotListItem(props: BotRowProps) {
   const { bot, selected, deleting, mascotMotion, pendingQueued, instances, liveCall, density, dispatch, onMenu, renameRequest, botDrag: drag, botDragging: dragging, main = false, tabStop } = props;
   const liveMedia = useLiveMedia();
-  const remoteClient = typeof window !== "undefined" && window.duskDesktop?.remoteClient?.active === true;
+  const remoteClient = typeof window !== "undefined" && window.madaniDesktop?.remoteClient?.active === true;
   const [renaming, setRenaming] = useState(false);
   // grok's row name is plain text: the field mounts only for a rename, from the menu or a double-click
   const [nameField, setNameField] = useState(false);
@@ -736,7 +736,7 @@ export function Sidebar({ open, onClose, collapseToIcons = false }: {
 }) {
   const { state, dispatch } = useStore();
   const cloudOwner = useCloudOwner(state.config?.cloudHome === true);
-  const remoteClient = window.duskDesktop?.remoteClient?.active === true;
+  const remoteClient = window.madaniDesktop?.remoteClient?.active === true;
   const { capabilities } = useDesktopCapabilities();
   const phone = useMediaQuery(PHONE_LAYOUT, false);
   const importReturnRef = useRef<HTMLButtonElement>(null);
@@ -827,7 +827,7 @@ export function Sidebar({ open, onClose, collapseToIcons = false }: {
 
   useEffect(() => {
     if (remoteClient) return;
-    return window.duskDesktop?.onPackageInstall?.((url) => {
+    return window.madaniDesktop?.onPackageInstall?.((url) => {
       setTeamInstallUrl(url);
       setTeamLibraryOpen(true);
     });
@@ -1066,7 +1066,7 @@ export function Sidebar({ open, onClose, collapseToIcons = false }: {
       style={{ ...drawer.props?.style, ["--sidebar-width" as string]: `${sizing.width}px` } as MotionStyle}
       className={cn(
         "relative flex h-full shrink-0 flex-col border-r-[0.5px] border-transparent bg-panel max-md:[--scroll-fade-surface:var(--color-app)]",
-        sizing.resizing && !sizing.snapping ? "transition-none" : "transition-[width] duration-[calc(500ms*var(--motion-scale,1))] ease-(--dusk-spring-soft) motion-reduce:transition-none",
+        sizing.resizing && !sizing.snapping ? "transition-none" : "transition-[width] duration-[calc(500ms*var(--motion-scale,1))] ease-(--madani-spring-soft) motion-reduce:transition-none",
         rail ? "w-[80px]" : "w-[288px] md:w-[var(--sidebar-width)]",
         "md:max-w-[calc(100vw-320px)]",
         // max-md: rather than an md: cancel: Tailwind v4 emits the native `translate`, and any value but `none` makes

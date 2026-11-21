@@ -15,7 +15,7 @@
   "updated": "2026-11-12",
   "review": {
     "status": "approved",
-    "by": "lead agent, after two independent reviewer passes, against dusk bot docs and the composio catalog",
+    "by": "lead agent, after two independent reviewer passes, against madani bot docs and the composio catalog",
     "at": "2026-11-12"
   },
   "tags": [
@@ -68,7 +68,7 @@
     "careful with **Full access**: a bot there with no sending rule can send up to 25 a day without asking. give it **Ask every time**.",
     "**use the subject to tell similar emails apart.** the sender alone may match several conversations.",
     "**open the attachment in the preview.** a polished reply can still carry yesterday’s certificate.",
-    "**local bots stop during sleep or when dusk closes.** dusk cloud runs routines on time."
+    "**local bots stop during sleep or when madani closes.** madani cloud runs routines on time."
   ],
   "faq": [
     {
@@ -86,15 +86,15 @@
   ],
   "sources": [
     {
-      "label": "dusk bot docs: files and apps",
+      "label": "madani bot docs: files and apps",
       "url": "/docs/files-and-apps"
     },
     {
-      "label": "dusk bot docs: routines",
+      "label": "madani bot docs: routines",
       "url": "/docs/routines"
     },
     {
-      "label": "dusk bot docs: a bot's computer",
+      "label": "madani bot docs: a bot's computer",
       "url": "/docs/computer"
     }
   ],

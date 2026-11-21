@@ -4,7 +4,7 @@ import type { IncomingMessage, ServerResponse } from "node:http";
 import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { launchVerificationServer } from "./control-dusk.ts";
+import { launchVerificationServer } from "./control-madani.ts";
 import { openHeadlessChrome, type HeadlessPage } from "./testing/headless-chrome.ts";
 import { mountPreview } from "./testing/preview-fixture.ts";
 
@@ -38,7 +38,7 @@ const click = (page: HeadlessPage, label: string) => page.evaluate(`(() => {
 })()`);
 
 async function withPage<T>(run: (page: HeadlessPage) => Promise<T>): Promise<T> {
-  const profile = mkdtempSync(join(tmpdir(), "dusk-funnel-preview-"));
+  const profile = mkdtempSync(join(tmpdir(), "madani-funnel-preview-"));
   const page = await openHeadlessChrome(profile);
   try {
     await page.send("Emulation.setDeviceMetricsOverride", { width: 1280, height: 820, deviceScaleFactor: 2, mobile: false });

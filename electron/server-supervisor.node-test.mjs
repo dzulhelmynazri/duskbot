@@ -226,7 +226,7 @@ test("repeated quit requests join the exact same child cleanup", async (t) => {
   assert.equal(f.children.length, 1);
 });
 
-const LOCAL_FIXTURE = { id: "l1", kind: "local", name: "Work", dataDir: "/Users/me/.duskbot-work", missing: false };
+const LOCAL_FIXTURE = { id: "l1", kind: "local", name: "Work", dataDir: "/Users/me/.madanibot-work", missing: false };
 
 function runForget(state) {
   const start = MAIN_SOURCE.indexOf("async function forgetEnvironment(");
@@ -253,7 +253,7 @@ function runForget(state) {
     remoteMicrophoneRefused: new Set(),
     // no account dashboard here: forgetting a server unlinks nothing there (e1c663e93)
     serverEnroll: null,
-    desktopDataDir: () => "/Users/me/.duskbot",
+    desktopDataDir: () => "/Users/me/.madanibot",
     slog: () => {},
     session: { defaultSession: { clearStorageData: async () => {} } },
     cloudFetch: async () => ({ ok: true }),
@@ -325,7 +325,7 @@ test("a purge of a missing folder still removes the entry (rm runs with force)",
 });
 
 function switchFixture(t, { startResults = [], releaseLeaseThrows = false, stopUtilityServer = async () => true } = {}) {
-  const targetDir = mkdtempSync(join(tmpdir(), "dusk-switch-fixture-"));
+  const targetDir = mkdtempSync(join(tmpdir(), "madani-switch-fixture-"));
   t.after(() => rmSync(targetDir, { recursive: true, force: true }));
   const forks = [];
   let forkIndex = 0;
@@ -356,7 +356,7 @@ function switchFixture(t, { startResults = [], releaseLeaseThrows = false, stopU
       return outcome === undefined ? { proc: { pid: 4000 + forkIndex } } : outcome;
     },
     environmentsState: { environments: [{ id: "l1", kind: "local", name: "Work", dataDir: targetDir }], activeId: "local" },
-    desktopDataDir: () => "/Users/me/.duskbot",
+    desktopDataDir: () => "/Users/me/.madanibot",
     startupEnvironmentDir: env.startupEnvironmentDir,
     withActive: env.withActive,
     persistEnvironments: (next) => { context.environmentsState = next; },

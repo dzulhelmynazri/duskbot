@@ -3,12 +3,12 @@ import { describe, expect, it } from "vitest";
 import { isNotesPrompt, looksLikeNotes, NOTES_PROMPT, parseNotes } from "./assistant-notes.ts";
 import { GrokImportError } from "./grok-import.ts";
 
-const file = (body: string, front = "format: dusk-bot-notes\nversion: 3\nfrom: ChatGPT\nexported: 2026-11-14") => `---\n${front}\n---\n\n${body}`;
+const file = (body: string, front = "format: madani-bot-notes\nversion: 3\nfrom: ChatGPT\nexported: 2026-11-14") => `---\n${front}\n---\n\n${body}`;
 const code = (run: () => unknown) => {
   try { run(); return "none"; } catch (error) { return error instanceof GrokImportError ? error.code : String(error); }
 };
 
-const whole = file(`# SETUP INSTRUCTIONS FOR DUSK BOT
+const whole = file(`# SETUP INSTRUCTIONS FOR MADANI BOT
 
 This export is from ChatGPT for Priya Shah. It lists 1 bot under Bots: recreate it as its own bot.
 
@@ -88,7 +88,7 @@ Convert cups to grams.
 ### Apps
 - Recipe search (https://mcp.example.com/recipes)
 
-END OF DUSK BOT NOTES
+END OF MADANI BOT NOTES
 `);
 
 describe("the markdown notes file", () => {
@@ -126,7 +126,7 @@ describe("the markdown notes file", () => {
 
   it("joins the parts of a split answer, and says when the last part never came", () => {
     const one = file("# Memories\n- Likes tea\n");
-    const two = file("# Memories\n- Likes tea\n- Runs on Sundays\n\nEND OF DUSK BOT NOTES\n");
+    const two = file("# Memories\n- Likes tea\n- Runs on Sundays\n\nEND OF MADANI BOT NOTES\n");
     const joined = parseNotes(`${one}\n\n${two}`);
     expect(joined.memories).toEqual(["Likes tea", "Runs on Sundays"]);
     expect(joined.partial).toBe(false);
@@ -134,7 +134,7 @@ describe("the markdown notes file", () => {
   });
 
   it("looks through a heading wrapped around everything and bold field names", () => {
-    const notes = parseNotes(file("# My export\n## About me\n- Lives in Oslo\n## Routines\n### Standup\n- **Cron:** 0 9 * * 1-5\n- **Time zone:** Europe/Oslo\n~~~text\nAsk what I'm doing today.\n~~~\n\nEND OF DUSK BOT NOTES"));
+    const notes = parseNotes(file("# My export\n## About me\n- Lives in Oslo\n## Routines\n### Standup\n- **Cron:** 0 9 * * 1-5\n- **Time zone:** Europe/Oslo\n~~~text\nAsk what I'm doing today.\n~~~\n\nEND OF MADANI BOT NOTES"));
     expect(notes.aboutMe).toEqual(["Lives in Oslo"]);
     expect(notes.recurring[0]).toMatchObject({ name: "Standup", cron: "0 9 * * 1-5", timeZone: "Europe/Oslo" });
   });
@@ -146,7 +146,7 @@ describe("the markdown notes file", () => {
       "# Skills", "## Order triage", "~~~text", "List new orders.", "~~~",
       "# Bots", "## Bot: Kiln", "### Instructions", "~~~text", "You run the shop.", "~~~", "### Memories", "- Tidepool sells out fastest",
       "### Skills", "#### Order triage", "~~~text", "List new orders.", "~~~", "### Routines", "#### Morning orders", "- Cron: 30 8 * * *", "~~~text", "Check new orders.", "~~~",
-      "", "END OF DUSK BOT NOTES",
+      "", "END OF MADANI BOT NOTES",
     ].join("\n")));
     expect(notes.instructions).toBe("");
     expect(notes.memories).toEqual(["Maya hates phone calls"]);
@@ -158,9 +158,9 @@ describe("the markdown notes file", () => {
 
   it("refuses the prompt itself, a template never filled in, and credentials", () => {
     expect(code(() => parseNotes(NOTES_PROMPT))).toBe("cutOff");
-    expect(code(() => parseNotes(file("# Memories\n- <each saved memory>\n\nEND OF DUSK BOT NOTES")))).toBe("notExport");
-    expect(code(() => parseNotes(file("# Memories\n- Likes tea", "format: dusk-bot-notes\nversion: 9\nfrom: Claude")))).toBe("newerVersion");
-    const notes = parseNotes(file("# Memories\n- My key is sk-ant-api03-abcdefghijklmnopqrstuvwxyz0123456789ABCDEFGH\n\nEND OF DUSK BOT NOTES"));
+    expect(code(() => parseNotes(file("# Memories\n- <each saved memory>\n\nEND OF MADANI BOT NOTES")))).toBe("notExport");
+    expect(code(() => parseNotes(file("# Memories\n- Likes tea", "format: madani-bot-notes\nversion: 9\nfrom: Claude")))).toBe("newerVersion");
+    const notes = parseNotes(file("# Memories\n- My key is sk-ant-api03-abcdefghijklmnopqrstuvwxyz0123456789ABCDEFGH\n\nEND OF MADANI BOT NOTES"));
     expect(notes.memories[0]).not.toContain("abcdefghijklmnopqrstuvwxyz0123456789");
   });
 });

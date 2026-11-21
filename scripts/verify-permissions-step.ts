@@ -18,7 +18,7 @@ try {
     await parkUntilSignal();
   } else {
     mkdirSync(out, { recursive: true });
-    const profile = mkdtempSync(join(tmpdir(), "dusk-permissions-step-"));
+    const profile = mkdtempSync(join(tmpdir(), "madani-permissions-step-"));
     const page = await openHeadlessChrome(profile);
     try {
       const sizes = { desktop: { width: 1200, height: 800 }, smallest: { width: 768, height: 520 } };

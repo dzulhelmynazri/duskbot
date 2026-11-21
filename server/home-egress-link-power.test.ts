@@ -1,5 +1,5 @@
 // The app's egress link is a websocket the home holds open while it is awake: it must never count as someone using the
-// home, nor as work in flight, or a dusk cloud home that sleeps when idle stays up (and billing) while the app is open.
+// home, nor as work in flight, or a madani cloud home that sleeps when idle stays up (and billing) while the app is open.
 import { mkdtempSync, rmSync } from "node:fs";
 import { createServer, type IncomingMessage, type ServerResponse } from "node:http";
 import type { AddressInfo } from "node:net";
@@ -19,7 +19,7 @@ afterEach(() => { for (const done of cleanup.splice(0)) done(); });
 
 async function homeWithLink() {
   let clock = Date.UTC(2026, 10, 14, 12);
-  const dataDir = mkdtempSync(join(tmpdir(), "dusk-egress-power-"));
+  const dataDir = mkdtempSync(join(tmpdir(), "madani-egress-power-"));
   const power = createCloudPower({ dataDir, now: () => clock, broadcast: () => {}, probes: {
     turn: () => false, run: () => false, liveCall: () => false, computer: () => false, maintenance: () => false, nextDueAt: () => null,
   } });

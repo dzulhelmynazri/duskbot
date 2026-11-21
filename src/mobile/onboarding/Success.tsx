@@ -54,7 +54,7 @@ export function Success({ name, onDone }: { name: string; onDone: () => void }) 
   }, [bots, w, h]);
 
   return (
-    <motion.div className="dusk-mobile fixed inset-0 z-[60] overflow-hidden bg-app text-ink"
+    <motion.div className="madani-mobile fixed inset-0 z-[60] overflow-hidden bg-app text-ink"
       initial={{ opacity: 1 }} exit={{ opacity: 0, transition: { duration: dur.slow, ease: ease.out } }}
       role="status" aria-live="polite">
         <div className="absolute left-1/2 top-[44%]">
@@ -65,7 +65,7 @@ export function Success({ name, onDone }: { name: string; onDone: () => void }) 
                 initial={reduced ? { x: seat.x, y: seat.y, opacity: 0 } : { x: seat.fx, y: seat.fy, rotate: seat.r * 3, scale: 0.7, opacity: 1 }}
                 animate={{ x: seat.x, y: seat.y, rotate: seat.r, scale: 1, opacity: 1 }}
                 transition={{ ...spring.lively, stiffness: 260, damping: 22, delay: reduced ? 0 : 0.06 * i, opacity: { duration: dur.fast } }}>
-                <span className="dusk-float relative block" style={{ animationDuration: `${5 + (i % 3)}s` }}>
+                <span className="madani-float relative block" style={{ animationDuration: `${5 + (i % 3)}s` }}>
                   {bot ? <BotAvatar bot={bot} size={72} state="happy" label="" /> : <MausAvatar color="blue" bodyId="kit" size={72} state="happy" label="" />}
                 </span>
               </motion.div>

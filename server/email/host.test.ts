@@ -17,7 +17,7 @@ const dirs: string[] = [];
 afterEach(() => { for (const dir of dirs.splice(0)) rmSync(dir, { recursive: true, force: true, maxRetries: 5, retryDelay: 50 }); });
 
 async function fixture(run: EmailHostDeps["run"] = {}, bot: EmailBot | null = { id: "b1", name: "Ada", color: "blue" }, connected = true) {
-  const dataDir = mkdtempSync(join(tmpdir(), "dusk-mail-host-")); dirs.push(dataDir);
+  const dataDir = mkdtempSync(join(tmpdir(), "madani-mail-host-")); dirs.push(dataDir);
   const service = createEmailService({ dataDir, publicOnly: false, guard: openGuard, discover: { fetchText: async () => null, mx: async () => [], srv: async () => [] }, test: { mailbox: (async () => ({ messages: 1 })) as never, sending: (async () => {}) as never } });
   if (connected) await service.connect({ address: "me@shop.example", password: PASSWORD });
   const marked: string[] = [];
@@ -36,7 +36,7 @@ const ALL_READS = {
 
 describe("a turn's Email tools", () => {
   it("saved attachments go with their conversation, and with their bot", async () => {
-    const dataDir = mkdtempSync(join(tmpdir(), "dusk-mail-host-")); dirs.push(dataDir);
+    const dataDir = mkdtempSync(join(tmpdir(), "madani-mail-host-")); dirs.push(dataDir);
     const service = createEmailService({ dataDir, publicOnly: false, guard: openGuard });
     let change: (event: { type: string; threadId?: string; botId?: string }) => void = () => {};
     createEmailHost({ service, dataDir, bot: () => null, inRoom: () => false, appendMessage: () => {}, markOutside: () => {}, onChange: (listener) => { change = listener; } });
@@ -147,7 +147,7 @@ describe("a turn's Email tools", () => {
     const { host } = await fixture();
     const mount = host.integration({ id: "b", name: "A" }, () => "cap", "http://127.0.0.1:1")!;
     expect(mount.args.at(-1)).toBe("email");
-    expect(mount.env.DUSK_MCP_TOKEN_EMAIL).toBe("cap");
+    expect(mount.env.MADANI_MCP_TOKEN_EMAIL).toBe("cap");
     expect(JSON.stringify(mount)).not.toContain(PASSWORD);
     expect(host.prompt({ id: "b", name: "A" })).toContain("me@shop.example");
     expect(host.prompt({ id: "b", name: "A" })).not.toContain(PASSWORD);

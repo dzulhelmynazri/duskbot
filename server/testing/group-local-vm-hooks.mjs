@@ -1,7 +1,7 @@
 // Loaded only by group-local-vm.e2e.test.ts via --import. Replace the container
 // boundary, preserving the real server, lease code, MCP config and fake driver.
 import { registerHooks } from 'node:module';
-const state = process.env.DUSK_TEST_VM_STATE;
+const state = process.env.MADANI_TEST_VM_STATE;
 if (!state) throw new Error('An explicit isolated VM state file is required');
 const actual = new URL('../container-computer.ts?actual', import.meta.url).href;
 const atomic = new URL('../atomic.ts', import.meta.url).href;
@@ -12,7 +12,7 @@ registerHooks({
   resolve(specifier, context, nextResolve) {
     if (specifier.endsWith('/container-computer.ts')) return { url: mock, shortCircuit: true };
     if (specifier.endsWith('/local-vm-profiles.ts')) return { url: profilesMock, shortCircuit: true };
-    if (specifier.endsWith('/vps-computer.ts') && process.env.DUSK_TEST_VPS_STATE) return { url: vpsMock, shortCircuit: true };
+    if (specifier.endsWith('/vps-computer.ts') && process.env.MADANI_TEST_VPS_STATE) return { url: vpsMock, shortCircuit: true };
     return nextResolve(specifier, context);
   },
   load(url, context, nextLoad) {
@@ -63,7 +63,7 @@ registerHooks({
         while (read().blocked || read().blockedTarget === target.key) await new Promise(r => setTimeout(r, 30));
         const missing = !(await containerComputerExists('podman', target));
         const stopped = read().stopped?.includes(target.key);
-        // An old desktop: made by dusk bot, on an image this release no longer runs (and maybe not yet rebuilt).
+        // An old desktop: made by madani bot, on an image this release no longer runs (and maybe not yet rebuilt).
         const image = !read().imageMissing;
         const outdated = !missing && Boolean(read().outdated?.includes(target.key));
         const ready = !missing && !stopped && !outdated && image && !read().failed;

@@ -57,7 +57,7 @@ describe("spoken prompts", () => {
   it("names the tool as a verb phrase, never the raw tool id", () => {
     expect(toolPhrase("Bash")).toBe("run a command");
     expect(toolPhrase("PowerShell")).toBe("run a command");
-    expect(toolPhrase("mcp__dusk__computer_batch")).toBe("computer batch");
+    expect(toolPhrase("mcp__madani__computer_batch")).toBe("computer batch");
     expect(toolPhrase(undefined)).toBe("take an action");
     expect(spokenApprovalPrompt(card({ requestId: "r1", tool: "Bash" }))).toBe("I want to run a command. rm -rf build. May I?");
   });

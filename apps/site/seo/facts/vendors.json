@@ -851,7 +851,7 @@
           "confidence": "high"
         }
       ],
-      "status_today": "Supported. Signing in to the official Codex CLI with a ChatGPT plan is documented, and third-party plan usage is an official program. Dusk is not listed as a partner; running the official Codex CLI does not depend on that list.",
+      "status_today": "Supported. Signing in to the official Codex CLI with a ChatGPT plan is documented, and third-party plan usage is an official program. Madani is not listed as a partner; running the official Codex CLI does not depend on that list.",
       "confidence": "high"
     },
     "google": {
@@ -927,7 +927,7 @@
       ],
       "sign_in": "Gemini CLI today: Google account sign-in serves Gemini Code Assist Standard/Enterprise; individuals use an API key. Antigravity: personal Google accounts can sign in on any plan including free (antigravity.google/docs/faq).",
       "ban_reversal": "A secondary blog (metricnexus.ai) says Google reversed the February bans on 2026-02-27; not confirmed by any Google source read. Treat as unverified.",
-      "status_today": "Restrictive and ambiguous for Dusk. Running Google's official binary is not the same as OAuth token reuse, but the Antigravity FAQ explicitly says wrapping agy inside third-party applications is not supported on consumer plans, and unattended scheduled runs are the risky part. Official supported path for third-party agents: Google AI Studio or Vertex/Gemini Enterprise API keys.",
+      "status_today": "Restrictive and ambiguous for Madani. Running Google's official binary is not the same as OAuth token reuse, but the Antigravity FAQ explicitly says wrapping agy inside third-party applications is not supported on consumer plans, and unattended scheduled runs are the risky part. Official supported path for third-party agents: Google AI Studio or Vertex/Gemini Enterprise API keys.",
       "confidence": "medium"
     },
     "xai": {

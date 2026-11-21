@@ -17,7 +17,7 @@ export const setupImportApi: SetupImportClient = {
 
 /** The desktop app's own window on its own server: never a hosted server, another server it connects to, or a browser. */
 export function localSetupImport(hosted: boolean): boolean {
-  const remote = globalThis.window?.duskDesktop?.remoteClient;
+  const remote = globalThis.window?.madaniDesktop?.remoteClient;
   return !hosted && remote !== undefined && remote.active !== true;
 }
 

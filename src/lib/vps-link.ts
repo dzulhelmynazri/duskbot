@@ -88,7 +88,7 @@ export interface VpsBackup {
   summary: { bots: number; chats: number; skills: number; routines: number } | null;
   reason: "before-move" | "before-restore" | "manual" | "from-server";
 }
-/** `uninstall`: the line to paste on the server to take dusk bot off it (older apps leave it out). `bring`: on this
+/** `uninstall`: the line to paste on the server to take madani bot off it (older apps leave it out). `bring`: on this
  * computer, the servers saved by hand whose bots may come here (moveBack with the id); `blocked` says why none may now. */
 export interface VpsWhere {
   place: "mac" | "vps";
@@ -124,15 +124,15 @@ export interface VpsLinkBridge {
   onChange(callback: (view: VpsLinkView) => void): () => void;
 }
 
-/** False on a page this app's window shows from elsewhere (dusk cloud, a server) and while it is another computer's remote
+/** False on a page this app's window shows from elsewhere (madani cloud, a server) and while it is another computer's remote
  * client: a server of one's own is added only from this computer's own page. */
 export function thisComputerPage(): boolean {
-  if (typeof window === "undefined" || window.duskDesktop?.remoteClient?.active) return false;
-  return !(window.duskDesktop?.app && window.duskDesktop.app.ownPage === false);
+  if (typeof window === "undefined" || window.madaniDesktop?.remoteClient?.active) return false;
+  return !(window.madaniDesktop?.app && window.madaniDesktop.app.ownPage === false);
 }
 
 export function vpsLinkBridge(): VpsLinkBridge | undefined {
-  return thisComputerPage() ? window.duskDesktop?.vpsLink : undefined;
+  return thisComputerPage() ? window.madaniDesktop?.vpsLink : undefined;
 }
 
 /** False in a browser, on another place's page, and in desktop builds without the bridge. */

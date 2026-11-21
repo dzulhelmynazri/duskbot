@@ -11,7 +11,7 @@
     "claude reject meeting invitation",
     "ai outlook decline with proposed time"
   ],
-  "answer": "**free the calendar slot without making up an excuse.** the bot finds the outlook invitation and declines with your words, optionally proposing another time. outlook emails the organiser by default. dusk classes this as a write, so sending approval does not hold it. tell the bot to ask before declining.",
+  "answer": "**free the calendar slot without making up an excuse.** the bot finds the outlook invitation and declines with your words, optionally proposing another time. outlook emails the organiser by default. madani classes this as a write, so sending approval does not hold it. tell the bot to ask before declining.",
   "tags": [
     "outlook",
     "meeting invitations",
@@ -42,7 +42,7 @@
     "open the invitation after the first decline and read its response status. **Pause** if it picked the wrong one."
   ],
   "watch": [
-    "**put the pause before the decline.** this action can email the organiser, but dusk classes it as a write. sending controls do not hold it.",
+    "**put the pause before the decline.** this action can email the organiser, but madani classes it as a write. sending controls do not hold it.",
     "**use the date and organiser to pick an occurrence.** repeating titles can hide different meetings.",
     "**give both ends of the new slot.** look up availability separately; a proposed time reserves nothing.",
     "**outlook accepted the request. the organiser still has to read it.** success says nothing about their agreement."
@@ -54,7 +54,7 @@
     },
     {
       "q": "does the bot ask before declining an invitation?",
-      "a": "**tell it to ask before declining.** dusk classes the action as a write, so the review step belongs in the routine."
+      "a": "**tell it to ask before declining.** madani classes the action as a write, so the review step belongs in the routine."
     },
     {
       "q": "can it suggest another time while declining?",
@@ -64,7 +64,7 @@
   "updated": "2026-11-12",
   "review": {
     "status": "approved",
-    "by": "lead agent, after two independent reviewer passes, against dusk bot docs and the composio catalog",
+    "by": "lead agent, after two independent reviewer passes, against madani bot docs and the composio catalog",
     "at": "2026-11-12"
   },
   "connectors": [
@@ -85,15 +85,15 @@
   },
   "sources": [
     {
-      "label": "dusk bot docs: files and apps",
+      "label": "madani bot docs: files and apps",
       "url": "/docs/files-and-apps"
     },
     {
-      "label": "dusk bot docs: routines",
+      "label": "madani bot docs: routines",
       "url": "/docs/routines"
     },
     {
-      "label": "dusk bot docs: a bot's computer",
+      "label": "madani bot docs: a bot's computer",
       "url": "/docs/computer"
     }
   ],

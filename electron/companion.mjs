@@ -80,7 +80,7 @@ async function control(method, urlPath, body, { timeoutMs = 4_000 } = {}) {
   const options = {
     method,
     signal: AbortSignal.timeout(timeoutMs),
-    headers: { "x-dusk-control-token": controlToken },
+    headers: { "x-madani-control-token": controlToken },
   };
   if (body !== undefined) {
     options.body = JSON.stringify(body);
@@ -160,14 +160,14 @@ async function start({ resourcesPath, harnessPort, mutationToken, hostedUrl = nu
 
   // Never inherit an endpoint from the launch environment: main passes one only after verifying the connector.
   const childEnvironment = { ...process.env };
-  delete childEnvironment.DUSK_COMPANION_HOSTED_URL;
-  delete childEnvironment.DUSK_COMPANION_INTERNAL_ORIGIN;
-  delete childEnvironment.DUSK_PHONE_SECRET_PUBLIC_KEY;
-  if (hostedUrl) childEnvironment.DUSK_COMPANION_HOSTED_URL = hostedUrl;
-  childEnvironment.DUSK_COMPANION_INTERNAL_ORIGIN = allocatedOrigin.socketPath;
-  childEnvironment.DUSK_COMPANION_DIR ||= companionFolder({ home: app.getPath("home"), harnessPort, packaged: app.isPackaged });
+  delete childEnvironment.MADANI_COMPANION_HOSTED_URL;
+  delete childEnvironment.MADANI_COMPANION_INTERNAL_ORIGIN;
+  delete childEnvironment.MADANI_PHONE_SECRET_PUBLIC_KEY;
+  if (hostedUrl) childEnvironment.MADANI_COMPANION_HOSTED_URL = hostedUrl;
+  childEnvironment.MADANI_COMPANION_INTERNAL_ORIGIN = allocatedOrigin.socketPath;
+  childEnvironment.MADANI_COMPANION_DIR ||= companionFolder({ home: app.getPath("home"), harnessPort, packaged: app.isPackaged });
   if (/^[A-Za-z0-9_-]{87}$/.test(String(secretPublicKey ?? ""))) {
-    childEnvironment.DUSK_PHONE_SECRET_PUBLIC_KEY = secretPublicKey;
+    childEnvironment.MADANI_PHONE_SECRET_PUBLIC_KEY = secretPublicKey;
   }
 
   controlToken = randomBytes(32).toString("base64url");
@@ -177,9 +177,9 @@ async function start({ resourcesPath, harnessPort, mutationToken, hostedUrl = nu
     child = utilityProcess.fork(resolved.entry, [], {
       env: {
         ...childEnvironment,
-        DUSK_PORT: String(harnessPort),
-        DUSK_COMPANION_PORT: String(ports.companion),
-        DUSK_CONTROL_PORT: String(ports.control),
+        MADANI_PORT: String(harnessPort),
+        MADANI_COMPANION_PORT: String(ports.companion),
+        MADANI_CONTROL_PORT: String(ports.control),
       },
       execArgv: resolved.execArgv,
       stdio: ["ignore", "pipe", "pipe"],
@@ -193,7 +193,7 @@ async function start({ resourcesPath, harnessPort, mutationToken, hostedUrl = nu
   child.once("spawn", () => {
     // Never expose this capability in argv, environment, logs or the renderer.
     try {
-      child.postMessage({ type: "duskbot:companion-mutation-token", token: mutationToken, controlToken });
+      child.postMessage({ type: "madanibot:companion-mutation-token", token: mutationToken, controlToken });
     } catch {
       log?.("companion authorization could not be initialized");
       child.kill();
@@ -348,7 +348,7 @@ export async function companionPairing(open, expectedToken) {
   if (!proc) return companionState();
   const conditionalClose = !open && expectedToken !== undefined;
   const candidate = String(expectedToken ?? "");
-  const token = /^(?:dusk|omb)_pair_[A-Za-z0-9_-]{43}$/.test(candidate)
+  const token = /^(?:madani|omb)_pair_[A-Za-z0-9_-]{43}$/.test(candidate)
     ? candidate
     : "invalid-pairing-token";
   const path = conditionalClose

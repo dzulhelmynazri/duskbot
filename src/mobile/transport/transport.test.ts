@@ -39,9 +39,9 @@ describe("SSE parser", () => {
 describe("API URL routing", () => {
   it.each([
     ["/api/events?since=a%2Fb#ignored", "https://workspace.test/api/events?since=a%2Fb"],
-    ["/.well-known/duskbot/environment", "https://workspace.test/.well-known/duskbot/environment"],
+    ["/.well-known/madanibot/environment", "https://workspace.test/.well-known/madanibot/environment"],
     ["https://localhost/api/bots", "https://workspace.test/api/bots"],
-    ["https://localhost/.well-known/duskbot/environment", "https://workspace.test/.well-known/duskbot/environment"],
+    ["https://localhost/.well-known/madanibot/environment", "https://workspace.test/.well-known/madanibot/environment"],
     ["https://other.test/api/bots", null],
     ["https://localhost:8080/api/bots", null],
     ["http://localhost/api/bots", null],
@@ -227,7 +227,7 @@ describe("installed adapters", () => {
       expect(second.getAttribute("src")).toBe("blob:test-1");
       expect(sourceSet.getAttribute("srcset")).toBe("  blob:test-1 1x, blob:test-2 2x, data:image/svg+xml,/api/keep 3x, https://other.test/image 4x");
       expect(fetcher).toHaveBeenCalledTimes(2);
-      expect(first.getAttribute("data-dusk-media")).toBe("1");
+      expect(first.getAttribute("data-madani-media")).toBe("1");
       mutate(first);
       await Promise.resolve();
       expect(fetcher).toHaveBeenCalledTimes(2);
@@ -359,7 +359,7 @@ describe("a sleeping Cloud behind the phone's stream", () => {
   afterEach(() => resetCloudPowerForTests());
   it("an asleep answer on the stream itself puts the page to sleep without a probe", async () => {
     const failed = vi.fn();
-    const fetcher = vi.fn(async () => new Response("asleep", { status: 503, headers: { "x-dusk-cloud-power": "asleep" } }));
+    const fetcher = vi.fn(async () => new Response("asleep", { status: 503, headers: { "x-madani-cloud-power": "asleep" } }));
     const source = new BearerEventSource("/api/events", undefined, { url: "https://workspace.test/api/events", token: "t", fetch: fetcher, failed });
     await vi.waitFor(() => expect(source.readyState).toBe(source.CLOSED));
     expect(cloudAsleep()).toBe(true); expect(failed).not.toHaveBeenCalled();
@@ -370,8 +370,8 @@ describe("a sleeping Cloud behind the phone's stream", () => {
     await vi.waitFor(() => expect(source.readyState).toBe(source.CLOSED));
     expect(failed).toHaveBeenCalledOnce();
   });
-  it("the probe and the stream both hear a deleted dusk cloud, and say it is gone", async () => {
-    const gone = () => new Response("This dusk bot was deleted.", { status: 410, headers: { "x-dusk-cloud-power": "gone" } });
+  it("the probe and the stream both hear a deleted madani cloud, and say it is gone", async () => {
+    const gone = () => new Response("This madani bot was deleted.", { status: 410, headers: { "x-madani-cloud-power": "gone" } });
     asleepProbe(vi.fn(async () => gone()), "https://workspace.test", "secret", () => 0)();
     await vi.waitFor(() => expect(cloudGone()).toBe(true));
     expect(cloudAsleep()).toBe(false);
@@ -384,14 +384,14 @@ describe("a sleeping Cloud behind the phone's stream", () => {
   });
   it("the probe is a background read that marks the page asleep, at most once in its gap", async () => {
     let clock = 0;
-    const send = vi.fn(async () => new Response("", { status: 503, headers: { "x-dusk-cloud-power": "asleep" } }));
+    const send = vi.fn(async () => new Response("", { status: 503, headers: { "x-madani-cloud-power": "asleep" } }));
     const probe = asleepProbe(send, "https://workspace.test", "secret", () => clock);
     probe(); probe();
     await vi.waitFor(() => expect(cloudAsleep()).toBe(true));
     expect(send).toHaveBeenCalledOnce();
     const [url, init] = send.mock.calls[0] as unknown as [string, RequestInit];
     expect(url).toBe("https://workspace.test/api/health");
-    expect(init.headers).toMatchObject({ Authorization: "Bearer secret", "x-dusk-background": "1" });
+    expect(init.headers).toMatchObject({ Authorization: "Bearer secret", "x-madani-background": "1" });
     clock = ASLEEP_PROBE_GAP_MS; probe();
     expect(send).toHaveBeenCalledTimes(2);
   });

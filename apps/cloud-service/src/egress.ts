@@ -80,7 +80,7 @@ export function freshEgress(month: string, serverId: string | null, lift: string
 // policer: packets past the rate are dropped and TCP backs off to it (a 100 MB upload measured 0.64 MB/s at 5 Mbit/s)
 const PATH = `export PATH="$PATH:/usr/sbin:/sbin"`;
 const DEV = `${PATH}; dev=$(ip -o route get 1.1.1.1 2>/dev/null | sed -n 's/.* dev \\([^ ]*\\).*/\\1/p'); [ -n "$dev" ] || { echo "no route"; exit 3; }`;
-const TABLE = "inet dusk_egress";
+const TABLE = "inet madani_egress";
 // one table replaced whole in one transaction (made first so the delete always finds it); the burst holds more than
 // one 64 KB offloaded segment and, at the faster steps, about 100 ms of the rate so TCP keeps its pace
 function rules(mbit: number): string {

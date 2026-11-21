@@ -1,10 +1,10 @@
-// Loaded with --import in isolated fixtures when DUSK_TEST_POWER_CLOCK=1: a Cloud home's idle windows (just woke, work
+// Loaded with --import in isolated fixtures when MADANI_TEST_POWER_CLOCK=1: a Cloud home's idle windows (just woke, work
 // ended, someone used it) last a quarter second instead of minutes, so a fixture can have the home agree to sleep
 // without waiting. A pending sleep still lasts its two minutes. No authorization or dispatch decision changes.
 import { registerHooks } from 'node:module';
 
-const dataDir = process.env.DUSK_DATA_DIR;
-if (!dataDir || dataDir !== process.env.HOME || process.env.DUSK_TEST_POWER_CLOCK !== '1') {
+const dataDir = process.env.MADANI_DATA_DIR;
+if (!dataDir || dataDir !== process.env.HOME || process.env.MADANI_TEST_POWER_CLOCK !== '1') {
   throw new Error('The power clock requires an explicitly isolated fixture');
 }
 const power = new URL('../cloud-power.ts', import.meta.url).href;

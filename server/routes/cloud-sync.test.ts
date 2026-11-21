@@ -17,9 +17,9 @@ let auth: RequestAuth, cloudHome: boolean, home: string, server: Server, base: s
 
 beforeEach(async () => {
   auth = owner; cloudHome = true;
-  home = mkdtempSync(join(tmpdir(), "dusk-sync-routes-"));
-  mkdirSync(join(home, ".duskbot"));
-  routes = createCloudSyncRoutes({ dataDir: join(home, ".duskbot"), cloudHome: () => cloudHome, statfs: () => ({ totalBytes: 10 * 1024 ** 3, freeBytes: 9 * 1024 ** 3 }) });
+  home = mkdtempSync(join(tmpdir(), "madani-sync-routes-"));
+  mkdirSync(join(home, ".madanibot"));
+  routes = createCloudSyncRoutes({ dataDir: join(home, ".madanibot"), cloudHome: () => cloudHome, statfs: () => ({ totalBytes: 10 * 1024 ** 3, freeBytes: 9 * 1024 ** 3 }) });
   server = createServer(async (req, res) => {
     const url = new URL(req.url!, "http://127.0.0.1");
     if (!await dispatchRoutes([routes], { req, res, url, path: url.pathname, method: req.method!, auth, json, readBody })) json(res, 404, { error: "not ours" });
@@ -60,7 +60,7 @@ it("registers, uploads in parts, lists, serves a range, deletes and restores", a
   const ranged = await call("GET", `/api/sync/folders/${id}/file?path=a.txt`, undefined, { range: "bytes=6-" });
   expect(ranged.status).toBe(206);
   expect(ranged.body).toBe("world");
-  expect(ranged.headers.get("x-dusk-sha256")).toBe(sha("hello world"));
+  expect(ranged.headers.get("x-madani-sha256")).toBe(sha("hello world"));
   expect((await call("POST", `/api/sync/folders/${id}/ops`, { ops: [{ op: "delete", path: "a.txt", baseSha256: sha("hello world") }] })).body).toEqual({ results: [{ ok: true }] });
   const [entry] = (await call("GET", "/api/sync/trash")).body.entries;
   expect((await call("POST", "/api/sync/trash/restore", { entryId: entry.id })).body).toEqual({ folderId: id, path: "a.txt" });
@@ -96,7 +96,7 @@ it("survives a file that cannot be read while it is being served", async () => {
 it("answers the desktop's held changes poll \"asleep\" when a Cloud home agrees to sleep, and refuses new ones until it wakes", async () => {
   let sleeping = false, abort = new AbortController();
   routes.close();
-  routes = createCloudSyncRoutes({ dataDir: join(home, ".duskbot"), cloudHome: () => cloudHome, statfs: () => ({ totalBytes: 10 * 1024 ** 3, freeBytes: 9 * 1024 ** 3 }),
+  routes = createCloudSyncRoutes({ dataDir: join(home, ".madanibot"), cloudHome: () => cloudHome, statfs: () => ({ totalBytes: 10 * 1024 ** 3, freeBytes: 9 * 1024 ** 3 }),
     power: () => ({ sleeping: () => sleeping, sleepSignal: () => abort.signal }) });
   const cursor = (await call("GET", "/api/sync/changes?cursor=0&waitMs=0")).body.cursor as number;
   const held = call("GET", `/api/sync/changes?cursor=${cursor}&waitMs=60000`);
@@ -105,7 +105,7 @@ it("answers the desktop's held changes poll \"asleep\" when a Cloud home agrees 
   const answer = await held;
   expect(answer.status).toBe(503);
   expect(answer.body).toEqual({ error: "asleep" });
-  expect(answer.headers.get("x-dusk-cloud-power")).toBe("asleep");
+  expect(answer.headers.get("x-madani-cloud-power")).toBe("asleep");
   expect((await call("GET", `/api/sync/changes?cursor=${cursor}&waitMs=60000`)).status).toBe(503);
   sleeping = false; abort = new AbortController();
   expect((await call("GET", `/api/sync/changes?cursor=${cursor}&waitMs=0`)).status).toBe(200);

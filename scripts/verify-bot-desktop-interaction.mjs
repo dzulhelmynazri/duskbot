@@ -10,15 +10,15 @@ import { closeFixtureBrowser, connectMcp, driver, eventually, httpFixture, socke
 
 const run = promisify(execFile);
 const root = fileURLToPath(new URL("..", import.meta.url));
-const image = process.env.DUSK_VERIFY_DESKTOP_IMAGE || "omb-bot-desktop:lean-fixture";
-const evidence = await mkdtemp(join(process.platform === "win32" ? tmpdir() : "/tmp", "dusk-di-"));
+const image = process.env.MADANI_VERIFY_DESKTOP_IMAGE || "omb-bot-desktop:lean-fixture";
+const evidence = await mkdtemp(join(process.platform === "win32" ? tmpdir() : "/tmp", "madani-di-"));
 const imageId = (await run("docker", ["image", "inspect", image, "--format", "{{.Id}}"])).stdout.trim();
 assert.match(imageId, /^sha256:[a-f0-9]{64}$/);
 const receipt = { image, imageId, evidence, results: [], ok: false };
 
 async function measure(forced) {
   const mode = forced ? "forced-accessibility" : "default-accessibility";
-  const name = `dusk-interaction-${process.pid}-${forced ? "forced" : "default"}`;
+  const name = `madani-interaction-${process.pid}-${forced ? "forced" : "default"}`;
   const started = performance.now();
   let container;
   let transport;
@@ -26,12 +26,12 @@ async function measure(forced) {
   receipt.results.push(result);
   try {
     container = (await run("docker", [
-      "run", "--rm", "-d", "--name", name, "--label", "bot.dusk.verification=interaction",
+      "run", "--rm", "-d", "--name", name, "--label", "bot.madani.verification=interaction",
       "--network", "none", "--user", "1000:1000", "--cap-drop", "ALL", "--security-opt", "no-new-privileges",
       "--read-only", "--memory", "2g", "--cpus", "2", "--pids-limit", "512", "--shm-size", "512m",
       "--tmpfs", "/home/cua:rw,nosuid,nodev,size=256m,uid=1000,gid=1000,mode=0700",
       "--tmpfs", "/tmp:rw,nosuid,nodev,size=512m", "--tmpfs", "/run:rw,nosuid,nodev,size=64m,uid=1000,gid=1000,mode=0755",
-      "-e", "DUSK_BROWSER_AT_START=off", "--entrypoint", "/usr/local/bin/omb-session", imageId,
+      "-e", "MADANI_BROWSER_AT_START=off", "--entrypoint", "/usr/local/bin/omb-session", imageId,
     ], { timeout: 15_000 })).stdout.trim();
     result.container = container;
     const exec = args => run("docker", ["exec", "-u", "1000:1000", "-e", "CUA_DRIVER_RS_TELEMETRY_ENABLED=0", container, ...args], {
@@ -130,14 +130,14 @@ async function measure(forced) {
     }
     if (!forced) {
       const { boxChromeRelay, boxChromeExecArgs } = await import("../server/vps-local.ts");
-      const binary = process.env.DUSK_AGENT_BROWSER_PATH || join(root, ".dusk-scratch", "verify-tools", "tools", "agent-browser", "0.37.0", "agent-browser");
+      const binary = process.env.MADANI_AGENT_BROWSER_PATH || join(root, ".madani-scratch", "verify-tools", "tools", "agent-browser", "0.37.0", "agent-browser");
       const home = join(evidence, "app-home");
       const relay = await boxChromeRelay(() => spawn("docker", boxChromeExecArgs(container), { stdio: ["pipe", "pipe", "ignore"] }));
       try {
         const { tools } = await transport.list();
         const app = await run(process.execPath, ["--experimental-strip-types", join(root, "scripts/testing/bot-desktop-app-browser.mjs"), relay.url, evidence, JSON.stringify(tools.map(tool => tool.name))], {
           cwd: root, timeout: 90_000, maxBuffer: 4 * 1024 * 1024,
-          env: { PATH: process.env.PATH, HOME: home, USERPROFILE: home, DUSK_DATA_DIR: join(evidence, "app-data"), DUSK_AGENT_BROWSER_PATH: binary },
+          env: { PATH: process.env.PATH, HOME: home, USERPROFILE: home, MADANI_DATA_DIR: join(evidence, "app-data"), MADANI_AGENT_BROWSER_PATH: binary },
         }).catch(async error => {
           await writeFile(join(evidence, "app-browser.log"), (error.stdout ?? "") + (error.stderr ?? ""));
           throw new Error(`App browser verification failed; see ${join(evidence, "app-browser.log")}`);
@@ -160,7 +160,7 @@ async function measure(forced) {
     throw error;
   } finally {
     if (container) {
-      const driverLog = await run("docker", ["exec", container, "cat", "/tmp/dusk-log/cua-driver.error.log"]).then(answer => answer.stdout, () => "");
+      const driverLog = await run("docker", ["exec", container, "cat", "/tmp/madani-log/cua-driver.error.log"]).then(answer => answer.stdout, () => "");
       await writeFile(join(evidence, `${mode}-driver.log`), driverLog);
     }
     await transport?.close();

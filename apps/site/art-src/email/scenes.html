@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en"><head><meta charset="utf-8"><title>dusk email art</title>
+<html lang="en"><head><meta charset="utf-8"><title>madani email art</title>
 <style>
   @font-face { font-family: 'General Sans'; src: url(../../public/landing/fonts/general-sans.woff2) format('woff2'); font-weight: 200 700; }
   @font-face { font-family: 'Pixelify Sans'; src: url(../../public/landing/fonts/pixelify-sans.woff2) format('woff2'); font-weight: 400 700; }
@@ -20,11 +20,11 @@ const SKIES = {
   day: { sky1: '#3cd0fd', sky4: '#90e4fc', sky5: '#c2ecfc', line: '#d0cefb', ground: '#c9f63f', fleck: '#c0ee36', stars: false, flowers: day },
   gold: { sky1: '#3cd0fd', sky4: '#90e4fc', sky5: '#fff3a0', line: '#ffe25c', ground: '#c9f63f', fleck: '#c0ee36', stars: false, flowers: day },
   rain: { sky1: '#8fa6c0', sky4: '#aebfd2', sky5: '#c8d5e2', line: '#c9c6e6', ground: '#b6d548', fleck: '#a8c83f', stars: false, flowers: day },
-  dusk: { sky1: '#6c3fa3', sky4: '#d9649b', sky5: '#ffb08f', line: '#f7b6c8', ground: '#bcd93c', fleck: '#aecb33', stars: false, flowers: day },
+  madani: { sky1: '#6c3fa3', sky4: '#d9649b', sky5: '#ffb08f', line: '#f7b6c8', ground: '#bcd93c', fleck: '#aecb33', stars: false, flowers: day },
   late: { sky1: '#2a2266', sky4: '#8a4aa6', sky5: '#e0739a', line: '#b58ad0', ground: '#9cc232', fleck: '#8fb52b', stars: true, flowers: dim },
   night: { sky1: '#111d4f', sky4: '#1b2c6b', sky5: '#2a3f86', line: '#5b54b8', ground: '#86b02a', fleck: '#7ca424', stars: true, flowers: dim },
 };
-const SKY_OF = { code: 'day', welcome: 'day', 'cloud-ready': 'day', receipt: 'gold', payment: 'rain', napping: 'dusk', 'heads-up': 'dusk', 'cloud-gone': 'night', bye: 'late', promo: 'day' };
+const SKY_OF = { code: 'day', welcome: 'day', 'cloud-ready': 'day', receipt: 'gold', payment: 'rain', napping: 'madani', 'heads-up': 'madani', 'cloud-gone': 'night', bye: 'late', promo: 'day' };
 const T = SKIES[SKY_OF[new URLSearchParams(location.search).get('scene')] ?? 'day'];
 let seed = 7;
 const rnd = () => { seed |= 0; seed = (seed + 0x6d2b79f5) | 0; let t = Math.imul(seed ^ (seed >>> 15), 1 | seed); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };

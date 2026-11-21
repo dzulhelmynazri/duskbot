@@ -14,7 +14,7 @@ const params = new URLSearchParams(location.search);
 applySkin(SKINS.find((one) => one.id === params.get("skin"))?.id ?? "grok");
 const active = { id: params.get("id") ?? "acc_7f3k2m9q", email: "ada@example.test", name: "Ada Lovelace", plan: { status: "active", tier: "pro" } };
 const view = { active };
-window.duskDesktop = {
+window.madaniDesktop = {
   platform: "darwin",
   remoteClient: { active: false },
   app: { ownPage: true },
@@ -26,7 +26,7 @@ window.duskDesktop = {
     setAvatar: async () => ({ outcome: "saved", view }),
     signOut: async () => ({ outcome: "signed-out", view: { active: null } }),
   },
-} as unknown as typeof window.duskDesktop;
+} as unknown as typeof window.madaniDesktop;
 
 createRoot(document.getElementById("root")!).render(
   <StoreProvider>

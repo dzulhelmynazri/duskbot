@@ -75,7 +75,7 @@
       "name": "monthly server memberships",
       "message": "on the first monday of each month at 9, list my discord servers. compare them with the community and work categories in your memory notes. show names under community, work and unsure here. ask about anything unclassified. never leave a server or change my account.",
       "when": "first monday each month at 9:00",
-      "output": "server names grouped in dusk chat, with uncertain memberships left for you"
+      "output": "server names grouped in madani chat, with uncertain memberships left for you"
     },
     {
       "name": "linked-account review",
@@ -90,17 +90,17 @@
       "output": "a note about current setup differences, with failed lookups named separately"
     }
   ],
-  "asks": "**keep the account reviews read only.** that covers these routines, and you can turn discord off for one bot without affecting the others.\n\ninvite resolution is the oddity: dusk classes it as a send. a read-only bot can't use it. with that action allowed, it asks unless you set a daily amount.[^3]\n\ncareful with **Full access**: a bot there with no sending rule can send up to 25 a day without asking. give it **Ask every time**.[^3]\n\nthis toolkit still has no send-message action. granting writes won't add one.",
+  "asks": "**keep the account reviews read only.** that covers these routines, and you can turn discord off for one bot without affecting the others.\n\ninvite resolution is the oddity: madani classes it as a send. a read-only bot can't use it. with that action allowed, it asks unless you set a daily amount.[^3]\n\ncareful with **Full access**: a bot there with no sending rule can send up to 25 a day without asking. give it **Ask every time**.[^3]\n\nthis toolkit still has no send-message action. granting writes won't add one.",
   "cannot": [
     "**read or search channel conversations.** this toolkit cannot retrieve yesterday's discussion to summarise it.",
     "**reply in channels or direct messages.** connecting this toolkit does not place a conversational teammate inside discord.",
     "**turn a missing widget into a server audit.** report what came back and what the bot could not inspect.",
-    "**run while its local computer sleeps.** the app and machine must be on. dusk cloud provides a home for scheduled work."
+    "**run while its local computer sleeps.** the app and machine must be on. madani cloud provides a home for scheduled work."
   ],
   "sections": [
     {
       "h": "if you wanted several bots talking",
-      "md": "**put bots in a dusk group when you want them talking together.** each keeps its own job and permissions in the [group thread](/ai-group-chat). choose who answers there.\n\nfor work conversations you want reviewed, look at the [slack actions](/integrations/slack). choose the connection that can read your source."
+      "md": "**put bots in a madani group when you want them talking together.** each keeps its own job and permissions in the [group thread](/ai-group-chat). choose who answers there.\n\nfor work conversations you want reviewed, look at the [slack actions](/integrations/slack). choose the connection that can read your source."
     },
     {
       "h": "put the missing lookup in the report",
@@ -123,15 +123,15 @@
   ],
   "sources": [
     {
-      "label": "dusk bot docs: files and apps",
+      "label": "madani bot docs: files and apps",
       "url": "/docs/files-and-apps"
     },
     {
-      "label": "dusk bot docs: routines",
+      "label": "madani bot docs: routines",
       "url": "/docs/routines"
     },
     {
-      "label": "dusk bot docs: sending and permissions",
+      "label": "madani bot docs: sending and permissions",
       "url": "/docs/computer"
     }
   ],

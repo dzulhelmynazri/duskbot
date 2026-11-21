@@ -123,7 +123,7 @@ if (dl) {
   const more = $('.split-more', dl), menu = $('.dl-menu', dl), main = $('.split-main', dl);
   // site.js (loaded after this file) finds the build
   addEventListener('DOMContentLoaded', async () => {
-    const key = await window.duskBuild?.();
+    const key = await window.madaniBuild?.();
     if (key === 'phone') { main.href = '/download'; main.removeAttribute('download'); return; }
     const item = key && $(`[data-key="${key}"]`, menu);
     if (!item) return;
@@ -219,16 +219,16 @@ document.addEventListener('visibilitychange', () => {
 });
 
 // the footer knows what time it is
-const dusk = $('[data-dusk]'), hour = new Date().getHours();
-if (dusk && hour >= 17 && hour < 20) dusk.textContent = "it's dusk where you are. the bots are just getting started.";
-else if (dusk && hour < 5) dusk.textContent = "it's late. the bots are still up, you don't have to be.";
+const madani = $('[data-madani]'), hour = new Date().getHours();
+if (madani && hour >= 17 && hour < 20) madani.textContent = "it's madani where you are. the bots are just getting started.";
+else if (madani && hour < 5) madani.textContent = "it's late. the bots are still up, you don't have to be.";
 
 // every screen: the screens come on one after another the first time the scene is seen; poke juno on any of them and
 // she reacts on all three, because it is the same bot
 const ev = document.querySelector('[data-ev]');
 if (ev && !still) {
   ev.addEventListener('click', (e) => {
-    if (!e.target.closest('.ev-scr') || !window.duskBots) return;
-    ev.querySelectorAll('.ev-j').forEach((b, i) => setTimeout(() => window.duskBots.react(b, 'hop'), i * 60));
+    if (!e.target.closest('.ev-scr') || !window.madaniBots) return;
+    ev.querySelectorAll('.ev-j').forEach((b, i) => setTimeout(() => window.madaniBots.react(b, 'hop'), i * 60));
   });
 }

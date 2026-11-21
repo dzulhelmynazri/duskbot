@@ -1,5 +1,5 @@
 // This computer's end of "browse through this computer's connection when a site blocks the cloud" for the person's
-// dusk cloud home (My Cloud). A linked VPS gets this over its own link (vps-link-egress.mjs, via the link agent); a
+// madani cloud home (My Cloud). A linked VPS gets this over its own link (vps-link-egress.mjs, via the link agent); a
 // cloud home has no link agent and is reached over its own https, so this keeps one websocket there while the home is
 // awake and hands it to the same egress endpoint, which checks and opens every connection on this computer. It never
 // wakes a sleeping home and never pairs a new device: it uses the app's own session cookie there.

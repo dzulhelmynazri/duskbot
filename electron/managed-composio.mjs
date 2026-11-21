@@ -1,12 +1,12 @@
 const TOKEN = /^[0-9a-f]{64}$/;
 
-/** dusk bot's own connected-apps service (apps/cloudflare/composio-broker). Closed to new installations: dusk bot pays
+/** madani bot's own connected-apps service (apps/cloudflare/composio-broker). Closed to new installations: madani bot pays
  * nothing per tool call, so apps connect with the person's own accounts and keys. Used only when named explicitly. */
-export const DEFAULT_MANAGED_COMPOSIO_BROKER_URL = "https://composio.dusk.bot";
+export const DEFAULT_MANAGED_COMPOSIO_BROKER_URL = "https://composio.madani.bot";
 
-/** Off unless DUSK_DEV_MANAGED_APPS=1 names it on purpose (and DUSK_COMPOSIO_BROKER_URL says where). */
+/** Off unless MADANI_DEV_MANAGED_APPS=1 names it on purpose (and MADANI_COMPOSIO_BROKER_URL says where). */
 export function devDesktopUsesManagedApps(env = process.env) {
-  return env.DUSK_DEV_MANAGED_APPS === "1";
+  return env.MADANI_DEV_MANAGED_APPS === "1";
 }
 
 /** An explicit URL wins; otherwise the default only when asked for on purpose (`useDefault`). No build, shipped or not,
@@ -39,12 +39,12 @@ export function managedComposioAccess(brokerUrl, credentials) {
 
 export function managedComposioChildEnvironment(brokerUrl, credentials, environment) {
   const next = { ...environment };
-  delete next.DUSK_COMPOSIO_BROKER_URL;
-  delete next.DUSK_COMPOSIO_BROKER_TOKEN;
+  delete next.MADANI_COMPOSIO_BROKER_URL;
+  delete next.MADANI_COMPOSIO_BROKER_TOKEN;
   const access = managedComposioAccess(brokerUrl, credentials);
   if (access) {
-    next.DUSK_COMPOSIO_BROKER_URL = access.url;
-    next.DUSK_COMPOSIO_BROKER_TOKEN = access.token;
+    next.MADANI_COMPOSIO_BROKER_URL = access.url;
+    next.MADANI_COMPOSIO_BROKER_TOKEN = access.token;
   }
   return next;
 }

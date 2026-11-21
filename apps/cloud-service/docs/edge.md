@@ -1,17 +1,17 @@
 # The public edge and its hook queue
 
-`edge/worker.js` is the Cloudflare Worker in front of every managed home (`https://<label>.<DUSK_MANAGED_PUBLIC_DOMAIN>`).
+`edge/worker.js` is the Cloudflare Worker in front of every managed home (`https://<label>.<MADANI_MANAGED_PUBLIC_DOMAIN>`).
 It asks the account service (`GET /v1/managed/edge/route`, `POST /v1/managed/edge/wake`, both behind
-`DUSK_MANAGED_EDGE_TOKEN`) where a label goes and whether that home is awake.
+`MADANI_MANAGED_EDGE_TOKEN`) where a label goes and whether that home is awake.
 
 ## Who wakes a sleeping home
 
 - A webhook: any request under `/hooks/*`.
-- A signed-in client acting: a non-GET with `authorization` or a cookie, unless it carries `x-dusk-background: 1` (the
+- A signed-in client acting: a non-GET with `authorization` or a cookie, unless it carries `x-madani-background: 1` (the
   app's focus pings and other hints).
 - Nothing else. Reads and anonymous traffic get a 503 with `retry-after: 5`.
 
-Each wake is a provider start, so the service caps them per home per hour (`DUSK_MANAGED_EDGE_WAKES_PER_HOUR`); over the
+Each wake is a provider start, so the service caps them per home per hour (`MADANI_MANAGED_EDGE_WAKES_PER_HOUR`); over the
 cap the sender gets 429 with `retry-after: 300`. A body over 2 MB gets 413.
 
 ## Webhooks for a sleeping home are queued
@@ -23,7 +23,7 @@ GitHub waits 10 s and never retries, and a long-asleep home can take 20 to 25 s 
    stores it, or answers that the id is already queued or was delivered in the last 24 hours.
 3. The Worker asks for the wake. If the wake is refused (429 over the cap, 409 no longer wakeable) the stored hook is
    forgotten and the sender hears 429 or 503, exactly as before. Otherwise the sender gets **202** at once, with the id
-   in `x-dusk-delivery`.
+   in `x-madani-delivery`.
 4. The object's alarm looks at the home a second later and then backs off (1, 2, 4 ... 30 s), asking for the wake again
    while it waits (free while a wake is under way). When the home is up it delivers each hook oldest first, with the
    original method, path, query, headers (signature headers included) and the body byte for byte, plus
@@ -74,7 +74,7 @@ their origins comma-separated, and `EDGE_TOKEN` holds one token for all or one p
 belongs to one service; the edge asks them in order, sends the wake to the one that answered, and never treats a label
 as missing while a service that might know it is down.
 
-Secrets: `wrangler secret put EDGE_TOKEN` (same value as `DUSK_MANAGED_EDGE_TOKEN`) and `wrangler secret put
+Secrets: `wrangler secret put EDGE_TOKEN` (same value as `MADANI_MANAGED_EDGE_TOKEN`) and `wrangler secret put
 HOOK_SEAL_KEY` (32 random bytes, base64url; 32 characters at least). Rotating `HOOK_SEAL_KEY` makes hooks queued at that
 moment unsealable: they are dropped with `reason: "unsealable"`, so rotate while few hooks are queued.
 

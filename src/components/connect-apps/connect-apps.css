@@ -184,17 +184,17 @@
 }
 .ca-home { margin-top: -18px; }
 /* a category change: only the list under the chips changes, and it settles from a faint dip rather than from blank */
-.ca-sections[data-browse-list] { animation: ca-list-in 140ms var(--dusk-ease-out); }
+.ca-sections[data-browse-list] { animation: ca-list-in 140ms var(--madani-ease-out); }
 @keyframes ca-list-in { from { opacity: 0.6; } }
 @media (prefers-reduced-motion: reduce) { .ca-sections[data-browse-list] { animation: none; } }
 :root[data-reduced-motion="true"] .ca-sections[data-browse-list] { animation: none; }
 /* a page change: in from the side it came from, at settings' pace (240ms slide, 180ms fade); reduced motion fades */
-.ca-pane[data-nav] { animation: ca-nav-slide 240ms var(--dusk-ease-out) backwards, dusk-fade-in 180ms var(--dusk-ease-out) backwards; }
+.ca-pane[data-nav] { animation: ca-nav-slide 240ms var(--madani-ease-out) backwards, madani-fade-in 180ms var(--madani-ease-out) backwards; }
 .ca-pane[data-nav="pop"] { --ca-nav-from: -16px; }
 .ca-pane[data-nav="swap"] { --ca-nav-from: 0px; }
-@keyframes ca-nav-slide { from { transform: translateX(calc(var(--ca-nav-from, 16px) * var(--dusk-inline-sign, 1))); } }
-@media (prefers-reduced-motion: reduce) { .ca-pane[data-nav] { animation: dusk-fade-in 180ms var(--dusk-ease-out) backwards; } }
-:root[data-reduced-motion="true"] .ca-pane[data-nav] { animation: dusk-fade-in 180ms var(--dusk-ease-out) backwards; }
+@keyframes ca-nav-slide { from { transform: translateX(calc(var(--ca-nav-from, 16px) * var(--madani-inline-sign, 1))); } }
+@media (prefers-reduced-motion: reduce) { .ca-pane[data-nav] { animation: madani-fade-in 180ms var(--madani-ease-out) backwards; } }
+:root[data-reduced-motion="true"] .ca-pane[data-nav] { animation: madani-fade-in 180ms var(--madani-ease-out) backwards; }
 
 .ca-head {
   position: relative;
@@ -1025,7 +1025,7 @@ a.ca-pill { color: inherit; text-decoration: none; }
 }
 .ca-abilities-toggle > :first-child { color: var(--color-ink); }
 .ca-abilities-count { color: var(--ca-ink-56); }
-.ca-abilities-toggle > i, .ca-abilities-toggle > svg { color: var(--ca-ink-56); transition: transform 240ms var(--dusk-ease-out); }
+.ca-abilities-toggle > i, .ca-abilities-toggle > svg { color: var(--ca-ink-56); transition: transform 240ms var(--madani-ease-out); }
 .ca-abilities-toggle[aria-expanded="true"] > i, .ca-abilities-toggle[aria-expanded="true"] > svg { transform: rotate(180deg); }
 .ca-abilities-toggle:focus-visible { outline: 2px solid var(--color-focus); outline-offset: -2px; border-radius: 14px; }
 @media (hover: hover) and (pointer: fine) { .ca-abilities-toggle:hover > :first-child { color: var(--color-ink); } .ca-abilities-toggle:hover > i, .ca-abilities-toggle:hover > svg { color: var(--ca-ink-68); } }
@@ -1049,16 +1049,16 @@ a.ca-pill { color: inherit; text-decoration: none; }
   display: grid;
   grid-template-rows: 0fr;
   opacity: 0;
-  transition: grid-template-rows 240ms var(--dusk-ease-out), opacity 180ms var(--dusk-ease-out);
+  transition: grid-template-rows 240ms var(--madani-ease-out), opacity 180ms var(--madani-ease-out);
 }
 .ca-abilities-fold[data-open] { grid-template-rows: 1fr; opacity: 1; }
 .ca-abilities-fold > .ca-abilities { min-height: 0; overflow: hidden; }
 .ca-abilities [data-ability] { min-height: 0; padding-block: 6px; }
 @media (prefers-reduced-motion: reduce) {
   .ca-abilities-toggle > i, .ca-abilities-toggle > svg { transition: none; }
-  .ca-abilities-fold { transition: opacity 180ms var(--dusk-ease-out); }
+  .ca-abilities-fold { transition: opacity 180ms var(--madani-ease-out); }
 }
-:root[data-reduced-motion="true"] .ca-abilities-fold { transition: opacity 180ms var(--dusk-ease-out); }
+:root[data-reduced-motion="true"] .ca-abilities-fold { transition: opacity 180ms var(--madani-ease-out); }
 
 /* an app page's cards read as Settings' do: a tonal fill on the window, no outline */
 .ca-detail .ca-card,

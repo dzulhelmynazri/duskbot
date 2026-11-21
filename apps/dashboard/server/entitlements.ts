@@ -1,5 +1,5 @@
 // The account service's signer for entitlements (shared/entitlement.ts): a hosted home and the app accept a cloud only with
-// a fresh one. The private key is DUSK_ENTITLEMENT_SIGNING_KEY (`kid:<base64url pkcs8>`), only in this service's
+// a fresh one. The private key is MADANI_ENTITLEMENT_SIGNING_KEY (`kid:<base64url pkcs8>`), only in this service's
 // environment; its public key must be pinned in shared/entitlement.ts and electron/entitlement.mjs before it signs.
 import { createHash } from "node:crypto";
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
@@ -11,10 +11,10 @@ export interface EntitlementSignerOptions { dataDir: string; loopback: boolean; 
 
 export function entitlementSignerFromEnv(env: NodeJS.ProcessEnv, options: EntitlementSignerOptions): { sign(cloud: StoredCloud): string; kid: string } | null {
   let signer: EntitlementSigner | null = null;
-  if (env.DUSK_ENTITLEMENT_SIGNING_KEY) signer = parseEntitlementSigner(env.DUSK_ENTITLEMENT_SIGNING_KEY);
-  else if (options.required) throw new Error("DUSK_ENTITLEMENT_SIGNING_KEY is required: hosted homes refuse clients without a signed entitlement.");
+  if (env.MADANI_ENTITLEMENT_SIGNING_KEY) signer = parseEntitlementSigner(env.MADANI_ENTITLEMENT_SIGNING_KEY);
+  else if (options.required) throw new Error("MADANI_ENTITLEMENT_SIGNING_KEY is required: hosted homes refuse clients without a signed entitlement.");
   else if (options.loopback) {
-    // a loopback service signs with its own development key; a home or app trusts it only when told (DUSK_ENTITLEMENT_DEV_KEYS)
+    // a loopback service signs with its own development key; a home or app trusts it only when told (MADANI_ENTITLEMENT_DEV_KEYS)
     const path = join(options.dataDir, "entitlement-dev-key");
     if (!existsSync(path)) writeFileSync(path, generateEntitlementSigner("dev-local").env, { mode: 0o600, flag: "wx" });
     signer = parseEntitlementSigner(readFileSync(path, "utf8").trim());

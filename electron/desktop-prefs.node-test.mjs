@@ -14,7 +14,7 @@ const localOrigin = require("./local-origin.cjs");
 
 const POPUP = "whats-new-2026-11", GROK = "grok-move-2026-11";
 const NOON = new Date(2026, 9, 16, 12).getTime();
-const LOCAL = "http://127.0.0.1:18799", CLOUD = "https://dusk-u-1.fly.dev", VPS = "https://bots.example.test";
+const LOCAL = "http://127.0.0.1:18799", CLOUD = "https://madani-u-1.fly.dev", VPS = "https://bots.example.test";
 
 test("discarded campaign ids never reappear in desktop notice state", () => {
   let saved = { seen: [POPUP, GROK, "retired-credit-2026-11"] };
@@ -203,7 +203,7 @@ function preload(origin, { activation = false, saved = null, language = null } =
   let bridge;
   const invoked = [], synced = [], heard = new Map();
   vm.runInNewContext(PRELOAD, {
-    process: { platform: "darwin", argv: [`--dusk-local-origin=${LOCAL}`, "--dusk-company-desktop=1"] },
+    process: { platform: "darwin", argv: [`--madani-local-origin=${LOCAL}`, "--madani-company-desktop=1"] },
     location: { origin }, navigator: { userActivation: { isActive: activation } }, TextEncoder, localStorage: { getItem: () => null },
     require: () => ({ webUtils: {}, contextBridge: { exposeInMainWorld: (_name, value) => { bridge = value; } },
       ipcRenderer: { on(channel, handler) { heard.set(channel, handler); }, removeListener() {}, send() {},
@@ -288,7 +288,7 @@ test("production wiring: main answers this computer's page, My Cloud's own page 
   let switched = async id => { calls.push(["switch", id]); }, loads = true, broadcasts = 0;
   const context = vm.createContext({
     registerDesktopPrefs: value => { options = value; }, createDesktopPrefs: store => ({ store }), jsonFile: file => ({ read: () => file, write: () => {} }), ipcMain: {}, cloudAccount: "the client",
-    path: { join: (...parts) => parts.join("/") }, app: { getPath: () => "/user-data" }, desktopDataDir: () => "/home/.duskbot",
+    path: { join: (...parts) => parts.join("/") }, app: { getPath: () => "/user-data" }, desktopDataDir: () => "/home/.madanibot",
     navigateMainWindow: async url => { calls.push(["navigate", url]); return loads; },
     senderIsLocal: localOrigin.isLocalSender, workspaceSenderAllowed: environments.workspaceSenderAllowed,
     mainWindow: { webContents: contents }, environmentsState: { environments: [{ id: "vps", name: "VPS", origin: VPS }], activeId: "vps" },
@@ -302,7 +302,7 @@ test("production wiring: main answers this computer's page, My Cloud's own page 
   });
   vm.runInContext(main.slice(start, end), context);
   assert.equal(options.prefs.store.read(), "/user-data/desktop-prefs.json");
-  assert.equal(options.localConfig(), "/home/.duskbot/config.json", "This computer's own workspace, whichever server the window shows");
+  assert.equal(options.localConfig(), "/home/.madanibot/config.json", "This computer's own workspace, whichever server the window shows");
   assert.deepEqual([options.frame.made(), options.frame.restarts], [false, true], "Windows: the frame its window was made with, until a restart");
   options.frame.changed();
   assert.equal(broadcasts, 1, "the pages hear the frame change");
@@ -355,9 +355,9 @@ test("the talk shortcut is off until turned on, with ⌃⌥Space as its key, and
 test("each server keeps its own Quick asks chat; nothing malformed is read back", () => {
   let saved = null;
   const prefs = createDesktopPrefs({ read: () => saved, write: value => { saved = structuredClone(value); } });
-  prefs.setQuickAsksChat("/Users/a/.duskbot", { botId: "bot-1", threadId: "t-1" });
-  assert.deepEqual(createDesktopPrefs({ read: () => saved, write: () => {} }).quickAsksChat("/Users/a/.duskbot"), { botId: "bot-1", threadId: "t-1" });
-  assert.equal(prefs.quickAsksChat("/Users/a/.duskbot-aprs"), null);
+  prefs.setQuickAsksChat("/Users/a/.madanibot", { botId: "bot-1", threadId: "t-1" });
+  assert.deepEqual(createDesktopPrefs({ read: () => saved, write: () => {} }).quickAsksChat("/Users/a/.madanibot"), { botId: "bot-1", threadId: "t-1" });
+  assert.equal(prefs.quickAsksChat("/Users/a/.madanibot-aprs"), null);
   const broken = createDesktopPrefs({ read: () => ({ quickAsks: { a: { botId: "../x", threadId: "t" }, b: "t-1", c: { botId: "b", threadId: "t", extra: 1 } } }), write: () => {} });
   assert.equal(broken.quickAsksChat("a"), null);
   assert.equal(broken.quickAsksChat("b"), null);

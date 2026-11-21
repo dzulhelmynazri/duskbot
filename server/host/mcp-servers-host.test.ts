@@ -23,7 +23,7 @@ function script(data: string, ...parts: string[]): string {
 }
 
 function setup(options: { boxed?: boolean; data?: string; bots?: Array<{ id: string; name: string; mcpServers?: string[]; toolScope?: unknown }>; checksUrl?: (name: string) => boolean } = {}) {
-  const data = options.data ?? mkdtempSync(join(tmpdir(), "dusk-mcp-host-"));
+  const data = options.data ?? mkdtempSync(join(tmpdir(), "madani-mcp-host-"));
   if (!options.data) dirs.push(data);
   const cfg: AppConfig = {
     mcpServers: {
@@ -127,7 +127,7 @@ it("a restart, or turning a server off and on, shows in what the next turn start
   await host.health.settled();
   const notes = () => host.mounted(PAUL).notes as { env: Record<string, string> };
   const fresh = JSON.stringify(host.mounted(PAUL).notes);
-  expect(notes().env.DUSK_MCP_RESTART).toBeUndefined();
+  expect(notes().env.MADANI_MCP_RESTART).toBeUndefined();
 
   host.health.changed("notes");
   const restarted = JSON.stringify(host.mounted(PAUL).notes);

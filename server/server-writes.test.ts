@@ -89,7 +89,7 @@ describe("bots.json saves", () => {
 
 describe("routines.json saves", () => {
   let dir: string;
-  beforeEach(() => { dir = mkdtempSync(join(tmpdir(), "dusk-routine-writes-")); });
+  beforeEach(() => { dir = mkdtempSync(join(tmpdir(), "madani-routine-writes-")); });
   afterEach(() => rmSync(dir, { recursive: true, force: true }));
 
   const event = (threadId: string, rest: Record<string, unknown>) =>

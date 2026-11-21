@@ -1,4 +1,4 @@
-# Limits: what keeps dusk bot up and what it costs us
+# Limits: what keeps madani bot up and what it costs us
 
 Every limit, quota and cost lever the hosted side relies on, with its value today and where it lives. Values are the
 code defaults; the ones you can change say how. "Per ip" means the caller's address as Cloudflare saw it (an IPv6
@@ -6,10 +6,10 @@ caller counts by its /64). Checked 2026-11-13.
 
 Short version:
 
-- **We pay for no one's AI.** Every engine runs on the person's own sign-in or key, on their computer or their dusk cloud.
+- **We pay for no one's AI.** Every engine runs on the person's own sign-in or key, on their computer or their madani cloud.
 - **Apps cost us nothing per call.** People connect apps with their own accounts, tokens or their own Composio. Our
   Composio broker is closed to new installs.
-- **The money levers are dusk cloud machines (InstaBox) and email (Brevo).** A machine's compute is held under its plan
+- **The money levers are madani cloud machines (InstaBox) and email (Brevo).** A machine's compute is held under its plan
   by the cost ceiling, its upload is slowed and then paused by the egress steps, and sign-in mail is capped per address,
   per ip, per hour and per day.
 - **The uptime levers are the Contabo box** (account service, relay, Mongo all share it) **and its 800 Mbit/s port.**
@@ -20,7 +20,7 @@ Short version:
 |---|---|---|---|
 | Sign-in codes to one address | 6 an hour, 12 a day, one every 30 s | "try again later" | `auth/index.ts` `AUTH_LIMITS` |
 | Code requests from one ip | 60 an hour | same | same |
-| Sign-in emails, everyone together | 120 an hour, 250 a day (`DUSK_AUTH_MAIL_PER_HOUR`, `DUSK_AUTH_MAIL_PER_DAY`) | same, and one incident email a day | same |
+| Sign-in emails, everyone together | 120 an hour, 250 a day (`MADANI_AUTH_MAIL_PER_HOUR`, `MADANI_AUTH_MAIL_PER_DAY`) | same, and one incident email a day | same |
 | Share of the day for new addresses | 80% (200 of 250); the rest is kept for people who already have an account | new addresses wait until tomorrow | same |
 | Wrong code guesses | 5 per code, codes live 10 min, 600 checks an hour per ip | code is dead / 429 | `shared/account-api.ts`, `auth/index.ts` |
 | Google / Apple sign-in starts | 600 an hour per ip | 429 | `auth/index.ts` |
@@ -28,7 +28,7 @@ Short version:
 | Web sessions / app sessions | 30 days / 90 days (renewed while used) | signed out | same |
 
 The 250 a day sits under Brevo's free plan (300 a day; the service key can't read the plan, so this is assumed: set
-`DUSK_BREVO_DAILY_LIMIT` and `DUSK_AUTH_MAIL_PER_DAY` higher when the plan grows). Cloud notices and owner alerts use
+`MADANI_BREVO_DAILY_LIMIT` and `MADANI_AUTH_MAIL_PER_DAY` higher when the plan grows). Cloud notices and owner alerts use
 the same Brevo account, which is why sign-in stops at 250.
 
 Code brute force: with 5 guesses per code and 12 codes a day per address, one address can be guessed at most 60 times
@@ -53,7 +53,7 @@ connections through Cloudflare and nginx (see section 9).
 
 | What | Limit | Where |
 |---|---|---|
-| Waitlist joins (dusk.bot) | 20 a minute per ip, 200 new joins a day per ip or ipv6 /64 (`DUSK_WAITLIST_PER_IP_DAY`), 2 KiB body, 22 throwaway domains refused, a honeypot field | `apps/site/server.js` |
+| Waitlist joins (madani.bot) | 20 a minute per ip, 200 new joins a day per ip or ipv6 /64 (`MADANI_WAITLIST_PER_IP_DAY`), 2 KiB body, 22 throwaway domains refused, a honeypot field | `apps/site/server.js` |
 | Waitlist to Brevo | each new address becomes a contact on the waitlist list; no email is sent | same |
 | Page beacon `/v1/t` | 3000 an hour per ip, 4 KiB | `analytics/ingest.ts` |
 | App events | 1500 an hour per ip and per install, 50 events / 32 KiB a batch | same |
@@ -73,10 +73,10 @@ contacts, not sends.
 | Checkouts per account | 30 an hour, each open 30 min; asking again replaces an unpaid one with a fresh payment page | same |
 | Webhooks | signed (Standard Webhooks), 5 min clock window, 64 KiB body, each id handled once (kept 30 days) | `billing/webhook-signature.ts`, `billing/service.ts` |
 | Free trial | none (`trial: null`) | `billing/plans.ts` |
-| Work license free until | 2026-12-01 (`DUSK_FREE_WORK_UNTIL`) | same |
+| Work license free until | 2026-12-01 (`MADANI_FREE_WORK_UNTIL`) | same |
 | Dodo fees | 6% + $0.40 a charge | ops page |
 
-## 5. dusk cloud machines (InstaBox, `apps/cloud-service`)
+## 5. madani cloud machines (InstaBox, `apps/cloud-service`)
 
 | Plan | Machine | Upload a month: alert / slower at / paused at |
 |---|---|---|
@@ -86,26 +86,26 @@ contacts, not sends.
 
 - **Who pays the tokens:** the person. The bot runs on their own Claude, ChatGPT or other sign-in; nothing on the
   cloud bills us per token. (The voice, X and decision relays in `server/included-services.ts` are not wired into
-  dusk cloud machines.)
+  madani cloud machines.)
 - **Compute:** InstaBox bills by the running hour (0.4 c per vCPU-hour, 0.225 c per GiB-hour, disk 8 c per GiB a month).
   Each machine has a monthly cost ceiling of always-on cost x 1.065; past it, starts and backups are refused
   (`power/ceiling.ts`, `spend.ts`). So a machine that runs flat out all month costs about what its plan assumed.
-- **Sleep and wake:** asleep 15 min after the start or the last input (`DUSK_MANAGED_IDLE_MINUTES`), 30 min once someone has been using it this hour, 5 min after work ends, never more than 2 h with no input unless a bot works; routines and their checks wake it on their own schedule; at most 20 starts an hour and 96 a day
-  per machine on InstaBox; 20 wakes an hour from the web edge (`DUSK_MANAGED_EDGE_WAKES_PER_HOUR`); 60 power changes an
+- **Sleep and wake:** asleep 15 min after the start or the last input (`MADANI_MANAGED_IDLE_MINUTES`), 30 min once someone has been using it this hour, 5 min after work ends, never more than 2 h with no input unless a bot works; routines and their checks wake it on their own schedule; at most 20 starts an hour and 96 a day
+  per machine on InstaBox; 20 wakes an hour from the web edge (`MADANI_MANAGED_EDGE_WAKES_PER_HOUR`); 60 power changes an
   hour per cloud from the dashboard. Our whole InstaBox workspace can start 30 machines a minute; alerts at 70% and up
   of the daily included starts.
 - **Upload (egress):** read every 5 min. Past each step the machine is slowed inside the VM; a machine that removes
   its own limit is paused at once; at the last step it is paused until the 1st. InstaBox includes 1 TiB a month across
   the workspace, then $0.02 a GB.
-- **CPU:** no cap (the plan pays for the cores). A dusk cloud above 90% cpu for 6 hours opens one incident a day
+- **CPU:** no cap (the plan pays for the cores). A madani cloud above 90% cpu for 6 hours opens one incident a day
   (mining or a runaway loop), so we look before InstaBox does.
 - **Memory:** the home service is held at 80% (soft) and 90% (hard) of the machine, bots at 65% / 75%.
-- **Backups:** daily (`DUSK_MANAGED_BACKUP_HOURS`), 3 kept plus one at least a week older, at most 4 GiB each
-  (`DUSK_MANAGED_BACKUP_MAX_MB`), on the account service's disk. Kept 30 days after a plan ends. Streamed to disk,
+- **Backups:** daily (`MADANI_MANAGED_BACKUP_HOURS`), 3 kept plus one at least a week older, at most 4 GiB each
+  (`MADANI_MANAGED_BACKUP_MAX_MB`), on the account service's disk. Kept 30 days after a plan ends. Streamed to disk,
   sealed, hashed and checked a piece at a time (a few MiB of memory whatever the size); upkeep looks after 4 machines
   at once.
 
-## 6. Relay (link service, `apps/link-service`, link.dusk.bot)
+## 6. Relay (link service, `apps/link-service`, link.madani.bot)
 
 Changeable live from the admin relay page (`relay-limits.json`).
 
@@ -122,7 +122,7 @@ Changeable live from the admin relay page (`relay-limits.json`).
 | New pairing sessions | 120 an hour per ip; queued bytes 16 MiB per direction, frames dropped after 60 s, 1 GiB queued in all |
 | Per ip | 512 connections, 200 requests a second |
 | Phone channels | 50 posts a second, 256 MiB a minute, 600 reads a minute |
-| Who can make a tunnel | only a signed-in dusk bot account (anonymous sessions get 401) |
+| Who can make a tunnel | only a signed-in madani bot account (anonymous sessions get 401) |
 | nginx in front (Contabo only) | 512 connections and 200 requests a second per ip, 10 new sessions a minute; Oracle's Caddy has none |
 
 Load test (2026-11-13): 100 tunnels with 3 clients each and a full reconnect storm ran clean on both nodes. On Contabo
@@ -142,7 +142,7 @@ tunnel. Its overall ceiling and per-tunnel daily cap are off by default.
 
 - People connect apps with their own accounts, tokens, or their own Composio key (Composio's own free plan: 10,000
   actions a month). We pay nothing per call.
-- Our broker (`composio.dusk.bot`) is closed to new installs (`REGISTRATION_MODE: "closed"`). If it is ever reopened:
+- Our broker (`composio.madani.bot`) is closed to new installs (`REGISTRATION_MODE: "closed"`). If it is ever reopened:
   500 tool calls a day across everyone (`GLOBAL_DAILY_TOOL_CALLS`), 10,000 per install, 60 new installs a day per ip.
   Lower the per-install cap below the global one first, or one install can use up everyone's day.
 
@@ -156,7 +156,7 @@ tunnel. Its overall ceiling and per-tunnel daily cap are off by default.
 | Owner money and signup alerts | rare | 30 an hour |
 | Waitlist | no sends, contacts only | none |
 
-Alert when Brevo's day passes 80% of `DUSK_BREVO_DAILY_LIMIT` (300 unless set).
+Alert when Brevo's day passes 80% of `MADANI_BREVO_DAILY_LIMIT` (300 unless set).
 
 ## 9. Boxes, database, storage
 
@@ -165,7 +165,7 @@ Alert when Brevo's day passes 80% of `DUSK_BREVO_DAILY_LIMIT` (300 unless set).
 | Contabo (account service, preview, relay, Mongo, others) | 12 vCPU, 48 GB, 800 Mbit/s port, "unlimited" traffic under fair use | memory > 90% for 10 min, disk > 85%, upload > 70% of 120 Mbit/s for 15 min, month on course past 32 TB (cpu shows on the health page, no email) |
 | nginx on Contabo | 12 workers x 8192 connections, 65535 open files each (every proxied request uses two) | none |
 | Oracle (backups copy, uptime checks) | 2 OCPU, 12 GB, 200 GB (free tier) | disk > 85%, no report in 30 min |
-| MongoDB (`mongod-dusk`, one-node replica set on Contabo) | about 2 MB today | over 5 GB, unreachable or not primary for 4 min |
+| MongoDB (`mongod-madani`, one-node replica set on Contabo) | about 2 MB today | over 5 GB, unreachable or not primary for 4 min |
 | Mongo backups | daily dump kept 7 days on Contabo; encrypted copy to Oracle and R2 (7 daily, 4 weekly) | backup older than 26 h |
 | R2 | backups only | over 8 GB (free tier is 10 GB) |
 | Cloudflare Workers (edge, relay, broker) | Workers Paid assumed: 10 M requests, 30 M cpu-ms a month | projected past either |
@@ -180,5 +180,5 @@ records, `workspaces`. At today's sizes this is years away from mattering; the 5
   rare (a lost machine only), unlike the daily backups, which now stream.
 - **Rate limit counters live in memory** and reset when the account service restarts (sign-in codes in flight are
   saved, so a deploy no longer kills them).
-- **Bot tools reaching private addresses** on a dusk cloud: the bot has a shell on its own machine by design, so this is
+- **Bot tools reaching private addresses** on a madani cloud: the bot has a shell on its own machine by design, so this is
   the owner's own machine, not ours.

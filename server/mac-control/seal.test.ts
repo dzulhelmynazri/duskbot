@@ -13,7 +13,7 @@ const link = generateKeyPairSync("ed25519");
 const linkPublic = link.publicKey.export({ type: "spki", format: "der" }).toString("base64");
 const job = (over: Record<string, unknown> = {}) => ({ id: randomUUID(), tool: "mac_exec", arguments: { command: "git status" }, bot: { id: "nova", name: "Nova" }, expiresAt: Date.now() + 60_000, ...over });
 
-describe("sealed jobs between a dusk cloud and the Mac", () => {
+describe("sealed jobs between a madani cloud and the Mac", () => {
   it("the Mac and the cloud agree on the signed and authenticated bytes", () => {
     const parts = { mac: "a", eph: "b", iv: "c", data: "d" };
     expect(cloudMacSignedBytes(parts)).toBe(shared.cloudMacSignedBytes(parts));
@@ -49,7 +49,7 @@ describe("sealed jobs between a dusk cloud and the Mac", () => {
   });
 
   it("reads the cloud's own link key from its data folder, and nothing else", () => {
-    const dir = mkdtempSync(join(tmpdir(), "dusk-link-key-"));
+    const dir = mkdtempSync(join(tmpdir(), "madani-link-key-"));
     try {
       expect(readLinkSigningKey(dir)).toBeNull();
       writeFileSync(join(dir, "dashboard-link.json"), JSON.stringify({ v: 1, privateKey: link.privateKey.export({ type: "pkcs8", format: "der" }).toString("base64") }));
@@ -61,7 +61,7 @@ describe("sealed jobs between a dusk cloud and the Mac", () => {
 describe("what the Mac itself refuses", () => {
   let home: string;
   beforeEach(() => {
-    home = realpathSync(mkdtempSync(join(tmpdir(), "dusk-cloud-mac-home-")));
+    home = realpathSync(mkdtempSync(join(tmpdir(), "madani-cloud-mac-home-")));
     mkdirSync(join(home, "Downloads"));
     mkdirSync(join(home, "Documents"));
     symlinkSync(join(home, "Documents"), join(home, "Downloads", "escape"));

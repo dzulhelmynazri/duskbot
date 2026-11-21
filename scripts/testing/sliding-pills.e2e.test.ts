@@ -1,33 +1,33 @@
 // The model menu's pill pair, headless, frame by frame: a pick slides the fill across in about 200ms (in between
 // positions, never a jump), the words' ink crossfades, a quick second pick retargets mid-slide, and the app's
-// reduced-motion switch makes the fill jump. Frames go to DUSK_UI_EVIDENCE_DIR/sliding-pills.
+// reduced-motion switch makes the fill jump. Frames go to MADANI_UI_EVIDENCE_DIR/sliding-pills.
 //
-//   DUSK_UI_E2E=1 pnpm exec vitest run scripts/testing/sliding-pills.e2e.test.ts
+//   MADANI_UI_E2E=1 pnpm exec vitest run scripts/testing/sliding-pills.e2e.test.ts
 import { spawn, type ChildProcess } from "node:child_process";
 import { existsSync, mkdirSync, mkdtempSync, readFileSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { expect, it } from "vitest";
 import { waitForExit } from "../../server/testing/cleanup.ts";
-import { ensureUiBrowser } from "./control-dusk-ui.ts";
+import { ensureUiBrowser } from "./control-madani-ui.ts";
 import { mountPreview, REPO_ROOT, type MountedPreview } from "./preview-fixture.ts";
 import { connect } from "./chat-gallery/cdp.ts";
 
-const enabled = process.env.DUSK_UI_E2E === "1";
+const enabled = process.env.MADANI_UI_E2E === "1";
 type Row = { t: number; x: number; ink: string };
 
 (enabled ? it : it.skip)("slides the picked fill instead of jumping", async () => {
   let preview: MountedPreview | undefined;
   let chrome: ChildProcess | undefined;
   let cdp: Awaited<ReturnType<typeof connect>> | undefined;
-  const evidence = join(process.env.DUSK_UI_EVIDENCE_DIR || join(REPO_ROOT, ".dusk-scratch", "verify-evidence"), "sliding-pills");
+  const evidence = join(process.env.MADANI_UI_EVIDENCE_DIR || join(REPO_ROOT, ".madani-scratch", "verify-evidence"), "sliding-pills");
   mkdirSync(evidence, { recursive: true });
   try {
     const tools = await ensureUiBrowser();
     if (!tools.chrome) throw new Error("needs the pinned Chrome for Testing");
     // no server behind this page: nothing on it calls /api
     preview = await mountPreview({ info: { url: "http://127.0.0.1:9" } }, { entry: "/scripts/testing/sliding-pills-preview.tsx", route: "/__sliding-pills.html", title: "Pills", logLevel: "warn", hmr: false });
-    const profile = mkdtempSync(join(tmpdir(), "dusk-pills-chrome-"));
+    const profile = mkdtempSync(join(tmpdir(), "madani-pills-chrome-"));
     chrome = spawn(tools.chrome, ["--headless=new", "--no-sandbox", "--no-first-run", "--no-default-browser-check", "--disable-background-networking", "--password-store=basic", "--use-mock-keychain", "--hide-scrollbars", "--remote-debugging-port=0", `--user-data-dir=${profile}`, "about:blank"], {
       env: { PATH: process.env.PATH, HOME: profile, USERPROFILE: profile }, stdio: "ignore",
     });

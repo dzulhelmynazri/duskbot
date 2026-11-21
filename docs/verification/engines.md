@@ -2,7 +2,7 @@
 
 ## Sub-features
 
-- Confirm the endpoint identifies itself as dusk bot.
+- Confirm the endpoint identifies itself as madani bot.
 - List configured provider instances without exposing executable paths.
 - Distinguish available and unavailable engines.
 - Add named Claude accounts and select them independently for bots.
@@ -14,11 +14,11 @@ Open a bot's model picker or Settings → Engines.
 ## Driving it
 
 ```sh
-pnpm control:dusk doctor --url http://127.0.0.1:PORT
-pnpm control:dusk models --url http://127.0.0.1:PORT
+pnpm control:madani doctor --url http://127.0.0.1:PORT
+pnpm control:madani models --url http://127.0.0.1:PORT
 ```
 
-`doctor.ok` is true only when the endpoint is dusk bot and at least one
+`doctor.ok` is true only when the endpoint is madani bot and at least one
 engine is available. The isolated fixture should expose `claude`.
 
 ## Startup engine discovery
@@ -118,7 +118,7 @@ with `muse login`. It spends that account's Muse usage, so it runs only when
 asked:
 
 ```sh
-DUSK_LIVE_MUSE=1 pnpm exec vitest run server/drivers/muse-code.live.test.ts
+MADANI_LIVE_MUSE=1 pnpm exec vitest run server/drivers/muse-code.live.test.ts
 ```
 
 It lists the account's models (Muse Wonder 1.0), answers on Muse Wonder, runs

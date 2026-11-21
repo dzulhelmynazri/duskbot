@@ -10,7 +10,7 @@ async function fixture(t, options = {}) {
   const server = createServer(async (req, res) => {
     res.setHeader("date", new Date(f.now).toUTCString());
     let body = ""; for await (const chunk of req) body += chunk;
-    f.requests.push({ route: req.url, method: req.method, token: req.headers.authorization, version: req.headers["x-dusk-version"], body });
+    f.requests.push({ route: req.url, method: req.method, token: req.headers.authorization, version: req.headers["x-madani-version"], body });
     const send = (status, data) => { res.writeHead(status, { "content-type": "application/json" }); res.end(JSON.stringify(data)); };
     if (req.url === "/api/cloud/desktop/authorize") return send(201, { cloudContractVersion: 1, deviceCode: "A".repeat(43), userCode: "ABCDE-FGHJK", verificationUriComplete: f.badUrl ? "https://untrusted.test" : `${f.origin}/cloud/desktop?code=ABCDE-FGHJK`, expiresIn: 600, interval: 5 });
     if (req.url === "/api/cloud/desktop/token") return f.approved ? send(200, { ...identity(), accessToken }) : send(400, { error: "authorization_pending" });
@@ -34,16 +34,16 @@ async function fixture(t, options = {}) {
 test("custom account targets accept only bare https or loopback http origins and isolate every file", () => {
   const fields = { file: "cloud-account-custom.bin", saved: "cloud-accounts-custom.bin", places: "account-places-custom.json", environments: "environments-custom.json", sync: "cloud-sync-custom", look: "cloud-home-look-custom.json" };
   for (const origin of ["https://accounts.example.test", "https://example.test:8443", "http://localhost:1234", "http://127.0.0.1:1234", "http://[::1]:1234"]) {
-    assert.deepEqual(cloudTarget({ DUSK_CLOUD_ORIGIN: origin, DUSK_CLOUD_STAGING: "1" }), { origin, staging: false, custom: true, ...fields });
+    assert.deepEqual(cloudTarget({ MADANI_CLOUD_ORIGIN: origin, MADANI_CLOUD_STAGING: "1" }), { origin, staging: false, custom: true, ...fields });
     assert.equal(cloudOrigin(origin, false, true), origin);
   }
   for (const origin of ["", "bad", "http://remote.test", "https://u:p@host.test", "https://host.test/", "https://host.test/path", "https://host.test?x=1", "https://host.test#", " https://host.test", "HTTPS://host.test", "http://localhost.evil.test", "http://127.0.0.2:1234", "https://host.test:443"]) {
-    assert.deepEqual(cloudTarget({ DUSK_CLOUD_ORIGIN: origin }), cloudTarget({}));
-    assert.deepEqual(cloudTarget({ DUSK_CLOUD_ORIGIN: origin, DUSK_CLOUD_STAGING: "1" }), cloudTarget({ DUSK_CLOUD_STAGING: "1" }));
+    assert.deepEqual(cloudTarget({ MADANI_CLOUD_ORIGIN: origin }), cloudTarget({}));
+    assert.deepEqual(cloudTarget({ MADANI_CLOUD_ORIGIN: origin, MADANI_CLOUD_STAGING: "1" }), cloudTarget({ MADANI_CLOUD_STAGING: "1" }));
     assert.throws(() => cloudOrigin(origin, false, true));
   }
   assert.equal(cloudTarget({}).origin, CLOUD_ORIGIN); assert.equal(cloudTarget({}).custom, false);
-  assert.equal(cloudTarget({ DUSK_CLOUD_STAGING: "1" }).origin, STAGING_CLOUD_ORIGIN); assert.equal(cloudTarget({ DUSK_CLOUD_STAGING: "1" }).custom, false);
+  assert.equal(cloudTarget({ MADANI_CLOUD_STAGING: "1" }).origin, STAGING_CLOUD_ORIGIN); assert.equal(cloudTarget({ MADANI_CLOUD_STAGING: "1" }).custom, false);
   for (const host of ["checkout.dodopayments.com", "test.checkout.dodopayments.com"]) assert.equal(checkoutDestination(`https://${host}/session/x`, { custom: true }), `https://${host}/session/x`);
   assert.equal(checkoutDestination("https://evil.test/session/x", { custom: true }), null);
 });

@@ -18,7 +18,7 @@ interface Snapshot {
   doneHere: boolean;
 }
 
-const DONE_HERE = "dusk.cloudWelcome.done";
+const DONE_HERE = "madani.cloudWelcome.done";
 function stored(key: string): string | null {
   try { return globalThis.localStorage?.getItem(key) || null; } catch { return null; }
 }
@@ -28,7 +28,7 @@ function store(key: string, value: string | null): void {
     else globalThis.localStorage?.removeItem(key);
   } catch {}
 }
-/** The query the desktop app adds when it opens the person's own Cloud: they met dusk bot on that computer, so the Cloud's
+/** The query the desktop app adds when it opens the person's own Cloud: they met madani bot on that computer, so the Cloud's
  * own welcome ends before it shows (saved to the Cloud's record like one ended here). Only ever ends a welcome. */
 export const WELCOMED_QUERY = "welcomed";
 function welcomedByTheApp(): boolean {
@@ -40,7 +40,7 @@ function welcomedByTheApp(): boolean {
     return true;
   } catch { return false; }
 }
-const FROM_APP = "dusk.cloudWelcome.fromApp";
+const FROM_APP = "madani.cloudWelcome.fromApp";
 const initial = (): Snapshot => {
   if (welcomedByTheApp()) { store(DONE_HERE, "1"); store(FROM_APP, "1"); }
   const doneHere = stored(DONE_HERE) !== null;

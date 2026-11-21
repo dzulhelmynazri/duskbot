@@ -18,8 +18,8 @@ export interface TurnStdioMcpServer {
   env: Record<string, string>;
 }
 
-/** URL servers always go through dusk bot's remote proxy: agents' own MCP clients add capability
- * fields strict servers refuse. Under a schema profile dusk bot fits every tool list: its own proxies and gates read
+/** URL servers always go through madani bot's remote proxy: agents' own MCP clients add capability
+ * fields strict servers refuse. Under a schema profile madani bot fits every tool list: its own proxies and gates read
  * the profile, and the person's stdio servers go through a gate. */
 export function turnStdioMcpServers(turn: SendTurnInput, options: { schemaProfile?: ToolSchemaProfileId; toolBudget?: number } = {}): TurnStdioMcpServer[] {
   const { schemaProfile, toolBudget } = options;
@@ -60,7 +60,7 @@ export function turnStdioMcpServers(turn: SendTurnInput, options: { schemaProfil
   return toolBudget === undefined ? fitted : withToolShares(fitted, turn, toolBudget);
 }
 
-/** dusk bot's proxies and gates that cap their list at DUSK_TOOL_LIMIT. */
+/** madani bot's proxies and gates that cap their list at MADANI_TOOL_LIMIT. */
 const LIMITING_PROXY = /(?:^|[\\/])(?:agents-proxy|harness-mcp-proxy|connector-proxy|mcp-gate|mcp-remote-proxy)\.[jt]s$/;
 
 const CORE_INTEGRATIONS = { browser: "browser", data: "data", email: "email", device: "device", computer: "localComputer" } as const;
@@ -93,15 +93,15 @@ export type AcpMcpServer = { name: string; command: string; args: string[]; env:
 
 const HARNESS_KINDS = ["browser", "computer", "data", "email", "device"] as const;
 
-/** dusk bot's own server behind a stdio proxy, as its HTTP endpoint on this server; null for any other server (the
+/** madani bot's own server behind a stdio proxy, as its HTTP endpoint on this server; null for any other server (the
  * person's, or one wrapped in a tool-selection gate). */
 export function ownMcpOverHttp(server: TurnStdioMcpServer): { url: string; headers: Record<string, string> } | null {
-  const harness = server.env.DUSK_HARNESS_URL;
+  const harness = server.env.MADANI_HARNESS_URL;
   if (!harness || !/^http:\/\/127\.0\.0\.1:\d+$/.test(harness)) return null;
   const script = server.args.findIndex((arg) => /(?:^|[\\/])(?:harness-mcp-proxy|agents-proxy)\.[jt]s$/.test(arg));
   if (script < 0) return null;
   if (/agents-proxy\.[jt]s$/.test(server.args[script]!)) {
-    const token = server.env.DUSK_COMMS_TOKEN;
+    const token = server.env.MADANI_COMMS_TOKEN;
     if (!token) return null;
     const settings = Object.fromEntries(AGENTS_MCP_ENV.flatMap((key) => server.env[key] === undefined ? [] : [[key, server.env[key]]]));
     return { url: `${harness}${OWN_MCP_HTTP_PATH}agents`, headers: { authorization: `Bearer ${token}`,
@@ -115,7 +115,7 @@ export function ownMcpOverHttp(server: TurnStdioMcpServer): { url: string; heade
 }
 
 /** The turn's MCP servers as ACP session/new takes them. stdio is the baseline every ACP agent supports; an agent that
- * reaches servers by URL (`http`) gets dusk bot's own as endpoints of this server instead of a proxy process each.
+ * reaches servers by URL (`http`) gets madani bot's own as endpoints of this server instead of a proxy process each.
  * `engine` is the driver kind, whose provider may limit each tool's schema; `toolBudget`, how many MCP tools the model's
  * provider takes in all. */
 export function acpMcpServers(turn: SendTurnInput, options: { http?: boolean; engine?: string; toolBudget?: number } = {}): AcpMcpServer[] {

@@ -1,5 +1,5 @@
 // the top accounts table at the head of admin ops: each account's relay bytes this month (and where that puts it on the
-// fair use curve), dusk cloud awake hours and cost, and the emails sent to it. built from what is already collected:
+// fair use curve), madani cloud awake hours and cost, and the emails sent to it. built from what is already collected:
 // the link nodes' fairUse, the infra usage rows and the "mail" daily counters. never a live third-party call.
 import type { OpsAccountFlag, OpsAccountRow, OpsAccountsAnswer, OpsAccountsRange, OpsFairStage, OpsRelayCard, OpsSuspect } from "../../../src/admin/ops-types.ts";
 import type { InfraDay } from "../infra.ts";

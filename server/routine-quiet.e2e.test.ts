@@ -8,7 +8,7 @@ import type { AddressInfo } from "node:net";
 import { join } from "node:path";
 import { afterEach, describe, expect, it } from "vitest";
 
-import { launchVerificationServer, runControlDusk, type VerificationServer } from "../scripts/control-dusk.ts";
+import { launchVerificationServer, runControlMadani, type VerificationServer } from "../scripts/control-madani.ts";
 
 let session: VerificationServer | null = null;
 let pages: Server | null = null;
@@ -22,7 +22,7 @@ afterEach(async () => {
 async function launch(env: Record<string, string> = {}) {
   session = await launchVerificationServer({ ...env });
   const url = session.info.url;
-  const control = (args: string[]) => runControlDusk([...args, "--url", url]) as Promise<any>;
+  const control = (args: string[]) => runControlMadani([...args, "--url", url]) as Promise<any>;
   const api = async (method: string, path: string, body?: unknown) => {
     const response = await fetch(url + path, { method, headers: { "content-type": "application/json", origin: url }, ...(body === undefined ? {} : { body: JSON.stringify(body) }) });
     return { status: response.status, body: await response.json().catch(() => null) as any };
@@ -51,7 +51,7 @@ describe("a quiet routine", () => {
     pages = createServer((_req, res) => { res.writeHead(page.status, { "content-type": "text/html" }); res.end(page.body); });
     await new Promise<void>((resolve) => pages!.listen(0, "127.0.0.1", resolve));
     const origin = `http://127.0.0.1:${(pages.address() as AddressInfo).port}`;
-    const f = await launch({ DUSK_PROBE_LOOPBACK_ORIGIN: origin });
+    const f = await launch({ MADANI_PROBE_LOOPBACK_ORIGIN: origin });
     const bot = (await f.control(["new-bot", "--name", "Watcher"])).bot;
     const created = await f.api("POST", "/api/routines", {
       name: "Release notes", prompt: "Tell me what is new in the release notes.", botId: bot.id,

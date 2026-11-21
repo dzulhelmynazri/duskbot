@@ -4,13 +4,13 @@
   "title": "Claude Code from Telegram, Discord or Slack: routes",
   "nav": "claude code in chat apps",
   "h1": "claude code from telegram, discord or slack",
-  "description": "Compare a custom chat bridge with Claude Remote Control and dusk bot chat, and separate talking to a bot from posting into a team channel.",
+  "description": "Compare a custom chat bridge with Claude Remote Control and madani bot chat, and separate talking to a bot from posting into a team channel.",
   "keyword": "claude code telegram",
   "keywords": [
     "claude code discord",
     "claude code slack"
   ],
-  "answer": "**text your bot from the couch without turning slack into a remote terminal.** a custom bridge needs someone to handle who can direct it, how approvals return and which computer stays on. anthropic’s remote control and dusk’s own chats offer other routes.[^1][^2] most people asking for this just want to text their bot from the couch. that part needs no bridge.",
+  "answer": "**text your bot from the couch without turning slack into a remote terminal.** a custom bridge needs someone to handle who can direct it, how approvals return and which computer stays on. anthropic’s remote control and madani’s own chats offer other routes.[^1][^2] most people asking for this just want to text their bot from the couch. that part needs no bridge.",
   "updated": "2026-11-12",
   "review": {
     "status": "approved",
@@ -57,16 +57,16 @@
       "md": "**your phone is a window, not the computer doing the work.** as of 12 november 2026, remote control connects claude.ai/code or claude’s ios and android app to your local session.[^1]\n\nthe computer must stay on with claude running. this route does not use telegram, discord or slack. the [phone guide](/claude-code-from-your-phone) compares where the session lives."
     },
     {
-      "h": "dusk gives each bot its own conversation",
-      "md": "**want claude code in your pocket? text the bot from your phone.** pair once by scanning a code. paired with your computer, it works while that computer is on. paired with dusk cloud, it works with the laptop shut.[^3]\n\ndusk keeps named bots with jobs, chats, memory and an ai choice for each. it runs official ai command-line apps where the bots live.[^2]\n\nyou talk in dusk. each bot has a conversation you can come back to, without another team-chat channel to maintain."
+      "h": "madani gives each bot its own conversation",
+      "md": "**want claude code in your pocket? text the bot from your phone.** pair once by scanning a code. paired with your computer, it works while that computer is on. paired with madani cloud, it works with the laptop shut.[^3]\n\nmadani keeps named bots with jobs, chats, memory and an ai choice for each. it runs official ai command-line apps where the bots live.[^2]\n\nyou talk in madani. each bot has a conversation you can come back to, without another team-chat channel to maintain."
     },
     {
       "h": "slack can receive the result",
-      "md": "**put the finished report where your team already reads.** dusk’s slack actions include message search and sending. prepare the result in the bot’s chat, then name its channel. see the [slack integration](/integrations/slack).[^4]\n\nsends ask first unless you allow a daily amount. careful with **Full access**: a bot there with no sending rule can send up to 25 a day without asking. give it **Ask every time**.[^8]\n\nreading jobs can stay read only. other app edits do not automatically ask; tell a writer “ask me before you change anything”.[^5]\n\ndiscord’s action list covers account and server membership, with no message-posting action as of 12 november 2026. the [discord connection](/integrations/discord) handles different jobs from slack.[^6]"
+      "md": "**put the finished report where your team already reads.** madani’s slack actions include message search and sending. prepare the result in the bot’s chat, then name its channel. see the [slack integration](/integrations/slack).[^4]\n\nsends ask first unless you allow a daily amount. careful with **Full access**: a bot there with no sending rule can send up to 25 a day without asking. give it **Ask every time**.[^8]\n\nreading jobs can stay read only. other app edits do not automatically ask; tell a writer “ask me before you change anything”.[^5]\n\ndiscord’s action list covers account and server membership, with no message-posting action as of 12 november 2026. the [discord connection](/integrations/discord) handles different jobs from slack.[^6]"
     },
     {
       "h": "choose the route you can keep running",
-      "md": "**use the smallest route that answers the actual need.** remote control suits a window into your running local session. dusk suits its own bot conversations and app connections.\n\na custom bridge makes sense when that chat entry point matters enough to maintain it. decide who will fix it after a broken connection.\n\nuse the [computer safety guide](/guides/is-it-safe-to-let-ai-control-your-computer) to limit what the session can reach. if the yes/no prompt doesn’t reach you, the bridge is broken. fix that first."
+      "md": "**use the smallest route that answers the actual need.** remote control suits a window into your running local session. madani suits its own bot conversations and app connections.\n\na custom bridge makes sense when that chat entry point matters enough to maintain it. decide who will fix it after a broken connection.\n\nuse the [computer safety guide](/guides/is-it-safe-to-let-ai-control-your-computer) to limit what the session can reach. if the yes/no prompt doesn’t reach you, the bridge is broken. fix that first."
     }
   ],
   "faq": [
@@ -75,8 +75,8 @@
       "a": "**we do not know of one.** anthropic’s published phone route is remote control.[^1]"
     },
     {
-      "q": "can i use a slack post to control a dusk bot?",
-      "a": "**you chat with the bot in dusk.** slack events can start a routine and arrive at once. the bot can post back, but slack does not become its chat interface.[^2][^4][^7]"
+      "q": "can i use a slack post to control a madani bot?",
+      "a": "**you chat with the bot in madani.** slack events can start a routine and arrive at once. the bot can post back, but slack does not become its chat interface.[^2][^4][^7]"
     },
     {
       "q": "does the discord connection include posting messages?",
@@ -90,11 +90,11 @@
       "checked": "2026-11-12"
     },
     {
-      "label": "dusk bot docs: bots",
+      "label": "madani bot docs: bots",
       "url": "/docs/bots"
     },
     {
-      "label": "dusk bot docs: phone",
+      "label": "madani bot docs: phone",
       "url": "/docs/phone"
     },
     {
@@ -103,7 +103,7 @@
       "checked": "2026-11-12"
     },
     {
-      "label": "dusk bot docs: files and apps",
+      "label": "madani bot docs: files and apps",
       "url": "/docs/files-and-apps"
     },
     {
@@ -112,11 +112,11 @@
       "checked": "2026-11-12"
     },
     {
-      "label": "dusk bot docs: routines and app events",
+      "label": "madani bot docs: routines and app events",
       "url": "/docs/routines"
     },
     {
-      "label": "dusk bot docs: sending and full access",
+      "label": "madani bot docs: sending and full access",
       "url": "/docs/computer"
     }
   ],
@@ -140,7 +140,7 @@
       ],
       [
         "separate bot conversations",
-        "dusk’s own chat"
+        "madani’s own chat"
       ],
       [
         "control through a specific team chat",

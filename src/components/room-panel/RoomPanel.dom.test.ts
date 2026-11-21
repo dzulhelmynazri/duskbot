@@ -127,8 +127,8 @@ describe("the Room panel's card", () => {
     render(room({ defaultResponder: { kind: "auto", fallbackBotId: "lead" }, cwd: "/Users/ada/code/recruiting/" }));
     expect(rowValue('[data-panel-page="responder"]')).toBe("Jev decides");
     expect(rowValue('[data-panel-page="folder"]')).toBe("recruiting");
-    render(room({ defaultResponder: { kind: "auto", fallbackBotId: "lead", by: "dusk" } }));
-    expect(rowValue('[data-panel-page="responder"]')).toBe("Let dusk decide");
+    render(room({ defaultResponder: { kind: "auto", fallbackBotId: "lead", by: "madani" } }));
+    expect(rowValue('[data-panel-page="responder"]')).toBe("Let madani decide");
     render(room({ defaultResponder: { kind: "member", botId: "lead", leader: true } }));
     expect(rowValue('[data-panel-page="responder"]')).toBe("Desk Manager leads");
     render(room({ defaultResponder: { kind: "everyone" } }));
@@ -232,14 +232,14 @@ describe("Name and description", () => {
 });
 
 describe("who responds", () => {
-  it("offers a leader, everyone, Dusk deciding and Jev deciding, and who leads under the leader", () => {
+  it("offers a leader, everyone, Madani deciding and Jev deciding, and who leads under the leader", () => {
     renderPage(createElement(RoomResponderModal, { group: room(), members: fixtureBots, onClose: vi.fn() }));
     expect(modal("responder")).not.toBeNull();
     const choices = [...modal("responder")!.querySelectorAll("[data-panel-choice]")].map((row) => [row.getAttribute("data-panel-choice"), words(row), row.getAttribute("aria-checked")]);
     expect(choices).toEqual([
       ["leader", "LeaderDesk Manager gets your message and hands out the work", "true"],
       ["everyone", "Everyone at onceEvery bot answers, side by side", "false"],
-      ["dusk", "Let dusk decideA quick model of your AI picks who answers", "false"],
+      ["madani", "Let madani decideA quick model of your AI picks who answers", "false"],
       ["auto", "Jev decidesPicks the right bot for each message", "false"],
       ["leader:lead", "Desk Manager", "true"],
       ["leader:bench", "Vendor Bench", "false"],
@@ -251,13 +251,13 @@ describe("who responds", () => {
     expect($('[data-sheet-group="jev"]')).toBeNull();
     // the fixture's room is from before leaders: picking its bot again makes it the leader
     click($('[data-panel-choice="leader"]'));
-    click($('[data-panel-choice="dusk"]'));
+    click($('[data-panel-choice="madani"]'));
     click($('[data-panel-choice="auto"]'));
     click($('[data-panel-choice="everyone"]'));
     click($('[data-panel-choice="leader:bench"]'));
     expect(patches()).toEqual([
       { type: "patchGroup", groupId: "desk", patch: { defaultResponder: { kind: "member", botId: "lead", leader: true } } },
-      { type: "patchGroup", groupId: "desk", patch: { defaultResponder: { kind: "auto", fallbackBotId: "lead", by: "dusk" } } },
+      { type: "patchGroup", groupId: "desk", patch: { defaultResponder: { kind: "auto", fallbackBotId: "lead", by: "madani" } } },
       { type: "patchGroup", groupId: "desk", patch: { defaultResponder: { kind: "auto", fallbackBotId: "lead" } } },
       { type: "patchGroup", groupId: "desk", patch: { defaultResponder: { kind: "everyone" } } },
       { type: "patchGroup", groupId: "desk", patch: { defaultResponder: { kind: "member", botId: "bench", leader: true } } },
@@ -267,7 +267,7 @@ describe("who responds", () => {
   it("keeps Only who I @mention for a room already set that way, and hides who leads", () => {
     renderPage(createElement(RoomResponderModal, { group: room({ defaultResponder: { kind: "mentions" } }), members: fixtureBots, onClose: vi.fn() }));
     expect([...modal("responder")!.querySelectorAll("[data-panel-choice]")].map((row) => row.getAttribute("data-panel-choice")))
-      .toEqual(["leader", "everyone", "dusk", "auto", "mentions"]);
+      .toEqual(["leader", "everyone", "madani", "auto", "mentions"]);
   });
 
   it("moves and picks with the arrow keys, wrapping at the ends", () => {

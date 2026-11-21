@@ -5,7 +5,7 @@
 // - every frame is AES-256-GCM sealed with a key only the phone and this computer hold (a grant's key travels only in the
 //   QR; a device's comes from X25519 between the phone and `keys` here); the link service keeps token verifiers and
 //   queues opaque frames, so it can neither read nor forge a request.
-// - phone requests reach the harness marked remote (x-forwarded-for, cookies and x-dusk-* stripped by the hub): each one
+// - phone requests reach the harness marked remote (x-forwarded-for, cookies and x-madani-* stripped by the hub): each one
 //   needs that phone's own workspace session; a grant channel reaches redeem, environment and health only.
 // - only this process may set the channel set: the sync carries the desktop owner token, which no phone request can.
 // - the tunnel token and phone keys are kept per workspace, encrypted with the OS keychain when it is available.
@@ -15,8 +15,8 @@ import path from "node:path";
 
 import { seal, sealKeyOf, sha256hex, x25519Pair } from "./vps-link-protocol.mjs";
 
-export const PHONE_RELAY_BASE = "https://link.dusk.bot";
-const DESKTOP_OWNER_HEADER = "x-dusk-desktop-owner";
+export const PHONE_RELAY_BASE = "https://link.madani.bot";
+const DESKTOP_OWNER_HEADER = "x-madani-desktop-owner";
 const CHECK_MS = 15_000;
 const RETRY_MS = [5_000, 30_000, 120_000];
 const ID = /^[a-z2-7]{10}$/;
@@ -115,7 +115,7 @@ export function desktopHarnessSync({ port, ownerToken, request = httpRequest }) 
 
 /**
  * Keeps the hub running while `wanted()` (remote access on, this computer's own workspace). States:
- * `off` (not wanted now, but could start), `signed-out` (no tunnel yet and no dusk account to make one), `starting`,
+ * `off` (not wanted now, but could start), `signed-out` (no tunnel yet and no madani account to make one), `starting`,
  * `ready` (the harness has the channels registered at the relay), `error` (the link service refused; `message` says why).
  * @param {{
  *   base: string,
@@ -236,7 +236,7 @@ export function createPhoneRelay(deps) {
       } catch (error) {
         backoff();
         log(`phone relay: no tunnel (${error?.code ?? error?.message ?? error})`);
-        set({ status: "error", code: error?.code ?? "unreachable", message: error instanceof RelaySetupError ? error.message : "dusk bot could not reach its relay." });
+        set({ status: "error", code: error?.code ?? "unreachable", message: error instanceof RelaySetupError ? error.message : "madani bot could not reach its relay." });
         return;
       }
       if (scope() !== at) { await retire(tunnel); return; }
@@ -246,7 +246,7 @@ export function createPhoneRelay(deps) {
         await retire(tunnel);
         backoff();
         log(`phone relay: the tunnel could not be saved (${error?.message ?? error})`);
-        set({ status: "error", code: "save_failed", message: "dusk bot could not save its relay settings." });
+        set({ status: "error", code: "save_failed", message: "madani bot could not save its relay settings." });
         return;
       }
       saved = { ...saved, tunnel };
@@ -343,7 +343,7 @@ export function phoneRelayStore({ jsonFile, userData, encryption }) {
  */
 export function installPhoneRelay({ ipcMain, guard, jsonFile, userData, dataDir, encryption, powerMonitor, session, ...deps }) {
   const relay = createPhoneRelay({
-    base: (process.env.DUSK_LINK_BASE || PHONE_RELAY_BASE).replace(/\/+$/, ""),
+    base: (process.env.MADANI_LINK_BASE || PHONE_RELAY_BASE).replace(/\/+$/, ""),
     proxy: systemProxy(() => session.defaultSession),
     store: phoneRelayStore({ jsonFile, userData, encryption }),
     scope: () => String(dataDir() ?? ""),
@@ -352,7 +352,7 @@ export function installPhoneRelay({ ipcMain, guard, jsonFile, userData, dataDir,
   });
   ipcMain.handle("phone-relay:state", guard("phone-relay:state", () => relay.state()));
   ipcMain.handle("phone-relay:ready", guard("phone-relay:ready", () => relay.ready()));
-  if (process.env.DUSK_PHONE_RELAY !== "off") {
+  if (process.env.MADANI_PHONE_RELAY !== "off") {
     relay.start();
     for (const event of ["resume", "unlock-screen"]) powerMonitor?.on(event, () => relay.wake());
   }

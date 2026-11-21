@@ -7,14 +7,14 @@ import { createInterface } from "node:readline";
 import { pathToFileURL } from "node:url";
 import { afterAll, afterEach, beforeEach, describe, expect, it } from "vitest";
 
-import { launchVerificationServer, runControlDusk, type VerificationServer } from "../scripts/control-dusk.ts";
+import { launchVerificationServer, runControlMadani, type VerificationServer } from "../scripts/control-madani.ts";
 import { handleToolCall, request } from "../scripts/mcp-server.ts";
 import { readHandoffs } from "./testing/handoff-rows.ts";
 import { memoryDate } from "./workspace.ts";
 
 describe("independent bot tasks through the isolated control surface", () => {
   let session: VerificationServer;
-  const cuaRecordDir = mkdtempSync(join(tmpdir(), "dusk-independent-cua-"));
+  const cuaRecordDir = mkdtempSync(join(tmpdir(), "madani-independent-cua-"));
   const cuaRecord = join(cuaRecordDir, "cua-connection.json");
   afterAll(() => rmSync(cuaRecordDir, { recursive: true, force: true }));
   let models: string[];
@@ -35,7 +35,7 @@ describe("independent bot tasks through the isolated control surface", () => {
     return result;
   };
   const control = async (args: string[]) => {
-    const result = await runControlDusk([...args, "--url", session.info.url]);
+    const result = await runControlMadani([...args, "--url", session.info.url]);
     evidence.push({ command: args, result });
     return result as any;
   };
@@ -57,7 +57,7 @@ describe("independent bot tasks through the isolated control surface", () => {
   };
   const permission = async (model: string, id: string, input: Record<string, unknown> = { command: "ls -la ./dist" }) => {
     const launched = await dump(model);
-    const socketPath = launched.mcpConfig.mcpServers.dusk.args.at(-1);
+    const socketPath = launched.mcpConfig.mcpServers.madani.args.at(-1);
     const socket = connect(socketPath);
     sockets.push(socket);
     await new Promise<void>((resolve, reject) => {
@@ -74,7 +74,7 @@ describe("independent bot tasks through the isolated control surface", () => {
     // The approval deadline fires only on a marker file.
     // Each server hears the desktop app's driver record from its parent, as the app's own server does; absent, there is none.
     rmSync(cuaRecord, { force: true });
-    session = await launchVerificationServer({ ...process.env, DUSK_TEST_APPROVAL_CLOCK: "1", DUSK_TEST_DESKTOP_CUA_CONNECTION: cuaRecord });
+    session = await launchVerificationServer({ ...process.env, MADANI_TEST_APPROVAL_CLOCK: "1", MADANI_TEST_DESKTOP_CUA_CONNECTION: cuaRecord });
     evidence = [{ fixture: session.info }];
     const wrapper = join(session.info.dataDir, "gated-claude.mjs");
     const fake = pathToFileURL(join(process.cwd(), "server/testing/fake-claude-cli.ts")).href;
@@ -84,7 +84,7 @@ describe("independent bot tasks through the isolated control surface", () => {
       'const at = process.argv.indexOf("--model");',
       'const model = (at < 0 ? "probe" : process.argv[at + 1]).replace(/[^\\w-]/g, "_");',
       'process.env.FAKE_CLAUDE_MODE = "slow";',
-      'process.env.DUSK_FIXTURE_CWD = process.cwd();',
+      'process.env.MADANI_FIXTURE_CWD = process.cwd();',
       `process.env.FAKE_CLAUDE_SLOW_FINISH_GATE = join(${JSON.stringify(session.info.dataDir)}, model + ".gate");`,
       `process.env.FAKE_CLAUDE_DUMP = join(${JSON.stringify(session.info.dataDir)}, model + ".json");`,
       `await import(${JSON.stringify(fake)});`,
@@ -117,7 +117,7 @@ describe("independent bot tasks through the isolated control surface", () => {
     const chat = (await api("POST", `/api/bots/${peer.id}/tasks`, { title: "Review notes" })).body.task.threadId;
     expect((await api("PATCH", `/api/bots/${peer.id}`, { mainThreadChoice: chat })).status).toBe(200);
     await control(["send", "--bot", chief.id, "--text", "Ask the reviewer to check the release notes, then return the result here."]);
-    const token = (await dump(models[0])).mcpConfig.mcpServers.agents.env.DUSK_COMMS_TOKEN;
+    const token = (await dump(models[0])).mcpConfig.mcpServers.agents.env.MADANI_COMMS_TOKEN;
     const roster = await internal(token, "GET", "/api/internal/agents");
     expect(roster.status).toBe(200);
     expect(roster.body.bots.find((bot: any) => bot.id === peer.id)).toMatchObject({
@@ -191,7 +191,7 @@ describe("independent bot tasks through the isolated control surface", () => {
     const peer = (await tool("create_bot", { name: "Release Peer", instance_id: "claude", model: models[1] })).bot;
     expect((await api("PATCH", `/api/bots/${peer.id}`, { approvalMode: "ask" })).status).toBe(200);
     await control(["send", "--bot", chief.id, "--text", "Ask the reviewer to run the release checks, then report back."]);
-    const token = (await dump(models[0])).mcpConfig.mcpServers.agents.env.DUSK_COMMS_TOKEN;
+    const token = (await dump(models[0])).mcpConfig.mcpServers.agents.env.MADANI_COMMS_TOKEN;
     const sent = await internal(token, "POST", "/api/internal/coordinate-bots", {
       botIds: [peer.id], message: "RELEASE_CHECKS: run the release checks.",
     });
@@ -245,7 +245,7 @@ describe("independent bot tasks through the isolated control surface", () => {
     writeFileSync(modelFile(models[1], "gate"), "finish");
     await expect.poll(() => handoff()?.status, { timeout: 20_000 }).toBe("completed");
     const result: string = handoff()!.result;
-    expect(result.startsWith("[dusk bot: nobody answered the approval for “Bash: npm run release-check” in time, so it did not run. Do not report it as done;")).toBe(true);
+    expect(result.startsWith("[madani bot: nobody answered the approval for “Bash: npm run release-check” in time, so it did not run. Do not report it as done;")).toBe(true);
     expect(result).toContain("reply to:");
     expect(result).not.toContain("git push");
     expect(result).not.toContain("npm run lint");
@@ -267,7 +267,7 @@ describe("independent bot tasks through the isolated control surface", () => {
     const run = (await api("POST", `/api/routines/${routine.body.routine.id}/run`)).body.run;
     const runThread = async () => (await api("GET", "/api/routines")).body.runs.find((candidate: any) => candidate.id === run.id)?.threadId as string | undefined;
     await expect.poll(runThread).toBeTruthy();
-    const token = (await dump(models[0])).mcpConfig.mcpServers.agents.env.DUSK_COMMS_TOKEN;
+    const token = (await dump(models[0])).mcpConfig.mcpServers.agents.env.MADANI_COMMS_TOKEN;
     const delegated = await internal(token, "POST", "/api/internal/coordinate-bots", { botIds: [peer.id], message: "RELEASE_CHECKS: run the release checks." });
     expect(delegated.status).toBe(200);
     expect(delegated.body.receipts).toEqual([expect.objectContaining({ botId: peer.id, outcome: "queued", requestId: expect.any(String) })]);
@@ -292,7 +292,7 @@ describe("independent bot tasks through the isolated control surface", () => {
     // whole, so the engine never reads the gate half-written
     writeFileSync(`${modelFile(models[1], "gate")}.tmp`, ending);
     renameSync(`${modelFile(models[1], "gate")}.tmp`, modelFile(models[1], "gate"));
-    const note = "[dusk bot: nobody answered the approval for “Bash: npm run release-check” in time, so it did not run.";
+    const note = "[madani bot: nobody answered the approval for “Bash: npm run release-check” in time, so it did not run.";
     const runMessages = async () => (await api("GET", `/api/threads/${await runThread()}/messages?limit=100`)).body.messages as any[];
     const reported = async () => (await runMessages()).find((message: any) => message.roomRequest?.id === requestId && message.roomRequest.phase === "result")?.tool;
     if (ending === "finish") {
@@ -323,7 +323,7 @@ describe("independent bot tasks through the isolated control surface", () => {
     expect(created.status).toBe(201);
     const room = created.body.group;
     expect((await api("POST", `/api/groups/${room.id}/messages`, { threadId: room.threadId, text: "Have the reviewer run the release checks." })).status).toBe(202);
-    const token = (await dump(models[0])).mcpConfig.mcpServers.agents.env.DUSK_COMMS_TOKEN;
+    const token = (await dump(models[0])).mcpConfig.mcpServers.agents.env.MADANI_COMMS_TOKEN;
     const sent = await internal(token, "POST", "/api/internal/coordinate-bots", { botIds: [peer.id], message: "RELEASE_CHECKS: run the release checks." });
     expect(sent.status).toBe(200);
     const requestId = sent.body.receipts[0].requestId;
@@ -339,7 +339,7 @@ describe("independent bot tasks through the isolated control surface", () => {
     rmSync(expiry, { force: true });
     writeFileSync(modelFile(models[1], "gate"), "finish");
     await expect.poll(() => handoff()?.status, { timeout: 20_000 }).toBe("completed");
-    expect(handoff()!.result.startsWith("[dusk bot: nobody answered the approval for “Bash: npm run release-check” in time, so it did not run.")).toBe(true);
+    expect(handoff()!.result.startsWith("[madani bot: nobody answered the approval for “Bash: npm run release-check” in time, so it did not run.")).toBe(true);
   }, 60_000);
 
   it("ends a one-way notice whose recipient thread was deleted before it started, without restarting the sender", async () => {
@@ -355,7 +355,7 @@ describe("independent bot tasks through the isolated control surface", () => {
       expect((await api("PATCH", `/api/bots/${recipient.id}`, { mainThreadChoice: chat })).status).toBe(200);
       await control(["send", "--bot", sender.id, "--text", "Prepare independent work."]);
       const launched = await dump(models[0]);
-      const token = launched.mcpConfig.mcpServers.agents.env.DUSK_COMMS_TOKEN;
+      const token = launched.mcpConfig.mcpServers.agents.env.MADANI_COMMS_TOKEN;
       const sent = await internal(token, "POST", "/api/internal/coordinate-bots", {
         botIds: [recipient.id], message: "Own this work.", thread: "new", reply: "none",
       });
@@ -430,7 +430,7 @@ describe("independent bot tasks through the isolated control surface", () => {
     const threadId = task.body.task.threadId;
     await control(["send", "--bot", botId, "--task", threadId, "--text", "REVIEW_MEMORY_OWNER"]);
     const launched = await dump(models[0]);
-    const token = launched.mcpConfig.mcpServers.agents.env.DUSK_COMMS_TOKEN;
+    const token = launched.mcpConfig.mcpServers.agents.env.MADANI_COMMS_TOKEN;
     expect((await internal(token, "POST", "/api/internal/memory", { action: "append", text: "A unique saved fact." })).status).toBe(200);
     for (const text of ["", " \n\t "]) {
       expect((await internal(token, "POST", "/api/internal/memory", { action: "replace", oldText: "unique saved fact", text })).status).toBe(400);
@@ -519,11 +519,11 @@ describe("independent bot tasks through the isolated control surface", () => {
     expect(launchedA.argv[launchedA.argv.indexOf("--permission-mode") + 1]).toBe("default");
     expect(launchedB.argv[launchedB.argv.indexOf("--permission-mode") + 1]).toBe("auto");
     evidence.push({ providerSelections: [models[0], models[1]], distinctProcesses: true });
-    expect(launchedA.env.DUSK_FIXTURE_CWD).toBe(realpathSync(join(session.info.dataDir, "task-workspaces", botId, taskA)));
-    expect(launchedB.env.DUSK_FIXTURE_CWD).toBe(realpathSync(join(session.info.dataDir, "task-workspaces", botId, taskB)));
+    expect(launchedA.env.MADANI_FIXTURE_CWD).toBe(realpathSync(join(session.info.dataDir, "task-workspaces", botId, taskA)));
+    expect(launchedB.env.MADANI_FIXTURE_CWD).toBe(realpathSync(join(session.info.dataDir, "task-workspaces", botId, taskB)));
 
-    const tokenA = launchedA.mcpConfig.mcpServers.agents.env.DUSK_COMMS_TOKEN;
-    const tokenB = launchedB.mcpConfig.mcpServers.agents.env.DUSK_COMMS_TOKEN;
+    const tokenA = launchedA.mcpConfig.mcpServers.agents.env.MADANI_COMMS_TOKEN;
+    const tokenB = launchedB.mcpConfig.mcpServers.agents.env.MADANI_COMMS_TOKEN;
     expect(tokenA).not.toBe(tokenB);
     const appended = await Promise.all([
       internal(tokenA, "POST", "/api/internal/memory", { botId, threadId: taskA, action: "append", text: "A remembers apples." }),
@@ -665,12 +665,12 @@ describe("independent bot tasks through the isolated control surface", () => {
     mkdirSync(cwd);
     expect((await api("PATCH", `/api/bots/${botId}`, { cwd })).status).toBe(200);
     await control(["send", "--bot", botId, "--task", taskA, "--text", "PROJECT_A"]);
-    expect((await dump(models[0])).env.DUSK_FIXTURE_CWD).toBe(realpathSync(cwd));
+    expect((await dump(models[0])).env.MADANI_FIXTURE_CWD).toBe(realpathSync(cwd));
     const second = await tool("create_task", { target_type: "bot", target_id: botId, title: "Project sibling" });
     const taskB = second.task.taskId;
     await control(["set-model", "--bot", botId, "--task", taskB, "--instance", "claude", "--model", models[1]]);
     await control(["send", "--bot", botId, "--task", taskB, "--text", "PROJECT_B_PARALLEL"]);
-    expect((await dump(models[1])).env.DUSK_FIXTURE_CWD).toBe(realpathSync(cwd));
+    expect((await dump(models[1])).env.MADANI_FIXTURE_CWD).toBe(realpathSync(cwd));
     const both = await botState(botId);
     expect(both.tasks.find((task: any) => task.taskId === taskA)?.busy).toBe(true);
     expect(both.tasks.find((task: any) => task.taskId === taskB)?.busy).toBe(true);
@@ -700,9 +700,9 @@ describe("independent bot tasks through the isolated control surface", () => {
     const launchedB = await dump(models[1]);
     const gate = (launched: any) => {
       const env = launched.mcpConfig.mcpServers.computer.env;
-      const url = new URL(env.DUSK_CONTROL_URL);
+      const url = new URL(env.MADANI_CONTROL_URL);
       expect(url.origin).toBe(session.info.url);
-      return internal(env.DUSK_CONTROL_TOKEN, "GET", `${url.pathname}${url.search}`);
+      return internal(env.MADANI_CONTROL_TOKEN, "GET", `${url.pathname}${url.search}`);
     };
     expect((await gate(launchedB)).body.held).toBe(false);
     const waitingA = gate(launchedA);

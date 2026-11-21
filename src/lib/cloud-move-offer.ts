@@ -3,7 +3,7 @@ import type { OneHomeView } from "../../electron/one-home.mjs";
 
 /** The move's page bridge, in the desktop app only: never in a browser. */
 export function moveOfferBridge(): CloudSendPageBridge | undefined {
-  return typeof window !== "undefined" && !window.duskDesktop?.remoteClient?.active ? window.duskDesktop?.cloudSendPage : undefined;
+  return typeof window !== "undefined" && !window.madaniDesktop?.remoteClient?.active ? window.madaniDesktop?.cloudSendPage : undefined;
 }
 
 /** Which ask the window shows by itself now: the sheet, the line at the top, or none (Settings keeps it either way). */
@@ -14,7 +14,7 @@ export function offerAsk(notice: CloudSendNotice | null | undefined): "prompt" |
 
 export type MoveSheetState = "ask" | "moving" | "failed" | "done";
 
-/** A fresh first run's move: dusk bot and its one welcome chat went, and nothing of the person's own, so there is no
+/** A fresh first run's move: madani bot and its one welcome chat went, and nothing of the person's own, so there is no
  * All moved to say. Counts the move didn't report never read as nothing. */
 export function movedNothing(move: Extract<OneHomeView, { phase: "done" }>): boolean {
   const counts = move.counts;

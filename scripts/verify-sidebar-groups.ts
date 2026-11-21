@@ -1,21 +1,21 @@
 // Departments in the sidebar of the real app, against a disposable fake-engine server: how they look, a bot's menu,
 // naming and deleting one. Dragging is covered by scripts/testing/sidebar-drag-ui.e2e.test.ts.
 // Run: node --experimental-strip-types scripts/verify-sidebar-groups.ts [--shots <dir> [--only <view,view>]]
-// With --shots it photographs each view with a headless Chrome in a throwaway profile (DUSK_CDP_CHROME, else the
+// With --shots it photographs each view with a headless Chrome in a throwaway profile (MADANI_CDP_CHROME, else the
 // installed Google Chrome) at twice 1280x800 and exits; without, it prints the preview's address and waits.
 import { spawn } from "node:child_process";
 import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import { setTimeout as delay } from "node:timers/promises";
-import { launchVerificationServer, runControlDusk } from "./control-dusk.ts";
+import { launchVerificationServer, runControlMadani } from "./control-madani.ts";
 import { fixtureApi, mountPreview, parkUntilSignal, type MountedPreview } from "./testing/preview-fixture.ts";
 
 const at = process.argv.indexOf("--shots");
 const shots = at === -1 ? null : resolve(process.argv[at + 1] ?? "");
 const onlyAt = process.argv.indexOf("--only");
 const only = onlyAt === -1 ? null : new Set((process.argv[onlyAt + 1] ?? "").split(",").filter(Boolean));
-const CHROME = process.env.DUSK_CDP_CHROME ?? "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome";
+const CHROME = process.env.MADANI_CDP_CHROME ?? "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome";
 const [WIDTH, HEIGHT, CLIP] = [1280, 800, 640];
 const BOTS: Record<string, string> = { Research: "pink", Inbox: "teal", Writer: "yellow", Travel: "blue", Recipes: "coral" };
 const NAMES = Object.keys(BOTS);
@@ -103,7 +103,7 @@ const fixture = await launchVerificationServer();
 let ui: MountedPreview | undefined;
 try {
   const api = fixtureApi(fixture.info.url, { headers: { origin: fixture.info.url } });
-  for (const name of NAMES) await runControlDusk(["new-bot", "--name", name, "--url", fixture.info.url]);
+  for (const name of NAMES) await runControlMadani(["new-bot", "--name", name, "--url", fixture.info.url]);
   await api("PATCH", "/api/config", { language: "en" });
   const { bots } = await api("GET", "/api/bots?messages=0") as { bots: Array<{ id: string; name: string }> };
   const ids = Object.fromEntries(NAMES.map((name) => [name, bots.find((bot) => bot.name === name)!.id]));
@@ -125,7 +125,7 @@ try {
     await parkUntilSignal();
   } else {
     mkdirSync(shots, { recursive: true });
-    const profile = mkdtempSync(join(tmpdir(), "dusk-groups-chrome-"));
+    const profile = mkdtempSync(join(tmpdir(), "madani-groups-chrome-"));
     const chrome = await openChrome(profile);
     try {
       for (const view of VIEWS.filter((entry) => !only || only.has(entry.name))) for (const skin of view.skins ?? ["daylight"]) {

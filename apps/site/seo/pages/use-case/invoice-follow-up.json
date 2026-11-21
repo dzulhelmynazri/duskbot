@@ -60,7 +60,7 @@
     },
     {
       "h": "hold conflicts instead of guessing",
-      "md": "**catch the disputed total before it becomes an awkward email.** put conflicting evidence together: partial payments, changed due dates and missing records belong in the review. newer-looking does not always mean right.\n\nleave disputes, late fees and accounting decisions to someone who knows the account. use the [receipts sweep](/routines/weekly-receipts-sweep) for expenses.\n\nlocal runs need dusk open and the machine awake. if monday's review is missing, look at automations for its run history."
+      "md": "**catch the disputed total before it becomes an awkward email.** put conflicting evidence together: partial payments, changed due dates and missing records belong in the review. newer-looking does not always mean right.\n\nleave disputes, late fees and accounting decisions to someone who knows the account. use the [receipts sweep](/routines/weekly-receipts-sweep) for expenses.\n\nlocal runs need madani open and the machine awake. if monday's review is missing, look at automations for its run history."
     }
   ],
   "safeguards": [
@@ -86,15 +86,15 @@
   ],
   "sources": [
     {
-      "label": "dusk bot docs: routines",
+      "label": "madani bot docs: routines",
       "url": "/docs/routines"
     },
     {
-      "label": "dusk bot docs: files and apps",
+      "label": "madani bot docs: files and apps",
       "url": "/docs/files-and-apps"
     },
     {
-      "label": "dusk bot docs: a bot’s computer",
+      "label": "madani bot docs: a bot’s computer",
       "url": "/docs/computer"
     },
     {

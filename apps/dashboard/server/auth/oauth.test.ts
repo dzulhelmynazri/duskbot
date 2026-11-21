@@ -29,7 +29,7 @@ describe("OAuth over isolated HTTP", () => {
   let fake: Awaited<ReturnType<typeof startFakeProviders>>, server: Server, app: ReturnType<typeof createDashboardApp>, options: DashboardAppOptions;
   let dataDir: string, url: string, time: number, jar: CookieJar, mailer: ReturnType<typeof memoryMailer>;
   beforeEach(async () => {
-    fake = await startFakeProviders(); dataDir = mkdtempSync(join(tmpdir(), "dusk-oauth-")); time = Date.now(); jar = new CookieJar(); mailer = memoryMailer();
+    fake = await startFakeProviders(); dataDir = mkdtempSync(join(tmpdir(), "madani-oauth-")); time = Date.now(); jar = new CookieJar(); mailer = memoryMailer();
     server = createServer();
     await new Promise<void>(resolve => server.listen(0, "127.0.0.1", resolve));
     const address = server.address(); if (!address || typeof address === "string") throw new Error();
@@ -69,7 +69,7 @@ describe("OAuth over isolated HTTP", () => {
   const oauth = async (provider: OAuthProvider, query = "") => callback(await authorization(provider, query));
   const account = async () => (await (await call("/v1/account")).json()) as AccountAnswer;
   const error = (res: Response) => new URL(location(res), url).searchParams.get("error");
-  async function emailLogin(email = "sid@duskbot.test", pending?: string) {
+  async function emailLogin(email = "sid@madanibot.test", pending?: string) {
     const start = await call("/v1/auth/start", { email, ...(pending ? { pending } : {}) }); expect(start.status).toBe(200);
     const { attempt } = await start.json() as { attempt: string };
     const code = mailer.outbox.findLast(message => message.to === email && /\b\d{8}\b/.test(message.text))!.text.match(/\b\d{8}\b/)![0];
@@ -87,10 +87,10 @@ describe("OAuth over isolated HTTP", () => {
 
   it("signs up with Google, returns both cookies, persists the identity and reuses the same account", async () => {
     const response = await oauth("google", "?next=/account"); expect(location(response)).toBe("/account");
-    expect(response.headers.getSetCookie()).toHaveLength(3); expect(jar.values.has("dusk_oauth")).toBe(false);
+    expect(response.headers.getSetCookie()).toHaveLength(3); expect(jar.values.has("madani_oauth")).toBe(false);
     const first = await account();
-    expect(first.account).toMatchObject({ email: "sid@duskbot.test", name: "Sid Fixture", providers: ["email", "google"] });
-    expect(first.identities).toEqual([{ provider: "google", email: "sid@duskbot.test", label: "Sid Fixture", addedAt: time }]);
+    expect(first.account).toMatchObject({ email: "sid@madanibot.test", name: "Sid Fixture", providers: ["email", "google"] });
+    expect(first.identities).toEqual([{ provider: "google", email: "sid@madanibot.test", label: "Sid Fixture", addedAt: time }]);
     jar = new CookieJar(); expect(location(await oauth("google"))).toBe("/");
     expect((await account()).account.id).toBe(first.account.id);
     restart({}); jar = new CookieJar(); await oauth("google"); expect((await account()).account.id).toBe(first.account.id);
@@ -136,8 +136,8 @@ describe("OAuth over isolated HTTP", () => {
     for (const token of fake.appleTokens()) expect(JSON.stringify(stored)).not.toContain(token);
   });
   it("links a native Apple sign-in to the email account with the same verified address", async () => {
-    const signed = await (await emailLogin("sid@duskbot.test")).json() as WebSignInAnswer;
-    const grant = await (await native(nativeBody({ nonce: random(), email: "sid@duskbot.test" }))).json() as AppGrant;
+    const signed = await (await emailLogin("sid@madanibot.test")).json() as WebSignInAnswer;
+    const grant = await (await native(nativeBody({ nonce: random(), email: "sid@madanibot.test" }))).json() as AppGrant;
     expect(grant.account.id).toBe(signed.account.id); expect((await account()).account.providers).toEqual(["email", "apple"]);
   });
   it("refuses native Apple tokens with a wrong nonce, another audience, a spent code, unknown fields, or no native client", async () => {
@@ -160,7 +160,7 @@ describe("OAuth over isolated HTTP", () => {
     await oauth("apple"); expect(fake.appleTokens()).toHaveLength(3);
     expect(app).toBeTruthy(); expect(JSON.stringify(await account())).not.toContain("revoke");
     const { account: owner } = await account();
-    expect((await call("/v1/account/delete", { email: owner.email }, { [CSRF_HEADER]: jar.values.get("dusk_csrf")! })).status).toBe(200);
+    expect((await call("/v1/account/delete", { email: owner.email }, { [CSRF_HEADER]: jar.values.get("madani_csrf")! })).status).toBe(200);
     // the newest web token and the app's token are revoked; the replaced web token is not kept, so it is not sent
     const revoked = fake.revoked();
     expect(revoked).toHaveLength(2); expect(revoked).toContain(app); expect(revoked).not.toContain(web);
@@ -210,11 +210,11 @@ describe("OAuth over isolated HTTP", () => {
   it.each(["google", "apple"] as const)("maps %s denial and clears the binding", async provider => {
     fake.deny(provider); const response = await oauth(provider, "?next=/account");
     expect(error(response)).toBe("oauth_denied"); expect(new URL(location(response), url).searchParams.get("next")).toBe("/account");
-    expect(jar.values.has("dusk_oauth")).toBe(false);
+    expect(jar.values.has("madani_oauth")).toBe(false);
   });
   it.each(["missing", "wrong"])("refuses a %s binding and consumes the state", async kind => {
     const auth = await authorization("google"), other = new CookieJar();
-    if (kind === "wrong") other.values.set("dusk_oauth", random());
+    if (kind === "wrong") other.values.set("madani_oauth", random());
     expect(error(await callback(auth, other))).toBe("oauth_failed"); expect(error(await callback(auth))).toBe("oauth_failed");
     expect((await call("/v1/me")).status).toBe(401);
   });
@@ -232,9 +232,9 @@ describe("OAuth over isolated HTTP", () => {
     expect(location(await oauth("google", `?next=${encodeURIComponent(next)}`))).toBe(new URL(next, url).href.slice(url.length));
   });
   it("reuses a well-formed binding across starts and sets HTTPS cross-site cookie flags", async () => {
-    const first = await call("/v1/auth/oauth/google/start"), binding = jar.values.get("dusk_oauth");
+    const first = await call("/v1/auth/oauth/google/start"), binding = jar.values.get("madani_oauth");
     expect(first.headers.getSetCookie()[0]).toContain("HttpOnly; Path=/v1/auth; Max-Age=600; SameSite=Lax");
-    await call("/v1/auth/oauth/apple/start"); expect(jar.values.get("dusk_oauth")).toBe(binding);
+    await call("/v1/auth/oauth/apple/start"); expect(jar.values.get("madani_oauth")).toBe(binding);
     restart({ publicUrl: "https://accounts.example.test" });
     const secure = await call("/v1/auth/oauth/apple/start"); expect(secure.headers.getSetCookie()[0]).toContain("SameSite=None; Secure");
   });
@@ -242,7 +242,7 @@ describe("OAuth over isolated HTTP", () => {
     await oauth("google"); const first = await account();
     await oauth("apple", "?link=1&next=/account"); const linked = await account();
     expect(linked.account.id).toBe(first.account.id); expect(linked.account.name).toBe("Sid Fixture"); expect(linked.identities.map(item => item.provider)).toEqual(["google", "apple"]);
-    const deleted = await call("/v1/account/identities/apple", {}, { [CSRF_HEADER]: jar.values.get("dusk_csrf")! }, "DELETE");
+    const deleted = await call("/v1/account/identities/apple", {}, { [CSRF_HEADER]: jar.values.get("madani_csrf")! }, "DELETE");
     expect(deleted.status).toBe(200); expect((await account()).identities).toHaveLength(1);
   });
   it("revokes the Apple sign-in at Apple when the account is deleted or Apple is unlinked, and keeps its token sealed", async () => {
@@ -254,14 +254,14 @@ describe("OAuth over isolated HTTP", () => {
     expect(JSON.stringify(saved)).not.toContain(issued!);
     expect((await account()).identities[0]).not.toHaveProperty("revoke");
     const email = (await account()).account.email;
-    const deleted = await call("/v1/account/delete", { email }, { [CSRF_HEADER]: jar.values.get("dusk_csrf")! });
+    const deleted = await call("/v1/account/delete", { email }, { [CSRF_HEADER]: jar.values.get("madani_csrf")! });
     expect(deleted.status).toBe(200);
     expect(fake.revoked()).toEqual([issued]);
 
     jar = new CookieJar();
     await oauth("google"); await oauth("apple", "?link=1&next=/account");
     const [linked] = fake.appleTokens();
-    expect((await call("/v1/account/identities/apple", {}, { [CSRF_HEADER]: jar.values.get("dusk_csrf")! }, "DELETE")).status).toBe(200);
+    expect((await call("/v1/account/identities/apple", {}, { [CSRF_HEADER]: jar.values.get("madani_csrf")! }, "DELETE")).status).toBe(200);
     expect(fake.revoked()).toEqual([issued, linked]);
   });
   it("refuses linking without a session, after signout, or when another account owns the identity", async () => {
@@ -285,7 +285,7 @@ describe("OAuth over isolated HTTP", () => {
     time += 900_000; expect((await call("/v1/auth/start", { email: "pending@example.test", pending })).status).toBe(400);
     time = Date.now();
     const signed = await (await emailLogin()).json() as WebSignInAnswer;
-    fake.setUser("google", { subject: "google-sid", email: "sid@duskbot.test", emailVerified: true, hd: "duskbot.test", label: "Sid Fixture", name: "Sid Fixture" });
+    fake.setUser("google", { subject: "google-sid", email: "sid@madanibot.test", emailVerified: true, hd: "madanibot.test", label: "Sid Fixture", name: "Sid Fixture" });
     restart({ signupOpen: false }); jar = new CookieJar(); await oauth("google"); expect((await account()).account.id).toBe(signed.account.id);
     expect(error(await oauth("apple"))).toBe("signup_closed");
     untrusted(); const next = new URL(location(await oauth("google")), url).searchParams.get("pending")!;
@@ -317,8 +317,8 @@ describe("OAuth over isolated HTTP", () => {
   });
   it("exchanges an app deep-link code for an accepted mobile omc_ grant, without cookies", async () => {
     const flow = await appAuthorization();
-    expect(flow.target.protocol).toBe("duskbot:"); expect(flow.target.hostname).toBe("auth"); expect(flow.target.searchParams.get("state")).toBe(flow.state);
-    const code = flow.target.searchParams.get("code")!; expect(code).toMatch(/^[A-Za-z0-9_-]{43}$/); expect(jar.values.has("dusk_dash")).toBe(false);
+    expect(flow.target.protocol).toBe("madanibot:"); expect(flow.target.hostname).toBe("auth"); expect(flow.target.searchParams.get("state")).toBe(flow.state);
+    const code = flow.target.searchParams.get("code")!; expect(code).toMatch(/^[A-Za-z0-9_-]{43}$/); expect(jar.values.has("madani_dash")).toBe(false);
     const response = await redeem(code, flow.verifier); expect(response.status).toBe(200); expect(response.headers.get("set-cookie")).toBeNull(); expect(response.headers.get("access-control-allow-origin")).toBe("*");
     const grant = await response.json() as AppGrant; expect(grant.accessToken).toMatch(/^omc_[A-Za-z0-9_-]{43}$/);
     const session = await call("/api/cloud/desktop/session", undefined, { authorization: `Bearer ${grant.accessToken}` }); expect(session.status).toBe(200); expect(await session.json()).toMatchObject({ account: grant.account, device: grant.device });
@@ -337,7 +337,7 @@ describe("OAuth over isolated HTTP", () => {
   it("completes the app's pending email and returns a fresh PKCE deep link", async () => {
     untrusted(); const flow = await appAuthorization(); expect(flow.target.pathname).toBe("/sign-in");
     const signed = await (await emailLogin("phone@example.test", flow.target.searchParams.get("pending")!)).json() as WebSignInAnswer;
-    const deep = new URL(signed.redirect!); expect(deep.protocol).toBe("duskbot:"); expect(deep.searchParams.get("state")).toBe(flow.state);
+    const deep = new URL(signed.redirect!); expect(deep.protocol).toBe("madanibot:"); expect(deep.searchParams.get("state")).toBe(flow.state);
     expect((await redeem(deep.searchParams.get("code")!, flow.verifier)).status).toBe(200);
   });
   it("ends a desktop sign-up that needed an email on the landing page, with the app's code in the fragment only", async () => {
@@ -349,10 +349,10 @@ describe("OAuth over isolated HTTP", () => {
   });
   it("returns app errors to the exact deep link with its state", async () => {
     fake.deny("google"); const flow = await appAuthorization();
-    expect(flow.target.protocol).toBe("duskbot:"); expect(flow.target.searchParams.get("error")).toBe("oauth_denied"); expect(flow.target.searchParams.get("state")).toBe(flow.state);
+    expect(flow.target.protocol).toBe("madanibot:"); expect(flow.target.searchParams.get("error")).toBe("oauth_denied"); expect(flow.target.searchParams.get("state")).toBe(flow.state);
   });
   it.each([
-    { provider: "missing" }, { provider: "email" }, { provider: "x" }, { code_challenge: "bad" }, { code_challenge_method: "plain" }, { state: "short" }, { state: "x".repeat(257) }, { redirect_uri: "https://evil.example" }, { redirect_uri: "duskbot://auth/" }, { link: "1" }, { landing: "app" },
+    { provider: "missing" }, { provider: "email" }, { provider: "x" }, { code_challenge: "bad" }, { code_challenge_method: "plain" }, { state: "short" }, { state: "x".repeat(257) }, { redirect_uri: "https://evil.example" }, { redirect_uri: "madanibot://auth/" }, { link: "1" }, { landing: "app" },
   ])("rejects invalid app authorization parameters %j", async change => {
     const params = new URLSearchParams({ provider: "google", code_challenge: random(), code_challenge_method: "S256", state: random(), redirect_uri: APP_AUTH_REDIRECT });
     for (const [key, value] of Object.entries(change)) if (value !== undefined) params.set(key, value);
@@ -384,7 +384,7 @@ describe("OAuth over isolated HTTP", () => {
       expect(client.state().status).toBe("connecting");
       const done = await client.finishLink(link);
       expect(done.outcome).toBe("signed-in");
-      expect(client.state()).toMatchObject({ status: "connected", account: { email: "sid@duskbot.test" } });
+      expect(client.state()).toMatchObject({ status: "connected", account: { email: "sid@madanibot.test" } });
       // the plan chosen before signing in comes through the sign-in with it: no second step to find it again
       expect(client.state().checkout).toMatchObject({ plan: "pro", signIn: true });
       expect(opened).toHaveLength(1);
@@ -414,7 +414,7 @@ describe("OAuth over isolated HTTP", () => {
       expect((await call("/v1/auth/verify", { attempt: link.searchParams.get("attempt"), code })).status).toBe(200);
       const looked = await (await call(`/v1/auth/device?code=${userCode}`)).json() as { fresh: boolean; created?: true };
       expect(looked).toMatchObject({ fresh: true, created: true });
-      expect((await call("/v1/auth/device/approve", { userCode }, { [CSRF_HEADER]: jar.values.get("dusk_csrf")! })).status).toBe(200);
+      expect((await call("/v1/auth/device/approve", { userCode }, { [CSRF_HEADER]: jar.values.get("madani_csrf")! })).status).toBe(200);
       time += 6000; wait!();
       for (let i = 0; i < 50 && client.state().status !== "connected"; i++) await new Promise(resolve => setTimeout(resolve, 20));
       expect(client.state()).toMatchObject({ status: "connected", account: { email: "magic-new@example.test" } });
@@ -476,31 +476,31 @@ describe("OAuth over isolated HTTP", () => {
 describe("provider environment configuration", () => {
   it("loads production defaults and escaped Apple PEM without env URL overrides, and ignores X settings", () => {
     const key = generateKeyPairSync("ec", { namedCurve: "prime256v1" }).privateKey.export({ type: "pkcs8", format: "pem" }).toString();
-    const env = { DUSK_AUTH_GOOGLE_CLIENT_ID: "google", DUSK_AUTH_GOOGLE_CLIENT_SECRET: "secret", DUSK_AUTH_GOOGLE_TOKEN_URL: "https://evil.example", DUSK_AUTH_X_CLIENT_ID: "x", DUSK_AUTH_X_SCOPES: "users.read offline.access", DUSK_AUTH_APPLE_CLIENT_ID: "apple", DUSK_AUTH_APPLE_TEAM_ID: "team", DUSK_AUTH_APPLE_KEY_ID: "key", DUSK_AUTH_APPLE_PRIVATE_KEY: key.replace(/\n/g, "\\n") };
+    const env = { MADANI_AUTH_GOOGLE_CLIENT_ID: "google", MADANI_AUTH_GOOGLE_CLIENT_SECRET: "secret", MADANI_AUTH_GOOGLE_TOKEN_URL: "https://evil.example", MADANI_AUTH_X_CLIENT_ID: "x", MADANI_AUTH_X_SCOPES: "users.read offline.access", MADANI_AUTH_APPLE_CLIENT_ID: "apple", MADANI_AUTH_APPLE_TEAM_ID: "team", MADANI_AUTH_APPLE_KEY_ID: "key", MADANI_AUTH_APPLE_PRIVATE_KEY: key.replace(/\n/g, "\\n") };
     const config = providersFromEnv(env);
     expect(config.google).toMatchObject({ tokenUrl: "https://oauth2.googleapis.com/token", scopes: "openid email profile" });
     expect(Object.keys(config).sort()).toEqual(["apple", "google"]);
     expect(config.apple?.apple?.privateKey).toBe(key); expect(config.apple?.authorizeUrl).toBe("https://appleid.apple.com/auth/authorize");
-    const dir = mkdtempSync(join(tmpdir(), "dusk-apple-key-"));
+    const dir = mkdtempSync(join(tmpdir(), "madani-apple-key-"));
     try {
       const file = join(dir, "key.p8"); writeFileSync(file, key, { mode: 0o600 });
-      expect(providersFromEnv({ ...env, DUSK_AUTH_APPLE_PRIVATE_KEY: undefined, DUSK_AUTH_APPLE_PRIVATE_KEY_FILE: file }).apple?.apple?.privateKey).toBe(key);
+      expect(providersFromEnv({ ...env, MADANI_AUTH_APPLE_PRIVATE_KEY: undefined, MADANI_AUTH_APPLE_PRIVATE_KEY_FILE: file }).apple?.apple?.privateKey).toBe(key);
     } finally { rmSync(dir, { recursive: true, force: true }); }
     expect(providersFromEnv({})).toEqual({});
   });
   it("reads the Apple key base64-encoded on one line and the native bundle ids", () => {
     const key = generateKeyPairSync("ec", { namedCurve: "prime256v1" }).privateKey.export({ type: "pkcs8", format: "pem" }).toString();
-    const env = { DUSK_AUTH_APPLE_CLIENT_ID: "bot.dusk.signin", DUSK_AUTH_APPLE_TEAM_ID: "team", DUSK_AUTH_APPLE_KEY_ID: "key", DUSK_AUTH_APPLE_PRIVATE_KEY: Buffer.from(key).toString("base64"), DUSK_AUTH_APPLE_NATIVE_CLIENT_IDS: "bot.dusk.mobile, bot.dusk.mac" };
-    expect(providersFromEnv(env).apple).toMatchObject({ clientId: "bot.dusk.signin", nativeClientIds: ["bot.dusk.mobile", "bot.dusk.mac"], revokeUrl: "https://appleid.apple.com/auth/revoke", apple: { privateKey: key } });
-    expect(providersFromEnv({ ...env, DUSK_AUTH_APPLE_NATIVE_CLIENT_IDS: undefined }).apple?.nativeClientIds).toBeUndefined();
-    expect(() => providersFromEnv({ ...env, DUSK_AUTH_APPLE_NATIVE_CLIENT_IDS: "bad id" })).toThrow("DUSK_AUTH_APPLE_NATIVE_CLIENT_IDS");
-    expect(() => providersFromEnv({ ...env, DUSK_AUTH_APPLE_PRIVATE_KEY: "bm90IGEga2V5" })).toThrow("expected a P-256 private key");
+    const env = { MADANI_AUTH_APPLE_CLIENT_ID: "bot.madani.signin", MADANI_AUTH_APPLE_TEAM_ID: "team", MADANI_AUTH_APPLE_KEY_ID: "key", MADANI_AUTH_APPLE_PRIVATE_KEY: Buffer.from(key).toString("base64"), MADANI_AUTH_APPLE_NATIVE_CLIENT_IDS: "bot.madani.mobile, bot.madani.mac" };
+    expect(providersFromEnv(env).apple).toMatchObject({ clientId: "bot.madani.signin", nativeClientIds: ["bot.madani.mobile", "bot.madani.mac"], revokeUrl: "https://appleid.apple.com/auth/revoke", apple: { privateKey: key } });
+    expect(providersFromEnv({ ...env, MADANI_AUTH_APPLE_NATIVE_CLIENT_IDS: undefined }).apple?.nativeClientIds).toBeUndefined();
+    expect(() => providersFromEnv({ ...env, MADANI_AUTH_APPLE_NATIVE_CLIENT_IDS: "bad id" })).toThrow("MADANI_AUTH_APPLE_NATIVE_CLIENT_IDS");
+    expect(() => providersFromEnv({ ...env, MADANI_AUTH_APPLE_PRIVATE_KEY: "bm90IGEga2V5" })).toThrow("expected a P-256 private key");
   });
   it.each([
-    [{ DUSK_AUTH_GOOGLE_CLIENT_ID: "client" }, "DUSK_AUTH_GOOGLE_CLIENT_SECRET"],
-    [{ DUSK_AUTH_GOOGLE_CLIENT_SECRET: "secret" }, "DUSK_AUTH_GOOGLE_CLIENT_ID"],
-    [{ DUSK_AUTH_APPLE_CLIENT_ID: "client" }, "DUSK_AUTH_APPLE_TEAM_ID"],
-    [{ DUSK_AUTH_APPLE_CLIENT_ID: "client", DUSK_AUTH_APPLE_TEAM_ID: "team" }, "DUSK_AUTH_APPLE_KEY_ID"],
-    [{ DUSK_AUTH_APPLE_CLIENT_ID: "client", DUSK_AUTH_APPLE_TEAM_ID: "team", DUSK_AUTH_APPLE_KEY_ID: "key" }, "DUSK_AUTH_APPLE_PRIVATE_KEY"],
+    [{ MADANI_AUTH_GOOGLE_CLIENT_ID: "client" }, "MADANI_AUTH_GOOGLE_CLIENT_SECRET"],
+    [{ MADANI_AUTH_GOOGLE_CLIENT_SECRET: "secret" }, "MADANI_AUTH_GOOGLE_CLIENT_ID"],
+    [{ MADANI_AUTH_APPLE_CLIENT_ID: "client" }, "MADANI_AUTH_APPLE_TEAM_ID"],
+    [{ MADANI_AUTH_APPLE_CLIENT_ID: "client", MADANI_AUTH_APPLE_TEAM_ID: "team" }, "MADANI_AUTH_APPLE_KEY_ID"],
+    [{ MADANI_AUTH_APPLE_CLIENT_ID: "client", MADANI_AUTH_APPLE_TEAM_ID: "team", MADANI_AUTH_APPLE_KEY_ID: "key" }, "MADANI_AUTH_APPLE_PRIVATE_KEY"],
   ])("names missing configuration without values", (env, name) => { expect(() => providersFromEnv(env)).toThrow(name); });
 });

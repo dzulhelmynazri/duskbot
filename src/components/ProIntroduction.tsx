@@ -14,7 +14,7 @@ export function proOfferAvailable(account: CloudAccountState | null): boolean {
 }
 
 export function useCloudPlan(): { view: CloudPlanView; account: CloudAccountState | null } | null {
-  const bridge = window.duskDesktop?.remoteClient?.active ? undefined : window.duskDesktop?.cloudAccount;
+  const bridge = window.madaniDesktop?.remoteClient?.active ? undefined : window.madaniDesktop?.cloudAccount;
   const [account, setAccount] = useState<CloudAccountState | null>(null);
   useEffect(() => {
     if (!bridge) return;

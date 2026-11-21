@@ -15,7 +15,7 @@ export function readyGate(timeoutMs = 30_000) {
       const entry = { req, res, timer: setTimeout(() => {
         held.delete(entry);
         res.writeHead(503, { "content-type": "application/json", "retry-after": "5", "cache-control": "no-store" });
-        res.end(JSON.stringify({ error: "dusk bot is restarting; try again in a moment.", code: "starting" }));
+        res.end(JSON.stringify({ error: "madani bot is restarting; try again in a moment.", code: "starting" }));
       }, timeoutMs) };
       held.add(entry);
       res.once("close", () => { clearTimeout(entry.timer); held.delete(entry); });

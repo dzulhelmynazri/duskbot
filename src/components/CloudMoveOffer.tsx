@@ -20,7 +20,7 @@ import { TOP_BAR_PILL, TOP_BAR_PILL_CLOSE, TopBarNotice } from "./TopBarNotice";
 export const QUIET_BUTTON = "inline-flex h-9 shrink-0 cursor-pointer items-center rounded-full px-3 text-[13px] font-medium text-ink-secondary transition-[color,background-color] duration-[120ms] ease-[ease] hover:bg-ink/6 hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus disabled:opacity-50";
 
 /**
- * Moving this computer's bots to the person's dusk cloud, in one small sheet: it asks once by itself, then follows the move
+ * Moving this computer's bots to the person's madani cloud, in one small sheet: it asks once by itself, then follows the move
  * as the bots hop across, and ends with All moved. Closed while it asks, a pill in the top bar asks instead; closed too,
  * Settings → Computer keeps Move (CloudMoveSettings). On My Cloud's page All moved is that pill, never a sheet over its chat.
  */
@@ -73,7 +73,7 @@ export function CloudMoveOffer({ cloudHome = false }: { cloudHome?: boolean }) {
       onClose={sheet === "ask" ? later : sheet === "done" ? openCloud : hide}
       onMove={() => accept("prompt")} onLater={later} onHide={hide} onRetry={retry} onOpen={openCloud} />;
   }
-  // on dusk cloud's own page the move is already where it ended: a line in the top bar, never a sheet over the cloud's chat
+  // on madani cloud's own page the move is already where it ended: a line in the top bar, never a sheet over the cloud's chat
   const line = sheet === "done" ? "done" : ask === "banner" && !moving ? "banner" : null;
   return <TopBarNotice noticeKey={line}>
     {line === "done" && <div role="status" data-cloud-move-done="" className={TOP_BAR_PILL}>

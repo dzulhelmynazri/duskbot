@@ -5,7 +5,7 @@ import { afterAll, describe, expect, it } from "vitest";
 
 import { folderToFollow, inMyFolderCwd, isSystemFolder, sharedProjectFolder, validateBotCwd } from "./bot-cwd.ts";
 
-const dir = mkdtempSync(join(tmpdir(), "dusk-cwd-"));
+const dir = mkdtempSync(join(tmpdir(), "madani-cwd-"));
 afterAll(() => rmSync(dir, { recursive: true, force: true }));
 
 describe("validateBotCwd", () => {
@@ -47,8 +47,8 @@ describe("validateBotCwd", () => {
 });
 
 describe("sharedProjectFolder", () => {
-  const data = join(dir, "dusk-data");
-  const project = join(dir, "dusk-data-site");
+  const data = join(dir, "madani-data");
+  const project = join(dir, "madani-data-site");
   mkdirSync(join(data, "task-workspaces", "bot", "thread"), { recursive: true });
   mkdirSync(project);
 
@@ -66,8 +66,8 @@ describe("sharedProjectFolder", () => {
 });
 
 describe("inMyFolderCwd", () => {
-  const data = join(dir, "dusk-data");
-  const project = join(dir, "dusk-data-site");
+  const data = join(dir, "madani-data");
+  const project = join(dir, "madani-data-site");
   const privateFolder = join(data, "task-workspaces", "bot", "thread");
 
   it("shares the sender's project folder outside a room unless asked not to", () => {
@@ -85,9 +85,9 @@ describe("inMyFolderCwd", () => {
 });
 
 describe("folderToFollow", () => {
-  const own = join(dir, "dusk-data", "task-workspaces", "bot", "thread");
-  const bot = { id: "bot", cwd: join(dir, "dusk-data-site") };
-  const folders = { worksInFolders: true, keepsPrivateFolder: false, dataDir: join(dir, "dusk-data") };
+  const own = join(dir, "madani-data", "task-workspaces", "bot", "thread");
+  const bot = { id: "bot", cwd: join(dir, "madani-data-site") };
+  const folders = { worksInFolders: true, keepsPrivateFolder: false, dataDir: join(dir, "madani-data") };
 
   it("moves a thread from its own folder to the working folder its bot has been given", () => {
     expect(folderToFollow(bot, "thread", own, folders)).toBe(bot.cwd);
@@ -97,7 +97,7 @@ describe("folderToFollow", () => {
     expect(folderToFollow({ id: "bot" }, "thread", own, folders)).toBeUndefined();
     expect(folderToFollow(bot, "thread", join(dir, "chosen"), folders)).toBeUndefined();
     expect(folderToFollow(bot, "thread", bot.cwd, folders)).toBeUndefined();
-    expect(folderToFollow(bot, "thread", join(dir, "dusk-data", "task-workspaces", "bot", "other-thread"), folders)).toBeUndefined();
+    expect(folderToFollow(bot, "thread", join(dir, "madani-data", "task-workspaces", "bot", "other-thread"), folders)).toBeUndefined();
     expect(folderToFollow(bot, "thread", null, folders)).toBeUndefined();
     expect(folderToFollow(bot, "thread", undefined, folders)).toBeUndefined();
   });

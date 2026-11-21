@@ -18,12 +18,12 @@ function Mark({ platform }: { platform: Platform }) {
   return <img src={src} alt="" width={22} height={22} className="size-[22px] object-contain" draggable={false} />;
 }
 
-const FILE = "https://github.com/DuskBotAI/duskbot-releases/releases/latest/download/";
+const FILE = "https://github.com/dzulhelmynazri/madani-bot-releases/releases/latest/download/";
 // the file itself, so a press downloads right here instead of opening another page
 const DIRECT: Partial<Record<Platform, { href: string; also?: { label: string; href: string } }>> = {
-  macos: { href: `${FILE}DuskBot.dmg`, also: { label: "intel mac", href: `${FILE}DuskBot-intel.dmg` } },
-  windows: { href: `${FILE}DuskBot-setup.exe` },
-  linux: { href: `${FILE}DuskBot.AppImage`, also: { label: ".deb", href: `${FILE}DuskBot-amd64.deb` } },
+  macos: { href: `${FILE}MadaniBot.dmg`, also: { label: "intel mac", href: `${FILE}MadaniBot-intel.dmg` } },
+  windows: { href: `${FILE}MadaniBot-setup.exe` },
+  linux: { href: `${FILE}MadaniBot.AppImage`, also: { label: ".deb", href: `${FILE}MadaniBot-amd64.deb` } },
 };
 const NOTE_DIRECT: Partial<Record<Platform, string>> = { macos: "apple silicon", windows: "windows 10 and 11", linux: "appimage" };
 

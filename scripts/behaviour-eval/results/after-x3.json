@@ -190,7 +190,7 @@
       "tools": [],
       "state": "idle",
       "ms": 4100,
-      "output": "I can’t rename the folder because Works on is Off in this bot’s settings. Turn it on, and I can rename `dusk-bto` to `dusk-bot` in Documents."
+      "output": "I can’t rename the folder because Works on is Off in this bot’s settings. Turn it on, and I can rename `madani-bto` to `madani-bot` in Documents."
     },
     {
       "model": "gpt-6.1-terra",
@@ -437,7 +437,7 @@
       "tools": [],
       "state": "idle",
       "ms": 3385,
-      "output": "I can’t rename the folder because Works on is Off in this bot’s settings. Turn it on and I can rename `dusk-bto` to `dusk-bot` in your Documents."
+      "output": "I can’t rename the folder because Works on is Off in this bot’s settings. Turn it on and I can rename `madani-bto` to `madani-bot` in your Documents."
     },
     {
       "model": "gpt-6.1-terra",
@@ -678,7 +678,7 @@
       "tools": [],
       "state": "idle",
       "ms": 4717,
-      "output": "I can’t rename the folder because Works on is Off in this bot’s settings, so I can’t access your Documents. Turn it on and I can rename `dusk-bto` to `dusk-bot`."
+      "output": "I can’t rename the folder because Works on is Off in this bot’s settings, so I can’t access your Documents. Turn it on and I can rename `madani-bto` to `madani-bot`."
     },
     {
       "model": "gpt-6.1-terra",
@@ -896,7 +896,7 @@
       "tools": [],
       "state": "idle",
       "ms": 3546,
-      "output": "Works on is Off, so I can’t rename folders on your computer. If you enable “Works on” for this bot, I can rename the dusk‑bto folder to dusk‑bot in Documents for you."
+      "output": "Works on is Off, so I can’t rename folders on your computer. If you enable “Works on” for this bot, I can rename the madani‑bto folder to madani‑bot in Documents for you."
     },
     {
       "model": "gpt-oss-120b-medium",
@@ -1586,7 +1586,7 @@
       ],
       "state": "idle",
       "ms": 12669,
-      "output": "On it, renaming your project folder in Documents now.\n---\nWorks on is Off in this bot's settings, so I can't access your file system to rename the folder directly. \n\nYou can rename `dusk-bto` to `dusk-bot` in your Documents folder by right-clicking it in Finder or running this command in Terminal:\n`mv ~/Documents/dusk-bto ~/Documents/dusk-bot`"
+      "output": "On it, renaming your project folder in Documents now.\n---\nWorks on is Off in this bot's settings, so I can't access your file system to rename the folder directly. \n\nYou can rename `madani-bto` to `madani-bot` in your Documents folder by right-clicking it in Finder or running this command in Terminal:\n`mv ~/Documents/madani-bto ~/Documents/madani-bot`"
     },
     {
       "model": "gemini-3.1-flash-lite",
@@ -1740,7 +1740,7 @@
       ],
       "state": "completed",
       "ms": 4058,
-      "output": "On it, setting up your new bot Ledger to track your monthly spending.\n---\nDone, I've asked dusk bot to set up Ledger for your monthly spending."
+      "output": "On it, setting up your new bot Ledger to track your monthly spending.\n---\nDone, I've asked madani bot to set up Ledger for your monthly spending."
     },
     {
       "model": "gemini-3.1-flash-lite",
@@ -1835,7 +1835,7 @@
       ],
       "state": "idle",
       "ms": 4838,
-      "output": "On it, renaming your project folder in Documents.\n---\nWorks on is Off in this bot's settings, so I can't access your file system or run terminal commands directly to rename the folder. You can rename it in Finder by right-clicking `dusk-bto` in your Documents folder and choosing Rename, or by running `mv ~/Documents/dusk-bto ~/Documents/dusk-bot` in your terminal."
+      "output": "On it, renaming your project folder in Documents.\n---\nWorks on is Off in this bot's settings, so I can't access your file system or run terminal commands directly to rename the folder. You can rename it in Finder by right-clicking `madani-bto` in your Documents folder and choosing Rename, or by running `mv ~/Documents/madani-bto ~/Documents/madani-bot` in your terminal."
     },
     {
       "model": "gemini-3.1-flash-lite",
@@ -2113,7 +2113,7 @@
       ],
       "state": "idle",
       "ms": 5642,
-      "output": "On it, renaming your project folder in Documents now.\n---\nWorks on is Off in this bot's settings, so I can't access your file system directly to rename the folder. You can rename `dusk-bto` to `dusk-bot` in your Documents folder manually."
+      "output": "On it, renaming your project folder in Documents now.\n---\nWorks on is Off in this bot's settings, so I can't access your file system directly to rename the folder. You can rename `madani-bto` to `madani-bot` in your Documents folder manually."
     },
     {
       "model": "gemini-3.1-flash-lite",
@@ -2138,7 +2138,7 @@
       ],
       "state": "idle",
       "ms": 17971,
-      "output": "Got it, canceling your daily morning summary.\n---\nYou don't have any daily morning summary routine set up on your triggers list right now, so there was nothing active to cancel.\n---\nDone. There are no active daily morning summary routines or triggers set up on my end or on dusk bot."
+      "output": "Got it, canceling your daily morning summary.\n---\nYou don't have any daily morning summary routine set up on your triggers list right now, so there was nothing active to cancel.\n---\nDone. There are no active daily morning summary routines or triggers set up on my end or on madani bot."
     },
     {
       "model": "gemini-3.1-flash-lite",

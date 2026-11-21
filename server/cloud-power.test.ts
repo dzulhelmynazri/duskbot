@@ -23,7 +23,7 @@ afterEach(() => {
 
 function home(probes: Partial<CloudPowerProbes> = {}) {
   let clock = START;
-  const dataDir = mkdtempSync(join(tmpdir(), "dusk-cloud-power-"));
+  const dataDir = mkdtempSync(join(tmpdir(), "madani-cloud-power-"));
   dirs.push(dataDir);
   const state = { turn: false, run: false, liveCall: false, computer: false, maintenance: false, nextDueAt: null as number | null };
   const sent: Record<string, unknown>[] = [];
@@ -165,7 +165,7 @@ describe("what woke the home", () => {
     h.power.prepareSleep();
     // Suspended, then resumed for a request: noticed by the request itself, before the clock tick does.
     h.jump(33_000);
-    h.power.arrived("/.well-known/duskbot/environment", { "x-dusk-background": "1" });
+    h.power.arrived("/.well-known/madanibot/environment", { "x-madani-background": "1" });
     expect(h.power.sleeping()).toBe(false);
     expect(h.power.report()).toMatchObject({ wokeAt: h.now(), wokeBy: { by: "version", background: true } });
     h.power.arrived("/api/threads", {});
@@ -180,7 +180,7 @@ describe("what woke the home", () => {
   });
 
   it("names each kind of request by its path alone", () => {
-    const paths = ["/api/events", "/api/sync/changes", "/.well-known/duskbot/environment", "/api/phones/self/jobs",
+    const paths = ["/api/events", "/api/sync/changes", "/.well-known/madanibot/environment", "/api/phones/self/jobs",
       "/api/presence/active", "/api/auth/session", "/api/auth/pair", "/pair", "/api/cloud/pairing", "/api/health", "/hooks", "/mcp-oauth/callback",
       "/api/bots/b1/read", "/", "/assets/index.js"];
     expect(paths.map(wakeCode)).toEqual(["events", "sync", "version", "phone", "presence", "session", "pair", "pair", "admin", "health", "webhook",
@@ -190,7 +190,7 @@ describe("what woke the home", () => {
 
 describe("waking from a sleep the machine was stopped for", () => {
   it("is not a startup once, and only after a sleep", () => {
-    const dataDir = mkdtempSync(join(tmpdir(), "dusk-cloud-power-"));
+    const dataDir = mkdtempSync(join(tmpdir(), "madani-cloud-power-"));
     dirs.push(dataDir);
     expect(wokeFromSleep(dataDir)).toBe(false);
     mkdirSync(dataDir, { recursive: true });
@@ -211,8 +211,8 @@ describe("waking from a sleep the machine was stopped for", () => {
 describe("what counts as someone using the home", () => {
   it("is any request but the background paths and marked polls", () => {
     expect(countsAsActivity("/api/threads/t1", {})).toBe(true);
-    expect(countsAsActivity("/api/threads/t1", { "x-dusk-background": "0" })).toBe(true);
-    expect(countsAsActivity("/api/team-map", { "x-dusk-background": "1" })).toBe(false);
+    expect(countsAsActivity("/api/threads/t1", { "x-madani-background": "0" })).toBe(true);
+    expect(countsAsActivity("/api/team-map", { "x-madani-background": "1" })).toBe(false);
     for (const path of ["/api/events", "/api/health", "/api/sync", "/api/sync/changes", "/api/shared-computers/c1/poll", "/api/cloud/power"]) {
       expect(countsAsActivity(path, {}), path).toBe(false);
     }
@@ -228,7 +228,7 @@ describe("the Admin's signed power routes", () => {
     let counter = 0;
     const sign = (target: string, method = "GET", body = "", key = secret) => {
       const timestamp = String(Math.floor(h.now() / 1000)), nonce = `nonce-${String(++counter).padStart(12, "0")}`;
-      return { "x-dusk-cloud-timestamp": timestamp, "x-dusk-cloud-nonce": nonce, "x-dusk-cloud-signature": `v1=${cloudRequestSignature(key, timestamp, nonce, method, target, body)}` };
+      return { "x-madani-cloud-timestamp": timestamp, "x-madani-cloud-nonce": nonce, "x-madani-cloud-signature": `v1=${cloudRequestSignature(key, timestamp, nonce, method, target, body)}` };
     };
     const send = async (method: string, target: string, headers: Record<string, string>, body = "") => {
       const req = Object.assign(new PassThrough(), { method, url: target, headers, socket: { remoteAddress: "127.0.0.1" } }) as unknown as IncomingMessage;
@@ -305,7 +305,7 @@ describe("the Admin's signed power routes", () => {
 describe("a Team Cloud", () => {
   it("never sleeps: the Admin's sleep request is refused as busy with the team, however idle it is", () => {
     let clock = START;
-    const dataDir = mkdtempSync(join(tmpdir(), "dusk-cloud-power-team-"));
+    const dataDir = mkdtempSync(join(tmpdir(), "madani-cloud-power-team-"));
     dirs.push(dataDir);
     const power = createCloudPower({ dataDir, team: true, now: () => clock, broadcast: () => {}, probes: {
       turn: () => false, run: () => false, liveCall: () => false, computer: () => false, maintenance: () => false, nextDueAt: () => null,
@@ -380,7 +380,7 @@ describe("hints that are not use", () => {
     expect(countsAsActivity("/api/mobile/presence", {})).toBe(false);
     const h = home();
     const res = Object.assign(new PassThrough(), { socket: null }) as unknown as ServerResponse;
-    h.power.request("/api/desktop-viewer/vps/bot-1/websockify", { "x-dusk-background": "1" }, res);
+    h.power.request("/api/desktop-viewer/vps/bot-1/websockify", { "x-madani-background": "1" }, res);
     h.pass(10_000);
     expect(h.power.report().busy).not.toContain("maintenance");
   });

@@ -23,7 +23,7 @@ import { clientIp, rateIp } from "../client-ip.ts";
 export const AUTH_LIMITS = { nativeApplePerIp: 300, startsPerIp: 60, startsPerEmail: 6, emailsPerAddressPerDay: 12, verifiesPerIp: 600, oauthPerIp: 600, deviceAuthorizePerIp: 300,
   mailPerHour: 120, mailPerDay: 250, newAddressShare: 0.8, handoffsPerSession: 60, handoffsPerIp: 600,
   phoneCodesPerSession: 20, phoneCodesPerAccount: 40, phoneRedeemsPerIp: 30, phoneWrongPerHour: 1000 };
-/** App Review's fixed-code address (DUSK_REVIEW_EMAIL): starts an hour and a day */
+/** App Review's fixed-code address (MADANI_REVIEW_EMAIL): starts an hour and a day */
 export const REVIEW_LIMITS = { startsPerHour: 30, startsPerDay: 120 };
 /** a web handoff link: how long it lives, and how many one account holds unredeemed at once (older ones are dropped) */
 export const HANDOFF_TTL_MS = 120_000, HANDOFF_OUTSTANDING = 5;
@@ -34,9 +34,9 @@ export interface AuthOptions {
   dataDir: string; publicUrl: string; mailer: Mailer; email?: EmailConfig; now?: () => number; fetch?: typeof fetch;
   /** where the page is served on publicUrl ("/dashboard" when it shares the origin with the site, "" at the root) */
   pageBase?: string;
-  /** sign-in emails the service sends an hour across everyone (DUSK_AUTH_MAIL_PER_HOUR, default AUTH_LIMITS.mailPerHour) */
+  /** sign-in emails the service sends an hour across everyone (MADANI_AUTH_MAIL_PER_HOUR, default AUTH_LIMITS.mailPerHour) */
   mailPerHour?: number;
-  /** and a day (DUSK_AUTH_MAIL_PER_DAY, default AUTH_LIMITS.mailPerDay); raise it with the brevo plan */
+  /** and a day (MADANI_AUTH_MAIL_PER_DAY, default AUTH_LIMITS.mailPerDay); raise it with the brevo plan */
   mailPerDay?: number;
   /** a service-wide sign-in mail limit was reached ("hour", "day" or "new" for the signup share of the day) */
   onMailLimit?: (kind: "hour" | "day" | "new") => void;
@@ -51,11 +51,11 @@ export interface AuthOptions {
   websiteFirstSteps?: boolean;
 }
 export interface ReviewAccount { email: string; code: string }
-/** DUSK_REVIEW_EMAIL and DUSK_REVIEW_CODE (EMAIL_CODE_DIGITS digits, what the apps' code field takes), both or none */
+/** MADANI_REVIEW_EMAIL and MADANI_REVIEW_CODE (EMAIL_CODE_DIGITS digits, what the apps' code field takes), both or none */
 export function reviewAccountFromEnv(env: Record<string, string | undefined>): ReviewAccount | null {
-  const email = cleanEmail(env.DUSK_REVIEW_EMAIL), code = env.DUSK_REVIEW_CODE?.trim() ?? "";
-  if (!env.DUSK_REVIEW_EMAIL && !env.DUSK_REVIEW_CODE) return null;
-  if (!email || !new RegExp(`^\\d{${EMAIL_CODE_DIGITS}}$`).test(code)) throw new Error(`DUSK_REVIEW_EMAIL needs a valid address and DUSK_REVIEW_CODE ${EMAIL_CODE_DIGITS} digits.`);
+  const email = cleanEmail(env.MADANI_REVIEW_EMAIL), code = env.MADANI_REVIEW_CODE?.trim() ?? "";
+  if (!env.MADANI_REVIEW_EMAIL && !env.MADANI_REVIEW_CODE) return null;
+  if (!email || !new RegExp(`^\\d{${EMAIL_CODE_DIGITS}}$`).test(code)) throw new Error(`MADANI_REVIEW_EMAIL needs a valid address and MADANI_REVIEW_CODE ${EMAIL_CODE_DIGITS} digits.`);
   return { email, code };
 }
 export class AuthError extends Error {
@@ -67,7 +67,7 @@ export class AuthError extends Error {
   }
 }
 const messages: Partial<Record<AccountErrorCode, string>> = {
-  billing_active: "Cancel your plan and dusk cloud before deleting your account.",
+  billing_active: "Cancel your plan and madani cloud before deleting your account.",
   delete_on_account_page: "Delete your account on your account page.",
   invalid_request: "Invalid request.", invalid_email: "Enter a valid email address.", wrong_code: "Code is incorrect.", invalid_code: "Code is incorrect.",
   expired: "Sign-in has expired.", rate_limited: "Try again later.", signup_closed: "New accounts are not available.", signed_out: "Sign in to continue.",
@@ -402,11 +402,11 @@ export function createAuth(options: AuthOptions) {
     return item && opaque(cookie) && equal(hash(cookie), item.bindingHash) ? item : undefined;
   }
   function binding(req: IncomingMessage) {
-    return req.headers.cookie?.split(";").map(item => item.trim()).find(item => item.startsWith("dusk_oauth="))?.slice(11);
+    return req.headers.cookie?.split(";").map(item => item.trim()).find(item => item.startsWith("madani_oauth="))?.slice(11);
   }
   function oauthCookie(res: ServerResponse, value = "") {
     const secure = publicUrl.startsWith("https:");
-    res.appendHeader("set-cookie", `dusk_oauth=${value}; HttpOnly; Path=/v1/auth; Max-Age=${value ? 600 : 0}; SameSite=${secure ? "None; Secure" : "Lax"}`);
+    res.appendHeader("set-cookie", `madani_oauth=${value}; HttpOnly; Path=/v1/auth; Max-Age=${value ? 600 : 0}; SameSite=${secure ? "None; Secure" : "Lax"}`);
   }
   function redirect(res: ServerResponse, location: string) { res.writeHead(302, { location, "referrer-policy": "no-referrer" }); res.end(); }
   function oauthError(res: ServerResponse, code: OAuthErrorCode, next = "/", flowId?: string) {
@@ -639,7 +639,7 @@ export function createAuth(options: AuthOptions) {
     res.setHeader("cache-control", "no-store");
     if (cors) {
       res.setHeader("access-control-allow-origin", "*");
-      res.setHeader("access-control-allow-headers", "content-type, authorization, x-dusk-version");
+      res.setHeader("access-control-allow-headers", "content-type, authorization, x-madani-version");
       res.setHeader("access-control-allow-methods", "GET, POST, DELETE, OPTIONS");
       if (method === "OPTIONS") { res.writeHead(204); res.end(); return true; }
     }

@@ -166,7 +166,7 @@ export function AddVpsFlow({ onClose }: { onClose: () => void }) {
     <div ref={root} role="dialog" aria-modal="true" aria-labelledby={TITLE_ID} tabIndex={-1} data-panel-modal="add-vps" data-vps-stage={at} data-vps-screen={screen}
       className="fixed inset-0 z-[61] overflow-y-auto bg-app text-ink outline-none">
       <button type="button" onClick={onClose} aria-label={t("common.close")}
-        className="dusk-press fixed end-4 top-4 z-10 flex size-8 items-center justify-center rounded-full text-ink-secondary outline-none hover:bg-ink/6 hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-focus [-webkit-app-region:no-drag]">
+        className="madani-press fixed end-4 top-4 z-10 flex size-8 items-center justify-center rounded-full text-ink-secondary outline-none hover:bg-ink/6 hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-focus [-webkit-app-region:no-drag]">
         <Icon name="close" size={14} />
       </button>
       <div className="relative h-full min-h-[700px] w-full">

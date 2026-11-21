@@ -18,7 +18,7 @@ describe("the phone's computers", () => {
   let app: ReturnType<typeof createDashboardApp>;
   let mailer: ReturnType<typeof memoryMailer>;
   beforeEach(async () => {
-    dataDir = mkdtempSync(join(tmpdir(), "dusk-computers-test-"));
+    dataDir = mkdtempSync(join(tmpdir(), "madani-computers-test-"));
     time = Date.now(); nonce = 0; mailer = memoryMailer();
     app = createDashboardApp({ dataDir, publicUrl: "http://127.0.0.1:7480", mailer, staticDir: null, now: () => time });
     server = createServer(app.handle);
@@ -60,7 +60,7 @@ describe("the phone's computers", () => {
   }
   let seq = 0;
   const report = (extra: Partial<WorkspaceReport> = {}): WorkspaceReport => ({ v: 1, seq: ++seq, at: time, workspace: { name: "Studio Mac", kind: "mac", version: "1.0.0", platform: "darwin", environmentId: "env-studio" }, ...extra });
-  const link = () => mobileLinkUrl({ v: 2, workspace: { name: "Studio Mac", environmentId: "env-studio", kind: "mac" }, grant: { id: "grant-1", secret: "dusk_pair_secret", expiresAt: time + MOBILE_GRANT_TTL_MS },
+  const link = () => mobileLinkUrl({ v: 2, workspace: { name: "Studio Mac", environmentId: "env-studio", kind: "mac" }, grant: { id: "grant-1", secret: "madani_pair_secret", expiresAt: time + MOBILE_GRANT_TTL_MS },
     via: [{ kind: "companion", url: "http://192.168.1.4:5331", net: "lan", priority: 1 }] });
   /** the computer side: picks up the queued phone.pair and answers it */
   async function answerPairing(ws: Computer, result: { ok: boolean; link?: string; reason?: "unreachable" | "refused" }) {
@@ -111,7 +111,7 @@ describe("the phone's computers", () => {
     await answerPairing(mac, { ok: false, reason: "unreachable" });
     expect(await body(unreachable)).toMatchObject({ code: "computer_unreachable" });
     const refused = call(ACCOUNT_ROUTES.appComputerPair(mac.id), {}, bearer(owner));
-    await answerPairing(mac, { ok: true, link: "duskbot://pair?m=bm90LWEtcGF5bG9hZA" });
+    await answerPairing(mac, { ok: true, link: "madanibot://pair?m=bm90LWEtcGF5bG9hZA" });
     expect(await body(refused)).toMatchObject({ code: "pair_refused" });
 
     time += APP_COMMAND_ONLINE_MS + 1;

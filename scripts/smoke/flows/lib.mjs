@@ -1,7 +1,7 @@
 // Shared harness of the flow smokes (scripts/smoke/flows/*.mjs): the isolated, invisible smoke app (../app.mjs) on a
 // profile of its own, steps that pass, fail or skip with a screenshot and a note, a friction list (what a new person
 // would trip on), and report.md / report.json. A flow signs in like a new person: the app's own account gate, with a
-// code read from the account service's test mailbox (../account.mjs), to a fresh <flow>-<time>@qa.dusk.test account on
+// code read from the account service's test mailbox (../account.mjs), to a fresh <flow>-<time>@qa.madani.test account on
 // preview. No real mail is ever sent.
 import { mkdirSync, rmSync, writeFileSync } from "node:fs";
 import { homedir } from "node:os";
@@ -20,15 +20,15 @@ export function flowArgs(name) {
   const option = (key, fallback = null) => { const at = args.indexOf(key); return at === -1 ? fallback : args[at + 1] ?? fallback; };
   const root = resolve(option("--root", join(dirname(fileURLToPath(import.meta.url)), "..", "..", "..")));
   const stamp = new Date().toISOString().replace(/[:.]/g, "-").slice(0, 19);
-  const out = resolve(option("--out", join(root, ".dusk-scratch", "flows", `${stamp}-${name}`)));
+  const out = resolve(option("--out", join(root, ".madani-scratch", "flows", `${stamp}-${name}`)));
   // a new person each run unless told otherwise: a fresh profile and a fresh account
-  const profile = resolve(option("--profile", join(homedir(), ".cache", "dusk-smoke", "flows", `${name}-${stamp}`)));
+  const profile = resolve(option("--profile", join(homedir(), ".cache", "madani-smoke", "flows", `${name}-${stamp}`)));
   const email = option("--email", `${name}-${stamp.slice(5, 16).replace(/[-T]/g, "")}@${TEST_MAIL_DOMAIN}`);
   return { args, option, flag: (key) => args.includes(key), root, stamp, out, profile, email };
 }
 
 /**
- * The run: `step()` records, `friction()` notes, `report()` writes. `env` reaches the app (DUSK_CLOUD_ORIGIN is preview by
+ * The run: `step()` records, `friction()` notes, `report()` writes. `env` reaches the app (MADANI_CLOUD_ORIGIN is preview by
  * default, so the dev app shows the account gate and account features the installed app has).
  */
 export function createFlow({ name, title, root, out, profile, email, env = {} }) {
@@ -41,7 +41,7 @@ export function createFlow({ name, title, root, out, profile, email, env = {} })
     name, root, out, profile, email, facts, app: null,
     log: (line) => console.log(`[${name} ${((Date.now() - t0) / 1000).toFixed(0).padStart(4)}s] ${line}`),
     async launch(extra = {}) {
-      flow.app = await launchSmokeApp({ root, profile, log: flow.log, env: { DUSK_CLOUD_ORIGIN: PREVIEW_ORIGIN, ...(walkthrough.enabled ? { DUSK_SMOKE_THEME: "light" } : {}), ...env, ...extra } });
+      flow.app = await launchSmokeApp({ root, profile, log: flow.log, env: { MADANI_CLOUD_ORIGIN: PREVIEW_ORIGIN, ...(walkthrough.enabled ? { MADANI_SMOKE_THEME: "light" } : {}), ...env, ...extra } });
       await flow.viewport(1280, 820);
       walkthrough.attachApp(flow.app);
       return flow.app;
@@ -100,7 +100,7 @@ export function createFlow({ name, title, root, out, profile, email, env = {} })
     opened(since = 0) { return flow.app.events().filter((event) => event.kind === "open-external" && event.at >= since).map((event) => event.url); },
     /** the account gate, as a new person meets it: email, the emailed code, in */
     async signInAtGate() {
-      await flow.waitText(/sign in to dusk bot/i, "the account gate", { timeout: 120_000 });
+      await flow.waitText(/sign in to madani bot/i, "the account gate", { timeout: 120_000 });
       await flow.evaluate(`document.querySelector("input[type=email], input")?.focus(); true`);
       await flow.type(email);
       const since = Date.now();
@@ -112,7 +112,7 @@ export function createFlow({ name, title, root, out, profile, email, env = {} })
       facts.codeSeconds = Math.round((Date.now() - since) / 1000);
       await flow.evaluate(`document.querySelector("input")?.focus(); true`);
       await flow.type(code);
-      await flow.waitFor(`!/sign in to dusk bot/i.test(document.body.innerText)`, "the gate to let the person in", 30_000);
+      await flow.waitFor(`!/sign in to madani bot/i.test(document.body.innerText)`, "the gate to let the person in", 30_000);
       return `${email}, code arrived in ${facts.codeSeconds}s`;
     },
     /** sends "reply with just ok" in the open chat; "reply:<text>", or "said:<text>" when the bot answered with a problem */
@@ -131,7 +131,7 @@ export function createFlow({ name, title, root, out, profile, email, env = {} })
         return /\\bok\\b/i.test(after) ? "reply:" + after.slice(0, 80) : false;
       })()`, "the bot's reply", timeout);
     },
-    accountState: () => flow.evaluate(`window.duskDesktop?.cloudAccount?.state()`),
+    accountState: () => flow.evaluate(`window.madaniDesktop?.cloudAccount?.state()`),
     async openSettings(section) {
       await flow.escape().catch(() => {});
       await sleep(300);
@@ -174,7 +174,7 @@ export function createFlow({ name, title, root, out, profile, email, env = {} })
       for (const fn of closers.splice(0)) await Promise.resolve().then(fn).catch((error) => flow.log(`cleanup failed: ${error?.message ?? error}`));
       await flow.app?.close().catch(() => {});
       flow.app = null;
-      if (!keepProfile && profile.includes(`${join(".cache", "dusk-smoke", "flows")}`)) { try { rmSync(profile, { recursive: true, force: true, maxRetries: 5, retryDelay: 500 }); } catch (error) { flow.log(`could not remove the profile: ${error.message}`); } }
+      if (!keepProfile && profile.includes(`${join(".cache", "madani-smoke", "flows")}`)) { try { rmSync(profile, { recursive: true, force: true, maxRetries: 5, retryDelay: 500 }); } catch (error) { flow.log(`could not remove the profile: ${error.message}`); } }
     },
   };
   return flow;
@@ -193,8 +193,8 @@ export async function runFlow(flow, body, { keepProfile = false } = {}) {
   }
 }
 
-/** the own-server line as the app shows it: the short one (`curl -fsSL https://dusk.bot/s/<code>[/<way>] | sh`) or the
- *  long one an older link service gets (`(for f in … curl -fsSL $f https://link.dusk.bot/i/<token> … | sh -s -- --way`) */
-export const INSTALL_LINE = /curl -fsSL https:\/\/[a-z0-9.-]+\/s\/[a-z0-9]{7}(?:\/[a-z]+)? \| sh|\(for f in [^\n]*?curl -fsSL \$f https:\/\/link\.dusk\.bot\/i\/[a-z0-9-]+[^\n]*?\| sh(?: -s -- --[a-z]+)?/;
+/** the own-server line as the app shows it: the short one (`curl -fsSL https://madani.bot/s/<code>[/<way>] | sh`) or the
+ *  long one an older link service gets (`(for f in … curl -fsSL $f https://link.madani.bot/i/<token> … | sh -s -- --way`) */
+export const INSTALL_LINE = /curl -fsSL https:\/\/[a-z0-9.-]+\/s\/[a-z0-9]{7}(?:\/[a-z]+)? \| sh|\(for f in [^\n]*?curl -fsSL \$f https:\/\/link\.madani\.bot\/i\/[a-z0-9-]+[^\n]*?\| sh(?: -s -- --[a-z]+)?/;
 /** one argument for a remote shell, exactly as written: nothing in it ($, quotes, backticks) is read by that shell */
 export const shellQuote = (text) => `'${String(text).replaceAll("'", "'\\''")}'`;

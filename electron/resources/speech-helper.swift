@@ -24,7 +24,7 @@ import Foundation
 import Speech
 
 // The audio tap and the recognizer call back on different threads: one line at a time.
-let emitQueue = DispatchQueue(label: "bot.dusk.speech.emit")
+let emitQueue = DispatchQueue(label: "bot.madani.speech.emit")
 func emit(_ obj: [String: Any]) {
   if let data = try? JSONSerialization.data(withJSONObject: obj),
     let line = String(data: data, encoding: .utf8)
@@ -158,7 +158,7 @@ if finishFile != nil || finishOnRelease != nil {
 /// SFSpeechRecognizer can keep revising/re-emitting a partial transcript
 /// after the user stops talking. Only a changed transcript resets the timer.
 final class SilenceEndpointer {
-  private let queue = DispatchQueue(label: "bot.dusk.speech.endpoint")
+  private let queue = DispatchQueue(label: "bot.madani.speech.endpoint")
   private let gap: TimeInterval
   private let finish: () -> Void
   private var timer: DispatchSourceTimer?

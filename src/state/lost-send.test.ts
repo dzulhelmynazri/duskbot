@@ -109,7 +109,7 @@ it.each([502, 503, 504])("asks again with the same sendId when a gateway answers
 it("holds a send to a waking Cloud past the lost-answer window, says the Cloud is waking, then delivers it once", async () => {
   const { cloudSendWaiting, resetCloudPowerForTests } = await import("../lib/cloud-power");
   resetCloudPowerForTests();
-  const waking = () => new Response("This dusk bot is waking up. Try again in a few seconds.", { status: 503, headers: { "retry-after": "5", "x-dusk-cloud-power": "waking" } });
+  const waking = () => new Response("This madani bot is waking up. Try again in a few seconds.", { status: 503, headers: { "retry-after": "5", "x-madani-cloud-power": "waking" } });
   let up = false;
   const bodies: string[] = [];
   const requests = vi.fn<typeof fetch>(async (path, init) => {
@@ -137,7 +137,7 @@ it("gives a send up after three minutes of a Cloud that does not wake, with a me
   const { cloudSendWaiting, resetCloudPowerForTests } = await import("../lib/cloud-power");
   resetCloudPowerForTests();
   const requests = vi.fn<typeof fetch>(async (path) => path !== SEND ? response({})
-    : new Response("waking", { status: 503, headers: { "retry-after": "5", "x-dusk-cloud-power": "waking" } }));
+    : new Response("waking", { status: 503, headers: { "retry-after": "5", "x-madani-cloud-power": "waking" } }));
   const onError = vi.fn();
   mount(requests)(onError);
   await flush();

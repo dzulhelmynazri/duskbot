@@ -13,7 +13,7 @@ function harness({ signedIn = true, fail = {} } = {}) {
   const maybe = (name) => {
     if (failing[name] > 0) { failing[name]--; throw Object.assign(new Error(`${name} is offline`), { code: "offline" }); }
   };
-  let account = signedIn ? { email: "tester@qa.dusk.test" } : null;
+  let account = signedIn ? { email: "tester@qa.madani.test" } : null;
   const views = [];
   const fresh = createStartFresh({
     account: () => account,
@@ -87,10 +87,10 @@ test("finish is refused before a run", async () => {
   assert.deepEqual(calls, []);
 });
 
-test("the next start deletes this computer's data, named local folders and dusk bot's own files, keeping tools, the lease and Chromium's", () => {
+test("the next start deletes this computer's data, named local folders and madani bot's own files, keeping tools, the lease and Chromium's", () => {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), "start-fresh-desktop-"));
   try {
-    const userData = path.join(root, "userData"), dataDir = path.join(root, ".duskbot"), named = path.join(root, ".duskbot-work"), stranger = path.join(root, "Documents");
+    const userData = path.join(root, "userData"), dataDir = path.join(root, ".madanibot"), named = path.join(root, ".madanibot-work"), stranger = path.join(root, "Documents");
     for (const dir of [userData, dataDir, named, stranger, `${dataDir}-clean`, path.join(userData, "cloud-sync"), path.join(userData, "Local Storage"), path.join(dataDir, "tools"), path.join(dataDir, "workspaces")]) fs.mkdirSync(dir, { recursive: true });
     for (const file of ["bots.json", "messages.db", "config.json", SERVER_LEASE_NAME]) fs.writeFileSync(path.join(dataDir, file), "x");
     for (const file of ["credentials.bin", "cloud-account-custom.bin", "vps-link.json", "window-state.json", "Cookies", "Preferences"]) fs.writeFileSync(path.join(userData, file), "x");

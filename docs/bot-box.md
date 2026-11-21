@@ -1,7 +1,7 @@
 # The bot box
 
-On a dusk cloud home every bot turn runs in a box: the engine (Claude Code, Codex, Grok, OpenCode, the ACP agents),
-every shell command it runs, the MCP servers it starts and dusk bot's own helper proxies all live inside one
+On a madani cloud home every bot turn runs in a box: the engine (Claude Code, Codex, Grok, OpenCode, the ACP agents),
+every shell command it runs, the MCP servers it starts and madani bot's own helper proxies all live inside one
 unprivileged [bubblewrap](https://github.com/containers/bubblewrap) sandbox for that process's lifetime. The server,
 its database, its settings, other bots' folders and other turns' processes are not in it. Code: `server/bot-box/`.
 
@@ -11,7 +11,7 @@ its database, its settings, other bots' folders and other turns' processes are n
 |---|---|
 | `/usr`, `/etc`, `/opt`, the server's own code folder, read-only | The image: engine CLIs, node, python, git, the bots' browser |
 | `HOME`, read-write | The engines' own logins and settings (`~/.claude`, `~/.codex`, `~/.grok`). On a Team Cloud this is the turn's audience's engine home instead, with the team's engine sign-in files bound into it, and the server's HOME is not there at all ([team-cloud.md](team-cloud.md#engine-homes)) |
-| the data folder (`~/.duskbot`), **an empty private folder** | `messages.db`, `config.json`, logins, the server's sockets, every other bot's folders are not there |
+| the data folder (`~/.madanibot`), **an empty private folder** | `messages.db`, `config.json`, logins, the server's sockets, every other bot's folders are not there |
 | put back inside it: the turn's working folder, the bot's own folder (`workspaces/<bot>`) and the folders of its other conversations (`task-workspaces/<bot>`; on a Team Cloud only those with the turn's audience), read-write | What the turn works on, the bot's memory and skills, and files it made in earlier chats |
 | put back: this turn's permission socket (the engine's question and approval helper reaches the server through it), and, read-only, the conversation's own hook token folder (the hook helper's bearer, renewed each turn) and the files its command line names (MCP config, system prompt) | What the driver made for this one process |
 | private `/tmp`, `/var/tmp`, `/run`, `/dev`, `/proc` | Its own PID namespace: other turns' processes do not exist for it |
@@ -19,8 +19,8 @@ its database, its settings, other bots' folders and other turns' processes are n
 | a network namespace with loopback only | Two loopback ports are bridged to unix sockets from outside (below); nothing else on the machine's loopback is reachable, and there is no route out |
 
 The environment is an allow-list (`server/bot-box/env.ts`): the engine's own settings and keys, the harness capability
-tokens and a few names a shell expects. Every `DUSK_CLOUD_*` setting, the server's own placement (`DUSK_DATA_DIR`,
-`DUSK_PORT`) and the workspace credentials are refused whatever a driver passed.
+tokens and a few names a shell expects. Every `MADANI_CLOUD_*` setting, the server's own placement (`MADANI_DATA_DIR`,
+`MADANI_PORT`) and the workspace credentials are refused whatever a driver passed.
 
 ## The two gates
 
@@ -38,8 +38,8 @@ neither bridge.
 
 ## When it is on
 
-`server/bot-box/detect.ts`: on by default on a Cloud home (`DUSK_CLOUD_ROLE=home` or `team`), off everywhere else
-unless `DUSK_BOT_BOX=1`; `DUSK_BOT_BOX=0` turns it off. It is never on without a working unprivileged bubblewrap: if the
+`server/bot-box/detect.ts`: on by default on a Cloud home (`MADANI_CLOUD_ROLE=home` or `team`), off everywhere else
+unless `MADANI_BOT_BOX=1`; `MADANI_BOT_BOX=0` turns it off. It is never on without a working unprivileged bubblewrap: if the
 kernel refuses user namespaces or the image has no `bwrap`, the box reports `off` with the reason, and the Admin shows
 it. The cloud-home image installs `bubblewrap` and `socat` (the in-box bridges; without socat a bundled Node bridge does
 the same).
@@ -69,7 +69,7 @@ checks it guards.
 
 Keys stay in the server process; boxes get tokens (`server/bot-box/broker.ts`). When a bot spawn is boxed, each provider
 key in its environment (`ANTHROPIC_API_KEY`, `ANTHROPIC_AUTH_TOKEN`, `OPENAI_API_KEY`, `GEMINI_API_KEY`/`GOOGLE_API_KEY`)
-is replaced by a per-process token (`dusk_t0_…`, random, bound to the bot and the conversation, 24 h at most, revoked
+is replaced by a per-process token (`madani_t0_…`, random, bound to the bot and the conversation, 24 h at most, revoked
 when the process exits), and the provider's base URL (`ANTHROPIC_BASE_URL`, `OPENAI_BASE_URL`, `GOOGLE_GEMINI_BASE_URL`)
 points at `http://127.0.0.1:18080/b/<token>/<provider>` inside the box, bridged to the broker's unix socket. The broker
 drops whatever credential header the client sent, adds the real key, and forwards to the provider's fixed upstream
@@ -100,7 +100,7 @@ or files, the base URL is the broker, a call with the token reaches the upstream
 | Mount namespace (bubblewrap) | every boxed process | reading the server's data folder, other bots' folders, other turns' files in `/tmp`, `/.fly`; writing anywhere but its own folders | reading HOME's engine logins (the engine's own identity); a path a driver puts back on purpose |
 | PID namespace | every boxed process | seeing, reading the environment of, or signalling another turn's or the server's processes | nothing inside the same box |
 | Network namespace + the two gates | every boxed process with its own network | reaching this machine's other listeners, the local network, link-local, metadata, Fly's private network; any route out except the egress gate; any server route except `/api/internal/*` | what the harness routes allow with a valid per-turn bearer; a public destination |
-| Environment allow-list | every boxed process | `DUSK_CLOUD_*`, the server's placement, workspace credentials, any unlisted name | the engines' own settings |
+| Environment allow-list | every boxed process | `MADANI_CLOUD_*`, the server's placement, workspace credentials, any unlisted name | the engines' own settings |
 | Credential broker (T0b) | every boxed process with its own network | holding a provider key or an MCP header; using a token after its process or conversation ends; choosing the upstream | keys with no base-URL setting (named in the report); subscription logins |
 | seccomp filter (T0c) | every boxed process on x86-64 | 34 system calls that only reach the kernel's attack surface: mount family, kernel modules, bpf, perf, userfaultfd, the kernel keyring, `open_by_handle_at`, `setns`, kexec, reboot, swap, clock setting, I/O ports (EPERM); a process of another architecture (killed) | anything an engine, shell, git, npm, python or Chrome uses: all allowed |
 | `hidepid=invisible` on the host's /proc (T0c) | the whole machine, set by the root supervisor at boot | a `maus` process outside a box (the browser engine, a helper) listing or reading root's processes | `maus` processes seeing each other; a box has its own /proc anyway |
@@ -111,4 +111,4 @@ switch uid; a per-bot uid needs a privileged spawn service (stdio over FIFOs, ki
 everything the server reads from the workspaces) which is a slice of its own, and with the user namespace the host
 sees the box as `maus` anyway. **nftables** rules would add nothing to a box with its own network namespace, and for
 the whole machine they would have to allow Fly's resolver on the private network; left for the separate-user design.
-`DUSK_CLOUD_HARDEN=0` skips the two supervisor steps if a machine ever needs that.
+`MADANI_CLOUD_HARDEN=0` skips the two supervisor steps if a machine ever needs that.

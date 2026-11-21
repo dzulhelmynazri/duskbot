@@ -109,7 +109,7 @@ const VERBS: Record<string, { options: ParseArgsOptionsConfig; positionals: numb
 
 export const HEADLESS_VERBS: ReadonlySet<string> = new Set(Object.keys(VERBS).map((verb) => verb.split(" ")[0]!));
 
-/** Verbs that change something; control-dusk refuses them on a discovered server. */
+/** Verbs that change something; control-madani refuses them on a discovered server. */
 export const MUTATING_VERBS: ReadonlySet<string> = new Set([
   "send", "send-channel", "run", "interrupt", "new-bot", "new-channel", "set-model", "edit", "team apply", "engine set",
 ]);
@@ -125,7 +125,7 @@ export interface ParsedCommand {
 /** Strict: an unknown flag or a missing value is a usage error (exit 2). */
 export function parseCommand(argv: readonly string[]): ParsedCommand {
   const [head, ...rest] = argv;
-  if (!head) throw usageError("name a verb", "run duskbot help");
+  if (!head) throw usageError("name a verb", "run madanibot help");
   let verb = head;
   let args = rest;
   if (head === "team" || head === "engine") {
@@ -133,22 +133,22 @@ export function parseCommand(argv: readonly string[]): ParsedCommand {
     const actions = head === "team" ? ["apply", "export"] : ["set", "list"];
     if (!action || !actions.includes(action)) {
       if (action === "--help" || action === "-h") return { verb: head, flags: { help: true }, positionals: [] };
-      throw usageError(`${head} needs one of: ${actions.join(", ")}`, `run duskbot help ${head}`);
+      throw usageError(`${head} needs one of: ${actions.join(", ")}`, `run madanibot help ${head}`);
     }
     verb = `${head} ${action}`;
     args = rest.slice(1);
   }
   const spec = VERBS[verb];
-  if (!spec) throw usageError(`unknown verb "${head}"`, "run duskbot help");
+  if (!spec) throw usageError(`unknown verb "${head}"`, "run madanibot help");
   let parsed: { values: Flags; positionals: string[] };
   try {
     parsed = parseArgs({ args: [...args], options: { ...GLOBAL, ...spec.options }, strict: true, allowPositionals: true }) as typeof parsed;
   } catch (error) {
-    throw usageError(error instanceof Error ? error.message.replace(/^Unknown option/, "unknown option") : String(error), `run duskbot help ${head}`);
+    throw usageError(error instanceof Error ? error.message.replace(/^Unknown option/, "unknown option") : String(error), `run madanibot help ${head}`);
   }
   if (!parsed.values.help && parsed.positionals.length > spec.positionals) {
     throw usageError(`${verb} takes at most ${spec.positionals} value${spec.positionals === 1 ? "" : "s"} besides its flags; put text with spaces in quotes`,
-      `run duskbot help ${head}`);
+      `run madanibot help ${head}`);
   }
   return { verb, flags: parsed.values, positionals: parsed.positionals };
 }

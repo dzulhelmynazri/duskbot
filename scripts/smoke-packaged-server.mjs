@@ -49,16 +49,16 @@ async function freePorts(count) {
   }
 }
 
-const staging = mkdtempSync(join(tmpdir(), "dusk-smoke-"));
-const home = mkdtempSync(join(tmpdir(), "dusk-smoke-home-"));
+const staging = mkdtempSync(join(tmpdir(), "madani-smoke-"));
+const home = mkdtempSync(join(tmpdir(), "madani-smoke-home-"));
 const [port, webhookPort] = await freePorts(2);
 
-// DUSK_SMOKE_DIST lets the release workflow aim this at a packaged app's
+// MADANI_SMOKE_DIST lets the release workflow aim this at a packaged app's
 // Resources/server tree instead of the repo build.
 try {
   // A desktop install can live beneath a user's CommonJS package scope.
   writeFileSync(join(staging, "package.json"), '{"type":"commonjs"}\n');
-  cpSync(process.env.DUSK_SMOKE_DIST ?? join(root, "dist-server"), join(staging, "server"), { recursive: true });
+  cpSync(process.env.MADANI_SMOKE_DIST ?? join(root, "dist-server"), join(staging, "server"), { recursive: true });
   if (browserBundle) cpSync(resolve(browserBundle), join(staging, "browser-engine"), { recursive: true });
 } catch (error) {
   for (const directory of [staging, home]) rmSync(directory, { recursive: true, force: true });
@@ -75,11 +75,11 @@ const fixtureEnv = {
   XDG_CONFIG_HOME: join(home, ".config"),
   XDG_CACHE_HOME: join(home, ".cache"),
   XDG_DATA_HOME: join(home, ".local", "share"),
-  DUSK_DATA_DIR: join(home, ".duskbot"),
-  DUSK_PORT: String(port),
-  DUSK_WEBHOOK_PORT: String(webhookPort),
+  MADANI_DATA_DIR: join(home, ".madanibot"),
+  MADANI_PORT: String(port),
+  MADANI_WEBHOOK_PORT: String(webhookPort),
   ...(browserBundle ? {
-    DUSK_RESOURCES_PATH: staging,
+    MADANI_RESOURCES_PATH: staging,
     // A global engine on the developer's PATH must not make this test pass.
     PATH: process.platform === "win32" ? join(process.env.SystemRoot ?? "C:\\Windows", "System32") : "/usr/bin:/bin",
   } : {}),
@@ -126,7 +126,7 @@ while (Date.now() < deadline) {
 let versionReport = null;
 if (listening) {
   try {
-    versionReport = (await (await fetch(`http://127.0.0.1:${port}/.well-known/duskbot/environment`, { signal: AbortSignal.timeout(5_000) })).json()).version;
+    versionReport = (await (await fetch(`http://127.0.0.1:${port}/.well-known/madanibot/environment`, { signal: AbortSignal.timeout(5_000) })).json()).version;
   } catch (error) { versionReport = String(error); }
 }
 
@@ -181,7 +181,7 @@ writeFileSync(pdfProbe, [
   'worker.once("error", error => { clearTimeout(timer); console.error(error.message); process.exitCode = 1; });',
 ].join("\n"));
 let pdfReport = null;
-const pdfRuntime = process.env.DUSK_SMOKE_PDF_RUNTIME ?? process.execPath;
+const pdfRuntime = process.env.MADANI_SMOKE_PDF_RUNTIME ?? process.execPath;
 const pdfEnv = { ...fixtureEnv, ELECTRON_RUN_AS_NODE: "1" };
 try {
   const { stdout } = await promisify(execFile)(pdfRuntime, [pdfProbe], { cwd: staging, env: pdfEnv, timeout: 15_000 });
@@ -252,8 +252,8 @@ if (listening) {
 let headlessReport = null;
 if (listening) {
   const runCli = (args) => new Promise((resolve) => {
-    const cli = spawn(process.execPath, [join(staging, "server", "duskbot.js"), ...args], {
-      cwd: staging, env: { ...fixtureEnv, DUSK_URL: `http://127.0.0.1:${port}` }, stdio: ["ignore", "pipe", "pipe"],
+    const cli = spawn(process.execPath, [join(staging, "server", "madanibot.js"), ...args], {
+      cwd: staging, env: { ...fixtureEnv, MADANI_URL: `http://127.0.0.1:${port}` }, stdio: ["ignore", "pipe", "pipe"],
     });
     let stdout = "";
     let stderr = "";
@@ -266,7 +266,7 @@ if (listening) {
     const doctor = await runCli(["doctor", "--json"]);
     const bots = await runCli(["bots", "--json"]);
     const vps = await runCli(["vps", "--help"]);
-    headlessReport = { doctor: { code: doctor.code, body: JSON.parse(doctor.stdout), stderr: doctor.stderr }, bots: { code: bots.code, body: JSON.parse(bots.stdout) }, vps: { code: vps.code, help: vps.stdout.includes("duskbot vps logs") } };
+    headlessReport = { doctor: { code: doctor.code, body: JSON.parse(doctor.stdout), stderr: doctor.stderr }, bots: { code: bots.code, body: JSON.parse(bots.stdout) }, vps: { code: vps.code, help: vps.stdout.includes("madanibot vps logs") } };
   } catch (error) {
     headlessReport = { error: String((error && error.message) || error) };
   }
@@ -283,7 +283,7 @@ if (listening) {
     });
     assert.equal(response.status, 200, "Packaged backup worker did not export successfully");
     const archive = await response.json();
-    assert.equal(archive.summary.format, "dusk.workspace-backup");
+    assert.equal(archive.summary.format, "madani.workspace-backup");
     const download = await fetch(`http://127.0.0.1:${port}/api/workspace-backup/download/${archive.id}`);
     assert.equal(download.status, 200);
     const bytes = Buffer.from(await download.arrayBuffer());
@@ -298,11 +298,11 @@ if (listening) {
 // cache on the data volume, and SIGTERM must end both with a clean exit.
 let launcherReport = null;
 if (listening && process.platform !== "win32") {
-  const launcherHome = mkdtempSync(join(tmpdir(), "dusk-smoke-launcher-"));
+  const launcherHome = mkdtempSync(join(tmpdir(), "madani-smoke-launcher-"));
   const [launcherPort, launcherWebhookPort] = await freePorts(2);
   const launcher = spawn(process.execPath, [join(staging, "server", "server-launcher.js")], {
     cwd: staging,
-    env: { ...fixtureEnv, HOME: launcherHome, USERPROFILE: launcherHome, DUSK_DATA_DIR: join(launcherHome, ".duskbot"), DUSK_PORT: String(launcherPort), DUSK_WEBHOOK_PORT: String(launcherWebhookPort) },
+    env: { ...fixtureEnv, HOME: launcherHome, USERPROFILE: launcherHome, MADANI_DATA_DIR: join(launcherHome, ".madanibot"), MADANI_PORT: String(launcherPort), MADANI_WEBHOOK_PORT: String(launcherWebhookPort) },
     stdio: ["ignore", "pipe", "pipe"],
   });
   let launcherOutput = "";
@@ -320,7 +320,7 @@ if (listening && process.platform !== "win32") {
       if (serverPid === null) await new Promise((resolve) => setTimeout(resolve, 300));
     }
     // The bootstrap writes the cache about 10 s after the server starts.
-    const launcherCache = join(launcherHome, ".duskbot", "cache", "node-compile");
+    const launcherCache = join(launcherHome, ".madanibot", "cache", "node-compile");
     let cached = false;
     for (const written = Date.now() + 30_000; serverPid !== null && !cached && Date.now() < written && launcher.exitCode === null;) {
       try { cached = readdirSync(launcherCache).some((name) => /^v\d+\.\d+\.\d+-/.test(name)); } catch { /* not yet */ }
@@ -346,7 +346,7 @@ if (listening && process.platform !== "win32") {
 // while it runs (Windows has no SIGTERM, so a kill skips the exit-time write).
 let desktopEntryReport = null;
 if (listening) {
-  const entryHome = mkdtempSync(join(tmpdir(), "dusk-smoke-entry-"));
+  const entryHome = mkdtempSync(join(tmpdir(), "madani-smoke-entry-"));
   const cacheDir = join(entryHome, "server-compile-cache");
   const cacheEntries = () => {
     try {
@@ -360,8 +360,8 @@ if (listening) {
       const [entryPort, entryWebhookPort] = await freePorts(2);
       const entry = spawn(process.execPath, [join(staging, "server", "desktop-entry.mjs")], {
         cwd: staging,
-        env: { ...fixtureEnv, HOME: entryHome, USERPROFILE: entryHome, DUSK_DATA_DIR: join(entryHome, ".duskbot"),
-          DUSK_PORT: String(entryPort), DUSK_WEBHOOK_PORT: String(entryWebhookPort), DUSK_SERVER_COMPILE_CACHE: cacheDir },
+        env: { ...fixtureEnv, HOME: entryHome, USERPROFILE: entryHome, MADANI_DATA_DIR: join(entryHome, ".madanibot"),
+          MADANI_PORT: String(entryPort), MADANI_WEBHOOK_PORT: String(entryWebhookPort), MADANI_SERVER_COMPILE_CACHE: cacheDir },
         stdio: ["ignore", "pipe", "pipe"],
       });
       let entryOutput = "";
@@ -418,7 +418,7 @@ if (!listening) {
 }
 
 const repoVersion = JSON.parse(readFileSync(join(root, "package.json"), "utf8")).version;
-if (!process.env.DUSK_SMOKE_DIST && versionReport !== repoVersion) {
+if (!process.env.MADANI_SMOKE_DIST && versionReport !== repoVersion) {
   console.error(`The packaged server reports version ${JSON.stringify(versionReport)}, not ${repoVersion}.`);
   process.exit(1);
 }
@@ -453,7 +453,7 @@ if (
   mcpReport.error ||
   mcpReport.exit?.timeout ||
   mcpReport.exit?.code !== 0 ||
-  mcpReport.responses?.find((response) => response.id === 1)?.result?.serverInfo?.name !== "duskbot-mcp" ||
+  mcpReport.responses?.find((response) => response.id === 1)?.result?.serverInfo?.name !== "madanibot-mcp" ||
   mcpReport.responses?.find((response) => response.id === 2)?.result?.structuredContent?.status !== "connected" ||
   JSON.stringify(mcpReport.responses?.find((response) => response.id === 3)?.result) !== "{}"
 ) {
@@ -465,7 +465,7 @@ if (
 if (!headlessReport || headlessReport.error || headlessReport.doctor.body?.server?.capabilities?.jobs !== true ||
   headlessReport.bots.code !== 0 || !Array.isArray(headlessReport.bots.body?.bots) ||
   headlessReport.vps.code !== 0 || !headlessReport.vps.help) {
-  console.error("the packaged duskbot command's headless verbs failed:");
+  console.error("the packaged madanibot command's headless verbs failed:");
   console.error(JSON.stringify(headlessReport, null, 2));
   process.exit(1);
 }
@@ -478,7 +478,7 @@ if (!backupReport?.ok) {
 console.log(`packaged server started with no node_modules in reach (port ${port}) ✓`);
 console.log(`all ${count} spawned proxy paths resolve inside the packaged server dir ✓`);
 console.log("packaged MCP stdio server reached the API and flushed its final frames ✓");
-console.log("packaged duskbot doctor, bots and VPS help answered from the bundle ✓");
+console.log("packaged madanibot doctor, bots and VPS help answered from the bundle ✓");
 console.log("packaged backup worker exported an encrypted archive ✓");
 if (launcherReport) console.log("packaged container launcher ran the server as its child and stopped it cleanly ✓");
 if (desktopEntryReport) console.log(`packaged desktop entry started the server twice on its compile cache (${desktopEntryReport.starts[0].cached.length} entries) ✓`);

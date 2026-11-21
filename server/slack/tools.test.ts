@@ -20,9 +20,9 @@ afterEach(async () => {
 async function fixture() {
   const fake = await startFakeSlack();
   fakes.push(fake);
-  const tmpDir = await mkdtemp(join(tmpdir(), "dusk-slack-tools-"));
+  const tmpDir = await mkdtemp(join(tmpdir(), "madani-slack-tools-"));
   dirs.push(tmpDir);
-  const api = createSlackApi({ env: { DUSK_SLACK_API_URL: fake.url }, minGapMs: 0, maxRetries: 0 });
+  const api = createSlackApi({ env: { MADANI_SLACK_API_URL: fake.url }, minGapMs: 0, maxRetries: 0 });
   const redirect = "http://127.0.0.1:3210/callback";
   const app = await api.call<{ app_id: string }>("apps.manifest.create", fake.config.access, {
     manifest: { features: { bot_user: { display_name: "Helper" } }, oauth_config: { redirect_urls: [redirect] } },
@@ -138,7 +138,7 @@ describe("the bot's own Slack tool routes", () => {
 
   it("refuses files outside the bot folder, including symlinks, and files over 25 MB", async () => {
     const f = await fixture();
-    const outside = await mkdtemp(join(tmpdir(), "dusk-slack-outside-"));
+    const outside = await mkdtemp(join(tmpdir(), "madani-slack-outside-"));
     dirs.push(outside);
     const path = join(outside, "private.txt");
     await writeFile(path, "private");

@@ -1,8 +1,8 @@
 import assert from "node:assert/strict";
 import { spawn } from "node:child_process";
 
-export const driver = "/usr/local/libexec/duskbot/cua-driver";
-export const socket = "/run/user/1000/duskbot-cua.sock";
+export const driver = "/usr/local/libexec/madanibot/cua-driver";
+export const socket = "/run/user/1000/madanibot-cua.sock";
 const page = `<!doctype html><meta charset="utf-8"><title>Isolated browser fixture</title>
 <style>body{padding:40px;font:24px sans-serif}input,button{font:inherit;margin:12px;padding:12px}</style>
 <h1>Isolated fixture form</h1><form action="/submitted"><label>Fixture name <input name="name" aria-label="Fixture name"></label><button>Save fixture</button></form>`;
@@ -97,7 +97,7 @@ export async function connectMcp(container, endpoint = socket) {
     });
     child.stdin.write(JSON.stringify({ jsonrpc: "2.0", id, method, params }) + "\n");
   });
-  await rpc("initialize", { protocolVersion: "2024-11-05", capabilities: {}, clientInfo: { name: "dusk-desktop-fixture", version: "1" } });
+  await rpc("initialize", { protocolVersion: "2024-11-05", capabilities: {}, clientInfo: { name: "madani-desktop-fixture", version: "1" } });
   child.stdin.write(JSON.stringify({ jsonrpc: "2.0", method: "notifications/initialized" }) + "\n");
   return {
     list: () => rpc("tools/list", {}),

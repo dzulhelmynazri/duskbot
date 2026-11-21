@@ -33,7 +33,7 @@ const until = async (check, ms = 4000) => {
 let pem = null;
 function certificate() {
   if (pem) return pem;
-  const dir = mkdtempSync(join(tmpdir(), "dusk-wss-cert-"));
+  const dir = mkdtempSync(join(tmpdir(), "madani-wss-cert-"));
   try {
     execFileSync("openssl", ["req", "-x509", "-newkey", "ec", "-pkeyopt", "ec_paramgen_curve:prime256v1", "-nodes", "-days", "1", "-subj", "/CN=127.0.0.1", "-addext", "subjectAltName=IP:127.0.0.1", "-keyout", join(dir, "key.pem"), "-out", join(dir, "cert.pem")], { stdio: "ignore" });
     pem = { key: readFileSync(join(dir, "key.pem"), "utf8"), cert: readFileSync(join(dir, "cert.pem"), "utf8") };
@@ -77,13 +77,13 @@ async function front(tls, upstreamPort) {
 async function rig(t) {
   const tls = certificate();
   if (!tls) { t.skip("no openssl here"); return null; }
-  const dusk = createServer((req, res) => { res.writeHead(200, { "content-type": "text/plain" }); res.end(`${req.method} ${req.url} ${req.headers["x-forwarded-for"]}`); });
-  const duskPort = await listen(dusk);
-  const hub = createDirectHub({ id: ID, key: KEY, server: { host: "127.0.0.1", port: duskPort }, guard: frameGuard(), log: () => {} });
+  const madani = createServer((req, res) => { res.writeHead(200, { "content-type": "text/plain" }); res.end(`${req.method} ${req.url} ${req.headers["x-forwarded-for"]}`); });
+  const madaniPort = await listen(madani);
+  const hub = createDirectHub({ id: ID, key: KEY, server: { host: "127.0.0.1", port: madaniPort }, guard: frameGuard(), log: () => {} });
   const ws = await listenDirectWss(hub, { port: 0, log: () => {} });
   const edge = await front(tls, ws.address().port);
   const url = `wss://127.0.0.1:${edge.port}/omb-direct`;
-  const close = async () => { hub.stop(); await Promise.all([new Promise((resolve) => ws.close(resolve)), new Promise((resolve) => edge.server.close(resolve)), new Promise((resolve) => dusk.close(resolve))]); };
+  const close = async () => { hub.stop(); await Promise.all([new Promise((resolve) => ws.close(resolve)), new Promise((resolve) => edge.server.close(resolve)), new Promise((resolve) => madani.close(resolve))]); };
   return { tls, hub, url, close };
 }
 
@@ -193,20 +193,20 @@ test("ssh first, then 443; a transport that failed on this network goes last the
 });
 
 test("the agent names its https address and key only when it has one", async () => {
-  const before = process.env.DUSK_LINK_WSS_URL;
+  const before = process.env.MADANI_LINK_WSS_URL;
   try {
-    delete process.env.DUSK_LINK_WSS_URL;
+    delete process.env.MADANI_LINK_WSS_URL;
     assert.equal(wssUrl({ origin: "https://203-0-113-10.sslip.io" }), "wss://203-0-113-10.sslip.io/omb-direct");
     assert.equal(wssUrl({ origin: null }), null);
     await assert.rejects(control("direct-wss", {}, { id: ID, origin: null }), /no https address/);
-    process.env.DUSK_LINK_WSS_URL = "wss://box.example.com/omb-direct";
+    process.env.MADANI_LINK_WSS_URL = "wss://box.example.com/omb-direct";
     const asked = [];
     const answer = await control("direct-wss", {}, { id: ID, origin: null, spkiOf: async (host, port) => { asked.push([host, port]); return "K".repeat(43) + "="; } });
     assert.deepEqual(answer, { v: 1, url: "wss://box.example.com/omb-direct", spki: "K".repeat(43) + "=" });
     assert.deepEqual(asked, [["box.example.com", 443]]);
-    process.env.DUSK_LINK_WSS_URL = "https://box.example.com/x";
+    process.env.MADANI_LINK_WSS_URL = "https://box.example.com/x";
     assert.throws(() => wssUrl({}), /not a wss/);
-  } finally { if (before === undefined) delete process.env.DUSK_LINK_WSS_URL; else process.env.DUSK_LINK_WSS_URL = before; }
+  } finally { if (before === undefined) delete process.env.MADANI_LINK_WSS_URL; else process.env.MADANI_LINK_WSS_URL = before; }
 });
 
 test("the app asks once for the server's https details, keeps them, and dials ssh then 443", async () => {

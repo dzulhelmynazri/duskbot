@@ -14,7 +14,7 @@ names in `electron/legacy-names.mjs` (`CLOUD_HOME`), which keep the pre-rename s
 
 ## Inside `/data`
 
-The home runs with `HOME=/data` and `DUSK_DATA_DIR=CLOUD_HOME.data`, so tools that write under the home directory land
+The home runs with `HOME=/data` and `MADANI_DATA_DIR=CLOUD_HOME.data`, so tools that write under the home directory land
 on the volume too.
 
 | What | Where (under `CLOUD_HOME.data` unless noted) |

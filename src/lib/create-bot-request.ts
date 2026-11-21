@@ -1,6 +1,6 @@
 /** Asks for Create New Bot (components/CreateBotDialog.tsx), from anywhere: the sidebar's +, ⌘N, search's New Bot, a
  * plain `newBot` action. `section`: the sidebar section the bot is made in. */
-export const CREATE_BOT_EVENT = "dusk:open-create-bot";
+export const CREATE_BOT_EVENT = "madani:open-create-bot";
 
 let pendingSection: string | undefined;
 

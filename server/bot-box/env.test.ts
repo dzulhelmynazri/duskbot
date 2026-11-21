@@ -7,24 +7,24 @@ describe("the box's environment allow-list", () => {
     const kept = boxEnvironment({
       PATH: "/usr/bin", HOME: "/data", LANG: "C.UTF-8", TZ: "Europe/Berlin", LC_ALL: "C", TERM: "xterm",
       ANTHROPIC_API_KEY: "sk-ant-1", ANTHROPIC_BASE_URL: "http://127.0.0.1:18080/b/t/anthropic", CLAUDE_CONFIG_DIR: "/data/.claude",
-      OPENAI_API_KEY: "sk-1", CODEX_HOME: "/data/.codex", DUSK_HOOK_URL: "http://127.0.0.1:8799/api/internal/hook", DUSK_COMMS_TOKEN: "cap",
+      OPENAI_API_KEY: "sk-1", CODEX_HOME: "/data/.codex", MADANI_HOOK_URL: "http://127.0.0.1:8799/api/internal/hook", MADANI_COMMS_TOKEN: "cap",
       HTTPS_PROXY: "http://127.0.0.1:3128", NO_PROXY: "127.0.0.1", NPM_CONFIG_LOGLEVEL: "error", ELECTRON_RUN_AS_NODE: "1",
-      DUSK_CLOUD_BOOTSTRAP_SECRET: "s", DUSK_CLOUD_MACHINE_ID: "m", DUSK_CLOUD_ADMIN_URL: "https://a", DUSK_LICENSE_KEY: "k",
-      DUSK_DATA_DIR: "/data/.duskbot", DUSK_PORT: "8799", DUSK_LOOPBACK_TRUST: "owner", AWS_SECRET_ACCESS_KEY: "aws", SSH_AUTH_SOCK: "/x",
+      MADANI_CLOUD_BOOTSTRAP_SECRET: "s", MADANI_CLOUD_MACHINE_ID: "m", MADANI_CLOUD_ADMIN_URL: "https://a", MADANI_LICENSE_KEY: "k",
+      MADANI_DATA_DIR: "/data/.madanibot", MADANI_PORT: "8799", MADANI_LOOPBACK_TRUST: "owner", AWS_SECRET_ACCESS_KEY: "aws", SSH_AUTH_SOCK: "/x",
       SOME_RANDOM_NAME: "x", EMPTY: undefined,
     });
     expect(Object.keys(kept).sort()).toEqual([
-      "ANTHROPIC_API_KEY", "ANTHROPIC_BASE_URL", "CLAUDE_CONFIG_DIR", "CODEX_HOME", "DUSK_COMMS_TOKEN", "DUSK_HOOK_URL", "ELECTRON_RUN_AS_NODE", "HOME", "HTTPS_PROXY", "LANG", "LC_ALL",
+      "ANTHROPIC_API_KEY", "ANTHROPIC_BASE_URL", "CLAUDE_CONFIG_DIR", "CODEX_HOME", "MADANI_COMMS_TOKEN", "MADANI_HOOK_URL", "ELECTRON_RUN_AS_NODE", "HOME", "HTTPS_PROXY", "LANG", "LC_ALL",
       "NO_PROXY", "NPM_CONFIG_LOGLEVEL", "OPENAI_API_KEY", "PATH", "TERM", "TZ",
     ]);
   });
 
   it("a denied name loses even against an allowing prefix, and the never-list beats everything", () => {
-    expect(boxEnvironmentAllows("DUSK_COMPOSIO_BROKER_TOKEN")).toBe(true);
-    expect(boxEnvironmentAllows("DUSK_COMPOSIO_BROKER_TOKEN", new Set(["DUSK_COMPOSIO_BROKER_TOKEN"]))).toBe(false);
+    expect(boxEnvironmentAllows("MADANI_COMPOSIO_BROKER_TOKEN")).toBe(true);
+    expect(boxEnvironmentAllows("MADANI_COMPOSIO_BROKER_TOKEN", new Set(["MADANI_COMPOSIO_BROKER_TOKEN"]))).toBe(false);
     for (const name of BOX_ENV_NEVER) expect(boxEnvironmentAllows(name), name).toBe(false);
-    expect(boxEnvironmentAllows("DUSK_CLOUD_ANYTHING")).toBe(false);
-    expect(boxEnvironmentAllows("DUSK_CLOUDFLARED_PATH")).toBe(true);
+    expect(boxEnvironmentAllows("MADANI_CLOUD_ANYTHING")).toBe(false);
+    expect(boxEnvironmentAllows("MADANI_CLOUDFLARED_PATH")).toBe(true);
     expect(BOX_ENV_NAMES.has("PATH")).toBe(true);
   });
 
@@ -32,10 +32,10 @@ describe("the box's environment allow-list", () => {
     for (const name of ["ANTIGRAVITY_HARNESS_PATH", "AGY_ACP_FORCE_FILE_STORAGE", "BROWSER", "GEMINI_HOME"]) expect(boxEnvironmentAllows(name), name).toBe(true);
   });
 
-  it("keeps the keys one spawn vouches for, under any name, past the allow-list and the deny, never past the never-list or DUSK_", () => {
-    const deny = new Set(["OPENCODE_API_KEY", "DUSK_COMPOSIO_BROKER_TOKEN"]);
-    const allow = new Set(["NANO_GPT_API_KEY", "OPENCODE_API_KEY", "DUSK_LICENSE_KEY", "DUSK_CLOUD_X_TOKEN", "DUSK_COMPOSIO_BROKER_TOKEN"]);
-    const env = { NANO_GPT_API_KEY: "n", OPENCODE_API_KEY: "o", DUSK_LICENSE_KEY: "l", DUSK_CLOUD_X_TOKEN: "c", DUSK_COMPOSIO_BROKER_TOKEN: "b", DEEPSEEK_API_KEY: "d" };
+  it("keeps the keys one spawn vouches for, under any name, past the allow-list and the deny, never past the never-list or MADANI_", () => {
+    const deny = new Set(["OPENCODE_API_KEY", "MADANI_COMPOSIO_BROKER_TOKEN"]);
+    const allow = new Set(["NANO_GPT_API_KEY", "OPENCODE_API_KEY", "MADANI_LICENSE_KEY", "MADANI_CLOUD_X_TOKEN", "MADANI_COMPOSIO_BROKER_TOKEN"]);
+    const env = { NANO_GPT_API_KEY: "n", OPENCODE_API_KEY: "o", MADANI_LICENSE_KEY: "l", MADANI_CLOUD_X_TOKEN: "c", MADANI_COMPOSIO_BROKER_TOKEN: "b", DEEPSEEK_API_KEY: "d" };
     expect(boxEnvironment(env, deny, allow)).toEqual({ NANO_GPT_API_KEY: "n", OPENCODE_API_KEY: "o" });
     expect(boxEnvironment(env, deny)).toEqual({});
   });

@@ -1,8 +1,8 @@
-// Deepgram Aura voices; DUSK_DEEPGRAM_API overrides the base URL in tests.
+// Deepgram Aura voices; MADANI_DEEPGRAM_API overrides the base URL in tests.
 import type { Audio, Voice } from "./elevenlabs.ts";
 import { readAudio, verifyWith, voiceRefusal, type VerifyResult } from "./http-audio.ts";
 
-const api = () => (process.env.DUSK_DEEPGRAM_API || "https://api.deepgram.com/v1").replace(/\/+$/, "");
+const api = () => (process.env.MADANI_DEEPGRAM_API || "https://api.deepgram.com/v1").replace(/\/+$/, "");
 const VOICES: ReadonlyArray<[name: string, description: string]> = [
   ["thalia", "Feminine"], ["andromeda", "Feminine"], ["apollo", "Masculine"], ["arcas", "Masculine"], ["aries", "Masculine"],
   ["amalthea", "Feminine, Filipino"], ["asteria", "Feminine"], ["athena", "Feminine"], ["atlas", "Masculine"], ["aurora", "Feminine"],

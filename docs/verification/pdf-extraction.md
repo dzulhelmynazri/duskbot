@@ -41,7 +41,7 @@ Chinese-font document using shipped character maps and fonts. PDF.js and its
 license ship in the server resources; its parser is absent from the main
 server startup bundle.
 
-On macOS, repeat the packaged smoke with `DUSK_SMOKE_PDF_RUNTIME` set to the
+On macOS, repeat the packaged smoke with `MADANI_SMOKE_PDF_RUNTIME` set to the
 installed Electron executable. Only its PDF probes use that executable, with
 `ELECTRON_RUN_AS_NODE=1`; no desktop window or user profile opens. This passed
 with Electron 43.7.9 as well as Node 26, using the copied server resources with

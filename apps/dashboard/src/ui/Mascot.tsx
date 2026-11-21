@@ -5,7 +5,7 @@ import { createPixel, type PixelBot } from "@/pixel/engine";
 import { pixelReaction, pixelState, pointerGaze, type MarkReaction, type MarkState } from "@/components/mascot-engine";
 import { MASCOT_INK } from "@/lib/mascot";
 import { cx } from "./kit";
-import { duskBody } from "../../../../shared/body-migration";
+import { madaniBody } from "../../../../shared/body-migration";
 import type { PixelBodyId } from "../../../../shared/pixel-bodies";
 
 const query = typeof window !== "undefined" ? window.matchMedia("(prefers-reduced-motion: reduce)") : null;
@@ -20,7 +20,7 @@ export const colorOf = (c: string | null | undefined): BotColour => (c && Object
 export type BotState = MarkState | BotMood;
 export type BotReaction = MarkReaction | "bounce" | "perk" | "shake" | "squish" | "dizzy" | "celebrate" | "blink";
 
-export const bodyOf = (b: string | null | undefined): PixelBodyId => duskBody(b);
+export const bodyOf = (b: string | null | undefined): PixelBodyId => madaniBody(b);
 
 export interface MascotHandle { react(kind: BotReaction): void; lookAt(x: number | null, y?: number): void }
 
@@ -62,7 +62,7 @@ function watch(el: Element, bot: PixelBot, reach: number) {
   };
 }
 
-/** a pixel dusk bot: still at rest with blinks, lively while busy; it stops off screen and rests under reduced motion */
+/** a pixel madani bot: still at rest with blinks, lively while busy; it stops off screen and rests under reduced motion */
 export const Mascot = forwardRef<MascotHandle, MascotProps>(function Mascot({ color = "blue", body, size = 28, state = "idle", label, still = false, track = false, gaze = null, tappable = false, className }, ref) {
   const el = useRef<HTMLSpanElement>(null);
   const bot = useRef<PixelBot | null>(null);

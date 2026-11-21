@@ -27,7 +27,7 @@ const WELCOME_HINT: Partial<Record<CloudSetupStep, LocaleKey>> = {
   move: "cloudWelcome.compact.bring", engine: "cloudSetup.engine.hint", files: "cloudWelcome.compact.files",
 };
 
-const COLLAPSED_KEY = "dusk.cloudSetup.collapsed";
+const COLLAPSED_KEY = "madani.cloudSetup.collapsed";
 function storedCollapsed(): boolean {
   try { return globalThis.localStorage?.getItem(COLLAPSED_KEY) === "1"; } catch { return false; }
 }

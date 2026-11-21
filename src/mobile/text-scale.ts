@@ -10,7 +10,7 @@ export const TEXT_SCALE_MAX = 1.35;
 export type TextSize = "system" | "small" | "default" | "large" | "larger";
 export const TEXT_SIZES: readonly TextSize[] = ["system", "small", "default", "large", "larger"];
 const FIXED: Record<Exclude<TextSize, "system">, number> = { small: 0.88, default: 1, large: 1.12, larger: 1.25 };
-const KEY = "dusk.mobile.textSize";
+const KEY = "madani.mobile.textSize";
 const listeners = new Set<() => void>();
 
 /** The app's text zoom for a measured system body size. */
@@ -71,7 +71,7 @@ export function followSystemTextSize(platform: Pick<MobilePlatform, "kind" | "on
   const apply = () => {
     current = textScale(readTextSize(), platform.kind, measure);
     zoom(Math.round(current * 100));
-    window.dispatchEvent(new Event("dusk:text-scale"));
+    window.dispatchEvent(new Event("madani:text-scale"));
   };
   apply();
   const stopResume = platform.onResume?.(apply);

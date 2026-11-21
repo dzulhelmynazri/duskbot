@@ -60,7 +60,7 @@ function BotCell({ bot, mood, now }: { bot: BotReport; mood: BotMood; now: numbe
   );
 }
 
-/** a dusk cloud that exists: its state and power up top, its bots on the left, live cpu and memory on the right */
+/** a madani cloud that exists: its state and power up top, its bots on the left, live cpu and memory on the right */
 export function CloudCard({ cloud, detail }: { cloud: CloudDesktop; detail: WorkspaceDetail | null }) {
   const { catalog } = useCloud();
   const now = useNow(30_000);
@@ -83,7 +83,7 @@ export function CloudCard({ cloud, detail }: { cloud: CloudDesktop; detail: Work
             {asleep && <span className="absolute -right-1 -top-2"><i className="zz not-italic">z</i><i className="zz not-italic">z</i><i className="zz not-italic">z</i></span>}
           </span>
           <div className="min-w-0">
-            <div className="t-meta">dusk cloud</div>
+            <div className="t-meta">madani cloud</div>
             <h2 id="cloud-card-title" className="mt-1 truncate text-24 font-medium tracking-[-0.035em] text-ink">{cloud.name}</h2>
             <div className="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1">
               <CloudStatus cloud={cloud} />
@@ -126,7 +126,7 @@ export function CloudCard({ cloud, detail }: { cloud: CloudDesktop; detail: Work
   );
 }
 
-const HIDE = "dusk-dash-move-guide";
+const HIDE = "madani-dash-move-guide";
 
 /** bots still on a mac once a cloud exists: the move in three plain steps, and the link that opens the app's cloud move */
 export function MoveGuide({ cloud, rows, cloudBots }: { cloud: CloudDesktop; rows: BotRow[]; cloudBots: BotReport[] | null }) {
@@ -136,8 +136,8 @@ export function MoveGuide({ cloud, rows, cloudBots }: { cloud: CloudDesktop; row
   if (hidden || !left.length || cloudBots === null) return null;
   const hide = () => { try { localStorage.setItem(HIDE, cloud.id); } catch {} setHidden(true); };
   const steps = [
-    { title: "open dusk bot on your mac", body: "the one signed in to this account. it asks if you want to move your bots." },
-    { title: "pick move my bots", body: "chats, memory and routines go over. your mac keeps its copy until dusk cloud has checked it all arrived." },
+    { title: "open madani bot on your mac", body: "the one signed in to this account. it asks if you want to move your bots." },
+    { title: "pick move my bots", body: "chats, memory and routines go over. your mac keeps its copy until madani cloud has checked it all arrived." },
     { title: "that's it", body: `they keep working on ${cloud.name}, even with your mac shut.` },
   ];
   return (
@@ -161,7 +161,7 @@ export function MoveGuide({ cloud, rows, cloudBots }: { cloud: CloudDesktop; row
         ))}
       </ol>
       <div className="mt-5 flex flex-wrap items-center gap-x-5 gap-y-2">
-        <Button variant="primary" onClick={() => openApp(appLink.cloud)}><Laptop size={16} strokeWidth={1.5} aria-hidden />open dusk bot on my mac</Button>
+        <Button variant="primary" onClick={() => openApp(appLink.cloud)}><Laptop size={16} strokeWidth={1.5} aria-hidden />open madani bot on my mac</Button>
       </div>
     </Card>
   );

@@ -43,7 +43,7 @@ describe("Reddit's names", () => {
 });
 
 describe("which browsers skip Reddit", () => {
-  it("is only dusk cloud's: the desktop's and a self-hosted server's open it", () => {
+  it("is only madani cloud's: the desktop's and a self-hosted server's open it", () => {
     for (const name of REDDIT_NAMES) {
       expect(refusesReddit("cloud", name), name).toBe(true);
       expect(refusesReddit("desktop", name), name).toBe(false);
@@ -79,7 +79,7 @@ describe("which browsers skip Reddit", () => {
   });
 });
 
-describe("the egress gate on dusk cloud", () => {
+describe("the egress gate on madani cloud", () => {
   const ownership = { botOwned: async () => false } as unknown as ListenerOwnership;
   /** Every name a gate looks up. None resolves, so nothing here reaches the network. */
   const egressOn = (host: EgressHost) => {

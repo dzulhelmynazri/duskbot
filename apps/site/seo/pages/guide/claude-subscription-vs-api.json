@@ -57,7 +57,7 @@
     },
     {
       "h": "count hosting only when the job needs it",
-      "md": "**add hosting only when your laptop needs to be off.** dusk's ai usage stays on your provider bill. personal use on your own computer is free. cloud plus costs $20/month; pro costs $50/month. that buys the computer; ai usage stays separate.[^7]\n\nput the machine in the [always-on calculator](/tools/always-on-cost) and other costs in the [agent cost guide](/guides/how-much-does-an-ai-agent-cost)."
+      "md": "**add hosting only when your laptop needs to be off.** madani's ai usage stays on your provider bill. personal use on your own computer is free. cloud plus costs $20/month; pro costs $50/month. that buys the computer; ai usage stays separate.[^7]\n\nput the machine in the [always-on calculator](/tools/always-on-cost) and other costs in the [agent cost guide](/guides/how-much-does-an-ai-agent-cost)."
     }
   ],
   "faq": [
@@ -106,8 +106,8 @@
       "checked": "2026-11-12"
     },
     {
-      "label": "dusk bot: cloud and ai costs",
-      "url": "/docs/dusk-cloud"
+      "label": "madani bot: cloud and ai costs",
+      "url": "/docs/madani-cloud"
     }
   ],
   "quick": {

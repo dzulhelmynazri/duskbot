@@ -11,7 +11,7 @@ import { fileURLToPath } from "node:url";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { afterAll, beforeAll, expect, it, vi } from "vitest";
-import { launchVerificationServer, verificationServerArgs, verificationServerEnvironment, type VerificationServer } from "../control-dusk.ts";
+import { launchVerificationServer, verificationServerArgs, verificationServerEnvironment, type VerificationServer } from "../control-madani.ts";
 import { waitForExit } from "../../server/testing/cleanup.ts";
 import { hostTimeout } from "../../server/testing/host-timeout.ts";
 
@@ -54,7 +54,7 @@ beforeAll(async () => {
     stubCalls.push(`${req.method} ${url.split("?")[0]}`);
     const reply = (status: number, body: unknown) => { res.writeHead(status, { "content-type": "application/json" }); res.end(JSON.stringify(body)); };
     if (url.startsWith("/composio/tool_router/session")) {
-      return reply(201, { session_id: "trs_readback", mcp: { type: "http", url: "https://app.composio.dev/tool_router/v3/trs_readback/mcp" }, config: { user_id: "duskbot_readback" } });
+      return reply(201, { session_id: "trs_readback", mcp: { type: "http", url: "https://app.composio.dev/tool_router/v3/trs_readback/mcp" }, config: { user_id: "madanibot_readback" } });
     }
     if (url === "/gemini/interactions") {
       const input = JSON.parse(raw);
@@ -83,10 +83,10 @@ beforeAll(async () => {
   writeFileSync(configFile, JSON.stringify({ ...JSON.parse(readFileSync(configFile, "utf8")), decider }));
   const env = {
     ...verificationServerEnvironment({}, fixture.info.dataDir, Number(new URL(fixture.info.url).port)),
-    DUSK_COMPOSIO_API: `${origin}/composio`, DUSK_COMPOSIO_TOOLKITS_API: `${origin}/composio`,
-    DUSK_GEMINI_TTS_API: `${origin}/gemini`,
-    DUSK_ELEVENLABS_API: `${origin}/eleven`, DUSK_FISH_AUDIO_API: `${origin}/fish`,
-    DUSK_DEEPGRAM_API: `${origin}/deepgram`, DUSK_CARTESIA_API: `${origin}/cartesia`, DUSK_ASSEMBLYAI_API: `${origin}/assemblyai`,
+    MADANI_COMPOSIO_API: `${origin}/composio`, MADANI_COMPOSIO_TOOLKITS_API: `${origin}/composio`,
+    MADANI_GEMINI_TTS_API: `${origin}/gemini`,
+    MADANI_ELEVENLABS_API: `${origin}/eleven`, MADANI_FISH_AUDIO_API: `${origin}/fish`,
+    MADANI_DEEPGRAM_API: `${origin}/deepgram`, MADANI_CARTESIA_API: `${origin}/cartesia`, MADANI_ASSEMBLYAI_API: `${origin}/assemblyai`,
   };
   const log = openSync(fixture.info.logPath, "a", 0o600);
   server = spawn(process.execPath, verificationServerArgs(env), { cwd: fileURLToPath(ROOT), env, stdio: ["ignore", log, log] });

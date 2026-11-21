@@ -26,17 +26,17 @@ export function memoryMailer() {
 export function consoleMailer(): Mailer {
   return { async send(message) { console.log(`code for ${message.to}: ${message.text.match(/\b\d{8}\b/)?.[0] ?? ""}`); } };
 }
-/** test harnesses sign up at <anything>@qa.dusk.test (.test is reserved, RFC 2606): their mail never reaches a provider */
-export const TEST_MAIL_DOMAIN = "qa.dusk.test";
-// qa@dusk.bot, qa-<x>@dusk.bot and qa+<x>@dusk.bot: older harnesses signed up there, and dusk.bot's catch-all lands in the owner's inbox
-const OWN_QA = /^qa(?:[-+._][^@]*)?@dusk\.bot$/;
+/** test harnesses sign up at <anything>@qa.madani.test (.test is reserved, RFC 2606): their mail never reaches a provider */
+export const TEST_MAIL_DOMAIN = "qa.madani.test";
+// qa@madani.bot, qa-<x>@madani.bot and qa+<x>@madani.bot: older harnesses signed up there, and madani.bot's catch-all lands in the owner's inbox
+const OWN_QA = /^qa(?:[-+._][^@]*)?@madani\.bot$/;
 export const isTestAddress = (email: unknown) => {
   if (typeof email !== "string") return false;
   const address = email.trim().toLowerCase();
   return address.endsWith(`@${TEST_MAIL_DOMAIN}`) || OWN_QA.test(address);
 };
 // the preview end-to-end runs sign up at a real throwaway inbox (apps/cloud-service/scripts/preview-e2e.ts) to prove a code arrives
-const E2E_LOCAL = /^dusk-(?:e2e|appconn)-[a-z0-9]+@/;
+const E2E_LOCAL = /^madani-(?:e2e|appconn)-[a-z0-9]+@/;
 /** a harness's account: it gets sign-in codes and links it acts on, never the courtesy mail (welcome, cloud ready, receipts) */
 export const isTestAccount = (email: unknown) => isTestAddress(email) || (typeof email === "string" && E2E_LOCAL.test(email.trim().toLowerCase()));
 export interface TestMail { to: string; subject: string; code: string | null; link: string | null; at: number }
@@ -63,9 +63,9 @@ export function createTestMailbox({ readable, now = Date.now, ttlMs = 30 * 60_00
 export function sinkTestMail(inner: Mailer, box: TestMailbox): Mailer {
   return { async send(message) { if (isTestAddress(message.to)) { box.keep(message); return; } return inner.send(message); } };
 }
-export const REPLY_TO = "hello@dusk.bot";
-export const SENDER_NAME = "dusk bot";
-/** the address out of "Name <address>" or a bare address; every email goes out under the name "dusk bot" */
+export const REPLY_TO = "hello@madani.bot";
+export const SENDER_NAME = "madani bot";
+/** the address out of "Name <address>" or a bare address; every email goes out under the name "madani bot" */
 export const senderAddress = (from: string) => (from.match(/<([^>]+)>\s*$/)?.[1] ?? from).trim();
 export function resendMailer(options: { apiKey: string; from: string; fetch?: typeof fetch }): Mailer {
   const request = options.fetch ?? fetch;
@@ -73,7 +73,7 @@ export function resendMailer(options: { apiKey: string; from: string; fetch?: ty
     try {
       const response = await request("https://api.resend.com/emails", { method: "POST", redirect: "error", signal: AbortSignal.timeout(15_000),
         headers: { authorization: `Bearer ${options.apiKey}`, "content-type": "application/json" },
-        // the dusk.bot domain has open and click tracking off in resend, and no list-unsubscribe header is added
+        // the madani.bot domain has open and click tracking off in resend, and no list-unsubscribe header is added
         body: JSON.stringify({ from: `${SENDER_NAME} <${senderAddress(options.from)}>`, reply_to: REPLY_TO, to: message.to, subject: message.subject, html: message.html, text: message.text }) });
       if (!response.ok) throw await failure(response);
       await response.body?.cancel();
@@ -96,32 +96,32 @@ export function brevoMailer(options: { apiKey: string; from: string; fetch?: typ
   } };
 }
 /** the providers the env configures, behind the router (auth/mail-router.ts): transactional mail goes through resend and
- *  everything else through brevo, each within its caps, falling back to the other. DUSK_MAIL_PROVIDER names the one that
+ *  everything else through brevo, each within its caps, falling back to the other. MADANI_MAIL_PROVIDER names the one that
  *  must be there (brevo or resend); console prints codes, development only */
 export function mailerFromEnv(env: NodeJS.ProcessEnv, { dev, usage, now }: { dev: boolean; usage?: MailUsageStore; now?: () => number }): RoutedMailer | Mailer {
-  const provider = env.DUSK_MAIL_PROVIDER ?? (dev ? "console" : "");
+  const provider = env.MADANI_MAIL_PROVIDER ?? (dev ? "console" : "");
   if (provider === "console" && dev) return consoleMailer();
-  if (provider !== "resend" && provider !== "brevo") throw new Error("Configure DUSK_MAIL_PROVIDER=brevo or resend for email delivery; console mail is allowed only in development.");
-  const key = provider === "resend" ? env.DUSK_RESEND_API_KEY : env.DUSK_BREVO_API_KEY;
-  if (!key || !env.DUSK_MAIL_FROM) throw new Error(`DUSK_MAIL_PROVIDER=${provider} requires DUSK_${provider.toUpperCase()}_API_KEY and DUSK_MAIL_FROM.`);
-  const from = env.DUSK_MAIL_FROM;
+  if (provider !== "resend" && provider !== "brevo") throw new Error("Configure MADANI_MAIL_PROVIDER=brevo or resend for email delivery; console mail is allowed only in development.");
+  const key = provider === "resend" ? env.MADANI_RESEND_API_KEY : env.MADANI_BREVO_API_KEY;
+  if (!key || !env.MADANI_MAIL_FROM) throw new Error(`MADANI_MAIL_PROVIDER=${provider} requires MADANI_${provider.toUpperCase()}_API_KEY and MADANI_MAIL_FROM.`);
+  const from = env.MADANI_MAIL_FROM;
   return createMailRouter({
     providers: {
-      resend: env.DUSK_RESEND_API_KEY ? resendMailer({ apiKey: env.DUSK_RESEND_API_KEY, from }) : null,
-      brevo: env.DUSK_BREVO_API_KEY ? brevoMailer({ apiKey: env.DUSK_BREVO_API_KEY, from }) : null,
+      resend: env.MADANI_RESEND_API_KEY ? resendMailer({ apiKey: env.MADANI_RESEND_API_KEY, from }) : null,
+      brevo: env.MADANI_BREVO_API_KEY ? brevoMailer({ apiKey: env.MADANI_BREVO_API_KEY, from }) : null,
     },
     caps: mailCapsFromEnv(env), usage: usage ?? memoryMailUsage(), now,
   });
 }
-export function codeMessage(to: string, code: string, cfg: EmailConfig = emailConfig(process.env, { publicUrl: "https://dusk.bot" })): MailMessage {
+export function codeMessage(to: string, code: string, cfg: EmailConfig = emailConfig(process.env, { publicUrl: "https://madani.bot" })): MailMessage {
   return { to, ...codeEmail(cfg, { code }) };
 }
 /** "Can't sign in?": the code (and, for the website, a one-time link), plus the ways this address signs in. `ways` null: no
  * account uses the address, so no code goes out, only that answer. */
-export function magicLinkMessage(to: string, link: string, cfg: EmailConfig = emailConfig(process.env, { publicUrl: "https://dusk.bot" })): MailMessage {
+export function magicLinkMessage(to: string, link: string, cfg: EmailConfig = emailConfig(process.env, { publicUrl: "https://madani.bot" })): MailMessage {
   return { to, ...magicLinkEmail(cfg, { link }) };
 }
 export function recoveryMessage(to: string, input: { code: string; link?: string | null; ways: string[] | null },
-  cfg: EmailConfig = emailConfig(process.env, { publicUrl: "https://dusk.bot" })): MailMessage {
+  cfg: EmailConfig = emailConfig(process.env, { publicUrl: "https://madani.bot" })): MailMessage {
   return { to, ...recoveryEmail(cfg, input) };
 }

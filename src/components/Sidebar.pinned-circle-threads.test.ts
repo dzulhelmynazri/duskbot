@@ -167,7 +167,7 @@ describe("pinned circle order", () => {
     const dropEvent = { preventDefault: vi.fn(), stopPropagation: vi.fn(), clientX: 70, clientY: 40, currentTarget: { getBoundingClientRect: () => rect }, dataTransfer: { types: [PINNED_CIRCLE_DRAG_TYPE], getData: () => "comet" } };
     (button.props.onDrop as Handler)(dropEvent);
     expect(drag.reorder).toHaveBeenLastCalledWith("comet", "atlas", "after");
-    (button.props.onDrop as Handler)({ ...dropEvent, dataTransfer: { types: ["application/x-dusk-folder"], getData: () => "comet" } });
+    (button.props.onDrop as Handler)({ ...dropEvent, dataTransfer: { types: ["application/x-madani-folder"], getData: () => "comet" } });
     expect(drag.reorder).toHaveBeenCalledTimes(3);
 
     let still: ReactNode;

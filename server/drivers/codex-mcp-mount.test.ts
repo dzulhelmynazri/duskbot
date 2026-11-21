@@ -11,7 +11,7 @@ describe("codexParallelMcpArgs", () => {
   });
 
   it("keeps the screen-driving and unknown servers one call at a time", () => {
-    for (const name of ["computer", "browser", "voluum", "duskbot_phone"]) expect(codexParallelMcpArgs(name, name, "0.170.2")).toEqual([]);
+    for (const name of ["computer", "browser", "voluum", "madanibot_phone"]) expect(codexParallelMcpArgs(name, name, "0.170.2")).toEqual([]);
   });
 
   it("adds nothing on a Codex older than the field or one not probed yet", () => {

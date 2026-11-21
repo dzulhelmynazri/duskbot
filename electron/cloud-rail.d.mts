@@ -46,7 +46,7 @@ export interface RailPlace {
   /** A server of the person's own, theirs alone by its own word, that this computer's bots may move to: its menu offers
    * Make … my home. */
   makeHome?: true;
-  /** A server of the person's own, set up with the install line: its menu offers moving it to dusk cloud. */
+  /** A server of the person's own, set up with the install line: its menu offers moving it to madani cloud. */
   cloudMove?: true;
 }
 /** ＋'s choices here: buying a Cloud, pasting a server's pairing link, typing its address on this computer's Settings, and

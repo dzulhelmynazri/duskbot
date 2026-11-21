@@ -1,5 +1,5 @@
 // Friendly names adapted from Minilytics (https://github.com/surendrapandar/minilytics),
-// Copyright (c) 2026 surendrapandar, MIT License. Adapted for dusk bot.
+// Copyright (c) 2026 surendrapandar, MIT License. Adapted for madani bot.
 
 import { PIXEL_BODIES, ELECTRIC, type ElectricColour, type PixelBodyId } from "../../../../shared/pixel-bodies";
 

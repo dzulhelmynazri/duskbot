@@ -45,12 +45,12 @@ describe("experimental feature flags", () => {
   });
 
   it("shows and prompts the phone app in a plain build, since both phone apps are out, and hides it only when a build asks", () => {
-    vi.stubEnv("VITE_DUSK_PHONE_APP", "");
+    vi.stubEnv("VITE_MADANI_PHONE_APP", "");
     expect(phoneAppEnabled()).toBe(true);
     expect(phoneAppPrompted()).toBe(true);
-    vi.stubEnv("VITE_DUSK_PHONE_APP", "1");
+    vi.stubEnv("VITE_MADANI_PHONE_APP", "1");
     expect(phoneAppEnabled()).toBe(true);
-    vi.stubEnv("VITE_DUSK_PHONE_APP", "0");
+    vi.stubEnv("VITE_MADANI_PHONE_APP", "0");
     expect(phoneAppEnabled()).toBe(false);
     expect(phoneAppPrompted()).toBe(false);
     vi.unstubAllEnvs();

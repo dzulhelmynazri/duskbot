@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import type { CompanionAccountState } from "../types/duskDesktop";
+import type { CompanionAccountState } from "../types/madaniDesktop";
 import {
   companionStateRefreshIsCurrent,
   mutateCompanionBridgeState,
@@ -148,7 +148,7 @@ describe("manual pairing code placement", () => {
   });
 
   it("keeps the code in troubleshooting details when a QR is available", () => {
-    expect(phonePairingManualCodeMode(true, "duskbot://pair?token=example")).toBe("details");
+    expect(phonePairingManualCodeMode(true, "madanibot://pair?token=example")).toBe("details");
     expect(phonePairingManualCodeMode(false, null)).toBe("hidden");
   });
 });

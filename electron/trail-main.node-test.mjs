@@ -34,7 +34,7 @@ test("a page main does not trust writes nothing", () => {
 });
 
 test("the export is scrubbed a second time and starts with what it holds", async () => {
-  const dir = fs.mkdtempSync(path.join(os.tmpdir(), "dusk-trail-export-"));
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), "madani-trail-export-"));
   const now = Date.parse("2026-11-14T10:00:00Z");
   fs.writeFileSync(path.join(dir, "trail.jsonl"), [
     { ts: "2026-11-14T09:00:00.000Z", ev: "link.path", from: "direct", to: "relay", host: "my-vps.example.net", msg: "ssh to 10.1.2.3 failed for sidd@example.com in /Users/sidd/x" },

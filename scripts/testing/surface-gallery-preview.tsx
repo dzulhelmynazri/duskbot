@@ -39,7 +39,7 @@ function Probe() {
   return null;
 }
 
-// ?card=cloud-ready: the cloud-ready card in the sidebar footer, as a new dusk cloud shows it.
+// ?card=cloud-ready: the cloud-ready card in the sidebar footer, as a new madani cloud shows it.
 // ?card=connect-ai: Connect an AI opened from inside the chat's composer dock, where the no-AI card opens it, so the
 // gallery's cover check sees whether its scrim escapes the dock's stacking context and covers the whole window
 const heldUpdate = (state: { ready: string | null; available: string; progress: number | null }) =>
@@ -58,16 +58,16 @@ const GALLERY_OFFER: CloudOffer = { recommended: "pro", refundDays: 14, plans: [
   { tier: "team", label: "Team", amount: 11900, allowances: { ...machine(4, 8, 60), seats: 2 } },
 ] };
 // ?card=cloud-stale-checkout: a free account whose Pro checkout was left open hours ago (main found it after a restart),
-// then Get dusk cloud: the plans show, with Finish your Pro checkout, never the payment screen
+// then Get madani cloud: the plans show, with Finish your Pro checkout, never the payment screen
 if (params.get("card") === "cloud-stale-checkout") {
   const account = { status: "connected", entitlement: { plan: "free" }, account: { email: "sam@example.test" }, checkout: { plan: "pro", startedAt: Date.now() - 5 * 3600_000, found: true } };
   const offer = { ...GALLERY_OFFER, checkout: { plan: "pro", openUntil: Date.now() + 20 * 60_000 } };
-  Object.assign(window, { duskDesktop: { ...(window as { duskDesktop?: object }).duskDesktop, cloudAccount: {
+  Object.assign(window, { madaniDesktop: { ...(window as { madaniDesktop?: object }).madaniDesktop, cloudAccount: {
     state: async () => account, onState: () => () => undefined, offer: async () => offer, sheet: async () => undefined,
   } } });
 }
 
-// ?card=cloud-mac: this Mac's desktop app with a ready dusk cloud on the account, the bots kept here, and Screen Recording and
+// ?card=cloud-mac: this Mac's desktop app with a ready madani cloud on the account, the bots kept here, and Screen Recording and
 // Accessibility not allowed yet; Allow turns each on, as macOS would
 if (params.get("card") === "cloud-mac") {
   const account = { status: "connected", entitlement: { plan: "pro" }, account: { email: "sam@example.test" },
@@ -76,7 +76,7 @@ if (params.get("card") === "cloud-mac") {
   const capabilities = { host: { platform: "darwin", label: "This Mac", session: "unknown", packaged: true }, windowChrome: "native",
     screenPreview: { available: false, interaction: "none" }, dictation: { available: false, engine: "none", onDevice: false },
     localComputer: { available: false, support: "supported", enabled: true, status: "unavailable", reasonCode: "permission-denied" } };
-  Object.assign(window, { duskDesktop: { ...(window as { duskDesktop?: object }).duskDesktop, platform: "darwin",
+  Object.assign(window, { madaniDesktop: { ...(window as { madaniDesktop?: object }).madaniDesktop, platform: "darwin",
     getCapabilities: async () => capabilities,
     cloudAccount: { state: async () => account, onState: () => () => undefined, offer: async () => GALLERY_OFFER, sheet: async () => undefined,
       connectHome: async () => undefined, openDashboard: async () => undefined },
@@ -97,8 +97,8 @@ function Cards() {
   const update = APP_UPDATE[params.get("card") ?? ""];
   if (update && slot) return createPortal(<SidebarSpot bridge={update} />, slot);
   if (params.get("card") === "cloud-ready") return <CloudReady slot={slot} onDone={() => undefined} />;
-  // ?card=cloud-nudge: the dusk cloud offer as a scheduled showing puts it in the spot above the account row
-  if (params.get("card") === "cloud-nudge" && slot) return createPortal(<SpotCloudCard cta={{ id: "cloud", title: "Keep your bots working", art: "clock", closeLabel: "Hide", onStart: () => undefined, onClose: () => undefined }} card={{ body: "dusk cloud keeps your bots working, even when your Mac is off.", action: "Keep them working", invested: false }} />, slot);
+  // ?card=cloud-nudge: the madani cloud offer as a scheduled showing puts it in the spot above the account row
+  if (params.get("card") === "cloud-nudge" && slot) return createPortal(<SpotCloudCard cta={{ id: "cloud", title: "Keep your bots working", art: "clock", closeLabel: "Hide", onStart: () => undefined, onClose: () => undefined }} card={{ body: "madani cloud keeps your bots working, even when your Mac is off.", action: "Keep them working", invested: false }} />, slot);
   // ?card=toast-done / toast-error: a passing toast, held on screen
   if (params.get("card") === "toast-done") return <Toast text="Pepper is ready to use" action={{ label: "Undo", onClick: () => undefined }} timeoutMs={600_000} onDone={() => undefined} />;
   if (params.get("card") === "toast-error") return <Toast tone="error" text="Couldn't save Pepper's name. Try again." timeoutMs={600_000} onDone={() => undefined} />;

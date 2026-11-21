@@ -9,7 +9,7 @@ interface MoneyRecords {
   checkouts: ReadonlyArray<{ subscriptionId: string | null }>;
 }
 
-/** which money the panel counts, from the x-dusk-admin-money header: live unless it asks for test or all */
+/** which money the panel counts, from the x-madani-admin-money header: live unless it asks for test or all */
 export const moneyViewOf = (value: unknown): MoneyView => value === "test" || value === "all" ? value : "live";
 
 /** the records made in one mode: a record without a stamp was made in the server's provider mode (preview's dodo is test),

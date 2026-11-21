@@ -24,7 +24,7 @@ function mount(onClose = () => {}) {
 
 describe("PanelPlaceholder", () => {
   it("draws the panel's shell while the window loads, never a remembered bot's face or name, and closes", () => {
-    localStorage.setItem("duskbot.botPanelLast.v1", JSON.stringify({ id: "b1", name: "Tally", color: "green" }));
+    localStorage.setItem("madanibot.botPanelLast.v1", JSON.stringify({ id: "b1", name: "Tally", color: "green" }));
     const onClose = vi.fn();
     const host = mount(onClose);
     const panel = host.querySelector("[data-panel-placeholder]")!;

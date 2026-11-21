@@ -10,7 +10,7 @@
     "ai virtual assistant for small business",
     "best ai agents for small business"
   ],
-  "answer": "**you opened a shop, not a second career in inbox admin.** a dusk bot can bring you customer questions, invoice mismatches and tomorrow’s booking gaps from the mail, files and calendar you allow. it can draft replies to reviews you attach too. business use needs a work license. start read only, with answers in chat for you to use.",
+  "answer": "**you opened a shop, not a second career in inbox admin.** a madani bot can bring you customer questions, invoice mismatches and tomorrow’s booking gaps from the mail, files and calendar you allow. it can draft replies to reviews you attach too. business use needs a work license. start read only, with answers in chat for you to use.",
   "updated": "2026-11-12",
   "review": {
     "status": "approved",
@@ -85,7 +85,7 @@
   "sections": [
     {
       "h": "give it the rules customers keep asking about",
-      "md": "**stop retyping your opening hours and cancellation policy.** attach the current rules, services and hours. name the version to use and have the bot bring exceptions to you.\n\nkeep the first drafts in dusk chat with gmail read only. once the tone is right, allow specific draft actions if saving replies in the mailbox helps. you still decide what the customer gets."
+      "md": "**stop retyping your opening hours and cancellation policy.** attach the current rules, services and hours. name the version to use and have the bot bring exceptions to you.\n\nkeep the first drafts in madani chat with gmail read only. once the tone is right, allow specific draft actions if saving replies in the mailbox helps. you still decide what the customer gets."
     },
     {
       "h": "a polite reply still needs the facts",
@@ -93,7 +93,7 @@
     },
     {
       "h": "budget for the business, not the personal trial",
-      "md": "**budget for business use from the start.** dusk cloud pro includes a work license for one person; see [pricing](/pricing). your ai provider bills usage separately. free personal use does not cover the shop’s work.\n\nlocal routines need dusk running on an awake computer. dusk cloud is another home for the bots. keep reviewing bookings normally during the trial; the bot only sees the mail, calendar and records you give it."
+      "md": "**budget for business use from the start.** madani cloud pro includes a work license for one person; see [pricing](/pricing). your ai provider bills usage separately. free personal use does not cover the shop’s work.\n\nlocal routines need madani running on an awake computer. madani cloud is another home for the bots. keep reviewing bookings normally during the trial; the bot only sees the mail, calendar and records you give it."
     }
   ],
   "faq": [
@@ -112,19 +112,19 @@
   ],
   "sources": [
     {
-      "label": "dusk bot docs: bots",
+      "label": "madani bot docs: bots",
       "url": "/docs/bots"
     },
     {
-      "label": "dusk bot docs: files and apps",
+      "label": "madani bot docs: files and apps",
       "url": "/docs/files-and-apps"
     },
     {
-      "label": "dusk bot docs: routines",
+      "label": "madani bot docs: routines",
       "url": "/docs/routines"
     },
     {
-      "label": "dusk bot docs: account and billing",
+      "label": "madani bot docs: account and billing",
       "url": "/docs/account-and-billing"
     },
     {

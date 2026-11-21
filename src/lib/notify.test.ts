@@ -62,7 +62,7 @@ describe("the desktop app on a Mac", () => {
   it("never posts a system notification or asks for the permission, and keeps the app's own ping", async () => {
     const { notices, requestPermission } = installNotification("granted");
     const show = vi.fn(async () => true);
-    vi.stubGlobal("window", { focus: vi.fn(), duskDesktop: { platform: "darwin", desktopNotifications: { show } } });
+    vi.stubGlobal("window", { focus: vi.fn(), madaniDesktop: { platform: "darwin", desktopNotifications: { show } } });
     expect(systemNotificationsAllowed()).toBe(false);
     showNotification(frame, vi.fn());
     showNotification({ ...frame, kind: "approval" }, vi.fn());
@@ -124,7 +124,7 @@ describe("desktop notifications", () => {
     const { notices } = installNotification("granted");
     showNotification(frame, vi.fn());
     expect(notices).toHaveLength(1);
-    expect(notices[0]).toMatchObject({ title: frame.title, options: { body: frame.body, tag: `duskbot:${frame.botId}` } });
+    expect(notices[0]).toMatchObject({ title: frame.title, options: { body: frame.body, tag: `madanibot:${frame.botId}` } });
   });
 
   it("stays quiet only when the exact target thread is already visible", () => {
@@ -141,7 +141,7 @@ describe("desktop notifications", () => {
     showNotification({ ...frame, kind: "spend", title: "Monthly spend limit reached" }, vi.fn(), "https://avatar.test/a.png", frame.threadId);
 
     expect(notices).toHaveLength(1);
-    expect(notices[0]!.options).toMatchObject({ tag: "duskbot:spend", icon: undefined });
+    expect(notices[0]!.options).toMatchObject({ tag: "madanibot:spend", icon: undefined });
   });
 
   it("still alerts a focused app when another task is visible", () => {
@@ -176,10 +176,10 @@ describe("desktop notifications", () => {
       vi.fn(),
     );
 
-    expect(notices[0]?.options?.tag).toBe(`duskbot:${frame.botId}`);
-    expect(notices[1]?.options?.tag).toBe(`duskbot:${frame.botId}`);
+    expect(notices[0]?.options?.tag).toBe(`madanibot:${frame.botId}`);
+    expect(notices[1]?.options?.tag).toBe(`madanibot:${frame.botId}`);
     showNotification({ ...frame, botId: "bot-2" }, vi.fn());
-    expect(notices[2]?.options?.tag).toBe(`duskbot:bot-2`);
+    expect(notices[2]?.options?.tag).toBe(`madanibot:bot-2`);
   });
 
   it("carries the bot's avatar when its profile has one", () => {
@@ -199,7 +199,7 @@ describe("on the desktop app, where main shows the banner so its click outlives 
   function installBridge(answer: () => Promise<boolean>) {
     const installed = installNotification("granted");
     const show = vi.fn(answer);
-    vi.stubGlobal("window", { focus: vi.fn(), duskDesktop: { desktopNotifications: { show } } });
+    vi.stubGlobal("window", { focus: vi.fn(), madaniDesktop: { desktopNotifications: { show } } });
     return { ...installed, show };
   }
 
@@ -208,7 +208,7 @@ describe("on the desktop app, where main shows the banner so its click outlives 
     showNotification(frame, vi.fn(), "/api/attachments/face.png");
     await flush();
     expect(show).toHaveBeenCalledWith({
-      title: frame.title, body: frame.body, tag: "duskbot:bot-1", silent: true, picture: "/api/attachments/face.png", botId: "bot-1", threadId: "thread-1",
+      title: frame.title, body: frame.body, tag: "madanibot:bot-1", silent: true, picture: "/api/attachments/face.png", botId: "bot-1", threadId: "thread-1",
     });
     expect(notices).toHaveLength(0);
   });
@@ -271,7 +271,7 @@ describe("notification sounds", () => {
 describe("buildNotificationOptions", () => {
   it("keys coalescing on botId and omits a missing avatar", () => {
     expect(buildNotificationOptions({ id: "bot-9" })).toEqual({
-      tag: "duskbot:bot-9",
+      tag: "madanibot:bot-9",
       icon: undefined,
     });
   });

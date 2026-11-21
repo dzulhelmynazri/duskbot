@@ -41,7 +41,7 @@ function fakeIo(answers: string[]) {
 describe("tunnel credentials: a private file, and unreadable is not empty", () => {
   let dir: string;
   beforeEach(() => {
-    dir = mkdtempSync(join(tmpdir(), "dusk-tunnel-cred-"));
+    dir = mkdtempSync(join(tmpdir(), "madani-tunnel-cred-"));
   });
   afterEach(() => removeTempDir(dir));
 
@@ -73,9 +73,9 @@ describe("login and logout against the control plane", () => {
   let dir: string;
   let stub: ControlPlaneStub;
   beforeEach(async () => {
-    dir = mkdtempSync(join(tmpdir(), "dusk-tunnel-login-"));
+    dir = mkdtempSync(join(tmpdir(), "madani-tunnel-login-"));
     stub = await startControlPlaneStub();
-    vi.stubEnv("DUSK_CONTROL_PLANE_URL", stub.url);
+    vi.stubEnv("MADANI_CONTROL_PLANE_URL", stub.url);
   });
   afterEach(async () => {
     vi.unstubAllEnvs();
@@ -172,10 +172,10 @@ describe("login and logout against the control plane", () => {
   });
 
   it("an unusable control-plane override is a clear error, not a silent default", async () => {
-    vi.stubEnv("DUSK_CONTROL_PLANE_URL", "ftp://nope");
+    vi.stubEnv("MADANI_CONTROL_PLANE_URL", "ftp://nope");
     const io = fakeIo([]);
     expect(await runLogin(options(dir, { email: "a@b.test" }), io.io)).toBe(1);
-    expect(io.err.join("\n")).toMatch(/DUSK_CONTROL_PLANE_URL/);
+    expect(io.err.join("\n")).toMatch(/MADANI_CONTROL_PLANE_URL/);
   });
 });
 
@@ -184,7 +184,7 @@ describe("where the pieces are", () => {
     expect(platformName("darwin")).toBe("darwin");
     expect(platformName("win32")).toBe("windows");
     expect(platformName("linux")).toBe("linux");
-    const bundled = mkdtempSync(join(tmpdir(), "dusk-tunnel-bundled-"));
+    const bundled = mkdtempSync(join(tmpdir(), "madani-tunnel-bundled-"));
     try {
       expect(guardianEntry(bundled)).toBeNull();
       writeFileSync(join(bundled, "tunnel-guardian.js"), "");
@@ -210,18 +210,18 @@ describe("where the pieces are", () => {
 
 describe.skipIf(!posix)("startTunnel: guardian, gateway and connector, verified through the gateway", () => {
   it("forwards the public address to the harness socket (no peer address = remote) and tears everything down on stop", async () => {
-    const dir = mkdtempSync(join(tmpdir(), "dusk-tunnel-run-"));
+    const dir = mkdtempSync(join(tmpdir(), "madani-tunnel-run-"));
     const origin = createTunnelOrigin();
     const pidFile = join(dir, "connector.pid");
     const fake = join(dir, "cloudflared");
     writeFileSync(fake, `#!/bin/sh\necho $$ > "${pidFile}"\nexec sleep 300\n`, { mode: 0o755 });
     const harness = createServer((req, res) => {
       res.writeHead(200, { "content-type": "application/json" });
-      res.end(JSON.stringify({ app: "duskbot", url: req.url, peer: req.socket.remoteAddress ?? null }));
+      res.end(JSON.stringify({ app: "madanibot", url: req.url, peer: req.socket.remoteAddress ?? null }));
     });
     await new Promise<void>((done) => harness.listen(origin.socketPath, done));
     const originPort = await freePortBlock([0], 29_600);
-    const endpoint = "https://c-stub.duskbot.invalid";
+    const endpoint = "https://c-stub.madanibot.invalid";
     const guardian = guardianEntry();
     expect(guardian).toBeTruthy();
     const states: string[] = [];
@@ -231,7 +231,7 @@ describe.skipIf(!posix)("startTunnel: guardian, gateway and connector, verified 
       originTarget: { pid: process.pid, socketPath: origin.socketPath },
       binaryPath: fake,
       guardian: guardian ?? "",
-      env: { ...process.env, DUSK_TUNNEL_ORIGIN_PORT: String(originPort) },
+      env: { ...process.env, MADANI_TUNNEL_ORIGIN_PORT: String(originPort) },
       fetchImpl: (input, init) => fetch(String(input).replace(endpoint, `http://127.0.0.1:${originPort}`), init),
       onState: (state) => states.push(state.status),
     });
@@ -239,7 +239,7 @@ describe.skipIf(!posix)("startTunnel: guardian, gateway and connector, verified 
       const settled = await tunnel.started;
       expect(settled.status, states.join(",")).toBe("ready");
       const viaGateway: any = await (await fetch(`http://127.0.0.1:${originPort}/api/health`)).json();
-      expect(viaGateway.app).toBe("duskbot");
+      expect(viaGateway.app).toBe("madanibot");
       expect(viaGateway.peer).toBeNull();
       // the connector is spawned right after the gateway binds; its shell writes the pid a moment later
       const connectorPidOtherThan = async (previous: number) => {

@@ -7,8 +7,8 @@ import { useCloudSendNotice } from "./CloudSendStrip";
 import { ItemRow } from "./ListRows";
 import { mdPrimaryCls } from "./ui/GrokDialog";
 
-/** Settings → Computer, one row under the workspaces: Move to dusk cloud while one is offered; while the bots move, how it
- * goes, and Try again when it got stuck. With nothing offered or under way, `otherwise` (Get dusk cloud, say). */
+/** Settings → Computer, one row under the workspaces: Move to madani cloud while one is offered; while the bots move, how it
+ * goes, and Try again when it got stuck. With nothing offered or under way, `otherwise` (Get madani cloud, say). */
 export function CloudMoveRow({ otherwise = null }: { otherwise?: ReactNode }) {
   const bridge = moveOfferBridge();
   const [notice, setNotice] = useCloudSendNotice(bridge);

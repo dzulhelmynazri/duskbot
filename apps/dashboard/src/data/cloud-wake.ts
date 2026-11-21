@@ -19,7 +19,7 @@ const browserDeps: WakeDeps = {
   workspace: (id) => api.workspace(id), power: api.power, now: Date.now, sleep: (ms) => new Promise((resolve) => setTimeout(resolve, ms)),
 };
 
-/** wakes a dusk cloud we put to sleep and resolves once it reports again */
+/** wakes a madani cloud we put to sleep and resolves once it reports again */
 export async function wokenUp(cloud: Pick<CloudDesktop, "id">, workspaceId: string, deps: WakeDeps): Promise<boolean> {
   const before = (await deps.workspace(workspaceId).catch(() => null))?.workspace.lastReportAt ?? 0;
   await deps.power(cloud.id, true).catch(() => {});

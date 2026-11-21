@@ -245,7 +245,7 @@ export async function signInCloudSession({ origin, mine, pair, fetch: fetchImpl 
     if (grant?.origin !== origin || typeof grant.code !== "string") return false;
     const response = await fetchImpl(`${origin}/api/auth/pair`, {
       method: "POST", credentials: "include", redirect: "error", cache: "no-store", signal: AbortSignal.timeout(15_000),
-      headers: { "content-type": "application/json", origin }, body: JSON.stringify({ code: grant.code, cookie: true, label: "dusk bot app (lending)" }),
+      headers: { "content-type": "application/json", origin }, body: JSON.stringify({ code: grant.code, cookie: true, label: "madani bot app (lending)" }),
     });
     return response.ok;
   } catch { return false; }
@@ -296,7 +296,7 @@ export function parseCloudTeams(input) {
   return teams;
 }
 
-/** the cloud's Ed25519 link public key, base64 SPKI DER, as dusk.bot hands it out */
+/** the cloud's Ed25519 link public key, base64 SPKI DER, as madani.bot hands it out */
 const LINK_KEY = /^[A-Za-z0-9+/]{40,120}={0,2}$/;
 export function parsePairingGrant(input, origin, now) {
   if (!input || typeof input !== "object" || input.cloudContractVersion !== 1 || input.origin !== origin) return null;

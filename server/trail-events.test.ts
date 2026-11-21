@@ -44,7 +44,7 @@ describe("a tool's name in the trail", () => {
     expect(loggedToolName("ls", "ls -la", "command")).toBe("shell");
     expect(loggedToolName("Read budget.xlsx", undefined, "read")).toBe("read");
     expect(loggedToolName("report.py", undefined, undefined)).toBe("tool");
-    expect(loggedToolName("mcp__dusk-browser__get_url", undefined, "fetch")).toBe("mcp__dusk-browser__get_url");
+    expect(loggedToolName("mcp__madani-browser__get_url", undefined, "fetch")).toBe("mcp__madani-browser__get_url");
     const written: Array<Record<string, unknown>> = [];
     configureTrail({ src: "server", writer: { write: (event) => written.push(event), flush: async () => {}, flushSync() {}, close() {} } });
     let listener: (event: never) => void = () => {};

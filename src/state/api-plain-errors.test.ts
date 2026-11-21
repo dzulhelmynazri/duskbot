@@ -15,7 +15,7 @@ describe("api() errors a person reads", () => {
 
   it("turns an errno or a stack into plain words, keeping the raw text as detail", async () => {
     vi.spyOn(console, "warn").mockImplementation(() => {});
-    vi.stubGlobal("fetch", answer(500, { error: "EACCES: permission denied, open '/Users/x/.duskbot/a.json'" }));
+    vi.stubGlobal("fetch", answer(500, { error: "EACCES: permission denied, open '/Users/x/.madanibot/a.json'" }));
     const error = await api("/api/bots").catch((cause: unknown) => cause);
     expect(error).toBeInstanceOf(ApiError);
     expect((error as ApiError).message).toBe(t("error.plain.permission"));

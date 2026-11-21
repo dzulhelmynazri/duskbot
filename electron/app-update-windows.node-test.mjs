@@ -12,21 +12,21 @@ const { privateKey } = generateKeyPairSync("ed25519");
 const keys = [{ kid: "test-desk", x: createPublicKey(privateKey).export({ format: "jwk" }).x }];
 const sha = (value) => createHash("sha256").update(value).digest("hex");
 function manifest(version, sums) {
-  const head = `r1.test-desk.${Buffer.from(JSON.stringify({ v: 1, kind: "desktop", name: "dusk bot", version, sha256: sha(sums), signedAt: 1 })).toString("base64url")}`;
+  const head = `r1.test-desk.${Buffer.from(JSON.stringify({ v: 1, kind: "desktop", name: "madani bot", version, sha256: sha(sums), signedAt: 1 })).toString("base64url")}`;
   return { v: 1, version, sha256sums: sha(sums), signature: `${head}.${sign(null, Buffer.from(head), privateKey).toString("base64url")}` };
 }
 
-const SETUP = "DuskBot-1.1.0-setup.exe";
+const SETUP = "MadaniBot-1.1.0-setup.exe";
 
 function world({ exe = Buffer.from("setup bytes"), routes: extra = {}, installer = null, blocked = null } = {}) {
-  const sums = `${sha("zip")}  DuskBot-1.1.0-x64.zip\n${sha(Buffer.from("setup bytes"))}  ${SETUP}\n${sha("win zip")}  DuskBot-1.1.0-win-x64.zip\n`;
+  const sums = `${sha("zip")}  MadaniBot-1.1.0-x64.zip\n${sha(Buffer.from("setup bytes"))}  ${SETUP}\n${sha("win zip")}  MadaniBot-1.1.0-win-x64.zip\n`;
   const routes = new Map([
     [DESKTOP_MANIFEST_URL, JSON.stringify(manifest("1.1.0", sums))],
     [sumsUrl("1.1.0"), sums],
     ...(exe ? [[mirrorUrl("1.1.0", SETUP), exe]] : []),
     ...Object.entries(extra),
   ]);
-  const w = { fetched: [], prepared: [], installed: 0, failures: [], told: 0, dir: mkdtempSync(join(tmpdir(), "dusk-win-update-")) };
+  const w = { fetched: [], prepared: [], installed: 0, failures: [], told: 0, dir: mkdtempSync(join(tmpdir(), "madani-win-update-")) };
   w.updater = createAppUpdater({
     current: "1.0.0", arch: "x64", dir: w.dir, keys, platform: "win32", signed: async () => true, blocked: async () => blocked,
     asset: setupIn, sources: setupSources, keep: [TRIED], download: { wait: async () => {} },
@@ -43,7 +43,7 @@ function world({ exe = Buffer.from("setup bytes"), routes: extra = {}, installer
 }
 const done = (w) => rmSync(w.dir, { recursive: true, force: true });
 
-test("windows downloads the release's installer from dusk.bot, checked against the signed sums", async () => {
+test("windows downloads the release's installer from madani.bot, checked against the signed sums", async () => {
   const w = world();
   assert.equal(await w.updater.check(), "1.1.0");
   assert.equal(w.prepared.length, 1);
@@ -54,14 +54,14 @@ test("windows downloads the release's installer from dusk.bot, checked against t
   done(w);
 });
 
-test("without dusk.bot's copy it takes the downloads repo's stable installer, and a changed one installs nothing", async () => {
-  const repo = world({ exe: undefined, routes: { [zipUrl("1.1.0", "DuskBot-setup.exe")]: Buffer.from("setup bytes") } });
-  assert.deepEqual(setupSources("1.1.0", SETUP), [mirrorUrl("1.1.0", SETUP), zipUrl("1.1.0", "DuskBot-setup.exe")]);
+test("without madani.bot's copy it takes the downloads repo's stable installer, and a changed one installs nothing", async () => {
+  const repo = world({ exe: undefined, routes: { [zipUrl("1.1.0", "MadaniBot-setup.exe")]: Buffer.from("setup bytes") } });
+  assert.deepEqual(setupSources("1.1.0", SETUP), [mirrorUrl("1.1.0", SETUP), zipUrl("1.1.0", "MadaniBot-setup.exe")]);
   assert.equal(await repo.updater.check(), "1.1.0");
   assert.equal(repo.prepared[0].bytes, "setup bytes");
   done(repo);
 
-  const tampered = world({ exe: Buffer.from("evil bytes"), routes: { [zipUrl("1.1.0", "DuskBot-setup.exe")]: Buffer.from("evil bytes") } });
+  const tampered = world({ exe: Buffer.from("evil bytes"), routes: { [zipUrl("1.1.0", "MadaniBot-setup.exe")]: Buffer.from("evil bytes") } });
   assert.equal(await tampered.updater.check(), null);
   assert.equal(tampered.prepared.length, 0);
   assert.equal(tampered.failures.at(-1).stage, "checksum");
@@ -70,7 +70,7 @@ test("without dusk.bot's copy it takes the downloads repo's stable installer, an
 });
 
 test("the installer runs silently on quit, starts the app again only for a restart, and never while Windows ends the session", async () => {
-  const dir = mkdtempSync(join(tmpdir(), "dusk-nsis-"));
+  const dir = mkdtempSync(join(tmpdir(), "madani-nsis-"));
   const file = join(dir, SETUP);
   writeFileSync(file, "setup bytes");
   writeFileSync(`${file}:Zone.Identifier`, "[ZoneTransfer]\r\nZoneId=3\r\n");
@@ -135,17 +135,17 @@ test("a version whose installer ran but did not install is offered by hand, unti
   assert.equal(w.updater.state().manual, null);
   done(w);
 
-  const installed = mkdtempSync(join(tmpdir(), "dusk-nsis-"));
+  const installed = mkdtempSync(join(tmpdir(), "madani-nsis-"));
   writeFileSync(join(installed, TRIED), JSON.stringify({ version: "1.1.0" }));
   assert.equal(nsisInstaller({ dir: installed, current: "1.1.0", quit: () => {} }).failed("1.1.0"), false);
   rmSync(installed, { recursive: true, force: true });
 });
 
 test("only an NSIS install it can write updates itself; the portable zip is pointed at the installer", async () => {
-  const exe = join("C:", "Users", "a", "AppData", "Local", "Programs", "dusk-bot", "Dusk Bot.exe");
-  assert.equal(windowsPlace(exe, { list: () => ["Dusk Bot.exe", "Uninstall Dusk Bot.exe"], writable: () => true }), null);
-  assert.equal(windowsPlace(exe, { list: () => ["Dusk Bot.exe", "Uninstall Dusk Bot.exe"], writable: () => false }), "readonly");
-  assert.equal(windowsPlace(exe, { list: () => ["Dusk Bot.exe", "resources"], writable: () => true }), "portable");
+  const exe = join("C:", "Users", "a", "AppData", "Local", "Programs", "madani-bot", "Madani Bot.exe");
+  assert.equal(windowsPlace(exe, { list: () => ["Madani Bot.exe", "Uninstall Madani Bot.exe"], writable: () => true }), null);
+  assert.equal(windowsPlace(exe, { list: () => ["Madani Bot.exe", "Uninstall Madani Bot.exe"], writable: () => false }), "readonly");
+  assert.equal(windowsPlace(exe, { list: () => ["Madani Bot.exe", "resources"], writable: () => true }), "portable");
   assert.equal(windowsPlace(exe, { list: () => { throw new Error("gone"); } }), "portable");
 
   const w = world({ blocked: "portable" });

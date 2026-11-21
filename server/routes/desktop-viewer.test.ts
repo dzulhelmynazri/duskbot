@@ -78,7 +78,7 @@ function open(path = `${base}/websockify`, overrides: Record<string, string | un
 }
 
 beforeEach(async () => {
-  dir = mkdtempSync(join(tmpdir(), "dusk-viewer-"));
+  dir = mkdtempSync(join(tmpdir(), "madani-viewer-"));
   now = Date.now();
   sessions = new SessionRegistry({ file: join(dir, "sessions.json"), now: () => now });
   admin = sessions.issue({ label: "Mac", scopes: ["admin", "client"] });
@@ -190,7 +190,7 @@ it.each(["capacitor://localhost", "https://localhost", "http://localhost", undef
 it("refuses invalid, expired, duplicate, client-scoped and foreign-origin viewer query tokens", async () => {
   for (const [query, origin, status] of [
     ["access_token=invalid", "capacitor://localhost", 401],
-    ["access_token=dusk_sess_invalid", "capacitor://localhost", 401],
+    ["access_token=madani_sess_invalid", "capacitor://localhost", 401],
     [`access_token=${member.token}`, "capacitor://localhost", 403],
     [`access_token=${admin.token}&access_token=${admin.token}`, "capacitor://localhost", 401],
     [`access_token=${admin.token}`, "https://evil.example", 401],

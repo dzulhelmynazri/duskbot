@@ -12,7 +12,7 @@ const input = {
   runOn: "maus" as const, deliveryId: "delivery", receivedAt: Date.now(),
 };
 function harness() {
-  const dir = mkdtempSync(join(tmpdir(), "dusk-webhook-commit-"));
+  const dir = mkdtempSync(join(tmpdir(), "madani-webhook-commit-"));
   dirs.push(dir);
   let now = Date.now();
   const options = {

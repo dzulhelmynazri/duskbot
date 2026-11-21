@@ -26,7 +26,7 @@ export interface ProductEvents {
   size(): number;
   close(): Promise<void>;
 }
-/** true only for a packaged app outside CI with DUSK_ANALYTICS unset or not "0" */
+/** true only for a packaged app outside CI with MADANI_ANALYTICS unset or not "0" */
 export declare function analyticsAllowed(options: { packaged: boolean; env?: Record<string, string | undefined>; custom?: boolean }): boolean;
 export declare function createProductEvents(options: {
   origin: string; token?: () => string | null; platform: string; version: string; fetch?: typeof fetch; now?: () => number;

@@ -11,7 +11,7 @@ import { collisionFreeDownloadPath, defaultSaveName, htmlCopyName, openHtmlCopy,
 
 // Creating a symlink on Windows needs elevation or developer mode.
 const canSymlink = (() => {
-  const probe = fs.mkdtempSync(path.join(os.tmpdir(), "dusk-symlink-probe-"));
+  const probe = fs.mkdtempSync(path.join(os.tmpdir(), "madani-symlink-probe-"));
   try {
     fs.symlinkSync(probe, path.join(probe, "link"));
     return true;
@@ -26,8 +26,8 @@ let home;
 let botHome;
 
 before(() => {
-  home = fs.mkdtempSync(path.join(os.tmpdir(), "dusk-save-file-"));
-  botHome = path.join(home, ".duskbot");
+  home = fs.mkdtempSync(path.join(os.tmpdir(), "madani-save-file-"));
+  botHome = path.join(home, ".madanibot");
   fs.mkdirSync(path.join(botHome, "workspaces", "bot"), { recursive: true });
   fs.writeFileSync(path.join(botHome, "workspaces", "bot", "report.docx"), "docx");
   fs.writeFileSync(path.join(home, "secret.txt"), "private");
@@ -47,14 +47,14 @@ describe("save-file path validation", () => {
   });
 
   it("accepts a file under a symlinked bot home", { skip: !canSymlink }, async () => {
-    const realHome = fs.mkdtempSync(path.join(os.tmpdir(), "dusk-real-home-"));
-    const linkedHome = fs.mkdtempSync(path.join(os.tmpdir(), "dusk-linked-home-"));
+    const realHome = fs.mkdtempSync(path.join(os.tmpdir(), "madani-real-home-"));
+    const linkedHome = fs.mkdtempSync(path.join(os.tmpdir(), "madani-linked-home-"));
     const realBotHome = path.join(realHome, "bot-data");
     fs.mkdirSync(realBotHome, { recursive: true });
     fs.writeFileSync(path.join(realBotHome, "report.docx"), "docx");
-    fs.symlinkSync(realBotHome, path.join(linkedHome, ".duskbot"));
+    fs.symlinkSync(realBotHome, path.join(linkedHome, ".madanibot"));
 
-    const viaLink = path.join(linkedHome, ".duskbot", "report.docx");
+    const viaLink = path.join(linkedHome, ".madanibot", "report.docx");
     assert.equal(await resolveSavablePath(viaLink, { home: linkedHome }), await fs.promises.realpath(viaLink));
 
     fs.rmSync(realHome, { recursive: true, force: true });
@@ -86,7 +86,7 @@ describe("save-file path validation", () => {
 
 describe("save-file dialog default name", () => {
   it("suggests a name that does not overwrite an existing file", async () => {
-    const downloads = fs.mkdtempSync(path.join(os.tmpdir(), "dusk-downloads-"));
+    const downloads = fs.mkdtempSync(path.join(os.tmpdir(), "madani-downloads-"));
     const source = path.join(botHome, "workspaces", "bot", "report.docx");
 
     assert.equal(await defaultSaveName(downloads, source), path.join(downloads, "report.docx"));
@@ -99,7 +99,7 @@ describe("save-file dialog default name", () => {
   });
 
   it("keeps the extension on the suggestion", async () => {
-    const downloads = fs.mkdtempSync(path.join(os.tmpdir(), "dusk-downloads-ext-"));
+    const downloads = fs.mkdtempSync(path.join(os.tmpdir(), "madani-downloads-ext-"));
     const source = path.join(botHome, "workspaces", "bot", "report.docx");
     fs.writeFileSync(path.join(downloads, "report.docx"), "");
 
@@ -111,7 +111,7 @@ describe("save-file dialog default name", () => {
 
 describe("attachment download destination", () => {
   it("uses Chromium-style suffixes without replacing an existing download", () => {
-    const downloads = fs.mkdtempSync(path.join(os.tmpdir(), "dusk-attachment-downloads-"));
+    const downloads = fs.mkdtempSync(path.join(os.tmpdir(), "madani-attachment-downloads-"));
     try {
       assert.equal(
         collisionFreeDownloadPath(downloads, "report.tar.gz"),
@@ -133,7 +133,7 @@ describe("attachment download destination", () => {
   });
 
   it("keeps renderer-supplied directories outside the destination", () => {
-    const downloads = fs.mkdtempSync(path.join(os.tmpdir(), "dusk-attachment-basename-"));
+    const downloads = fs.mkdtempSync(path.join(os.tmpdir(), "madani-attachment-basename-"));
     try {
       assert.equal(
         collisionFreeDownloadPath(downloads, "../../outside.txt"),
@@ -270,9 +270,9 @@ describe("Show in folder for a file outside the workspace", () => {
 
 describe("openLogsFolder", () => {
   it("opens exactly main's own logs folder, making it first, and says where it is when the system cannot open it", async () => {
-    const root = fs.mkdtempSync(path.join(os.tmpdir(), "dusk-logs-folder-"));
+    const root = fs.mkdtempSync(path.join(os.tmpdir(), "madani-logs-folder-"));
     try {
-      const folder = path.join(root, "dusk bot", "logs");
+      const folder = path.join(root, "madani bot", "logs");
       const opened = [];
       assert.deepEqual(await openLogsFolder(folder, { open: async (target) => { opened.push(target); return ""; } }), { folder, opened: true });
       assert.deepEqual(opened, [folder]);
@@ -291,14 +291,14 @@ describe("openLogsFolder", () => {
     const declaration = main.match(/^const LOG_DIR = .+;$/m)?.[0];
     assert.ok(declaration);
     for (const [isPackaged, override, expected] of [[true, undefined, "/app/logs"], [true, "/dev/logs", "/app/logs"], [false, undefined, "/app/logs"], [false, "/dev/logs", "/dev/logs"]]) {
-      assert.equal(runInNewContext(`${declaration} LOG_DIR`, { app: { isPackaged, getPath: () => "/app/logs" }, process: { env: { DUSK_LOG_DIR: override } } }), expected);
+      assert.equal(runInNewContext(`${declaration} LOG_DIR`, { app: { isPackaged, getPath: () => "/app/logs" }, process: { env: { MADANI_LOG_DIR: override } } }), expected);
     }
   });
 });
 
 describe("openHtmlCopy (#4406)", () => {
   it("opens a fresh private copy inside our own folder, never a path from the page", async () => {
-    const dir = fs.mkdtempSync(path.join(os.tmpdir(), "dusk-open-html-"));
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), "madani-open-html-"));
     try {
       const opened = [];
       assert.equal(await openHtmlCopy("<h1>hi</h1>", "../../evil/report.html", { dir, open: async (file) => { opened.push(file); return ""; } }), true);
@@ -313,7 +313,7 @@ describe("openHtmlCopy (#4406)", () => {
   });
 
   it("refuses what is not a page or is too large, and passes on why the system could not open it", async () => {
-    const dir = fs.mkdtempSync(path.join(os.tmpdir(), "dusk-open-html-"));
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), "madani-open-html-"));
     try {
       const open = async () => "";
       await assert.rejects(openHtmlCopy(42, "a.html", { dir, open }), /Nothing to open/);
@@ -325,7 +325,7 @@ describe("openHtmlCopy (#4406)", () => {
   });
 
   it("clears copies older than a day", async () => {
-    const dir = fs.mkdtempSync(path.join(os.tmpdir(), "dusk-open-html-"));
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), "madani-open-html-"));
     try {
       const old = path.join(dir, "p-old");
       fs.mkdirSync(old);

@@ -5,10 +5,10 @@ import { readHomeGlass } from "./native-home-glass";
 const box = (left: number, top: number, w: number, h: number) => () => ({ left, top, width: w, height: h, right: left + w, bottom: top + h, x: left, y: top, toJSON() {} }) as DOMRect;
 
 function home({ page }: { page?: "moving" | "resting" } = {}) {
-  document.body.innerHTML = `<div class="dusk-mobile"><div class="mobile-nav"><div id="list"><header data-home-bar>
+  document.body.innerHTML = `<div class="madani-mobile"><div class="mobile-nav"><div id="list"><header data-home-bar>
     <button data-home-glass="search" aria-label="Search"></button><button data-home-glass="newBot" aria-label="New bot"></button>
   </header></div>${page ? `<div class="mobile-page" ${page === "moving" ? "data-moving" : ""}></div>` : ""}</div></div>`;
-  const root = document.querySelector<HTMLElement>(".dusk-mobile")!;
+  const root = document.querySelector<HTMLElement>(".madani-mobile")!;
   Object.defineProperty(document.documentElement, "clientWidth", { configurable: true, value: 390 });
   Object.defineProperty(document.documentElement, "clientHeight", { configurable: true, value: 844 });
   document.querySelector<HTMLElement>("#list")!.getBoundingClientRect = box(0, 0, 390, 844);

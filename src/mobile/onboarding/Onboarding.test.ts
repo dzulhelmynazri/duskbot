@@ -26,7 +26,7 @@ vi.mock("../connection/pair", async (original) => ({
 }));
 (globalThis as { IS_REACT_ACT_ENVIRONMENT?: boolean }).IS_REACT_ACT_ENVIRONMENT = true;
 
-const origin = "https://dusk.bot";
+const origin = "https://madani.bot";
 const account = { id: "person", email: "person@example.com" };
 const token = `omc_${"t".repeat(43)}`;
 const response = (value: unknown, status = 200) => new Response(JSON.stringify(value), { status });
@@ -35,7 +35,7 @@ let fetcher: ReturnType<typeof vi.fn<typeof fetch>>;
 
 beforeEach(() => {
   setLocale("en"); window.history.replaceState({}, "", "/");
-  vi.stubEnv("VITE_DUSK_ALLOW_SIGNED_OUT", ""); vi.stubEnv("VITE_DUSK_ACCOUNT_ORIGIN", "");
+  vi.stubEnv("VITE_MADANI_ALLOW_SIGNED_OUT", ""); vi.stubEnv("VITE_MADANI_ACCOUNT_ORIGIN", "");
   host = document.createElement("div"); document.body.append(host);
   prefs = new Map(); secrets = new Map();
   platform = { ...webPlatform(), native: true, kind: "android",
@@ -58,7 +58,7 @@ const heading = () => host.querySelector("h1")?.textContent;
 it("log in opens the account sign-in straight away", async () => {
   await mount(onboarding());
   await press("[data-entry=signin]");
-  expect(heading()).toBe("Log in to dusk bot");
+  expect(heading()).toBe("Log in to madani bot");
   expect(host.querySelector("input[type=email]")).not.toBeNull();
 });
 
@@ -99,7 +99,7 @@ it("picks the first screen from what the phone already has", () => {
   expect(firstStep({ incoming: true, signedIn: false, adding: true, startAt: "signin" })).toBe("confirm");
 });
 
-it("leads with scanning your own computer, logging in to a dusk cloud next to it, and typing a code as the quiet way", async () => {
+it("leads with scanning your own computer, logging in to a madani cloud next to it, and typing a code as the quiet way", async () => {
   await mount(onboarding());
   const [scan, signIn, code] = entries();
   expect(scan?.dataset.entry).toBe("scan");
@@ -108,7 +108,7 @@ it("leads with scanning your own computer, logging in to a dusk cloud next to it
   expect(scan?.className).toContain("bg-ink ");
   expect(signIn?.className, "a real choice, never outranking the scan").toContain("bg-ink/[0.05]");
   expect(code?.className).not.toContain("bg-ink");
-  expect(entries().map((button) => button.textContent)).toEqual(["Scan a QR code", "Log in to dusk cloud", "Enter a code"]);
+  expect(entries().map((button) => button.textContent)).toEqual(["Scan a QR code", "Log in to madani cloud", "Enter a code"]);
   expect(host.textContent).not.toContain("demo");
 });
 
@@ -136,7 +136,7 @@ describe("a sign-in the Keychain kept through a delete and reinstall", () => {
   const computer = { id: "ws_mac", name: "Studio Mac", kind: "mac", presence: "online", environmentId: "env-mac" };
   let pairs: number, sessionEnded: boolean;
   const keptSignIn = (session: () => Response = () => response({ ok: true, clouds: [cloud] })) => {
-    secrets.set("dusk.account", JSON.stringify({ origin, token, expiresAt: Date.now() + 60_000, account, deviceId: "phone" }));
+    secrets.set("madani.account", JSON.stringify({ origin, token, expiresAt: Date.now() + 60_000, account, deviceId: "phone" }));
     pairs = 0; sessionEnded = false;
     fetcher.mockImplementation(async (input, init) => {
       const url = String(input);
@@ -160,7 +160,7 @@ describe("a sign-in the Keychain kept through a delete and reinstall", () => {
     expect([...host.querySelectorAll<HTMLElement>("[data-place-kind]")].map((row) => row.dataset.placeKind)).toEqual(["cloud", "computer"]);
     expect(host.querySelector("[data-entry=sign-out]")?.textContent).toBe("Sign out");
     expect(host.querySelector("[data-entry=other-account]")).not.toBeNull();
-    expect(prefs.get("dusk.mobile.installed")).toBe("1");
+    expect(prefs.get("madani.mobile.installed")).toBe("1");
     await press("[data-testid=mobile-cloud-connect][data-place-kind=cloud]");
     await settle();
     expect(pairs).toBe(1);
@@ -174,20 +174,20 @@ describe("a sign-in the Keychain kept through a delete and reinstall", () => {
     await press("[data-entry=sign-out]");
     await settle();
     expect(sessionEnded).toBe(true);
-    expect(secrets.has("dusk.account")).toBe(false);
+    expect(secrets.has("madani.account")).toBe(false);
   });
 
   it("one the service no longer knows is forgotten, and the phone starts on its first screen", async () => {
     keptSignIn(() => response({ error: "invalid_token", code: "invalid_token" }, 401));
     await mount(onboarding());
     await settle();
-    expect(secrets.has("dusk.account")).toBe(false);
+    expect(secrets.has("madani.account")).toBe(false);
     expect(entries().map((button) => button.dataset.entry)).toEqual(["scan", "signin", "code"]);
   });
 
   it("a sign-in made on the phone still opens its only cloud by itself", async () => {
     keptSignIn();
-    secrets.delete("dusk.account");
+    secrets.delete("madani.account");
     fetcher.mockImplementation(async (input) => {
       const url = String(input);
       if (url.endsWith("/api/cloud/app/sign-in/phone")) return response({ cloudContractVersion: 1, accessToken: token, expiresAt: Date.now() + 86_400_000, device: { id: "phone" }, account });
@@ -211,7 +211,7 @@ describe("a sign-in the Keychain kept through a delete and reinstall", () => {
 });
 
 it("a signed-in account with no cloud is pointed at linking a computer", async () => {
-  secrets.set("dusk.account", JSON.stringify({ origin, token, expiresAt: Date.now() + 60_000, account, deviceId: "phone" }));
+  secrets.set("madani.account", JSON.stringify({ origin, token, expiresAt: Date.now() + 60_000, account, deviceId: "phone" }));
   fetcher.mockImplementation(async (input) => String(input).endsWith("/api/cloud/desktop/session") ? response({ ok: true, clouds: [] }) : response({}));
   await mount(onboarding());
   expect(heading()).toBe("No cloud yet");
@@ -253,7 +253,7 @@ it("the sign-in offer opens the sign-in without leaving the app", async () => {
   await act(async () => { vi.advanceTimersByTime(3000); });
   await act(async () => {});
   await act(async () => { [...host.querySelectorAll("button")].find((button) => button.textContent === "Log in")!.click(); });
-  expect(host.querySelector("[role=dialog] h1")?.textContent).toBe("Log in to dusk bot");
+  expect(host.querySelector("[role=dialog] h1")?.textContent).toBe("Log in to madani bot");
 });
 
 it("a scan of the desktop's App Store qr says so, and the screen after a failed scan offers scanning again", async () => {
@@ -271,21 +271,21 @@ it("a scan of the desktop's App Store qr says so, and the screen after a failed 
   expect(host.querySelector("button[type=submit]")).toBeNull();
 });
 
-it("a scan of a dusk cloud's log in qr with no code opens the log in with its email filled in", async () => {
+it("a scan of a madani cloud's log in qr with no code opens the log in with its email filled in", async () => {
   platform = { ...platform, camera: {
     permission: async () => "granted", request: async () => "granted",
-    start: async ({ onCode }: { onCode: (text: string) => void }) => { setTimeout(() => onCode("https://dusk.bot/m/signin#email=person%40example.com"), 0); return { stop: async () => {} }; },
+    start: async ({ onCode }: { onCode: (text: string) => void }) => { setTimeout(() => onCode("https://madani.bot/m/signin#email=person%40example.com"), 0); return { stop: async () => {} }; },
   } as unknown as MobilePlatform["camera"] };
   await mount(onboarding());
   await press("[data-entry=scan]");
   for (let i = 0; i < 100 && !host.querySelector("input[type=email]"); i++) await act(async () => { await new Promise((resolve) => setTimeout(resolve, 10)); });
-  expect(heading()).toBe("Log in to dusk bot");
+  expect(heading()).toBe("Log in to madani bot");
   expect(host.querySelector<HTMLInputElement>("input[type=email]")?.value).toBe("person@example.com");
 });
 
-describe("a dusk cloud's log in qr for another account than the phone's", () => {
+describe("a madani cloud's log in qr for another account than the phone's", () => {
   const signedInWithoutClouds = () => {
-    secrets.set("dusk.account", JSON.stringify({ origin, token, expiresAt: Date.now() + 60_000, account, deviceId: "phone" }));
+    secrets.set("madani.account", JSON.stringify({ origin, token, expiresAt: Date.now() + 60_000, account, deviceId: "phone" }));
     fetcher.mockImplementation(async (input) => String(input).endsWith("/api/cloud/desktop/session") ? response({ ok: true, clouds: [] }) : response({ v: 1, providers: [], signupOpen: true }));
   };
   const settle = async (done: () => boolean) => { for (let i = 0; i < 100 && !done(); i++) await act(async () => { await new Promise((resolve) => setTimeout(resolve, 10)); }); };
@@ -294,7 +294,7 @@ describe("a dusk cloud's log in qr for another account than the phone's", () => 
     signedInWithoutClouds();
     platform = { ...platform, camera: {
       permission: async () => "granted", request: async () => "granted",
-      start: async ({ onCode }: { onCode: (text: string) => void }) => { setTimeout(() => onCode("https://dusk.bot/m/signin#email=owner%40example.com"), 0); return { stop: async () => {} }; },
+      start: async ({ onCode }: { onCode: (text: string) => void }) => { setTimeout(() => onCode("https://madani.bot/m/signin#email=owner%40example.com"), 0); return { stop: async () => {} }; },
     } as unknown as MobilePlatform["camera"] };
     await mount(onboarding());
     const scan = () => [...host.querySelectorAll<HTMLButtonElement>("button")].find((button) => button.textContent === "Scan a QR code");
@@ -303,12 +303,12 @@ describe("a dusk cloud's log in qr for another account than the phone's", () => 
     await act(async () => { scan()!.click(); });
     await settle(() => Boolean(host.querySelector("[data-entry=switch-account]")));
     expect(heading()).toBe("Log in as owner@example.com?");
-    expect(secrets.has("dusk.account"), "nothing changes before the person says so").toBe(true);
+    expect(secrets.has("madani.account"), "nothing changes before the person says so").toBe(true);
     await press("[data-entry=switch-account]");
     await settle(() => Boolean(host.querySelector("input[type=email]")));
-    expect(heading()).toBe("Log in to dusk bot");
+    expect(heading()).toBe("Log in to madani bot");
     expect(host.querySelector<HTMLInputElement>("input[type=email]")?.value).toBe("owner@example.com");
-    expect(secrets.has("dusk.account"), "the account in use stays until the other one signs in").toBe(true);
+    expect(secrets.has("madani.account"), "the account in use stays until the other one signs in").toBe(true);
   });
 
   it("opened from the camera, does the same", async () => {
@@ -321,7 +321,7 @@ describe("a dusk cloud's log in qr for another account than the phone's", () => 
   });
 });
 
-describe("a dusk cloud's code from the desktop", () => {
+describe("a madani cloud's code from the desktop", () => {
   const phoneGrant = { cloudContractVersion: 1, accessToken: token, expiresAt: Date.now() + 86_400_000, device: { id: "phone" }, account };
   const route = (phone: () => Response) => fetcher.mockImplementation(async (input) => {
     const url = String(input);
@@ -349,7 +349,7 @@ describe("a dusk cloud's code from the desktop", () => {
     expect(JSON.parse(String(phoneCalls()[0]![1]?.body))).toMatchObject({ code: "ABCDEFGH" });
     expect(host.querySelector("input[type=email]"), "never the email sign-in").toBeNull();
     expect(heading()).not.toBe("Enter the code");
-    expect(secrets.has("dusk.account")).toBe(true);
+    expect(secrets.has("madani.account")).toBe(true);
   });
 
   it.each([
@@ -362,7 +362,7 @@ describe("a dusk cloud's code from the desktop", () => {
     await submit();
     expect(heading()).toBe("Enter the code");
     expect(host.textContent).toContain(words);
-    expect(secrets.has("dusk.account")).toBe(false);
+    expect(secrets.has("madani.account")).toBe(false);
   });
 
   it("the qr's link carries the code: it is redeemed at once", async () => {
@@ -370,7 +370,7 @@ describe("a dusk cloud's code from the desktop", () => {
     await mount(onboarding({ signInCode: "ABCDEFGH", email: "person@example.com", startAt: "signin" }));
     await act(async () => { await new Promise((resolve) => setTimeout(resolve, 0)); });
     expect(phoneCalls()).toHaveLength(1);
-    expect(secrets.has("dusk.account")).toBe(true);
+    expect(secrets.has("madani.account")).toBe(true);
     expect(host.querySelector("input[type=email]")).toBeNull();
   });
 
@@ -382,10 +382,10 @@ describe("a dusk cloud's code from the desktop", () => {
   });
 });
 
-describe("a dusk cloud's QR always ends in that cloud, on its account", () => {
+describe("a madani cloud's QR always ends in that cloud, on its account", () => {
   const owner = { id: "owner", email: "owner@example.com" };
-  const home = { id: "c1", name: "Home cloud", role: "owner", status: "ready", origin: "https://d0123456789abcdef0123.dusk.bot", primary: true };
-  const work = { id: "c2", name: "Work cloud", role: "owner", status: "ready", origin: "https://dfedcba9876543210fedc.dusk.bot" };
+  const home = { id: "c1", name: "Home cloud", role: "owner", status: "ready", origin: "https://d0123456789abcdef0123.madani.bot", primary: true };
+  const work = { id: "c2", name: "Work cloud", role: "owner", status: "ready", origin: "https://dfedcba9876543210fedc.madani.bot" };
   const grant = (who: typeof owner) => ({ cloudContractVersion: 1, accessToken: token, expiresAt: Date.now() + 86_400_000, device: { id: "phone" }, account: who });
   let paired: string[];
   const route = (clouds: unknown[]) => fetcher.mockImplementation(async (input, init) => {
@@ -410,7 +410,7 @@ describe("a dusk cloud's QR always ends in that cloud, on its account", () => {
 
   it("a signed-out phone scanning it in the app logs in and opens the cloud the QR was drawn on, of two", async () => {
     route([home, work]);
-    platform = scanning(`https://dusk.bot/m/signin#c=ABCDEFGH&email=owner%40example.com&o=${encodeURIComponent(work.origin)}`);
+    platform = scanning(`https://madani.bot/m/signin#c=ABCDEFGH&email=owner%40example.com&o=${encodeURIComponent(work.origin)}`);
     const onLinked = vi.fn();
     await mount(onboarding({ onLinked }));
     await press("[data-entry=scan]");
@@ -429,9 +429,9 @@ describe("a dusk cloud's QR always ends in that cloud, on its account", () => {
 
   it("a phone already linked to that cloud opens it instead of a picker with nothing to pick", async () => {
     route([home]);
-    prefs.set("dusk.mobile.connections.v1", JSON.stringify([{ id: "kept", environmentId: "env", label: "Home cloud", transport: "https", origin: home.origin, sessionRef: "token.kept", capabilities: {}, addedAt: 1, lastUsedAt: 1 }]));
+    prefs.set("madani.mobile.connections.v1", JSON.stringify([{ id: "kept", environmentId: "env", label: "Home cloud", transport: "https", origin: home.origin, sessionRef: "token.kept", capabilities: {}, addedAt: 1, lastUsedAt: 1 }]));
     secrets.set("token.kept", "kept-token");
-    secrets.set("dusk.account", JSON.stringify({ origin, token, expiresAt: Date.now() + 60_000, account: owner, deviceId: "phone" }));
+    secrets.set("madani.account", JSON.stringify({ origin, token, expiresAt: Date.now() + 60_000, account: owner, deviceId: "phone" }));
     const onOpen = vi.fn();
     await mount(onboarding({ onOpen, startAtLink: true, onCancel: vi.fn(), startAt: "signin", email: owner.email, signInCode: "ABCDEFGH", signInCloud: home.origin }));
     await settle(() => onOpen.mock.calls.length > 0);
@@ -441,8 +441,8 @@ describe("a dusk cloud's QR always ends in that cloud, on its account", () => {
 
   it("a phone on another account asks first; switching keeps that account and its clouds beside the new one, then opens the QR's cloud", async () => {
     route([home]);
-    secrets.set("dusk.account", JSON.stringify({ origin, token, expiresAt: Date.now() + 60_000, account, deviceId: "phone" }));
-    prefs.set("dusk.mobile.connections.v1", JSON.stringify([{ id: "old", environmentId: "env-old", label: "Old cloud", transport: "https", origin: "https://d1111111111111111111a.dusk.bot", sessionRef: "token.old", capabilities: {}, addedAt: 1, lastUsedAt: 1 }]));
+    secrets.set("madani.account", JSON.stringify({ origin, token, expiresAt: Date.now() + 60_000, account, deviceId: "phone" }));
+    prefs.set("madani.mobile.connections.v1", JSON.stringify([{ id: "old", environmentId: "env-old", label: "Old cloud", transport: "https", origin: "https://d1111111111111111111a.madani.bot", sessionRef: "token.old", capabilities: {}, addedAt: 1, lastUsedAt: 1 }]));
     secrets.set("token.old", "old-token");
     const onLinked = vi.fn();
     await mount(onboarding({ onLinked, startAt: "signin", email: owner.email, signInCode: "ABCDEFGH" }));
@@ -451,27 +451,27 @@ describe("a dusk cloud's QR always ends in that cloud, on its account", () => {
     expect(host.textContent).toContain(account.email);
     await press("[data-entry=switch-account]");
     await settle(() => onLinked.mock.calls.length > 0);
-    expect(JSON.parse(prefs.get("dusk.mobile.connections.v1") ?? "[]").map((one: { id: string }) => one.id)).toEqual(["old"]);
+    expect(JSON.parse(prefs.get("madani.mobile.connections.v1") ?? "[]").map((one: { id: string }) => one.id)).toEqual(["old"]);
     expect(secrets.get("token.old")).toBe("old-token");
-    expect(JSON.parse(secrets.get("dusk.account.others") ?? "[]").map((one: { account: { email: string } }) => one.account.email)).toEqual([account.email]);
+    expect(JSON.parse(secrets.get("madani.account.others") ?? "[]").map((one: { account: { email: string } }) => one.account.email)).toEqual([account.email]);
     expect(paired).toEqual(["c1"]);
   });
 });
 
 describe("another account is always a tap away", () => {
   it("Add another account on the clouds screen opens an empty sign-in and keeps this account and its clouds", async () => {
-    secrets.set("dusk.account", JSON.stringify({ origin, token, expiresAt: Date.now() + 60_000, account, deviceId: "phone" }));
-    prefs.set("dusk.mobile.connections.v1", JSON.stringify([{ id: "wrong", environmentId: "env-w", label: "Wrong cloud", transport: "https", origin: "https://d2222222222222222222b.dusk.bot", sessionRef: "token.wrong", capabilities: {}, addedAt: 1, lastUsedAt: 1 }]));
+    secrets.set("madani.account", JSON.stringify({ origin, token, expiresAt: Date.now() + 60_000, account, deviceId: "phone" }));
+    prefs.set("madani.mobile.connections.v1", JSON.stringify([{ id: "wrong", environmentId: "env-w", label: "Wrong cloud", transport: "https", origin: "https://d2222222222222222222b.madani.bot", sessionRef: "token.wrong", capabilities: {}, addedAt: 1, lastUsedAt: 1 }]));
     secrets.set("token.wrong", "wrong-token");
     fetcher.mockImplementation(async (input) => String(input).endsWith("/api/cloud/desktop/session") ? response({ ok: true, clouds: [] }) : response({ v: 1, providers: [], signupOpen: true }));
     await mount(onboarding());
     for (let i = 0; i < 50 && !host.querySelector("[data-entry=other-account]"); i++) await act(async () => { await new Promise((resolve) => setTimeout(resolve, 10)); });
     await press("[data-entry=other-account]");
     for (let i = 0; i < 50 && !host.querySelector("input[type=email]"); i++) await act(async () => { await new Promise((resolve) => setTimeout(resolve, 10)); });
-    expect(heading()).toBe("Log in to dusk bot");
+    expect(heading()).toBe("Log in to madani bot");
     expect(host.querySelector<HTMLInputElement>("input[type=email]")?.value).toBe("");
-    expect(secrets.has("dusk.account")).toBe(true);
-    expect(JSON.parse(prefs.get("dusk.mobile.connections.v1") ?? "[]").map((one: { id: string }) => one.id)).toEqual(["wrong"]);
+    expect(secrets.has("madani.account")).toBe(true);
+    expect(JSON.parse(prefs.get("madani.mobile.connections.v1") ?? "[]").map((one: { id: string }) => one.id)).toEqual(["wrong"]);
     expect(secrets.get("token.wrong")).toBe("wrong-token");
   });
 });
@@ -503,12 +503,12 @@ describe("a signed-in desktop's QR signs the phone in as it pairs", () => {
     await press("[data-entry=scan]");
     await settle(() => onLinked.mock.calls.length > 0);
     expect(phoneCalls()).toHaveLength(1);
-    expect(secrets.has("dusk.account")).toBe(true);
+    expect(secrets.has("madani.account")).toBe(true);
     expect(onLinked).toHaveBeenCalledWith(expect.objectContaining({ id: "linked" }), "session", expect.any(String));
   });
 
   it("a phone on another account is asked first, then switches and pairs", async () => {
-    secrets.set("dusk.account", JSON.stringify({ origin, token, expiresAt: Date.now() + 60_000, account, deviceId: "phone" }));
+    secrets.set("madani.account", JSON.stringify({ origin, token, expiresAt: Date.now() + 60_000, account, deviceId: "phone" }));
     platform = scanning();
     const onLinked = vi.fn();
     await mount(onboarding({ onLinked, startAtLink: true, onCancel: vi.fn() }));
@@ -530,7 +530,7 @@ describe("a signed-in desktop's QR signs the phone in as it pairs", () => {
     await press("[data-entry=scan]");
     await settle(() => onLinked.mock.calls.length > 0);
     expect(onLinked).toHaveBeenCalled();
-    expect(secrets.has("dusk.account")).toBe(false);
+    expect(secrets.has("madani.account")).toBe(false);
   });
 });
 

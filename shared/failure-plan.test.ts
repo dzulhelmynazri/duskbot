@@ -10,13 +10,13 @@ const KINDS: FailureKind[] = [...REASONS, "claude_update", "place", "restart_int
 
 /** What engines and the system really say when they fail, as people must never read it. */
 const RAW_CAUSES = [
-  "spawn claude ENOENT: /Users/sam/.duskbot/workspaces/0f6c/chats/main does not exist",
-  "Error: boom\n    at runTurn (/Applications/Dusk Bot.app/Contents/Resources/server.js:12:4)\n    at process.tick (node:internal/process:1:1)",
+  "spawn claude ENOENT: /Users/sam/.madanibot/workspaces/0f6c/chats/main does not exist",
+  "Error: boom\n    at runTurn (/Applications/Madani Bot.app/Contents/Resources/server.js:12:4)\n    at process.tick (node:internal/process:1:1)",
   'API Error: 400 {"type":"error","error":{"type":"invalid_request_error","message":"tools.3.custom.input_schema: bad"}}',
   "request to https://api.anthropic.com/v1/messages failed, reason: socket hang up",
   "codex exited with code 137",
   "connect ECONNREFUSED 127.0.0.1:8317",
-  "C:\\Users\\sam\\AppData\\Local\\dusk bot\\server.log has the details",
+  "C:\\Users\\sam\\AppData\\Local\\madani bot\\server.log has the details",
   "Traceback (most recent call last):\n  File \"agent.py\", line 3",
 ];
 
@@ -35,7 +35,7 @@ describe("every way a reply can be lost", () => {
     for (const kind of KINDS) {
       const { line } = FAILURE_PLANS[kind];
       expect(rawDetailIn(line), `${kind}: ${line}`).toBeNull();
-      expect(line, kind).toMatch(/^(?:dusk bot|[A-Z])[^\n]{10,120}\.$/);
+      expect(line, kind).toMatch(/^(?:madani bot|[A-Z])[^\n]{10,120}\.$/);
       expect(line.split(/(?<=\.) /).length, kind).toBeLessThanOrEqual(2);
     }
   });
@@ -65,9 +65,9 @@ describe("a failed turn's stored row", () => {
       }
     }
     expect(failedTurnCause(failedTurnTool(RAW_CAUSES[0]!, { reason: "cli_missing" }).name))
-      .toBe("spawn claude ENOENT: ~/.duskbot/workspaces/0f6c/chats/main does not exist");
-    expect(failedTurnCause(failedTurnTool("C:\\Users\\sam\\AppData\\Local\\dusk bot\\server.log has the details").name))
-      .toBe("~\\AppData\\Local\\dusk bot\\server.log has the details");
+      .toBe("spawn claude ENOENT: ~/.madanibot/workspaces/0f6c/chats/main does not exist");
+    expect(failedTurnCause(failedTurnTool("C:\\Users\\sam\\AppData\\Local\\madani bot\\server.log has the details").name))
+      .toBe("~\\AppData\\Local\\madani bot\\server.log has the details");
   });
 
   it("keeps the engine's own plain words, and any words with no known reason", () => {

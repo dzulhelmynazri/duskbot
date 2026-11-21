@@ -3,7 +3,7 @@
 // to the provider's own page, never signed in there); an emailed magic link (sink address) signs in on the website, the
 // app signs itself in and goes on with its own first run while the website asks a name and a plan. The website never opens
 // the app by itself: skipping the plan ends on the pricing page, paying (test-mode checkout) ends on the plan page, and both
-// show a quiet "open dusk bot" (duskbot://open, or duskbot://cloud after paying) that the run presses, delivered to the app
+// show a quiet "open madani bot" (madanibot://open, or madanibot://cloud after paying) that the run presses, delivered to the app
 // as the OS would.
 //
 //   node scripts/smoke/flows/account-handoff.mjs [--plan free|paid] [--out DIR] [--profile DIR] [--email ADDRESS] [--no-providers]
@@ -19,17 +19,17 @@ const plan = option("--plan", "free");
 if (!["free", "paid"].includes(plan)) throw new Error("--plan is free or paid");
 const NAME = option("--name", "Robin Fieldtest");
 const flow = createFlow({ name: `account-handoff-${plan}`, title: `account step handoff (${plan})`, root, out, profile, email,
-  env: { DUSK_ANALYTICS: process.env.DUSK_ANALYTICS ?? "1" } });
+  env: { MADANI_ANALYTICS: process.env.MADANI_ANALYTICS ?? "1" } });
 
 const at = () => flow.evaluate(`document.querySelector("[data-welcome]")?.dataset.welcome ?? null`);
-const gate = (expression) => flow.evaluate(`window.duskDesktop.accountGate.${expression}`);
+const gate = (expression) => flow.evaluate(`window.madaniDesktop.accountGate.${expression}`);
 const timeline = [];
 const mark = (what, where) => { timeline.push({ what, where, at: Date.now() }); flow.log(`${where}: ${what}`); };
 
 /** the newest magic link the account service kept for this test address since `since` */
 async function testMailLink(since) {
   if (!isTestAddress(email)) throw new Error("not a test address");
-  const token = envValue("DUSK_OPS_TOKEN_PREVIEW");
+  const token = envValue("MADANI_OPS_TOKEN_PREVIEW");
   const response = await fetch(`${PREVIEW_ORIGIN}/v1/ops/test-mail?to=${encodeURIComponent(email)}&since=${Math.max(0, since - 5_000)}`, { headers: { authorization: `Bearer ${token}` } });
   if (response.status === 404) return null;
   if (!response.ok) throw new Error(`the test mailbox answered ${response.status}`);
@@ -44,7 +44,7 @@ function watchAppLinks(browser) {
   socket.onmessage = (event) => {
     const message = JSON.parse(String(event.data));
     const url = message.params?.url;
-    if (typeof url === "string" && url.startsWith("duskbot:") && !seen.includes(url)) seen.push(url);
+    if (typeof url === "string" && url.startsWith("madanibot:") && !seen.includes(url)) seen.push(url);
   };
   return { seen, close: () => socket.close() };
 }
@@ -53,7 +53,7 @@ await runFlow(flow, async () => {
   await flow.step("launch", "a fresh app shows the welcome, then the account step", async () => {
     await flow.launch();
     await flow.viewport(1040, 760);
-    await flow.waitText(/meet dusk bot|create your/i, "the welcome", { timeout: 120_000 });
+    await flow.waitText(/meet madani bot|create your/i, "the welcome", { timeout: 120_000 });
     if (await flow.evaluate(`Boolean([...document.querySelectorAll("button")].find((b) => /^get started$/i.test(b.innerText.trim()) && b.getClientRects().length))`)) await flow.click("get started");
     await flow.waitFor(`document.querySelector("[data-welcome]")?.dataset.welcome === "account"`, "the account step", 30_000);
     await sleep(1200);
@@ -139,7 +139,7 @@ await runFlow(flow, async () => {
   }, { critical: true });
 
   await flow.step("app-signed-in", "the app signs itself in and keeps going with its own first run", async (entry) => {
-    await flow.waitFor(`window.duskDesktop.accountGate.state().then((s) => s.status === "connected")`, "the app signed in", 60_000);
+    await flow.waitFor(`window.madaniDesktop.accountGate.state().then((s) => s.status === "connected")`, "the app signed in", 60_000);
     mark("app signed in", "app");
     await flow.waitFor(`document.querySelector("[data-welcome]")?.dataset.welcome !== "account"`, "the app past the account step", 20_000);
     await sleep(1500);
@@ -169,7 +169,7 @@ await runFlow(flow, async () => {
   }, { critical: true });
 
   if (plan === "free") {
-    await flow.step("web-free", "free ends on the pricing page, with a quiet open dusk bot and no automatic app link", async () => {
+    await flow.step("web-free", "free ends on the pricing page, with a quiet open madani bot and no automatic app link", async () => {
       await browser.evaluate(`document.querySelector("#home-free").click(); true`);
       await sleep(400);
       await browser.click("continue with free");
@@ -180,7 +180,7 @@ await runFlow(flow, async () => {
       const href = await browser.evaluate(`document.querySelector("[data-open-app-link]")?.getAttribute("href") ?? null`);
       flow.facts.appLinksFromWeb = [...links.seen];
       if (links.seen.length) throw new Error(`the website opened the app by itself: ${links.seen.join(", ")}`);
-      if (href !== "duskbot://open") throw new Error(`open dusk bot button: ${href}`);
+      if (href !== "madanibot://open") throw new Error(`open madani bot button: ${href}`);
       await browser.evaluate(`document.querySelector("[data-open-app-link]").click(); true`);
       await sleep(1500);
       return `on ${new URL(await browser.url()).pathname}, button ${href}, nothing opened until pressed (${links.seen.join(", ") || "headless: no handler"})`;
@@ -199,22 +199,22 @@ await runFlow(flow, async () => {
     await flow.step("web-pay", "pays with the test card and comes back to the website", async () => {
       const paid = await payDodoTestCheckout(checkoutUrl, { browser, log: flow.log, shot: (label) => join(out, `pay-${label}.png`) });
       mark("paid", "web");
-      await until(async () => /preview\.dusk\.bot/.test(await browser.url()), { timeout: 90_000, what: "back on the website" });
+      await until(async () => /preview\.madani\.bot/.test(await browser.url()), { timeout: 90_000, what: "back on the website" });
       await sleep(6000);
       await web("after-pay");
       flow.facts.afterPay = (await browser.url()).replace(/#.*$/, "");
       flow.facts.appLinksFromWeb = [...links.seen];
       if (links.seen.length) throw new Error(`the website opened the app by itself: ${links.seen.join(", ")}`);
       if (!new URL(flow.facts.afterPay).pathname.endsWith("/billing")) throw new Error(`ended on ${flow.facts.afterPay}, not the plan page`);
-      const href = await until(() => browser.evaluate(`document.querySelector("[data-open-app-link]")?.getAttribute("href") ?? false`), { timeout: 30_000, what: "the open dusk bot button" });
-      if (href !== "duskbot://cloud") throw new Error(`open dusk bot button: ${href}`);
+      const href = await until(() => browser.evaluate(`document.querySelector("[data-open-app-link]")?.getAttribute("href") ?? false`), { timeout: 30_000, what: "the open madani bot button" });
+      if (href !== "madanibot://cloud") throw new Error(`open madani bot button: ${href}`);
       await browser.evaluate(`document.querySelector("[data-open-app-link]").click(); true`);
       await sleep(1500);
       return `${new URL(paid.url).host}, then ${flow.facts.afterPay} and stopped; button ${href}`;
     });
   }
 
-  await flow.step("back-in-app", "open dusk bot from the website's button reaches the app, which comes forward where it was", async (entry) => {
+  await flow.step("back-in-app", "open madani bot from the website's button reaches the app, which comes forward where it was", async (entry) => {
     const sent = links.seen.at(-1);
     if (!sent) throw flow.skip("the website sent no app link");
     const before = await at();
@@ -225,7 +225,7 @@ await runFlow(flow, async () => {
     const after = await at();
     const sheet = await flow.evaluate(`[...document.querySelectorAll("[role=dialog]")].filter((d) => d.getClientRects().length).map((d) => d.innerText.replace(/\\s+/g, " ").slice(0, 120))`);
     flow.facts.backInApp = { link: sent, before, after, dialogs: sheet };
-    if (sent === "duskbot://cloud" && !sheet.length) throw new Error(`no cloud sheet after ${sent} (welcome ${before} -> ${after})`);
+    if (sent === "madanibot://cloud" && !sheet.length) throw new Error(`no cloud sheet after ${sent} (welcome ${before} -> ${after})`);
     return `welcome ${before} -> ${after}; dialogs: ${sheet.join(" | ") || "none"}`;
   });
 
@@ -269,8 +269,8 @@ await runFlow(flow, async () => {
     return `pressed ${pressed.join(", ")}; "${NAME}" on screen`;
   });
 
-  // the app sends its usage every 30 s; a run that sends analytics (DUSK_ANALYTICS=1) hands over what is still queued
-  if (flow.app && process.env.DUSK_ANALYTICS !== "0") {
+  // the app sends its usage every 30 s; a run that sends analytics (MADANI_ANALYTICS=1) hands over what is still queued
+  if (flow.app && process.env.MADANI_ANALYTICS !== "0") {
     await flow.evaluate(`import("/src/lib/product-analytics.ts").then((m) => m.flush()).then(() => true)`).catch(() => {});
     await sleep(8000);
   }

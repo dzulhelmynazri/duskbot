@@ -1,28 +1,28 @@
 // Voice input in the real composer, headless, with a simulated recognizer and audio levels (no microphone): the
 // waveform and one-line preview while talking, the words landing on Done, the first-run sheet and the calm error.
-// Screenshots go to DUSK_UI_EVIDENCE_DIR/voice-input (default .dusk-scratch/verify-evidence/voice-input).
+// Screenshots go to MADANI_UI_EVIDENCE_DIR/voice-input (default .madani-scratch/verify-evidence/voice-input).
 //
-//   DUSK_UI_E2E=1 pnpm exec vitest run scripts/testing/voice-input.e2e.test.ts
+//   MADANI_UI_E2E=1 pnpm exec vitest run scripts/testing/voice-input.e2e.test.ts
 import { spawn, type ChildProcess } from "node:child_process";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { expect, it } from "vitest";
-import { launchVerificationServer, type VerificationServer } from "../control-dusk.ts";
+import { launchVerificationServer, type VerificationServer } from "../control-madani.ts";
 import { waitForExit } from "../../server/testing/cleanup.ts";
-import { ensureUiBrowser } from "./control-dusk-ui.ts";
+import { ensureUiBrowser } from "./control-madani-ui.ts";
 import { fixtureApi, mountPreview, REPO_ROOT, type MountedPreview } from "./preview-fixture.ts";
 import { connect } from "./chat-gallery/cdp.ts";
 import { NOTICES } from "../../src/lib/notices.ts";
 
-const enabled = process.env.DUSK_UI_E2E === "1";
-if (!enabled) console.log("skipping voice input screenshots: set DUSK_UI_E2E=1 for isolated browser qualification");
+const enabled = process.env.MADANI_UI_E2E === "1";
+if (!enabled) console.log("skipping voice input screenshots: set MADANI_UI_E2E=1 for isolated browser qualification");
 
 (enabled ? it : it.skip)("shows the waveform and one line while talking, then lands the words", async () => {
   let fixture: VerificationServer | undefined;
   let preview: MountedPreview | undefined;
   let chrome: ChildProcess | undefined;
   let cdp: Awaited<ReturnType<typeof connect>> | undefined;
-  const evidence = join(process.env.DUSK_UI_EVIDENCE_DIR || join(REPO_ROOT, ".dusk-scratch", "verify-evidence"), "voice-input");
+  const evidence = join(process.env.MADANI_UI_EVIDENCE_DIR || join(REPO_ROOT, ".madani-scratch", "verify-evidence"), "voice-input");
   mkdirSync(evidence, { recursive: true });
   try {
     const tools = await ensureUiBrowser();
@@ -151,7 +151,7 @@ if (!enabled) console.log("skipping voice input screenshots: set DUSK_UI_E2E=1 f
   let preview: MountedPreview | undefined;
   let chrome: ChildProcess | undefined;
   let cdp: Awaited<ReturnType<typeof connect>> | undefined;
-  const evidence = join(process.env.DUSK_UI_EVIDENCE_DIR || join(REPO_ROOT, ".dusk-scratch", "verify-evidence"), "voice-settings");
+  const evidence = join(process.env.MADANI_UI_EVIDENCE_DIR || join(REPO_ROOT, ".madani-scratch", "verify-evidence"), "voice-settings");
   mkdirSync(evidence, { recursive: true });
   try {
     const tools = await ensureUiBrowser();

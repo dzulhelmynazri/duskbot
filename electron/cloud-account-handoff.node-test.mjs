@@ -29,11 +29,11 @@ async function fixture(t, handoff, page = null) {
 }
 
 test("handoffDestination accepts only this origin's handoff page with a fragment token", () => {
-  const origin = "https://dusk.bot";
+  const origin = "https://madani.bot";
   for (const good of [`${origin}/handoff#t=${handoffToken}`, `${origin}/dashboard/handoff#t=${handoffToken}`]) assert.equal(handoffDestination(good, origin), good);
-  for (const bad of [`https://evil.test/handoff#t=${handoffToken}`, `http://dusk.bot/handoff#t=${handoffToken}`, `${origin}/handoff?t=${handoffToken}`,
+  for (const bad of [`https://evil.test/handoff#t=${handoffToken}`, `http://madani.bot/handoff#t=${handoffToken}`, `${origin}/handoff?t=${handoffToken}`,
     `${origin}/handoff?x=1#t=${handoffToken}`, `${origin}/billing#t=${handoffToken}`, `${origin}/handoff#t=short`, `${origin}/handoff`,
-    `https://user:pass@dusk.bot/handoff#t=${handoffToken}`, `https://dusk.bot.evil.test/handoff#t=${handoffToken}`, `${origin}/x/../handoff#t=${handoffToken}`, null, 42]) {
+    `https://user:pass@madani.bot/handoff#t=${handoffToken}`, `https://madani.bot.evil.test/handoff#t=${handoffToken}`, `${origin}/x/../handoff#t=${handoffToken}`, null, 42]) {
     assert.equal(handoffDestination(bad, origin), null, String(bad));
   }
 });

@@ -15,7 +15,7 @@ let garage: OwnServer, family: OwnServer;
 beforeAll(async () => {
   fx = await launchOwnHomeFixture();
   garage = await fx.addServer("Garage server");
-  family = await fx.addServer("Family server", { DUSK_SIGNIN_MEMBER_EMAILS: "friend@example.test" });
+  family = await fx.addServer("Family server", { MADANI_SIGNIN_MEMBER_EMAILS: "friend@example.test" });
 }, hostTimeout(120_000));
 afterAll(async () => { await fx?.close(); });
 
@@ -38,7 +38,7 @@ const routines = async (side: Side) => (await side("GET", "/api/routines")).body
 it("only a server that is the person's alone says it is theirs, takes a move and is offered as their bots' home", async () => {
   expect((await garage.as("GET", "/api/auth/session")).body).toMatchObject({ kind: "session", own: true });
   expect((await family.as("GET", "/api/auth/session")).body.own, "others sign in there").toBeUndefined();
-  const described = async (server: OwnServer) => ((await (await fetch(`${server.base}/.well-known/duskbot/environment`)).json()) as { capabilities: { move?: number } }).capabilities;
+  const described = async (server: OwnServer) => ((await (await fetch(`${server.base}/.well-known/madanibot/environment`)).json()) as { capabilities: { move?: number } }).capabilities;
   expect((await described(garage)).move).toBe(1);
   expect((await described(family)).move).toBeUndefined();
 

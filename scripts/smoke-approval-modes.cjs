@@ -13,7 +13,7 @@ const { setTimeout: delay } = require("node:timers/promises");
 const { createTrustedApprovalModeCoordinator } = require("../electron/approval-trusted-mode.cjs");
 
 const root = resolve(__dirname, "..");
-const home = mkdtempSync(join(tmpdir(), "dusk-approval-smoke-"));
+const home = mkdtempSync(join(tmpdir(), "madani-approval-smoke-"));
 app.setPath("userData", join(home, "electron"));
 let child;
 let logs = "";
@@ -95,10 +95,10 @@ app.whenReady().then(async () => {
     cwd: root,
     execArgv: ["--experimental-strip-types"],
     env: {
-      HOME: home, USERPROFILE: home, DUSK_DATA_DIR: home, PATH: "",
+      HOME: home, USERPROFILE: home, MADANI_DATA_DIR: home, PATH: "",
       ...(process.env.SystemRoot ? { SystemRoot: process.env.SystemRoot } : {}),
-      DUSK_PORT: String(port), DUSK_WEBHOOK_PORT: String(webhookPort),
-      DUSK_TEST_INTERNAL_CAPABILITY_KEY: testCapabilityKey,
+      MADANI_PORT: String(port), MADANI_WEBHOOK_PORT: String(webhookPort),
+      MADANI_TEST_INTERNAL_CAPABILITY_KEY: testCapabilityKey,
       FAKE_CLAUDE_MODE: "happy", FAKE_CLAUDE_DUMP: dump,
       FAKE_ACP_MODE: "permission", FAKE_ACP_AUTH_METHOD: "oauth-personal",
       FAKE_ACP_MODELS: "gemini-3.8-flash-high,gemini-3.8-flash-low", FAKE_ACP_MODES: "default,yolo",
@@ -122,7 +122,7 @@ app.whenReady().then(async () => {
   });
   if (process.argv.includes("--skill-ui-only")) {
     await require("./testing/skill-approval-ui-smoke.cjs")({ root, home, url: `http://127.0.0.1:${port}`, api, until,
-      capability: (botId, threadId) => api("/api/testing/internal-capability", "POST", { botId, threadId, skillAuthoring: true }, { "x-dusk-test-capability": testCapabilityKey }),
+      capability: (botId, threadId) => api("/api/testing/internal-capability", "POST", { botId, threadId, skillAuthoring: true }, { "x-madani-test-capability": testCapabilityKey }),
     });
     return;
   }
@@ -371,7 +371,7 @@ app.whenReady().then(async () => {
   await coordinator.request(child, peerTarget.id, "full");
   await coordinator.request(child, peerTarget.id, "full", { threadId: peerThread.threadId });
   assert.equal((await api(`/api/bots/${id}`, "PATCH", { approvePeerComms: false })).status, 200);
-  const capability = await api("/api/testing/internal-capability", "POST", { botId: id, threadId: created.body.bot.threadId }, { "x-dusk-test-capability": testCapabilityKey });
+  const capability = await api("/api/testing/internal-capability", "POST", { botId: id, threadId: created.body.bot.threadId }, { "x-madani-test-capability": testCapabilityKey });
   assert.equal(capability.status, 201);
   const peerResponse = await api("/api/internal/coordinate-bots", "POST", { botIds: [peerTarget.id], message: "Peer-initiated permission fixture", consult: true }, { authorization: `Bearer ${capability.body.token}` });
   assert.equal(peerResponse.status, 200);

@@ -14,7 +14,7 @@ import { memoryWarmStore, rangeFrom } from "./web-warm.ts";
 import type { EventName } from "../analytics/events.ts";
 import { CSRF_HEADER } from "../../../../shared/account-api.ts";
 
-const ORIGIN = "http://127.0.0.1:7999", SITE = "https://dusk.bot";
+const ORIGIN = "http://127.0.0.1:7999", SITE = "https://madani.bot";
 const ADMIN = "owner@example.test", OTHER = "someone@example.test";
 const VID = "AbCdEfGhIjKlMnOpQrStUv", ANON = "ZyXwVuTsRqPoNmLkJiHgFe", INSTALL = "inst_0123456789abcdef";
 type Routes = ReturnType<typeof createAnalyticsRoutes>;
@@ -33,7 +33,7 @@ describe("admin analytics routes", () => {
   const csrf = new Map<string, string>();
 
   beforeEach(async () => {
-    dataDir = mkdtempSync(join(tmpdir(), "dusk-analytics-routes-"));
+    dataDir = mkdtempSync(join(tmpdir(), "madani-analytics-routes-"));
     time = Date.parse("2026-11-12T12:00:00Z");
     mailer = memoryMailer(); sink = memorySink(() => time); csrf.clear();
     app = createDashboardApp({ dataDir, publicUrl: ORIGIN, mailer, staticDir: null, now: () => time,
@@ -68,7 +68,7 @@ describe("admin analytics routes", () => {
   }
   function call(path: string, init: { method?: string; body?: unknown; cookie?: string; csrf?: boolean } = {}) {
     return send(path, { method: init.method ?? (init.body === undefined ? "GET" : "POST"),
-      headers: { origin: ORIGIN, "x-dusk-admin-tests": "show", "x-dusk-admin-money": "all", ...(init.body === undefined ? {} : { "content-type": "application/json" }),
+      headers: { origin: ORIGIN, "x-madani-admin-tests": "show", "x-madani-admin-money": "all", ...(init.body === undefined ? {} : { "content-type": "application/json" }),
         ...(init.cookie ? { cookie: init.cookie, ...(init.csrf === false ? {} : { [CSRF_HEADER]: csrf.get(init.cookie) ?? "" }) } : {}) },
       ...(init.body === undefined ? {} : { body: JSON.stringify(init.body) }) });
   }
@@ -95,7 +95,7 @@ describe("admin analytics routes", () => {
   }
   async function beacon(visitor = ANON, path = "/anonymous") {
     const response = await send("/v1/t", { method: "POST", headers: { "content-type": "text/plain;charset=UTF-8", origin: SITE, "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 14_5) AppleWebKit/605.1.15 Version/17.5 Safari/605.1.15" },
-      body: JSON.stringify({ v: 1, e: "pageview", vid: visitor, sid: visitor, pv: "pv000001", h: "dusk.bot", p: path, w: 1440 }) });
+      body: JSON.stringify({ v: 1, e: "pageview", vid: visitor, sid: visitor, pv: "pv000001", h: "madani.bot", p: path, w: 1440 }) });
     expect(response.status).toBe(200);
     await expect.poll(() => sink.all.some(event => event.name === "site_view" && event.ctx?.visitor === visitor)).toBe(true);
   }
@@ -273,9 +273,9 @@ describe("admin analytics routes", () => {
     const start = time;
     await login(OTHER);
     const accountId = app.auth.accountByEmail(OTHER)!.id;
-    await view(VID, "shared", start, "/", { host: "dusk.bot", utm: { term: "Dusk-Bot" } });
+    await view(VID, "shared", start, "/", { host: "madani.bot", utm: { term: "Madani-Bot" } });
     await identify(accountId, VID, INSTALL);
-    await record("page_view", { accountId, at: start + 100, props: { path: "/billing" }, ctx: { session: "shared", host: "dusk.bot" } });
+    await record("page_view", { accountId, at: start + 100, props: { path: "/billing" }, ctx: { session: "shared", host: "madani.bot" } });
     await record("app_open", { at: start + 200, props: { kind: "desktop" }, ctx: { install: INSTALL, session: "shared", app: { platform: "darwin" } } });
     await record("app_open", { accountId, at: start + 300, props: { kind: "mobile" }, ctx: { install: "phone", session: "phone", app: { platform: "android" } } });
     pay(accountId, start + 400);
@@ -285,8 +285,8 @@ describe("admin analytics routes", () => {
     const data = await read<Web>(`/v1/admin/web?${query}`, admin);
     expect(data.surfaces).toEqual({ site: 1, account: 1, desktop: 1, phone: 1 });
     expect(data.current).toMatchObject({ visitors: 1, visits: 1, pageviews: 1, signups: 2, paid: 1 });
-    expect(data.cards.host).toEqual([{ key: "dusk.bot", visitors: 1, signups: 1, paid: 1 }]);
-    expect(data.cards.keyword).toEqual([{ key: "dusk-bot", visitors: 1, signups: 1, paid: 1 }]);
+    expect(data.cards.host).toEqual([{ key: "madani.bot", visitors: 1, signups: 1, paid: 1 }]);
+    expect(data.cards.keyword).toEqual([{ key: "madani-bot", visitors: 1, signups: 1, paid: 1 }]);
     expect(data.cards.surface).toEqual([{ key: "site", visitors: 1, signups: 1, paid: 1 }]);
     expect(data.marks).toEqual([
       { at: time, kind: "signup", seed: adminId, email: ADMIN, customer: false },
@@ -302,7 +302,7 @@ describe("admin analytics routes", () => {
       expect(selected.series.signups.reduce((sum, n) => sum + n, 0)).toBe(1);
     }
     expect((await read<Web>(`/v1/admin/web?${query}&surface=all`, admin)).current).toMatchObject({ visitors: 3, visits: 4, pageviews: 4 });
-    const filtered = await read<Web>(`/v1/admin/web?${query}&surface=all&f.surface=site&f.host=dusk.bot&f.keyword=dusk-bot`, admin);
+    const filtered = await read<Web>(`/v1/admin/web?${query}&surface=all&f.surface=site&f.host=madani.bot&f.keyword=madani-bot`, admin);
     expect(filtered.current).toMatchObject({ visitors: 1, signups: 1, paid: 1 });
     expect(filtered.marks).toEqual(data.marks.slice(1));
     expect((await read<Web>(`/v1/admin/web?${query}&surface=desktop&f.surface=phone`, admin)).current.visitors).toBe(0);
@@ -316,22 +316,22 @@ describe("admin analytics routes", () => {
     await login(OTHER);
     const accountId = app.auth.accountByEmail(OTHER)!.id;
     await identify(accountId);
-    await view(VID, "first", start, "/", { host: "dusk.bot" });
-    await view(VID, "first", start + 1000, "/pricing", { host: "dusk.bot" });
-    await view(ANON, "second", start + 2000, "/", { host: "dusk.bot" });
-    await view(VID, "third", start + 3000, "/", { host: "preview.dusk.bot" });
+    await view(VID, "first", start, "/", { host: "madani.bot" });
+    await view(VID, "first", start + 1000, "/pricing", { host: "madani.bot" });
+    await view(ANON, "second", start + 2000, "/", { host: "madani.bot" });
+    await view(VID, "third", start + 3000, "/", { host: "preview.madani.bot" });
     await view("outside", "outside", start - 1, "/outside");
-    await record("page_view", { accountId, at: start + 4000, props: { path: "/billing" }, ctx: { session: "account", host: "dusk.bot" } });
+    await record("page_view", { accountId, at: start + 4000, props: { path: "/billing" }, ctx: { session: "account", host: "madani.bot" } });
     pay(accountId, start + 5000);
     time += HOUR;
     const admin = await login(ADMIN), query = range(start, time);
     const data = await read<Details>(`/v1/admin/web/host?${query}`, admin);
     expect(data).toMatchObject({ from: start, to: time, dimension: "host", filters: {} });
     expect(data.rows).toEqual([
-      { key: "dusk.bot", visitors: 2, signups: 1, paid: 1, conversion: 0.5, bounce: 0.5, visitMs: 500, pageviews: 3 },
-      { key: "preview.dusk.bot", visitors: 1, signups: 1, paid: 1, conversion: 1, bounce: 1, visitMs: 0, pageviews: 1 },
+      { key: "madani.bot", visitors: 2, signups: 1, paid: 1, conversion: 0.5, bounce: 0.5, visitMs: 500, pageviews: 3 },
+      { key: "preview.madani.bot", visitors: 1, signups: 1, paid: 1, conversion: 1, bounce: 1, visitMs: 0, pageviews: 1 },
     ]);
-    const filtered = await read<Details>(`/v1/admin/web/page?${query}&f.host=dusk.bot&f.channel=ai`, admin);
+    const filtered = await read<Details>(`/v1/admin/web/page?${query}&f.host=madani.bot&f.channel=ai`, admin);
     expect(filtered.rows).toEqual([
       { key: "/", visitors: 2, signups: 1, paid: 1, conversion: 0.5, bounce: 0.5, visitMs: 500, pageviews: 3 },
       { key: "/pricing", visitors: 1, signups: 1, paid: 1, conversion: 1, bounce: 0, visitMs: 1000, pageviews: 2 },

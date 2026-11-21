@@ -10,7 +10,7 @@ import { describeSpawnFailure } from "./procs.ts";
 import { roomTurnFolder } from "./room-folder.ts";
 import { Store } from "./store.ts";
 
-const root = mkdtempSync(join(tmpdir(), "dusk-own-folders-"));
+const root = mkdtempSync(join(tmpdir(), "madani-own-folders-"));
 afterAll(() => rmSync(root, { recursive: true, force: true }));
 
 const BOT = "b3ce933b-e438-49ee-8ff3-b5dff0a6043e", THREAD = "b056d17b-13cc-4569-9dd1-8524fbd97c2b";
@@ -31,7 +31,7 @@ describe("rebaseOwnFolder", () => {
   it("maps a chat's and a bot's own folder from another data dir onto this one", () => {
     expect(rebaseOwnFolder(otherChat, here, isBot)).toBe(join(here, "task-workspaces", BOT, THREAD));
     expect(rebaseOwnFolder(join(other, "workspaces", BOT), here, isBot)).toBe(join(here, "workspaces", BOT));
-    expect(rebaseOwnFolder(`C:\\Users\\me\\.duskbot\\task-workspaces\\${BOT}\\${THREAD}\\out`, here, isBot)).toBe(join(here, "task-workspaces", BOT, THREAD, "out"));
+    expect(rebaseOwnFolder(`C:\\Users\\me\\.madanibot\\task-workspaces\\${BOT}\\${THREAD}\\out`, here, isBot)).toBe(join(here, "task-workspaces", BOT, THREAD, "out"));
   });
 
   it("leaves a picked folder, another bot's id and an escaping tail alone", () => {
@@ -66,7 +66,7 @@ describe("settleChatFolder", () => {
     mkdirSync(inOther, { recursive: true });
     expect(foreignDataDir(inOther, here)).toBe(other);
     expect(settle(inOther)).toMatchObject({ cwd: join(here, "task-workspaces", BOT, THREAD), lost: "projects" });
-    expect(validateBotCwd(inOther)).toEqual({ ok: false, error: expect.stringMatching(/another dusk bot/) });
+    expect(validateBotCwd(inOther)).toEqual({ ok: false, error: expect.stringMatching(/another madani bot/) });
   });
 
   it("keeps a picked folder that exists, no folder, and a chat not pinned yet", () => {

@@ -52,11 +52,11 @@ export function createPagesRoutes(service: PagesService) {
 export function pagesRoutesFromEnv(options: { dataDir: string; publicUrl: string; clouds: { get(id: string): StoredCloud | null }; now?: () => number; fetch?: typeof fetch; env?: NodeJS.ProcessEnv }) {
   const env = options.env ?? process.env, url = new URL(options.publicUrl);
   const loopback = url.protocol === "http:" && ["127.0.0.1", "localhost", "[::1]"].includes(url.hostname);
-  const kind = env.DUSK_PAGES_STORE ?? (loopback ? "fs" : "off");
-  if (!["memory", "fs", "s3", "off"].includes(kind)) throw new Error("Invalid DUSK_PAGES_STORE.");
+  const kind = env.MADANI_PAGES_STORE ?? (loopback ? "fs" : "off");
+  if (!["memory", "fs", "s3", "off"].includes(kind)) throw new Error("Invalid MADANI_PAGES_STORE.");
   if (kind === "off") return {
     async handle(req: IncomingMessage, res: ServerResponse) {
-      if (!(req.headers.host ?? "").toLowerCase().replace(/:\d+$/, "").endsWith(`.${(env.DUSK_PAGES_DOMAIN ?? "page.dusk.bot").toLowerCase()}`)) return false;
+      if (!(req.headers.host ?? "").toLowerCase().replace(/:\d+$/, "").endsWith(`.${(env.MADANI_PAGES_DOMAIN ?? "page.madani.bot").toLowerCase()}`)) return false;
       const response = pageNotFound(req.method ?? "GET");
       res.writeHead(response.status, Object.fromEntries(response.headers));
       res.end(Buffer.from(await response.arrayBuffer()));
@@ -65,11 +65,11 @@ export function pagesRoutesFromEnv(options: { dataDir: string; publicUrl: string
   };
   function required(key: string) { const value = env[key]; if (!value) throw new Error(`${key} is required.`); return value; }
   function s3() {
-    const endpoint = required("DUSK_PAGES_S3_ENDPOINT");
-    try { if (new URL(endpoint).protocol !== "https:") throw new Error(); } catch { throw new Error("Invalid DUSK_PAGES_S3_ENDPOINT."); }
-    return createS3ObjectStore({ endpoint, region: required("DUSK_PAGES_S3_REGION"), bucket: required("DUSK_PAGES_S3_BUCKET"), accessKeyId: required("DUSK_PAGES_S3_ACCESS_KEY_ID"), secretAccessKey: required("DUSK_PAGES_S3_SECRET_ACCESS_KEY"), fetch: options.fetch });
+    const endpoint = required("MADANI_PAGES_S3_ENDPOINT");
+    try { if (new URL(endpoint).protocol !== "https:") throw new Error(); } catch { throw new Error("Invalid MADANI_PAGES_S3_ENDPOINT."); }
+    return createS3ObjectStore({ endpoint, region: required("MADANI_PAGES_S3_REGION"), bucket: required("MADANI_PAGES_S3_BUCKET"), accessKeyId: required("MADANI_PAGES_S3_ACCESS_KEY_ID"), secretAccessKey: required("MADANI_PAGES_S3_SECRET_ACCESS_KEY"), fetch: options.fetch });
   }
   const store = kind === "memory" ? createMemoryObjectStore() : kind === "fs" ? createFsObjectStore(join(options.dataDir, "pages-objects")) : s3();
-  const sealer = createSealer(env.DUSK_CLOUD_SEAL_KEY ? parseSealKey(env.DUSK_CLOUD_SEAL_KEY) : null);
-  return createPagesRoutes(createPagesService({ ...options, store, unseal: sealer.unseal, pagesDomain: env.DUSK_PAGES_DOMAIN }));
+  const sealer = createSealer(env.MADANI_CLOUD_SEAL_KEY ? parseSealKey(env.MADANI_CLOUD_SEAL_KEY) : null);
+  return createPagesRoutes(createPagesService({ ...options, store, unseal: sealer.unseal, pagesDomain: env.MADANI_PAGES_DOMAIN }));
 }

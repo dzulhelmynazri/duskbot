@@ -7,7 +7,7 @@ import type { BillingContext } from "./index.ts";
 import { BillingError } from "./service.ts";
 import { body, cartInput, cloudName, color, invalid, json, rawBody, survey, text } from "./http.ts";
 
-/** the operator's funnel read: a bearer token from DUSK_OPS_TOKEN, compared in constant time */
+/** the operator's funnel read: a bearer token from MADANI_OPS_TOKEN, compared in constant time */
 function opsAllowed(header: string | undefined, token: string) {
   const given = Buffer.from(header?.startsWith("Bearer ") ? header.slice(7) : "");
   const wanted = Buffer.from(token);

@@ -1,4 +1,4 @@
-// ~/.duskbot/config.json, with env vars overriding its credentials.
+// ~/.madanibot/config.json, with env vars overriding its credentials.
 import { dataDirFor } from "../electron/legacy-names.mjs";
 import { readFileSync, mkdirSync, existsSync, renameSync } from "node:fs";
 import { homedir } from "node:os";
@@ -379,7 +379,7 @@ const appConfigSchema = z.object({
       "Use a model ID without control characters",
     ).optional(),
   }).optional(),
-  /** Non-secret profile details; aboutMe is shared with every bot. `accountName`: the dusk cloud account's name this
+  /** Non-secret profile details; aboutMe is shared with every bot. `accountName`: the madani cloud account's name this
    * computer last copied into `name`; while `name` is still that copy, a new name on the account replaces it. */
   profile: z.object({ name: optionalText, email: optionalText, aboutMe: z.string().max(24_000).optional(), avatarUrl: z.union([z.literal(""), botAvatarUrlSchema]).optional(), accountName: optionalText }).optional(),
   /** UI language override (BCP-47, lowercase), absent follows the system; what a paired phone calls this computer, "" for the default. */
@@ -398,7 +398,7 @@ const appConfigSchema = z.object({
     tidyHour: z.number().int().min(0).max(23).optional(),
   }).strict().optional(),
   threads: threadsConfigSchema.optional(),
-  /** Minimum days of decision-log month files kept; DUSK_DECISION_RETENTION_DAYS wins. */
+  /** Minimum days of decision-log month files kept; MADANI_DECISION_RETENTION_DAYS wins. */
   decisions: z.object({ retentionDays: z.number().int().min(1).max(3650).optional() }).strict().optional(),
   loopGuard: loopGuardConfigSchema.optional(),
   safetyFloor: z.object({ enabled: z.boolean().optional() }).strict().optional(), // off by default: safetyFloorEnabled in server/safety-floor-gate.ts
@@ -691,7 +691,7 @@ export function changedInstanceIds(before: Record<string, unknown>, after: Recor
     .filter((id) => !isDeepStrictEqual(before[id], after[id]));
 }
 
-export const DATA_DIR = dataDirFor(process.env.DUSK_DATA_DIR, homedir());
+export const DATA_DIR = dataDirFor(process.env.MADANI_DATA_DIR, homedir());
 const LEGACY_DATA_DIR = join(homedir(), ".opengrokbot");
 export const EVENTS_DIR = join(DATA_DIR, "events");
 export const NATIVE_DIR = join(DATA_DIR, "native");
@@ -744,19 +744,19 @@ export function loadConfig(): AppConfig {
     }
   }
   // Env wins over the file for every credential: the desktop shell injects them as env at spawn.
-  for (const [name, env] of [["mistral", "MISTRAL_API_KEY"], ["cerebras", "CEREBRAS_API_KEY"], ["groq", "DUSK_GROQ_API_KEY"], ["meta", "DUSK_META_API_KEY"],
-    ["deepseek", "DUSK_DEEPSEEK_API_KEY"], ["greenference", "DUSK_GREENFERENCE_API_KEY"], ["xai", "XAI_API_KEY"]] as const) {
+  for (const [name, env] of [["mistral", "MISTRAL_API_KEY"], ["cerebras", "CEREBRAS_API_KEY"], ["groq", "MADANI_GROQ_API_KEY"], ["meta", "MADANI_META_API_KEY"],
+    ["deepseek", "MADANI_DEEPSEEK_API_KEY"], ["greenference", "MADANI_GREENFERENCE_API_KEY"], ["xai", "XAI_API_KEY"]] as const) {
     cfg[name] = { ...cfg[name], ...(process.env[env] !== undefined ? { key: process.env[env] } : {}) };
   }
-  if (process.env.DUSK_TREG_KEY !== undefined) cfg.treg = { ...cfg.treg, key: process.env.DUSK_TREG_KEY };
+  if (process.env.MADANI_TREG_KEY !== undefined) cfg.treg = { ...cfg.treg, key: process.env.MADANI_TREG_KEY };
   // Never ANTHROPIC_API_KEY: an operator's stray variable must not move every Claude bot onto API billing.
   cfg.anthropic = { ...cfg.anthropic };
-  if (process.env.DUSK_ANTHROPIC_API_KEY !== undefined) cfg.anthropic.key = process.env.DUSK_ANTHROPIC_API_KEY;
-  if (process.env.DUSK_ANTHROPIC_API_URL !== undefined) cfg.anthropic.url = process.env.DUSK_ANTHROPIC_API_URL;
+  if (process.env.MADANI_ANTHROPIC_API_KEY !== undefined) cfg.anthropic.key = process.env.MADANI_ANTHROPIC_API_KEY;
+  if (process.env.MADANI_ANTHROPIC_API_URL !== undefined) cfg.anthropic.url = process.env.MADANI_ANTHROPIC_API_URL;
   cfg.openai = { ...cfg.openai };
-  if (process.env.DUSK_OPENAI_API_KEY !== undefined) cfg.openai.key = process.env.DUSK_OPENAI_API_KEY;
+  if (process.env.MADANI_OPENAI_API_KEY !== undefined) cfg.openai.key = process.env.MADANI_OPENAI_API_KEY;
   cfg.openrouter = { ...cfg.openrouter };
-  if (process.env.DUSK_OPENROUTER_API_KEY !== undefined) cfg.openrouter.key = process.env.DUSK_OPENROUTER_API_KEY;
+  if (process.env.MADANI_OPENROUTER_API_KEY !== undefined) cfg.openrouter.key = process.env.MADANI_OPENROUTER_API_KEY;
   cfg.openaiCompat = { ...cfg.openaiCompat };
   if (process.env.OPENAI_COMPAT_API_KEY !== undefined) cfg.openaiCompat.key = process.env.OPENAI_COMPAT_API_KEY;
   if (process.env.OPENAI_COMPAT_URL !== undefined) cfg.openaiCompat.url = process.env.OPENAI_COMPAT_URL;
@@ -767,26 +767,26 @@ export function loadConfig(): AppConfig {
   cfg.opencodeGo = { ...cfg.opencodeGo };
   if (process.env.OPENCODE_API_KEY !== undefined) cfg.opencodeGo.apiKey = process.env.OPENCODE_API_KEY;
   cfg.tts = { ...cfg.tts };
-  if (process.env.DUSK_TTS_KEY !== undefined) cfg.tts.key = process.env.DUSK_TTS_KEY;
-  const presetVoice = process.env.DUSK_TTS_DEFAULT_VOICE?.trim();
+  if (process.env.MADANI_TTS_KEY !== undefined) cfg.tts.key = process.env.MADANI_TTS_KEY;
+  const presetVoice = process.env.MADANI_TTS_DEFAULT_VOICE?.trim();
   if (presetVoice && !cfg.tts.voice?.trim() && (cfg.tts.provider ?? "elevenlabs") === "elevenlabs") cfg.tts.voice = presetVoice;
-  if (process.env.DUSK_FISH_AUDIO_API_KEY !== undefined) cfg.tts.fishKey = process.env.DUSK_FISH_AUDIO_API_KEY;
-  if (process.env.DUSK_GEMINI_API_KEY !== undefined) cfg.tts.geminiKey = process.env.DUSK_GEMINI_API_KEY;
-  if (process.env.DUSK_DEEPGRAM_API_KEY !== undefined) cfg.tts.deepgramKey = process.env.DUSK_DEEPGRAM_API_KEY;
-  if (process.env.DUSK_CARTESIA_API_KEY !== undefined) cfg.tts.cartesiaKey = process.env.DUSK_CARTESIA_API_KEY;
-  if (process.env.DUSK_ASSEMBLYAI_API_KEY !== undefined) cfg.tts.assemblyAiKey = process.env.DUSK_ASSEMBLYAI_API_KEY;
+  if (process.env.MADANI_FISH_AUDIO_API_KEY !== undefined) cfg.tts.fishKey = process.env.MADANI_FISH_AUDIO_API_KEY;
+  if (process.env.MADANI_GEMINI_API_KEY !== undefined) cfg.tts.geminiKey = process.env.MADANI_GEMINI_API_KEY;
+  if (process.env.MADANI_DEEPGRAM_API_KEY !== undefined) cfg.tts.deepgramKey = process.env.MADANI_DEEPGRAM_API_KEY;
+  if (process.env.MADANI_CARTESIA_API_KEY !== undefined) cfg.tts.cartesiaKey = process.env.MADANI_CARTESIA_API_KEY;
+  if (process.env.MADANI_ASSEMBLYAI_API_KEY !== undefined) cfg.tts.assemblyAiKey = process.env.MADANI_ASSEMBLYAI_API_KEY;
   cfg.decider = { ...cfg.decider };
-  if (process.env.DUSK_JEV_API_KEY !== undefined) cfg.decider.key = process.env.DUSK_JEV_API_KEY;
-  if (process.env.DUSK_OPENROUTER_DECIDER_KEY !== undefined) cfg.decider.openrouterKey = process.env.DUSK_OPENROUTER_DECIDER_KEY; if (process.env.DUSK_WORKERS_AI_TOKEN !== undefined) cfg.decider.workersAiToken = process.env.DUSK_WORKERS_AI_TOKEN; if (process.env.DUSK_GATEWAY_DECIDER_KEY !== undefined) cfg.decider.gatewayKey = process.env.DUSK_GATEWAY_DECIDER_KEY;
+  if (process.env.MADANI_JEV_API_KEY !== undefined) cfg.decider.key = process.env.MADANI_JEV_API_KEY;
+  if (process.env.MADANI_OPENROUTER_DECIDER_KEY !== undefined) cfg.decider.openrouterKey = process.env.MADANI_OPENROUTER_DECIDER_KEY; if (process.env.MADANI_WORKERS_AI_TOKEN !== undefined) cfg.decider.workersAiToken = process.env.MADANI_WORKERS_AI_TOKEN; if (process.env.MADANI_GATEWAY_DECIDER_KEY !== undefined) cfg.decider.gatewayKey = process.env.MADANI_GATEWAY_DECIDER_KEY;
   cfg.live = liveConfigWithEnv(cfg.live);
   cfg.imageGen = { ...cfg.imageGen };
-  if (process.env.DUSK_OPENAI_IMAGE_KEY !== undefined) cfg.imageGen.key = process.env.DUSK_OPENAI_IMAGE_KEY;
-  if (process.env.DUSK_CUSTOM_IMAGE_KEY !== undefined) cfg.imageGen.customApiKey = process.env.DUSK_CUSTOM_IMAGE_KEY;
+  if (process.env.MADANI_OPENAI_IMAGE_KEY !== undefined) cfg.imageGen.key = process.env.MADANI_OPENAI_IMAGE_KEY;
+  if (process.env.MADANI_CUSTOM_IMAGE_KEY !== undefined) cfg.imageGen.customApiKey = process.env.MADANI_CUSTOM_IMAGE_KEY;
   const splitEmails = (value: string) => value.split(/[,\s]+/).map((entry) => entry.trim().toLowerCase()).filter(Boolean);
-  if (process.env.DUSK_SIGNIN_EMAILS !== undefined || process.env.DUSK_SIGNIN_MEMBER_EMAILS !== undefined) {
+  if (process.env.MADANI_SIGNIN_EMAILS !== undefined || process.env.MADANI_SIGNIN_MEMBER_EMAILS !== undefined) {
     cfg.signIn = { ...cfg.signIn };
-    if (process.env.DUSK_SIGNIN_EMAILS !== undefined) cfg.signIn.admins = splitEmails(process.env.DUSK_SIGNIN_EMAILS);
-    if (process.env.DUSK_SIGNIN_MEMBER_EMAILS !== undefined) cfg.signIn.members = splitEmails(process.env.DUSK_SIGNIN_MEMBER_EMAILS);
+    if (process.env.MADANI_SIGNIN_EMAILS !== undefined) cfg.signIn.admins = splitEmails(process.env.MADANI_SIGNIN_EMAILS);
+    if (process.env.MADANI_SIGNIN_MEMBER_EMAILS !== undefined) cfg.signIn.members = splitEmails(process.env.MADANI_SIGNIN_MEMBER_EMAILS);
   }
   return cfg;
 }
@@ -808,28 +808,28 @@ export function syncCredentialEnv(patch: Partial<Omit<AppConfig, "threads" | "ne
   const secrets: Array<[value: string | undefined, name: string]> = [
     [patch.xai?.key, "XAI_API_KEY"],
     [patch.mistral?.key, "MISTRAL_API_KEY"],
-    [patch.cerebras?.key, "CEREBRAS_API_KEY"], [patch.treg?.key, "DUSK_TREG_KEY"],
-    [patch.groq?.key, "DUSK_GROQ_API_KEY"],
-    [patch.greenference?.key, "DUSK_GREENFERENCE_API_KEY"],
-    [patch.meta?.key, "DUSK_META_API_KEY"],
-    [patch.deepseek?.key, "DUSK_DEEPSEEK_API_KEY"],
-    [patch.anthropic?.key, "DUSK_ANTHROPIC_API_KEY"],
+    [patch.cerebras?.key, "CEREBRAS_API_KEY"], [patch.treg?.key, "MADANI_TREG_KEY"],
+    [patch.groq?.key, "MADANI_GROQ_API_KEY"],
+    [patch.greenference?.key, "MADANI_GREENFERENCE_API_KEY"],
+    [patch.meta?.key, "MADANI_META_API_KEY"],
+    [patch.deepseek?.key, "MADANI_DEEPSEEK_API_KEY"],
+    [patch.anthropic?.key, "MADANI_ANTHROPIC_API_KEY"],
     [patch.openaiCompat?.key, "OPENAI_COMPAT_API_KEY"],
-    [patch.openai?.key, "DUSK_OPENAI_API_KEY"],
-    [patch.openrouter?.key, "DUSK_OPENROUTER_API_KEY"],
+    [patch.openai?.key, "MADANI_OPENAI_API_KEY"],
+    [patch.openrouter?.key, "MADANI_OPENROUTER_API_KEY"],
     [patch.composio?.apiKey, "COMPOSIO_API_KEY"],
     [patch.opencodeGo?.apiKey, "OPENCODE_API_KEY"],
-    [patch.tts?.key, "DUSK_TTS_KEY"],
-    [patch.tts?.fishKey, "DUSK_FISH_AUDIO_API_KEY"],
-    [patch.tts?.geminiKey, "DUSK_GEMINI_API_KEY"],
-    [patch.tts?.deepgramKey, "DUSK_DEEPGRAM_API_KEY"],
-    [patch.tts?.cartesiaKey, "DUSK_CARTESIA_API_KEY"],
-    [patch.tts?.assemblyAiKey, "DUSK_ASSEMBLYAI_API_KEY"],
-    [patch.decider?.key, "DUSK_JEV_API_KEY"],
-    [patch.decider?.openrouterKey, "DUSK_OPENROUTER_DECIDER_KEY"], [patch.decider?.workersAiToken, "DUSK_WORKERS_AI_TOKEN"], [patch.decider?.gatewayKey, "DUSK_GATEWAY_DECIDER_KEY"],
-    [patch.imageGen?.key, "DUSK_OPENAI_IMAGE_KEY"],
-    [patch.imageGen?.customApiKey, "DUSK_CUSTOM_IMAGE_KEY"],
-    [patch.live?.key, "DUSK_OPENAI_LIVE_KEY"],
+    [patch.tts?.key, "MADANI_TTS_KEY"],
+    [patch.tts?.fishKey, "MADANI_FISH_AUDIO_API_KEY"],
+    [patch.tts?.geminiKey, "MADANI_GEMINI_API_KEY"],
+    [patch.tts?.deepgramKey, "MADANI_DEEPGRAM_API_KEY"],
+    [patch.tts?.cartesiaKey, "MADANI_CARTESIA_API_KEY"],
+    [patch.tts?.assemblyAiKey, "MADANI_ASSEMBLYAI_API_KEY"],
+    [patch.decider?.key, "MADANI_JEV_API_KEY"],
+    [patch.decider?.openrouterKey, "MADANI_OPENROUTER_DECIDER_KEY"], [patch.decider?.workersAiToken, "MADANI_WORKERS_AI_TOKEN"], [patch.decider?.gatewayKey, "MADANI_GATEWAY_DECIDER_KEY"],
+    [patch.imageGen?.key, "MADANI_OPENAI_IMAGE_KEY"],
+    [patch.imageGen?.customApiKey, "MADANI_CUSTOM_IMAGE_KEY"],
+    [patch.live?.key, "MADANI_OPENAI_LIVE_KEY"],
   ];
   for (const [value, name] of secrets) {
     if (value === undefined) continue;
@@ -838,7 +838,7 @@ export function syncCredentialEnv(patch: Partial<Omit<AppConfig, "threads" | "ne
   }
   const settings: Array<[value: string | undefined, name: string]> = [
     [patch.openaiCompat?.url, "OPENAI_COMPAT_URL"],
-    [patch.anthropic?.url, "DUSK_ANTHROPIC_API_URL"],
+    [patch.anthropic?.url, "MADANI_ANTHROPIC_API_URL"],
     [patch.openaiCompat?.model, "OPENAI_COMPAT_MODEL"],
     [patch.openaiCompat?.provider, "OPENAI_COMPAT_PROVIDER"],
     ...liveSettingEnv(patch.live),
@@ -862,10 +862,10 @@ function openCodeProviderKeyNameRefusal(name: string): string | undefined {
     return "Use the name the provider reads its key from: capitals, ending in _API_KEY, _KEY or _TOKEN, such as VENICE_API_KEY.";
   }
   if (name === "OPENCODE_API_KEY") return "Save the OpenCode key in the OpenCode API key box instead.";
-  const reserved = name.startsWith("OPENCODE_") || name.startsWith("DUSK_")
+  const reserved = name.startsWith("OPENCODE_") || name.startsWith("MADANI_")
     || (WORKSPACE_CREDENTIAL_ENV as readonly string[]).includes(name)
     || ((PROVIDER_CREDENTIAL_ENV as readonly string[]).includes(name) && !(OPENCODE_PROVIDER_ENV as readonly string[]).includes(name));
-  return reserved ? `dusk bot keeps ${name} for itself, so OpenCode can't be given it here. Put this key in opencode.json instead.` : undefined;
+  return reserved ? `madani bot keeps ${name} for itself, so OpenCode can't be given it here. Put this key in opencode.json instead.` : undefined;
 }
 
 export function openCodeProviderKeys(cfg: Pick<AppConfig, "opencodeGo">): Record<string, string> {
@@ -1153,9 +1153,9 @@ function injectedEnvironment(cfg: AppConfig, instanceId: string, driver: string)
   if (driver === "grok" && cfg.xai?.key) environment.set("XAI_API_KEY", cfg.xai.key);
   if (driver === "claudeAgent") for (const [name, value] of Object.entries(anthropicKeyEnv(cfg.anthropic, instanceId === CLAUDE_API_INSTANCE))) environment.set(name, value);
   if (driver === "openai-compat" && instanceId === OPENAI_API_INSTANCE) {
-    if (cfg.openai?.key) environment.set("DUSK_OPENAI_API_KEY", cfg.openai.key);
+    if (cfg.openai?.key) environment.set("MADANI_OPENAI_API_KEY", cfg.openai.key);
   } else if (driver === "openai-compat" && instanceId === OPENROUTER_API_INSTANCE) {
-    if (cfg.openrouter?.key) environment.set("DUSK_OPENROUTER_API_KEY", cfg.openrouter.key);
+    if (cfg.openrouter?.key) environment.set("MADANI_OPENROUTER_API_KEY", cfg.openrouter.key);
   } else {
     if (driver === "openai-compat" && cfg.openaiCompat?.key)
       environment.set("OPENAI_COMPAT_API_KEY", cfg.openaiCompat.key);

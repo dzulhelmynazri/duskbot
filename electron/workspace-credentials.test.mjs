@@ -14,7 +14,7 @@ describe("workspace credential migration", () => {
     } }, {});
     expect(result.credentials).toEqual({ openaiImageApiKey: "openai-only", customImageApiKey: "router-only" });
     expect(result.config.imageGen).toEqual({ provider: "custom", customUrl: "http://127.0.0.1:4000/v1", customModel: "local/image" });
-    expect(workspaceCredentialEnv(result.credentials)).toEqual({ DUSK_OPENAI_IMAGE_KEY: "openai-only", DUSK_CUSTOM_IMAGE_KEY: "router-only" });
+    expect(workspaceCredentialEnv(result.credentials)).toEqual({ MADANI_OPENAI_IMAGE_KEY: "openai-only", MADANI_CUSTOM_IMAGE_KEY: "router-only" });
   });
   it("moves every plaintext secret into the store and deletes the field", () => {
     const config = {
@@ -55,8 +55,8 @@ describe("workspace credential migration", () => {
     expect(result.config.decider).toEqual({ provider: "openrouter", openrouterModel: "openai/gpt-4o-mini", enabled: true });
     expect(result.config.openrouter).toEqual({ key: "engine-openrouter-key" });
     expect(workspaceCredentialEnv(result.credentials)).toEqual({
-      DUSK_JEV_API_KEY: "jev-secret",
-      DUSK_OPENROUTER_DECIDER_KEY: "sk-or-secret",
+      MADANI_JEV_API_KEY: "jev-secret",
+      MADANI_OPENROUTER_DECIDER_KEY: "sk-or-secret",
     });
   });
 
@@ -134,10 +134,10 @@ describe("workspace credential env", () => {
       }),
     ).toEqual({
       XAI_API_KEY: "xai-secret",
-      DUSK_TTS_KEY: "tts-secret",
-      DUSK_FISH_AUDIO_API_KEY: "fish-secret",
+      MADANI_TTS_KEY: "tts-secret",
+      MADANI_FISH_AUDIO_API_KEY: "fish-secret",
       OPENCODE_API_KEY: "ocg-secret",
-      DUSK_OPENAI_IMAGE_KEY: "image-secret",
+      MADANI_OPENAI_IMAGE_KEY: "image-secret",
     });
   });
 

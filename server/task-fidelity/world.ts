@@ -10,7 +10,7 @@ import {
 } from "../system-prompt.ts";
 import type { ConnectorToolGrant } from "../../shared/wire.ts";
 
-export type Family = "connector" | "browser" | "computer" | "web" | "files" | "shell" | "dusk";
+export type Family = "connector" | "browser" | "computer" | "web" | "files" | "shell" | "madani";
 export type Slack = "bridge" | "composio" | null;
 
 export interface Channel { id: string; name: string }
@@ -57,7 +57,7 @@ const ENGINE_TOOLS: Tool[] = [
   { name: "WebFetch", description: "Fetch a web page as text.", input_schema: SCHEMA({ url: str("URL") }, ["url"]) },
 ];
 
-const DUSK_TOOLS: Tool[] = [
+const MADANI_TOOLS: Tool[] = [
   { name: "set_status", description: "Set the one-line status the person sees while you work.", input_schema: SCHEMA({ text: str("Status") }, ["text"]) },
   { name: "session_search", description: "Search this person's earlier chats and your notes.", input_schema: SCHEMA({ query: str("Words to look for") }, ["query"]) },
   { name: "memory_update", description: "Remember, correct or forget a fact about the person.", input_schema: SCHEMA({ action: str("add, replace or remove"), text: str("The fact") }, ["action", "text"]) },
@@ -96,7 +96,7 @@ const toTool = (tool: { name: string; description: string; inputSchema: Record<s
 
 export function worldTools(world: World): Tool[] {
   return [
-    ...ENGINE_TOOLS, ...DUSK_TOOLS,
+    ...ENGINE_TOOLS, ...MADANI_TOOLS,
     ...(world.slack === "bridge" ? SLACK_TOOL_DEFINITIONS.map(toTool) : []),
     ...(world.apps.length || world.slack === "composio" ? COMPOSIO_TOOLS : []),
     ...(world.apps.includes("gmail") ? GMAIL_TOOLS : []),
@@ -151,7 +151,7 @@ export function familyOf(call: Call): Family {
   if (name === "WebSearch" || name === "WebFetch") return "web";
   if (name === "Read" || name === "Glob" || name === "Grep") return "files";
   if (name === "Bash") return FILE_COMMAND.test(lower(call.input.command)) ? "files" : "shell";
-  return "dusk";
+  return "madani";
 }
 
 /** A call that puts something in front of other people, with where it went; null for everything else. */

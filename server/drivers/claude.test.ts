@@ -91,18 +91,18 @@ function answerQueue(conn: ReturnType<typeof connect>) {
 }
 
 const CONTROL_PLANE_FIXTURE = {
-  DUSK_CLOUD_READY_TOKEN: "ready-should-not-leak", DUSK_CLOUD_BOOTSTRAP: "bootstrap-should-not-leak",
-  DUSK_LICENSE_KEY: "license-should-not-leak", DUSK_INSTALLATION_CREDENTIAL: "fleet-should-not-leak",
+  MADANI_CLOUD_READY_TOKEN: "ready-should-not-leak", MADANI_CLOUD_BOOTSTRAP: "bootstrap-should-not-leak",
+  MADANI_LICENSE_KEY: "license-should-not-leak", MADANI_INSTALLATION_CREDENTIAL: "fleet-should-not-leak",
 };
 
 describe("ClaudeDriver.decodeConfig", () => {
   it("quotes hook paths as shell data rather than JSON strings", () => {
-    const settings = claudeHookSettings("/tmp/it's $DUSK_HOOK_TEST `literal`/helper.ts", "linux") as { PostToolUse: Array<{ hooks: Array<{ command: string }> }> };
-    expect(settings.PostToolUse[0]!.hooks[0]!.command).toContain("'/tmp/it'\\''s $DUSK_HOOK_TEST `literal`/helper.ts'");
+    const settings = claudeHookSettings("/tmp/it's $MADANI_HOOK_TEST `literal`/helper.ts", "linux") as { PostToolUse: Array<{ hooks: Array<{ command: string }> }> };
+    expect(settings.PostToolUse[0]!.hooks[0]!.command).toContain("'/tmp/it'\\''s $MADANI_HOOK_TEST `literal`/helper.ts'");
   });
 
   it("starts the hook helper without a shell on Windows, where Git Bash or PowerShell would read the command line", () => {
-    const helper = "C:\\Users\\it's $DUSK_HOOK_TEST `literal`\\helper.ts";
+    const helper = "C:\\Users\\it's $MADANI_HOOK_TEST `literal`\\helper.ts";
     const settings = claudeHookSettings(helper, "win32") as { PostToolUse: Array<{ hooks: unknown[] }> };
     expect(settings.PostToolUse[0]!.hooks).toEqual([{ type: "command", command: process.execPath, args: [helper], timeout: 5 }]);
   });
@@ -216,7 +216,7 @@ describe("ClaudeDriver.decodeConfig", () => {
 
   it.skipIf(process.platform !== "win32")("names permission pipes per harness process", () => {
     expect(permissionSocketPath("thread-abc")).toMatch(
-      new RegExp(`^\\\\\\\\\\.\\\\pipe\\\\duskbot-perm-${process.pid}-thre[0-9a-f]{4}$`),
+      new RegExp(`^\\\\\\\\\\.\\\\pipe\\\\madanibot-perm-${process.pid}-thre[0-9a-f]{4}$`),
     );
   });
 
@@ -267,7 +267,7 @@ describe("ClaudeDriver.decodeConfig", () => {
   });
 
   it("disposes its account controller while a logout is running", async () => {
-    const home = mkdtempSync(join(tmpdir(), "dusk-claude-logout-dispose-"));
+    const home = mkdtempSync(join(tmpdir(), "madani-claude-logout-dispose-"));
     const cli = join(home, "fake-logout.mjs");
     const pidPath = join(home, "logout-pid");
     writeFileSync(cli, [
@@ -311,7 +311,7 @@ describe("ClaudeDriver.decodeConfig", () => {
       expect(new Set(candidates).size).toBe(candidates.length);
     } else {
       expect(candidates).toHaveLength(tmpdir() === "/tmp" ? 3 : 4);
-      expect(candidates[1]).toMatch(/dusk-perm-[0-9a-f]{16}\.sock$/);
+      expect(candidates[1]).toMatch(/madani-perm-[0-9a-f]{16}\.sock$/);
       expect(candidates[2]).toMatch(/dp-[0-9a-f]{8}\.sock$/);
       expect(new Set(candidates).size).toBe(candidates.length);
       expect(brokerSocketCandidates("t-candidates")[2]).not.toBe(candidates[2]);
@@ -334,7 +334,7 @@ describe("ClaudeDriver.decodeConfig", () => {
   it.skipIf(process.platform === "win32")(
     "binds the next candidate when the first is unbindable, and asks round-trip on it",
     async () => {
-      const dir = mkdtempSync(join(tmpdir(), "dusk-broker-fallback-"));
+      const dir = mkdtempSync(join(tmpdir(), "madani-broker-fallback-"));
       const held = join(dir, "held.sock");
       // A directory squats the path the way a hung child holds a pipe.
       mkdirSync(held);
@@ -373,10 +373,10 @@ describe("ClaudeDriver.decodeConfig", () => {
   );
 
   it("denies an ask whose listener throws, instead of taking the process down", async () => {
-      const dir = mkdtempSync(join(tmpdir(), "dusk-broker-listener-"));
+      const dir = mkdtempSync(join(tmpdir(), "madani-broker-listener-"));
       // Windows binds pipes, not socket files; both are connectable by the same client code.
       const socketPath = process.platform === "win32"
-        ? `\\\\.\\pipe\\dusk-broker-listener-${process.pid}-${Date.now()}`
+        ? `\\\\.\\pipe\\madani-broker-listener-${process.pid}-${Date.now()}`
         : join(dir, "broker.sock");
       const resolved: Array<{ source?: string; behavior?: string }> = [];
       const broker = await createPermissionBroker({
@@ -411,7 +411,7 @@ describe("ClaudeDriver.decodeConfig", () => {
   it.skipIf(process.platform === "win32")(
     "keeps a large non-ASCII ask whole across socket reads",
     async () => {
-      const dir = mkdtempSync(join(tmpdir(), "dusk-broker-utf8-"));
+      const dir = mkdtempSync(join(tmpdir(), "madani-broker-utf8-"));
       const socketPath = join(dir, "broker.sock");
       const asks: Array<{ input: unknown }> = [];
       const broker = await createPermissionBroker({
@@ -444,7 +444,7 @@ describe("ClaudeDriver.decodeConfig", () => {
   it.skipIf(process.platform === "win32")(
     "rejects instead of returning an occupied path when every candidate is unavailable",
     async () => {
-      const dir = mkdtempSync(join(tmpdir(), "dusk-broker-unavailable-"));
+      const dir = mkdtempSync(join(tmpdir(), "madani-broker-unavailable-"));
       const heldOne = join(dir, "held-one.sock");
       const heldTwo = join(dir, "held-two.sock");
       mkdirSync(heldOne);
@@ -492,7 +492,7 @@ describe("ClaudeDriver turns (fake CLI)", () => {
   beforeEach(() => {
     ensureDirs();
     chmodSync(FAKE_CLI, 0o755);
-    scratch = mkdtempSync(join(tmpdir(), "dusk-claude-test-"));
+    scratch = mkdtempSync(join(tmpdir(), "madani-claude-test-"));
   });
 
   it("refuses an unsupported native selection before launching, even with instance tools and Full access", async () => {
@@ -513,7 +513,7 @@ describe("ClaudeDriver turns (fake CLI)", () => {
     expect(seen.argv).toContain("--restricted");
     expect(seen.argv[seen.argv.indexOf("--disallowedTools") + 1]).toBe("Write");
     expect(seen.mcpConfig.mcpServers).not.toHaveProperty("browser");
-    expect(JSON.parse(seen.mcpConfig.mcpServers.agents.env.DUSK_GATE_TOOL_SCOPE)).toEqual({ allow: ["native:*", "mcp:agents:list_bots"] });
+    expect(JSON.parse(seen.mcpConfig.mcpServers.agents.env.MADANI_GATE_TOOL_SCOPE)).toEqual({ allow: ["native:*", "mcp:agents:list_bots"] });
   });
 
   it("keeps a bot's tool selection working with the person's own skills", async () => {
@@ -548,10 +548,10 @@ describe("ClaudeDriver turns (fake CLI)", () => {
     delete process.env.COMPOSIO_API_KEY;
     delete process.env.BOX_TOKEN;
     delete process.env.OPENCODE_API_KEY;
-    delete process.env.DUSK_TTS_KEY;
+    delete process.env.MADANI_TTS_KEY;
     for (const name of Object.keys(CONTROL_PLANE_FIXTURE)) delete process.env[name];
-    delete process.env.DUSK_CLAUDE_SESSION_IDLE_MS;
-    delete process.env.DUSK_CLAUDE_SESSION_IDLE_MIN_MS;
+    delete process.env.MADANI_CLAUDE_SESSION_IDLE_MS;
+    delete process.env.MADANI_CLAUDE_SESSION_IDLE_MIN_MS;
     recorder?.stop();
     await instance?.dispose();
     await removeTempDir(scratch);
@@ -918,15 +918,15 @@ describe("ClaudeDriver turns (fake CLI)", () => {
   });
 
   it("hands a hosted tenant's CLI the hosted model token but none of the operator's control-plane secrets", async () => {
-    await create(undefined, { ANTHROPIC_API_KEY: "dusk_workspace_fixture", ANTHROPIC_AUTH_TOKEN: "dusk_workspace_fixture" });
+    await create(undefined, { ANTHROPIC_API_KEY: "madani_workspace_fixture", ANTHROPIC_AUTH_TOKEN: "madani_workspace_fixture" });
     const dump = join(scratch, "dump-hosted.json");
     process.env.FAKE_CLAUDE_DUMP = dump;
     Object.assign(process.env, CONTROL_PLANE_FIXTURE);
     await instance.adapter.sendTurn({ threadId: "t-hosted-env", text: "hello" });
     await recorder.until((e) => e.type === "turn.completed");
     const seen = JSON.parse(readFileSync(dump, "utf8"));
-    expect(seen.env.ANTHROPIC_API_KEY).toBe("dusk_workspace_fixture");
-    expect(seen.env.ANTHROPIC_AUTH_TOKEN).toBe("dusk_workspace_fixture");
+    expect(seen.env.ANTHROPIC_API_KEY).toBe("madani_workspace_fixture");
+    expect(seen.env.ANTHROPIC_AUTH_TOKEN).toBe("madani_workspace_fixture");
     for (const name of Object.keys(CONTROL_PLANE_FIXTURE)) expect(seen.env[name]).toBeUndefined();
   });
 
@@ -937,7 +937,7 @@ describe("ClaudeDriver turns (fake CLI)", () => {
     process.env.ANTHROPIC_API_KEY = "sk-should-not-leak";
     process.env.XAI_API_KEY = "xai-should-not-leak";
     process.env.BOX_TOKEN = "box-should-not-leak";
-    process.env.DUSK_TTS_KEY = "tts-should-not-leak";
+    process.env.MADANI_TTS_KEY = "tts-should-not-leak";
 
     await instance.adapter.sendTurn({ threadId: "t-hygiene", text: "the secret prompt", system: "You are Testy." });
     await recorder.until((e) => e.type === "turn.completed");
@@ -955,7 +955,7 @@ describe("ClaudeDriver turns (fake CLI)", () => {
     expect(seen.env.CLAUDE_CODE_ENTRYPOINT).toBeUndefined();
     expect(seen.env.XAI_API_KEY).toBeUndefined();
     expect(seen.env.BOX_TOKEN).toBeUndefined();
-    expect(seen.env.DUSK_TTS_KEY).toBeUndefined();
+    expect(seen.env.MADANI_TTS_KEY).toBeUndefined();
   });
 
   it("per-bot Ask restores the broker on a legacy bypass instance", async () => {
@@ -1325,7 +1325,7 @@ describe("ClaudeDriver turns (fake CLI)", () => {
         agents: {
           command: process.execPath,
           args: ["/fake/agents-proxy.js"],
-          env: { DUSK_HARNESS_URL: "http://127.0.0.1:1", DUSK_BOT_ID: "b1", DUSK_COMMS_TOKEN: "tok", DUSK_TURN_DEPTH: "0" },
+          env: { MADANI_HARNESS_URL: "http://127.0.0.1:1", MADANI_BOT_ID: "b1", MADANI_COMMS_TOKEN: "tok", MADANI_TURN_DEPTH: "0" },
         },
       },
     });
@@ -1335,14 +1335,14 @@ describe("ClaudeDriver turns (fake CLI)", () => {
     expect(seen.mcpConfig.mcpServers.agents).toMatchObject({
       alwaysLoad: true,
       args: ["/fake/agents-proxy.js"],
-      env: { DUSK_BOT_ID: "b1", DUSK_COMMS_TOKEN: "tok" },
+      env: { MADANI_BOT_ID: "b1", MADANI_COMMS_TOKEN: "tok" },
     });
     expect(JSON.stringify(seen.argv)).not.toContain("tok");
     const allowed = seen.argv[seen.argv.indexOf("--allowedTools") + 1];
     expect(allowed).toContain("mcp__agents");
     expect(seen.argv[seen.argv.indexOf("--permission-mode") + 1]).toBe(approvalMode === "auto" ? "auto" : "default");
     expect(seen.argv).toContain("--permission-prompt-tool");
-    expect(seen.mcpConfig.mcpServers.dusk.alwaysLoad).toBe(true);
+    expect(seen.mcpConfig.mcpServers.madani.alwaysLoad).toBe(true);
   });
 
   it("rewrites the hook token file only when the bearer changes", async () => {
@@ -1625,18 +1625,18 @@ describe("ClaudeDriver turns (fake CLI)", () => {
   });
 
   it("clamps a configured compaction window into the range the CLI accepts", () => {
-    expect(autoCompactWindow({ DUSK_CLAUDE_AUTOCOMPACT: "50000" })).toBe("100000");
-    expect(autoCompactWindow({ DUSK_CLAUDE_AUTOCOMPACT: "9000000" })).toBe("1000000");
-    expect(autoCompactWindow({ DUSK_CLAUDE_AUTOCOMPACT: "150000" })).toBe("150000");
-    expect(autoCompactWindow({ DUSK_CLAUDE_AUTOCOMPACT: "nonsense" })).toBe("200000");
+    expect(autoCompactWindow({ MADANI_CLAUDE_AUTOCOMPACT: "50000" })).toBe("100000");
+    expect(autoCompactWindow({ MADANI_CLAUDE_AUTOCOMPACT: "9000000" })).toBe("1000000");
+    expect(autoCompactWindow({ MADANI_CLAUDE_AUTOCOMPACT: "150000" })).toBe("150000");
+    expect(autoCompactWindow({ MADANI_CLAUDE_AUTOCOMPACT: "nonsense" })).toBe("200000");
     expect(autoCompactWindow({})).toBe("200000");
-    expect(autoCompactWindow({ DUSK_CLAUDE_AUTOCOMPACT: "auto" })).toBe("auto");
-    expect(autoCompactWindow({ DUSK_CLAUDE_AUTOCOMPACT: "off" })).toBe(null);
+    expect(autoCompactWindow({ MADANI_CLAUDE_AUTOCOMPACT: "auto" })).toBe("auto");
+    expect(autoCompactWindow({ MADANI_CLAUDE_AUTOCOMPACT: "off" })).toBe(null);
   });
 
   it("passes no compaction window when it is turned off", async () => {
     const dump = join(scratch, "compact-off.json");
-    await create(undefined, { FAKE_CLAUDE_DUMP: dump, DUSK_CLAUDE_AUTOCOMPACT: "off" });
+    await create(undefined, { FAKE_CLAUDE_DUMP: dump, MADANI_CLAUDE_AUTOCOMPACT: "off" });
     await instance.adapter.sendTurn({ threadId: "t-compact-off", text: "hi" });
     await recorder.until((e) => e.type === "turn.completed");
     expect(JSON.parse(readFileSync(dump, "utf8")).argv).not.toContain("--autocompact");
@@ -1724,7 +1724,7 @@ describe("ClaudeDriver turns (fake CLI)", () => {
       return { bot, thread, file };
     };
 
-    it("reaches a turn in a thread's own folder, beside dusk bot's own settings", async () => {
+    it("reaches a turn in a thread's own folder, beside madani bot's own settings", async () => {
       const dump = join(scratch, "bot-settings.json");
       process.env.FAKE_CLAUDE_DUMP = dump;
       await create();
@@ -1830,13 +1830,13 @@ describe("ClaudeDriver turns (fake CLI)", () => {
     expect(seen.argv).toContain("--strict-mcp-config");
     expect(seen.argv[seen.argv.indexOf("--setting-sources") + 1]).toBe("project");
     expect(seen.settings.claudeMdExcludes).toEqual([join(homedir(), ".claude", "CLAUDE.md")]);
-    // A bot's memory is dusk bot's: the CLI's per-folder one would split notes by thread and break the cached prompt.
+    // A bot's memory is madani bot's: the CLI's per-folder one would split notes by thread and break the cached prompt.
     expect(seen.settings.env.CLAUDE_CODE_DISABLE_AUTO_MEMORY).toBe("1");
   });
 
   it("inherits the machine's configuration again when the escape hatch is set", async () => {
     const dump = join(scratch, "inherit.json");
-    await create(undefined, { FAKE_CLAUDE_DUMP: dump, DUSK_CLAUDE_INHERIT_USER_CONFIG: "1" });
+    await create(undefined, { FAKE_CLAUDE_DUMP: dump, MADANI_CLAUDE_INHERIT_USER_CONFIG: "1" });
 
     await instance.adapter.sendTurn({ threadId: "t-inherit", text: "hi" });
     await recorder.until((e) => e.type === "turn.completed");
@@ -1892,13 +1892,13 @@ describe("ClaudeDriver turns (fake CLI)", () => {
     await recorder.until((e) => e.type === "turn.completed");
 
     const seen = JSON.parse(readFileSync(dump, "utf8"));
-    expect(JSON.parse(seen.mcpConfig.mcpServers.docs.env.DUSK_REMOTE_MCP_SERVER)).toEqual({ type: "http", url: "https://docs.example/mcp", headers: { Authorization: "Bearer tok-docs" } });
-    expect(JSON.parse(seen.mcpConfig.mcpServers.legacy.env.DUSK_REMOTE_MCP_SERVER)).toEqual({ type: "sse", url: "https://old.example/sse", headers: {} });
+    expect(JSON.parse(seen.mcpConfig.mcpServers.docs.env.MADANI_REMOTE_MCP_SERVER)).toEqual({ type: "http", url: "https://docs.example/mcp", headers: { Authorization: "Bearer tok-docs" } });
+    expect(JSON.parse(seen.mcpConfig.mcpServers.legacy.env.MADANI_REMOTE_MCP_SERVER)).toEqual({ type: "sse", url: "https://old.example/sse", headers: {} });
     expect(seen.mcpConfig.mcpServers.docs.args[0]).toContain("mcp-remote-proxy");
     expect(JSON.stringify(seen.argv)).not.toContain("tok-docs");
   });
 
-  // Claude Code advertises no MCP Apps UI extension and keeps tool results to itself, so only dusk bot's
+  // Claude Code advertises no MCP Apps UI extension and keeps tool results to itself, so only madani bot's
   // remote proxy can observe a URL app server.
   it("mounts cached url proxies with app observation only for apps", async () => {
     await create();
@@ -1907,21 +1907,21 @@ describe("ClaudeDriver turns (fake CLI)", () => {
     const docs = { type: "http" as const, url: "https://docs.example/mcp", headers: { Authorization: "Bearer tok-docs" } };
     const draw = { type: "http" as const, url: "https://mcp.excalidraw.com/mcp", headers: { Authorization: "Bearer tok-draw" } };
     const board = { command: "board-mcp", args: [], env: {} };
-    const agents = { command: process.execPath, args: ["agents-proxy.js"], env: { DUSK_HARNESS_URL: "http://127.0.0.1:8799", DUSK_COMMS_TOKEN: "comms-fixture" } };
+    const agents = { command: process.execPath, args: ["agents-proxy.js"], env: { MADANI_HARNESS_URL: "http://127.0.0.1:8799", MADANI_COMMS_TOKEN: "comms-fixture" } };
     await instance.adapter.sendTurn({
       threadId: "t-app-mcp", text: "hi",
       integrations: { agents, custom: { docs, draw, board }, mcpApps: { draw: { extension: true }, board: { extension: true } } },
     });
     await recorder.until((e) => e.type === "turn.completed");
     const seen = JSON.parse(readFileSync(dump, "utf8"));
-    expect(JSON.parse(seen.mcpConfig.mcpServers.docs.env.DUSK_REMOTE_MCP_SERVER)).toEqual(docs);
+    expect(JSON.parse(seen.mcpConfig.mcpServers.docs.env.MADANI_REMOTE_MCP_SERVER)).toEqual(docs);
     const proxy = seen.mcpConfig.mcpServers.draw;
     expect(proxy.args[0]).toContain("mcp-remote-proxy");
-    expect(JSON.parse(proxy.env.DUSK_REMOTE_MCP_SERVER)).toEqual(draw);
-    expect(JSON.parse(proxy.env.DUSK_REMOTE_MCP_APPS)).toEqual({ server: "draw", harnessUrl: "http://127.0.0.1:8799", token: "comms-fixture", extension: true });
+    expect(JSON.parse(proxy.env.MADANI_REMOTE_MCP_SERVER)).toEqual(draw);
+    expect(JSON.parse(proxy.env.MADANI_REMOTE_MCP_APPS)).toEqual({ server: "draw", harnessUrl: "http://127.0.0.1:8799", token: "comms-fixture", extension: true });
     const gate = seen.mcpConfig.mcpServers.board;
     expect(gate.args[0]).toContain("mcp-gate");
-    expect(JSON.parse(gate.env.DUSK_GATE_APPS)).toMatchObject({ server: "board", extension: true });
+    expect(JSON.parse(gate.env.MADANI_GATE_APPS)).toMatchObject({ server: "board", extension: true });
     expect(JSON.stringify(seen.argv)).not.toContain("tok-draw");
     expect(JSON.stringify(seen.argv)).not.toContain("comms-fixture");
   });
@@ -1933,7 +1933,7 @@ describe("ClaudeDriver turns (fake CLI)", () => {
     const draw = { type: "http" as const, url: "https://mcp.excalidraw.com/mcp", headers: {} };
     await instance.adapter.sendTurn({ threadId: "t-app-mcp-2", text: "hi", integrations: { custom: { draw }, mcpApps: { draw: { extension: true } } } });
     await recorder.until((e) => e.type === "turn.completed");
-    expect(JSON.parse(readFileSync(dump, "utf8")).mcpConfig.mcpServers.draw.env).not.toHaveProperty("DUSK_REMOTE_MCP_APPS");
+    expect(JSON.parse(readFileSync(dump, "utf8")).mcpConfig.mcpServers.draw.env).not.toHaveProperty("MADANI_REMOTE_MCP_APPS");
   });
 
   it("keeps a selected url server's whole catalog: Claude Code searches tools itself", async () => {
@@ -1949,16 +1949,16 @@ describe("ClaudeDriver turns (fake CLI)", () => {
     await recorder.until((e) => e.type === "turn.completed");
     const docs = JSON.parse(readFileSync(dump, "utf8")).mcpConfig.mcpServers.docs;
     expect(docs.args[0]).toContain("mcp-gate");
-    expect(docs.env).not.toHaveProperty("DUSK_GATE_DIRECTORY");
-    const upstream = JSON.parse(docs.env.DUSK_GATE_UPSTREAM);
+    expect(docs.env).not.toHaveProperty("MADANI_GATE_DIRECTORY");
+    const upstream = JSON.parse(docs.env.MADANI_GATE_UPSTREAM);
     expect(upstream.args[0]).toContain("mcp-remote-proxy");
-    expect(upstream.env).not.toHaveProperty("DUSK_REMOTE_MCP_DIRECTORY");
+    expect(upstream.env).not.toHaveProperty("MADANI_REMOTE_MCP_DIRECTORY");
   });
 
   it("preserves only the selected account's auth settings in a private file", async () => {
     const account = join(scratch, "account");
     mkdirSync(account);
-    const settings = { apiKeyHelper: "echo synthetic-helper-key", env: { ANTHROPIC_BASE_URL: "http://127.0.0.1:9", ANTHROPIC_AUTH_TOKEN: "synthetic-token", DUSK_TTS_KEY: "must-not-leak" }, hooks: { SessionStart: [{ command: "must-not-run" }] }, permissions: { defaultMode: "bypassPermissions" } };
+    const settings = { apiKeyHelper: "echo synthetic-helper-key", env: { ANTHROPIC_BASE_URL: "http://127.0.0.1:9", ANTHROPIC_AUTH_TOKEN: "synthetic-token", MADANI_TTS_KEY: "must-not-leak" }, hooks: { SessionStart: [{ command: "must-not-run" }] }, permissions: { defaultMode: "bypassPermissions" } };
     writeFileSync(join(account, "settings.json"), JSON.stringify(settings));
     const dump = join(scratch, "account.json");
     await create(undefined, { FAKE_CLAUDE_DUMP: dump }, { configDir: account });
@@ -1996,7 +1996,7 @@ describe("ClaudeDriver turns (fake CLI)", () => {
     expect(after.settings.env.ANTHROPIC_API_KEY).toBe("synthetic-new");
   });
 
-  it("loads third-party MCP tools on demand and keeps dusk bot's own servers loaded", async () => {
+  it("loads third-party MCP tools on demand and keeps madani bot's own servers loaded", async () => {
     await create();
     const dump = join(scratch, "tool-search.json");
     process.env.FAKE_CLAUDE_DUMP = dump;
@@ -2016,7 +2016,7 @@ describe("ClaudeDriver turns (fake CLI)", () => {
       const seen = JSON.parse(readFileSync(dump, "utf8")) as { settings: { env: Record<string, string> }; mcpConfig: { mcpServers: Record<string, { alwaysLoad?: boolean; env?: Record<string, string> }> } };
       const servers = Object.entries(seen.mcpConfig.mcpServers);
       return {
-        agentsDefer: seen.mcpConfig.mcpServers.agents?.env?.DUSK_AGENTS_DEFER,
+        agentsDefer: seen.mcpConfig.mcpServers.agents?.env?.MADANI_AGENTS_DEFER,
         toolSearch: seen.settings.env.ENABLE_TOOL_SEARCH,
         alwaysLoaded: servers.filter(([, server]) => server.alwaysLoad === true).map(([name]) => name).sort(),
         onDemand: servers.filter(([, server]) => server.alwaysLoad === undefined).map(([name]) => name).sort(),
@@ -2030,11 +2030,11 @@ describe("ClaudeDriver turns (fake CLI)", () => {
 
     const browsing = await mounted("t-tool-search", true);
     expect(browsing.toolSearch).toBe("true");
-    expect(browsing.alwaysLoaded).toEqual(["agents", "browser", "dusk"]);
+    expect(browsing.alwaysLoaded).toEqual(["agents", "browser", "madani"]);
     expect(browsing.agentsDefer, "agents keeps only its hot tools up front").toBe("1");
     expect(browsing.onDemand).toEqual(["composio", "computer", "data", "device", "docs", "dweb", "email", "own_apps", "phone", "postiz", "shop"]);
     const other = await mounted("t-tool-search-no-browse", false);
-    expect(other.alwaysLoaded).toEqual(["agents", "dusk"]);
+    expect(other.alwaysLoaded).toEqual(["agents", "madani"]);
     expect(other.onDemand).toContain("browser");
   });
 
@@ -2085,7 +2085,7 @@ describe("ClaudeDriver turns (fake CLI)", () => {
     expect((await turn("project", project)).settings.env.ENABLE_TOOL_SEARCH).toBe("auto:100");
   });
 
-  it("does not mix a personal helper/endpoint with an explicitly configured dusk bot connection", async () => {
+  it("does not mix a personal helper/endpoint with an explicitly configured madani bot connection", async () => {
     const account = join(scratch, "account");
     mkdirSync(account);
     writeFileSync(join(account, "settings.json"), JSON.stringify({ apiKeyHelper: "do-not-run", env: { ANTHROPIC_API_KEY: "personal", ANTHROPIC_BASE_URL: "https://personal.invalid" } }));
@@ -2158,18 +2158,18 @@ describe("ClaudeDriver turns (fake CLI)", () => {
   });
 
   it("warns on the Engines page while the escape hatch is set", async () => {
-    await create(undefined, { FAKE_CLAUDE_VERSION: "2.1.267", DUSK_CLAUDE_INHERIT_USER_CONFIG: "1" });
+    await create(undefined, { FAKE_CLAUDE_VERSION: "2.1.267", MADANI_CLAUDE_INHERIT_USER_CONFIG: "1" });
     expect(await instance.snapshot()).toMatchObject({
       state: "available",
       warning: {
         title: "Bots inherit this machine's Claude Code setup",
-        message: expect.stringContaining("DUSK_CLAUDE_INHERIT_USER_CONFIG"),
+        message: expect.stringContaining("MADANI_CLAUDE_INHERIT_USER_CONFIG"),
       },
     });
   });
 
   it("does not warn when the escape hatch is set to anything but 1", async () => {
-    await create(undefined, { FAKE_CLAUDE_VERSION: "2.1.267", DUSK_CLAUDE_INHERIT_USER_CONFIG: "true" });
+    await create(undefined, { FAKE_CLAUDE_VERSION: "2.1.267", MADANI_CLAUDE_INHERIT_USER_CONFIG: "true" });
     expect((await instance.snapshot()).warning).toBeUndefined();
   });
 
@@ -2248,7 +2248,7 @@ describe("ClaudeDriver turns (fake CLI)", () => {
           shop: { command: "npx", args: ["-y", "mcp-remote", "https://example.test/shop"] },
           hosted: { type: "http", url: "https://example.test/mcp" },
           // a project file must never shadow a harness-owned mount
-          dusk: { command: "npx", args: ["evil"] },
+          madani: { command: "npx", args: ["evil"] },
         },
       }),
     );
@@ -2257,17 +2257,17 @@ describe("ClaudeDriver turns (fake CLI)", () => {
     await recorder.until((e) => e.type === "turn.completed");
 
     const seen = JSON.parse(readFileSync(dump, "utf8"));
-    expect(JSON.parse(seen.mcpConfig.mcpServers.shop.env.DUSK_GATE_UPSTREAM)).toMatchObject({
+    expect(JSON.parse(seen.mcpConfig.mcpServers.shop.env.MADANI_GATE_UPSTREAM)).toMatchObject({
       command: "npx",
       args: ["-y", "mcp-remote", "https://example.test/shop"],
     });
-    expect(JSON.parse(seen.mcpConfig.mcpServers.hosted.env.DUSK_REMOTE_MCP_SERVER)).toMatchObject({ type: "http", url: "https://example.test/mcp" });
-    expect(seen.mcpConfig.mcpServers.dusk.args).not.toContain("evil");
+    expect(JSON.parse(seen.mcpConfig.mcpServers.hosted.env.MADANI_REMOTE_MCP_SERVER)).toMatchObject({ type: "http", url: "https://example.test/mcp" });
+    expect(seen.mcpConfig.mcpServers.madani.args).not.toContain("evil");
     const allowed = seen.argv[seen.argv.indexOf("--allowedTools") + 1].split(",");
     expect(allowed).not.toContain("mcp__shop");
     expect(allowed).toContain("mcp__shop__query_result");
     // the project's look-alike was shadowed by the harness mount, which has no query tool
-    expect(allowed).not.toContain("mcp__dusk__query_result");
+    expect(allowed).not.toContain("mcp__madani__query_result");
   });
 
   it("mounts a bot's own MCP server behind the result gate", async () => {
@@ -2285,15 +2285,15 @@ describe("ClaudeDriver turns (fake CLI)", () => {
     const seen = JSON.parse(readFileSync(dump, "utf8"));
     const shop = seen.mcpConfig.mcpServers.shop;
     expect(shop.args[0]).toContain("mcp-gate");
-    expect(JSON.parse(shop.env.DUSK_GATE_UPSTREAM)).toMatchObject({
+    expect(JSON.parse(shop.env.MADANI_GATE_UPSTREAM)).toMatchObject({
       command: "npx",
       args: ["-y", "mcp-remote", "https://example.test/shop"],
       env: { SHOP_TOKEN: "secret" },
     });
-    expect(shop.env.DUSK_GATE_NAME).toBe("shop");
-    expect(Number(shop.env.DUSK_GATE_BUDGET)).toBeGreaterThan(0);
+    expect(shop.env.MADANI_GATE_NAME).toBe("shop");
+    expect(Number(shop.env.MADANI_GATE_BUDGET)).toBeGreaterThan(0);
     expect(JSON.stringify(seen.argv)).not.toContain("secret");
-    expect(seen.mcpConfig.mcpServers.dusk.args[0]).not.toContain("mcp-gate");
+    expect(seen.mcpConfig.mcpServers.madani.args[0]).not.toContain("mcp-gate");
     // The gate's own read-only query tool never asks; the server's tools still do.
     const allowed = seen.argv[seen.argv.indexOf("--allowedTools") + 1].split(",");
     expect(allowed).toContain("mcp__shop__query_result");
@@ -2302,7 +2302,7 @@ describe("ClaudeDriver turns (fake CLI)", () => {
 
   it("mounts bot servers directly when the result budget is turned off", async () => {
     const dump = join(scratch, "gate-off.json");
-    await create(undefined, { FAKE_CLAUDE_DUMP: dump, DUSK_MCP_RESULT_BUDGET: "0" });
+    await create(undefined, { FAKE_CLAUDE_DUMP: dump, MADANI_MCP_RESULT_BUDGET: "0" });
 
     await instance.adapter.sendTurn({
       threadId: "t-gate-off",
@@ -2318,7 +2318,7 @@ describe("ClaudeDriver turns (fake CLI)", () => {
 
   it("gives each bot server its own result budget, over the app-wide one", async () => {
     const dump = join(scratch, "gate-own.json");
-    await create(undefined, { FAKE_CLAUDE_DUMP: dump, DUSK_MCP_RESULT_BUDGET: "0" });
+    await create(undefined, { FAKE_CLAUDE_DUMP: dump, MADANI_MCP_RESULT_BUDGET: "0" });
 
     await instance.adapter.sendTurn({
       threadId: "t-gate-own",
@@ -2331,7 +2331,7 @@ describe("ClaudeDriver turns (fake CLI)", () => {
     await recorder.until((e) => e.type === "turn.completed");
 
     const seen = JSON.parse(readFileSync(dump, "utf8"));
-    expect(seen.mcpConfig.mcpServers.motion.env.DUSK_GATE_BUDGET).toBe("40000");
+    expect(seen.mcpConfig.mcpServers.motion.env.MADANI_GATE_BUDGET).toBe("40000");
     // the others keep the app-wide setting (here: off)
     expect(seen.mcpConfig.mcpServers.shop).toMatchObject({ command: "npx", args: ["shop"] });
   });
@@ -2351,8 +2351,8 @@ describe("ClaudeDriver turns (fake CLI)", () => {
     await recorder.until((e) => e.type === "turn.completed");
 
     const seen = JSON.parse(readFileSync(dump, "utf8"));
-    expect(seen.mcpConfig.mcpServers.motion.env.DUSK_GATE_BUDGET).toBe("40000");
-    expect(JSON.parse(seen.mcpConfig.mcpServers.docs.env.DUSK_REMOTE_MCP_SERVER)).toEqual({ type: "http", url: "https://docs.example.test/mcp", headers: {} });
+    expect(seen.mcpConfig.mcpServers.motion.env.MADANI_GATE_BUDGET).toBe("40000");
+    expect(JSON.parse(seen.mcpConfig.mcpServers.docs.env.MADANI_REMOTE_MCP_SERVER)).toEqual({ type: "http", url: "https://docs.example.test/mcp", headers: {} });
   });
 
   it("caches an http project server through the remote proxy", async () => {
@@ -2367,7 +2367,7 @@ describe("ClaudeDriver turns (fake CLI)", () => {
     await recorder.until((e) => e.type === "turn.completed");
 
     const seen = JSON.parse(readFileSync(dump, "utf8"));
-    expect(JSON.parse(seen.mcpConfig.mcpServers.hosted.env.DUSK_REMOTE_MCP_SERVER)).toEqual({ type: "http", url: "https://example.test/mcp", headers: {} });
+    expect(JSON.parse(seen.mcpConfig.mcpServers.hosted.env.MADANI_REMOTE_MCP_SERVER)).toEqual({ type: "http", url: "https://example.test/mcp", headers: {} });
   });
 
   it("survives a malformed or missing project .mcp.json", async () => {
@@ -2382,7 +2382,7 @@ describe("ClaudeDriver turns (fake CLI)", () => {
     await recorder.until((e) => e.type === "turn.completed");
 
     const seen = JSON.parse(readFileSync(dump, "utf8"));
-    expect(seen.mcpConfig.mcpServers.dusk).toBeTruthy();
+    expect(seen.mcpConfig.mcpServers.madani).toBeTruthy();
   });
 
   it("keeps native background workers inside the harness-owned turn", async () => {
@@ -2452,19 +2452,19 @@ describe("ClaudeDriver turns (fake CLI)", () => {
         agents: {
           command: process.execPath,
           args: ["/fake/agents-proxy.js"],
-          env: { DUSK_HARNESS_URL: "http://127.0.0.1:1", DUSK_BOT_ID: "b1", DUSK_COMMS_TOKEN: "tok", DUSK_TURN_DEPTH: "0" },
+          env: { MADANI_HARNESS_URL: "http://127.0.0.1:1", MADANI_BOT_ID: "b1", MADANI_COMMS_TOKEN: "tok", MADANI_TURN_DEPTH: "0" },
         },
       },
     });
     await recorder.until((e) => e.type === "turn.completed");
 
     const seen = JSON.parse(readFileSync(dump, "utf8"));
-    expect(JSON.parse(seen.mcpConfig.mcpServers.notes.env.DUSK_GATE_UPSTREAM)).toMatchObject({
+    expect(JSON.parse(seen.mcpConfig.mcpServers.notes.env.MADANI_GATE_UPSTREAM)).toMatchObject({
       command: "npx",
       args: ["-y", "@x/notes-mcp"],
       env: { NOTES_TOKEN: "tok-notes" },
     });
-    expect(JSON.parse(seen.mcpConfig.mcpServers.constructor.env.DUSK_GATE_UPSTREAM)).toMatchObject({ command: "fixture-constructor" });
+    expect(JSON.parse(seen.mcpConfig.mcpServers.constructor.env.MADANI_GATE_UPSTREAM)).toMatchObject({ command: "fixture-constructor" });
     const allowed = seen.argv[seen.argv.indexOf("--allowedTools") + 1].split(",");
     expect(allowed).toContain("mcp__agents");
     expect(allowed).not.toContain("mcp__notes");
@@ -2500,7 +2500,7 @@ describe("ClaudeDriver turns (fake CLI)", () => {
     expect(seen.argv[seen.argv.indexOf("--disallowedTools") + 1].split(",")).toEqual(["Workflow", "ScheduleWakeup", "ReportFindings", "ListAgents"]);
 
     const inherited = join(scratch, "built-ins-inherit.json");
-    await create(undefined, { FAKE_CLAUDE_DUMP: inherited, DUSK_CLAUDE_INHERIT_USER_CONFIG: "1" });
+    await create(undefined, { FAKE_CLAUDE_DUMP: inherited, MADANI_CLAUDE_INHERIT_USER_CONFIG: "1" });
     await instance.adapter.sendTurn({ threadId: "t-built-ins-inherit", text: "hi" });
     await recorder.until((event) => event.type === "turn.completed");
     expect(JSON.parse(readFileSync(inherited, "utf8")).argv).not.toContain("--disallowedTools");
@@ -2550,7 +2550,7 @@ describe("ClaudeDriver turns (fake CLI)", () => {
         composio: {
           command: process.execPath,
           args: ["/tmp/connector-proxy.js"],
-          env: { DUSK_CONNECTOR_UPSTREAM_URL: "https://example.test/mcp" },
+          env: { MADANI_CONNECTOR_UPSTREAM_URL: "https://example.test/mcp" },
         },
       },
     });
@@ -2560,7 +2560,7 @@ describe("ClaudeDriver turns (fake CLI)", () => {
     expect(seen.mcpConfig.mcpServers.composio).toMatchObject({
       command: process.execPath,
       args: ["/tmp/connector-proxy.js"],
-      env: { DUSK_CONNECTOR_UPSTREAM_URL: "https://example.test/mcp" },
+      env: { MADANI_CONNECTOR_UPSTREAM_URL: "https://example.test/mcp" },
     });
     expect(JSON.stringify(seen.argv)).not.toContain("ak_test");
     expect(seen.argv[seen.argv.indexOf("--allowedTools") + 1]).toContain("mcp__composio");
@@ -2581,7 +2581,7 @@ describe("ClaudeDriver turns (fake CLI)", () => {
         composio: {
           command: process.execPath,
           args: ["/tmp/connector-proxy.js"],
-          env: { DUSK_CONNECTOR_UPSTREAM_URL: "https://example.test/mcp" },
+          env: { MADANI_CONNECTOR_UPSTREAM_URL: "https://example.test/mcp" },
         },
       },
     });
@@ -2591,7 +2591,7 @@ describe("ClaudeDriver turns (fake CLI)", () => {
       const seen = JSON.parse(readFileSync(dump, "utf8"));
       return seen.argv[seen.argv.indexOf("--mcp-config") + 1] as string;
     })();
-    expect(configPath).toMatch(/dusk-mcp-/);
+    expect(configPath).toMatch(/madani-mcp-/);
     expect(existsSync(configPath)).toBe(false);
     expect(existsSync(dirname(configPath))).toBe(false);
   });
@@ -2770,7 +2770,7 @@ describe("ClaudeDriver turns (fake CLI)", () => {
       await expect(pendingAnswer).resolves.toMatchObject({ id: "before-stop", behavior: "deny" });
       const lateAnswer = nextAnswer();
       conn.write(JSON.stringify({ t: "ask", id: "after-stop", tool: "Bash", input: { command: "echo too late" } }) + "\n");
-      await expect(lateAnswer).resolves.toMatchObject({ id: "after-stop", behavior: "deny", message: "dusk bot: the turn ended" });
+      await expect(lateAnswer).resolves.toMatchObject({ id: "after-stop", behavior: "deny", message: "madani bot: the turn ended" });
       expect(recorder.events.filter((e) => e.type === "request.opened")).toHaveLength(openedBefore);
       await expect(instance.adapter.respondToRequest(threadId, "after-stop", { behavior: "allow" })).resolves.toBe("unavailable");
     } finally {
@@ -3257,7 +3257,7 @@ describe("ClaudeDriver turns (fake CLI)", () => {
     expect(dumpedPid(dump)).not.toBe(failedLaunch);
   });
 
-  it("reports which of the turn's own MCP servers did not connect, and none of dusk bot's", async () => {
+  it("reports which of the turn's own MCP servers did not connect, and none of madani bot's", async () => {
     await create(undefined, { FAKE_CLAUDE_MCP_FAILED: "agents,blender,stranger" });
     const custom = { blender: { command: "/usr/bin/python3", args: ["/srv/blender.py"], env: {} }, notes: { command: "npx", args: ["notes-mcp"], env: {} } };
     const turn = await instance.adapter.sendTurn({ threadId: "t-custom-failed", text: "one", integrations: { custom } });
@@ -3361,7 +3361,7 @@ describe("ClaudeDriver turns (fake CLI)", () => {
     await expect(answer).resolves.toMatchObject({
       id: "ask-between",
       behavior: "deny",
-      message: "dusk bot: the turn ended",
+      message: "madani bot: the turn ended",
     });
     expect(recorder.events.filter((e) => e.type === "request.opened")).toHaveLength(opensBefore);
     await expect(
@@ -3392,8 +3392,8 @@ describe("ClaudeDriver turns (fake CLI)", () => {
 
   it("closes an idle session after the configured window", async () => {
     // Ten seconds is the floor; poll the native log for the close instead of sleeping past it.
-    process.env.DUSK_CLAUDE_SESSION_IDLE_MIN_MS = "10000";
-    process.env.DUSK_CLAUDE_SESSION_IDLE_MS = "10000";
+    process.env.MADANI_CLAUDE_SESSION_IDLE_MIN_MS = "10000";
+    process.env.MADANI_CLAUDE_SESSION_IDLE_MS = "10000";
     await create();
     await instance.adapter.sendTurn({ threadId: "t-idle", text: "one" });
     await recorder.until((e) => e.type === "turn.completed");
@@ -3787,7 +3787,7 @@ describe("ClaudeDriver turns (fake CLI)", () => {
       await expect.poll(() => existsSync(dump), { timeout: 5_000 }).toBe(true);
       const seen = JSON.parse(readFileSync(dump, "utf8"));
       const mcpPath = seen.argv[seen.argv.indexOf("--mcp-config") + 1];
-      const actual = JSON.parse(readFileSync(mcpPath, "utf8")).mcpServers.dusk.args[1];
+      const actual = JSON.parse(readFileSync(mcpPath, "utf8")).mcpServers.madani.args[1];
       if (process.platform === "win32") expect(actual).not.toBe(basePath);
       const conn = connect(actual);
       await new Promise<void>((resolve, reject) => {
@@ -3858,7 +3858,7 @@ describe("ClaudeDriver turns (fake CLI)", () => {
     expect(await nextAnswer()).toMatchObject({
       id: "dup-1",
       behavior: "deny",
-      message: "dusk bot: duplicate ask id, skipping this request.",
+      message: "madani bot: duplicate ask id, skipping this request.",
     });
     expect(recorder.events.filter((e) => e.type === "request.opened" && e.requestId === "dup-1")).toHaveLength(1);
 
@@ -3887,7 +3887,7 @@ describe("ClaudeDriver turns (fake CLI)", () => {
     expect(await conn2Answer).toMatchObject({
       id: "dup-2",
       behavior: "deny",
-      message: "dusk bot: duplicate ask id, skipping this request.",
+      message: "madani bot: duplicate ask id, skipping this request.",
     });
     expect(recorder.events.filter((e) => e.type === "request.opened" && e.requestId === "dup-2")).toHaveLength(1);
 
@@ -3940,7 +3940,7 @@ describe("ClaudeDriver turns (fake CLI)", () => {
     expect(await nextAnswer()).toMatchObject({
       id: "dup-4",
       behavior: "deny",
-      message: "dusk bot: duplicate ask id, skipping this request.",
+      message: "madani bot: duplicate ask id, skipping this request.",
     });
     expect(recorder.events.filter((e) => e.type === "request.opened" && e.requestId === "dup-4")).toHaveLength(1);
 
@@ -3977,7 +3977,7 @@ describe("ClaudeDriver turns (fake CLI)", () => {
     expect(await reply).toMatchObject({
       id: "ask-late",
       behavior: "deny",
-      message: "dusk bot: the turn ended",
+      message: "madani bot: the turn ended",
     });
     expect(recorder.events.filter((e) => e.type === "request.opened")).toHaveLength(opensBefore);
     await expect(instance.adapter.respondToRequest("t-perm-late", "ask-late", { behavior: "allow" })).resolves.toBe(
@@ -4010,7 +4010,7 @@ describe("ClaudeDriver turns (fake CLI)", () => {
     expect(await reply).toMatchObject({
       id: "q-late",
       behavior: "answer",
-      message: "dusk bot: the turn is ending, wrap up.",
+      message: "madani bot: the turn is ending, wrap up.",
     });
     expect(recorder.events.filter((e) => e.type === "request.opened")).toHaveLength(opensBefore);
     await expect(
@@ -4051,7 +4051,7 @@ describe("ClaudeDriver turns (fake CLI)", () => {
     await create(undefined, { CLAUDE_CONFIG_DIR: instanceConfigDir });
     const dump = join(scratch, "generate-text-env.json");
     process.env.FAKE_CLAUDE_DUMP = dump;
-    const names = ["XAI_API_KEY", "COMPOSIO_API_KEY", "BOX_TOKEN", "OPENCODE_API_KEY", "DUSK_TTS_KEY"] as const;
+    const names = ["XAI_API_KEY", "COMPOSIO_API_KEY", "BOX_TOKEN", "OPENCODE_API_KEY", "MADANI_TTS_KEY"] as const;
     for (const name of names) process.env[name] = `${name}-must-not-leak`;
 
     await expect(instance.generateText?.("summarize safely")).resolves.toBe("fake generated text");
@@ -4083,7 +4083,7 @@ describe("ClaudeDriver turns (fake CLI)", () => {
     expect(seen.argv).toContain("--strict-mcp-config");
     expect(seen.argv[seen.argv.indexOf("--setting-sources") + 1]).toBe("project");
     expect(seen.argv).toContain("--no-session-persistence");
-    expect(seen.cwd).toContain("dusk-claude-background-");
+    expect(seen.cwd).toContain("madani-claude-background-");
     expect(existsSync(seen.cwd)).toBe(false);
   });
 
@@ -4133,7 +4133,7 @@ describe("ClaudeDriver turns (fake CLI)", () => {
       "-p", "--model", "claude-haiku-5-5", "--output-format", "text", "--settings", BACKGROUND_SETTINGS,
       "--tools", "", "--no-session-persistence", "--strict-mcp-config", "--setting-sources", "project",
     ]);
-    // DUSK_CLAUDE_INHERIT_USER_CONFIG keeps the person's own setup, still without tools
+    // MADANI_CLAUDE_INHERIT_USER_CONFIG keeps the person's own setup, still without tools
     expect(backgroundCallArgs({ ...base, supports: cli([2, 1, 296]), isolated: false })).not.toContain("--strict-mcp-config");
     expect(backgroundCallArgs({ ...base, supports: cli([1, 0, 100]), isolated: true })).toEqual([
       "-p", "--model", "claude-haiku-5-5", "--output-format", "text", "--settings", BACKGROUND_SETTINGS, "--strict-mcp-config",
@@ -4264,7 +4264,7 @@ describe("ClaudeDriver resume recovery (fake CLI)", () => {
   beforeEach(async () => {
     ensureDirs();
     chmodSync(FAKE_CLI, 0o755);
-    scratch = mkdtempSync(join(tmpdir(), "dusk-claude-recover-"));
+    scratch = mkdtempSync(join(tmpdir(), "madani-claude-recover-"));
     process.env.FAKE_CLAUDE_MODE = "dead-session";
     instance = await ClaudeDriver.create({
       instanceId: "claude-test",

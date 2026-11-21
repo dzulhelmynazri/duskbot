@@ -1,4 +1,4 @@
-// End-to-end check of a running dusk bot harness server over the HTTP API
+// End-to-end check of a running madani bot harness server over the HTTP API
 // the app drives. No deps; Node 22+.
 //
 //   node scripts/e2e-server.mjs [--port 8799] [--keep-bots]
@@ -11,12 +11,12 @@ const opt = (n, d) => {
   const i = args.indexOf(n);
   return i >= 0 ? args[i + 1] : d;
 };
-const PORT = Number(opt("--port", process.env.DUSK_PORT ?? 8799));
+const PORT = Number(opt("--port", process.env.MADANI_PORT ?? 8799));
 const BASE = `http://127.0.0.1:${PORT}`;
 const KEEP_BOTS = flag("--keep-bots");
 
 const tag = Date.now().toString(36).slice(-6);
-const marker = (s) => `dusk-e2e-${s}-${tag}`;
+const marker = (s) => `madani-e2e-${s}-${tag}`;
 const log = (...a) => console.log(new Date().toISOString().slice(11, 19), ...a);
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 // throw (not exit) so main's finally still deletes the test bots
@@ -129,7 +129,7 @@ async function main() {
 
       // curl usually trips the CLI's permission layer; its safe-command
       // classifier occasionally auto-allows (soft-pass), a stall is a failure.
-      await send(bot.id, `Run exactly one shell command: curl -sS https://example.com -o dusk_${tag}_allow.html — then tell me the first word of the downloaded file.`);
+      await send(bot.id, `Run exactly one shell command: curl -sS https://example.com -o madani_${tag}_allow.html — then tell me the first word of the downloaded file.`);
       const allowTry = await waitAskOrSettle(bot.id, 180_000);
       if (allowTry.ask) {
         log(`  ✓ permission card appeared (${allowTry.ask.card.subtitle?.slice(0, 60)})`);
@@ -150,7 +150,7 @@ async function main() {
       // A fresh bot: the resumed CLI session remembers the allow above.
       const denyBot = await makeBot("E2E Claude Deny", "claude", byKind.claudeAgent.models.default);
       created.push(denyBot.id);
-      await send(denyBot.id, `Run the shell command "curl -sS https://example.org -o dusk_${tag}_deny.html" — nothing else.`);
+      await send(denyBot.id, `Run the shell command "curl -sS https://example.org -o madani_${tag}_deny.html" — nothing else.`);
       const denyTry = await waitAskOrSettle(denyBot.id, 180_000);
       if (denyTry.ask) {
         await api(`/api/bots/${denyBot.id}/respond`, {

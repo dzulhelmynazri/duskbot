@@ -1,4 +1,4 @@
-// A dusk cloud home's built-in browser meets a site that blocks the datacenter and lets a home connection through. The
+// A madani cloud home's built-in browser meets a site that blocks the datacenter and lets a home connection through. The
 // pieces are the real ones: the browser's gate (gate.ts) with its through route, this server's link and its websocket
 // route, the app's link client (electron/home-egress-link.mjs) over the app's own websocket client, and the app's egress
 // endpoint (electron/vps-link-egress.mjs). Only the dialer on "the person's computer" is a stand-in: it reaches the
@@ -66,7 +66,7 @@ suite("a cloud home's built-in browser through the person's connection", () => {
     cloud = await listen(cloudServer);
     // the app on the person's computer
     app = createAppLink({
-      origin: () => `http://127.0.0.1:${cloud}`, awake: () => true, cookie: async () => "dusk_session=fixture", checkMs: 200,
+      origin: () => `http://127.0.0.1:${cloud}`, awake: () => true, cookie: async () => "madani_session=fixture", checkMs: 200,
       connect: (url, headers) => wssConnector({ url, spki: null, headers })(),
       endpoint: (tunnel) => createEgressEndpoint({ ...tunnel, dialer: { open: () => new Promise((resolve) => {
         const socket = connect(home, "127.0.0.1", () => resolve({ socket }));

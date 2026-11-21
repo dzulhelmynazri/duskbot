@@ -18,7 +18,7 @@ export function parseDriverGate(psOutput) {
 }
 
 /** The record's reason: names each grant ("... required") so the app can open its pane, and the app that needs it
- * (shared/your-computer.ts `COMPUTER_HELPER_APP`), since macOS lists CuaDriver there, not dusk bot. */
+ * (shared/your-computer.ts `COMPUTER_HELPER_APP`), since macOS lists CuaDriver there, not madani bot. */
 export function driverGateReason(missing) {
   return `${missing.join(" and ")} required for CuaDriver; turn on CuaDriver in System Settings > Privacy & Security`;
 }

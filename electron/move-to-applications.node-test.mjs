@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import { bundleOf, inApplications, offerMoveToApplications } from "./move-to-applications.mjs";
 
-const DMG = "/Volumes/dusk bot/Dusk Bot.app/Contents/MacOS/Dusk Bot";
+const DMG = "/Volumes/madani bot/Madani Bot.app/Contents/MacOS/Madani Bot";
 const fakeApp = ({ packaged = true, inFolder = false, moves = true } = {}) => {
   const calls = [];
   return { calls, isPackaged: packaged, isInApplicationsFolder: () => inFolder, moveToApplicationsFolder: () => { calls.push("move"); return moves; } };
@@ -18,19 +18,19 @@ const offer = (over = {}) => {
 };
 
 test("the .app folder and whether it sits in either Applications folder", () => {
-  assert.equal(bundleOf(DMG), "/Volumes/dusk bot/Dusk Bot.app");
+  assert.equal(bundleOf(DMG), "/Volumes/madani bot/Madani Bot.app");
   assert.equal(bundleOf("/usr/local/bin/node"), null);
-  assert.ok(inApplications("/Applications/Dusk Bot.app", "/Users/a"));
-  assert.ok(inApplications("/Users/a/Applications/Dusk Bot.app", "/Users/a"));
-  assert.ok(!inApplications("/Volumes/dusk bot/Dusk Bot.app", "/Users/a"));
-  assert.ok(!inApplications("/Applications Old/Dusk Bot.app", "/Users/a"));
+  assert.ok(inApplications("/Applications/Madani Bot.app", "/Users/a"));
+  assert.ok(inApplications("/Users/a/Applications/Madani Bot.app", "/Users/a"));
+  assert.ok(!inApplications("/Volumes/madani bot/Madani Bot.app", "/Users/a"));
+  assert.ok(!inApplications("/Applications Old/Madani Bot.app", "/Users/a"));
 });
 
 test("opened from the disk image: asks, without a don't-ask box, and moves on yes", async () => {
   const { result, asked, app } = offer();
   assert.equal(await result, true);
   assert.equal(asked.length, 1);
-  assert.equal(asked[0].message, "Move dusk bot to Applications?");
+  assert.equal(asked[0].message, "Move madani bot to Applications?");
   assert.deepEqual(asked[0].buttons, ["Move to Applications", "Not now"]);
   assert.equal(asked[0].checkboxLabel, undefined);
   assert.deepEqual(app.calls, ["move"]);
@@ -45,7 +45,7 @@ test("not now leaves the app where it is; the disk image asks again even after d
 });
 
 test("elsewhere outside Applications: don't ask again is kept", async () => {
-  const execPath = "/Users/a/Downloads/Dusk Bot.app/Contents/MacOS/Dusk Bot";
+  const execPath = "/Users/a/Downloads/Madani Bot.app/Contents/MacOS/Madani Bot";
   const first = offer({ execPath, answer: { response: 1, checkboxChecked: true } });
   assert.equal(await first.result, false);
   assert.equal(first.asked[0].checkboxLabel, "Don't ask again");
@@ -57,8 +57,8 @@ test("elsewhere outside Applications: don't ask again is kept", async () => {
 
 test("never asks in Applications, in dev, off macOS, at login or in an automated run", async () => {
   for (const over of [
-    { execPath: "/Applications/Dusk Bot.app/Contents/MacOS/Dusk Bot" },
-    { execPath: "/Users/a/Applications/Dusk Bot.app/Contents/MacOS/Dusk Bot" },
+    { execPath: "/Applications/Madani Bot.app/Contents/MacOS/Madani Bot" },
+    { execPath: "/Users/a/Applications/Madani Bot.app/Contents/MacOS/Madani Bot" },
     { app: fakeApp({ inFolder: true }) },
     { app: fakeApp({ packaged: false }) },
     { platform: "win32" },

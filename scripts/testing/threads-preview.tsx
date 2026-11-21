@@ -10,10 +10,10 @@ import "../../src/styles/overlays.css";
 import "../../src/styles/motion.css";
 
 // This entry point is served only by the disposable verification launcher.
-// The voice-latency harness opts in with ?duskVoiceProbe=1; the recorder in
+// The voice-latency harness opts in with ?madaniVoiceProbe=1; the recorder in
 // src/lib/voice-latency-probe stays inert without this sink.
-if (new URLSearchParams(location.search).has("duskVoiceProbe")) {
-  (window as typeof window & { __duskVoiceProbe?: unknown[] }).__duskVoiceProbe = [];
+if (new URLSearchParams(location.search).has("madaniVoiceProbe")) {
+  (window as typeof window & { __madaniVoiceProbe?: unknown[] }).__madaniVoiceProbe = [];
 }
 // ?onboarding=1 plays a brand-new install, and a new install opens in Simple mode.
 else if (!new URLSearchParams(location.search).has("onboarding")) setEmailGateDone("skipped");

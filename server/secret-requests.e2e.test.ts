@@ -1,4 +1,4 @@
-// A real Cloud home and its agents tools: a bot asks for two secrets dusk bot does not keep, the person types each
+// A real Cloud home and its agents tools: a bot asks for two secrets madani bot does not keep, the person types each
 // into its card, and the bot uses them. Each recognisable value is then searched for in everything the server wrote (the
 // data folder, its events, transcripts, usage spans and logs), every answer it gave, every tool result and its own log.
 // The file secret is found only in its private file; the ref secret only in the MCP server settings it was saved into.
@@ -18,7 +18,7 @@ import { hostTimeout } from "./testing/host-timeout.ts";
 import { freePortBlock } from "./testing/ports.ts";
 
 const SERVER_DIR = dirname(fileURLToPath(import.meta.url));
-const HOST = "dusk-t-5ec2e7f1a0b9.fly.dev";
+const HOST = "madani-t-5ec2e7f1a0b9.fly.dev";
 const FILE_CANARY = `sk_test_FILECANARY${randomBytes(12).toString("hex")}`;
 const REF_CANARY = `ntn_REFCANARY${randomBytes(12).toString("hex")}`;
 const VAULT_CANARY = `or_VAULTCANARY${randomBytes(12).toString("hex")}`;
@@ -49,11 +49,11 @@ async function api(method: string, path: string, body?: unknown) {
 }
 
 async function pairOwner(): Promise<string> {
-  const body = JSON.stringify({ label: "dusk bot app (Cloud)", ttlSeconds: 300 });
+  const body = JSON.stringify({ label: "madani bot app (Cloud)", ttlSeconds: 300 });
   const timestamp = String(Math.floor(Date.now() / 1000)), nonce = randomBytes(16).toString("base64url");
   const response = await fetch(`${base}/api/cloud/pairing`, { method: "POST", headers: {
     host: HOST, "x-forwarded-for": "203.0.113.9", "x-forwarded-proto": "https", "content-type": "application/json",
-    "x-dusk-cloud-timestamp": timestamp, "x-dusk-cloud-nonce": nonce, "x-dusk-cloud-signature": `v1=${cloudPairingSignature(bootstrap, timestamp, nonce, body)}`,
+    "x-madani-cloud-timestamp": timestamp, "x-madani-cloud-nonce": nonce, "x-madani-cloud-signature": `v1=${cloudPairingSignature(bootstrap, timestamp, nonce, body)}`,
   }, body });
   const granted = await response.json() as { code: string };
   const paired = await api("POST", "/api/auth/pair", { code: granted.code });
@@ -90,8 +90,8 @@ async function proxyFor(start: () => Promise<void>) {
 }
 
 beforeAll(async () => {
-  home = mkdtempSync(join(tmpdir(), "dusk-secret-requests-"));
-  const dataDir = join(home, ".duskbot");
+  home = mkdtempSync(join(tmpdir(), "madani-secret-requests-"));
+  const dataDir = join(home, ".madanibot");
   mkdirSync(dataDir, { recursive: true });
   const cli = join(home, "fixture-claude.mjs");
   writeFileSync(cli, `#!/usr/bin/env node
@@ -106,13 +106,13 @@ await import(${JSON.stringify(pathToFileURL(join(SERVER_DIR, "testing", "fake-cl
   } }));
   const port = await freePortBlock([0, 1]);
   base = `http://127.0.0.1:${port}`;
-  const contract = { DUSK_CLOUD_ROLE: "home", DUSK_CLOUD_MACHINE_ID: "7d1c3b5a-2e4f-4a6b-8c9d-0e1f2a3b4c5d", DUSK_CLOUD_ADMIN_URL: "https://cloud.example.test",
-    DUSK_CLOUD_BOOTSTRAP_SECRET: bootstrap, DUSK_PUBLIC_URL: `https://${HOST}` };
-  const imageEnv = { PATH: process.env.PATH, DUSK_DUCKDB_DIR: join(home, "empty-tree"), ...contract };
+  const contract = { MADANI_CLOUD_ROLE: "home", MADANI_CLOUD_MACHINE_ID: "7d1c3b5a-2e4f-4a6b-8c9d-0e1f2a3b4c5d", MADANI_CLOUD_ADMIN_URL: "https://cloud.example.test",
+    MADANI_CLOUD_BOOTSTRAP_SECRET: bootstrap, MADANI_PUBLIC_URL: `https://${HOST}` };
+  const imageEnv = { PATH: process.env.PATH, MADANI_DUCKDB_DIR: join(home, "empty-tree"), ...contract };
   const { server, secrets } = cloudHomeChildEnvironments(cloudHomeConfiguration(imageEnv)!, imageEnv, home);
   const offline = `data:text/javascript,${encodeURIComponent('const real = globalThis.fetch; globalThis.fetch = async (url, init) => String(url).startsWith("http://127.0.0.1:") ? real(url, init) : new Response("offline fixture", { status: 503 });')}`;
   child = spawnWithSecrets(process.execPath, ["--import", offline, join(SERVER_DIR, "index.ts")], {
-    ...server, DUSK_PORT: String(port), DUSK_WEBHOOK_PORT: String(port + 1), USERPROFILE: home,
+    ...server, MADANI_PORT: String(port), MADANI_WEBHOOK_PORT: String(port + 1), USERPROFILE: home,
     ...(process.env.SystemRoot ? { SystemRoot: process.env.SystemRoot } : {}),
   }, secrets, null, true);
   child.stdout?.on("data", (chunk) => { log += chunk; });
@@ -178,7 +178,7 @@ it("keeps a file secret and a ref secret out of every record, and the bot uses e
   expect(await save(fileCard.id, FILE_CANARY)).toMatchObject({ status: 200, body: { provided: true } });
   expect(await save(fileCard.id, FILE_CANARY)).toMatchObject({ status: 409, body: { error: "this secret was already saved" } });
   const fileText = (await tools.call("request_credential", { label: "Stripe secret key", reason: "To create test charges.", delivery: "file" })).text;
-  const secretFile = join(home, ".duskbot", "workspaces", bot.id, ".duskbot-secrets", bot.threadId, fileCard.id);
+  const secretFile = join(home, ".madanibot", "workspaces", bot.id, ".madanibot-secrets", bot.threadId, fileCard.id);
   expect(fileText).toContain(`saved Stripe secret key to the file ${secretFile}`);
   expect(fileText).toContain("never print, echo, log or copy it anywhere else");
   expect(readFileSync(secretFile, "utf8")).toBe(FILE_CANARY);
@@ -187,19 +187,19 @@ it("keeps a file secret and a ref secret out of every record, and the bot uses e
   // A one-use secretRef for mcp_server.
   await tools.call("request_credential", { label: "Notion key", reason: "For Notion's MCP server.", delivery: "ref" });
   const refCard = (await cards()).at(-1);
-  expect(refCard.secret.description).toBe("For Notion's MCP server. Ledger gets a one-use reference for dusk bot's own tools and never sees it.");
+  expect(refCard.secret.description).toBe("For Notion's MCP server. Ledger gets a one-use reference for madani bot's own tools and never sees it.");
   expect(await save(refCard.id, REF_CANARY)).toMatchObject({ status: 200, body: { provided: true } });
   const refText = (await tools.call("request_credential", { label: "Notion key", reason: "For Notion's MCP server.", delivery: "ref" })).text;
   const ref = /secret-ref:[0-9a-f]{32}/u.exec(refText)?.[0];
   expect(ref, refText).toBeDefined();
-  // The person agreed to dusk bot's tools only: a file needs a new card.
+  // The person agreed to madani bot's tools only: a file needs a new card.
   const asFile = await tools.call("request_credential", { label: "Notion key", reason: "For a script.", delivery: "file" });
   expect(asFile.text).toContain("not as a file for your commands (not a file request), so this card asks for it again");
   expect((await cards()).at(-1).secret).toMatchObject({ label: "Notion key", delivery: "file" });
 
   const added = await tools.call("mcp_server", { action: "add", name: "notion", url: "https://mcp.notion.test/mcp", headers: { Authorization: `Bearer ${ref}`, "Notion-Version": "2022-06-28" } });
   expect(added).toEqual({ isError: false, text: expect.stringMatching(/^Added MCP server notion and turned it on\. Test: /u) });
-  const config = JSON.parse(readFileSync(join(home, ".duskbot", "config.json"), "utf8"));
+  const config = JSON.parse(readFileSync(join(home, ".madanibot", "config.json"), "utf8"));
   expect(config.mcpServers.notion.headers).toEqual({ Authorization: `Bearer ${REF_CANARY}`, "Notion-Version": "2022-06-28" });
   const reused = await tools.call("mcp_server", { action: "add", name: "notion2", url: "https://mcp.notion.test/mcp", headers: { Authorization: `Bearer ${ref}` } });
   expect(reused).toEqual({ isError: true, text: `${ref} was already used: each secretRef works once. Ask again with request_credential.` });
@@ -223,14 +223,14 @@ it("keeps a file secret and a ref secret out of every record, and the bot uses e
   expect(await api("DELETE", `/api/saved-secrets/${vaultList.body.secrets[0].id}`)).toMatchObject({ status: 200, body: { removed: true } });
   expect((await api("GET", "/api/saved-secrets")).body.secrets).toEqual([]);
   expect((await tools.call("request_credential", { label: "OpenRouter API key", reason: "Once more.", delivery: "ref" })).text).toMatch(/^A secure card for OpenRouter API key/u);
-  const vaultFile = join(home, ".duskbot", "workspaces", bot.id, ".duskbot-secrets", bot.threadId, vaultCard.id);
+  const vaultFile = join(home, ".madanibot", "workspaces", bot.id, ".madanibot-secrets", bot.threadId, vaultCard.id);
 
   // A bot that disobeys and writes a value into its memory still leaves it out of every record.
   expect((await tools.call("memory_update", { action: "append", text: `Stripe test key: ${FILE_CANARY}` })).isError).toBe(false);
 
   // Only the secret file holds one value, and only the MCP server's settings the other.
   expect(filesHolding(home, FILE_CANARY)).toEqual([relative(home, secretFile)]);
-  expect(filesHolding(home, REF_CANARY)).toEqual([join(".duskbot", "config.json")]);
+  expect(filesHolding(home, REF_CANARY)).toEqual([join(".madanibot", "config.json")]);
   // the Vault kept it sealed (and has since forgotten it): only the card's own private file ever held it in the clear
   expect(filesHolding(home, VAULT_CANARY)).toEqual([relative(home, vaultFile)]);
   for (const where of [...said, log]) {
@@ -250,7 +250,7 @@ it("takes a value the person pasted in chat straight to the Vault with no card, 
 
   const took = await tools.call("request_credential", { label: "xactions token", reason: "For the xactions MCP server.", delivery: "ref", pasted_as: "XACTIONS_TOKEN" });
   expect(took.isError).toBe(false);
-  expect(took.text).toMatch(/^dusk bot took xactions token from the person's own message, so no card was needed, and saved it to their Vault\./u);
+  expect(took.text).toMatch(/^madani bot took xactions token from the person's own message, so no card was needed, and saved it to their Vault\./u);
   expect(took.text).toContain("Continue the task.");
   expect(took.text).not.toContain(PASTED);
   expect(await cards()).toEqual([]);
@@ -261,7 +261,7 @@ it("takes a value the person pasted in chat straight to the Vault with no card, 
   expect(ref, took.text).toBeDefined();
   const added = await tools.call("mcp_server", { action: "add", name: "xactions", url: "https://xactions.example.test/mcp", headers: { Authorization: `Bearer ${ref}` } });
   expect(added.isError, added.text).toBe(false);
-  expect(JSON.parse(readFileSync(join(home, ".duskbot", "config.json"), "utf8")).mcpServers.xactions.headers).toEqual({ Authorization: `Bearer ${PASTED}` });
+  expect(JSON.parse(readFileSync(join(home, ".madanibot", "config.json"), "utf8")).mcpServers.xactions.headers).toEqual({ Authorization: `Bearer ${PASTED}` });
 
   // nothing pasted under that name: the secure card, as before
   const asked = await tools.call("request_credential", { label: "Hindsight token", reason: "For Hindsight memory.", delivery: "ref" });

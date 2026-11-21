@@ -3,7 +3,7 @@
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { connect, type Socket } from "node:net";
 import { join } from "node:path";
-import { launchVerificationServer, runControlDusk } from "./control-dusk.ts";
+import { launchVerificationServer, runControlMadani } from "./control-madani.ts";
 import { fixtureApi, mountPreview, parkUntilSignal, type MountedPreview } from "./testing/preview-fixture.ts";
 
 const RUNS = 5;
@@ -16,7 +16,7 @@ let ui: MountedPreview | undefined;
 let broker: Socket | undefined;
 const evidence: unknown[] = [];
 const api = fixtureApi(fixture.info.url, { headers: { origin: fixture.info.url }, observe: (call) => { if (call.method !== "GET") evidence.push(call); } });
-const control = (args: string[]) => runControlDusk([...args, "--url", fixture.info.url]) as Promise<any>;
+const control = (args: string[]) => runControlMadani([...args, "--url", fixture.info.url]) as Promise<any>;
 const say = (line: Record<string, unknown>) => console.log(JSON.stringify({ at: new Date().toISOString(), ...line }));
 async function until<T>(check: () => T | Promise<T>, timeoutMs = 120_000): Promise<NonNullable<T>> {
   const deadline = Date.now() + timeoutMs;
@@ -51,7 +51,7 @@ try {
     reply("Nothing else from Acme.\nNOTHING NEW", "run-5"),
     { ...reply("NOTHING NEW", "later"), repeat: true },
   ] } }));
-  ui = await mountPreview(fixture, { entry: "/scripts/testing/threads-preview.tsx", route: "/__automations.html", title: "Isolated dusk bot Automations", logLevel: "silent" });
+  ui = await mountPreview(fixture, { entry: "/scripts/testing/threads-preview.tsx", route: "/__automations.html", title: "Isolated madani bot Automations", logLevel: "silent" });
   say({ ...fixture.info, previewUrl: ui.previewUrl, botId, mainThreadId: main });
 
   await control(["send", "--bot", botId, "--task", main, "--text", "Watch my inbox and tell me when Acme writes."]);
@@ -68,7 +68,7 @@ try {
         const current = (await runsOf())[3];
         if (current?.status !== "running" || !existsSync(fixture.fixtureDumpPath)) return null;
         const launch = JSON.parse(readFileSync(fixture.fixtureDumpPath, "utf8"));
-        return launch.mcpConfig?.mcpServers?.agents?.env?.DUSK_THREAD_ID === current.threadId ? launch.mcpConfig.mcpServers.dusk.args.at(-1) as string : null;
+        return launch.mcpConfig?.mcpServers?.agents?.env?.MADANI_THREAD_ID === current.threadId ? launch.mcpConfig.mcpServers.madani.args.at(-1) as string : null;
       });
       broker = connect(started);
       broker.on("error", () => {});

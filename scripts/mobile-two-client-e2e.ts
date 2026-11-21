@@ -104,7 +104,7 @@ async function send(page: HeadlessPage, text: string, scope = "document"): Promi
 }
 
 async function main() {
-  const fixture = start(["--experimental-strip-types", "scripts/control-dusk.ts", "launch"], { FAKE_CLAUDE_REPLIES: JSON.stringify(["hello from the fixture bot"]) });
+  const fixture = start(["--experimental-strip-types", "scripts/control-madani.ts", "launch"], { FAKE_CLAUDE_REPLIES: JSON.stringify(["hello from the fixture bot"]) });
   const harness = (await printed(fixture, /"url":\s*"(http:\/\/127\.0\.0\.1:(\d+))"/, "the fixture"))[1]!;
   const harnessPort = new URL(harness).port;
   console.log(`fixture ${harness}`);
@@ -125,11 +125,11 @@ async function main() {
   const botId: string = created.body.bot.id;
 
   const desktopPort = await freePort(), phonePort = await freePort();
-  const desktopServer = start(["node_modules/vite/bin/vite.js"], { DUSK_PORT: harnessPort, DUSK_UI_PORT: String(desktopPort) });
-  const phoneServer = start(["node_modules/vite/bin/vite.js", "--config", "apps/mobile/vite.config.ts"], { DUSK_PORT: harnessPort, DUSK_MOBILE_PORT: String(phonePort) });
+  const desktopServer = start(["node_modules/vite/bin/vite.js"], { MADANI_PORT: harnessPort, MADANI_UI_PORT: String(desktopPort) });
+  const phoneServer = start(["node_modules/vite/bin/vite.js", "--config", "apps/mobile/vite.config.ts"], { MADANI_PORT: harnessPort, MADANI_MOBILE_PORT: String(phonePort) });
   await Promise.all([printed(desktopServer, /ready in/, "the desktop page server"), printed(phoneServer, /ready in/, "the phone page server")]);
 
-  const profiles = [mkdtempSync(join(tmpdir(), "dusk-two-desktop-")), mkdtempSync(join(tmpdir(), "dusk-two-phone-"))];
+  const profiles = [mkdtempSync(join(tmpdir(), "madani-two-desktop-")), mkdtempSync(join(tmpdir(), "madani-two-phone-"))];
   cleanups.push(() => { for (const dir of profiles) rmSync(dir, { recursive: true, force: true }); });
   const desktop = await openHeadlessChrome(profiles[0]!);
   const phone = await openHeadlessChrome(profiles[1]!);

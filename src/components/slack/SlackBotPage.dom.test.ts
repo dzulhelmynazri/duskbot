@@ -73,7 +73,7 @@ describe("a bot's Slack setup", () => {
     expect(host.textContent).toContain("paste the link from the Slack page here");
     expect(button("Continue").disabled).toBe(true);
     const state = "a".repeat(64);
-    write("Link from Slack", `duskbot://slack/oauth?code=fixture-code&state=${state}`);
+    write("Link from Slack", `madanibot://slack/oauth?code=fixture-code&state=${state}`);
     await click("Continue");
     expect(fixture.api).toHaveBeenCalledWith("/api/slack/oauth", expect.objectContaining({ method: "POST", body: JSON.stringify({ code: "fixture-code", state }) }));
     expect(host.textContent).toContain("One more step.");
@@ -245,7 +245,7 @@ describe("a bot's Slack setup", () => {
     await mount();
     const implementation = fixture.api.getMockImplementation()!;
     fixture.api.mockImplementation((path: string, init?: RequestInit) => path === "/api/slack/oauth" ? Promise.reject(new Error("private diagnostic")) : implementation(path, init));
-    write("Link from Slack", `duskbot://slack/oauth?code=fixture-code&state=${"a".repeat(64)}`);
+    write("Link from Slack", `madanibot://slack/oauth?code=fixture-code&state=${"a".repeat(64)}`);
     await click("Continue");
     expect(host.querySelector('[role="alert"]')?.textContent).toBe("Could not update Slack. Try again.");
     expect(host.textContent).not.toContain("private diagnostic");

@@ -41,7 +41,7 @@ jobs:
         if: failure()
         shell: bash
         env:
-          DUSK_HELLO_MODE: check
+          MADANI_HELLO_MODE: check
         run: |
           node --input-type=module -e 'import { writeFileSync } from "node:fs"; import { WINDOWS_HELLO_SCRIPT } from "./electron/windows-hello.mjs"; writeFileSync("hello-debug.ps1", WINDOWS_HELLO_SCRIPT.replace("catch {", "catch { Write-Output ($_ | Out-String);"))'
           "$SYSTEMROOT/System32/WindowsPowerShell/v1.0/powershell.exe" -NoProfile -ExecutionPolicy Bypass -File hello-debug.ps1

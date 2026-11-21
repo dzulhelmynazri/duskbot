@@ -4,8 +4,8 @@ import { join } from "node:path";
 import { afterAll, describe, expect, it } from "vitest";
 
 // attachments.ts reads DATA_DIR at import time.
-const DATA_ROOT = mkdtempSync(join(tmpdir(), "dusk-scratch-chat-"));
-process.env.DUSK_DATA_DIR = join(DATA_ROOT, "data");
+const DATA_ROOT = mkdtempSync(join(tmpdir(), "madani-scratch-chat-"));
+process.env.MADANI_DATA_DIR = join(DATA_ROOT, "data");
 const { saveBotAttachment } = await import("./bot-attachment.ts");
 const { ATTACHMENTS_DIR } = await import("./attachments.ts");
 const { openMessageFile } = await import("./message-file.ts");

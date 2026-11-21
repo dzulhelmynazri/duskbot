@@ -53,8 +53,8 @@ afterAll(() => vi.unstubAllGlobals());
 
 /** A remote client keeps the full header: the model, the computer, Stop, the role and ⋯. */
 function asRemote<T>(run: () => T): T {
-  window.duskDesktop = { remoteClient: { active: true } } as NonNullable<Window["duskDesktop"]>;
-  try { return run(); } finally { delete window.duskDesktop; }
+  window.madaniDesktop = { remoteClient: { active: true } } as NonNullable<Window["madaniDesktop"]>;
+  try { return run(); } finally { delete window.madaniDesktop; }
 }
 
 const bot: Bot = {
@@ -83,7 +83,7 @@ describe("the header's right side", () => {
   });
 
   it("keeps the model, the computer and ⋯ in a remote client's header, whose settings panel has no room for them", () => {
-    window.duskDesktop = { remoteClient: { active: true } } as NonNullable<Window["duskDesktop"]>;
+    window.madaniDesktop = { remoteClient: { active: true } } as NonNullable<Window["madaniDesktop"]>;
     try {
       const { markup } = header();
       // The host checks the model against its own catalog, so a paired desktop can change it like the phone can.
@@ -94,12 +94,12 @@ describe("the header's right side", () => {
       const more = fixture.menus.find((menu) => menu.ariaLabel === "More")!;
       expect(more.items.map((item) => item.key)).toEqual(["find", "copy", "download"]);
     } finally {
-      delete window.duskDesktop;
+      delete window.madaniDesktop;
     }
   });
 
   it("shows no Stop in the header or the composer while a turn runs: only send and voice", () => {
-    vi.stubEnv("VITE_DUSK_VOICE_CALL", "0");
+    vi.stubEnv("VITE_MADANI_VOICE_CALL", "0");
     {
       const busy = { ...bot, busy: true, tasks: (bot.tasks ?? []).map((task) => ({ ...task, busy: true })) };
       const { markup, controls } = header(busy);
@@ -136,7 +136,7 @@ describe("the Simple header", () => {
       for (const gone of ["data-chathead-role", "data-background-activity", "data-chathead-back", 'data-testid="chat-more"']) {
         expect(simple, gone).not.toContain(gone);
       }
-      window.duskDesktop = { remoteClient: { active: true } } as NonNullable<Window["duskDesktop"]>;
+      window.madaniDesktop = { remoteClient: { active: true } } as NonNullable<Window["madaniDesktop"]>;
       try {
         const remote = renderToStaticMarkup(createElement(ChatView, { bot: busyElsewhere }));
         expect(remote).not.toContain("data-chathead-elsewhere");
@@ -144,7 +144,7 @@ describe("the Simple header", () => {
         expect(remote).toContain("data-chathead-back");
         expect(remote).toContain("data-chathead-role");
       } finally {
-        delete window.duskDesktop;
+        delete window.madaniDesktop;
       }
     }
   });
@@ -268,7 +268,7 @@ describe("thread control placement", () => {
   });
 
   it("with calls off, offers no call anywhere and keeps the mic in the composer", () => {
-    vi.stubEnv("VITE_DUSK_VOICE_CALL", "0");
+    vi.stubEnv("VITE_MADANI_VOICE_CALL", "0");
     const markup = renderToStaticMarkup(createElement(ChatView, { bot }));
     expect(markup).not.toContain("data-call-button");
     expect(markup.slice(markup.indexOf("data-composer-actions"))).toContain('data-voice-mic="start"');
@@ -276,7 +276,7 @@ describe("thread control placement", () => {
   });
 
   it("calls from the composer beside dictation, not the header", () => {
-    vi.stubEnv("VITE_DUSK_LIVE_CALL", "1");
+    vi.stubEnv("VITE_MADANI_LIVE_CALL", "1");
     const markup = renderToStaticMarkup(createElement(ChatView, { bot }));
     const header = markup.slice(markup.indexOf("data-chathead-controls"), markup.indexOf("data-composer-row"));
     expect(header).not.toContain("data-call-button");
@@ -307,11 +307,11 @@ describe("thread control placement", () => {
     }
   });
   it("says in a few words that this computer can't be used, with the server's reason behind Copy details", () => {
-    const line = "Only the dusk bot app on this computer can let a bot use it. Open the app here, or let the bot work in its own browser or on a cloud desktop instead.";
+    const line = "Only the madani bot app on this computer can let a bot use it. Open the app here, or let the bot work in its own browser or on a cloud desktop instead.";
     const markup = renderToStaticMarkup(createElement(ErrorRow, { message: line, action: { label: "Open screen", onClick: () => {} } }));
     expect(markup).toContain("I can&#x27;t use this computer right now.");
     expect(markup).toContain("data-error-details-copy");
-    expect(markup).not.toContain("Only the dusk bot app");
+    expect(markup).not.toContain("Only the madani bot app");
     expect(markup).toContain(">Open screen</button>");
   });
   it("directs ChatGPT plan limits to usage settings rather than repeatedly retrying", () => {
@@ -322,7 +322,7 @@ describe("thread control placement", () => {
   });
   it("sends a Codex usage limit to the account's Codex usage page, not Retry", () => {
     const codex = { instanceId: "codex", driverKind: "codex", displayName: "Codex", snapshot: { state: "available", authenticated: true } } as unknown as InstanceInfo;
-    const limit = `${CODEX_USAGE_LIMIT_REACHED} This is OpenAI's limit, not your Dusk plan. It resets at 5:23 PM (UTC).`;
+    const limit = `${CODEX_USAGE_LIMIT_REACHED} This is OpenAI's limit, not your Madani plan. It resets at 5:23 PM (UTC).`;
     const markup = renderToStaticMarkup(createElement(FailedTurnRow, { tool: failedTurnTool(limit), engine: codex, onRetry: () => {} }));
     expect(markup).toContain(limit.replaceAll("'", "&#x27;"));
     expect(markup).toContain(`href="${CODEX_USAGE_URL}"`);
@@ -454,39 +454,39 @@ describe("thread control placement", () => {
   it("offers the matching macOS Settings and relaunch actions only for a named CUA permission failure", () => {
     fixture.platform = "darwin";
     fixture.localMessage = "Screen Recording required";
-    window.duskDesktop = { platform: "darwin", permOpenSettings: vi.fn(), relaunch: vi.fn() } as unknown as NonNullable<Window["duskDesktop"]>;
+    window.madaniDesktop = { platform: "darwin", permOpenSettings: vi.fn(), relaunch: vi.fn() } as unknown as NonNullable<Window["madaniDesktop"]>;
     const screen = renderToStaticMarkup(createElement(ErrorRow, {
-      message: "dusk bot can't use this computer yet — embedded host failed: Screen Recording required. Relaunch dusk bot after granting any missing macOS permission.",
+      message: "madani bot can't use this computer yet — embedded host failed: Screen Recording required. Relaunch madani bot after granting any missing macOS permission.",
     }));
     expect(screen).toContain("Open Screen Recording settings");
-    expect(screen).toContain(">Relaunch dusk bot<");
+    expect(screen).toContain(">Relaunch madani bot<");
     expect(screen).not.toContain("Open Accessibility settings");
     fixture.localMessage = "Accessibility required";
     const accessibility = renderToStaticMarkup(createElement(ErrorRow, {
-      message: "dusk bot can't use this computer yet — Accessibility required",
+      message: "madani bot can't use this computer yet — Accessibility required",
     }));
     expect(accessibility).toContain("Open Accessibility settings");
     expect(accessibility).not.toContain("Open Screen Recording settings");
     expect(renderToStaticMarkup(createElement(ErrorRow, {
-      message: "dusk bot can't use this computer yet — Screen Recording required",
+      message: "madani bot can't use this computer yet — Screen Recording required",
     }))).not.toContain("Open Screen Recording settings");
     expect(renderToStaticMarkup(createElement(ErrorRow, { message: "Network timeout" }))).not.toContain("Open Screen Recording settings");
     // a copy run from source waits on CuaDriver's grant: name it, open its pane, check again instead of relaunching
     fixture.localMessage = "Screen Recording required for CuaDriver; turn on CuaDriver in System Settings > Privacy & Security";
-    window.duskDesktop = { platform: "darwin", permOpenSettings: vi.fn(), relaunch: vi.fn(), localControl: { retry: vi.fn() } } as unknown as NonNullable<Window["duskDesktop"]>;
+    window.madaniDesktop = { platform: "darwin", permOpenSettings: vi.fn(), relaunch: vi.fn(), localControl: { retry: vi.fn() } } as unknown as NonNullable<Window["madaniDesktop"]>;
     const helper = renderToStaticMarkup(createElement(ErrorRow, {
-      message: "dusk bot can't use this computer yet: Screen Recording required. Turn on CuaDriver in System Settings > Privacy & Security > Screen Recording; dusk bot notices by itself, no restart needed.",
+      message: "madani bot can't use this computer yet: Screen Recording required. Turn on CuaDriver in System Settings > Privacy & Security > Screen Recording; madani bot notices by itself, no restart needed.",
     }));
     expect(helper).toContain("Turn on CuaDriver in System Settings");
     expect(helper).toContain("Open Screen Recording settings");
     expect(helper).toContain("Check again");
     expect(helper).not.toContain("Relaunch");
     fixture.localReasonCode = "remote-server";
-    expect(renderToStaticMarkup(createElement(ErrorRow, { message: "dusk bot can't use this computer yet — Screen Recording required" }))).not.toContain("Open Screen Recording settings");
+    expect(renderToStaticMarkup(createElement(ErrorRow, { message: "madani bot can't use this computer yet — Screen Recording required" }))).not.toContain("Open Screen Recording settings");
     fixture.localReasonCode = "cua-driver-unavailable";
     fixture.platform = "other";
     fixture.localMessage = "";
-    delete window.duskDesktop;
+    delete window.madaniDesktop;
   });
   it.each([
     "شغّل الاختبارات\nThen run typecheck\nوبعدها ارفع الفرع",
@@ -521,7 +521,7 @@ describe("thread control placement", () => {
   });
 
   it("offers remote clients the model picker but keeps approval changes on the host", () => {
-    window.duskDesktop = { remoteClient: { active: true } } as NonNullable<Window["duskDesktop"]>;
+    window.madaniDesktop = { remoteClient: { active: true } } as NonNullable<Window["madaniDesktop"]>;
     try {
       fixture.model = null;
       const markup = renderToStaticMarkup(createElement(ChatView, { bot }));
@@ -529,7 +529,7 @@ describe("thread control placement", () => {
       expect(fixture.model).toMatchObject({ bot: { id: "bot" }, threadId: "selected" });
       expect(markup).not.toContain("data-test-approval-control");
     } finally {
-      delete window.duskDesktop;
+      delete window.madaniDesktop;
     }
   });
 

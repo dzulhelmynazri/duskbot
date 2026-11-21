@@ -315,7 +315,7 @@ export function brokerHarness(options: { migrations?: number } = {}) {
       return { response, body: await response.json() as { triggerId: string; error?: string } };
     },
     poll(owner: Installation, query = "", poller = "poller-main-0001") {
-      return harness.call(owner, `/v1/events${query ? `?${query}` : ""}`, { headers: { "x-dusk-poller": poller } });
+      return harness.call(owner, `/v1/events${query ? `?${query}` : ""}`, { headers: { "x-madani-poller": poller } });
     },
     /** One Composio delivery. `id` is both the webhook-id header and the envelope id unless `envelopeId` says otherwise. */
     deliver(envelope: Record<string, unknown>, sign: {

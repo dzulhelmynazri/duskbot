@@ -18,7 +18,7 @@ export const VOICE_LANGUAGES = [
 /** A bot's own call speed and language; a field the person never set is missing, so the call keeps its global one. */
 export interface VoicePrefs { speed?: string; language?: string }
 
-const key = (botId: string) => `duskbot.voicePrefs.v1:${botId}`;
+const key = (botId: string) => `madanibot.voicePrefs.v1:${botId}`;
 const watchers = new Set<() => void>();
 const cache = new Map<string, VoicePrefs>();
 

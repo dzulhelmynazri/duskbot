@@ -90,7 +90,7 @@ beforeEach(() => {
     groups: [room],
     sections: ["Work"],
   };
-  vi.stubGlobal("window", Object.assign(new EventTarget(), { innerWidth: 1280, innerHeight: 800, duskDesktop: undefined, setTimeout, clearTimeout }));
+  vi.stubGlobal("window", Object.assign(new EventTarget(), { innerWidth: 1280, innerHeight: 800, madaniDesktop: undefined, setTimeout, clearTimeout }));
   vi.stubGlobal("document", { body: {} });
   vi.stubGlobal("localStorage", {
     getItem: (key: string) => fixture.storage.get(key) ?? null,
@@ -118,7 +118,7 @@ describe("Simple-mode sidebar layout", () => {
   });
 
   it("in the person's own order, keeps the order they dragged the bots into, as Discord's channels do: a turn starting or a message arriving moves no row", () => {
-    fixture.storage.set("duskbot.sidebarBotOrder", "custom");
+    fixture.storage.set("madanibot.sidebarBotOrder", "custom");
     const at = Date.now() - 60_000;
     const said = (id: string, when: number): Message => ({ id, at: when, role: "bot", kind: "text", text: id });
     fixture.state = { ...fixture.state, sections: [], groups: [], bots: [
@@ -257,7 +257,7 @@ describe("Simple-mode sidebar layout", () => {
   it("opens the search palette from the round search button, as grok's Search does, with no pill in the sidebar", () => {
     const toggle = () => render().tree.find((node) => node.type === SidebarSearchToggle)!.props as Parameters<typeof SidebarSearchToggle>[0];
     const opened = vi.fn();
-    window.addEventListener("dusk:open-command-palette", opened);
+    window.addEventListener("madani:open-command-palette", opened);
     toggle().onToggle();
     expect(opened).toHaveBeenCalledOnce();
     expect(render().tree.some((node) => node.type === SidebarSearchPill)).toBe(false);

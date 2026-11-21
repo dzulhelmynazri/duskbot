@@ -1,20 +1,20 @@
 // Full server + built viewer + synthetic Docker/RFB, in disposable homes.
-// Build first, then run with explicit DUSK_AGENT_BROWSER_PATH and
+// Build first, then run with explicit MADANI_AGENT_BROWSER_PATH and
 // AGENT_BROWSER_EXECUTABLE_PATH if reusing installed browser binaries.
 import assert from "node:assert/strict";
 import { mkdtempSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import { launchVerificationServer, runControlDusk, type VerificationServer } from "./control-dusk.ts";
-import { agentBrowser, ensureUiBrowser, sessionEnv } from "./testing/control-dusk-ui.ts";
+import { launchVerificationServer, runControlMadani, type VerificationServer } from "./control-madani.ts";
+import { agentBrowser, ensureUiBrowser, sessionEnv } from "./testing/control-madani-ui.ts";
 import { fixtureApi, mountPreview, type MountedPreview } from "./testing/preview-fixture.ts";
 import { connectCdp } from "../server/browser-sites.ts";
 import { fakeVnc } from "./testing/fake-vnc.ts";
 import { BASE_IMAGE_DIGEST, CUA_DRIVER_VERSION, IMAGE, IMAGE_LAYER_VERSION } from "../server/container-computer.ts";
 
 const root = fileURLToPath(new URL("..", import.meta.url));
-const scratch = mkdtempSync(join(process.platform === "win32" ? tmpdir() : "/tmp", "dusk-viewer-fixture-"));
+const scratch = mkdtempSync(join(process.platform === "win32" ? tmpdir() : "/tmp", "madani-viewer-fixture-"));
 const bin = join(scratch, "bin");
 mkdirSync(bin);
 mkdirSync(join(scratch, "tmp"));
@@ -31,24 +31,24 @@ const fs = require("node:fs");
 const stopped = ${JSON.stringify(join(scratch, "stopped"))};
 let args = process.argv.slice(2);
 if (args[0] === "-H") args = args.slice(2);
-const labels = ${JSON.stringify({ "bot.dusk.local-vm": "1", "bot.dusk.cua-driver": CUA_DRIVER_VERSION, "bot.dusk.cua-base": BASE_IMAGE_DIGEST, "bot.dusk.image-layer": IMAGE_LAYER_VERSION, "bot.dusk.workspace": "1" })};
+const labels = ${JSON.stringify({ "bot.madani.local-vm": "1", "bot.madani.cua-driver": CUA_DRIVER_VERSION, "bot.madani.cua-base": BASE_IMAGE_DIGEST, "bot.madani.image-layer": IMAGE_LAYER_VERSION, "bot.madani.workspace": "1" })};
 let result;
 const imageId = 'sha256:' + 'a'.repeat(64);
-if (args[0] === 'inspect' && /^duskbot-vps-/.test(args[1])) result = [{
+if (args[0] === 'inspect' && /^madanibot-vps-/.test(args[1])) result = [{
   Id:'b'.repeat(64), Image:imageId, State:{Running:!fs.existsSync(stopped)}, Mounts:[],
   Config:{Image:${JSON.stringify(IMAGE)}, Env:['VNC_PW=fixture-password'], Labels:{...labels,
-    'bot.dusk.vps':'1', 'bot.dusk.container':args[1], 'bot.dusk.vps-viewer':'1'}},
+    'bot.madani.vps':'1', 'bot.madani.container':args[1], 'bot.madani.vps-viewer':'1'}},
   HostConfig:{Privileged:false,NetworkMode:'bridge',PortBindings:{},Memory:4294967296,MemorySwap:4294967296,NanoCpus:2000000000,
     PidsLimit:4096,CapDrop:['ALL'],CapAdd:['CAP_SETUID','CAP_SETGID'],IpcMode:'private',ShmSize:536870912,
     CgroupnsMode:'private',SecurityOpt:[],RestartPolicy:{Name:'unless-stopped',MaximumRetryCount:0}},
   NetworkSettings:{Networks:{bridge:{IPAddress:'172.17.0.5'}}}
 }];
-else if (['start','stop'].includes(args[0]) && (/^duskbot-vps-/.test(args[1]) || args[1] === 'b'.repeat(64))) { if(args[0]==='start') fs.rmSync(stopped,{force:true}); else fs.writeFileSync(stopped,'stopped'); result = args[1]; }
+else if (['start','stop'].includes(args[0]) && (/^madanibot-vps-/.test(args[1]) || args[1] === 'b'.repeat(64))) { if(args[0]==='start') fs.rmSync(stopped,{force:true}); else fs.writeFileSync(stopped,'stopped'); result = args[1]; }
 else if (args[0] === 'exec') result = args.includes('--version') ? 'cua-driver ${CUA_DRIVER_VERSION}'
-  : (args.includes('dusk-desktop-probe') || args.includes('health_report')) ? {schema_version:'1',overall:'ok',checks:[]} : {};
+  : (args.includes('madani-desktop-probe') || args.includes('health_report')) ? {schema_version:'1',overall:'ok',checks:[]} : {};
 else if (args[0] === 'info') result = 'fixture';
 else if (args[0] === 'image' && args[1] === 'inspect') result = [{Id:imageId,Config:{Labels:labels}}];
-else if (args[0] === 'inspect' && args[1] === 'duskbot-computer') result = [{
+else if (args[0] === 'inspect' && args[1] === 'madanibot-computer') result = [{
   Config:{Image:${JSON.stringify(IMAGE)},Labels:labels,Env:['VNC_PW=fixture-password']},
   State:{Running:true},Image:imageId,
   HostConfig:{PortBindings:{'6901/tcp':[{HostIp:'127.0.0.1',HostPort:'${desktop.port}'}]}},
@@ -234,7 +234,7 @@ process.on('SIGTERM',()=>{fs.appendFileSync(log,'close ');process.exit(0)});
     assert.equal(await evaluate("window.liveComputerFixture.requests.filter(request => request.method === 'GET' && request.url.includes('/desktop-viewer/')).length"), 0);
   };
   if (process.argv.includes("--live-only")) {
-    await runControlDusk(["new-bot", "--name", "Live watch fixture", "--url", fixture.info.url]);
+    await runControlMadani(["new-bot", "--name", "Live watch fixture", "--url", fixture.info.url]);
     const { bots } = await api("GET", "/api/bots?messages=0");
     const bot = bots.find((candidate: { name: string }) => candidate.name === "Live watch fixture");
     await api("PATCH", "/api/config", { vps: { sshAlias: "viewer-fixture", independentScreens: false } });
@@ -266,7 +266,7 @@ process.on('SIGTERM',()=>{fs.appendFileSync(log,'close ');process.exit(0)});
   assert.equal(status.viewer_url.includes("password"), false);
   const matchingBackgrounds = "getComputedStyle(document.querySelector('#screen > div')).backgroundColor === getComputedStyle(document.querySelector('main')).backgroundColor";
   assert.equal(await evaluate(matchingBackgrounds), true);
-  const evidenceDir = process.env.DUSK_UI_EVIDENCE_DIR ? resolve(root, process.env.DUSK_UI_EVIDENCE_DIR) : dirname(fixture.info.logPath);
+  const evidenceDir = process.env.MADANI_UI_EVIDENCE_DIR ? resolve(root, process.env.MADANI_UI_EVIDENCE_DIR) : dirname(fixture.info.logPath);
   mkdirSync(evidenceDir, { recursive: true });
   const desktopScreenshot = join(evidenceDir, `viewer-${process.pid}-desktop.png`);
   await command("wait", "--fn", "document.getAnimations().every(a => a.playState !== 'running')");
@@ -404,7 +404,7 @@ process.on('SIGTERM',()=>{fs.appendFileSync(log,'close ');process.exit(0)});
   await nextConnection;
   await command("wait", "--fn", "document.getElementById('status').textContent === 'Desktop connected'");
   // Exercise the real VPS join route, SSH process lifecycle and the same UI.
-  await runControlDusk(["new-bot", "--name", "VPS fixture", "--url", fixture.info.url]);
+  await runControlMadani(["new-bot", "--name", "VPS fixture", "--url", fixture.info.url]);
   const { bots } = await api("GET", "/api/bots?messages=0");
   const vpsBot = bots.find((bot: { name: string }) => bot.name === "VPS fixture");
   await api("PATCH", "/api/config", { vps: { sshAlias: "viewer-fixture", independentScreens: false } });

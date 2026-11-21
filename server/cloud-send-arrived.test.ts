@@ -11,7 +11,7 @@ const dirs: string[] = [];
 afterEach(() => { for (const dir of dirs.splice(0)) rmSync(dir, { recursive: true, force: true }); });
 
 function cloud(owner = true, language?: string) {
-  const dataDir = mkdtempSync(join(tmpdir(), "dusk-arrived-")); dirs.push(dataDir);
+  const dataDir = mkdtempSync(join(tmpdir(), "madani-arrived-")); dirs.push(dataDir);
   const lines: Array<{ threadId: string; text?: string }> = [];
   const deps = {
     dataDir,

@@ -38,7 +38,7 @@ const MAIN = readFileSync(join(REPO_ROOT, "electron", "main.mjs"), "utf8").repla
 const SPLASH_ICON = join(REPO_ROOT, "electron", "resources", "app-icon.png");
 export const ACCOUNT_ID = "acct-fixture";
 /** The renderer's own routes to its server; the same keys as vite.config.ts, so none of its own targets is kept. */
-const PROXIED = ["/api", "/.well-known/duskbot/environment"];
+const PROXIED = ["/api", "/.well-known/madanibot/environment"];
 
 type Cdp = Awaited<ReturnType<typeof connectCdp>>;
 type Handler = (params: any, sessionId?: string) => void;
@@ -102,7 +102,7 @@ export class TabWindow extends EventEmitter {
     contents.isDestroyed = () => this.destroyed;
     contents.isLoadingMainFrame = () => false;
     contents.focus = () => {};
-    contents.send = (channel: string, ...args: unknown[]) => { void this.evaluate(`window.__duskDesktopEmit?.(${JSON.stringify(channel)}, ...${JSON.stringify(args)})`).catch(() => {}); };
+    contents.send = (channel: string, ...args: unknown[]) => { void this.evaluate(`window.__madaniDesktopEmit?.(${JSON.stringify(channel)}, ...${JSON.stringify(args)})`).catch(() => {}); };
     contents.executeJavaScript = (code: string) => this.evaluate(code);
     contents.reload = () => { void cdp.request("Page.reload", {}, sessionId).catch(() => {}); };
     this.webContents = contents;
@@ -178,10 +178,10 @@ function readBody(req: IncomingMessage): Promise<string> {
 function preloadStandIn(ipcBase: string, localOrigin: string): string {
   return `(() => {
   if (!/^https?:/.test(location.protocol)) return;
-  try { localStorage.setItem("dusk-analytics-opt-out", "1"); localStorage.setItem("dusk-email-gate", "skipped"); localStorage.setItem("dusk-advanced-mode", "0");
+  try { localStorage.setItem("madani-analytics-opt-out", "1"); localStorage.setItem("madani-email-gate", "skipped"); localStorage.setItem("madani-advanced-mode", "0");
     for (const notice of ${JSON.stringify(NOTICES)}) localStorage.setItem(notice, "1"); } catch {}
   const listeners = new Map();
-  window.__duskDesktopEmit = (channel, ...args) => { for (const listener of [...(listeners.get(channel) ?? [])]) listener({}, ...args); };
+  window.__madaniDesktopEmit = (channel, ...args) => { for (const listener of [...(listeners.get(channel) ?? [])]) listener({}, ...args); };
   const call = async (channel, args) => {
     const response = await fetch(${JSON.stringify(ipcBase)} + "/__ipc/" + channel, { method: "POST", headers: { "content-type": "text/plain" }, body: JSON.stringify({ args }) });
     const answer = await response.json();
@@ -202,7 +202,7 @@ function preloadStandIn(ipcBase: string, localOrigin: string): string {
     removeListener: (channel, listener) => { listeners.get(channel)?.delete(listener); },
   };
   const electron = { contextBridge: { exposeInMainWorld: (key, value) => { window[key] = value; } }, ipcRenderer, webUtils: { getPathForFile: () => "" } };
-  const process = { platform: "darwin", argv: ["--dusk-local-origin=${localOrigin}", "--dusk-company-desktop=1"] };
+  const process = { platform: "darwin", argv: ["--madani-local-origin=${localOrigin}", "--madani-company-desktop=1"] };
   (function (require, process) {
 ${PRELOAD}
   })(() => electron, process);
@@ -223,7 +223,7 @@ export interface HomeWorld {
   home: ReturnType<typeof createHomeWindow>;
   /** A launch of the app: the startup screen, then show() as main's launch does. */
   launch(): Promise<void>;
-  /** The dusk cloud sign-in main reads: its state, and the power word of a Cloud that sleeps. */
+  /** The madani cloud sign-in main reads: its state, and the power word of a Cloud that sleeps. */
   account: { state: Record<string, any>; power: { state: "awake" | "asleep" | "waking"; since: number; sleeps: true } | null; wakeMs: number; wakes: number; signIns: string[] };
   /** Down: every request on the way to My Cloud fails, the window's and main's alike; `teamDown`: the team's Cloud only;
    * `nameMissing`: My Cloud's name isn't found (a resolver kept the answer it got while My Cloud was set up). */
@@ -240,7 +240,7 @@ export interface HomeWorld {
   environments(): { environments: any[]; activeId: string };
   /** The switcher's entries as main's native menu would list them (environments.cjs). */
   menu(): Array<{ label?: string; sublabel?: string; checked?: boolean }>;
-  /** The dusk cloud sign-in changed: main's own two steps (the places follow the session, then the window). */
+  /** The madani cloud sign-in changed: main's own two steps (the places follow the session, then the window). */
   sync(): Promise<void>;
   /** Each request My Cloud's edge passed on, in order. */
   cloudRequests: Array<{ path: string; at: number }>;
@@ -264,7 +264,7 @@ async function vite(port: number, host: string, plugin: (server: ViteDevServer) 
   const server = await createViteServer({
     root: REPO_ROOT, logLevel: "warn", clearScreen: false,
     // its own deps cache: the developer's running dev server keeps node_modules/.vite
-    cacheDir: join(REPO_ROOT, ".dusk-scratch", "vite-one-workspace"),
+    cacheDir: join(REPO_ROOT, ".madani-scratch", "vite-one-workspace"),
     server: { host, port, strictPort: true, proxy: proxy as never, hmr: { port: port + 1 } },
     plugins: [{ name: "one-workspace-edge", configureServer: plugin }],
   });
@@ -344,7 +344,7 @@ export async function launchHomeWorld(fx: CloudSendFixture, { chrome, ports, ver
       }
       next();
     });
-  }, Object.fromEntries(PROXIED.map((path) => [path, { target: fx.desktopBase, ws: true, headers: { "x-dusk-desktop-owner": fx.ownerCapability } }])));
+  }, Object.fromEntries(PROXIED.map((path) => [path, { target: fx.desktopBase, ws: true, headers: { "x-madani-desktop-owner": fx.ownerCapability } }])));
   cleanup.push(() => localEdge.close());
 
   // Main's ipcMain, reached by the preload's ipcRenderer.
@@ -362,8 +362,8 @@ export async function launchHomeWorld(fx: CloudSendFixture, { chrome, ports, ver
       const listed = req.method === "POST" && req.headers.authorization === "Bearer omc_fixture" && account.state.status === "connected" && (account.state.teams ?? []).some((team: any) => team.id === id) && !admin.removed.has(id);
       if (!listed) return reply(404, { error: "not_found" });
       admin.teamPairings.push(id);
-      const grant = await fx.grant("dusk bot app (Team Cloud)");
-      return reply(200, { cloudContractVersion: 1, origin: teamOrigin, code: grant.code, pairingUrl: `${teamOrigin}/pair#code=${grant.code}`, expiresAt: grant.expiresAt, credential: "dusk_pair_fixture" });
+      const grant = await fx.grant("madani bot app (Team Cloud)");
+      return reply(200, { cloudContractVersion: 1, origin: teamOrigin, code: grant.code, pairingUrl: `${teamOrigin}/pair#code=${grant.code}`, expiresAt: grant.expiresAt, credential: "madani_pair_fixture" });
     }
     if (!sync && !asked) { res.writeHead(200, { "content-type": "text/html" }); res.end("<!doctype html><title>Another server</title><p>Another server</p>"); return; }
     const { args = [] } = JSON.parse((await readBody(req)) || "{}") as { args?: unknown[] };
@@ -396,7 +396,7 @@ export async function launchHomeWorld(fx: CloudSendFixture, { chrome, ports, ver
   };
 
   // Chrome, its two tabs' worth of windows.
-  const profile = mkdtempSync(join(tmpdir(), "dusk-one-workspace-chrome-"));
+  const profile = mkdtempSync(join(tmpdir(), "madani-one-workspace-chrome-"));
   cleanup.push(() => rmSync(profile, { recursive: true, force: true }));
   const browser: ChildProcess = spawn(chrome, ["--headless=new", "--no-sandbox", "--no-first-run", "--no-default-browser-check", "--disable-background-networking",
     "--password-store=basic", "--use-mock-keychain", "--remote-debugging-port=0", `--user-data-dir=${profile}`, "about:blank"], {
@@ -446,7 +446,7 @@ export async function launchHomeWorld(fx: CloudSendFixture, { chrome, ports, ver
   });
   const pairHome = async () => {
     if (account.state.status !== "connected" || network.down) throw new Error("My Cloud is not ready to connect yet.");
-    const grant = await fx.grant("dusk bot app (Cloud)");
+    const grant = await fx.grant("madani bot app (Cloud)");
     return { ...grant, origin: cloudOrigin };
   };
   /** The real client's `pairTeam` shape against the fake Admin's route: the Admin's answer, read as the app reads it. */
@@ -496,7 +496,7 @@ export async function launchHomeWorld(fx: CloudSendFixture, { chrome, ports, ver
   };
   const home = createHomeWindow({
     journal: () => (moves.moved ? { v: 1, phase: "done", cloud: { origin: cloudOrigin, account: ACCOUNT_ID, machine: cloudOrigin }, doneAt: Date.now() } : null),
-    frozen: async () => (moves.moved ? (await fetch(`${fx.desktopBase}/api/move/freeze`, { headers: { "x-dusk-desktop-owner": fx.ownerCapability } })).json() : { frozen: false }),
+    frozen: async () => (moves.moved ? (await fetch(`${fx.desktopBase}/api/move/freeze`, { headers: { "x-madani-desktop-owner": fx.ownerCapability } })).json() : { frozen: false }),
     // The window's Electron session: its own resolver and host cache, for My Cloud's name.
     hosts: () => ({
       clearHostResolverCache: async () => { hostCache.cleared++; },
@@ -567,7 +567,7 @@ export async function launchHomeWorld(fx: CloudSendFixture, { chrome, ports, ver
 }
 
 export function shotsDir(fallback: string): string {
-  const dir = process.env.DUSK_ONE_WORKSPACE_SHOTS ?? join(fallback, "shots");
+  const dir = process.env.MADANI_ONE_WORKSPACE_SHOTS ?? join(fallback, "shots");
   mkdirSync(dir, { recursive: true });
   return dir;
 }

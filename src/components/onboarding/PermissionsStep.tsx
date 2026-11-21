@@ -44,7 +44,7 @@ export function MacPermissionList({ bridge, relaunch, onStatus }: {
     read();
     const timer = setInterval(read, PERMISSIONS_POLL_MS);
     // back from System Settings: the helper looks again for what was turned on there
-    const back = () => { read(); if (helper) void window.duskDesktop?.localControl?.retry?.().catch(() => {}); };
+    const back = () => { read(); if (helper) void window.madaniDesktop?.localControl?.retry?.().catch(() => {}); };
     window.addEventListener("focus", back);
     return () => { clearInterval(timer); window.removeEventListener("focus", back); };
   }, [read, helper]);

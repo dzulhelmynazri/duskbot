@@ -66,13 +66,13 @@ describe("voice input in the real composer", () => {
     speechFinish = vi.fn().mockResolvedValue(undefined);
     level = undefined;
     setVoicePrefs({ ...DEFAULT_VOICE_PREFS, firstRunSeen: true });
-    window.duskDesktop = {
+    window.madaniDesktop = {
       platform: "darwin",
       speechStart, speechStop, speechFinish,
       onSpeechTranscript: (cb: typeof transcript) => { transcript = cb; return vi.fn(); },
       onSpeechEnd: (cb: typeof end) => { end = cb; return vi.fn(); },
       onSpeechLevel: (cb: (value: number) => void) => { level = cb; return vi.fn(); },
-    } as unknown as typeof window.duskDesktop;
+    } as unknown as typeof window.madaniDesktop;
     restoreComposerDraft(draftId, { text: "", attachments: [] });
     container = document.createElement("div");
     document.body.append(container);
@@ -91,7 +91,7 @@ describe("voice input in the real composer", () => {
     restoreComposerDraft(draftId, { text: "", attachments: [] });
     restoreComposerDraft(`bot:${bot.id}:other-thread`, { text: "", attachments: [] });
     setVoicePrefs(DEFAULT_VOICE_PREFS);
-    delete window.duskDesktop;
+    delete window.madaniDesktop;
     vi.clearAllMocks();
     vi.restoreAllMocks();
     vi.unstubAllGlobals();
@@ -225,7 +225,7 @@ describe("voice input in the real composer", () => {
 
   it("says a refused microphone in one line with a button to System Settings", () => {
     const permOpenSettings = vi.fn().mockResolvedValue(undefined);
-    Object.assign(window.duskDesktop!, { permOpenSettings });
+    Object.assign(window.madaniDesktop!, { permOpenSettings });
     start();
     flushSync(() => end({ code: 1, reason: "mic-denied" }));
     expect(container.textContent).toContain(t("composer.voice.micDenied"));
@@ -255,10 +255,10 @@ describe("the first tap on the mic", () => {
     vi.spyOn(HTMLElement.prototype, "scrollIntoView").mockImplementation(() => {});
     setVoicePrefs(DEFAULT_VOICE_PREFS);
     speechStart = vi.fn().mockResolvedValue(undefined);
-    window.duskDesktop = {
+    window.madaniDesktop = {
       platform: "darwin", speechStart, speechStop: vi.fn().mockResolvedValue(undefined), speechFinish: vi.fn().mockResolvedValue(undefined),
       onSpeechTranscript: () => vi.fn(), onSpeechEnd: () => vi.fn(),
-    } as unknown as typeof window.duskDesktop;
+    } as unknown as typeof window.madaniDesktop;
     restoreComposerDraft(draftId, { text: "", attachments: [] });
     container = document.createElement("div");
     document.body.append(container);
@@ -270,7 +270,7 @@ describe("the first tap on the mic", () => {
     flushSync(() => root.unmount());
     container.remove();
     setVoicePrefs(DEFAULT_VOICE_PREFS);
-    delete window.duskDesktop;
+    delete window.madaniDesktop;
     vi.clearAllMocks();
     vi.restoreAllMocks();
     vi.unstubAllGlobals();
@@ -323,10 +323,10 @@ describe("a computer where nothing can listen", () => {
     setVoicePrefs({ ...DEFAULT_VOICE_PREFS, firstRunSeen: true });
     speechStart = vi.fn().mockResolvedValue(undefined);
     // Linux has no recognizer of its own, and this server has no listening key
-    window.duskDesktop = {
+    window.madaniDesktop = {
       platform: "linux", speechStart, speechStop: vi.fn().mockResolvedValue(undefined), speechFinish: vi.fn().mockResolvedValue(undefined),
       onSpeechTranscript: () => vi.fn(), onSpeechEnd: () => vi.fn(),
-    } as unknown as typeof window.duskDesktop;
+    } as unknown as typeof window.madaniDesktop;
     restoreComposerDraft(draftId, { text: "", attachments: [] });
     container = document.createElement("div");
     document.body.append(container);
@@ -338,7 +338,7 @@ describe("a computer where nothing can listen", () => {
     flushSync(() => root.unmount());
     container.remove();
     setVoicePrefs(DEFAULT_VOICE_PREFS);
-    delete window.duskDesktop;
+    delete window.madaniDesktop;
     vi.clearAllMocks();
     vi.restoreAllMocks();
     vi.unstubAllGlobals();

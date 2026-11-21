@@ -1,4 +1,4 @@
-/** The link agent's phone hub, as the desktop app and a dusk cloud run it in their own process. */
+/** The link agent's phone hub, as the desktop app and a madani cloud run it in their own process. */
 export interface PhoneHubKeys { pub: string; priv: string }
 export declare function x25519Pair(): PhoneHubKeys;
 export declare function harnessSync(server?: { host: string; port: number }): (input: Record<string, unknown>) => Promise<unknown>;

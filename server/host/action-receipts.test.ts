@@ -11,7 +11,7 @@ const dirs: string[] = [];
 afterEach(() => { for (const dir of dirs.splice(0)) rmSync(dir, { recursive: true, force: true }); });
 
 function harness() {
-  const dataDir = mkdtempSync(join(tmpdir(), "dusk-receipts-"));
+  const dataDir = mkdtempSync(join(tmpdir(), "madani-receipts-"));
   dirs.push(dataDir);
   const marks: Array<{ threadId: string; turnId?: string; kinds: ActionKind[] }> = [];
   const receipts = createActionReceipts({ dataDir, botOf: (threadId) => (threadId === "room" ? null : "bot-1"), mark: (threadId, turnId, kinds) => { marks.push({ threadId, turnId, kinds }); return true; } });
@@ -53,7 +53,7 @@ describe("evidence", () => {
 
 describe("action receipts", () => {
   it("drops receipt months that ended more than 30 days ago, so the folder cannot grow forever", async () => {
-    const dataDir = mkdtempSync(join(tmpdir(), "dusk-receipts-"));
+    const dataDir = mkdtempSync(join(tmpdir(), "madani-receipts-"));
     dirs.push(dataDir);
     mkdirSync(join(dataDir, "receipts"));
     for (const name of ["2026-01.jsonl", "2026-09.jsonl", "notes.txt"]) writeFileSync(join(dataDir, "receipts", name), "{}\n");

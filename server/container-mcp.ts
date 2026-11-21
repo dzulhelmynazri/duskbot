@@ -16,8 +16,8 @@ if (!container || !/^[a-zA-Z0-9_.-]+$/.test(container) || !socket?.startsWith("/
 }
 
 // The who-is-driving pair rides in env, not argv, which `ps` shows to everyone; the token guards a loopback endpoint.
-const controlUrl = process.env.DUSK_CONTROL_URL ?? "";
-const controlToken = process.env.DUSK_CONTROL_TOKEN ?? "";
+const controlUrl = process.env.MADANI_CONTROL_URL ?? "";
+const controlToken = process.env.MADANI_CONTROL_TOKEN ?? "";
 
 const session = createSandboxComputerSession();
 

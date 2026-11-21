@@ -92,7 +92,7 @@ beforeEach(() => {
   dispatch.mockReset();
   flushBotPatches.mockClear();
   vi.stubGlobal("fetch", fetchMock);
-  vi.stubGlobal("duskDesktop", { openExternal: vi.fn(async () => true) });
+  vi.stubGlobal("madaniDesktop", { openExternal: vi.fn(async () => true) });
   // happy-dom's observer never reports: without one, a row counts as in view
   vi.stubGlobal("IntersectionObserver", undefined);
   pool = createAppPool({ limit: 3 });
@@ -174,7 +174,7 @@ describe("a bot's page", () => {
     expect(button("About this app")!.getAttribute("aria-expanded")).toBe("true");
   });
 
-  it("sends dusk.send as the person's message from this app, only while they use it", async () => {
+  it("sends madani.send as the person's message from this app, only while they use it", async () => {
     await mount(row(htmlPayload()));
     await handshake();
     const ask = { jsonrpc: "2.0", id: "m1", method: "ui/message", params: { role: "user", content: [{ type: "text", text: "I have had 3 cups." }] } };
@@ -205,7 +205,7 @@ describe("a bot's page", () => {
     await handshake();
     await engage();
     await fromView({ jsonrpc: "2.0", id: "l1", method: "ui/open-link", params: { url: "https://example.com/a" } });
-    expect((window as unknown as { duskDesktop: { openExternal: ReturnType<typeof vi.fn> } }).duskDesktop.openExternal).toHaveBeenCalledWith("https://example.com/a");
+    expect((window as unknown as { madaniDesktop: { openExternal: ReturnType<typeof vi.fn> } }).madaniDesktop.openExternal).toHaveBeenCalledWith("https://example.com/a");
   });
 
   it("update_html mounts the new page at the same height, after the old one is asked to go", async () => {

@@ -7,7 +7,7 @@ order: 1
 art: s-signpost
 ---
 
-bots are only as good as what you hand them. none of this is required, but people who get the most out of dusk bot do most of it.
+bots are only as good as what you hand them. none of this is required, but people who get the most out of madani bot do most of it.
 
 ## 1. one bot, one job
 
@@ -66,6 +66,6 @@ put the researcher, the writer and the reviewer in one [group chat](/docs/group-
 
 read what a new bot or routine does the first few times, and correct it right in the chat ("shorter", "skip newsletters", "always include the link"). it learns fast, and after a week you'll only glance.
 
-## 11. move to dusk cloud when bots become part of your day
+## 11. move to madani cloud when bots become part of your day
 
-if a routine missed because your laptop was asleep, or you want to text a bot from your phone at night, that's the sign. [dusk cloud](/docs/dusk-cloud) keeps your bots always available, with nothing to look after.
+if a routine missed because your laptop was asleep, or you want to text a bot from your phone at night, that's the sign. [madani cloud](/docs/madani-cloud) keeps your bots always available, with nothing to look after.

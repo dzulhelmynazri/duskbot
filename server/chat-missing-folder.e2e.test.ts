@@ -2,12 +2,12 @@
 import { mkdirSync, rmSync } from "node:fs";
 import { join } from "node:path";
 import { expect, it } from "vitest";
-import { launchVerificationServer, runControlDusk } from "../scripts/control-dusk.ts";
+import { launchVerificationServer, runControlMadani } from "../scripts/control-madani.ts";
 
 it("a message to a bot whose folder was deleted still gets a reply, from the chat's own folder", async () => {
   const session = await launchVerificationServer(process.env, undefined, undefined, undefined, { scripted: true }, ["codex"]);
   const { url, dataDir } = session.info;
-  const cli = (...args: string[]) => runControlDusk([...args, "--url", url]) as Promise<any>;
+  const cli = (...args: string[]) => runControlMadani([...args, "--url", url]) as Promise<any>;
   const api = async (method: string, path: string, body?: unknown) => {
     const response = await fetch(url + path, {
       method,

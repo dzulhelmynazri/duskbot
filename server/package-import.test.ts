@@ -10,7 +10,7 @@ const fixture = (name: string): any => JSON.parse(readFileSync(join(FIXTURES, na
 let home: string;
 
 async function installation(options: { refuse?: (name: string) => string | undefined; servers?: Record<string, unknown> } = {}) {
-  home = mkdtempSync(join(tmpdir(), "dusk-package-import-"));
+  home = mkdtempSync(join(tmpdir(), "madani-package-import-"));
   vi.resetModules();
   vi.stubEnv("HOME", home);
   vi.stubEnv("USERPROFILE", home);
@@ -108,13 +108,13 @@ describe("importing a whole team", () => {
     expect(app.events.filter((kind) => kind === "bot")).toHaveLength(3);
   });
 
-  it("brings a new install's chrome Dusk back in chrome from its own export", async () => {
+  it("brings a new install's chrome Madani back in chrome from its own export", async () => {
     const app = await installation();
     app.store.seedIfEmpty();
     const { createBotPackageExport } = await import("./package-export.ts");
     const exported = createBotPackageExport({ name: "Mine", groups: [], routines: [], bots: app.store.bots });
     const document: PackageDocument = app.parsePackageDocument(JSON.parse(JSON.stringify(exported)));
-    expect(document.package.agents.map((agent) => [agent.name, agent.appearance?.color])).toEqual([["dusk bot", "chrome"]]);
+    expect(document.package.agents.map((agent) => [agent.name, agent.appearance?.color])).toEqual([["madani bot", "chrome"]]);
     const result = app.importer.importPackageDocument(document, { trust: "file", mode: "add" }, app.deps);
     if (result.alreadyAdded) throw new Error("unexpected");
     expect(result.bots.map((bot) => app.store.bot(bot.id)?.color)).toEqual(["chrome"]);
@@ -245,7 +245,7 @@ describe("importing onto a Starter Cloud", () => {
     const app = await onStarter(5);
     const before = app.snapshot();
     const { parseTeamManifest } = await import("./team-manifest.ts");
-    const manifest = parseTeamManifest({ format: "dusk.team", version: 2, team: { name: "Desk", members: [{ key: "helper", name: "Helper", appearance: { color: "blue" } }] } });
+    const manifest = parseTeamManifest({ format: "madani.team", version: 2, team: { name: "Desk", members: [{ key: "helper", name: "Helper", appearance: { color: "blue" } }] } });
     expect(() => app.importer.importTeamManifest(manifest, { mode: "add", cwd: null }, app.deps))
       .toThrow(expect.objectContaining({ code: "bot_limit", status: 409 }));
     expect(app.snapshot()).toBe(before);

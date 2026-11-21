@@ -51,7 +51,7 @@ describe("a text size picked in Settings", () => {
   });
 
   it("reads an unknown saved value as the phone's setting", () => {
-    localStorage.setItem("dusk.mobile.textSize", "huge");
+    localStorage.setItem("madani.mobile.textSize", "huge");
     expect(readTextSize()).toBe("system");
   });
 });

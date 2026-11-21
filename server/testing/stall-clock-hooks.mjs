@@ -1,10 +1,10 @@
-// Loaded with --import in isolated fixtures when DUSK_TEST_STALL_CLOCK=1: once the fixture writes
+// Loaded with --import in isolated fixtures when MADANI_TEST_STALL_CLOCK=1: once the fixture writes
 // <data dir>/stall-turns, every then-silent turn with no tool running has spent the stall window, and the
 // watchdog sweeps every 50 ms. No authorization or dispatch decision changes.
 import { registerHooks } from 'node:module';
 import { join } from 'node:path';
-const dataDir = process.env.DUSK_DATA_DIR;
-if (!dataDir || dataDir !== process.env.HOME || process.env.DUSK_TEST_STALL_CLOCK !== '1') {
+const dataDir = process.env.MADANI_DATA_DIR;
+if (!dataDir || dataDir !== process.env.HOME || process.env.MADANI_TEST_STALL_CLOCK !== '1') {
   throw new Error('The stall clock requires an explicitly isolated fixture');
 }
 const marker = join(dataDir, 'stall-turns');

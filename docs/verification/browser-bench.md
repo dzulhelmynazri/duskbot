@@ -2,7 +2,7 @@
 
 27 local pages that reproduce the UI bots trip on (`server/browser-bench/tasks-*.ts`), each with a check of what the
 page itself saw: the message sent, the setting saved, the answer the bot gave. A real Claude Code CLI plays each task
-with dusk bot's browser tools as its only tools, through the real `BrowserService` on a headless Chrome
+with madani bot's browser tools as its only tools, through the real `BrowserService` on a headless Chrome
 (`--use-mock-keychain --password-store=basic`). Nothing leaves the computer: every page is served on loopback, and
 every run gets its own path, so runs in parallel never share state.
 
@@ -23,7 +23,7 @@ kind (stale ref, not found, covered, not editable, timeout, bad arguments) and t
 
 ```sh
 # no model: each task's scripted way through passes on real Chrome, and doing nothing fails it
-DUSK_CDP_E2E=1 npx vitest run server/browser-bench
+MADANI_CDP_E2E=1 npx vitest run server/browser-bench
 # the real Claude Code CLI, 3 runs per task
 node --experimental-strip-types scripts/browser-bench.ts --engine claude --runs 3 --parallel 3 --label after --out /tmp/bench
 # --model haiku, --only x-dm,slider for a subset; the scorecard of two runs as HTML and PNG

@@ -22,7 +22,7 @@ const ICON = { computer: "laptop", cloud: "cloud", server: "server" } as const;
 const DOT = { online: "bg-success", asleep: "bg-ink-tertiary", offline: "bg-danger" } as const;
 const WORD = { online: "slack.state.online", asleep: "runsOn.status.asleep", offline: "runsOn.status.offline" } as const;
 
-const DOT_SEEN = "dusk-place-dot-seen";
+const DOT_SEEN = "madani-place-dot-seen";
 /** The green "online" dot shows until the person has opened the list of places once; a grey or red one always shows. */
 export function placeDotSeen(): boolean {
   try { return localStorage.getItem(DOT_SEEN) === "1"; } catch { return false; }
@@ -57,7 +57,7 @@ export function usePlaceStatus(waking: boolean): PlaceStatus {
 }
 
 export function switchPlaceCommand(): (() => void) | null {
-  const bridge = typeof window === "undefined" ? undefined : window.duskDesktop?.workspaces;
+  const bridge = typeof window === "undefined" ? undefined : window.madaniDesktop?.workspaces;
   return bridge ? () => void openServerMenu(bridge).catch(() => {}) : null;
 }
 

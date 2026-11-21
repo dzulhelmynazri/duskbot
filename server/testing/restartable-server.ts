@@ -1,12 +1,12 @@
 // A real fake-engine server in a temporary home that can be stopped and started again on the same data and port, so a
-// test can prove what survives a restart. Same environment as control-dusk's launch: no user data, no developer CLIs.
+// test can prove what survives a restart. Same environment as control-madani's launch: no user data, no developer CLIs.
 import { spawn, type ChildProcess } from "node:child_process";
 import { closeSync, mkdirSync, mkdtempSync, openSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { delimiter, dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
-import { verificationServerArgs, verificationServerEnvironment } from "../../scripts/control-dusk.ts";
+import { verificationServerArgs, verificationServerEnvironment } from "../../scripts/control-madani.ts";
 import { removeTempDir, waitForExit } from "./cleanup.ts";
 import { freePortBlock } from "./ports.ts";
 
@@ -36,7 +36,7 @@ export async function launchRestartableServer(options: {
 } = {}): Promise<RestartableServer> {
   const port = await freePortBlock([0, 1]);
   // Native browser daemons use UNIX sockets, and a macOS temp home can exceed their path limit.
-  const dataDir = mkdtempSync(join(options.dataDirRoot ?? tmpdir(), "dusk-restartable-"));
+  const dataDir = mkdtempSync(join(options.dataDirRoot ?? tmpdir(), "madani-restartable-"));
   mkdirSync(join(dataDir, "tmp"), { recursive: true });
   const planPath = join(dataDir, "room-plan.json");
   if (options.scripted) writeFileSync(planPath, "{}");
@@ -45,7 +45,7 @@ export async function launchRestartableServer(options: {
     ...(options.scripted ? { environment: { FAKE_CLAUDE_ROOM_PLAN: planPath } } : {}),
   } } }, null, 2));
   // Kept after close, for a failed run's evidence.
-  const evidenceDir = join(tmpdir(), "duskbot-verification-evidence");
+  const evidenceDir = join(tmpdir(), "madanibot-verification-evidence");
   mkdirSync(evidenceDir, { recursive: true });
   const logPath = join(evidenceDir, `restartable-${Date.now()}-${process.pid}.log`);
   const url = `http://127.0.0.1:${port}`;
@@ -62,7 +62,7 @@ export async function launchRestartableServer(options: {
       if (child.exitCode !== null) throw new Error(`the server exited before it was ready; see ${logPath}`);
       try {
         const body = await (await fetch(`${url}/api/health`, { signal: AbortSignal.timeout(1_000) })).json() as { app?: string };
-        if (body.app === "duskbot") return;
+        if (body.app === "madanibot") return;
       } catch { /* not listening yet */ }
       if (Date.now() > deadline) throw new Error(`the server did not become ready; see ${logPath}`);
       await new Promise((resolve) => setTimeout(resolve, 150));

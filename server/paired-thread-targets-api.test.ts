@@ -1,7 +1,7 @@
 import { writeFileSync } from "node:fs";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
-import { launchVerificationServer, type VerificationServer } from "../scripts/control-dusk.ts";
+import { launchVerificationServer, type VerificationServer } from "../scripts/control-madani.ts";
 
 describe("paired thread targets through an isolated HTTP fixture", () => {
   let fixture: VerificationServer;
@@ -69,9 +69,9 @@ describe("paired thread targets through an isolated HTTP fixture", () => {
     for (const [method, suffix, body] of actions) {
       const result = await paired(method, `/api/bots/${bot.id}${suffix}`, body);
       expect(result.status, `${method} ${suffix}`).toBe(409);
-      expect(result.body.error).toMatch(/Update the dusk bot app on this device.*choose a thread/);
+      expect(result.body.error).toMatch(/Update the madani bot app on this device.*choose a thread/);
     }
-    const legacyPhone = await api("POST", `/api/bots/${bot.id}/read`, undefined, { "x-dusk-companion": "1", "x-dusk-companion-device": "fixture-phone" });
+    const legacyPhone = await api("POST", `/api/bots/${bot.id}/read`, undefined, { "x-madani-companion": "1", "x-madani-companion-device": "fixture-phone" });
     expect(legacyPhone.status).toBe(409);
     expect((await page(threadA)).messages).toEqual(beforeA.messages);
     expect((await page(threadB)).messages).toEqual(beforeB.messages);
@@ -138,8 +138,8 @@ describe("paired thread targets through an isolated HTTP fixture", () => {
     const before = await page(bot.threadId);
     const spoofed = await api("POST", `/api/bots/${bot.id}/messages`, { text: "Unauthorized", threadId: bot.threadId }, {
       "x-forwarded-for": "203.0.113.5",
-      "x-dusk-companion": "1",
-      "x-dusk-companion-device": "not-authenticated",
+      "x-madani-companion": "1",
+      "x-madani-companion-device": "not-authenticated",
     });
     expect(spoofed.status).toBe(403);
     expect((await page(bot.threadId)).messages).toEqual(before.messages);

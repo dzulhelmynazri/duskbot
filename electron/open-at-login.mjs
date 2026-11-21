@@ -3,16 +3,16 @@
 import fs from "node:fs";
 import path from "node:path";
 
-export const HIDDEN_ARG = "--dusk-hidden";
-const MARK = "X-Dusk-Lending=true";
+export const HIDDEN_ARG = "--madani-hidden";
+const MARK = "X-Madani-Lending=true";
 /** Windows keeps one Run entry per name, so the person's own entry has a name apart from lending's (the app's). */
-const CHOSEN_NAME = "dusk bot at login";
+const CHOSEN_NAME = "madani bot at login";
 
 /** Desktop Entry Exec quoting: the path in double quotes, with ", `, $ and \ escaped. */
 const quoted = (value) => `"${value.replace(/["`$\\]/g, (match) => `\\${match}`)}"`;
 
 export function autostartEntry(exec, { lending = true } = {}) {
-  return ["[Desktop Entry]", "Type=Application", "Name=dusk bot", `Exec=${quoted(exec)} ${HIDDEN_ARG}`, "NoDisplay=true",
+  return ["[Desktop Entry]", "Type=Application", "Name=madani bot", `Exec=${quoted(exec)} ${HIDDEN_ARG}`, "NoDisplay=true",
     "X-GNOME-Autostart-enabled=true", ...(lending ? [MARK] : []), ""].join("\n");
 }
 
@@ -26,13 +26,13 @@ export function autostartEntry(exec, { lending = true } = {}) {
  * item; true when it turned it on.
  */
 export function createOpenAtLogin({ app, file, platform = process.platform, env = process.env, home, argv = process.argv, execPath = process.execPath }) {
-  const autostart = path.join(env.XDG_CONFIG_HOME || path.join(home, ".config"), "autostart", "duskbot.desktop");
+  const autostart = path.join(env.XDG_CONFIG_HOME || path.join(home, ".config"), "autostart", "madanibot.desktop");
   const saved = () => { try { return JSON.parse(fs.readFileSync(file, "utf8")) ?? {}; } catch { return {}; } };
   const store = (fields) => { try { fs.mkdirSync(path.dirname(file), { recursive: true }); fs.writeFileSync(file, JSON.stringify({ ...saved(), ...fields })); } catch {} };
   const added = () => saved().added === true;
   const remember = (value) => store({ added: value });
   /** Electron 43.7 on Windows: `openAtLogin` compares the Run entry's arguments with the `args` asked about (none by
-   * default), so lending's `--dusk-hidden` entry reads as off; `launchItems` lists the entries that start this executable,
+   * default), so lending's `--madani-hidden` entry reads as off; `launchItems` lists the entries that start this executable,
    * each with its name, arguments and whether Task Manager has it enabled. */
   const windowsStartsApp = () => (app.getLoginItemSettings().launchItems ?? []).filter(item => item.enabled !== false);
   const declined = () => saved().declined === true

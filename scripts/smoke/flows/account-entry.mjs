@@ -1,5 +1,5 @@
 // The account steps of the desktop app, each as a person meets it (the account context redirect): a fresh app that is
-// not signed in (DUSK_ALLOW_SIGNED_OUT=1). Settings' "sign in to your cloud plan" and the You menu's "sign in" continue
+// not signed in (MADANI_ALLOW_SIGNED_OUT=1). Settings' "sign in to your cloud plan" and the You menu's "sign in" continue
 // in the browser (one calm sheet in the app, the website's sign-up and approval), and the app signs itself in with no
 // trip back; signed in, billing opens straight on the website with no second sign-in. Sink addresses only.
 //
@@ -11,7 +11,7 @@ import { accountLinkFrom, webAccountStep } from "./web-account.mjs";
 import { walkthrough } from "./recorder.mjs";
 
 const { root, out, profile, email } = flowArgs("acct");
-const flow = createFlow({ name: "account-entry", title: "account steps continue in the browser", root, out, profile, email, env: { DUSK_ALLOW_SIGNED_OUT: "1" } });
+const flow = createFlow({ name: "account-entry", title: "account steps continue in the browser", root, out, profile, email, env: { MADANI_ALLOW_SIGNED_OUT: "1" } });
 /** the You menu: the account button beside "connect apps" in the sidebar */
 const openAccountMenu = () => until(() => flow.evaluate(`(() => {
   const shown = [...document.querySelectorAll("button")].filter((b) => b.getClientRects().length);
@@ -19,7 +19,7 @@ const openAccountMenu = () => until(() => flow.evaluate(`(() => {
   const account = apps?.parentElement?.querySelector("button:not(:last-child)") ?? shown.find((b) => /^[a-z]$/i.test(b.innerText.trim()));
   if (!account) return false; account.click(); return true;
 })()`), { what: "the account button" }).then(() => walkthrough.did("clicks the account button (bottom left)"));
-const signedIn = () => flow.evaluate(`window.duskDesktop.cloudAccount.state().then((s) => Boolean(s.account) && s.status === "connected")`);
+const signedIn = () => flow.evaluate(`window.madaniDesktop.cloudAccount.state().then((s) => Boolean(s.account) && s.status === "connected")`);
 
 async function browserHalf(since, label) {
   const link = await until(() => accountLinkFrom(flow.opened(since)), { timeout: 30_000, what: `the browser page for ${label}` });
@@ -30,7 +30,7 @@ async function browserHalf(since, label) {
 await runFlow(flow, async () => {
   await flow.step("launch", "a fresh app, not signed in, gets into the app", async () => {
     await flow.launch();
-    await flow.waitText(/meet dusk bot|where should your bots live/i, "the welcome", { timeout: 120_000 });
+    await flow.waitText(/meet madani bot|where should your bots live/i, "the welcome", { timeout: 120_000 });
     // past the welcome without an account: the welcome is not what this flow checks (and it is being redesigned)
     await flow.evaluate(`fetch("/api/config", { method: "PUT", headers: { "content-type": "application/json" }, body: JSON.stringify({ onboarding: { completedAt: new Date().toISOString(), version: 1 } }) }).then((r) => r.status)`);
     await flow.evaluate(`location.reload(); true`).catch(() => {});
@@ -57,16 +57,16 @@ await runFlow(flow, async () => {
     flow.facts.sheet = shown.replace(/\s+/g, " ").slice(0, 200);
     await flow.shot("continue-sheet");
     const { web } = await browserHalf(since, "settings");
-    await flow.waitFor(`window.duskDesktop.cloudAccount.state().then((s) => Boolean(s.account) && s.status === "connected")`, "the app signed in", 60_000);
+    await flow.waitFor(`window.madaniDesktop.cloudAccount.state().then((s) => Boolean(s.account) && s.status === "connected")`, "the app signed in", 60_000);
     await flow.waitFor(`!document.querySelector("[data-continue-in-browser]")`, "the sheet to close by itself", 20_000);
     return web.steps.join("; ");
   });
 
   await flow.step("billing", "signed in, billing opens on the website with no second sign-in", async () => {
     const since = Date.now();
-    const answer = await flow.app.send("Runtime.evaluate", { expression: `window.duskDesktop.cloudAccount.continueInBrowser({ kind: "billing" })`, awaitPromise: true, returnByValue: true, userGesture: true });
+    const answer = await flow.app.send("Runtime.evaluate", { expression: `window.madaniDesktop.cloudAccount.continueInBrowser({ kind: "billing" })`, awaitPromise: true, returnByValue: true, userGesture: true });
     if (answer.result?.value?.outcome !== "opened") throw new Error(`billing answered ${JSON.stringify(answer.result?.value).slice(0, 120)}`);
-    const opened = await until(() => flow.opened(since).find((url) => /preview\.dusk\.bot/.test(url)), { timeout: 20_000, what: "the billing page" });
+    const opened = await until(() => flow.opened(since).find((url) => /preview\.madani\.bot/.test(url)), { timeout: 20_000, what: "the billing page" });
     if (/cloud\/desktop\?code=/.test(opened)) throw new Error("signed in, yet the app asked to sign in again");
     const { web } = await browserHalf(since, "billing");
     if (!/\/billing/.test(web.landed)) throw new Error(`landed on ${web.landed}`);
@@ -89,8 +89,8 @@ await runFlow(flow, async () => {
   });
 
   await flow.step("menu-sign-in", "signed out again, the You menu's sign in continues in the browser too", async () => {
-    await flow.evaluate(`window.duskDesktop.cloudAccount.signOut()`);
-    await flow.waitFor(`window.duskDesktop.cloudAccount.state().then((s) => !s.account)`, "signed out", 30_000);
+    await flow.evaluate(`window.madaniDesktop.cloudAccount.signOut()`);
+    await flow.waitFor(`window.madaniDesktop.cloudAccount.state().then((s) => !s.account)`, "signed out", 30_000);
     await flow.escape().catch(() => {});
     const since = Date.now();
     // the You menu: the account button, then its sign in row
@@ -98,7 +98,7 @@ await runFlow(flow, async () => {
     await flow.click("sign in", { contains: false });
     await flow.waitFor(`Boolean(document.querySelector("[data-continue-in-browser]"))`, "the continue-in-browser sheet", 20_000);
     const { web } = await browserHalf(since, "menu");
-    await flow.waitFor(`window.duskDesktop.cloudAccount.state().then((s) => Boolean(s.account) && s.status === "connected")`, "the app signed in", 60_000);
+    await flow.waitFor(`window.madaniDesktop.cloudAccount.state().then((s) => Boolean(s.account) && s.status === "connected")`, "the app signed in", 60_000);
     return web.steps.join("; ");
   });
 });

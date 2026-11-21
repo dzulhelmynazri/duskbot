@@ -1,15 +1,15 @@
 #!/bin/sh
 # pid 1, as root only long enough to prepare the box; the desktop session always runs as uid 1000.
-#   DUSK_MODE=free    the host fences this box's network (host-fence.sh); the bot may sudo inside it.
-#   DUSK_MODE=strict  the box fences itself with NET_ADMIN once, then drops to uid 1000 under no_new_privs, which
+#   MADANI_MODE=free    the host fences this box's network (host-fence.sh); the bot may sudo inside it.
+#   MADANI_MODE=strict  the box fences itself with NET_ADMIN once, then drops to uid 1000 under no_new_privs, which
 #                    also makes sudo inert, so nothing the bot runs can undo the firewall. the default.
 set -eu
-mode="${DUSK_MODE:-strict}"
+mode="${MADANI_MODE:-strict}"
 
 if [ "$(id -u)" = 0 ]; then
   # public resolvers, straight from the box: docker's embedded dns would forward to the host's own resolver, which on
   # many clouds is the metadata address the fence refuses (and gVisor does not see its redirect at all)
-  dns="${DUSK_DNS:-1.1.1.1 9.9.9.9}"
+  dns="${MADANI_DNS:-1.1.1.1 9.9.9.9}"
   # (strict mounts it read-only; there docker's resolver forwards to the same servers, from --dns)
   { { for server in $dns; do echo "nameserver $server"; done; echo "options timeout:2 attempts:2"; } > /etc/resolv.conf; } 2>/dev/null || true
   if [ "$mode" = free ]; then

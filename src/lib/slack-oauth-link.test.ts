@@ -14,7 +14,7 @@ import { completeSlackOAuth, SLACK_OAUTH_EVENT, useSlackOAuthLinks, useSlackOAut
 
 const STATE = "ab".repeat(32);
 const CODE = "fixture.code_-123";
-const LINK = `duskbot://slack/oauth?code=${CODE}&state=${STATE}`;
+const LINK = `madanibot://slack/oauth?code=${CODE}&state=${STATE}`;
 const status: SlackBotStatus = { version: 1, botId: "scout", state: "installed" };
 
 beforeEach(() => { vi.stubGlobal("window", new EventTarget()); });
@@ -24,7 +24,7 @@ describe("completeSlackOAuth", () => {
   it("ignores non-Slack and invalid links without posting or dispatching", async () => {
     const post = vi.fn();
     const dispatch = vi.spyOn(window, "dispatchEvent");
-    for (const link of ["duskbot://cloud", "duskbot://bot/scout", `${LINK}&extra=1`]) {
+    for (const link of ["madanibot://cloud", "madanibot://bot/scout", `${LINK}&extra=1`]) {
       expect(await completeSlackOAuth(link, post)).toBeNull();
     }
     expect(post).not.toHaveBeenCalled();
@@ -44,7 +44,7 @@ describe("completeSlackOAuth", () => {
     const post = vi.fn();
     const dispatch = vi.spyOn(window, "dispatchEvent");
     const result = { ok: false, error: expected };
-    expect(await completeSlackOAuth(`duskbot://slack/oauth?error=${error}&state=${STATE}`, post)).toEqual(result);
+    expect(await completeSlackOAuth(`madanibot://slack/oauth?error=${error}&state=${STATE}`, post)).toEqual(result);
     expect(post).not.toHaveBeenCalled();
     expect(dispatch).toHaveBeenCalledOnce();
     expect((dispatch.mock.calls[0][0] as CustomEvent).detail).toEqual(result);
@@ -84,7 +84,7 @@ describe("Slack OAuth subscriptions", () => {
     let deliver: ((link: string) => void) | undefined;
     const unsubscribe = vi.fn();
     vi.stubGlobal("window", Object.assign(new EventTarget(), {
-      duskDesktop: { onSlackOAuth: (cb: (link: string) => void) => { deliver = cb; return unsubscribe; } },
+      madaniDesktop: { onSlackOAuth: (cb: (link: string) => void) => { deliver = cb; return unsubscribe; } },
     }));
     vi.mocked(api).mockResolvedValueOnce({ status });
     const receive = vi.fn();

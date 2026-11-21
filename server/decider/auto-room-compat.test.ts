@@ -112,7 +112,7 @@ describe("team backups", () => {
 
 describe("legacy team files", () => {
   const manifest = (defaultResponder: Record<string, string>) => ({
-    format: "dusk.team",
+    format: "madani.team",
     version: 1,
     team: {
       name: "Research",

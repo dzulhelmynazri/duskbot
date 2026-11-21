@@ -20,7 +20,7 @@ node --experimental-strip-types scripts/memory-eval/run.ts --repo /path/to/check
   *echo* answers every turn with "ok" and every memory step with an empty answer; *script* answers a turn whose
   message holds a trigger with scripted tool calls (through `use_tool` when the tool is bridged); *forward* passes the
   call to the gateway with streaming off and records its token usage.
-- **Gateway** (live and run.ts). `DUSK_EVAL_URL` and `DUSK_EVAL_KEY`, else `MCHAT_BASE_URL` and `MCHAT_API_KEY`
+- **Gateway** (live and run.ts). `MADANI_EVAL_URL` and `MADANI_EVAL_KEY`, else `MCHAT_BASE_URL` and `MCHAT_API_KEY`
   from `~/Desktop/code/mchat/.env`. The key never leaves the eval process and the sandbox's own `config.json`
   (0600), and is never printed.
 - **Corpus** (`corpus.ts`). One invented person, Dana, January to November 2026, with three bots: Scout (personal
@@ -136,7 +136,7 @@ current lines 89 at the start, 93 at the end; About me 1,983 to 2,605 characters
 ### Memory v2
 
 Run on 2026-11-15 on main after the memory v2 commits, with the local embedding model
-(`DUSK_MEMORY_EMBED=1 DUSK_MODEL_DIR=<a folder holding the model>`), the same model and judge as the baseline
+(`MADANI_MEMORY_EMBED=1 MADANI_MODEL_DIR=<a folder holding the model>`), the same model and judge as the baseline
 (`results/v2-offline-c.json`, `results/v2-live-a.json`, `results/v2-live-b.json`; run b adds the change that moves a
 bot's copy of a person fact into About me).
 

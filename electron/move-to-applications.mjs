@@ -25,10 +25,10 @@ export function shouldOfferMove({ platform, packaged, bundle, home, isInApplicat
 export function moveDialog({ fromDiskImage }) {
   return {
     type: "question",
-    message: "Move dusk bot to Applications?",
+    message: "Move madani bot to Applications?",
     detail: fromDiskImage
-      ? "dusk bot is running from the disk image. In Applications it can update itself and keeps working after you eject."
-      : "dusk bot updates itself only from the Applications folder.",
+      ? "madani bot is running from the disk image. In Applications it can update itself and keeps working after you eject."
+      : "madani bot updates itself only from the Applications folder.",
     buttons: ["Move to Applications", "Not now"],
     defaultId: 0,
     cancelId: 1,

@@ -644,7 +644,7 @@ function RoomSetup({ group, members }: { group: Group; members: Bot[] }) {
   };
 
   const pickFolder = async () => {
-    const chosen = await window.duskDesktop?.pickFolder?.(folder || group.cwd);
+    const chosen = await window.madaniDesktop?.pickFolder?.(folder || group.cwd);
     if (chosen) setFolder(chosen);
   };
 
@@ -675,7 +675,7 @@ function RoomSetup({ group, members }: { group: Group; members: Bot[] }) {
               placeholder={t("room.folder.own")}
               className={cn(textFieldCls, "flex-1")}
             />
-            {window.duskDesktop?.pickFolder && (
+            {window.madaniDesktop?.pickFolder && (
               <button
                 type="button"
                 onClick={() => void pickFolder()}
@@ -855,7 +855,7 @@ const USAGE_ROW_GAP = 8 + 12;
 export function GroupView({ group: room }: { group: Group }) {
   const group = useMemo(() => shownTranscript(room), [room]);
   const { state, dispatch } = useStore();
-  const remoteClient = window.duskDesktop?.remoteClient?.active === true;
+  const remoteClient = window.madaniDesktop?.remoteClient?.active === true;
   const composerDockRef = useRef<HTMLDivElement>(null);
   const composerDock = useComposerDockPad(composerDockRef, () => scrollRef.current);
   const [folderOpen, setFolderOpen] = useState(false);

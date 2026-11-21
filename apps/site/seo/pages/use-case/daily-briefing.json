@@ -58,7 +58,7 @@
     },
     {
       "h": "let the brief admit what it missed",
-      "md": "**get the brief before you open the laptop.** [dusk cloud](/docs/dusk-cloud) runs routines on time. local runs need dusk open and the computer awake. a run missed by less than 12 hours happens once when you return; older runs skip.\n\nask the brief to show missing attachments and other gaps. it can't know about a call outside your calendar or a deadline only mentioned aloud.\n\nopen the original event before heading to the meeting. use its time and location to plan the trip."
+      "md": "**get the brief before you open the laptop.** [madani cloud](/docs/madani-cloud) runs routines on time. local runs need madani open and the computer awake. a run missed by less than 12 hours happens once when you return; older runs skip.\n\nask the brief to show missing attachments and other gaps. it can't know about a call outside your calendar or a deadline only mentioned aloud.\n\nopen the original event before heading to the meeting. use its time and location to plan the trip."
     }
   ],
   "safeguards": [
@@ -74,7 +74,7 @@
     },
     {
       "q": "can it brief me on two gmail accounts?",
-      "a": "**yes, name both labelled accounts.** dusk supports up to five connected accounts per app. name the calendar too."
+      "a": "**yes, name both labelled accounts.** madani supports up to five connected accounts per app. name the calendar too."
     },
     {
       "q": "why did my brief arrive after i opened my laptop?",
@@ -82,20 +82,20 @@
     },
     {
       "q": "can i use this for my job?",
-      "a": "**work use needs a work license.** personal use is free. dusk cloud pro includes a work license for one person; see [billing](/docs/account-and-billing)."
+      "a": "**work use needs a work license.** personal use is free. madani cloud pro includes a work license for one person; see [billing](/docs/account-and-billing)."
     }
   ],
   "sources": [
     {
-      "label": "dusk bot docs: routines",
+      "label": "madani bot docs: routines",
       "url": "/docs/routines"
     },
     {
-      "label": "dusk bot docs: files and apps",
+      "label": "madani bot docs: files and apps",
       "url": "/docs/files-and-apps"
     },
     {
-      "label": "dusk bot docs: troubleshooting",
+      "label": "madani bot docs: troubleshooting",
       "url": "/docs/troubleshooting"
     },
     {

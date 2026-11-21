@@ -3,7 +3,7 @@
     "relation": ["delegate_permission/common.handle_all_urls"],
     "target": {
       "namespace": "android_app",
-      "package_name": "bot.dusk.mobile",
+      "package_name": "bot.madani.mobile",
       "sha256_cert_fingerprints": [
         "37:A3:AB:FC:08:7C:D8:73:AF:FA:08:40:57:83:B6:69:8F:AC:12:E6:D1:61:6E:B0:9E:5E:83:82:05:77:13:2D"
       ]

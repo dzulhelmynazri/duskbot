@@ -45,7 +45,7 @@ const quiet = () => {
   timer = null;
 };
 
-window.duskDesktop = {
+window.madaniDesktop = {
   // ?platform=linux: no recognizer of its own and, with no listening key on the fixture's server, nothing can listen
   platform: params.get("platform") === "linux" ? "linux" : "darwin",
   permOpenSettings: async () => {},
@@ -56,7 +56,7 @@ window.duskDesktop = {
   onSpeechTranscript: (cb: (line: Line) => void) => { lines.add(cb); return () => lines.delete(cb); },
   onSpeechEnd: (cb: (info: { code: number }) => void) => { ends.add(cb); return () => ends.delete(cb); },
   onSpeechLevel: (cb: (level: number) => void) => { levels.add(cb); return () => levels.delete(cb); },
-} as unknown as typeof window.duskDesktop;
+} as unknown as typeof window.madaniDesktop;
 
 Object.assign(window, { voiceFixture: {
   say: (text: string, partial = true) => lines.forEach((cb) => cb({ text, partial })),

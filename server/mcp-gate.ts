@@ -26,11 +26,11 @@ function gateEnvironment(): NodeJS.ProcessEnv {
   if (process.argv.length === 2) return process.env;
   try {
     const key = process.argv[3];
-    if (process.argv.length !== 4 || process.argv[2] !== "--config-env" || !key || !/^DUSK_GATE_CONFIG_[a-f0-9]{64}$/.test(key)) throw new Error();
+    if (process.argv.length !== 4 || process.argv[2] !== "--config-env" || !key || !/^MADANI_GATE_CONFIG_[a-f0-9]{64}$/.test(key)) throw new Error();
     const value = JSON.parse(process.env[key] ?? "");
     if (!value || typeof value !== "object" || Array.isArray(value)
-      || !["DUSK_GATE_NAME", "DUSK_GATE_UPSTREAM"].every(name => typeof value[name] === "string")
-      || (typeof value.DUSK_GATE_TOOL_SCOPE !== "string" && typeof value[GATE_APPS_ENV] !== "string")
+      || !["MADANI_GATE_NAME", "MADANI_GATE_UPSTREAM"].every(name => typeof value[name] === "string")
+      || (typeof value.MADANI_GATE_TOOL_SCOPE !== "string" && typeof value[GATE_APPS_ENV] !== "string")
       || !Object.entries(value).every(([name, setting]) => GATE_ENV_KEYS.includes(name) && typeof setting === "string")) throw new Error();
     return value;
   } catch {
@@ -38,15 +38,15 @@ function gateEnvironment(): NodeJS.ProcessEnv {
   }
 }
 /** The gate's own settings never reach the upstream server's environment. */
-const GATE_ENV_KEYS = ["DUSK_GATE_NAME", "DUSK_GATE_SPILL_DIR", "DUSK_GATE_BUDGET", "DUSK_GATE_UPSTREAM", "DUSK_GATE_SPILL_HINT", "DUSK_GATE_TOOL_SCOPE", "DUSK_GATE_DIRECTORY", GATE_APPS_ENV];
+const GATE_ENV_KEYS = ["MADANI_GATE_NAME", "MADANI_GATE_SPILL_DIR", "MADANI_GATE_BUDGET", "MADANI_GATE_UPSTREAM", "MADANI_GATE_SPILL_HINT", "MADANI_GATE_TOOL_SCOPE", "MADANI_GATE_DIRECTORY", GATE_APPS_ENV];
 const gateEnv = gateEnvironment();
-const NAME = gateEnv.DUSK_GATE_NAME || "mcp";
-const SPILL_DIR = gateEnv.DUSK_GATE_SPILL_DIR || "";
-const rawBudget = Number(gateEnv.DUSK_GATE_BUDGET);
+const NAME = gateEnv.MADANI_GATE_NAME || "mcp";
+const SPILL_DIR = gateEnv.MADANI_GATE_SPILL_DIR || "";
+const rawBudget = Number(gateEnv.MADANI_GATE_BUDGET);
 const BUDGET = Number.isFinite(rawBudget) && rawBudget >= 0 ? rawBudget : DEFAULT_RESULT_BUDGET;
 const SPILL_MAX_AGE_MS = 24 * 60 * 60_000;
-const SPILL_HINT = gateEnv.DUSK_GATE_SPILL_HINT === "1";
-const DIRECTORY = gateEnv.DUSK_GATE_DIRECTORY === "1";
+const SPILL_HINT = gateEnv.MADANI_GATE_SPILL_HINT === "1";
+const DIRECTORY = gateEnv.MADANI_GATE_DIRECTORY === "1";
 const SCHEMA_PROFILE = toolSchemaProfileFromEnv(process.env);
 const TOOL_LIMIT = toolLimitFromEnv(process.env);
 
@@ -56,7 +56,7 @@ function fail(message: string): never {
 }
 
 function toolScope(): ToolScope | undefined {
-  const raw = gateEnv.DUSK_GATE_TOOL_SCOPE;
+  const raw = gateEnv.MADANI_GATE_TOOL_SCOPE;
   if (raw === undefined) return;
   let value: unknown;
   try { value = JSON.parse(raw); } catch { fail("invalid tool selection JSON"); }
@@ -88,13 +88,13 @@ interface Upstream {
 function upstreamSpec(): Upstream {
   let parsed: unknown;
   try {
-    parsed = JSON.parse(gateEnv.DUSK_GATE_UPSTREAM ?? "");
+    parsed = JSON.parse(gateEnv.MADANI_GATE_UPSTREAM ?? "");
   } catch {
-    fail("DUSK_GATE_UPSTREAM is not valid JSON");
+    fail("MADANI_GATE_UPSTREAM is not valid JSON");
   }
   const spec = parsed as Upstream | null;
   if (!spec || typeof spec !== "object" || typeof spec.command !== "string" || !spec.command) {
-    fail("DUSK_GATE_UPSTREAM needs a command");
+    fail("MADANI_GATE_UPSTREAM needs a command");
   }
   return spec;
 }
@@ -221,7 +221,7 @@ const spec = upstreamSpec();
 if (SPILL_DIR) sweepSpill(SPILL_DIR);
 
 const childEnv: NodeJS.ProcessEnv = { ...process.env, ...spec.env };
-for (const key of Object.keys(childEnv)) if (key.startsWith("DUSK_GATE_")) delete childEnv[key];
+for (const key of Object.keys(childEnv)) if (key.startsWith("MADANI_GATE_")) delete childEnv[key];
 
 // CreateProcess cannot exec an npm .cmd shim or a node-shebang script, and a shell would re-interpret JSON argv.
 const resolved = resolveCliSpawn(spec.command, spec.args ?? []);
@@ -304,7 +304,7 @@ createInterface({ input: process.stdin }).on("line", (line) => {
   if (message?.method === "tools/call" && typeof params?.name === "string") {
     const target = callTarget(params.name, params.arguments);
     if (target !== undefined && appOnly.has(target)) return rejectRequest(message.id, -32602, APP_ONLY_REFUSAL);
-    // dusk bot's own agents tools write into its own chats; every other server's send reaches someone outside.
+    // madani bot's own agents tools write into its own chats; every other server's send reaches someone outside.
     if (NAME !== "agents" && target !== undefined && isOutboundTool(target) && sendsErrorDump([{ arguments: params.arguments }])) {
       return rejectRequest(message.id, -32602, ERROR_DUMP_REFUSAL);
     }

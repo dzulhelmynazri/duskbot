@@ -15,7 +15,7 @@ afterEach(() => {
 
 describe("readClaudeModelCatalog", () => {
   it("returns the official models when settings are missing", () => {
-    expect(readClaudeModelCatalog({ HOME: join(tmpdir(), "dusk-claude-missing-home") })).toEqual(STATIC_CLAUDE_MODELS);
+    expect(readClaudeModelCatalog({ HOME: join(tmpdir(), "madani-claude-missing-home") })).toEqual(STATIC_CLAUDE_MODELS);
     expect(STATIC_CLAUDE_MODELS.options.slice(0, 3)).toEqual([
       { id: "claude-fable-5-2", label: "Claude Fable 5.2", contextWindow: 1_000_000 },
       { id: "claude-fable-5-1", label: "Claude Fable 5.1" },
@@ -38,14 +38,14 @@ describe("readClaudeModelCatalog", () => {
   });
 
   it("lists ANTHROPIC_MODEL from the instance environment when settings are missing", () => {
-    const home = mkdtempSync(join(tmpdir(), "dusk-claude-missing-home-"));
+    const home = mkdtempSync(join(tmpdir(), "madani-claude-missing-home-"));
     scratchDirs.push(home);
     const catalog = readClaudeModelCatalog({ HOME: join(home, "missing"), ANTHROPIC_MODEL: "MiniMax-M3" });
     expect(catalog.options).toEqual([...STATIC_CLAUDE_MODELS.options, { id: "MiniMax-M3", label: "MiniMax-M3", custom: true }]);
   });
 
   it("tags extra settings models as custom and leaves official rows untagged", () => {
-    const home = mkdtempSync(join(tmpdir(), "dusk-claude-catalog-"));
+    const home = mkdtempSync(join(tmpdir(), "madani-claude-catalog-"));
     scratchDirs.push(home);
     const dir = join(home, ".claude");
     mkdirSync(dir, { recursive: true });
@@ -69,7 +69,7 @@ describe("readClaudeModelCatalog", () => {
   });
 
   it("lists Claude Code's custom model option and non-Claude tier models as custom", () => {
-    const home = mkdtempSync(join(tmpdir(), "dusk-claude-catalog-"));
+    const home = mkdtempSync(join(tmpdir(), "madani-claude-catalog-"));
     scratchDirs.push(home);
     const dir = join(home, ".claude");
     mkdirSync(dir, { recursive: true });
@@ -96,7 +96,7 @@ describe("readClaudeModelCatalog", () => {
   });
 
   it("lists a newer Anthropic model from extraModels with the official rows, not as custom", () => {
-    const home = mkdtempSync(join(tmpdir(), "dusk-claude-catalog-"));
+    const home = mkdtempSync(join(tmpdir(), "madani-claude-catalog-"));
     scratchDirs.push(home);
     const dir = join(home, ".claude");
     mkdirSync(dir, { recursive: true });
@@ -116,7 +116,7 @@ describe("readClaudeModelCatalog", () => {
   });
 
   it.each(["settings", "instance"])("keeps an official-looking model override custom for a compatible endpoint in %s", (source) => {
-    const home = mkdtempSync(join(tmpdir(), "dusk-claude-compatible-"));
+    const home = mkdtempSync(join(tmpdir(), "madani-claude-compatible-"));
     scratchDirs.push(home);
     const dir = join(home, ".claude");
     mkdirSync(dir, { recursive: true });
@@ -137,7 +137,7 @@ describe("readClaudeModelCatalog", () => {
   });
 
   it("keeps official-looking availableModels and customModels custom", () => {
-    const home = mkdtempSync(join(tmpdir(), "dusk-claude-custom-catalog-"));
+    const home = mkdtempSync(join(tmpdir(), "madani-claude-custom-catalog-"));
     scratchDirs.push(home);
     const dir = join(home, ".claude");
     mkdirSync(dir, { recursive: true });
@@ -151,7 +151,7 @@ describe("readClaudeModelCatalog", () => {
   });
 
   it("does not list settings.model as a Custom leftover", () => {
-    const home = mkdtempSync(join(tmpdir(), "dusk-claude-leftover-"));
+    const home = mkdtempSync(join(tmpdir(), "madani-claude-leftover-"));
     scratchDirs.push(home);
     const dir = join(home, ".claude");
     mkdirSync(dir, { recursive: true });
@@ -166,7 +166,7 @@ describe("readClaudeModelCatalog", () => {
 
 describe("ClaudeDriver catalog", () => {
   it.each([false, true])("offers Haiku 5.5 after discovery (existing installation: %s)", async (existing) => {
-    const home = mkdtempSync(join(tmpdir(), "dusk-claude-haiku-"));
+    const home = mkdtempSync(join(tmpdir(), "madani-claude-haiku-"));
     scratchDirs.push(home);
     const instanceId = "claude-haiku-catalog";
     if (existing) {
@@ -199,7 +199,7 @@ describe("ClaudeDriver catalog", () => {
   });
 
   it("loads extras when the instance is created", async () => {
-    const home = mkdtempSync(join(tmpdir(), "dusk-claude-instance-"));
+    const home = mkdtempSync(join(tmpdir(), "madani-claude-instance-"));
     scratchDirs.push(home);
     const dir = join(home, ".claude");
     mkdirSync(dir, { recursive: true });

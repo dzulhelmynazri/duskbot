@@ -4,8 +4,8 @@ import { desktopCapabilitiesNow } from "./desktop";
 import { fishSpeech, type SpeechBridge } from "./fish-speech";
 
 /** The speech bridge this computer listens through: the page's own Fish Audio listener, or the desktop app's helper. */
-export function speechBridge(): SpeechBridge | Window["duskDesktop"] {
-  return desktopCapabilitiesNow().dictation.engine === "fish-audio" ? fishSpeech : globalThis.window?.duskDesktop;
+export function speechBridge(): SpeechBridge | Window["madaniDesktop"] {
+  return desktopCapabilitiesNow().dictation.engine === "fish-audio" ? fishSpeech : globalThis.window?.madaniDesktop;
 }
 
 /** Whether the bot's server can turn a clip into text: a Fish Audio key, or any other listening key it reports. */

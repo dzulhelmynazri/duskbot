@@ -8,7 +8,7 @@ import { StepArt, StepFrame } from "./onboarding/FunnelSteps";
 
 export function NoEngines() {
   const { refreshInstances } = useStore();
-  const remoteClient = window.duskDesktop?.remoteClient?.active === true;
+  const remoteClient = window.madaniDesktop?.remoteClient?.active === true;
   const [rechecking, setRechecking] = useState(false);
   const [more, setMore] = useState(false);
   const recheck = async () => {

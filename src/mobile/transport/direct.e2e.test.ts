@@ -1,8 +1,8 @@
 // the phone's whole way to its server, in node: the real link service as the relay, the real link agent (its tunnel and
-// its phone hub) in front of a stand-in dusk bot server, and the phone's own transport (relay.ts + direct.ts) with
+// its phone hub) in front of a stand-in madani bot server, and the phone's own transport (relay.ts + direct.ts) with
 // node-datachannel's RTCPeerConnection standing in for the webview's. signaling rides the phone's sealed relay channel,
 // requests ride the data channel, and a cut channel sends what is safe to send again over the relay.
-// DUSK_PHONE_CHAOS=<seconds> runs a longer chaos run; it prints the split either way.
+// MADANI_PHONE_CHAOS=<seconds> runs a longer chaos run; it prints the split either way.
 import { createHash, randomBytes } from "node:crypto";
 import { createServer, type Server } from "node:http";
 import type { AddressInfo } from "node:net";
@@ -123,8 +123,8 @@ describe("the phone reaches its server direct first (link service, link agent, n
   });
 
   it("chaos: a cut channel moves requests to the relay at once and the link comes back direct", { timeout: 180_000 }, async () => {
-    const seconds = Number(process.env.DUSK_PHONE_CHAOS) || 8;
-    const every = Number(process.env.DUSK_PHONE_CHAOS_CUT_MS) || 2000;
+    const seconds = Number(process.env.MADANI_PHONE_CHAOS) || 8;
+    const every = Number(process.env.MADANI_PHONE_CHAOS_CUT_MS) || 2000;
     const f = await fixture();
     await until(() => f.phone.direct!.ready());
     const tally = { direct: { n: 0, ms: [] as number[] }, relay: { n: 0, ms: [] as number[] }, failed: 0, failedSmall: 0, bytes: 0 };
@@ -164,7 +164,7 @@ describe("the phone reaches its server direct first (link service, link agent, n
   });
 
   it("a server with direct links off answers the offer with a refusal, and the phone stays on the relay", { timeout: 30_000 }, async () => {
-    vi.stubEnv("DUSK_LINK_DIRECT", "off");
+    vi.stubEnv("MADANI_LINK_DIRECT", "off");
     const f = await fixture();
     expect((await f.get("/api/one")).status).toBe(200);
     await until(() => f.phone.direct!.state() === "waiting");

@@ -4,8 +4,8 @@
   "title": "LinkedIn AI assistant for post reviews, not inbox outreach",
   "nav": "linkedin",
   "h1": "a linkedin assistant for posts worth reading",
-  "description": "See what a dusk bot can do in LinkedIn: draft and publish posts, read page stats and company details. No inbox messages or connection requests.",
-  "answer": "**turn a useful customer question into your next linkedin post.** a dusk bot can draft in chat, publish posts and read named posts, company details and selected statistics. as of 12 november 2026, the toolkit has 29 actions. it has no inbox messaging, connection requests or general people search. give it the source posts and choose the ai you already sign in to.",
+  "description": "See what a madani bot can do in LinkedIn: draft and publish posts, read page stats and company details. No inbox messages or connection requests.",
+  "answer": "**turn a useful customer question into your next linkedin post.** a madani bot can draft in chat, publish posts and read named posts, company details and selected statistics. as of 12 november 2026, the toolkit has 29 actions. it has no inbox messaging, connection requests or general people search. give it the source posts and choose the ai you already sign in to.",
   "tags": [
     "professional-social",
     "publishing",
@@ -68,7 +68,7 @@
     ],
     "setup": "**start by asking which account is connected.** connect linkedin, confirm the identity and give the bot reading access. add the post links or company you want reviewed. private company stats still depend on what your linkedin account can see."
   },
-  "routines_intro": "**get the page review before the meeting and the draft before you need to post.** these jobs work from named posts and companies, with proposed copy kept in dusk. they need no feed reader or inbox watcher.",
+  "routines_intro": "**get the page review before the meeting and the draft before you need to post.** these jobs work from named posts and companies, with proposed copy kept in madani. they need no feed reader or inbox watcher.",
   "routines": [
     {
       "name": "page review before the team meeting",
@@ -95,7 +95,7 @@
     "**no connection requests or general people search.** ad targeting search doesn't replace either one.",
     "**no full feed or comment-inbox digest.** you can read named posts and reactions, and create comments. there's no general feed reader or comment list.",
     "**no linkedin event triggers.** use scheduled reads rather than promising instant alerts.",
-    "**no local review while your computer sleeps.** dusk cloud keeps schedules running with your desktop off."
+    "**no local review while your computer sleeps.** madani cloud keeps schedules running with your desktop off."
   ],
   "sections": [
     {
@@ -114,7 +114,7 @@
     },
     {
       "q": "can claude write my linkedin posts?",
-      "a": "**yes. ask a dusk bot to draft in chat.** choose the ai and provide approved facts and source posts. publishing uses a separate action if you allow it later."
+      "a": "**yes. ask a madani bot to draft in chat.** choose the ai and provide approved facts and source posts. publishing uses a separate action if you allow it later."
     },
     {
       "q": "can it monitor every new comment automatically?",
@@ -123,15 +123,15 @@
   ],
   "sources": [
     {
-      "label": "dusk bot docs: files and apps",
+      "label": "madani bot docs: files and apps",
       "url": "/docs/files-and-apps"
     },
     {
-      "label": "dusk bot docs: routines",
+      "label": "madani bot docs: routines",
       "url": "/docs/routines"
     },
     {
-      "label": "dusk bot docs: permissions and sends",
+      "label": "madani bot docs: permissions and sends",
       "url": "/docs/computer"
     }
   ],
@@ -151,7 +151,7 @@
       "connect linkedin as read only",
       "ask the bot to confirm the account",
       "give it one post to review",
-      "ask for a follow-up draft in dusk chat only"
+      "ask for a follow-up draft in madani chat only"
     ]
   },
   "mistakes": [

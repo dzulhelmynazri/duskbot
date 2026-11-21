@@ -31,7 +31,7 @@ import type { WebhookManager } from "./webhooks.ts";
 import { restorePaths, validRelative } from "./workspace-backup-paths.ts";
 
 /** Where both servers name their own data folder when they compare a definition, so one moved keeps its hash. */
-const SHARED_ROOT = "/dusk-data";
+const SHARED_ROOT = "/madani-data";
 const FINISHED = new Set(["completed", "failed", "cancelled", "missed"]);
 const KIND_BODY_MAX = 8 * 1024 * 1024;
 const ROUTINE_FIELDS = ["name", "prompt", "target", "botId", "groupId", "runOn", "schedule", "durationMinutes", "timeoutMinutes", "attachments", "continuity",

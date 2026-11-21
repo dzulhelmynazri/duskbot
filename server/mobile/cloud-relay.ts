@@ -1,4 +1,4 @@
-// A dusk cloud's own phone relay: the same supervisor and link agent hub a desktop runs, in the server's own process, on
+// A madani cloud's own phone relay: the same supervisor and link agent hub a desktop runs, in the server's own process, on
 // a tunnel made with the link grant the account service sends with each entitlement push.
 //
 // Security invariant: the tunnel token and the hub's X25519 key stay in `phone-relay.json` in the cloud's data folder,
@@ -35,7 +35,7 @@ export function startCloudPhoneRelay(options: CloudPhoneRelayOptions) {
   let grant: { value: string; at: number } | null = null;
   const fresh = () => (grant && now() - grant.at < GRANT_FRESH_MS ? grant.value : null);
   const relay = createPhoneRelay({
-    base: (env.DUSK_LINK_BASE || PHONE_RELAY_BASE).replace(/\/+$/, ""),
+    base: (env.MADANI_LINK_BASE || PHONE_RELAY_BASE).replace(/\/+$/, ""),
     wanted: () => true,
     signedIn: () => Boolean(fresh()),
     linkGrant: async () => { const value = fresh(); grant = null; return value; },

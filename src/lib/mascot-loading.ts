@@ -11,7 +11,7 @@ export type LoadingFace = LoadingMood | "sleeping" | "waking" | "happy";
 export const LOADING_CREW = ["goo", "kit", "pip", "mochi", "boxo"] as const;
 export type LoadingCrew = (typeof LOADING_CREW)[number];
 
-const LAST_COLOUR = "dusk.loading.colour";
+const LAST_COLOUR = "madani.loading.colour";
 // white eyes on a yellow body read too faintly at loading size
 const PALE = new Set<MausColor>(["yellow"]);
 
@@ -62,7 +62,7 @@ function handedByDesktop(): unknown {
   if (typeof window === "undefined") return null;
   const held = (window as unknown as Record<string, unknown>)[HANDED_KEY];
   if (held) return held;
-  try { return window.duskDesktop?.workspaces?.takeLook?.() ?? null; } catch { return null; }
+  try { return window.madaniDesktop?.workspaces?.takeLook?.() ?? null; } catch { return null; }
 }
 
 /** A switch of place began: the same mascot waits again from the start, hopping in as on launch. */

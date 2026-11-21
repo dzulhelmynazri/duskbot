@@ -3,7 +3,7 @@
 // answer can take a while; until a card's engine has a real answer, the card shows what it last showed.
 import type { AiTileId } from "./funnel";
 
-const KEY = "dusk:ai-connected";
+const KEY = "madani:ai-connected";
 const CHECKING = /^Checking engine status$/;
 
 type Snapshot = { state: string; reason?: string };

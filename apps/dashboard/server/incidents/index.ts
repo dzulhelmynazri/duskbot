@@ -56,7 +56,7 @@ export interface IncidentsOptions {
   mailers: Mailer[];
   email: EmailConfig;
   panelUrl: string;
-  /** false records incidents but sends no email (DUSK_ALERTS=off, or development) */
+  /** false records incidents but sends no email (MADANI_ALERTS=off, or development) */
   mail: boolean;
   now?: () => number;
   /** off in tests, which call tick() themselves */
@@ -207,7 +207,7 @@ export function createIncidents(options: IncidentsOptions) {
     for (const entry of dirty) entry.unsaved = 0;
     saving = store.record(batch).catch((error: unknown) => {
       for (const [index, entry] of dirty.entries()) entry.unsaved += batch[index]!.add;
-      // why, masked: without it nine of these on dusk.bot (2026-11-12) said nothing anyone could act on
+      // why, masked: without it nine of these on madani.bot (2026-11-12) said nothing anyone could act on
       log(`incidents could not be saved (${failure(error)}); they are kept in memory and tried again`);
     }).finally(() => { saving = null; });
     return saving;

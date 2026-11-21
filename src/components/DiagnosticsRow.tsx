@@ -15,11 +15,11 @@ export function DiagnosticsRow({ simple = false }: { simple?: boolean }) {
   const [folder, setFolder] = useState<string | null>(null);
 
   const exportDiagnostics = async () => {
-    if (!window.duskDesktop?.exportDiagnostics || exporting) return;
+    if (!window.madaniDesktop?.exportDiagnostics || exporting) return;
     setExporting(true);
     setResult(null);
     try {
-      const path = await window.duskDesktop.exportDiagnostics();
+      const path = await window.madaniDesktop.exportDiagnostics();
       if (path) setResult({ kind: "success", message: t("settings.diagnostics.saved", { path }) });
     } catch (e) {
       setResult({ kind: "error", message: friendlyError(e) });
@@ -29,10 +29,10 @@ export function DiagnosticsRow({ simple = false }: { simple?: boolean }) {
   };
 
   const openLogs = async () => {
-    if (!window.duskDesktop?.openLogsFolder) return;
+    if (!window.madaniDesktop?.openLogsFolder) return;
     setResult(null);
     try {
-      const opened = await window.duskDesktop.openLogsFolder();
+      const opened = await window.madaniDesktop.openLogsFolder();
       setFolder(opened.folder);
       if (!opened.opened) setResult({ kind: "error", message: t("settings.diagnostics.openFailed", { folder: opened.folder }) });
     } catch (e) {
@@ -41,7 +41,7 @@ export function DiagnosticsRow({ simple = false }: { simple?: boolean }) {
   };
 
   // My Cloud's page in the app, or a browser: this computer's logs are not reachable from here.
-  const here = Boolean(window.duskDesktop?.exportDiagnostics);
+  const here = Boolean(window.madaniDesktop?.exportDiagnostics);
   return (
     <SettingRow
       title={t("settings.diagnostics.title")}
@@ -55,7 +55,7 @@ export function DiagnosticsRow({ simple = false }: { simple?: boolean }) {
       </>}
     >
       {here && <div className="flex flex-wrap gap-2">
-        {window.duskDesktop?.openLogsFolder && <button type="button" onClick={() => void openLogs()} className="ui-button">{t("settings.diagnostics.openLogs")}</button>}
+        {window.madaniDesktop?.openLogsFolder && <button type="button" onClick={() => void openLogs()} className="ui-button">{t("settings.diagnostics.openLogs")}</button>}
         <button
           onClick={() => void exportDiagnostics()}
           disabled={exporting}

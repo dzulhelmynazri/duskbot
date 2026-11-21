@@ -33,7 +33,7 @@ const voices = [
 beforeEach(() => {
   vi.stubGlobal("localStorage", memoryStorage());
   vi.stubGlobal("window", {
-    duskDesktop: { platform: "darwin", remoteClient: { active: true } },
+    madaniDesktop: { platform: "darwin", remoteClient: { active: true } },
     SpeechSynthesisUtterance: class {},
     speechSynthesis: { getVoices: () => voices },
   });
@@ -65,7 +65,7 @@ describe("paired desktop voice preferences", () => {
 
   it("never offers Mac voices on a Windows client", () => {
     vi.stubGlobal("window", {
-      duskDesktop: { platform: "win32", remoteClient: { active: true } },
+      madaniDesktop: { platform: "win32", remoteClient: { active: true } },
       SpeechSynthesisUtterance: class {},
       speechSynthesis: { getVoices: () => voices },
     });

@@ -45,7 +45,7 @@ describe("growth admin role", () => {
   const csrf = new Map<string, string>();
 
   beforeEach(async () => {
-    dataDir = mkdtempSync(join(tmpdir(), "dusk-growth-admin-test-"));
+    dataDir = mkdtempSync(join(tmpdir(), "madani-growth-admin-test-"));
     time = Date.parse("2026-11-12T12:00:00Z");
     mailer = memoryMailer();
     sink = memorySink(() => time);
@@ -71,7 +71,7 @@ describe("growth admin role", () => {
     const method = init.method ?? (init.body === undefined ? "GET" : "POST");
     const body = init.body ?? (method === "GET" || method === "HEAD" ? undefined : {});
     return fetch(`${url}${path}`, { method, headers: { origin, ...(body === undefined ? {} : { "content-type": "application/json" }),
-      "x-dusk-admin-tests": "show", "x-dusk-admin-money": "all", ...(init.cookie ? { cookie: init.cookie, [CSRF_HEADER]: csrf.get(init.cookie) ?? "" } : {}) },
+      "x-madani-admin-tests": "show", "x-madani-admin-money": "all", ...(init.cookie ? { cookie: init.cookie, [CSRF_HEADER]: csrf.get(init.cookie) ?? "" } : {}) },
       ...(body === undefined ? {} : { body: JSON.stringify(body) }) });
   }
   async function login(email: string) {
@@ -125,7 +125,7 @@ describe("growth admin role", () => {
     expect(audit.entries.some(entry => entry.action === "admin.role.grant" && entry.target === growthId)).toBe(true);
   });
 
-  it("takes the role from DUSK_GROWTH_ADMIN_EMAILS without a grant, still limited", async () => {
+  it("takes the role from MADANI_GROWTH_ADMIN_EMAILS without a grant, still limited", async () => {
     app.close();
     await new Promise<void>(resolve => { server.close(() => resolve()); server.closeAllConnections(); });
     app = createDashboardApp({ dataDir, publicUrl: origin, mailer, staticDir: null, now: () => time, analytics: { sink, waitlist: null, infra: memoryInfraStore() },

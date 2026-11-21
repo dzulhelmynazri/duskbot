@@ -1,7 +1,7 @@
 apply plugin: 'com.android.application'
 
 // release signing: the upload key comes from the environment or ~/.gradle/gradle.properties, never from the repo.
-// without all four values the release build is left unsigned (scripts/build-android-release.sh fills them from dusk.env)
+// without all four values the release build is left unsigned (scripts/build-android-release.sh fills them from madani.env)
 def releaseValue = { String name ->
     def value = System.getenv(name)
     if (!value && project.hasProperty(name)) value = project.property(name)
@@ -12,18 +12,18 @@ def uploadSigning = uploadKeystore && file(uploadKeystore).exists() &&
         releaseValue('ANDROID_UPLOAD_KEY_ALIAS') && releaseValue('ANDROID_UPLOAD_STORE_PASSWORD') && releaseValue('ANDROID_UPLOAD_KEY_PASSWORD')
 
 android {
-    namespace = "bot.dusk.mobile"
+    namespace = "bot.madani.mobile"
     compileSdk = rootProject.ext.compileSdkVersion
     defaultConfig {
-        applicationId "bot.dusk.mobile"
+        applicationId "bot.madani.mobile"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        // every Play upload needs a higher versionCode: DUSK_ANDROID_VERSION_CODE=2 scripts/build-android-release.sh
-        versionCode((releaseValue('DUSK_ANDROID_VERSION_CODE') ?: '1') as int)
-        versionName releaseValue('DUSK_ANDROID_VERSION_NAME') ?: "1.0"
+        // every Play upload needs a higher versionCode: MADANI_ANDROID_VERSION_CODE=2 scripts/build-android-release.sh
+        versionCode((releaseValue('MADANI_ANDROID_VERSION_CODE') ?: '1') as int)
+        versionName releaseValue('MADANI_ANDROID_VERSION_NAME') ?: "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-        // the sideload apk carries phone cpus only (DUSK_ANDROID_ABIS=arm64-v8a,armeabi-v7a); the Play bundle keeps all
-        def abis = releaseValue('DUSK_ANDROID_ABIS')
+        // the sideload apk carries phone cpus only (MADANI_ANDROID_ABIS=arm64-v8a,armeabi-v7a); the Play bundle keeps all
+        def abis = releaseValue('MADANI_ANDROID_ABIS')
         if (abis) ndk { abiFilters(*abis.split(',')) }
         aaptOptions {
              // Files and dirs to omit from the packaged assets dir, modified to accommodate modern web apps.

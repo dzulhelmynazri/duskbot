@@ -1,10 +1,10 @@
 # Edge for one My Cloud home on an InstaBox machine (apps/cloud-service/docs/provider.md). InstaBox's public port proxy
 # terminates TLS for its hosted name and reaches this machine on :8080; people reach it as https://<label>.<public domain>.
-# The dusk bot server listens only on 127.0.0.1, and
+# The madani bot server listens only on 127.0.0.1, and
 # every request forwarded to it carries X-Forwarded-*, so it is never the loopback owner (server/request-auth.ts): a
 # remote client needs a paired session.
 #
-# DUSK_CLOUD_EDGE_HOLD: how long a request waits for the server while it starts after a resume, instead of a 502.
+# MADANI_CLOUD_EDGE_HOLD: how long a request waits for the server while it starts after a resume, instead of a 502.
 {
 	admin off
 	auto_https off
@@ -12,9 +12,9 @@
 	servers {
 		# Only these peers may name the real client, in this header (the launcher sets both:
 		# server/cloud-home-start.ts). The address feeds the pairing lockout, never authorization.
-		trusted_proxies static {$DUSK_CLOUD_EDGE_TRUSTED_PROXIES}
+		trusted_proxies static {$MADANI_CLOUD_EDGE_TRUSTED_PROXIES}
 		trusted_proxies_strict
-		client_ip_headers {$DUSK_CLOUD_EDGE_CLIENT_IP_HEADER}
+		client_ip_headers {$MADANI_CLOUD_EDGE_CLIENT_IP_HEADER}
 	}
 }
 
@@ -26,19 +26,19 @@
 	@proxied {
 		remote_ip 127.0.0.1/32 ::1/128
 		host 127.0.0.1 localhost
-		header X-Forwarded-Host {$DUSK_CLOUD_PUBLIC_HOST}
-		header X-Forwarded-Host {$DUSK_CLOUD_UPSTREAM_HOST}
+		header X-Forwarded-Host {$MADANI_CLOUD_PUBLIC_HOST}
+		header X-Forwarded-Host {$MADANI_CLOUD_UPSTREAM_HOST}
 	}
 	request_header @proxied Host {http.request.header.X-Forwarded-Host}
 	# InstaBox's port proxy puts its own hosted name in X-Forwarded-Host, replacing the public edge's (seen live
 	# 2026-11-12), while browsers send the public name as Origin: the server must see the public name, or it refuses every
 	# change a signed-in page makes as cross-origin (server/request-auth.ts isSameOrigin).
-	@upstream host {$DUSK_CLOUD_UPSTREAM_HOST}
-	request_header @upstream Host {$DUSK_CLOUD_PUBLIC_HOST}
+	@upstream host {$MADANI_CLOUD_UPSTREAM_HOST}
+	request_header @upstream Host {$MADANI_CLOUD_PUBLIC_HOST}
 
 	handle /api/health {
 		reverse_proxy 127.0.0.1:8799 {
-			lb_try_duration {$DUSK_CLOUD_EDGE_HOLD:0s}
+			lb_try_duration {$MADANI_CLOUD_EDGE_HOLD:0s}
 			lb_try_interval 50ms
 			header_up X-Forwarded-Proto https
 			header_up X-Forwarded-For {client_ip}
@@ -47,12 +47,12 @@
 
 	# Everything else answers only for this machine's own names: the public one, and the provider's hosted name the
 	# public edge (apps/cloud-service/edge/worker.js) forwards to.
-	@home host {$DUSK_CLOUD_PUBLIC_HOST} {$DUSK_CLOUD_UPSTREAM_HOST}
+	@home host {$MADANI_CLOUD_PUBLIC_HOST} {$MADANI_CLOUD_UPSTREAM_HOST}
 	handle @home {
 		# Webhook ingress has its own per-hook secrets.
 		handle /hooks/* {
 			reverse_proxy 127.0.0.1:8800 {
-				lb_try_duration {$DUSK_CLOUD_EDGE_HOLD:0s}
+				lb_try_duration {$MADANI_CLOUD_EDGE_HOLD:0s}
 				lb_try_interval 50ms
 				header_up X-Forwarded-Proto https
 				header_up X-Forwarded-For {client_ip}
@@ -60,7 +60,7 @@
 		}
 		handle {
 			reverse_proxy 127.0.0.1:8799 {
-				lb_try_duration {$DUSK_CLOUD_EDGE_HOLD:0s}
+				lb_try_duration {$MADANI_CLOUD_EDGE_HOLD:0s}
 				lb_try_interval 50ms
 				header_up X-Forwarded-Proto https
 				header_up X-Forwarded-For {client_ip}

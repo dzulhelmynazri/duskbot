@@ -1,11 +1,11 @@
 #!/usr/bin/env node
 // one email when a backup set starts failing and one when it works again, nothing in between; an email that fails to
-// send is retried on the next run for up to three days. run by dusk-backup@<set>.service as ExecStopPost, which
+// send is retried on the next run for up to three days. run by madani-backup@<set>.service as ExecStopPost, which
 // gets SERVICE_RESULT from systemd.
-//   argv[2]                 the set name (dusk, make)
-//   DUSK_BACKUP_ALERT_ENV   file with DUSK_BREVO_API_KEY (DUSK_RESEND_API_KEY), DUSK_ALERT_TO, DUSK_ALERT_FROM
-//                           (default /etc/dusk-backup/alert.env), read here so the backup itself never holds the key
-//   DUSK_BACKUP_STATE       state folder (default /var/lib/dusk-backup)
+//   argv[2]                 the set name (madani, make)
+//   MADANI_BACKUP_ALERT_ENV   file with MADANI_BREVO_API_KEY (MADANI_RESEND_API_KEY), MADANI_ALERT_TO, MADANI_ALERT_FROM
+//                           (default /etc/madani-backup/alert.env), read here so the backup itself never holds the key
+//   MADANI_BACKUP_STATE       state folder (default /var/lib/madani-backup)
 import { execFileSync } from "node:child_process";
 import { existsSync, mkdirSync, readFileSync, renameSync, writeFileSync } from "node:fs";
 import { pathToFileURL } from "node:url";
@@ -21,7 +21,7 @@ export function decide(state, ok, time) {
 
 const days = ms => { const h = Math.round(ms / 3_600_000); return h < 48 ? `${h}h` : `${Math.round(h / 24)} days`; };
 
-const EMAIL_CFG = { assets: "https://dusk.bot/email", site: "https://dusk.bot", app: "https://dusk.bot/dashboard", address: null };
+const EMAIL_CFG = { assets: "https://madani.bot/email", site: "https://madani.bot", app: "https://madani.bot/dashboard", address: null };
 
 /** `render` is the shared email layout when it loads; without it the email is the plain text in a pre */
 export function message(kind, set, { log = "", downFor = 0, host = "the contabo vps", render = null } = {}) {
@@ -29,12 +29,12 @@ export function message(kind, set, { log = "", downFor = 0, host = "the contabo 
   const subject = failed ? `backup failed: ${set}` : `backups work again: ${set}`;
   const intro = failed ? `the daily ${set} backup on ${host} failed. this is the only email until it works again; then you get one more.`
     : `the ${set} backup on ${host} works again after ${days(downFor)}.`;
-  const command = `journalctl -u dusk-backup@${set} -n 50`;
+  const command = `journalctl -u madani-backup@${set} -n 50`;
   if (render) return render(EMAIL_CFG, { subject, preheader: intro.slice(0, 120), tag: "backup", say: failed ? "uh oh, a backup failed" : "phew, backups work again",
     accent: failed ? "pink" : "lime", status: failed ? ["failed", "bad"] : ["working", "ok"],
     blocks: [{ t: "h1", text: subject }, { t: "p", text: intro }, { t: "facts", rows: [["set", set], ["host", host]] },
       ...(failed ? [{ t: "label", text: "see what happened" }, { t: "cmd", text: command }, ...(log ? [{ t: "label", text: "last lines" }, { t: "log", text: log }] : [])] : [])],
-    reason: "owner alert for dusk bot backups. one email per incident." });
+    reason: "owner alert for madani bot backups. one email per incident." });
   const text = (failed ? [intro, `see: ${command}`, ...(log ? ["last lines:", log] : [])] : [intro]).join("\n\n");
   return { subject, text, html: `<pre style="font-family:ui-monospace,monospace;white-space:pre-wrap">${text.replace(/[&<>]/g, ch => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" })[ch])}</pre>` };
 }
@@ -49,13 +49,13 @@ function lastLog() {
 async function main() {
   const set = process.argv[2];
   if (!/^[a-z0-9-]+$/.test(set ?? "")) throw new Error("usage: backup-alert.mjs <set>");
-  const envFile = process.env.DUSK_BACKUP_ALERT_ENV || "/etc/dusk-backup/alert.env";
+  const envFile = process.env.MADANI_BACKUP_ALERT_ENV || "/etc/madani-backup/alert.env";
   if (existsSync(envFile)) process.loadEnvFile(envFile);
   const { settings, deliver, layout } = await import(new URL("./uptime-check.mjs", import.meta.url).href);
   const cfg = settings();
   const render = await layout();
 
-  const dir = process.env.DUSK_BACKUP_STATE || "/var/lib/dusk-backup";
+  const dir = process.env.MADANI_BACKUP_STATE || "/var/lib/madani-backup";
   mkdirSync(dir, { recursive: true, mode: 0o700 });
   const file = `${dir}/alert-${set}.json`;
   let saved;

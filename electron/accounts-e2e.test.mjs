@@ -35,7 +35,7 @@ describe("accounts across the website, desktop, workspace and phone", () => {
   const untrustedGoogle = () => providers.setUser("google", { subject: "google-held", email: "held@company.test", emailVerified: true, label: "held fixture", name: "held fixture" });
   afterAll(async () => { await providers?.close(); });
   beforeEach(async () => {
-    f = { dir: mkdtempSync(join(tmpdir(), "dusk-accounts-e2e-")), cleanup: [], secrets: new Set(), offset: 0, mailer: memoryMailer() };
+    f = { dir: mkdtempSync(join(tmpdir(), "madani-accounts-e2e-")), cleanup: [], secrets: new Set(), offset: 0, mailer: memoryMailer() };
     f.now = () => Date.now() + f.offset;
     f.resend = () => { f.offset += EMAIL_RESEND_SECONDS * 1000; };
     f.server = createServer();
@@ -112,7 +112,7 @@ describe("accounts across the website, desktop, workspace and phone", () => {
       let url = new URL(path, f.url), init = {};
       for (let hop = 0; hop < 12; hop++) {
         url = appLink(url);
-        if (url.protocol === "duskbot:" || (url.origin === f.url && ["/", "/sign-in", "/cloud/desktop"].includes(url.pathname))) return url;
+        if (url.protocol === "madanibot:" || (url.origin === f.url && ["/", "/sign-in", "/cloud/desktop"].includes(url.pathname))) return url;
         const response = await request(url, init);
         if ([302, 303].includes(response.status)) {
           url = new URL(response.headers.get("location"), url); init = {}; await response.body?.cancel();
@@ -151,7 +151,7 @@ describe("accounts across the website, desktop, workspace and phone", () => {
     const response = await jar.json("/v1/workspaces"); expect(response.status).toBe(200); return (await response.json()).workspaces;
   }
   async function desktop() {
-    const target = cloudTarget({ DUSK_CLOUD_ORIGIN: f.url });
+    const target = cloudTarget({ MADANI_CLOUD_ORIGIN: f.url });
     expect(target.custom).toBe(true); expect(target.file).toBe("cloud-account-custom.bin");
     const d = { saved: null, opened: [], timers: new Map(), nextTimer: 0 };
     d.client = createCloudAccountClient({ origin: target.origin, custom: target.custom, platform: "darwin", deviceName: "Fixture Mac", appVersion: "1.2.3",
@@ -171,7 +171,7 @@ describe("accounts across the website, desktop, workspace and phone", () => {
     const client = createMobileAccount({ origin: f.url, fetch: f.fetch, platform: { secrets, prefs, kind: "ios", native: true,
       deviceName: () => "Fixture iPhone", appVersion: "1.2.3", openExternal: async url => { opened.push(url); } } });
     f.cleanup.push(() => client.signOut());
-    return { client, secrets, prefs, opened, token: () => JSON.parse(secrets.values.get("dusk.account")).token };
+    return { client, secrets, prefs, opened, token: () => JSON.parse(secrets.values.get("madani.account")).token };
   }
   async function phoneSignIn(p, email) {
     expect((await p.client.emailStart(email)).outcome).toBe("sent");
@@ -293,7 +293,7 @@ describe("accounts across the website, desktop, workspace and phone", () => {
     const second = browser(); f.resend(); await webSignIn(second, "second@accounts.test");
     link.enroll.onState(d.client.state());
     await waitFor(() => expect(link.answers).toHaveLength(2));
-    expect(link.answers[1]).toMatchObject({ status: 409, error: expect.stringMatching(/belongs to another dusk bot account/) });
+    expect(link.answers[1]).toMatchObject({ status: 409, error: expect.stringMatching(/belongs to another madani bot account/) });
     expect(link.memory).toMatchObject({ accountId: owner, workspaceId });
     expect(await workspaces(first)).toMatchObject([{ id: workspaceId }]); expect(await workspaces(second)).toEqual([]);
   }, 30_000);
@@ -305,7 +305,7 @@ describe("accounts across the website, desktop, workspace and phone", () => {
     expect(await bearer(emailToken)).toEqual({ status: 401, data: { error: "invalid_token" } });
     await p.client.oauthStart("google");
     const deep = await browser().follow(p.opened.at(-1));
-    expect(deep.protocol).toBe("duskbot:"); expect(deep.host).toBe("auth"); expect(deep.searchParams.has("code")).toBe(true);
+    expect(deep.protocol).toBe("madanibot:"); expect(deep.host).toBe("auth"); expect(deep.searchParams.has("code")).toBe(true);
     expect(await p.client.handleAuthUrl(deep.href)).toEqual({ outcome: "signed-in" });
     // the same account; the service also sends its name and photo (b61175e2f), which the phone does not keep
     expect((await bearer(p.token())).data.account).toMatchObject(p.client.account());
@@ -313,7 +313,7 @@ describe("accounts across the website, desktop, workspace and phone", () => {
     await p.client.oauthStart("google");
     const tampered = await browser().follow(p.opened.at(-1)); tampered.searchParams.set("state", "tampered");
     expect(await p.client.handleAuthUrl(tampered.href)).toEqual({ outcome: "invalid-state" });
-    expect(p.client.account()).toBeNull(); expect(p.secrets.values.has("dusk.account")).toBe(false);
+    expect(p.client.account()).toBeNull(); expect(p.secrets.values.has("madani.account")).toBe(false);
     expect((await bearer(signedToken)).status).toBe(401);
     untrustedGoogle(); await p.client.oauthStart("google");
     const jar = browser(), pendingUrl = await jar.follow(p.opened.at(-1)), pending = pendingUrl.searchParams.get("pending");
@@ -321,7 +321,7 @@ describe("accounts across the website, desktop, workspace and phone", () => {
     expect((await browser().json(R.emailStart, { email: "phone-held@accounts.test", pending })).status).toBe(400);
     const verified = await webSignIn(jar, "phone-held@accounts.test", pending);
     const handedBack = jar.appLink(verified.redirect);
-    expect(handedBack.protocol).toBe("duskbot:");
+    expect(handedBack.protocol).toBe("madanibot:");
     expect(await p.client.handleAuthUrl(handedBack.href)).toEqual({ outcome: "signed-in" });
     expect((await bearer(p.token())).data.account).toMatchObject(p.client.account());
     expect(p.client.account().id).toBe(verified.account.id);
@@ -331,8 +331,8 @@ describe("accounts across the website, desktop, workspace and phone", () => {
   it("gates a desktop only where the install asks for an account, and signs in through sanitized gate IPC", async () => {
     expect(accountGateRequired({ env: {}, packaged: true, remote: false, custom: false }), "the app works signed out").toBe(false);
     for (const custom of [false, true]) {
-      expect(accountGateRequired({ env: { DUSK_REQUIRE_ACCOUNT: "1" }, packaged: true, remote: false, custom })).toBe(true);
-      for (const packaged of [false, true]) expect(accountGateRequired({ env: { DUSK_REQUIRE_ACCOUNT: "1" }, packaged, remote: true, custom })).toBe(false);
+      expect(accountGateRequired({ env: { MADANI_REQUIRE_ACCOUNT: "1" }, packaged: true, remote: false, custom })).toBe(true);
+      for (const packaged of [false, true]) expect(accountGateRequired({ env: { MADANI_REQUIRE_ACCOUNT: "1" }, packaged, remote: true, custom })).toBe(false);
     }
     const d = await desktop(), ipc = fakeIpc(), sent = [];
     const gate = installAccountGate({ ...ipc, client: () => d.client, required: () => true,

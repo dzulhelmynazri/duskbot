@@ -8,7 +8,7 @@ import { botSkillTemplateSchema } from "../new-bot-defaults.ts";
 import { removeTempDir } from "../testing/cleanup.ts";
 import { loadTeamFile, ROOM_BRIEF_MAX_CHARS, serverFolder, SKILL_MAX_BYTES, TEAM_BRIEF_MAX_BYTES } from "./team-file.ts";
 
-const dir = mkdtempSync(join(tmpdir(), "dusk-team-file-"));
+const dir = mkdtempSync(join(tmpdir(), "madani-team-file-"));
 afterAll(() => removeTempDir(dir));
 let n = 0;
 const file = (text: string, name = `team-${++n}.yaml`) => { writeFileSync(join(dir, name), text); return join(dir, name); };

@@ -1,12 +1,12 @@
 // A throwaway InstaBox machine for the own-server flow: made, used over the exec API, always deleted. The key is the
-// preview one from the dusk env file (INSTABOX_API_KEY_PREVIEW, never printed). Cost: the smallest size, minutes long.
+// preview one from the madani env file (INSTABOX_API_KEY_PREVIEW, never printed). Cost: the smallest size, minutes long.
 import { envValue } from "../account.mjs";
 import { until } from "../app.mjs";
 
 const API = "https://api.instabox.sh";
 async function call(method, path, body, headers = {}) {
   const key = envValue("INSTABOX_API_KEY_PREVIEW") ?? envValue("INSTABOX_API_KEY");
-  if (!key) throw new Error("INSTABOX_API_KEY_PREVIEW is not set (dusk env file)");
+  if (!key) throw new Error("INSTABOX_API_KEY_PREVIEW is not set (madani env file)");
   const response = await fetch(`${API}${path}`, { method, headers: { authorization: `Bearer ${key}`, "content-type": "application/json", ...headers }, ...(body === undefined ? {} : { body: JSON.stringify(body) }), signal: AbortSignal.timeout(700_000) });
   const text = await response.text();
   if (!response.ok && !(method === "DELETE" && response.status === 404)) throw new Error(`instabox ${method} ${path.split("?")[0]}: ${response.status} ${text.slice(0, 200)}`);
@@ -14,7 +14,7 @@ async function call(method, path, body, headers = {}) {
 }
 
 export async function createVm(name, { vcpus = 2, memMiB = 4096 } = {}) {
-  await call("POST", "/v1/machines", { name, templateId: "universal", vcpus, memMiB, autoSuspendAfterSeconds: 1800, vault: false, secrets: [], metadata: { "dusk.smoke": "own-server-flow" } }, { "idempotency-key": `create-${name}` });
+  await call("POST", "/v1/machines", { name, templateId: "universal", vcpus, memMiB, autoSuspendAfterSeconds: 1800, vault: false, secrets: [], metadata: { "madani.smoke": "own-server-flow" } }, { "idempotency-key": `create-${name}` });
   const machine = await until(async () => { const m = await call("GET", `/v1/machines/${encodeURIComponent(name)}`); return m?.state === "running" && m?.runtime?.ready && !m?.operationId ? m : false; }, { timeout: 300_000, every: 3_000, what: `InstaBox machine ${name}` });
   const vm = {
     id: machine.id, name,
@@ -28,6 +28,6 @@ export async function createVm(name, { vcpus = 2, memMiB = 4096 } = {}) {
 /** every machine this harness made that is still there (by its metadata), for a cleanup pass */
 export async function leftoverVms() {
   const list = await call("GET", "/v1/machines?limit=100");
-  return (list?.machines ?? []).filter((m) => m.metadata?.["dusk.smoke"] === "own-server-flow");
+  return (list?.machines ?? []).filter((m) => m.metadata?.["madani.smoke"] === "own-server-flow");
 }
 export async function removeVm(id) { await call("DELETE", `/v1/machines/${id}`, undefined, { "x-confirm-delete": id, "idempotency-key": `delete-${id}` }); }

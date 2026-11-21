@@ -1,16 +1,16 @@
 #!/bin/sh
-# encrypted, off-box daily backup of one set (dusk bot, make.design), run as root by dusk-backup@<set>.timer with
-# /etc/dusk-backup/<set>.env (mode 0600, see backup.env.example). every destination gets the same archive.
-#   DUSK_BACKUP_NAME         set name: the archive prefix and the folder under each destination (default dusk-account)
-#   DUSK_BACKUP_PATHS        space-separated folders or files to include; DUSK_DASHBOARD_DATA is added when set
-#   DUSK_BACKUP_EXCLUDE      space-separated rsync patterns left out (full paths like /var/lib/x/cache/, or *.tmp)
-#   DUSK_BACKUP_MONGO_CONFIG a mongodump --config file (uri only, mode 0600): a fresh dump goes in. mongodump only reads.
-#   DUSK_BACKUP_MONGO_DIR    or: the newest finished dump (file or folder) in this folder goes in
-#   DUSK_BACKUP_RECIPIENT    age public key (age1...); only its private half, kept off this box, can open a backup
-#   DUSK_BACKUP_DEST         space-separated rclone destinations, e.g. "oracle-backup:/data r2-backup:dusk-backups"
-#   DUSK_BACKUP_KEEP_DAYS    dailies kept at each destination (default 7)
-#   DUSK_BACKUP_KEEP_WEEKS   sunday copies kept (default 4), so nothing is older than about 28 days
-#   DUSK_BACKUP_KEEP_RUNS    for a set that runs several times a day (default 0, off): every run lands in runs/ and
+# encrypted, off-box daily backup of one set (madani bot, make.design), run as root by madani-backup@<set>.timer with
+# /etc/madani-backup/<set>.env (mode 0600, see backup.env.example). every destination gets the same archive.
+#   MADANI_BACKUP_NAME         set name: the archive prefix and the folder under each destination (default madani-account)
+#   MADANI_BACKUP_PATHS        space-separated folders or files to include; MADANI_DASHBOARD_DATA is added when set
+#   MADANI_BACKUP_EXCLUDE      space-separated rsync patterns left out (full paths like /var/lib/x/cache/, or *.tmp)
+#   MADANI_BACKUP_MONGO_CONFIG a mongodump --config file (uri only, mode 0600): a fresh dump goes in. mongodump only reads.
+#   MADANI_BACKUP_MONGO_DIR    or: the newest finished dump (file or folder) in this folder goes in
+#   MADANI_BACKUP_RECIPIENT    age public key (age1...); only its private half, kept off this box, can open a backup
+#   MADANI_BACKUP_DEST         space-separated rclone destinations, e.g. "oracle-backup:/data r2-backup:madani-backups"
+#   MADANI_BACKUP_KEEP_DAYS    dailies kept at each destination (default 7)
+#   MADANI_BACKUP_KEEP_WEEKS   sunday copies kept (default 4), so nothing is older than about 28 days
+#   MADANI_BACKUP_KEEP_RUNS    for a set that runs several times a day (default 0, off): every run lands in runs/ and
 #                            the newest this many stay; daily/ and weekly/ then take only the first run of each day
 # layout: <dest>/<name>/daily/<name>-<utc time>.tar.gz.age, <dest>/<name>/weekly/... and <dest>/<name>/runs/...
 # restore: rclone copy <dest>/<name>/daily/<file> . && age -d -i backup-age.key <file> | tar -xz -C <empty folder>
@@ -18,25 +18,25 @@
 #          mongorestore --gzip --archive=<file> (into a stopped service's database, --drop to replace)
 set -eu
 
-NAME="${DUSK_BACKUP_NAME:-dusk-account}"
-RECIPIENT="${DUSK_BACKUP_RECIPIENT:?set DUSK_BACKUP_RECIPIENT}"
-DEST="${DUSK_BACKUP_DEST:?set DUSK_BACKUP_DEST}"
-KEEP_DAYS="${DUSK_BACKUP_KEEP_DAYS:-7}"
-KEEP_WEEKS="${DUSK_BACKUP_KEEP_WEEKS:-4}"
-KEEP_RUNS="${DUSK_BACKUP_KEEP_RUNS:-0}"
-PATHS="${DUSK_BACKUP_PATHS:-} ${DUSK_DASHBOARD_DATA:-}"
-case "$NAME" in ''|*[!a-z0-9-]*) echo "DUSK_BACKUP_NAME must be lowercase letters, digits and dashes" >&2; exit 2 ;; esac
-case "$RECIPIENT" in age1*) ;; *) echo "DUSK_BACKUP_RECIPIENT must be an age public key" >&2; exit 2 ;; esac
-for n in "$KEEP_DAYS" "$KEEP_WEEKS" "$KEEP_RUNS"; do case "$n" in ''|*[!0-9]*) echo "DUSK_BACKUP_KEEP_DAYS, _WEEKS and _RUNS must be numbers" >&2; exit 2 ;; esac; done
-[ "$KEEP_DAYS" -ge 1 ] || { echo "DUSK_BACKUP_KEEP_DAYS must be at least 1" >&2; exit 2; }
+NAME="${MADANI_BACKUP_NAME:-madani-account}"
+RECIPIENT="${MADANI_BACKUP_RECIPIENT:?set MADANI_BACKUP_RECIPIENT}"
+DEST="${MADANI_BACKUP_DEST:?set MADANI_BACKUP_DEST}"
+KEEP_DAYS="${MADANI_BACKUP_KEEP_DAYS:-7}"
+KEEP_WEEKS="${MADANI_BACKUP_KEEP_WEEKS:-4}"
+KEEP_RUNS="${MADANI_BACKUP_KEEP_RUNS:-0}"
+PATHS="${MADANI_BACKUP_PATHS:-} ${MADANI_DASHBOARD_DATA:-}"
+case "$NAME" in ''|*[!a-z0-9-]*) echo "MADANI_BACKUP_NAME must be lowercase letters, digits and dashes" >&2; exit 2 ;; esac
+case "$RECIPIENT" in age1*) ;; *) echo "MADANI_BACKUP_RECIPIENT must be an age public key" >&2; exit 2 ;; esac
+for n in "$KEEP_DAYS" "$KEEP_WEEKS" "$KEEP_RUNS"; do case "$n" in ''|*[!0-9]*) echo "MADANI_BACKUP_KEEP_DAYS, _WEEKS and _RUNS must be numbers" >&2; exit 2 ;; esac; done
+[ "$KEEP_DAYS" -ge 1 ] || { echo "MADANI_BACKUP_KEEP_DAYS must be at least 1" >&2; exit 2; }
 
 # one run per set at a time
-exec 9>"/run/lock/dusk-backup-$NAME.lock"
+exec 9>"/run/lock/madani-backup-$NAME.lock"
 flock -n 9 || { echo "another $NAME backup is running" >&2; exit 1; }
 
 started=$(date +%s)
 umask 077
-work=$(mktemp -d /var/tmp/dusk-backup.XXXXXX)
+work=$(mktemp -d /var/tmp/madani-backup.XXXXXX)
 trap 'rm -rf "$work"' EXIT
 stamp=$(date -u +%Y%m%dT%H%M%SZ)
 day="${stamp%%T*}"
@@ -46,7 +46,7 @@ parts=""
 # the services write each file by rename, so a copy holds whole files and keeps tar from reading a moving tree
 set -f
 excludes=""
-for pattern in ${DUSK_BACKUP_EXCLUDE:-}; do excludes="$excludes --exclude=$pattern"; done
+for pattern in ${MADANI_BACKUP_EXCLUDE:-}; do excludes="$excludes --exclude=$pattern"; done
 for path in $PATHS; do
   [ -e "$path" ] || { echo "missing $path" >&2; exit 1; }
   mkdir -p "$work/files"
@@ -57,20 +57,20 @@ for path in $PATHS; do
 done
 set +f
 
-if [ -n "${DUSK_BACKUP_MONGO_CONFIG:-}" ]; then
+if [ -n "${MADANI_BACKUP_MONGO_CONFIG:-}" ]; then
   mkdir "$work/mongo"
-  mongodump --quiet --config "$DUSK_BACKUP_MONGO_CONFIG" --gzip --archive="$work/mongo/$NAME.archive.gz"
+  mongodump --quiet --config "$MADANI_BACKUP_MONGO_CONFIG" --gzip --archive="$work/mongo/$NAME.archive.gz"
   parts="$parts mongo"
-elif [ -n "${DUSK_BACKUP_MONGO_DIR:-}" ]; then
-  [ -d "$DUSK_BACKUP_MONGO_DIR" ] || { echo "no mongodump folder at $DUSK_BACKUP_MONGO_DIR" >&2; exit 1; }
+elif [ -n "${MADANI_BACKUP_MONGO_DIR:-}" ]; then
+  [ -d "$MADANI_BACKUP_MONGO_DIR" ] || { echo "no mongodump folder at $MADANI_BACKUP_MONGO_DIR" >&2; exit 1; }
   # a dump younger than 30 minutes may still be being written
-  dump=$(find "$DUSK_BACKUP_MONGO_DIR" -mindepth 1 -maxdepth 1 -mmin +30 ! -name '*.tmp' -exec ls -1dt {} + | head -n 1)
-  [ -n "$dump" ] || { echo "no finished mongodump in $DUSK_BACKUP_MONGO_DIR" >&2; exit 1; }
+  dump=$(find "$MADANI_BACKUP_MONGO_DIR" -mindepth 1 -maxdepth 1 -mmin +30 ! -name '*.tmp' -exec ls -1dt {} + | head -n 1)
+  [ -n "$dump" ] || { echo "no finished mongodump in $MADANI_BACKUP_MONGO_DIR" >&2; exit 1; }
   mkdir "$work/mongo"
   cp -a "$dump" "$work/mongo/"
   parts="$parts mongo"
 fi
-[ -n "$parts" ] || { echo "nothing to back up: set DUSK_BACKUP_PATHS or a mongo source" >&2; exit 2; }
+[ -n "$parts" ] || { echo "nothing to back up: set MADANI_BACKUP_PATHS or a mongo source" >&2; exit 2; }
 
 # shellcheck disable=SC2086
 tar -C "$work" -czf - $parts | age -r "$RECIPIENT" -o "$work/$file"

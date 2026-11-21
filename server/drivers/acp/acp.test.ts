@@ -85,8 +85,8 @@ const ClassifiedErrorDriver = createAcpDriver({
 });
 
 const CONTROL_PLANE_FIXTURE = {
-  DUSK_CLOUD_READY_TOKEN: "ready-should-not-leak", DUSK_CLOUD_BOOTSTRAP: "bootstrap-should-not-leak",
-  DUSK_LICENSE_KEY: "license-should-not-leak", DUSK_INSTALLATION_CREDENTIAL: "fleet-should-not-leak",
+  MADANI_CLOUD_READY_TOKEN: "ready-should-not-leak", MADANI_CLOUD_BOOTSTRAP: "bootstrap-should-not-leak",
+  MADANI_LICENSE_KEY: "license-should-not-leak", MADANI_INSTALLATION_CREDENTIAL: "fleet-should-not-leak",
 };
 
 describe("skipSubscriptionAuthForLocalInject", () => {
@@ -268,7 +268,7 @@ describe("ACP turns (fake CLI)", () => {
     delete process.env.AGY_ACP_DEFAULT_MODEL;
     ensureDirs();
     chmodSync(FAKE_CLI, 0o755);
-    scratch = mkdtempSync(join(tmpdir(), "dusk-acp-test-"));
+    scratch = mkdtempSync(join(tmpdir(), "madani-acp-test-"));
   });
 
   afterEach(async () => {
@@ -300,7 +300,7 @@ describe("ACP turns (fake CLI)", () => {
     delete process.env.CURSOR_API_KEY;
     delete process.env.CURSOR_AUTH_TOKEN;
     delete process.env.BOX_TOKEN;
-    delete process.env.DUSK_TTS_KEY;
+    delete process.env.MADANI_TTS_KEY;
     if (savedAgyModel !== undefined) process.env.AGY_ACP_DEFAULT_MODEL = savedAgyModel;
     else delete process.env.AGY_ACP_DEFAULT_MODEL;
     for (const name of Object.keys(CONTROL_PLANE_FIXTURE)) delete process.env[name];
@@ -314,17 +314,17 @@ describe("ACP turns (fake CLI)", () => {
     delete process.env.FAKE_ACP_TOOL_MS;
     delete process.env.FAKE_ACP_USAGE_UPDATES_FILE;
     delete process.env.FAKE_ACP_UPDATES_FILE;
-    delete process.env.DUSK_ACP_PLAN_LINES;
+    delete process.env.MADANI_ACP_PLAN_LINES;
     delete process.env.FAKE_ACP_DUMP_PROMPT;
-    delete process.env.DUSK_ACP_PROMPT_IDLE_TIMEOUT_MS;
-    delete process.env.DUSK_ACP_QUIET_NOTICE_MS;
-    delete process.env.DUSK_ACP_QUIET_TICK_MS;
+    delete process.env.MADANI_ACP_PROMPT_IDLE_TIMEOUT_MS;
+    delete process.env.MADANI_ACP_QUIET_NOTICE_MS;
+    delete process.env.MADANI_ACP_QUIET_TICK_MS;
     delete process.env.FAKE_ACP_QUIET_MS;
     delete process.env.FAKE_ACP_QWEN_LOG;
     delete process.env.FAKE_ACP_LOG_EVERY_MS;
     delete process.env.QWEN_HOME;
-    delete process.env.DUSK_ACP_SESSION_IDLE_MS;
-    delete process.env.DUSK_ACP_SESSION_IDLE_MIN_MS;
+    delete process.env.MADANI_ACP_SESSION_IDLE_MS;
+    delete process.env.MADANI_ACP_SESSION_IDLE_MIN_MS;
     delete process.env.FAKE_ACP_LAUNCH_COUNT_FILE;
     recorder?.stop();
     await instance?.dispose();
@@ -490,7 +490,7 @@ describe("ACP turns (fake CLI)", () => {
       .toBe("Standing rules.\n\nMemory: likes quiet hours.\n\nfirst");
     expect(await send("second", "Memory: likes quiet hours.")).toBe("second");
     expect(await send("third", "Memory: moved to Toronto."))
-      .toBe("Context from dusk bot updated since this conversation started; it replaces any earlier copy:\n\nMemory: moved to Toronto.\n\nthird");
+      .toBe("Context from madani bot updated since this conversation started; it replaces any earlier copy:\n\nMemory: moved to Toronto.\n\nthird");
     expect(await send("fourth", "")).toContain("have been cleared");
     expect(await send("fifth", "")).toBe("fifth");
   });
@@ -852,7 +852,7 @@ describe("ACP turns (fake CLI)", () => {
   });
 
   it("shows one finished step each time an agent's plan reads differently", async () => {
-    process.env.DUSK_ACP_PLAN_LINES = "1";
+    process.env.MADANI_ACP_PLAN_LINES = "1";
     const { report, send, lastTurn } = await reportingThread("plan-lines");
     report(
       plan(["pending", "Read the brief"], ["pending", "Write the tests"], ["pending", "Ship it"]),
@@ -890,7 +890,7 @@ describe("ACP turns (fake CLI)", () => {
   });
 
   it("bounds a plan line and redacts it before it is cut", async () => {
-    process.env.DUSK_ACP_PLAN_LINES = "1";
+    process.env.MADANI_ACP_PLAN_LINES = "1";
     const { report, send, lastTurn } = await reportingThread("plan-redacted");
     const secret = "xai-" + "a".repeat(40);
     report(plan(["in_progress", `Rotate the deploy key ${secret} on every runner in the fleet, then check each one of them twice`]));
@@ -902,7 +902,7 @@ describe("ACP turns (fake CLI)", () => {
   });
 
   it("does not take a plan for the turn's reply", async () => {
-    process.env.DUSK_ACP_PLAN_LINES = "1";
+    process.env.MADANI_ACP_PLAN_LINES = "1";
     process.env.FAKE_ACP_MODE = "empty-reply";
     const { report, send, lastTurn } = await reportingThread("plan-no-reply");
     report(plan(["in_progress", "Read the brief"]));
@@ -1168,7 +1168,7 @@ describe("ACP turns (fake CLI)", () => {
     process.env.CURSOR_API_KEY = "cursor-should-not-leak";
     process.env.CURSOR_AUTH_TOKEN = "cursor-token-should-not-leak";
     process.env.BOX_TOKEN = "box-should-not-leak";
-    process.env.DUSK_TTS_KEY = "tts-should-not-leak";
+    process.env.MADANI_TTS_KEY = "tts-should-not-leak";
     Object.assign(process.env, CONTROL_PLANE_FIXTURE);
 
     await instance.adapter.sendTurn({ threadId: "t-hygiene", text: "go" });
@@ -1184,7 +1184,7 @@ describe("ACP turns (fake CLI)", () => {
     expect(seen.env.CURSOR_API_KEY).toBeUndefined();
     expect(seen.env.CURSOR_AUTH_TOKEN).toBeUndefined();
     expect(seen.env.BOX_TOKEN).toBeUndefined();
-    expect(seen.env.DUSK_TTS_KEY).toBeUndefined();
+    expect(seen.env.MADANI_TTS_KEY).toBeUndefined();
     for (const name of Object.keys(CONTROL_PLANE_FIXTURE)) expect(seen.env[name]).toBeUndefined();
   });
 
@@ -1200,7 +1200,7 @@ describe("ACP turns (fake CLI)", () => {
         composio: {
           command: process.execPath,
           args: ["/tmp/connector-proxy.js"],
-          env: { DUSK_CONNECTOR_UPSTREAM_URL: "http://127.0.0.1:8799/api/internal/connectors/mcp" },
+          env: { MADANI_CONNECTOR_UPSTREAM_URL: "http://127.0.0.1:8799/api/internal/connectors/mcp" },
         },
       },
     });
@@ -1209,11 +1209,11 @@ describe("ACP turns (fake CLI)", () => {
       name: "composio",
       command: process.execPath,
       args: ["/tmp/connector-proxy.js"],
-      env: [{ name: "DUSK_CONNECTOR_UPSTREAM_URL", value: "http://127.0.0.1:8799/api/internal/connectors/mcp" }],
+      env: [{ name: "MADANI_CONNECTOR_UPSTREAM_URL", value: "http://127.0.0.1:8799/api/internal/connectors/mcp" }],
     });
   });
 
-  it("hands an agent that reaches MCP servers by URL dusk bot's own servers as endpoints of this server, no proxy process", async () => {
+  it("hands an agent that reaches MCP servers by URL madani bot's own servers as endpoints of this server, no proxy process", async () => {
     await create(createAcpDriver({ ...SELECT_MODEL_SUPPORT, driverKind: "httpMcpTest", selectModel: undefined, ownMcpOverHttp: true }));
     const dump = join(scratch, "own-http.json");
     process.env.FAKE_ACP_DUMP = dump;
@@ -1221,7 +1221,7 @@ describe("ACP turns (fake CLI)", () => {
     await instance.adapter.sendTurn({
       threadId: "t-own-http", text: "go",
       integrations: {
-        browser: { command: process.execPath, args: ["/app/dist-server/harness-mcp-proxy.js", "browser"], env: { DUSK_HARNESS_URL: harness, DUSK_MCP_TOKEN_BROWSER: "synthetic-browser-capability" } },
+        browser: { command: process.execPath, args: ["/app/dist-server/harness-mcp-proxy.js", "browser"], env: { MADANI_HARNESS_URL: harness, MADANI_MCP_TOKEN_BROWSER: "synthetic-browser-capability" } },
         custom: { notes: { command: process.execPath, args: ["/tmp/notes-mcp.js"], env: {} } },
       },
     });
@@ -1237,7 +1237,7 @@ describe("ACP turns (fake CLI)", () => {
     const dump = join(scratch, "data.json");
     process.env.FAKE_ACP_DUMP = dump;
     process.env.FAKE_ACP_DUMP_PROMPT = "1";
-    const data = { command: process.execPath, args: [join(scratch, "data-proxy.mjs")], env: { DUSK_DATA_TOKEN: "synthetic-turn-capability" } };
+    const data = { command: process.execPath, args: [join(scratch, "data-proxy.mjs")], env: { MADANI_DATA_TOKEN: "synthetic-turn-capability" } };
     expect(instance.adapter.capabilities.dataMcp).toBe(true);
     await instance.adapter.sendTurn({
       threadId: "t-data", text: "Update the existing result.", system: BUILT_IN_DATA_SYSTEM_PROMPT,
@@ -1245,7 +1245,7 @@ describe("ACP turns (fake CLI)", () => {
     });
     expect(await recorder.until((event) => event.type === "turn.completed")).toMatchObject({ ok: true });
     expect(JSON.parse(readFileSync(`${dump}.mcp.json`, "utf8"))).toEqual(excluded ? [] : [{
-      name: "data", ...data, env: [{ name: "DUSK_DATA_TOKEN", value: "synthetic-turn-capability" }],
+      name: "data", ...data, env: [{ name: "MADANI_DATA_TOKEN", value: "synthetic-turn-capability" }],
     }]);
     const prompt = JSON.parse(readFileSync(`${dump}.prompt.json`, "utf8")) as Array<{ type: string; text?: string }>;
     expect(prompt.find(block => block.type === "text")?.text).toContain(BUILT_IN_DATA_SYSTEM_PROMPT.trim());
@@ -1381,14 +1381,14 @@ describe("ACP turns (fake CLI)", () => {
   };
 
   const proxied = (server: { command?: string; args?: string[]; env?: Array<{ name: string; value: string }> }) => {
-    const value = server.env?.find((entry) => entry.name === "DUSK_REMOTE_MCP_SERVER")?.value;
+    const value = server.env?.find((entry) => entry.name === "MADANI_REMOTE_MCP_SERVER")?.value;
     return value === undefined ? undefined : JSON.parse(value);
   };
 
   it.each([
     ["advertises no remote transport", undefined],
     ["advertises http and sse", "http,sse"],
-  ])("mounts every url server as dusk bot's connector for an agent that %s", async (_name, transports) => {
+  ])("mounts every url server as madani bot's connector for an agent that %s", async (_name, transports) => {
     if (transports) process.env.FAKE_ACP_MCP_TRANSPORTS = transports;
     try {
       await create();
@@ -1403,7 +1403,7 @@ describe("ACP turns (fake CLI)", () => {
       expect(docs.args.join(" ")).toContain("mcp-remote-proxy");
       expect(docs.args.join(" ")).not.toContain("tok-docs");
       expect(proxied(docs)).toEqual(remoteServers.docs);
-      expect(docs.env.some((entry: { name: string }) => entry.name === "DUSK_REMOTE_MCP_DIRECTORY")).toBe(false);
+      expect(docs.env.some((entry: { name: string }) => entry.name === "MADANI_REMOTE_MCP_DIRECTORY")).toBe(false);
       expect(proxied(seen.mcpServers.find((server: { name: string }) => server.name === "legacy"))).toEqual(remoteServers.legacy);
     } finally {
       delete process.env.FAKE_ACP_MCP_TRANSPORTS;
@@ -1411,7 +1411,7 @@ describe("ACP turns (fake CLI)", () => {
   });
 
   // The fake agent connects each mounted server with grok 1.0.25's handshake, which a strict server refuses.
-  it("lists a strict url server's tools through dusk bot's connector, even for an agent that speaks http", async () => {
+  it("lists a strict url server's tools through madani bot's connector, even for an agent that speaks http", async () => {
     const strict = await startFakeHttpMcp({ strictInitialize: "http-400", strictSchema: "2025-11-25",
       tools: [{ name: "report", inputSchema: { type: "object" } }, { name: "campaigns", inputSchema: { type: "object" } }],
       requireHeader: { name: "Authorization", value: "Bearer tok-voluum" } });
@@ -1424,7 +1424,7 @@ describe("ACP turns (fake CLI)", () => {
       expect(await recorder.until((event) => event.type === "turn.completed")).toMatchObject({ ok: true });
       const text = recorder.events.find((event) => event.type === "item.completed" && (event as { itemType?: string }).itemType === "assistant_text");
       expect((text as { text?: string } | undefined)?.text).toBe("voluum: report,campaigns");
-      expect(strict.initializes).toEqual([{ protocolVersion: "2025-06-18", capabilities: {}, clientInfo: { name: "dusk bot tool proxy", version: "1" } }]);
+      expect(strict.initializes).toEqual([{ protocolVersion: "2025-06-18", capabilities: {}, clientInfo: { name: "madani bot tool proxy", version: "1" } }]);
     } finally {
       delete process.env.FAKE_ACP_MCP_TRANSPORTS;
       await strict.close();
@@ -2141,7 +2141,7 @@ describe("ACP turns (fake CLI)", () => {
   });
 
   it("does not expire an agent while a person is answering an approval", async () => {
-    process.env.DUSK_ACP_PROMPT_IDLE_TIMEOUT_MS = "150";
+    process.env.MADANI_ACP_PROMPT_IDLE_TIMEOUT_MS = "150";
     await create(GrokAgentDriver, "permission");
     await instance.adapter.sendTurn({ threadId: "t-idle-approval", text: "go", approvalMode: "ask" });
     const opened = await recorder.until(e => e.type === "request.opened");
@@ -2154,7 +2154,7 @@ describe("ACP turns (fake CLI)", () => {
   });
 
   it.each([GrokAgentDriver, QwenAgentDriver])("does not expire $driverKind while a tool it started is still running", async (driver) => {
-    process.env.DUSK_ACP_PROMPT_IDLE_TIMEOUT_MS = "150";
+    process.env.MADANI_ACP_PROMPT_IDLE_TIMEOUT_MS = "150";
     process.env.FAKE_ACP_TOOL_MS = "600";
     await create(driver, "slow-tool");
     await instance.adapter.sendTurn({ threadId: "t-slow-tool", text: "go" });
@@ -2195,7 +2195,7 @@ describe("ACP turns (fake CLI)", () => {
   });
 
   it.each([GrokAgentDriver, QwenAgentDriver])("still fails $driverKind when it goes silent once its tool has finished", async (driver) => {
-    process.env.DUSK_ACP_PROMPT_IDLE_TIMEOUT_MS = "150";
+    process.env.MADANI_ACP_PROMPT_IDLE_TIMEOUT_MS = "150";
     await create(driver, "stall-after-tool");
     await instance.adapter.sendTurn({ threadId: "t-stall-tool", text: "go" });
     expect(await recorder.until(e => e.type === "turn.completed")).toMatchObject({ ok: false, stopReason: "rpc_error" });
@@ -2206,8 +2206,8 @@ describe("ACP turns (fake CLI)", () => {
   it("tells the person what a quiet agent is doing, then finishes the turn", async () => {
     // Test the driver's notices, not how fast this OS starts ps/PowerShell.
     vi.spyOn(quietStatus, "sampleProcessTree").mockResolvedValue({ cpuMs: 0, connections: 1 });
-    process.env.DUSK_ACP_QUIET_NOTICE_MS = "150";
-    process.env.DUSK_ACP_QUIET_TICK_MS = "50";
+    process.env.MADANI_ACP_QUIET_NOTICE_MS = "150";
+    process.env.MADANI_ACP_QUIET_TICK_MS = "50";
     process.env.FAKE_ACP_QUIET_MS = "700";
     await create(GrokAgentDriver, "quiet-then-answer");
     await instance.adapter.sendTurn({ threadId: "t-quiet", text: "go" });
@@ -2220,8 +2220,8 @@ describe("ACP turns (fake CLI)", () => {
 
   it("does not count idle time before a new prompt toward the quiet notice", async () => {
     vi.spyOn(quietStatus, "sampleProcessTree").mockResolvedValue({ cpuMs: 0, connections: 1 });
-    process.env.DUSK_ACP_QUIET_NOTICE_MS = "400";
-    process.env.DUSK_ACP_QUIET_TICK_MS = "50";
+    process.env.MADANI_ACP_QUIET_NOTICE_MS = "400";
+    process.env.MADANI_ACP_QUIET_TICK_MS = "50";
     process.env.FAKE_ACP_QUIET_MS = "200";
     await create(GrokAgentDriver, "quiet-then-answer");
     await instance.adapter.sendTurn({ threadId: "t-quiet-idle", text: "one" });
@@ -2237,9 +2237,9 @@ describe("ACP turns (fake CLI)", () => {
     vi.spyOn(quietStatus, "sampleProcessTree").mockResolvedValue({ cpuMs: 0, connections: 1 });
     process.env.QWEN_HOME = scratch;
     // Margins wide enough for a slow Windows runner: the log must be read well inside the idle guard.
-    process.env.DUSK_ACP_PROMPT_IDLE_TIMEOUT_MS = "1500";
-    process.env.DUSK_ACP_QUIET_NOTICE_MS = "150";
-    process.env.DUSK_ACP_QUIET_TICK_MS = "50";
+    process.env.MADANI_ACP_PROMPT_IDLE_TIMEOUT_MS = "1500";
+    process.env.MADANI_ACP_QUIET_NOTICE_MS = "150";
+    process.env.MADANI_ACP_QUIET_TICK_MS = "50";
     process.env.FAKE_ACP_QUIET_MS = "3500";
     process.env.FAKE_ACP_QWEN_LOG = JSON.stringify([
       "[ERROR] [OPENAI_ERROR] OpenAI API Error: 429 rate limited {",
@@ -2311,7 +2311,7 @@ describe("ACP turns (fake CLI)", () => {
   });
 
   it("an agent that goes silent mid-answer is failed and closed by the prompt idle guard", async () => {
-    process.env.DUSK_ACP_PROMPT_IDLE_TIMEOUT_MS = "150";
+    process.env.MADANI_ACP_PROMPT_IDLE_TIMEOUT_MS = "150";
     await create(GrokAgentDriver, "stall-after-text");
     await instance.adapter.sendTurn({ threadId: "t-stall", text: "go" });
 
@@ -2321,7 +2321,7 @@ describe("ACP turns (fake CLI)", () => {
     expect(err?.message).toMatch(/no tool running/i);
     // Plain words for the person: no setting names.
     expect(err?.message).toMatch(/Send the message again to retry\.$/);
-    expect(err?.message).not.toContain("DUSK_ACP_PROMPT_IDLE_TIMEOUT_MS");
+    expect(err?.message).not.toContain("MADANI_ACP_PROMPT_IDLE_TIMEOUT_MS");
     expect(err).toMatchObject({ stalled: true });
     expect(recorder.events.some((e) => e.type === "content.delta")).toBe(true);
     expect(instance.adapter.hasSession("t-stall")).toBe(false);
@@ -2699,7 +2699,7 @@ describe("ACP turns (fake CLI)", () => {
     });
 
     it("acknowledges before a prompt timeout and never offers startup recovery afterward", async () => {
-      process.env.DUSK_ACP_PROMPT_IDLE_TIMEOUT_MS = "100";
+      process.env.MADANI_ACP_PROMPT_IDLE_TIMEOUT_MS = "100";
       await create(GrokAgentDriver, "stall-after-text");
       const ack = await instance.adapter.sendTurn({ threadId: "startup-prompt", text: "go", startupRecovery: true });
       expect(recorder.events.some((event) => event.type === "turn.completed")).toBe(false);
@@ -2954,8 +2954,8 @@ describe("ACP turns (fake CLI)", () => {
 
     it("closes the idle process and resumes on the next turn", async () => {
       // Ten seconds is the floor; give the poll room past it.
-      process.env.DUSK_ACP_SESSION_IDLE_MIN_MS = "10000";
-      process.env.DUSK_ACP_SESSION_IDLE_MS = "10000";
+      process.env.MADANI_ACP_SESSION_IDLE_MIN_MS = "10000";
+      process.env.MADANI_ACP_SESSION_IDLE_MS = "10000";
       countFile = join(scratch, "launches");
       rpcFile = join(scratch, "rpc.json");
       process.env.FAKE_ACP_LAUNCH_COUNT_FILE = countFile;
@@ -3032,7 +3032,7 @@ describe("ACP turns (fake CLI)", () => {
       const integration = (token: string) => ({
         command: process.execPath,
         args: [FAKE_CLI],
-        env: { DUSK_COMMS_TOKEN: token },
+        env: { MADANI_COMMS_TOKEN: token },
       });
       const first = await instance.adapter.sendTurn({
         threadId: "t-pool-token",
@@ -3077,7 +3077,7 @@ describe("ACP turns (fake CLI)", () => {
         config: { cli: FAKE_CLI, fullAuto: false },
       });
       recorder = recordEvents(instance.adapter);
-      const integration = (token: string) => ({ command: process.execPath, args: [FAKE_CLI], env: { DUSK_COMMS_TOKEN: token } });
+      const integration = (token: string) => ({ command: process.execPath, args: [FAKE_CLI], env: { MADANI_COMMS_TOKEN: token } });
       const first = await instance.adapter.sendTurn({ threadId: "qwen-stop", text: "one", integrations: { agents: integration("one") } });
       await recorder.until((e) => e.type === "turn.completed" && e.turnId === first.turnId);
 
@@ -3137,7 +3137,7 @@ describe("ACP turns (fake CLI)", () => {
         return kill(child, timeout);
       });
       if (reason === "prompt stall") {
-        process.env.DUSK_ACP_PROMPT_IDLE_TIMEOUT_MS = "100";
+        process.env.MADANI_ACP_PROMPT_IDLE_TIMEOUT_MS = "100";
         process.env.FAKE_ACP_MODE = "stall-after-text";
       }
       instance = await QwenAgentDriver.create({
@@ -3146,7 +3146,7 @@ describe("ACP turns (fake CLI)", () => {
         config: { cli: FAKE_CLI, fullAuto: false },
       });
       recorder = recordEvents(instance.adapter);
-      const integration = (token: string) => ({ agents: { command: process.execPath, args: [FAKE_CLI], env: { DUSK_COMMS_TOKEN: token } } });
+      const integration = (token: string) => ({ agents: { command: process.execPath, args: [FAKE_CLI], env: { MADANI_COMMS_TOKEN: token } } });
       try {
         const first = await instance.adapter.sendTurn({ threadId: "qwen-retry", text: "one", integrations: integration("one") });
         expect(await recorder.until((e) => e.type === "turn.completed" && e.turnId === first.turnId))
@@ -3201,7 +3201,7 @@ describe("ACP turns (fake CLI)", () => {
       const integration = (token: string) => ({
         command: process.execPath,
         args: [FAKE_CLI],
-        env: { DUSK_COMMS_TOKEN: token },
+        env: { MADANI_COMMS_TOKEN: token },
       });
       const first = await instance.adapter.sendTurn({
         threadId: "t-pool-reject",
@@ -3280,7 +3280,7 @@ describe("ACP snapshot", () => {
   });
 
   it("kimi checks KIMI_CODE_HOME before the child HOME", async () => {
-    const scratch = mkdtempSync(join(tmpdir(), "dusk-kimi-auth-"));
+    const scratch = mkdtempSync(join(tmpdir(), "madani-kimi-auth-"));
     const kimiHome = join(scratch, "custom-kimi-home");
     const childHome = join(scratch, "child-home");
     mkdirSync(join(childHome, ".kimi-code", "credentials"), { recursive: true });
@@ -3305,7 +3305,7 @@ describe("ACP snapshot", () => {
   });
 
   it("droid resolves the signed-in CLI before falling back to FACTORY_API_KEY", async () => {
-    const scratch = mkdtempSync(join(tmpdir(), "dusk-droid-auth-"));
+    const scratch = mkdtempSync(join(tmpdir(), "madani-droid-auth-"));
     const overrideHome = join(scratch, "custom-home");
     const childHome = join(scratch, "child-home");
     mkdirSync(join(childHome, ".factory"), { recursive: true });
@@ -3361,7 +3361,7 @@ describe("ACP snapshot", () => {
   });
 
   it("droid reads custom models, favourites order, and the configured default", async () => {
-    const scratch = mkdtempSync(join(tmpdir(), "dusk-droid-models-"));
+    const scratch = mkdtempSync(join(tmpdir(), "madani-droid-models-"));
     mkdirSync(join(scratch, ".factory"), { recursive: true });
     writeFileSync(
       join(scratch, ".factory", "settings.json"),
@@ -3396,7 +3396,7 @@ describe("ACP snapshot", () => {
   });
 
   it("droid falls back to the built-in catalog when settings.json is unreadable", async () => {
-    const scratch = mkdtempSync(join(tmpdir(), "dusk-droid-nosettings-"));
+    const scratch = mkdtempSync(join(tmpdir(), "madani-droid-nosettings-"));
     mkdirSync(join(scratch, ".factory"), { recursive: true });
     writeFileSync(join(scratch, ".factory", "settings.json"), "{ not json");
 
@@ -3417,7 +3417,7 @@ describe("ACP snapshot", () => {
   });
 
   it("kimi resolves default credentials from the child HOME", async () => {
-    const scratch = mkdtempSync(join(tmpdir(), "dusk-kimi-home-"));
+    const scratch = mkdtempSync(join(tmpdir(), "madani-kimi-home-"));
     const credentialDir = join(scratch, ".kimi-code", "credentials");
     mkdirSync(credentialDir, { recursive: true });
     writeFileSync(join(credentialDir, "kimi-code.json"), "{}");

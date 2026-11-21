@@ -5,7 +5,7 @@ import { toast } from "../lib/toast";
 
 const DETAIL_MS = 3_000;
 const LIST_MS = 10_000;
-const PICK = "dusk-dash-workspace";
+const PICK = "madani-dash-workspace";
 
 interface Session {
   account: Account | null | undefined;

@@ -1,10 +1,10 @@
 {
   "path": "/vs/chatgpt-agent",
-  "title": "ChatGPT agent is now Work: compare it with dusk bot",
+  "title": "ChatGPT agent is now Work: compare it with madani bot",
   "nav": "chatgpt work",
-  "h1": "chatgpt agent is gone: chatgpt work vs dusk bot",
-  "description": "ChatGPT agent has been replaced by Work. Compare current hosting, shared Codex usage, task limits and bot roles with dusk bot.",
-  "answer": "**pick the app that makes your next handoff easier.** as of 12 november 2026, openai says agent is no longer available.[^1] work replaces it for longer tasks and finished deliverables. web and phone run in the cloud; desktop can work locally too.[^2] dusk gives named bots their own memory and ai choices. compare the roles you need and the usage bills.",
+  "h1": "chatgpt agent is gone: chatgpt work vs madani bot",
+  "description": "ChatGPT agent has been replaced by Work. Compare current hosting, shared Codex usage, task limits and bot roles with madani bot.",
+  "answer": "**pick the app that makes your next handoff easier.** as of 12 november 2026, openai says agent is no longer available.[^1] work replaces it for longer tasks and finished deliverables. web and phone run in the cloud; desktop can work locally too.[^2] madani gives named bots their own memory and ai choices. compare the roles you need and the usage bills.",
   "tags": [
     "chatgpt",
     "work",
@@ -36,17 +36,17 @@
       "**finish multi-step tasks inside chatgpt.** keep openai models and the work together.",
       "**share one usage pool with codex.** that fits how you already budget."
     ],
-    "dusk": [
+    "madani": [
       "**keep roles apart.** each bot has its own memory and chats.",
-      "**choose ai per role and where bots live.** use your computer, server or dusk cloud."
+      "**choose ai per role and where bots live.** use your computer, server or madani cloud."
     ]
   },
   "compare": {
     "h": "the current choice, rather than the old agent limits",
-    "intro": "**work and dusk give your tasks different homes and usage bills.** these rows reflect 12 november 2026. agent mode has retired; its old message quotas don't describe work's allowances.",
+    "intro": "**work and madani give your tasks different homes and usage bills.** these rows reflect 12 november 2026. agent mode has retired; its old message quotas don't describe work's allowances.",
     "cols": [
       "ChatGPT Work",
-      "dusk bot"
+      "madani bot"
     ],
     "rows": [
       {
@@ -64,7 +64,7 @@
         "label": "cloud or local",
         "cells": [
           "cloud on web and mobile; desktop can work locally with files, apps and browser",
-          "local computer, your server or dusk cloud"
+          "local computer, your server or madani cloud"
         ],
         "src": [
           2,
@@ -86,7 +86,7 @@
         "label": "usage pool",
         "cells": [
           "work and codex share usage, pricing and credits",
-          "ai usage is billed by the ai provider, separately from dusk"
+          "ai usage is billed by the ai provider, separately from madani"
         ],
         "src": [
           4,
@@ -108,7 +108,7 @@
         "label": "starting price",
         "cells": [
           "limited desktop work on free; plus $20 monthly; pro from $100 monthly",
-          "free personal desktop use; dusk cloud plus $20 monthly, plus ai costs"
+          "free personal desktop use; madani cloud plus $20 monthly, plus ai costs"
         ],
         "src": [
           10,
@@ -118,7 +118,7 @@
       }
     ]
   },
-  "method": "**use the rows to choose a setup, then try your own task.** we make dusk bot. openai's help and pricing pages were checked on 12 november 2026; dusk claims come from our docs.\n\nwe didn't run matching tasks. active-task caps count saved schedules. shared usage limits still govern how much work can finish.",
+  "method": "**use the rows to choose a setup, then try your own task.** we make madani bot. openai's help and pricing pages were checked on 12 november 2026; madani claims come from our docs.\n\nwe didn't run matching tasks. active-task caps count saved schedules. shared usage limits still govern how much work can finish.",
   "sections": [
     {
       "h": "put the task where its files live",
@@ -126,11 +126,11 @@
     },
     {
       "h": "your schedule count isn't your usage budget",
-      "md": "**work and codex spend from shared usage.** count both when you plan the month.[^4] an active schedule slot doesn't tell you how many runs your plan can finish. timing controls and active-task limits vary by plan.[^5]\n\ndusk separates hosting from ai usage. your provider bills the ai, and a bot tells you when that plan runs out.[^8][^11]\n\nread the [task guide](/guides/chatgpt-scheduled-tasks) for schedule caps and the [cost guide](/guides/how-much-does-an-ai-agent-cost) for the full bill."
+      "md": "**work and codex spend from shared usage.** count both when you plan the month.[^4] an active schedule slot doesn't tell you how many runs your plan can finish. timing controls and active-task limits vary by plan.[^5]\n\nmadani separates hosting from ai usage. your provider bills the ai, and a bot tells you when that plan runs out.[^8][^11]\n\nread the [task guide](/guides/chatgpt-scheduled-tasks) for schedule caps and the [cost guide](/guides/how-much-does-an-ai-agent-cost) for the full bill."
     },
     {
       "h": "test a handoff you can judge",
-      "md": "**find out how much correcting the handoff takes.** attach short notes. ask for agreed points, open questions and claims the notes don't support. compare the result with the original.\n\ndusk can give preparation and review separate jobs, chats and memory.[^11] try attached files first. if you connect apps later, keep the reviewer read only so it can read the work without changing it.[^12][^13]"
+      "md": "**find out how much correcting the handoff takes.** attach short notes. ask for agreed points, open questions and claims the notes don't support. compare the result with the original.\n\nmadani can give preparation and review separate jobs, chats and memory.[^11] try attached files first. if you connect apps later, keep the reviewer read only so it can read the work without changing it.[^12][^13]"
     }
   ],
   "faq": [
@@ -170,19 +170,19 @@
       "checked": "2026-11-12"
     },
     {
-      "label": "dusk bot: ai choices and first run",
+      "label": "madani bot: ai choices and first run",
       "url": "/docs/getting-started"
     },
     {
-      "label": "dusk bot: where bots live",
-      "url": "/docs/dusk-cloud"
+      "label": "madani bot: where bots live",
+      "url": "/docs/madani-cloud"
     },
     {
-      "label": "dusk bot: ai billing",
+      "label": "madani bot: ai billing",
       "url": "/docs/account-and-billing"
     },
     {
-      "label": "dusk bot: desktop routine timing",
+      "label": "madani bot: desktop routine timing",
       "url": "/docs/routines"
     },
     {
@@ -191,15 +191,15 @@
       "checked": "2026-11-12"
     },
     {
-      "label": "dusk bot: bot jobs and ai limits",
+      "label": "madani bot: bot jobs and ai limits",
       "url": "/docs/bots"
     },
     {
-      "label": "dusk bot: read-only access and sends",
+      "label": "madani bot: read-only access and sends",
       "url": "/docs/files-and-apps"
     },
     {
-      "label": "dusk bot: permissions and sends",
+      "label": "madani bot: permissions and sends",
       "url": "/docs/computer"
     }
   ],
@@ -220,7 +220,7 @@
     "steps": [
       "pick one short document handoff",
       "try work with the notes attached",
-      "try a dusk bot with the same notes",
+      "try a madani bot with the same notes",
       "compare missing facts and corrections, not just polish"
     ]
   },
@@ -247,7 +247,7 @@
       ],
       [
         "different ai choices for separate jobs",
-        "dusk bot"
+        "madani bot"
       ],
       [
         "cloud on a phone and local desktop work",
@@ -255,7 +255,7 @@
       ],
       [
         "separate planning and review bots",
-        "dusk bot roles"
+        "madani bot roles"
       ]
     ]
   },

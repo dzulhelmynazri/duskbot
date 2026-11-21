@@ -1,7 +1,7 @@
 import { createServer } from "node:http";
 import { readFileSync } from "node:fs";
 import { expect, it } from "vitest";
-import { launchVerificationServer, runControlDusk } from "../scripts/control-dusk.ts";
+import { launchVerificationServer, runControlMadani } from "../scripts/control-madani.ts";
 
 const PNG = Buffer.from(
   "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==",
@@ -36,11 +36,11 @@ async function replyToOldPicture(url: string, created: { id: string; threadId?: 
 
 it("a reply to an old picture carries the picture to the Claude engine as an image", async () => {
   const fixture = await launchVerificationServer();
-  const env = { DUSK_URL: fixture.info.url };
+  const env = { MADANI_URL: fixture.info.url };
   try {
-    const { bot } = await runControlDusk(["new-bot", "--name", "Reply picture fixture"], { env }) as any;
+    const { bot } = await runControlMadani(["new-bot", "--name", "Reply picture fixture"], { env }) as any;
     await replyToOldPicture(fixture.info.url, bot, async () => {
-      await runControlDusk(["wait", "--bot", bot.id, "--timeout", "30"], { env });
+      await runControlMadani(["wait", "--bot", bot.id, "--timeout", "30"], { env });
     });
     const content = JSON.parse(readFileSync(fixture.fixtureDumpPath, "utf8")).prompt.message.content;
     expect(Array.isArray(content), JSON.stringify(content).slice(0, 400)).toBe(true);
@@ -75,17 +75,17 @@ it("a reply to an old picture carries the picture to an OpenAI-compatible engine
   const address = upstream.address();
   if (!address || typeof address === "string") throw new Error("Fixture provider has no port");
   const fixture = await launchVerificationServer();
-  const env = { DUSK_URL: fixture.info.url };
+  const env = { MADANI_URL: fixture.info.url };
   try {
     const put = (method: string, path: string, body: unknown) => fetch(`${fixture.info.url}${path}`, {
       method, headers: { "content-type": "application/json" }, body: JSON.stringify(body),
     });
     expect((await put("PUT", "/api/config", { openaiCompat: { url: `http://127.0.0.1:${address.port}/v1`, key: "synthetic-fixture-key", model: "fixture-model" } })).ok).toBe(true);
     expect((await put("PATCH", "/api/instances/openaiCompat", { tools: false })).ok).toBe(true);
-    const { bot } = await runControlDusk(["new-bot", "--name", "Reply picture compat"], { env }) as any;
-    await runControlDusk(["set-model", "--bot", bot.id, "--instance", "openaiCompat", "--model", "fixture-model"], { env });
+    const { bot } = await runControlMadani(["new-bot", "--name", "Reply picture compat"], { env }) as any;
+    await runControlMadani(["set-model", "--bot", bot.id, "--instance", "openaiCompat", "--model", "fixture-model"], { env });
     await replyToOldPicture(fixture.info.url, bot, async () => {
-      expect((await runControlDusk(["wait", "--bot", bot.id, "--timeout", "20"], { env }) as any).status).toBe("settled");
+      expect((await runControlMadani(["wait", "--bot", bot.id, "--timeout", "20"], { env }) as any).status).toBe("settled");
     });
     const last = requests.at(-1).messages.at(-1);
     expect(last.role).toBe("user");

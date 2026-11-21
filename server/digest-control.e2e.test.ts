@@ -2,7 +2,7 @@ import { existsSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { DatabaseSync } from "node:sqlite";
 import { expect, it } from "vitest";
-import { launchVerificationServer, runControlDusk } from "../scripts/control-dusk.ts";
+import { launchVerificationServer, runControlMadani } from "../scripts/control-madani.ts";
 import type { WireMessage } from "../shared/wire.ts";
 
 it("records independent turns and room speakers through the shared control fixture", async () => {
@@ -14,7 +14,7 @@ it("records independent turns and room speakers through the shared control fixtu
   });
   const evidence: unknown[] = [{ fixture: fixture.info }];
   const control = async (args: string[]) => {
-    const result = await runControlDusk([...args, "--url", fixture.info.url]);
+    const result = await runControlMadani([...args, "--url", fixture.info.url]);
     evidence.push({ command: args, result });
     return result as any;
   };

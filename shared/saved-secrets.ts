@@ -32,7 +32,7 @@ export interface CardSealKey {
   signature?: string;
 }
 
-export const CARD_SECRET_INFO = "dusk bot card secret v1";
+export const CARD_SECRET_INFO = "madani bot card secret v1";
 
 /** What the seal is bound to, so a relay cannot move it to another bot, conversation, card or choice. */
 export function cardSecretAAD(context: { keyId: string; botId: string; threadId: string; messageId: string; requestKey: string; remember: boolean }): Uint8Array {
@@ -46,7 +46,7 @@ export function sealKeySigningInput(key: Pick<CardSealKey, "keyId" | "x" | "y">,
   return new TextEncoder().encode([SEAL_LABELS.sealKey, identity, key.keyId, key.x, key.y].join("\n"));
 }
 
-export const SEALED_VALUE_INFO = "dusk bot sealed value v1";
+export const SEALED_VALUE_INFO = "madani bot sealed value v1";
 
 /** Where a sealed login, token or key may be opened: a relay cannot move it to another purpose or target. */
 export type SealPurpose = "login.create" | "login.update" | "login.card" | "onepassword.connect" | "config" | "model-provider" | "vault.secret" | "card.secret";

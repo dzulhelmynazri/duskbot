@@ -490,7 +490,7 @@ describe("a dial left pending with no answer, as an iOS web view does after a re
   });
 });
 
-describe("a dusk cloud that was deleted", () => {
+describe("a madani cloud that was deleted", () => {
   it("asks once per check window whether the place is gone, and stops dialing for good once it is", async () => {
     const test = harness();
     const onError = vi.fn();

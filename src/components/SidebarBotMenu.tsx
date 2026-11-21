@@ -72,7 +72,7 @@ export function BotContextMenu({
   const admin = useOwnerOrAdmin();
   const member = admin === false;
   const mayMove = useMayMoveBots();
-  const remoteClient = window.duskDesktop?.remoteClient?.active === true;
+  const remoteClient = window.madaniDesktop?.remoteClient?.active === true;
   const bot = shown ? state.bots.find((b) => b.id === shown.botId) : undefined;
   const menuRef = useRef<HTMLDivElement>(null);
   const latestMenu = useRef(menu);

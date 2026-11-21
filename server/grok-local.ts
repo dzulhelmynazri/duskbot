@@ -115,11 +115,11 @@ export function lookForGrokBot(machine: SetupMachine, options: { downloads?: boo
   return { files: options.downloads === false ? [] : readExportFiles(machine), bots: rosterBots(machine) };
 }
 
-/** The notes another AI saved for dusk bot (NOTES_PROMPT asks for dusk-bot-notes.md in Downloads, an earlier prompt for
- * .json; a browser numbers a second copy "dusk-bot-notes (1).md", and an app that can only save text may add .txt).
+/** The notes another AI saved for madani bot (NOTES_PROMPT asks for madani-bot-notes.md in Downloads, an earlier prompt for
+ * .json; a browser numbers a second copy "madani-bot-notes (1).md", and an app that can only save text may add .txt).
  * Only real files of that name, changed after `since`, at most NOTES_FILE_MAX bytes each; nothing else in Downloads is
  * opened. */
-export const NOTES_FILE = /^dusk-bot-notes[^/\\]{0,40}\.(?:md|markdown|json|txt)$/i;
+export const NOTES_FILE = /^madani-bot-notes[^/\\]{0,40}\.(?:md|markdown|json|txt)$/i;
 export const NOTES_FILE_MAX = 2 * 1024 * 1024;
 const MAX_NOTES_FILES = 10;
 

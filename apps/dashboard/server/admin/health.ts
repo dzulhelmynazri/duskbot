@@ -38,7 +38,7 @@ export function spoolCount(dir: string): number {
   try { return readdirSync(dir).filter(name => !name.startsWith(".")).length; } catch { return 0; }
 }
 
-/** DUSK_ADMIN_HEALTH_URLS: "name=https://host/path,name2=http://127.0.0.1:3106/" */
+/** MADANI_ADMIN_HEALTH_URLS: "name=https://host/path,name2=http://127.0.0.1:3106/" */
 export function healthTargets(value: string | undefined): Array<{ name: string; url: string }> {
   return (value ?? "").split(",").map(part => part.trim()).filter(Boolean).flatMap(part => {
     const at = part.indexOf("="), name = part.slice(0, at).trim(), url = part.slice(at + 1).trim();

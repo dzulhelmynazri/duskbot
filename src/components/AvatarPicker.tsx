@@ -29,7 +29,7 @@ function choiceAccount(account: AccountRow, choice: UserAvatarChoice | null) {
 /** Pick the avatar that follows the person everywhere: shuffle a new drawing, take one of a few suggestions, or use the photo
  * of their sign-in. Saved to the account on Save; Escape or a click elsewhere leaves it as it was. */
 export function AvatarPicker({ account, anchor, onClose }: { account: AccountRow; anchor: HTMLElement | null; onClose: () => void }) {
-  const bridge = window.duskDesktop?.accounts;
+  const bridge = window.madaniDesktop?.accounts;
   const saved = parseUserAvatarChoice(account.avatar);
   const hasPhoto = Boolean(account.avatarUrl);
   const start = plainAvatarChoice(saved, hasPhoto);

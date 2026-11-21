@@ -1,5 +1,5 @@
 // Screenshots of the person's avatar, light and dark: the account card, the picker open, and the sidebar's person row.
-//   DUSK_CHROME=<chrome binary> node --experimental-strip-types scripts/testing/user-avatar-shots.ts <out dir>
+//   MADANI_CHROME=<chrome binary> node --experimental-strip-types scripts/testing/user-avatar-shots.ts <out dir>
 import { spawn } from "node:child_process";
 import { existsSync, mkdirSync, mkdtempSync, readFileSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
@@ -8,8 +8,8 @@ import { connect } from "./chat-gallery/cdp.ts";
 import { mountPreview } from "./preview-fixture.ts";
 
 const out = process.argv[2] ?? "user-avatar-shots";
-const chromePath = process.env.DUSK_CHROME;
-if (!chromePath) throw new Error("set DUSK_CHROME to a Chrome binary");
+const chromePath = process.env.MADANI_CHROME;
+if (!chromePath) throw new Error("set MADANI_CHROME to a Chrome binary");
 mkdirSync(out, { recursive: true });
 const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 const preview = await mountPreview({ info: { url: "http://127.0.0.1:9" } }, { entry: "/scripts/testing/user-avatar-preview.tsx", route: "/__user-avatar.html", title: "User avatar", logLevel: "warn", hmr: false });

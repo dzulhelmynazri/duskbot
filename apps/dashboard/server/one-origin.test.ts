@@ -9,7 +9,7 @@ import { CSRF_HEADER } from "../../../shared/account-api.ts";
 
 // the page at /dashboard, the admin panel at /admin (owner only), the site at every other path, all on one origin
 describe("one origin: dashboard, admin and site", () => {
-  const origin = "https://dusk.test", OWNER = "owner@dusk.test";
+  const origin = "https://madani.test", OWNER = "owner@madani.test";
   let mailer: ReturnType<typeof memoryMailer>;
   let app: ReturnType<typeof createDashboardApp>;
   let server: Server, site: Server;
@@ -17,8 +17,8 @@ describe("one origin: dashboard, admin and site", () => {
   const siteHits: string[] = [];
 
   beforeEach(async () => {
-    dataDir = mkdtempSync(join(tmpdir(), "dusk-one-origin-"));
-    staticDir = mkdtempSync(join(tmpdir(), "dusk-one-origin-static-"));
+    dataDir = mkdtempSync(join(tmpdir(), "madani-one-origin-"));
+    staticDir = mkdtempSync(join(tmpdir(), "madani-one-origin-static-"));
     writeFileSync(`${staticDir}/index.html`, "<!doctype html><title>page shell</title>");
     mkdirSync(`${staticDir}/assets/admin`, { recursive: true });
     writeFileSync(`${staticDir}/assets/main.js`, "main");
@@ -76,7 +76,7 @@ describe("one origin: dashboard, admin and site", () => {
     const before = siteHits.length;
     expect((await get("/")).status).toBe(404);
     expect(siteHits.slice(before)).toEqual(["/"]);
-    const person = await login("home@dusk.test");
+    const person = await login("home@madani.test");
     const answer = await get("/", { cookie: person.cookie });
     expect([answer.status, answer.headers.get("location")]).toEqual([302, "/dashboard/"]);
     expect((await get("/?home", { cookie: person.cookie })).status).toBe(404);
@@ -97,7 +97,7 @@ describe("one origin: dashboard, admin and site", () => {
     expect(out.status).toBe(302);
     expect(out.headers.get("location")).toBe(`/dashboard/sign-in?${new URLSearchParams({ next: "/admin/people" })}`);
 
-    const stranger = await login("someone@dusk.test");
+    const stranger = await login("someone@madani.test");
     const denied = await get("/admin", { cookie: stranger.cookie });
     expect([denied.status, await denied.text()]).toEqual([404, "site 404"]);
     expect((await get("/dashboard/assets/admin/AdminApp-x.js", { cookie: stranger.cookie })).status).toBe(404);
@@ -117,13 +117,13 @@ describe("one origin: dashboard, admin and site", () => {
   });
 
   it("keeps one public host: www to the apex, app to the page (its API still answers), dev home", async () => {
-    expect(await hosted("www.dusk.test", "/pricing?a=1")).toEqual({ status: 301, location: "https://dusk.test/pricing?a=1" });
-    expect(await hosted("app.dusk.test", "/")).toEqual({ status: 301, location: "https://dusk.test/dashboard" });
-    expect(await hosted("app.dusk.test", "/billing")).toEqual({ status: 301, location: "https://dusk.test/dashboard/billing" });
-    expect(await hosted("app.dusk.test", "/admin")).toEqual({ status: 301, location: "https://dusk.test/admin" });
-    expect((await hosted("app.dusk.test", "/v1/health")).status).toBe(200);
-    expect(await hosted("dev.dusk.test", "/anything")).toEqual({ status: 301, location: "https://dusk.test/" });
-    expect((await hosted("dusk.test", "/dashboard")).status).toBe(200);
+    expect(await hosted("www.madani.test", "/pricing?a=1")).toEqual({ status: 301, location: "https://madani.test/pricing?a=1" });
+    expect(await hosted("app.madani.test", "/")).toEqual({ status: 301, location: "https://madani.test/dashboard" });
+    expect(await hosted("app.madani.test", "/billing")).toEqual({ status: 301, location: "https://madani.test/dashboard/billing" });
+    expect(await hosted("app.madani.test", "/admin")).toEqual({ status: 301, location: "https://madani.test/admin" });
+    expect((await hosted("app.madani.test", "/v1/health")).status).toBe(200);
+    expect(await hosted("dev.madani.test", "/anything")).toEqual({ status: 301, location: "https://madani.test/" });
+    expect((await hosted("madani.test", "/dashboard")).status).toBe(200);
   });
 
   it("before launch (waitlistOnly) sends the page home but keeps the apps' and emailed links' flows, the API, webhooks and the site", async () => {
@@ -162,14 +162,14 @@ describe("one origin: dashboard, admin and site", () => {
     const { userCode } = await (await post("/api/cloud/desktop/authorize", { deviceName: "Studio", platform: "darwin" })).json() as { userCode: string };
     const desktop = `/cloud/desktop?code=${userCode}`;
     // the emailed "trouble signing in?" link: its attempt rides in the query, the code stays in the fragment
-    const lost = "lost@dusk.test";
+    const lost = "lost@madani.test";
     await login(lost);
     skew = 120_000; // past the resend wait between two codes to one address
     expect((await post("/v1/auth/start", { email: lost, recover: true })).status).toBe(200);
-    const link = new URL(mailer.outbox.findLast(item => item.to === lost)!.text.match(/https:\/\/dusk\.test\/dashboard\/sign-in\?\S+/)![0]);
+    const link = new URL(mailer.outbox.findLast(item => item.to === lost)!.text.match(/https:\/\/madani\.test\/dashboard\/sign-in\?\S+/)![0]);
     expect(link.hash).toMatch(/^#code=\d{8}$/);
     const opened = await (await get(`/dashboard/sign-in${link.search}`)).text();
-    expect(opened).toContain('<meta name="dusk-prelaunch" content="1">');
+    expect(opened).toContain('<meta name="madani-prelaunch" content="1">');
     // the handoff, claim and delete links keep their token in the fragment, out of our sight: the page checks those itself
     for (const path of [`/dashboard${desktop}`, `/dashboard/sign-in?${new URLSearchParams({ error: "oauth_denied", next: desktop })}`, `/dashboard/sign-in?${new URLSearchParams({ pending: "p", next: desktop })}`,
       "/dashboard/sign-in?next=%2Fclaim", "/dashboard/handoff", "/dashboard/claim", "/dashboard/clouds/c1/delete", "/dashboard/assets/main.js"]) expect([path, (await get(path)).status]).toEqual([path, 200]);
@@ -188,7 +188,7 @@ describe("one origin: dashboard, admin and site", () => {
     const webhook = await fetch(`${url}/v1/billing/webhooks/dodo`, { method: "POST", redirect: "manual", headers: { "content-type": "application/json" }, body: "{}" });
     expect(webhook.status).not.toBe(302);
     expect((await get("/api/cloud/desktop/authorize")).status).not.toBe(302);
-    expect((await get("/.well-known/duskbot/dashboard")).status).toBe(200);
+    expect((await get("/.well-known/madanibot/dashboard")).status).toBe(200);
     expect((await get("/privacy")).status).toBe(404);
     expect(siteHits).toContain("/privacy");
     expect((await get("/")).status).toBe(404);
@@ -200,14 +200,14 @@ describe("one origin: dashboard, admin and site", () => {
   });
 });
 
-// the own-server short line: dusk.bot/s/<code> is the link service's, through Cloudflare, with the visitor's address
+// the own-server short line: madani.bot/s/<code> is the link service's, through Cloudflare, with the visitor's address
 describe("one origin: the short install line", () => {
   it("sends /s/<code> and /s/<code>/<way> to the link service, and nothing else there", async () => {
     const hits: Array<{ url: string; ip: string }> = [];
     const link = createServer((req, res) => { hits.push({ url: req.url ?? "", ip: String(req.headers["x-real-ip"] ?? "") }); res.writeHead(200, { "content-type": "text/plain" }); res.end("#!/bin/sh\n"); });
     await new Promise<void>(resolve => link.listen(0, "127.0.0.1", resolve));
-    const dataDir = mkdtempSync(join(tmpdir(), "dusk-short-line-"));
-    const app = createDashboardApp({ dataDir, staticDir: dataDir, publicUrl: "https://dusk.test", mailer: memoryMailer(), linkUpstream: `http://127.0.0.1:${(link.address() as { port: number }).port}` });
+    const dataDir = mkdtempSync(join(tmpdir(), "madani-short-line-"));
+    const app = createDashboardApp({ dataDir, staticDir: dataDir, publicUrl: "https://madani.test", mailer: memoryMailer(), linkUpstream: `http://127.0.0.1:${(link.address() as { port: number }).port}` });
     const server = createServer(app.handle);
     await new Promise<void>(resolve => server.listen(0, "127.0.0.1", resolve));
     const base = `http://127.0.0.1:${(server.address() as { port: number }).port}`;

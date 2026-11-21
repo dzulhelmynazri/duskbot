@@ -2,13 +2,13 @@ import type { CapacitorConfig } from "@capacitor/cli";
 import type { KeyboardResize } from "@capacitor/keyboard";
 
 const config: CapacitorConfig = {
-  appId: "bot.dusk.mobile",
-  appName: "dusk bot",
+  appId: "bot.madani.mobile",
+  appName: "madani bot",
   webDir: "dist",
   // the native bridge logs plugin results in debug builds, which would put pairing secrets and tokens in device logs
   loggingBehavior: "none",
   // dev only: live reload from the local vite server
-  ...(process.env.DUSK_MOBILE_DEV_URL ? { server: { url: process.env.DUSK_MOBILE_DEV_URL, cleartext: true } } : {}),
+  ...(process.env.MADANI_MOBILE_DEV_URL ? { server: { url: process.env.MADANI_MOBILE_DEV_URL, cleartext: true } } : {}),
   ios: { contentInset: "never", scrollEnabled: false, backgroundColor: "#fcfcfc", allowsLinkPreview: false },
   android: { backgroundColor: "#fcfcfc", allowMixedContent: false },
   plugins: {

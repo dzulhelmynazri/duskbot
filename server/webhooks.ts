@@ -75,7 +75,7 @@ export interface WebhookManagerOptions {
   /** delivery:"post" sink: lands in the trigger's own stable thread, never a caller-supplied one. */
   post?: (botId: string, threadId: string, text: string) => void;
   /** Absent, every post delivery fails with 503 rather than falling back to an ambient thread
-   *  (https://github.com/goatedgrokbotalternative/duskbot/issues/2071). */
+   *  (https://github.com/goatedgrokbotalternative/madanibot/issues/2071). */
   resolvePostThread?: (trigger: WebhookTrigger, forceNew: boolean) => string | undefined;
   /** delivery:"post" with a groupId: the room sink. Absent, a room delivery fails with 503
    *  rather than downgrading to a thread post. */
@@ -273,7 +273,7 @@ function serializePayload(payload: JsonValue): string {
     }
   }
   if (text.length <= MAX_EVENT_CHARS) return text;
-  return `${text.slice(0, MAX_EVENT_CHARS)}\n\n[Payload truncated by dusk bot]`;
+  return `${text.slice(0, MAX_EVENT_CHARS)}\n\n[Payload truncated by madani bot]`;
 }
 
 function previewPayload(payload: JsonValue): string {
@@ -597,18 +597,18 @@ export class WebhookManager {
     this.recordRejectedForTrigger(trigger, status, error instanceof Error ? error.message : String(error), event);
   }
 
-  test(id: string, payload: JsonValue = { event: "dusk.test", message: "Test webhook delivery" }): WebhookReceiveResult | null {
+  test(id: string, payload: JsonValue = { event: "madani.test", message: "Test webhook delivery" }): WebhookReceiveResult | null {
     const trigger = this.webhooks.find((candidate) => candidate.id === id);
     if (!trigger) return null;
     // A room delivery synthesizes voice and stores images asynchronously; the test route stays synchronous.
     if (trigger.delivery === "post" && trigger.groupId) fail(400, "a room webhook posts through its webhook URL, not the test button");
-    const eventName = trigger.eventTypes?.[0] ?? "dusk.test";
+    const eventName = trigger.eventTypes?.[0] ?? "madani.test";
     // Run now is the person's own test: like a schedule's, it runs while paused.
     return this.dispatch(trigger, {
       payload,
       contentType: "application/json",
       eventName,
-      userAgent: "dusk bot webhook tester",
+      userAgent: "madani bot webhook tester",
       deliveryId: `test-${randomUUID()}`,
     }, true);
   }

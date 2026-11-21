@@ -35,11 +35,11 @@ const threadMessages = async (threadId: string): Promise<Array<{ kind: string; c
 
 /** Duplicated, not imported: DATA_DIR there is fixed at import time from this process's HOME. Keep in lockstep with claude.ts. */
 function brokerCandidates(threadId: string, botId: string): string[] {
-  const dataDir = join(home, ".duskbot");
+  const dataDir = join(home, ".madanibot");
   const prefix = threadId.replace(/[^\w-]/g, "").slice(0, 4);
   const digest = createHash("sha256").update(`${botId}\0${threadId}`).digest("hex").slice(0, 4);
   const scope = createHash("sha256").update(`${dataDir}\0${child.pid}\0${botId}\0${threadId}`).digest("hex").slice(0, 16);
-  return [join(dataDir, `perm-${prefix}${digest}.sock`), join(tmpdir(), `dusk-perm-${scope}.sock`)];
+  return [join(dataDir, `perm-${prefix}${digest}.sock`), join(tmpdir(), `madani-perm-${scope}.sock`)];
 }
 
 async function connectBroker(threadId: string, botId: string): Promise<Socket> {
@@ -75,8 +75,8 @@ function ask(conn: Socket, id: string, command: string): { answered: () => boole
 posixOnly("a steered message does not lift the unattended mark on its own", () => {
   beforeAll(async () => {
     chmodSync(FAKE_CLAUDE, 0o755);
-    home = mkdtempSync(join(tmpdir(), "dusk-steer-unattended-"));
-    const data = join(home, ".duskbot");
+    home = mkdtempSync(join(tmpdir(), "madani-steer-unattended-"));
+    const data = join(home, ".madanibot");
     mkdirSync(data, { recursive: true });
     finishGate = join(home, "finish.gate");
     writeFileSync(join(data, "config.json"), JSON.stringify({
@@ -97,8 +97,8 @@ posixOnly("a steered message does not lift the unattended mark on its own", () =
         ...(process.env.PATH ? { PATH: process.env.PATH } : {}),
         HOME: home,
         USERPROFILE: home,
-        DUSK_PORT: String(port),
-        DUSK_WEBHOOK_PORT: String(port + 1),
+        MADANI_PORT: String(port),
+        MADANI_WEBHOOK_PORT: String(port + 1),
         // Under a deep HOME the broker falls back to os.tmpdir(); the child has to agree with this process about where that is.
         TMPDIR: tmpdir(),
       },

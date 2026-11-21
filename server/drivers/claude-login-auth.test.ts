@@ -96,7 +96,7 @@ describe("Claude sign-in through its own localhost callback", () => {
   let home: string;
   let controller: ClaudeLoginController | null = null;
   beforeEach(() => {
-    home = mkdtempSync(join(tmpdir(), "dusk-claude-browser-"));
+    home = mkdtempSync(join(tmpdir(), "madani-claude-browser-"));
     writeFileSync(join(home, "fake-claude.mjs"), FAKE, { mode: 0o700 });
   });
   afterEach(async () => {
@@ -160,7 +160,7 @@ describe("Claude server-owned sign-in", () => {
   };
 
   beforeEach(() => {
-    home = mkdtempSync(join(tmpdir(), "dusk-claude-login-"));
+    home = mkdtempSync(join(tmpdir(), "madani-claude-login-"));
     cli = join(home, "fake-claude.mjs");
     writeFileSync(cli, FAKE, { mode: 0o700 });
     chmodSync(cli, 0o700);
@@ -185,7 +185,7 @@ describe("Claude server-owned sign-in", () => {
     expect(calls().map((call) => call.args)).toEqual([["auth", "status", "--json"], ["auth", "login"], ["auth", "status", "--json"]]);
     expect(calls().every((call) => call.home === home && call.configDir === join(home, ".claude"))).toBe(true);
     // $BROWSER records the link and never opens anything on the server
-    if (process.platform !== "win32") expect(calls()[1].browser).toMatch(/dusk-signin-.*\/open$/);
+    if (process.platform !== "win32") expect(calls()[1].browser).toMatch(/madani-signin-.*\/open$/);
     await expect(controller.complete(start.flowId!, "GOODCODE#abc")).rejects.toThrow(/no longer available/);
   });
 

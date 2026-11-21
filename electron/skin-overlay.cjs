@@ -9,7 +9,7 @@ const SKIN_CHROME = Object.freeze({
   lagoon: Object.freeze({ color: "#dfeceb", symbolColor: "#4d5c5b" }),
   graphite: Object.freeze({ color: "#111214", symbolColor: "#b3b8c2" }),
   linen: Object.freeze({ color: "#eceff3", symbolColor: "#59616c" }),
-  dusk: Object.freeze({ color: "#121014", symbolColor: "#b9afbd" }),
+  madani: Object.freeze({ color: "#121014", symbolColor: "#b9afbd" }),
   daylight: Object.freeze({ color: "#fdfdfd", symbolColor: "#575757" }),
   meadow: Object.freeze({ color: "#ffffff", symbolColor: "#4d5a52" }),
   pop: Object.freeze({ color: "#fdf5ea", symbolColor: "#3a322d" }),

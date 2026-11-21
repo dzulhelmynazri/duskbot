@@ -47,9 +47,9 @@ describe("when the next showing may start", () => {
 });
 
 describe("who never sees it", () => {
-  it("only where the offer is allowed (no store build, no dusk cloud yet), after first run, with no corner cloud card", () => {
+  it("only where the offer is allowed (no store build, no madani cloud yet), after first run, with no corner cloud card", () => {
     expect(nudgeEligible({ allowed: true, settled: true, cornerCard: false })).toBe(true);
-    expect(nudgeEligible({ allowed: false, settled: true, cornerCard: false }), "has dusk cloud, or a store build").toBe(false);
+    expect(nudgeEligible({ allowed: false, settled: true, cornerCard: false }), "has madani cloud, or a store build").toBe(false);
     expect(nudgeEligible({ allowed: null, settled: true, cornerCard: false }), "plan still loading").toBe(false);
     expect(nudgeEligible({ allowed: true, settled: false, cornerCard: false }), "first run").toBe(false);
     expect(nudgeEligible({ allowed: true, settled: true, cornerCard: true })).toBe(false);

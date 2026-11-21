@@ -9,7 +9,7 @@ if (electron.app && process.type === "browser") {
   const { tmpdir } = require("node:os");
   const { join } = require("node:path");
   const { pathToFileURL } = require("node:url");
-  const shim = join(mkdtempSync(join(tmpdir(), "dusk-hidden-electron-")), "electron-hidden.mjs");
+  const shim = join(mkdtempSync(join(tmpdir(), "madani-hidden-electron-")), "electron-hidden.mjs");
   const names = Object.keys(electron).filter((name) => name !== "default" && name !== "BrowserWindow" && /^[A-Za-z_$][\w$]*$/.test(name));
   writeFileSync(shim, `import { createRequire } from "node:module";
 const electron = createRequire(import.meta.url)("electron");

@@ -5,9 +5,9 @@ import { useOptionalStoreRef } from "@/state/store-ref";
 import { openExternalLink } from "./app-links";
 import { browserAvailable, builtInBrowserEnabled, type FeatureFlagConfig } from "./feature-flags";
 
-export const PAGES_DOMAIN = "page.dusk.bot";
+export const PAGES_DOMAIN = "page.madani.bot";
 
-/** A link to a page a bot published: https://<page id>.page.dusk.bot/… Never an app, chat or prompt link. */
+/** A link to a page a bot published: https://<page id>.page.madani.bot/… Never an app, chat or prompt link. */
 export function isPublishedPageUrl(value: string | null | undefined): value is string {
   if (typeof value !== "string") return false;
   let url: URL;
@@ -77,7 +77,7 @@ export function usePageOpener(): (url: string) => void {
   latest.current = store;
   return useCallback((url: string) => {
     const app = latest.current, state = app?.state();
-    const botId = app && state ? pagePanelBot(url, { selectedId: state.selectedId, bots: state.bots ?? [], groups: state.groups ?? [], config: state.config, desktop: window.duskDesktop }) : null;
+    const botId = app && state ? pagePanelBot(url, { selectedId: state.selectedId, bots: state.bots ?? [], groups: state.groups ?? [], config: state.config, desktop: window.madaniDesktop }) : null;
     if (!app || !botId) { void openExternalLink(url).catch(() => {}); return; }
     requestPanelPage(botId, url);
     app.dispatch({ type: "toggleComputer", open: true });

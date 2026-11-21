@@ -20,7 +20,7 @@ export function settledCardStays(card: NonNullable<Message["card"]>): boolean {
   return Boolean(card.requestId && card.tool) && !card.dismissed;
 }
 
-/** A settled card the chat drops. Dusk's intro is a card only for its asks: a typed message dismisses it
+/** A settled card the chat drops. Madani's intro is a card only for its asks: a typed message dismisses it
  * (dismissOnboardingCard), and its bubbles and follow-up stay while only the chips go. */
 export function settledCardGoes(m: Message): boolean {
   return Boolean(m.card && !m.helperIntro && (m.card.answered || m.card.dismissed) && !settledCardStays(m.card));
@@ -45,7 +45,7 @@ export function optionsCardRow({ message: m, transcript, botId, botName, botColo
   /** The bot that asks: this conversation's, or for an inbox's copy the one that asked where it came from. */
   asker?: Asker;
 }): ReactNode {
-  // Dusk's follow-up is drawn under its intro (HelperIntro), never as a row of its own.
+  // Madani's follow-up is drawn under its intro (HelperIntro), never as a row of its own.
   if (m.helperFollowup) return null;
   const card = m.helperIntro ? (
     <HelperIntro botId={botId} threadId={threadId} message={m} answered={shouldHideOnboardingCard(m, transcript)}

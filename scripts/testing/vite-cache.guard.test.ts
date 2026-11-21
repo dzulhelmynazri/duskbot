@@ -1,4 +1,4 @@
-// A test, check or verify script that starts its own Vite dev server keeps its deps cache under .dusk-scratch. Without
+// A test, check or verify script that starts its own Vite dev server keeps its deps cache under .madani-scratch. Without
 // `cacheDir` it shares node_modules/.vite with the developer's running dev server (a worktree links the same folder),
 // rewrites its optimized deps under it, and that page then fails to load parts it fetches later.
 import { readdirSync, readFileSync } from "node:fs";
@@ -7,7 +7,7 @@ import { describe, expect, it } from "vitest";
 import { REPO_ROOT } from "./preview-fixture.ts";
 
 const DIRS = ["scripts", "src", "server", "apps", "electron", "evals"];
-const SKIP = /(^|\/)(node_modules|dist[\w-]*|\.dusk-scratch)(\/|$)/;
+const SKIP = /(^|\/)(node_modules|dist[\w-]*|\.madani-scratch)(\/|$)/;
 const files = DIRS.flatMap((dir) => {
   try { return readdirSync(join(REPO_ROOT, dir), { recursive: true, encoding: "utf8" }).map((name) => join(dir, name)); } catch { return []; }
 }).filter((name) => /\.(?:[cm]?[jt]sx?)$/.test(name) && !SKIP.test(name) && !/vite\.config\.[cm]?ts$/.test(name));

@@ -15,7 +15,7 @@ import { useDesktopCapabilities } from "./DesktopCapabilities";
 import { friendlyError } from "@/lib/plain-error";
 
 const LINUX_GUIDE_URL =
-  "https://github.com/goatedgrokbotalternative/duskbot/blob/main/docs/linux-desktop.md#enable-local-control";
+  "https://github.com/goatedgrokbotalternative/madanibot/blob/main/docs/linux-desktop.md#enable-local-control";
 
 export function LinuxLocalControl() {
   const { capabilities } = useDesktopCapabilities();
@@ -31,7 +31,7 @@ export function LinuxLocalControl() {
   const bundledDriver = local.driverSource === "bundled";
 
   const run = async (action: "enable" | "disable" | "retry") => {
-    if (!window.duskDesktop?.localControl) return;
+    if (!window.madaniDesktop?.localControl) return;
     setPending(action);
     setError(null);
     try {
@@ -42,7 +42,7 @@ export function LinuxLocalControl() {
           return;
         }
       }
-      await window.duskDesktop.localControl[action]();
+      await window.madaniDesktop.localControl[action]();
     } catch (reason) {
       setError(friendlyError(reason));
     } finally {

@@ -9,10 +9,10 @@ import { parsePulse, type PulseSample } from "./machine-pulse.ts";
 export const DASHBOARD_PROTOCOL = 1;
 
 // the default hosted instance, overridable by workspace configuration.
-export const DEFAULT_DASHBOARD_URL = "https://dusk.bot";
+export const DEFAULT_DASHBOARD_URL = "https://madani.bot";
 
 /** where a relay or a dashboard service says which dashboard it belongs to: `{ v: 1, url }` */
-export const DASHBOARD_DISCOVERY_PATH = "/.well-known/duskbot/dashboard";
+export const DASHBOARD_DISCOVERY_PATH = "/.well-known/madanibot/dashboard";
 
 /** reports come every 5 s while someone has the dashboard open, every 3 minutes otherwise */
 export const FAST_REPORT_MS = 5_000;
@@ -27,12 +27,12 @@ export const CLAIM_TTL_MS = 30 * 60_000;
 export const COMMAND_TTL_MS = 10 * 60_000;
 export const MAX_REPORT_BYTES = 512 * 1024;
 
-export const SIGNATURE_HEADERS = { workspace: "x-dusk-workspace", time: "x-dusk-time", signature: "x-dusk-signature" } as const;
+export const SIGNATURE_HEADERS = { workspace: "x-madani-workspace", time: "x-madani-time", signature: "x-madani-signature" } as const;
 
 /** the exact bytes a workspace signs with its ed25519 key: method, path with query, time and the body's sha256 (of
  * the empty string for a GET) */
 export function signedPayload(method: string, path: string, time: number, bodySha256Hex: string): string {
-  return `dusk-dashboard-v${DASHBOARD_PROTOCOL}\n${method.toUpperCase()}\n${path}\n${time}\n${bodySha256Hex}`;
+  return `madani-dashboard-v${DASHBOARD_PROTOCOL}\n${method.toUpperCase()}\n${path}\n${time}\n${bodySha256Hex}`;
 }
 
 export type WorkspaceKind = "vps" | "mac" | "linux" | "windows";
@@ -146,7 +146,7 @@ export function appSlug(input: unknown): string | null {
 export interface DashboardCommand { id: string; kind: CommandKind; target: string; issuedAt: number; expiresAt: number; callback?: string }
 /** `url` is app.connect's sign-in page: https only, shown only to the workspace's owner, never stored. `returnsHere`: that
  * sign-in ends on the command's `callback`, so the website may send its own tab there. `link` is
- * phone.pair's one-time pairing link (duskbot://pair?m=..., shared/mobile-link.ts): handed to the waiting phone only, never
+ * phone.pair's one-time pairing link (madanibot://pair?m=..., shared/mobile-link.ts): handed to the waiting phone only, never
  * stored. `reason` says why a phone.pair failed: no route a phone could use, or refused (policy, too many phones) */
 export interface CommandResult { id: string; ok: boolean; message: string | null; at: number; url?: string | null; returnsHere?: true; link?: string; reason?: "unreachable" | "refused" }
 
@@ -170,7 +170,7 @@ export function connectCallback(input: unknown): string | null {
 
 /** a phone pairing link a workspace may hand back for phone.pair; anything else is dropped */
 export function commandPairLink(input: unknown): string | null {
-  return typeof input === "string" && input.length <= 8192 && /^duskbot:\/\/pair\?m=[A-Za-z0-9_-]+$/.test(input) ? input : null;
+  return typeof input === "string" && input.length <= 8192 && /^madanibot:\/\/pair\?m=[A-Za-z0-9_-]+$/.test(input) ? input : null;
 }
 
 /** a sign-in link a workspace may hand back; anything else is dropped */
@@ -199,7 +199,7 @@ export interface WorkspaceReport {
   apps?: AppsReport;
   /** structured usage since the last report (usage-signals.ts); the service rolls it up and never keeps it on the workspace */
   usage?: UsageReport;
-  /** the person changed "help improve dusk bot" in the app: true is off. The service sets the account's switch to match
+  /** the person changed "help improve madani bot" in the app: true is off. The service sets the account's switch to match
    * (off also deletes what it stored); sent until a report gets through */
   usageOptOut?: boolean;
   /** cpu and memory samples newer than the last report's, sent only while someone watches (machine-pulse.ts) */
@@ -210,7 +210,7 @@ export interface WorkspaceReport {
 /** answer to POST /v1/report and GET /v1/wait */
 export interface ReportAnswer {
   v: 1; watching: boolean; nextReportMs: number; commands: DashboardCommand[];
-  /** the account's "help improve dusk bot" switch (true is off), so the app follows a change made on the account */
+  /** the account's "help improve madani bot" switch (true is off), so the app follows a change made on the account */
   usageOptOut?: boolean;
 }
 

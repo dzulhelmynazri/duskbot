@@ -1,4 +1,4 @@
-export const FOLDER_DRAG_TYPE = "application/x-dusk-folder";
+export const FOLDER_DRAG_TYPE = "application/x-madani-folder";
 
 export function draggedFolder(raw: string, botId: string, projectIds: readonly string[]): string | null {
   try {

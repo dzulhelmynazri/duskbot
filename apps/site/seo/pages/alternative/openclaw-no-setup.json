@@ -4,7 +4,7 @@
   "title": "OpenClaw setup without a terminal: what changes?",
   "nav": "openclaw setup",
   "h1": "openclaw setup without the terminal",
-  "description": "Compare OpenClaw's desktop installers with dusk bot: the steps before your first reply, where each runs, and what you still need to look after.",
+  "description": "Compare OpenClaw's desktop installers with madani bot: the steps before your first reply, where each runs, and what you still need to look after.",
   "keyword": "openclaw setup",
   "keywords": [
     "openclaw install",
@@ -12,7 +12,7 @@
     "openclaw too complicated",
     "non technical openclaw"
   ],
-  "answer": "**get to your first reply without opening a terminal.** openclaw's desktop apps install the pieces for you.[^1] you still choose an ai and keep its computer running.[^2] dusk bot offers named bots and optional hosting later.[^3][^4] try the app and sign-in first, then decide who handles upkeep. we haven't timed first replies in either.",
+  "answer": "**get to your first reply without opening a terminal.** openclaw's desktop apps install the pieces for you.[^1] you still choose an ai and keep its computer running.[^2] madani bot offers named bots and optional hosting later.[^3][^4] try the app and sign-in first, then decide who handles upkeep. we haven't timed first replies in either.",
   "updated": "2026-11-12",
   "review": {
     "status": "approved",
@@ -51,9 +51,9 @@
       "**you want openclaw’s chat channels.** try its installer if the terminal was your only obstacle.",
       "**you want software you can change.** openclaw uses the mit license; you look after the machine."
     ],
-    "dusk": [
+    "madani": [
       "**you want a named bot with a clear job.** add separate jobs when the first one works.",
-      "**you want hosting as a later option.** move chats, memory and routines to a dusk cloud computer."
+      "**you want hosting as a later option.** move chats, memory and routines to a madani cloud computer."
     ]
   },
   "compare": {
@@ -61,7 +61,7 @@
     "intro": "**the desktop installer gets you past the terminal.** the machine still needs upkeep. these setup paths reflect sources checked 12 november 2026. openclaw's time estimate is its own; we haven't timed it.",
     "cols": [
       "openclaw",
-      "dusk bot"
+      "madani bot"
     ],
     "rows": [
       {
@@ -104,7 +104,7 @@
         "label": "published setup time",
         "cells": [
           "about 5 minutes, according to its getting-started docs",
-          "no measured dusk first-reply time in this comparison"
+          "no measured madani first-reply time in this comparison"
         ],
         "src": [
           1,
@@ -115,7 +115,7 @@
         "label": "where the assistant runs",
         "cells": [
           "your computer or your server; no hosted tier from the project",
-          "your computer, your own server or dusk cloud"
+          "your computer, your own server or madani cloud"
         ],
         "src": [
           2,
@@ -126,7 +126,7 @@
         "label": "what happens overnight",
         "cells": [
           "scheduled jobs run through its scheduler on your chosen machine",
-          "local routines stop during sleep or while the app is closed; dusk cloud runs them on time"
+          "local routines stop during sleep or while the app is closed; madani cloud runs them on time"
         ],
         "src": [
           7,
@@ -146,19 +146,19 @@
       }
     ]
   },
-  "method": "**this is a map of the setup, not a race.** we make dusk bot. we read the outside sources on 12 november 2026.\n\nwe did not install both on identical computers or time the same first task. openclaw's five-minute estimate belongs to its docs. a quick install says nothing about answer quality.",
+  "method": "**this is a map of the setup, not a race.** we make madani bot. we read the outside sources on 12 november 2026.\n\nwe did not install both on identical computers or time the same first task. openclaw's five-minute estimate belongs to its docs. a quick install says nothing about answer quality.",
   "sections": [
     {
       "h": "get one reply before connecting your working life",
-      "md": "**try the current installer before giving up on openclaw.** its docs call windows hub the easiest desktop path. terminal instructions remain an option, not a requirement.[^1]\n\nin dusk, use **new bot**, give it one job and ask one question. personal desktop use needs no dusk account.[^3][^6][^10]\n\nleave work apps disconnected until that first answer works. it is easier to spot a sign-in problem before you add several permissions."
+      "md": "**try the current installer before giving up on openclaw.** its docs call windows hub the easiest desktop path. terminal instructions remain an option, not a requirement.[^1]\n\nin madani, use **new bot**, give it one job and ask one question. personal desktop use needs no madani account.[^3][^6][^10]\n\nleave work apps disconnected until that first answer works. it is easier to spot a sign-in problem before you add several permissions."
     },
     {
       "h": "decide who keeps the computer running",
-      "md": "**someone has to keep the morning job running.** openclaw runs on your computer or server; its project offers no hosted tier.[^2] third-party offers are a separate choice in [managed openclaw hosting](/alternatives/openclaw-hosting).\n\ndusk cloud hosts the computer and backs it up daily. move bots there with chats, memory and routines.[^4]\n\nstaying local costs less in dusk. routines stop during sleep, though. read [where agents run with the lid shut](/agents-when-laptop-closed) before counting on an overnight job."
+      "md": "**someone has to keep the morning job running.** openclaw runs on your computer or server; its project offers no hosted tier.[^2] third-party offers are a separate choice in [managed openclaw hosting](/alternatives/openclaw-hosting).\n\nmadani cloud hosts the computer and backs it up daily. move bots there with chats, memory and routines.[^4]\n\nstaying local costs less in madani. routines stop during sleep, though. read [where agents run with the lid shut](/agents-when-laptop-closed) before counting on an overnight job."
     },
     {
       "h": "the setup ends when you know what you own",
-      "md": "**choose who gets the call when it breaks next month.** the installer leaves three decisions with you.\n\n- where the assistant runs\n- which ai answers\n- who handles the machine\n\nopenclaw's desktop route handles installation. you own the running setup.[^1][^2]\n\ndusk hosting doesn't include ai usage. when the plan runs out, the bot tells you: wait for the reset or switch ai.[^6][^10] read your provider's current terms. the [broader alternatives](/alternatives/openclaw) help if upkeep was the real concern."
+      "md": "**choose who gets the call when it breaks next month.** the installer leaves three decisions with you.\n\n- where the assistant runs\n- which ai answers\n- who handles the machine\n\nopenclaw's desktop route handles installation. you own the running setup.[^1][^2]\n\nmadani hosting doesn't include ai usage. when the plan runs out, the bot tells you: wait for the reset or switch ai.[^6][^10] read your provider's current terms. the [broader alternatives](/alternatives/openclaw) help if upkeep was the real concern."
     }
   ],
   "faq": [
@@ -172,7 +172,7 @@
     },
     {
       "q": "which one gives me a reply fastest?",
-      "a": "**openclaw's docs say about five minutes for setup, onboarding and chat.** we haven't timed that against dusk, so try a reply before buying hosting.[^1]"
+      "a": "**openclaw's docs say about five minutes for setup, onboarding and chat.** we haven't timed that against madani, so try a reply before buying hosting.[^1]"
     }
   ],
   "sources": [
@@ -187,12 +187,12 @@
       "checked": "2026-11-12"
     },
     {
-      "label": "dusk bot getting started",
+      "label": "madani bot getting started",
       "url": "/docs/getting-started"
     },
     {
-      "label": "dusk cloud",
-      "url": "/docs/dusk-cloud"
+      "label": "madani cloud",
+      "url": "/docs/madani-cloud"
     },
     {
       "label": "openclaw model authentication",
@@ -200,7 +200,7 @@
       "checked": "2026-11-12"
     },
     {
-      "label": "dusk bot jobs and model choices",
+      "label": "madani bot jobs and model choices",
       "url": "/docs/bots"
     },
     {
@@ -209,15 +209,15 @@
       "checked": "2026-11-12"
     },
     {
-      "label": "dusk bot on your own server",
+      "label": "madani bot on your own server",
       "url": "/docs/your-own-server"
     },
     {
-      "label": "dusk routines",
+      "label": "madani routines",
       "url": "/docs/routines"
     },
     {
-      "label": "dusk account and billing",
+      "label": "madani account and billing",
       "url": "/docs/account-and-billing"
     }
   ],

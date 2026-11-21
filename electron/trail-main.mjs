@@ -8,7 +8,7 @@ import fs from "node:fs";
 import { randomBytes } from "node:crypto";
 import { TRAIL_DAYS, TRAIL_EXPORT_PREVIEW, readTrail, scrubForExport, trail, trailError, trailFrom } from "./trail.mjs";
 
-export const SUPPORT_EMAIL = "hello@dusk.bot";
+export const SUPPORT_EMAIL = "hello@madani.bot";
 const RENDERER_PER_MINUTE = 3000;
 
 /** the events of the last `days` in `dir`, scrubbed for leaving this computer, one JSON line each */
@@ -22,7 +22,7 @@ export async function exportTrailText(dir, { now = Date.now(), days = TRAIL_DAYS
   return { text: `${lines.join("\n")}\n`, count: events.length };
 }
 
-export const usageLogFileName = (date = new Date()) => `dusk-bot-usage-log-${date.toISOString().slice(0, 10)}.jsonl`;
+export const usageLogFileName = (date = new Date()) => `madani-bot-usage-log-${date.toISOString().slice(0, 10)}.jsonl`;
 
 /**
  * @param {{ ipcMain: any, app: any, dialog: any, shell: any, powerMonitor?: any, BrowserWindow: any, logDir: string,
@@ -68,7 +68,7 @@ export function installTrailMain({ ipcMain, app, dialog, shell, powerMonitor, Br
       trail("export.saved", { events: count });
       const ask = await dialog.showMessageBox(owner, {
         type: "info",
-        message: "Send the usage log to dusk bot support?",
+        message: "Send the usage log to madani bot support?",
         detail: `${TRAIL_EXPORT_PREVIEW}.\n\nYour email app opens a new message to ${SUPPORT_EMAIL}; attach the file from the folder that opens.`,
         buttons: ["Send by email", "Done"],
         defaultId: 0,
@@ -77,7 +77,7 @@ export function installTrailMain({ ipcMain, app, dialog, shell, powerMonitor, Br
       });
       if (ask.response !== 0) return { saved: true, sent: false };
       shell.showItemInFolder(chosen.filePath);
-      const subject = encodeURIComponent("dusk bot usage log");
+      const subject = encodeURIComponent("madani bot usage log");
       const body = encodeURIComponent(`What happened, and roughly when:\n\n\n(The usage log ${path.basename(chosen.filePath)} is attached.)`);
       await shell.openExternal(`mailto:${SUPPORT_EMAIL}?subject=${subject}&body=${body}`);
       trail("export.sent", { how: "email" });

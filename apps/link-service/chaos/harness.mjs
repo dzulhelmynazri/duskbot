@@ -229,7 +229,7 @@ export function createNode({ id, port, dataDir, nodes, base, env = {}, log = () 
   const lines = [];
   function start() {
     child = spawn(process.execPath, ["--import", join(chaosDir, "preload.mjs"), join(linkRoot, "src/server.mjs")], {
-      env: { ...process.env, ...env, PORT: String(port), HOST: "127.0.0.1", LINK_DATA_DIR: dataDir, LINK_BASE: base, LINK_NODES: nodes, LINK_NODE_ID: id, LINK_PEER_TOKEN: PEER_TOKEN, LINK_STATS_TOKEN: STATS_TOKEN, DUSK_LINK_OPEN: "1", LINK_TRUST_PROXY: "1", NODE_EXTRA_CA_CERTS: join(dataDir, "..", "ca.pem") },
+      env: { ...process.env, ...env, PORT: String(port), HOST: "127.0.0.1", LINK_DATA_DIR: dataDir, LINK_BASE: base, LINK_NODES: nodes, LINK_NODE_ID: id, LINK_PEER_TOKEN: PEER_TOKEN, LINK_STATS_TOKEN: STATS_TOKEN, MADANI_LINK_OPEN: "1", LINK_TRUST_PROXY: "1", NODE_EXTRA_CA_CERTS: join(dataDir, "..", "ca.pem") },
       stdio: ["ignore", "pipe", "pipe"],
     });
     const keep = (data) => { for (const line of String(data).split("\n").filter(Boolean)) { lines.push(`${new Date().toISOString().slice(11, 23)} ${line}`); log(`[${id}] ${line}`); } if (lines.length > 4000) lines.splice(0, 1000); };
@@ -278,7 +278,7 @@ export function patternBytes(length) {
 }
 
 /**
- * stands in for dusk bot on the server: what the agent needs to link, a json ping, a live event stream, a big download,
+ * stands in for madani bot on the server: what the agent needs to link, a json ping, a live event stream, a big download,
  * an upload that answers its hash, a websocket echo. `restart()` drops it for a moment like a server upgrade does.
  */
 export async function createBotServer({ port: wanted = 0 } = {}) {
@@ -288,7 +288,7 @@ export async function createBotServer({ port: wanted = 0 } = {}) {
   const handler = (req, res) => {
     const url = new URL(req.url, "http://x");
     if (url.pathname === "/api/auth/pairing") return json(res, { code: "CHAO-SXXX-0001", expiresAt: Date.now() + 600_000 });
-    if (url.pathname === "/.well-known/duskbot/environment") return json(res, { environmentId: "6f1c2d3e-0000-4000-8000-00000000c4a5", version: "chaos" });
+    if (url.pathname === "/.well-known/madanibot/environment") return json(res, { environmentId: "6f1c2d3e-0000-4000-8000-00000000c4a5", version: "chaos" });
     if (url.pathname === "/api/ping") return json(res, { ok: true, at: Date.now() });
     if (url.pathname === "/api/slow") { const ms = Number(url.searchParams.get("ms") ?? 1000); setTimeout(() => json(res, { ok: true }), ms); return; }
     if (url.pathname === "/api/events") {
@@ -375,8 +375,8 @@ export function createAgent({ home, serverPort, ca, restartMs = 5000, env = {}, 
   const lines = [];
   const baseEnv = () => ({
     ...process.env, HOME: home, NODE_EXTRA_CA_CERTS: ca, LINK_SERVER_PORT: String(serverPort),
-    DUSK_LINK_DIRECT: "off", DUSK_RELAY_URL: "off", DUSK_LINK_SERVER_UPDATES: "off", DUSK_LINK_UPDATES: "off", DUSK_LINK_PHONES: "off",
-    DUSK_CHAOS_SKEW_MS: String(skewMs), ...env,
+    MADANI_LINK_DIRECT: "off", MADANI_RELAY_URL: "off", MADANI_LINK_SERVER_UPDATES: "off", MADANI_LINK_UPDATES: "off", MADANI_LINK_PHONES: "off",
+    MADANI_CHAOS_SKEW_MS: String(skewMs), ...env,
   });
   const keep = (data) => { for (const line of String(data).split("\n").filter(Boolean)) { lines.push(`${new Date().toISOString().slice(11, 23)} ${line}`); log(`[agent] ${line}`); } if (lines.length > 4000) lines.splice(0, 1000); };
   function launch(args, extra = {}) {
@@ -411,7 +411,7 @@ export function createAgent({ home, serverPort, ca, restartMs = 5000, env = {}, 
     send(message) { child?.send?.(message); },
     setSkew(ms) { skewMs = ms; },
     starts: () => starts,
-    nodesFile: () => { try { return JSON.parse(readFileSync(join(home, ".config/duskbot-link/nodes.json"), "utf8")); } catch { return null; } },
+    nodesFile: () => { try { return JSON.parse(readFileSync(join(home, ".config/madanibot-link/nodes.json"), "utf8")); } catch { return null; } },
   };
 }
 
@@ -454,6 +454,6 @@ export function createApp({ link, ca, log = () => {}, runner = "app-runner.mjs" 
 }
 
 /** a fresh scratch folder */
-export function scratch(prefix = "dusk-chaos-") { return mkdtempSync(join(tmpdir(), prefix)); }
+export function scratch(prefix = "madani-chaos-") { return mkdtempSync(join(tmpdir(), prefix)); }
 export function removeScratch(dir) { rmSync(dir, { recursive: true, force: true }); }
 export { mkdirSync, randomBytes };

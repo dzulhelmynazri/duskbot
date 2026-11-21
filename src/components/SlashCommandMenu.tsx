@@ -5,7 +5,7 @@ import { t } from "@/lib/i18n";
 import type { ComposerSlashCommand } from "@/lib/composer-commands";
 import type { MenuMotion } from "./MenuMotion";
 
-/** The composer's / list: dusk bot's commands like /goal, the skills made in dusk bot, then a More row for the other
+/** The composer's / list: madani bot's commands like /goal, the skills made in madani bot, then a More row for the other
  * AI tools' skills. */
 export function SlashCommandMenu({ listRef, motion, commands, highlight, onPick, onHighlight }: {
   listRef: RefObject<HTMLDivElement | null>;

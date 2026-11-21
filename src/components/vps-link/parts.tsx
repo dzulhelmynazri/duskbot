@@ -15,7 +15,7 @@ export const centered = "absolute left-1/2 w-[520px] max-w-[calc(100%-32px)] -tr
 
 /** "Mac" on a Mac, "computer" elsewhere, as copy says it. */
 export function deviceWord(): string {
-  const platform = typeof window === "undefined" ? undefined : window.duskDesktop?.platform;
+  const platform = typeof window === "undefined" ? undefined : window.madaniDesktop?.platform;
   return platform === "darwin" ? t("vpsLink.device.mac") : t("vpsLink.device.computer");
 }
 
@@ -77,7 +77,7 @@ export function CommandPill({ command, onCopied }: { command: string; onCopied?:
       <span aria-hidden="true" className="shrink-0 select-none font-mono text-[13px] leading-[18px] text-ink/40">$</span>
       <code data-vps-command="" tabIndex={0} className="min-w-0 flex-1 select-all overflow-x-auto whitespace-nowrap font-mono text-[13px] leading-[18px] text-ink outline-none [mask-image:linear-gradient(to_right,black_calc(100%-28px),transparent)] [scrollbar-width:none] focus-visible:rounded-[4px] focus-visible:outline-2 focus-visible:outline-focus">{command}</code>
       <button type="button" data-autofocus="" onClick={copy} aria-label={copied ? t("vpsLink.copied") : t("vpsLink.copyAria")}
-        className="dusk-press inline-flex h-8 shrink-0 items-center justify-center gap-1.5 rounded-full bg-ink px-3.5 text-[13px] leading-[18px] text-app outline-none hover:bg-[color-mix(in_srgb,var(--color-ink)_88.5%,var(--color-app))] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus">
+        className="madani-press inline-flex h-8 shrink-0 items-center justify-center gap-1.5 rounded-full bg-ink px-3.5 text-[13px] leading-[18px] text-app outline-none hover:bg-[color-mix(in_srgb,var(--color-ink)_88.5%,var(--color-app))] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus">
         {copied
           ? <span key="copied" className="vps-land inline-flex items-center gap-1.5"><Check size={13} strokeWidth={2.5} aria-hidden="true" />{t("vpsLink.copied")}</span>
           : <span key="copy" className="inline-flex items-center gap-1.5"><Copy size={13} aria-hidden="true" />{state === "failed" ? t("common.copyFailed") : t("vpsLink.copy")}</span>}

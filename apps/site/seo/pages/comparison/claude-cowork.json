@@ -1,10 +1,10 @@
 {
   "path": "/vs/claude-cowork",
-  "title": "Claude Cowork vs dusk bot: tasks or a bot team?",
+  "title": "Claude Cowork vs madani bot: tasks or a bot team?",
   "nav": "claude cowork",
-  "h1": "claude cowork vs dusk bot: files, schedules and bot teams",
-  "description": "Cowork is becoming part of Claude. Compare its file tasks and cloud schedules with dusk bot, including the limits of local routines.",
-  "answer": "**choose between handing claude a task and keeping a team of named bots.** cowork is becoming part of claude as of 12 november 2026.[^1] dusk gives each bot its own job, memory and ai choice. both schedule work. new cowork tasks on pro, max and ultra run in the cloud, so laptop sleep is no longer the deciding difference.[^2]",
+  "h1": "claude cowork vs madani bot: files, schedules and bot teams",
+  "description": "Cowork is becoming part of Claude. Compare its file tasks and cloud schedules with madani bot, including the limits of local routines.",
+  "answer": "**choose between handing claude a task and keeping a team of named bots.** cowork is becoming part of claude as of 12 november 2026.[^1] madani gives each bot its own job, memory and ai choice. both schedule work. new cowork tasks on pro, max and ultra run in the cloud, so laptop sleep is no longer the deciding difference.[^2]",
   "tags": [
     "claude",
     "cowork",
@@ -36,7 +36,7 @@
       "**you want file work in claude’s own app.** hand over an outcome without using a terminal.",
       "**you want its remote schedules.** they come with a paid claude plan."
     ],
-    "dusk": [
+    "madani": [
       "**you want lasting, separate roles.** give the reviewer and planner different jobs and memory.",
       "**you want to change the ai without starting over.** each bot keeps chats, files and memory."
     ]
@@ -46,7 +46,7 @@
     "intro": "**both can schedule work; the daily arrangement differs.** details are as of 12 november 2026. the claude column includes its move to cloud tasks.",
     "cols": [
       "claude cowork",
-      "dusk bot"
+      "madani bot"
     ],
     "rows": [
       {
@@ -86,7 +86,7 @@
         "label": "scheduled sessions",
         "cells": [
           "paid plans support remote recurring tasks, including while the laptop sleeps",
-          "desktop routines need an awake machine and open app; dusk cloud keeps running"
+          "desktop routines need an awake machine and open app; madani cloud keeps running"
         ],
         "src": [
           5,
@@ -120,19 +120,19 @@
       }
     ]
   },
-  "method": "**compare the work you will repeat, then try it with your own files.** we publish dusk bot. we did not run identical tasks in both apps.\n\nanthropic's sources were checked on 12 november 2026. newer cloud-task help supersedes older desktop sleep advice. the table names the affected plans so you can match them to yours.",
+  "method": "**compare the work you will repeat, then try it with your own files.** we publish madani bot. we did not run identical tasks in both apps.\n\nanthropic's sources were checked on 12 november 2026. newer cloud-task help supersedes older desktop sleep advice. the table names the affected plans so you can match them to yours.",
   "sections": [
     {
       "h": "start with the work, not the chat box",
-      "md": "**hand over a document task, or keep a teammate for the next one too.** cowork brings claude code's agent architecture to work beyond coding, with no terminal required.[^3]\n\nclaude code cloud schedules package a prompt, repositories and connectors. schedules, api calls or github events can start them.[^12] that suits work beginning in a code repository.\n\nfor documents you want back for review, cowork is a direct fit. dusk keeps lasting roles. [ai teammates](/ai-teammates) shows a reader and planner with different jobs and memory."
+      "md": "**hand over a document task, or keep a teammate for the next one too.** cowork brings claude code's agent architecture to work beyond coding, with no terminal required.[^3]\n\nclaude code cloud schedules package a prompt, repositories and connectors. schedules, api calls or github events can start them.[^12] that suits work beginning in a code repository.\n\nfor documents you want back for review, cowork is a direct fit. madani keeps lasting roles. [ai teammates](/ai-teammates) shows a reader and planner with different jobs and memory."
     },
     {
       "h": "find out which answer leaves you less work",
-      "md": "**see which one catches the promise that changed.** give both tools two versions of a proposal you can share. ask for changed promises and unanswered questions. leave both files untouched.\n\ncompare each answer with the originals. did it find the new deadline? how much still needs your attention? a polished summary is cheap if you have to do the review again.\n\nin dusk, attach the files and use **ask for approval** for commands and file changes. keep connected apps read only; those limits block app changes separately.[^7][^13]"
+      "md": "**see which one catches the promise that changed.** give both tools two versions of a proposal you can share. ask for changed promises and unanswered questions. leave both files untouched.\n\ncompare each answer with the originals. did it find the new deadline? how much still needs your attention? a polished summary is cheap if you have to do the review again.\n\nin madani, attach the files and use **ask for approval** for commands and file changes. keep connected apps read only; those limits block app changes separately.[^7][^13]"
     },
     {
       "h": "price the setup you will actually use",
-      "md": "**both can keep working with your laptop shut.** new cowork tasks on pro, max and ultra moved to the cloud on 6 october 2026. the local-only option went away.[^2]\n\ncurrent schedules run remotely too. older tasks created before that date can remain local.[^5] the [schedule guide](/guides/claude-scheduled-tasks) separates them.\n\ndusk desktop routines still need an awake machine and open app. dusk cloud changes their home; ai usage stays on your provider's bill.[^8][^9][^11] include a work license when needed. use the [pricing guide](/guides/claude-cowork-pricing) before deciding from one headline price."
+      "md": "**both can keep working with your laptop shut.** new cowork tasks on pro, max and ultra moved to the cloud on 6 october 2026. the local-only option went away.[^2]\n\ncurrent schedules run remotely too. older tasks created before that date can remain local.[^5] the [schedule guide](/guides/claude-scheduled-tasks) separates them.\n\nmadani desktop routines still need an awake machine and open app. madani cloud changes their home; ai usage stays on your provider's bill.[^8][^9][^11] include a work license when needed. use the [pricing guide](/guides/claude-cowork-pricing) before deciding from one headline price."
     }
   ],
   "faq": [
@@ -146,7 +146,7 @@
     },
     {
       "q": "can i run claude and another ai as separate teammates?",
-      "a": "**yes, dusk gives each bot its own ai.** put them in a group chat to share work. read each provider's current sign-in terms.[^6][^10]"
+      "a": "**yes, madani gives each bot its own ai.** put them in a group chat to share work. read each provider's current sign-in terms.[^6][^10]"
     }
   ],
   "sources": [
@@ -176,27 +176,27 @@
       "checked": "2026-11-12"
     },
     {
-      "label": "dusk bot: jobs and ai choices",
+      "label": "madani bot: jobs and ai choices",
       "url": "/docs/bots"
     },
     {
-      "label": "dusk bot: files and app permissions",
+      "label": "madani bot: files and app permissions",
       "url": "/docs/files-and-apps"
     },
     {
-      "label": "dusk bot: when routines run",
+      "label": "madani bot: when routines run",
       "url": "/docs/routines"
     },
     {
-      "label": "dusk bot: hosted computers",
-      "url": "/docs/dusk-cloud"
+      "label": "madani bot: hosted computers",
+      "url": "/docs/madani-cloud"
     },
     {
-      "label": "dusk bot: shared threads",
+      "label": "madani bot: shared threads",
       "url": "/docs/group-chats"
     },
     {
-      "label": "dusk bot: personal and work use",
+      "label": "madani bot: personal and work use",
       "url": "/docs/account-and-billing"
     },
     {
@@ -205,7 +205,7 @@
       "checked": "2026-11-12"
     },
     {
-      "label": "dusk bot: command and file approvals",
+      "label": "madani bot: command and file approvals",
       "url": "/docs/computer"
     }
   ],
@@ -244,11 +244,11 @@
       ],
       [
         "reviewer and planner with separate memory",
-        "dusk bots"
+        "madani bots"
       ],
       [
         "different ai choices for different jobs",
-        "dusk bots"
+        "madani bots"
       ],
       [
         "remote schedules inside your claude plan",

@@ -8,7 +8,7 @@ import { CHECKOUT_PAGE, finishesPurchase } from "../shared/purchase.ts";
 /** How long one confirmation lets the browser finish the purchase it covers. */
 export const PURCHASE_PASS_MS = 10 * 60_000;
 
-export const PURCHASE_REFUSAL = "dusk bot did not click this: it looks like the last step of a purchase, which needs the person's confirmation first. Call confirm_purchase with the order summary you can see on this page (items and quantities, total with shipping, masked payment method, delivery address, expected delivery). It shows the person a card and waits for their tap; once they confirm, take this step again. If they cancel, do not buy.";
+export const PURCHASE_REFUSAL = "madani bot did not click this: it looks like the last step of a purchase, which needs the person's confirmation first. Call confirm_purchase with the order summary you can see on this page (items and quantities, total with shipping, masked payment method, delivery address, expected delivery). It shows the person a card and waits for their tap; once they confirm, take this step again. If they cancel, do not buy.";
 
 type Args = Record<string, unknown>;
 interface Page { address: string; refs: Map<string, string> }
@@ -27,13 +27,13 @@ function resultText(result: unknown): string {
 }
 
 /** Where a point click's control name is carried to the check: a string, or null when the page could not name it. */
-const HIT = "duskPointName";
-const HIT_MARK = /DUSK_HIT:([^\s"'\\]*):END/u;
+const HIT = "madaniPointName";
+const HIT_MARK = /MADANI_HIT:([^\s"'\\]*):END/u;
 
 /** The control under a point, as an agent_browser_eval script: the clickable element around it and its words. A frame
  * there (a card form) has no words this page can read. */
 export function pointNameScript(x: number, y: number): string {
-  return `(() => { const el = document.elementFromPoint(${Number(x)}, ${Number(y)}); if (!el || el.tagName === "IFRAME") return "DUSK_HIT::END"; const c = el.closest("button,a,[role=button],[role=link],input[type=submit],input[type=button],summary") || el; const t = (c.getAttribute("aria-label") || c.value || c.innerText || c.textContent || "").trim().replace(/\\s+/g, " ").slice(0, 200); return "DUSK_HIT:" + encodeURIComponent(t || "-") + ":END"; })()`;
+  return `(() => { const el = document.elementFromPoint(${Number(x)}, ${Number(y)}); if (!el || el.tagName === "IFRAME") return "MADANI_HIT::END"; const c = el.closest("button,a,[role=button],[role=link],input[type=submit],input[type=button],summary") || el; const t = (c.getAttribute("aria-label") || c.value || c.innerText || c.textContent || "").trim().replace(/\\s+/g, " ").slice(0, 200); return "MADANI_HIT:" + encodeURIComponent(t || "-") + ":END"; })()`;
 }
 
 /** The name an eval of pointNameScript returned, or null. */

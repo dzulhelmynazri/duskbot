@@ -22,7 +22,7 @@ path; they do not identify the exact cache responsible in an old live session.
 
 Build the generated `managedImageDockerfile()` under a dedicated fixture image
 tag, rather than replacing an image used by running user desktops. Set explicit
-`DUSK_VERIFY_PODMAN`, `DUSK_VERIFY_MACHINE`, and `DUSK_VERIFY_IMAGE`, then run:
+`MADANI_VERIFY_PODMAN`, `MADANI_VERIFY_MACHINE`, and `MADANI_VERIFY_IMAGE`, then run:
 
 ```sh
 node --experimental-strip-types scripts/verify-japanese-desktop.ts
@@ -30,13 +30,13 @@ node --experimental-strip-types scripts/verify-japanese-desktop.ts
 
 The script saves a minimal UTF-8 HTML file, launches Firefox in two independently
 created desktops, records actual screenshots and removes its containers and
-engine-host temporary workspaces. Use `DUSK_VERIFY_OUTPUT` for a separate evidence
+engine-host temporary workspaces. Use `MADANI_VERIFY_OUTPUT` for a separate evidence
 directory when comparing the old image. The receipt reports capture completion;
 glyph correctness requires inspecting the PNGs.
 
 App imports use a fresh temporary HOME and data directory under the output
 directory. Podman alone keeps its existing connection and SSH configuration.
-Each container has a unique `dusk-font-fixture-` name. The script resolves the
+Each container has a unique `madani-font-fixture-` name. The script resolves the
 chosen image to an immutable local ID once, records that ID in the receipt, and
 also removes partially created containers after a failed launch. It removes
 temporary app data and home on normal completion or a caught failure. After a

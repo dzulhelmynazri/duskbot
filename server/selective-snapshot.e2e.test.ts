@@ -1,6 +1,6 @@
 import { writeFileSync } from "node:fs";
 import { expect, it } from "vitest";
-import { launchVerificationServer, runControlDusk } from "../scripts/control-dusk.ts";
+import { launchVerificationServer, runControlMadani } from "../scripts/control-madani.ts";
 import type { BackupTask, TeamBackup } from "../shared/team-backup.ts";
 import type { WireBot, WireGroup, WireMessage } from "../shared/wire.ts";
 
@@ -30,7 +30,7 @@ it("sends full history only for the selected conversation and preserves on-deman
   };
   try {
     const backup: TeamBackup = {
-      format: "dusk.backup", version: 1, name: "Startup fixture", exportedAt: 1, warnings: [], routines: [],
+      format: "madani.backup", version: 1, name: "Startup fixture", exportedAt: 1, warnings: [], routines: [],
       bots: Array.from({ length: 13 }, (_, index) => ({
         key: `bot-${index}`, name: `Fixture ${index}`, title: "", description: "", color: "green", chiefOfStaff: false,
         hidden: false, playbooks: [], activeTask: `bot-${index}-main`, tasks: [history(`bot-${index}-main`), history(`bot-${index}-sibling`)],
@@ -74,8 +74,8 @@ it("sends full history only for the selected conversation and preserves on-deman
     expect(afterSwitch.loadedThreads).toEqual([sibling.threadId]);
     expect(afterSwitch.bots.find((bot: WireBot) => bot.id === other.id).messages).toEqual(switched.messages);
 
-    await runControlDusk(["send", "--bot", selected.id, "--task", selected.threadId, "--text", "Startup fixture live reply", "--url", fixture.info.url]);
-    const settled = await runControlDusk(["wait", "--bot", selected.id, "--task", selected.threadId, "--timeout", "15", "--url", fixture.info.url]) as { status: string };
+    await runControlMadani(["send", "--bot", selected.id, "--task", selected.threadId, "--text", "Startup fixture live reply", "--url", fixture.info.url]);
+    const settled = await runControlMadani(["wait", "--bot", selected.id, "--task", selected.threadId, "--timeout", "15", "--url", fixture.info.url]) as { status: string };
     expect(settled.status).toBe("settled");
     const afterReply = (await request(`/api/bots?messages=200&selected=${selected.id}`)).body;
     expect(afterReply.bots.find((bot: WireBot) => bot.id === selected.id).messages.some((message: { text?: string }) => message.text === "Startup fixture live reply")).toBe(true);

@@ -34,7 +34,7 @@ function writePrivate(dir: string, file: string, value: unknown) {
 export function createSlackHandover(deps: SlackHandoverDeps) {
   const fetcher = deps.fetch ?? fetch, now = deps.now ?? Date.now, log = deps.log ?? (() => {});
   const keyFile = join(deps.dataDir, "slack-edge-key.json");
-  const active = deps.env.DUSK_CLOUD_ROLE === "home" && deps.env.DUSK_SLACK_EDGE !== "0";
+  const active = deps.env.MADANI_CLOUD_ROLE === "home" && deps.env.MADANI_SLACK_EDGE !== "0";
   let timer: ReturnType<typeof setTimeout> | null = null, running = false, syncing: Promise<void> | null = null;
   let acks: string[] = [];
 

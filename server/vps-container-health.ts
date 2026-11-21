@@ -51,7 +51,7 @@ export async function forceStopContainer(docker: DockerCall, containerId: string
   }
   await docker([
     "run", "--rm", "--runtime", "runc", "--pid", "host", "--userns", "host", "--privileged", "--network", "none", "--user", "0:0",
-    "--label", "dusk.role=sandbox-reaper", "--entrypoint", "sh", state.image, "-c", 'kill -9 "$1"', "sh", String(state.pid),
+    "--label", "madani.role=sandbox-reaper", "--entrypoint", "sh", state.image, "-c", 'kill -9 "$1"', "sh", String(state.pid),
   ], REAPER_TIMEOUT_MS);
   for (let poll = 0; poll < SETTLE_POLLS; poll++) {
     if (!(await running(docker, containerId)).running) return "sandbox-killed";

@@ -1,6 +1,6 @@
 import { LEGACY } from "./legacy-names.mjs";
 const INSTALLATION_CREDENTIAL =
-  /^(?:dusk|omb)_install_[A-Za-z0-9_-]{22}\.[A-Za-z0-9_-]{43}$/;
+  /^(?:madani|omb)_install_[A-Za-z0-9_-]{22}\.[A-Za-z0-9_-]{43}$/;
 const INSTALLATION_ID =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const CLIENT_INSTANCE = /^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$/;
@@ -276,7 +276,7 @@ export function createControlPlaneClient({
       if (
         payload.ok !== true ||
         // the hosted control plane may still answer under its name from before the rename
-        !["duskbot-control-plane", LEGACY.controlPlaneService].includes(payload.service)
+        !["madanibot-control-plane", LEGACY.controlPlaneService].includes(payload.service)
       ) {
         throw new ControlPlaneError("control_plane_unavailable");
       }

@@ -87,7 +87,7 @@ const press = (label: string, key: string) => {
 };
 
 beforeAll(() => {
-  vi.stubGlobal("duskDesktop", undefined);
+  vi.stubGlobal("madaniDesktop", undefined);
 });
 beforeEach(() => {
   // The panel remembers each conversation's tab, so one test's click must not choose the next test's tab.
@@ -137,7 +137,7 @@ describe("Computer panel tab", () => {
     fixture.browser = true;
     await open(makeBot());
     expect(selected()).toBe("Screen");
-    const PAGE = "https://abcdefghijklmnopqrstuvwxyz.page.dusk.bot/";
+    const PAGE = "https://abcdefghijklmnopqrstuvwxyz.page.madani.bot/";
     flushSync(() => requestPanelPage("scout", PAGE));
     await settle();
     expect(selected()).toBe("Browser");

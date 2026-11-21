@@ -49,7 +49,7 @@ export function BotRoutines({ bot, defaultRunOn, label = true }: { bot: Bot; def
   const appTriggers = useAppTriggers();
   const [openId, setOpenId] = useState<string | null>(null);
   const [editing, setEditing] = useState<string | "new" | null>(null);
-  const remote = typeof window !== "undefined" && window.duskDesktop?.remoteClient?.active === true;
+  const remote = typeof window !== "undefined" && window.madaniDesktop?.remoteClient?.active === true;
   const automations = useMemo(() => automationsFrom({
     routines: state.routines.filter((routine) => routine.botId === bot.id).sort((a, b) => a.createdAt - b.createdAt),
     webhooks: remote ? [] : state.webhooks.filter((webhook) => webhook.botId === bot.id),

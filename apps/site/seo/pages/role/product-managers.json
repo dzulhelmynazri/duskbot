@@ -113,15 +113,15 @@
   ],
   "sources": [
     {
-      "label": "dusk bot docs: connected apps and permissions",
+      "label": "madani bot docs: connected apps and permissions",
       "url": "/docs/files-and-apps"
     },
     {
-      "label": "dusk bot docs: routines",
+      "label": "madani bot docs: routines",
       "url": "/docs/routines"
     },
     {
-      "label": "dusk bot docs: account and billing",
+      "label": "madani bot docs: account and billing",
       "url": "/docs/account-and-billing"
     },
     {
@@ -140,7 +140,7 @@
       "checked": "2026-11-12"
     },
     {
-      "label": "dusk bot docs: permissions and sends",
+      "label": "madani bot docs: permissions and sends",
       "url": "/docs/computer"
     }
   ],

@@ -2,14 +2,14 @@ import { randomUUID } from "node:crypto";
 import { existsSync, readFileSync, readdirSync, rmSync, statSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { expect, it } from "vitest";
-import { launchVerificationServer } from "../scripts/control-dusk.ts";
+import { launchVerificationServer } from "../scripts/control-madani.ts";
 import { createTeamVpsFixture } from "../scripts/testing/team-vps-fixture.ts";
 
 const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 async function harness(independent: boolean, initiallyEnabled = true) {
   const vps = await createTeamVpsFixture({ screens: independent });
   let fixture;
-  try { fixture = await launchVerificationServer({ DUSK_TEST_VPS_IDLE_CLOCK: "1" }, undefined, vps.localVm); }
+  try { fixture = await launchVerificationServer({ MADANI_TEST_VPS_IDLE_CLOCK: "1" }, undefined, vps.localVm); }
   catch (error) { await vps.close(); throw error; }
   const api = async (method: string, path: string, body?: unknown) => {
     const response = await fetch(fixture.info.url + path, { method, headers: { "content-type": "application/json", origin: fixture.info.url }, ...(body === undefined ? {} : { body: JSON.stringify(body) }) });

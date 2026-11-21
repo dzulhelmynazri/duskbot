@@ -12,7 +12,7 @@ import { DirectRefused, type ScreenChannel, type ScreenDirect } from "../screen-
 import { PASS, type RouteHandler } from "./table.ts";
 
 /** Headers that say who is asking; everything else of the signaling request stays behind. */
-const CARRIED = ["cookie", "authorization", "host", "origin", "user-agent", "x-forwarded-for", "x-forwarded-proto", "x-forwarded-host", "forwarded", "x-dusk-background"];
+const CARRIED = ["cookie", "authorization", "host", "origin", "user-agent", "x-forwarded-for", "x-forwarded-proto", "x-forwarded-host", "forwarded", "x-madani-background"];
 const HIGH = 1024 * 1024;
 const CONNECT_MS = 10_000;
 /** a peer whose channel has not opened by then never will (gathering, the answer's way back and ICE) */

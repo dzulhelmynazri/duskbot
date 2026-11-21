@@ -128,7 +128,7 @@ async function waitIdle(api: ReturnType<typeof client>, threadId: string, timeou
   }
 }
 
-process.env.DUSK_NO_TEST_BOTS = "1";
+process.env.MADANI_NO_TEST_BOTS = "1";
 const all: Result[] = [];
 for (const model of values.models!.split(",")) all.push(...await runModel(model));
 const summary: Record<string, Record<string, string>> = {};

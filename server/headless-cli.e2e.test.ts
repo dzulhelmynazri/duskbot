@@ -4,10 +4,10 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
-import { launchVerificationServer, type VerificationServer } from "../scripts/control-dusk.ts";
+import { launchVerificationServer, type VerificationServer } from "../scripts/control-madani.ts";
 import { removeTempDir } from "./testing/cleanup.ts";
 
-const ENTRY = join(import.meta.dirname, "duskbot.ts");
+const ENTRY = join(import.meta.dirname, "madanibot.ts");
 
 interface Ran { code: number | null; stdout: string; stderr: string }
 
@@ -17,14 +17,14 @@ let dir: string;
 function cli(args: string[], env: NodeJS.ProcessEnv = {}): Promise<Ran> {
   return new Promise((resolve, reject) => {
     const child = spawn(process.execPath, ["--experimental-strip-types", ENTRY, ...args], {
-      env: { ...process.env, DUSK_TOKEN: "", DUSK_PORT: "", DUSK_URL: session.info.url, ...env },
+      env: { ...process.env, MADANI_TOKEN: "", MADANI_PORT: "", MADANI_URL: session.info.url, ...env },
       stdio: ["ignore", "pipe", "pipe"],
     });
     let stdout = "";
     let stderr = "";
     child.stdout.on("data", (chunk) => { stdout += chunk; });
     child.stderr.on("data", (chunk) => { stderr += chunk; });
-    const timer = setTimeout(() => { child.kill("SIGKILL"); reject(new Error(`duskbot ${args.join(" ")} did not finish: ${stderr}`)); }, 90_000);
+    const timer = setTimeout(() => { child.kill("SIGKILL"); reject(new Error(`madanibot ${args.join(" ")} did not finish: ${stderr}`)); }, 90_000);
     child.on("error", reject);
     child.on("close", (code) => { clearTimeout(timer); resolve({ code, stdout, stderr }); });
   });
@@ -34,8 +34,8 @@ const botsNow = async () => json(await cli(["bots", "--json"])).bots as any[];
 
 beforeAll(async () => {
   // A port range of its own (19975-19999), and a scripted fake engine.
-  session = await launchVerificationServer({ ...process.env, DUSK_TEST_PORTS: "19975-19999" }, undefined, undefined, undefined, { scripted: true });
-  dir = mkdtempSync(join(tmpdir(), "dusk-headless-cli-"));
+  session = await launchVerificationServer({ ...process.env, MADANI_TEST_PORTS: "19975-19999" }, undefined, undefined, undefined, { scripted: true });
+  dir = mkdtempSync(join(tmpdir(), "madani-headless-cli-"));
 }, 60_000);
 
 afterAll(async () => {
@@ -43,7 +43,7 @@ afterAll(async () => {
   if (dir) await removeTempDir(dir);
 });
 
-describe("duskbot headless: team apply → run --wait job → export", () => {
+describe("madanibot headless: team apply → run --wait job → export", () => {
   let model: string;
   let lead: any;
   let priya: any;

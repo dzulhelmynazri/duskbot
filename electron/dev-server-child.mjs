@@ -1,9 +1,9 @@
 import net from "node:net";
 import { UTILITY_NAMES } from "./utility-names.mjs";
 
-// `pnpm dev:app` (DUSK_DEV_OWN_SERVER=1): a source checkout runs the harness as this app's own utility child, the way
+// `pnpm dev:app` (MADANI_DEV_OWN_SERVER=1): a source checkout runs the harness as this app's own utility child, the way
 // the packaged app does, so the local computer grant reaches it over the child's private port and nowhere else.
-export const DEV_OWN_SERVER = "DUSK_DEV_OWN_SERVER";
+export const DEV_OWN_SERVER = "MADANI_DEV_OWN_SERVER";
 const QUICK_EXIT_MS = 10_000;
 const MAX_QUICK_EXITS = 5;
 

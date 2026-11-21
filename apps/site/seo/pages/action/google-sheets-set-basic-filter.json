@@ -15,7 +15,7 @@
   "updated": "2026-11-12",
   "review": {
     "status": "approved",
-    "by": "lead agent, after two independent reviewer passes, against dusk bot docs and the composio catalog",
+    "by": "lead agent, after two independent reviewer passes, against madani bot docs and the composio catalog",
     "at": "2026-11-12"
   },
   "tags": [
@@ -64,7 +64,7 @@
     "look at the visible rows after the change. **Pause** if the selection rules change before the next run."
   ],
   "watch": [
-    "**the filter belongs to the sheet.** it is not a private report inside dusk chat.",
+    "**the filter belongs to the sheet.** it is not a private report inside madani chat.",
     "**name the table and the rows you want.** the spreadsheet link alone leaves the bot guessing.",
     "**the filter stays after the bot leaves.** turn it off in sheets when the review ends."
   ],
@@ -80,15 +80,15 @@
   ],
   "sources": [
     {
-      "label": "dusk bot docs: files and apps",
+      "label": "madani bot docs: files and apps",
       "url": "/docs/files-and-apps"
     },
     {
-      "label": "dusk bot docs: routines",
+      "label": "madani bot docs: routines",
       "url": "/docs/routines"
     },
     {
-      "label": "dusk bot docs: computer permissions",
+      "label": "madani bot docs: computer permissions",
       "url": "/docs/computer"
     }
   ],

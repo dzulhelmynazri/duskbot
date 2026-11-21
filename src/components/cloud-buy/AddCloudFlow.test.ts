@@ -54,7 +54,7 @@ beforeEach(() => {
   setLocale("en");
   vi.clearAllMocks();
   view = base();
-  Object.assign(window, { duskDesktop: { cloudAdd: bridge, workspaces: { onChanged: () => () => {} } } });
+  Object.assign(window, { madaniDesktop: { cloudAdd: bridge, workspaces: { onChanged: () => () => {} } } });
   host = document.createElement("div"); document.body.append(host);
 });
 afterEach(async () => { await act(async () => root?.unmount()); root = null; host.remove(); });

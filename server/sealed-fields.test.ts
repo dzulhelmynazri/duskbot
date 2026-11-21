@@ -109,7 +109,7 @@ describe("the server's signed sealing key", () => {
 
 describe("the server's identity", () => {
   it("is made once, 0600, kept across starts, and never in a backup", () => {
-    const dir = mkdtempSync(join(tmpdir(), "dusk-seal-identity-"));
+    const dir = mkdtempSync(join(tmpdir(), "madani-seal-identity-"));
     try {
       const first = loadSealIdentity(dir);
       expect(statSync(join(dir, SEAL_IDENTITY_FILE)).mode & 0o777).toBe(0o600);

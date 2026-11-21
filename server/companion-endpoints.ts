@@ -2,8 +2,8 @@ import { randomUUID } from "node:crypto";
 import type { CompanionEndpoint } from "../shared/pairing-link.ts";
 
 /** asked of the desktop main process: `endpoints` is null unless the Mac companion already runs and remote access is allowed */
-export type CompanionEndpointsRequest = { type: "duskbot:companion-endpoints"; requestId: string };
-export type CompanionEndpointsResult = { type: "duskbot:companion-endpoints-result"; requestId: string; endpoints: CompanionEndpoint[] | null };
+export type CompanionEndpointsRequest = { type: "madanibot:companion-endpoints"; requestId: string };
+export type CompanionEndpointsResult = { type: "madanibot:companion-endpoints-result"; requestId: string; endpoints: CompanionEndpoint[] | null };
 
 const KINDS = new Set<string>(["hosted", "tailnet", "lan", "bonjour"] satisfies CompanionEndpoint["kind"][]);
 
@@ -24,11 +24,11 @@ export function createCompanionEndpointsBridge(send: (message: CompanionEndpoint
         const timer = setTimeout(() => { pending.delete(requestId); resolve(null); }, timeoutMs);
         timer.unref?.();
         pending.set(requestId, (endpoints) => { clearTimeout(timer); pending.delete(requestId); resolve(endpoints); });
-        if (!send({ type: "duskbot:companion-endpoints", requestId })) pending.get(requestId)!(null);
+        if (!send({ type: "madanibot:companion-endpoints", requestId })) pending.get(requestId)!(null);
       });
     },
     receive(raw: unknown): boolean {
-      if (!raw || typeof raw !== "object" || (raw as { type?: unknown }).type !== "duskbot:companion-endpoints-result") return false;
+      if (!raw || typeof raw !== "object" || (raw as { type?: unknown }).type !== "madanibot:companion-endpoints-result") return false;
       const message = raw as Partial<CompanionEndpointsResult>;
       if (typeof message.requestId === "string") pending.get(message.requestId)?.(cleanEndpoints(message.endpoints));
       return true;

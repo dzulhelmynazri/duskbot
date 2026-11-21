@@ -3,7 +3,7 @@ import { createOutbox, type OutboxPrefs } from "./outbox-queue";
 import { installSendOutbox } from "./send-outbox";
 import { useStore } from "./store";
 
-const KEY = "duskbot.outbox.v1";
+const KEY = "madanibot.outbox.v1";
 
 /** localStorage as an outbox's prefs; a storage that refuses (private browsing, a full quota) keeps the list in memory. */
 export function storagePrefs(storage: Pick<Storage, "getItem" | "setItem" | "removeItem"> | undefined = globalThis.localStorage): OutboxPrefs {

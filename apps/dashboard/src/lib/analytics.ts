@@ -13,10 +13,10 @@ const live = () => typeof window !== "undefined" && !(import.meta.env.DEV && new
 
 function sessionId(): string {
   try {
-    const saved = sessionStorage.getItem("dusk-dash-visit");
+    const saved = sessionStorage.getItem("madani-dash-visit");
     if (saved) return saved;
     const fresh = Array.from(crypto.getRandomValues(new Uint8Array(12)), (b) => b.toString(16).padStart(2, "0")).join("");
-    sessionStorage.setItem("dusk-dash-visit", fresh);
+    sessionStorage.setItem("madani-dash-visit", fresh);
     return fresh;
   } catch { return "unavailable"; }
 }
@@ -130,7 +130,7 @@ export function trackOnboardingStep(step: string, fromApp: boolean) {
 type UpsellSource = "dash_sidebar" | "dash_invested" | "dash_routines";
 const upsells = upsellClock((action, label, ms) => track({ name: "page_action", props: { action, path: currentPath, label, ...(ms !== null ? { ms } : {}) } }));
 
-/** a dusk cloud upsell seen, opened or put away; label is its checkout source, so the funnel can line them up */
+/** a madani cloud upsell seen, opened or put away; label is its checkout source, so the funnel can line them up */
 export function trackUpsell(step: Exclude<UpsellStep, "ignored">, source: UpsellSource) {
   upsells.report(step, source);
 }

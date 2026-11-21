@@ -57,7 +57,7 @@ describe("the cancel sheet", () => {
     expect(chips()).toEqual([["Missing a feature", "false"], ["Too expensive", "false"], ["Hard to set up", "false"], ["Didn't work as I expected", "false"],
       ["Not using it right now", "false"], ["Something else", "false"]]);
     expect(document.activeElement?.textContent).toBe("Missing a feature");
-    expect([...sheet()!.querySelectorAll("label")].map(label => label.textContent)).toEqual(["What did you expect dusk cloud to do? (Optional)", "What could we have done better? (Optional)"]);
+    expect([...sheet()!.querySelectorAll("label")].map(label => label.textContent)).toEqual(["What did you expect madani cloud to do? (Optional)", "What could we have done better? (Optional)"]);
     expect(sheet()!.querySelector("a")).toBeNull();
     // One tap picks a reason; the same tap again lets it go.
     await click(button("Too expensive"));
@@ -178,9 +178,9 @@ describe("the plan cards", () => {
 
   it("this computer's Settings: Cancel trial for the account that pays, through main's own bridge; nothing for anyone else", async () => {
     const bridge = accountBridge(paidState(trial));
-    vi.stubGlobal("window", Object.assign(window, { duskDesktop: { cloudAccount: bridge } }));
+    vi.stubGlobal("window", Object.assign(window, { madaniDesktop: { cloudAccount: bridge } }));
     await show(createElement(CloudAccountSettings));
-    expect(text()).toContain("Pro active · verified by dusk cloud");
+    expect(text()).toContain("Pro active · verified by madani cloud");
     expect(button("Manage cloud subscription")).toBeTruthy();
     await click(button("Cancel trial"));
     await click(button("Missing a feature"));
@@ -188,15 +188,15 @@ describe("the plan cards", () => {
     expect(bridge.cancelPlan).toHaveBeenCalledExactlyOnceWith({ answer: "feature" });
     expect(text()).toContain("The cloud page's billing opened in your browser.");
     await act(async () => root.unmount()); root = createRoot(container);
-    vi.stubGlobal("window", Object.assign(window, { duskDesktop: { cloudAccount: accountBridge(paidState()) } }));
+    vi.stubGlobal("window", Object.assign(window, { madaniDesktop: { cloudAccount: accountBridge(paidState()) } }));
     await show(createElement(CloudAccountSettings));
-    expect(text()).toContain("Pro active · verified by dusk cloud");
+    expect(text()).toContain("Pro active · verified by madani cloud");
     expect(button("Cancel trial")).toBeUndefined();
     expect(button("Cancel plan")).toBeUndefined();
     // Cancelled during the trial: Keep my plan is the way back, so the trial's own button doesn't offer a second one.
     const ending = { ...paidState(cancelledTrial), trial: { state: "ending" as const, tier: "pro", endsAt: END, amount: 4900, chargeAt: null, holdUntil: null, deleteAt: END + 3 * DAY, keep: "portal" as const } };
     await act(async () => root.unmount()); root = createRoot(container);
-    vi.stubGlobal("window", Object.assign(window, { duskDesktop: { cloudAccount: accountBridge(ending) } }));
+    vi.stubGlobal("window", Object.assign(window, { madaniDesktop: { cloudAccount: accountBridge(ending) } }));
     await show(createElement(CloudAccountSettings));
     expect(button("Keep my plan")).toBeTruthy();
     expect(button("Subscribe to keep it")).toBeUndefined();

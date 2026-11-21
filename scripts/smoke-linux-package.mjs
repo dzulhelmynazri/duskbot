@@ -15,11 +15,11 @@ import { fileURLToPath } from "node:url";
 import { linuxDisablesGpu } from "../electron/linux-gpu.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const wayland = process.env.DUSK_SMOKE_WAYLAND === "1";
-const hardDeath = process.env.DUSK_SMOKE_HARD_DEATH === "1";
-const bundled = process.env.DUSK_SMOKE_BUNDLED_CUA === "1";
-const sessionBlocked = process.env.DUSK_SMOKE_LINUX_CUA_BLOCKED === "1";
-const signalShutdown = process.env.DUSK_SMOKE_SIGNAL_SHUTDOWN === "1";
+const wayland = process.env.MADANI_SMOKE_WAYLAND === "1";
+const hardDeath = process.env.MADANI_SMOKE_HARD_DEATH === "1";
+const bundled = process.env.MADANI_SMOKE_BUNDLED_CUA === "1";
+const sessionBlocked = process.env.MADANI_SMOKE_LINUX_CUA_BLOCKED === "1";
+const signalShutdown = process.env.MADANI_SMOKE_SIGNAL_SHUTDOWN === "1";
 if ([hardDeath, bundled, sessionBlocked].filter(Boolean).length > 1) {
   throw new Error("hard-death, bundled, and release-safety smoke modes are mutually exclusive");
 }
@@ -27,26 +27,26 @@ if (signalShutdown && !bundled) {
   throw new Error("signal-shutdown smoke requires the bundled runtime mode");
 }
 const executable = path.resolve(
-  process.env.DUSK_SMOKE_EXECUTABLE ?? path.join(root, "release", "linux-unpacked", "duskbot"),
+  process.env.MADANI_SMOKE_EXECUTABLE ?? path.join(root, "release", "linux-unpacked", "madanibot"),
 );
 if (!existsSync(executable)) throw new Error(`[smoke-linux-package] missing executable: ${executable}`);
 
-const sandbox = mkdtempSync(path.join(tmpdir(), "dusk-linux-smoke-"));
+const sandbox = mkdtempSync(path.join(tmpdir(), "madani-linux-smoke-"));
 const home = path.join(sandbox, "home");
 const xdgConfig = path.join(sandbox, "config");
 const xdgRuntime = path.join(sandbox, "runtime");
 const marker = path.join(sandbox, "cua-invocations.ndjson");
 const fakeState = path.join(sandbox, "cua-serve-count");
 const sentinel = path.join(sandbox, "cua-driver");
-mkdirSync(path.join(home, ".duskbot"), { recursive: true });
+mkdirSync(path.join(home, ".madanibot"), { recursive: true });
 mkdirSync(xdgConfig, { recursive: true });
 mkdirSync(xdgRuntime, { recursive: true, mode: 0o700 });
 chmodSync(xdgRuntime, 0o700);
 writeFileSync(
-  path.join(home, ".duskbot", "config.json"),
+  path.join(home, ".madanibot", "config.json"),
   JSON.stringify({ instances: { ghost: { driver: "not-a-real-driver", displayName: "Ghost" } } }),
 );
-for (const appName of ["duskbot", "Dusk Bot"]) {
+for (const appName of ["madanibot", "Madani Bot"]) {
   const userData = path.join(xdgConfig, appName);
   mkdirSync(userData, { recursive: true, mode: 0o700 });
   chmodSync(userData, 0o700);
@@ -118,7 +118,7 @@ const metadata = {
   mcp_protocol_version: "2025-06-18",
   pid: process.pid,
   embedded: true,
-  host_bundle_id: "bot.dusk.app",
+  host_bundle_id: "bot.madani.app",
 };
 const tools = ["click", "get_window_state", "list_apps", "type_text"].map((name) => ({ name }));
 const toolManifest = { schema_version: "1", capability_version: "1", tools };
@@ -189,19 +189,19 @@ if (!brokerAddress || typeof brokerAddress === "string") {
 const desktopEnv = {
   ...process.env,
   // a smoke launch of the installed package must never count as an install in usage analytics
-  DUSK_ANALYTICS: "0",
+  MADANI_ANALYTICS: "0",
   HOME: home,
   XDG_CONFIG_HOME: xdgConfig,
   XDG_RUNTIME_DIR: xdgRuntime,
   XDG_SESSION_TYPE: wayland ? "wayland" : "x11",
   XDG_CURRENT_DESKTOP: "GNOME",
   CUA_DRIVER_PATH: sentinel,
-  DUSK_COMPOSIO_BROKER_URL: `http://127.0.0.1:${brokerAddress.port}`,
-  DUSK_SMOKE_TEST: "1",
-  DUSK_SMOKE_CUA: hardDeath || bundled || sessionBlocked ? "0" : "1",
-  DUSK_SMOKE_BUNDLED_CUA: bundled ? "1" : "0",
+  MADANI_COMPOSIO_BROKER_URL: `http://127.0.0.1:${brokerAddress.port}`,
+  MADANI_SMOKE_TEST: "1",
+  MADANI_SMOKE_CUA: hardDeath || bundled || sessionBlocked ? "0" : "1",
+  MADANI_SMOKE_BUNDLED_CUA: bundled ? "1" : "0",
 };
-if (hardDeath || signalShutdown) desktopEnv.DUSK_SMOKE_KEEP_OPEN = "1";
+if (hardDeath || signalShutdown) desktopEnv.MADANI_SMOKE_KEEP_OPEN = "1";
 if (bundled) delete desktopEnv.CUA_DRIVER_PATH;
 if (wayland) desktopEnv.WAYLAND_DISPLAY = "wayland-smoke";
 else delete desktopEnv.WAYLAND_DISPLAY;
@@ -285,10 +285,10 @@ try {
     location,
     title,
   } = result;
-  if (health?.app !== "duskbot" || health.static !== true) {
+  if (health?.app !== "madanibot" || health.static !== true) {
     throw new Error(`unexpected embedded health response: ${JSON.stringify(health)}`);
   }
-  if (!/\bdusk\b/i.test(String(title))) throw new Error(`unexpected renderer title: ${title}`);
+  if (!/\bmadani\b/i.test(String(title))) throw new Error(`unexpected renderer title: ${title}`);
   if (capabilities.host.platform !== "linux") throw new Error("renderer did not report Linux");
   if (capabilities.host.session !== (wayland ? "wayland" : "x11")) {
     throw new Error(`renderer did not report the ${wayland ? "Wayland" : "X11"} contract`);
@@ -332,14 +332,14 @@ try {
     }
   }
   if (result.hardwareAccelerationEnabled !== !linuxDisablesGpu({ env: desktopEnv })) {
-    throw new Error("Linux package did not apply the GPU rule (off on NVIDIA or DUSK_LINUX_GPU=off) before startup");
+    throw new Error("Linux package did not apply the GPU rule (off on NVIDIA or MADANI_LINUX_GPU=off) before startup");
   }
   if (displayMediaRequests !== 0) throw new Error("launch triggered display capture without user intent");
   await until(async () => brokerRequests > 0, "the optional slow-broker request");
   if (sessionBlocked) {
     await waitForExit();
     if (existsSync(marker)) throw new Error("release safety block still invoked a CUA executable");
-    const activeUserData = ["duskbot", "Dusk Bot"]
+    const activeUserData = ["madanibot", "Madani Bot"]
       .map((name) => path.join(xdgConfig, name))
       .find((directory) => existsSync(path.join(directory, "cua-connection.json")));
     if (!activeUserData) throw new Error("release safety smoke could not locate the CUA descriptor");
@@ -386,7 +386,7 @@ try {
     if (existsSync(marker)) {
       throw new Error(`packaged app invoked the ambient driver:\n${readFileSync(marker, "utf8")}`);
     }
-    const userData = ["duskbot", "Dusk Bot"]
+    const userData = ["madanibot", "Madani Bot"]
       .map((name) => path.join(xdgConfig, name))
       .find((directory) => existsSync(path.join(directory, "cua-connection.json")));
     if (!userData) throw new Error("bundled smoke could not locate the CUA descriptor");
@@ -482,7 +482,7 @@ try {
       await delay(50);
     }
     if (staleHealth?.ok) throw new Error("embedded harness survived hard Electron death");
-    const userData = ["duskbot", "Dusk Bot"]
+    const userData = ["madanibot", "Madani Bot"]
       .map((name) => path.join(xdgConfig, name))
       .find((directory) => existsSync(path.join(directory, "cua-connection.json")));
     if (!userData) throw new Error("hard-death smoke could not locate the CUA descriptor");
@@ -498,7 +498,7 @@ try {
     const restart = spawn(executable, wayland ? ["--ozone-platform=x11"] : [], {
       cwd: root,
       detached: true,
-      env: { ...desktopEnv, DUSK_SMOKE_KEEP_OPEN: "0" },
+      env: { ...desktopEnv, MADANI_SMOKE_KEEP_OPEN: "0" },
       stdio: ["ignore", "pipe", "pipe"],
     });
     try {
@@ -595,6 +595,6 @@ try {
   await stopProcess();
   for (const socket of brokerSockets) socket.destroy();
   await new Promise((resolve) => slowBroker.close(resolve));
-  if (process.env.DUSK_KEEP_SMOKE_DIR !== "1") rmSync(sandbox, { recursive: true, force: true });
+  if (process.env.MADANI_KEEP_SMOKE_DIR !== "1") rmSync(sandbox, { recursive: true, force: true });
   else console.log(`[smoke-linux-package] kept ${sandbox}`);
 }

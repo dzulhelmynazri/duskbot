@@ -890,7 +890,7 @@
       "tools": [],
       "state": "idle",
       "ms": 4674,
-      "output": "I can’t rename the folder because I don’t have a computer available this turn. Choose a computer under “Works on” in my settings, and I can rename `dusk-bto` to `dusk-bot` in Documents."
+      "output": "I can’t rename the folder because I don’t have a computer available this turn. Choose a computer under “Works on” in my settings, and I can rename `madani-bto` to `madani-bot` in Documents."
     },
     {
       "model": "gpt-6.1-terra",
@@ -1216,7 +1216,7 @@
       "tools": [],
       "state": "idle",
       "ms": 4209,
-      "output": "I can’t rename folders right now because this bot has no computer or filesystem access with “Works on” turned off. If you enable “Works on” in the bot’s settings, I’ll rename dusk‑bto to dusk‑bot in your Documents folder for you."
+      "output": "I can’t rename folders right now because this bot has no computer or filesystem access with “Works on” turned off. If you enable “Works on” in the bot’s settings, I’ll rename madani‑bto to madani‑bot in your Documents folder for you."
     },
     {
       "model": "gpt-oss-120b-medium",
@@ -1512,7 +1512,7 @@
       "tools": [],
       "state": "idle",
       "ms": 4150,
-      "output": "Done. I’ve prepared the post “Dark mode is live!” as a draft for your X account. Since X isn’t connected, you’ll need to link it in the Connect section of Dusk Bot. Once it’s connected, I can publish the draft for you."
+      "output": "Done. I’ve prepared the post “Dark mode is live!” as a draft for your X account. Since X isn’t connected, you’ll need to link it in the Connect section of Madani Bot. Once it’s connected, I can publish the draft for you."
     },
     {
       "model": "gpt-oss-120b-medium",
@@ -1525,7 +1525,7 @@
       "tools": [],
       "state": "idle",
       "ms": 3716,
-      "output": "I can’t rename the folder right now because this bot has no computer or file‑system access in this turn. You can rename “dusk‑bto” to “dusk‑bot” in your Documents folder manually, or enable the “Works on” setting to let me do it for you."
+      "output": "I can’t rename the folder right now because this bot has no computer or file‑system access in this turn. You can rename “madani‑bto” to “madani‑bot” in your Documents folder manually, or enable the “Works on” setting to let me do it for you."
     },
     {
       "model": "gpt-oss-120b-medium",
@@ -1845,7 +1845,7 @@
       "tools": [],
       "state": "idle",
       "ms": 3867,
-      "output": "I don’t have a computer or browser mounted right now, so I can’t rename a folder on your device. If you turn the “Works on” setting on, I can rename `Documents/dusk-bto` to `Documents/dusk-bot` for you. Let me know when that’s enabled."
+      "output": "I don’t have a computer or browser mounted right now, so I can’t rename a folder on your device. If you turn the “Works on” setting on, I can rename `Documents/madani-bto` to `Documents/madani-bot` for you. Let me know when that’s enabled."
     },
     {
       "model": "gpt-oss-120b-medium",
@@ -2133,7 +2133,7 @@
       ],
       "state": "completed",
       "ms": 6384,
-      "output": "On it, building your new monthly spending bot Ledger right now.\n---\nDone, I've asked dusk bot to set up Ledger for your monthly spending."
+      "output": "On it, building your new monthly spending bot Ledger right now.\n---\nDone, I've asked madani bot to set up Ledger for your monthly spending."
     },
     {
       "model": "gemini-3.1-flash-lite",
@@ -2240,7 +2240,7 @@
       ],
       "state": "idle",
       "ms": 9998,
-      "output": "On it, renaming your dusk-bto project folder in Documents to dusk-bot.\n---\nI don't have a computer or browser to use right now because my \"Works on\" setting is set to Off. You can turn it on in my settings if you'd like me to run commands or work with files on your computer."
+      "output": "On it, renaming your madani-bto project folder in Documents to madani-bot.\n---\nI don't have a computer or browser to use right now because my \"Works on\" setting is set to Off. You can turn it on in my settings if you'd like me to run commands or work with files on your computer."
     },
     {
       "model": "gemini-3.1-flash-lite",
@@ -2634,7 +2634,7 @@
       ],
       "state": "idle",
       "ms": 3537,
-      "output": "You have no computer or browser to use this turn, so I cannot rename the folder on your machine directly. You can rename `dusk-bto` to `dusk-bot` in your Documents folder, or turn on \"Works on\" in my settings so I can do it for you."
+      "output": "You have no computer or browser to use this turn, so I cannot rename the folder on your machine directly. You can rename `madani-bto` to `madani-bot` in your Documents folder, or turn on \"Works on\" in my settings so I can do it for you."
     },
     {
       "model": "gemini-3.1-flash-lite",
@@ -3018,7 +3018,7 @@
       ],
       "state": "idle",
       "ms": 3615,
-      "output": "Since I don't have a computer or browser mounted right now, I can't rename the folder on your filesystem directly. You can quickly rename `dusk-bto` to `dusk-bot` in your Documents folder using Finder or Terminal."
+      "output": "Since I don't have a computer or browser mounted right now, I can't rename the folder on your filesystem directly. You can quickly rename `madani-bto` to `madani-bot` in your Documents folder using Finder or Terminal."
     },
     {
       "model": "gemini-3.1-flash-lite",
@@ -3986,7 +3986,7 @@
       "tools": [],
       "state": "idle",
       "ms": 35657,
-      "output": "Here are 3 posts for X:\n\n1. \"Dark mode just landed in Dusk. Switch it on in settings for a cleaner, easier-on-the-eyes experience. Try it now.\"\n\n2. \"Night mode is here. Dusk's new dark theme looks sharp and cuts the glare. Update and flip the switch.\"\n\n3. \"Big update: Dusk now has dark mode. Perfect for late nights or bright rooms. Enable it in settings today.\""
+      "output": "Here are 3 posts for X:\n\n1. \"Dark mode just landed in Madani. Switch it on in settings for a cleaner, easier-on-the-eyes experience. Try it now.\"\n\n2. \"Night mode is here. Madani's new dark theme looks sharp and cuts the glare. Update and flip the switch.\"\n\n3. \"Big update: Madani now has dark mode. Perfect for late nights or bright rooms. Enable it in settings today.\""
     },
     {
       "model": "grok-3-mini",

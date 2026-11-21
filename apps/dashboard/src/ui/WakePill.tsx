@@ -43,7 +43,7 @@ function WakeCard({ wake }: { wake: Wake }) {
   );
 }
 
-/** a dusk cloud waking for something the person asked: a short note first, then a pill in the corner on every page,
+/** a madani cloud waking for something the person asked: a short note first, then a pill in the corner on every page,
  *  which offers the waiting action once the cloud answers */
 export function WakePill() {
   const { wakes, asking } = useWakes();

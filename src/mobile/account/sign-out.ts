@@ -38,7 +38,7 @@ async function revokeDevice(platform: MobilePlatform, record: MobileConnectionRe
 async function forgetPlace(platform: MobilePlatform, store: Store, record: MobileConnectionRecord, request: typeof fetch): Promise<void> {
   await revokeDevice(platform, record, request);
   await store.remove(record.id);
-  await platform.prefs.remove(`dusk.account.enrolled.${record.id}`).catch(() => {});
+  await platform.prefs.remove(`madani.account.enrolled.${record.id}`).catch(() => {});
 }
 
 async function endLiveActivities(platform: MobilePlatform): Promise<void> {
@@ -58,11 +58,11 @@ export async function landAfterRemoval(store: Store): Promise<Landing> {
   return "first-screen";
 }
 
-/** Whose dusk clouds a sign-out takes off the phone: `account`'s, the ones it lists (`listed`: their addresses) and,
+/** Whose madani clouds a sign-out takes off the phone: `account`'s, the ones it lists (`listed`: their addresses) and,
  * when no other account stays signed in here, every one. */
 export type SignedOut = { account: string | null; othersStay: boolean; listed?: readonly string[] };
 
-/** Signing out of a dusk bot account on the phone: every dusk cloud it reached through that account leaves the phone
+/** Signing out of a madani bot account on the phone: every madani cloud it reached through that account leaves the phone
  * (its device on the cloud, token, push registration, unsent messages and cached chats), Live Activities end, and the
  * account's session ends on the service. The phone's other accounts and their clouds stay, and so do computers paired
  * with their own QR or code; with nothing left the app opens on its first screen. */
@@ -82,7 +82,7 @@ export async function signOutPhone({ platform, signOutAccount, signedOut = { acc
   return landAfterRemoval(store);
 }
 
-/** the dusk clouds saved on the phone that a sign-out takes with it, forgotten as signing out does */
+/** the madani clouds saved on the phone that a sign-out takes with it, forgotten as signing out does */
 export async function forgetCloudPlaces(platform: MobilePlatform, request: typeof fetch = globalThis.fetch, signedOut: SignedOut = { account: null, othersStay: false }): Promise<void> {
   const store = createConnectionStore(platform);
   const leaves = (record: MobileConnectionRecord) => !signedOut.othersStay || record.account?.id === signedOut.account

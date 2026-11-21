@@ -9,6 +9,6 @@ const blocked = { phase: "error", error: { kind: "microphone-blocked", message: 
 describe("the call bar's status", () => {
   it("says the microphone is off in a short sentence on a small phone, and in full where there is room", () => {
     expect(statusText(blocked, "Nova", true)).toBe("Microphone is off");
-    expect(statusText(blocked, "Nova")).toBe("Microphone access is off for dusk bot");
+    expect(statusText(blocked, "Nova")).toBe("Microphone access is off for madani bot");
   });
 });

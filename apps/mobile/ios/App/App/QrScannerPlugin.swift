@@ -28,7 +28,7 @@ public class QrScannerPlugin: CAPPlugin, CAPBridgedPlugin, AVCaptureMetadataOutp
         let scrollBackgroundColor: UIColor?
     }
 
-    private let sessionQueue = DispatchQueue(label: "bot.dusk.mobile.qr-scanner")
+    private let sessionQueue = DispatchQueue(label: "bot.madani.mobile.qr-scanner")
     private var session: AVCaptureSession?
     private var device: AVCaptureDevice?
     private var previewView: UIView?

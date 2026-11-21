@@ -1,5 +1,5 @@
 // a made-up team whose chats hold everything the phone opens full screen: code, tables, pictures, links, files and
-// cards. stage.ts reads it with DUSK_STAGE_TEAM=./viewers-team.mjs; viewers.ts uploads PICTURES before it looks.
+// cards. stage.ts reads it with MADANI_STAGE_TEAM=./viewers-team.mjs; viewers.ts uploads PICTURES before it looks.
 
 /** stored pictures, uploaded under these ids from apps/mobile/store/art */
 export const PICTURES = [

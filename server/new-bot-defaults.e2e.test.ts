@@ -1,5 +1,5 @@
 import { expect, it } from "vitest";
-import { launchVerificationServer } from "../scripts/control-dusk.ts";
+import { launchVerificationServer } from "../scripts/control-madani.ts";
 
 it("applies independent creation templates through the real isolated HTTP routes", async () => {
   const fixture = await launchVerificationServer();

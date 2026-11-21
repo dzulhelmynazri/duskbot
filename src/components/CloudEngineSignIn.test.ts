@@ -32,7 +32,7 @@ function mount(instances: InstanceInfo[]) {
 beforeEach(() => {
   setLocale("en");
   dispatch.mockReset();
-  vi.stubGlobal("duskDesktop", undefined);
+  vi.stubGlobal("madaniDesktop", undefined);
   vi.stubGlobal("fetch", vi.fn(async (path: string) => {
     if (String(path).includes("/auth/start")) return new Response(JSON.stringify({ auth: { phase: "waiting", flowId: "f", userCode: "RJ4K-WQ8M", authorizationUrl: "https://accounts.x.ai/device" } }));
     if (String(path).startsWith("/api/instances")) return new Response(JSON.stringify({ instances: [claude, codex, grok] }));

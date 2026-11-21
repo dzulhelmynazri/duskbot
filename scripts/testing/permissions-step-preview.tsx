@@ -21,10 +21,10 @@ setLocale("en");
 setEmailGateDone("skipped");
 const params = new URLSearchParams(location.search);
 applySkin(SKINS.find((one) => one.id === params.get("skin"))?.id ?? "grok");
-window.duskDesktop = {
+window.madaniDesktop = {
   platform: "darwin",
   getCapabilities: async () => ({ ...initialDesktopCapabilities(), windowChrome: "mac-inset" }),
-} as unknown as typeof window.duskDesktop;
+} as unknown as typeof window.madaniDesktop;
 
 const START: Record<string, Record<MacPermission, MacPermissionState>> = {
   none: { accessibility: "missing", screen: "missing", notifications: "missing" },

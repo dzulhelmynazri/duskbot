@@ -29,7 +29,7 @@ export const LEGACY = Object.freeze({
   vpsUnits: { server: `${OLD}.service`, link: `${OLD}-link.service` },
   serveLabel: `com.${OLD}.serve`,
   controlPlaneService: `${OLD}-control-plane`,
-  // the hosted control plane issues managed companion addresses under these until it is moved to cloud.dusk.bot
+  // the hosted control plane issues managed companion addresses under these until it is moved to cloud.madani.bot
   companionHostSuffixes: [`${OLD}.com`, "mausbot.si"],
   sentinelUnit: `${OLD}-sentinel`,
 });
@@ -74,15 +74,15 @@ export const UPSTREAM = Object.freeze({
   teamLibrary: { repository: `https://github.com/milind-soni/${OLD}-teams`, raw: `https://raw.githubusercontent.com/milind-soni/${OLD}-teams/main` },
 });
 
-const NEW_ENV = "DUSK_";
-const NEW_HEADER = "x-dusk-";
-const NEW_WELL_KNOWN = "/.well-known/duskbot";
-const NEW_STORAGE = "duskbot.";
-const STORAGE_RENAMES = { [`${OLD}.`]: NEW_STORAGE, "omb-": "dusk-", "omb.": "dusk." };
-const NEW_PROTOCOL = "duskbot";
+const NEW_ENV = "MADANI_";
+const NEW_HEADER = "x-madani-";
+const NEW_WELL_KNOWN = "/.well-known/madanibot";
+const NEW_STORAGE = "madanibot.";
+const STORAGE_RENAMES = { [`${OLD}.`]: NEW_STORAGE, "omb-": "madani-", "omb.": "madani." };
+const NEW_PROTOCOL = "madanibot";
 
-/** OMB_X and OPENMAUSBOT_X move to DUSK_X (a DUSK_X already set wins). moved, not copied: every list that keeps a
- * secret out of a child's env names only DUSK_*, so an old name left behind would reach engines and bots. */
+/** OMB_X and OPENMAUSBOT_X move to MADANI_X (a MADANI_X already set wins). moved, not copied: every list that keeps a
+ * secret out of a child's env names only MADANI_*, so an old name left behind would reach engines and bots. */
 export function aliasLegacyEnv(env) {
   if (!env || typeof env !== "object") return env;
   for (const key of Object.keys(env)) {
@@ -95,7 +95,7 @@ export function aliasLegacyEnv(env) {
   return env;
 }
 
-/** x-openmausbot-* and x-omb-* request headers read as x-dusk-*; a value the client sent under the new name always wins. */
+/** x-openmausbot-* and x-omb-* request headers read as x-madani-*; a value the client sent under the new name always wins. */
 export function aliasLegacyHeaders(headers) {
   if (!headers || typeof headers !== "object") return headers;
   for (const key of Object.keys(headers)) {
@@ -133,10 +133,10 @@ export function withLegacyHeaders(headers) {
   return out;
 }
 
-/** /.well-known/openmausbot/... answers as /.well-known/duskbot/... */
+/** /.well-known/openmausbot/... answers as /.well-known/madanibot/... */
 export function fromLegacyPath(pathname) {
   if (typeof pathname !== "string") return pathname;
-  if (pathname === "/.well-known/omb-link" || pathname.startsWith("/.well-known/omb-link/")) return "/.well-known/dusk-link" + pathname.slice("/.well-known/omb-link".length);
+  if (pathname === "/.well-known/omb-link" || pathname.startsWith("/.well-known/omb-link/")) return "/.well-known/madani-link" + pathname.slice("/.well-known/omb-link".length);
   return pathname === LEGACY.wellKnown || pathname.startsWith(`${LEGACY.wellKnown}/`)
     ? NEW_WELL_KNOWN + pathname.slice(LEGACY.wellKnown.length)
     : pathname;
@@ -144,16 +144,16 @@ export function fromLegacyPath(pathname) {
 
 /** the same well-known path under its old name, to ask a server that predates the rename */
 export function toLegacyPath(pathname) {
-  if (typeof pathname === "string" && pathname.startsWith("/.well-known/dusk-link")) return "/.well-known/omb-link" + pathname.slice("/.well-known/dusk-link".length);
+  if (typeof pathname === "string" && pathname.startsWith("/.well-known/madani-link")) return "/.well-known/omb-link" + pathname.slice("/.well-known/madani-link".length);
   return typeof pathname === "string" && pathname.startsWith(NEW_WELL_KNOWN)
     ? LEGACY.wellKnown + pathname.slice(NEW_WELL_KNOWN.length)
     : pathname;
 }
 
 /** a server's health answer names it as ours under either name */
-export const isOwnAppId = (app) => app === "duskbot" || app === LEGACY.appId;
+export const isOwnAppId = (app) => app === "madanibot" || app === LEGACY.appId;
 
-/** openmausbot://x becomes duskbot://x; anything else is returned as it came */
+/** openmausbot://x becomes madanibot://x; anything else is returned as it came */
 export function fromLegacyLink(link) {
   if (typeof link !== "string") return link;
   const old = `${LEGACY.protocol}:`;
@@ -220,21 +220,21 @@ export function migrateLegacyDir(next, old, { fs = node("node:fs"), markers = []
 /** the data folder in `home`, moved from its old name on first use */
 // never adopts another app's folder (OpenMausBot's ~/.openmausbot): its chats are brought in only when the person asks
 export function defaultDataDir(home, _options = {}) {
-  return join(home, ".duskbot");
+  return join(home, ".madanibot");
 }
 
 /** the data folder a setting names, or the default; a setting naming the default (a container image's) moves the old one too */
 export function dataDirFor(configured, home, options = {}) {
-  return !configured || configured === join(home, ".duskbot") ? defaultDataDir(home, options) : configured;
+  return !configured || configured === join(home, ".madanibot") ? defaultDataDir(home, options) : configured;
 }
 
 /** the companion's folder in `home`, moved from its old name on first use */
 export function defaultCompanionDir(home, _options = {}) {
-  return join(home, ".duskbot-companion");
+  return join(home, ".madanibot-companion");
 }
 
 /** a data folder's name, old or new, for lists that keep the bots and syncs out of it */
-export const DATA_DIR_NAMES = Object.freeze([".duskbot", LEGACY.dataDirName]);
+export const DATA_DIR_NAMES = Object.freeze([".madanibot", LEGACY.dataDirName]);
 
 /**
  * electron's own folder (userData) under its old name, copied once to the new one before electron opens it. a copy, not
@@ -307,30 +307,30 @@ export function carryLegacySafeStorageKey({ name, packaged = true, run = securit
   }
 }
 
-/** the name `pnpm dev:app` runs under on macOS, so its keychain key ("duskbot dev Safe Storage") is never the packaged
- * app's ("duskbot Safe Storage"): a key one build made makes the other ask for the login password */
+/** the name `pnpm dev:app` runs under on macOS, so its keychain key ("madanibot dev Safe Storage") is never the packaged
+ * app's ("madanibot Safe Storage"): a key one build made makes the other ask for the login password */
 export const devAppName = (name) => `${name} dev`;
 
 /** a file format id from before the rename (openmaus.backup, openmaus.team, ...) read as the current one; the document is copied, never changed.
  * openmaus.package keeps its name: a package's release sha256 is over its canonical bytes, format id included. */
 export function withCurrentFormat(value) {
   if (!value || typeof value !== "object" || Array.isArray(value) || typeof value.format !== "string" || !value.format.startsWith("openmaus.") || value.format === "openmaus.package") return value;
-  return { ...value, format: `dusk.${value.format.slice("openmaus.".length)}` };
+  return { ...value, format: `madani.${value.format.slice("openmaus.".length)}` };
 }
 
-/** tokens and cookies minted while the product was called omb start omb_<kind>_; both are read, only dusk_ is minted */
+/** tokens and cookies minted while the product was called omb start omb_<kind>_; both are read, only madani_ is minted */
 export const hasTokenPrefix = (value, kind) =>
-  typeof value === "string" && (value.startsWith(`dusk_${kind}_`) || value.startsWith(`omb_${kind}_`));
+  typeof value === "string" && (value.startsWith(`madani_${kind}_`) || value.startsWith(`omb_${kind}_`));
 
-/** omb_* cookies a browser still holds read as dusk_*; one already sent under the new name wins. */
+/** omb_* cookies a browser still holds read as madani_*; one already sent under the new name wins. */
 export function aliasLegacyCookies(headers) {
   if (!headers || typeof headers.cookie !== "string" || !headers.cookie.includes("omb_")) return headers;
   const parts = headers.cookie.split(";").map((part) => part.trim());
   const names = new Set(parts.map((part) => part.slice(0, part.indexOf("="))));
   headers.cookie = parts.map((part) => {
     const name = part.slice(0, part.indexOf("="));
-    if (!name.startsWith("omb_") || names.has(`dusk_${name.slice(4)}`)) return part;
-    return `dusk_${name.slice(4)}${part.slice(name.length)}`;
+    if (!name.startsWith("omb_") || names.has(`madani_${name.slice(4)}`)) return part;
+    return `madani_${name.slice(4)}${part.slice(name.length)}`;
   }).join("; ");
   return headers;
 }

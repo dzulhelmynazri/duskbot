@@ -15,9 +15,9 @@ afterEach(async () => { for (const dir of dirs.splice(0)) await rm(dir, { recurs
 async function putCommand({ existing } = {}) {
   const dir = await mkdtemp(join(tmpdir(), "omb-install-command-"));
   dirs.push(dir);
-  const home = join(dir, "home"), cli = join(dir, "duskbot");
+  const home = join(dir, "home"), cli = join(dir, "madanibot");
   await mkdir(join(home, ".local/bin"), { recursive: true });
-  await writeFile(join(home, ".local/bin/duskbot"), '#!/bin/sh\necho "server duskbot $HOME $*"\n', { mode: 0o755 });
+  await writeFile(join(home, ".local/bin/madanibot"), '#!/bin/sh\necho "server madanibot $HOME $*"\n', { mode: 0o755 });
   if (existing !== undefined) await writeFile(cli, existing, { mode: 0o755 });
   const file = join(dir, "fixture.sh");
   await writeFile(file, `${script}
@@ -33,18 +33,18 @@ put_command
   return { stdout, cli, home, wrapper: await readFile(cli, "utf8") };
 }
 
-describe("the duskbot command an install puts on the PATH", () => {
+describe("the madanibot command an install puts on the PATH", () => {
   it("runs the server account's own build as that account", async () => {
     const { stdout, cli, home, wrapper } = await putCommand();
-    expect(stdout).toContain("duskbot now runs from any login on this server");
-    expect(wrapper).toContain("managed by duskbot-link");
+    expect(stdout).toContain("madanibot now runs from any login on this server");
+    expect(wrapper).toContain("managed by madanibot-link");
     expect(wrapper).toContain(`runuser -u ${userInfo().username} -- env HOME=${home}`);
     expect(wrapper).toContain(`sudo -u ${userInfo().username} -- env HOME=${home}`);
     const ran = await run(cli, ["pair", "--label", "desktop"], { env: { PATH: "/usr/bin:/bin", HOME: "/nowhere" } });
-    expect(ran.stdout.trim()).toBe(`server duskbot ${home} pair --label desktop`);
+    expect(ran.stdout.trim()).toBe(`server madanibot ${home} pair --label desktop`);
   });
 
-  it("leaves a duskbot that something else installed", async () => {
+  it("leaves a madanibot that something else installed", async () => {
     const { stdout, wrapper } = await putCommand({ existing: "#!/bin/sh\necho npm\n" });
     expect(stdout).toContain("it is not ours");
     expect(wrapper).toBe("#!/bin/sh\necho npm\n");
@@ -54,14 +54,14 @@ describe("the duskbot command an install puts on the PATH", () => {
     const first = await putCommand();
     const again = await run("sh", [join(first.cli, "..", "fixture.sh")], { env: { PATH: "/usr/bin:/bin", TERM: "dumb" } });
     expect(again.stdout).toBe("");
-    const older = await putCommand({ existing: "#!/bin/sh\n# managed by duskbot-link: an older wrapper\n" });
-    expect(older.stdout).toContain("duskbot now runs from any login on this server");
+    const older = await putCommand({ existing: "#!/bin/sh\n# managed by madanibot-link: an older wrapper\n" });
+    expect(older.stdout).toContain("madanibot now runs from any login on this server");
     expect(older.wrapper).toContain("runuser -u");
   });
 
   it("is taken off by uninstall only when it is ours", () => {
-    expect(uninstall).toContain("CLI=/usr/local/bin/duskbot");
-    expect(uninstall).toMatch(/cli_ours\(\) \{ grep -qs "managed by duskbot-link" "\$CLI"; \}/);
+    expect(uninstall).toContain("CLI=/usr/local/bin/madanibot");
+    expect(uninstall).toMatch(/cli_ours\(\) \{ grep -qs "managed by madanibot-link" "\$CLI"; \}/);
     expect(uninstall).toMatch(/if cli_ours; then x rm -f "\$CLI"/);
   });
 });

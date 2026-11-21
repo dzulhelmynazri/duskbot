@@ -1,4 +1,4 @@
-// The upstream handshake is dusk bot's own, never the engine's: an engine's client adds capability fields a strict server
+// The upstream handshake is madani bot's own, never the engine's: an engine's client adds capability fields a strict server
 // refuses. stdout carries only protocol frames.
 import { createInterface } from "node:readline";
 import { homedir } from "node:os";
@@ -53,7 +53,7 @@ function fail(message: string): never {
 }
 
 const CREDENTIALS_REFUSED = "This MCP server refused its credentials (HTTP 401). If it uses a sign-in, send the message again: "
-  + "dusk bot refreshes sign-ins when a message starts. If it still fails, open Plugins → MCP servers and sign in to it again, "
+  + "madani bot refreshes sign-ins when a message starts. If it still fails, open Plugins → MCP servers and sign in to it again, "
   + "or check its header values.";
 
 /** A refusal of our own: its words carry nothing remote, so they are relayed. */
@@ -65,7 +65,7 @@ class Refusal extends Error {
   }
 }
 
-const SETTINGS = ["DUSK_REMOTE_MCP_SERVER", "DUSK_REMOTE_MCP_DIRECTORY", REMOTE_MCP_APPS_ENV, REMOTE_MCP_CACHE_ENV, REMOTE_MCP_CACHE_ID_ENV];
+const SETTINGS = ["MADANI_REMOTE_MCP_SERVER", "MADANI_REMOTE_MCP_DIRECTORY", REMOTE_MCP_APPS_ENV, REMOTE_MCP_CACHE_ENV, REMOTE_MCP_CACHE_ID_ENV];
 /** Codex hands every MCP child one shared environment, so a mount names its own record; settings leave this env once read. */
 function privateSettings(): Record<string, string | undefined> {
   if (process.argv.length === 2) {
@@ -88,7 +88,7 @@ function privateSettings(): Record<string, string | undefined> {
 
 const settings = privateSettings();
 let spec;
-try { spec = remoteMcpSpec(JSON.parse(settings.DUSK_REMOTE_MCP_SERVER ?? "")); } catch {}
+try { spec = remoteMcpSpec(JSON.parse(settings.MADANI_REMOTE_MCP_SERVER ?? "")); } catch {}
 if (!spec) fail("invalid remote MCP configuration");
 
 /** A selection that cannot be read must never widen to all tools. */
@@ -104,7 +104,7 @@ function directorySettings(raw: string | undefined): { server: string; scope: To
   } catch {}
   return fail("invalid tool directory configuration");
 }
-const directory = directorySettings(settings.DUSK_REMOTE_MCP_DIRECTORY);
+const directory = directorySettings(settings.MADANI_REMOTE_MCP_DIRECTORY);
 const observer = (() => {
   try {
     const mount = parseAppMount(settings[REMOTE_MCP_APPS_ENV]);
@@ -177,7 +177,7 @@ const client = new RemoteMcpClient(spec, {
 });
 const metadata = new RemoteMcpMetadataCache({
   directory: remoteMcpCacheDirectory(settings[REMOTE_MCP_CACHE_ENV], homedir()), identity: settings[REMOTE_MCP_CACHE_ID_ENV], spec, handshake: HANDSHAKE, closed: closed.signal,
-  initialize: (signal) => client.initialize("dusk bot tool proxy", signal, HANDSHAKE),
+  initialize: (signal) => client.initialize("madani bot tool proxy", signal, HANDSHAKE),
   request: (method, params, signal) => client.request(method, params, signal),
   changed: () => { generation += 1; catalog = undefined; loading = undefined; },
 });
@@ -307,10 +307,10 @@ async function directed(message: Json, signal: AbortSignal): Promise<unknown> {
   return upstream(message.method as string, message.params, signal);
 }
 
-const CALL_MS = Number(process.env.DUSK_REMOTE_MCP_CALL_MS) > 0 ? Number(process.env.DUSK_REMOTE_MCP_CALL_MS) : 120_000;
+const CALL_MS = Number(process.env.MADANI_REMOTE_MCP_CALL_MS) > 0 ? Number(process.env.MADANI_REMOTE_MCP_CALL_MS) : 120_000;
 function callTimeoutText(ms: number): string {
   const wait = ms >= 60_000 ? `${Math.round(ms / 60_000)} minute${ms >= 90_000 ? "s" : ""}` : `${Math.round(ms / 1000)} seconds`;
-  return `This tool did not answer within ${wait}, so dusk bot stopped waiting for it. The service may still be working on it: `
+  return `This tool did not answer within ${wait}, so madani bot stopped waiting for it. The service may still be working on it: `
     + "check for its result another way, or try a smaller step, before running it again.";
 }
 

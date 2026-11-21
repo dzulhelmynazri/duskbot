@@ -102,7 +102,7 @@ describe("haptics", () => {
   });
 
   it("a sheet ticks as it opens and as it closes", () => {
-    const sheet = (open: boolean) => createElement("div", { className: "dusk-mobile" }, createElement(Sheet, { open, onClose() {}, title: "Settings", children: "body" }));
+    const sheet = (open: boolean) => createElement("div", { className: "madani-mobile" }, createElement(Sheet, { open, onClose() {}, title: "Settings", children: "body" }));
     mount(sheet(true));
     expect(played()).toEqual(["soft"]);
     flushSync(() => root!.render(sheet(false)));

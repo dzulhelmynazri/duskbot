@@ -20,7 +20,7 @@ import {
   withoutDesktopCompanionAccess,
 } from "./desktop-companion-client.mjs";
 
-const token = `dusk_${"a".repeat(43)}`;
+const token = `madani_${"a".repeat(43)}`;
 // The one opaque label the control plane puts in front of a managed domain.
 const LABEL = "c-0123456789abcdef0123456789abcdef";
 const deviceId = "123e4567-e89b-12d3-a456-426614174000";
@@ -44,11 +44,11 @@ afterEach(async () => {
 describe("desktop companion endpoint", () => {
   it("preserves the local-origin boundary while marking companion client mode", () => {
     expect(desktopCompanionRendererArguments("http://127.0.0.1:8799", null)).toEqual([
-      "--dusk-local-origin=http://127.0.0.1:8799",
+      "--madani-local-origin=http://127.0.0.1:8799",
     ]);
     expect(desktopCompanionRendererArguments("http://127.0.0.1:8798", access)).toEqual([
-      "--dusk-local-origin=http://127.0.0.1:8798",
-      "--duskbot-remote-client",
+      "--madani-local-origin=http://127.0.0.1:8798",
+      "--madanibot-remote-client",
     ]);
   });
 
@@ -59,14 +59,14 @@ describe("desktop companion endpoint", () => {
     expect(normalizeTailscaleCompanionEndpoint("http://HOST.example-tailnet.ts.net:9910/")).toBe(
       "http://host.example-tailnet.ts.net:9910",
     );
-    expect(normalizeDesktopCompanionEndpoint(`https://${LABEL}.cloud.dusk.bot`)).toBe(
-      `https://${LABEL}.cloud.dusk.bot`,
+    expect(normalizeDesktopCompanionEndpoint(`https://${LABEL}.cloud.madani.bot`)).toBe(
+      `https://${LABEL}.cloud.madani.bot`,
     );
-    expect(normalizeDesktopCompanionEndpoint(`${LABEL}.cloud.dusk.bot`)).toBe(
-      `https://${LABEL}.cloud.dusk.bot`,
+    expect(normalizeDesktopCompanionEndpoint(`${LABEL}.cloud.madani.bot`)).toBe(
+      `https://${LABEL}.cloud.madani.bot`,
     );
-    expect(normalizeDesktopCompanionEndpoint(` ${LABEL.toUpperCase()}.Cloud.DUSK.Bot/ `)).toBe(
-      `https://${LABEL}.cloud.dusk.bot`,
+    expect(normalizeDesktopCompanionEndpoint(` ${LABEL.toUpperCase()}.Cloud.MADANI.Bot/ `)).toBe(
+      `https://${LABEL}.cloud.madani.bot`,
     );
     // the hosted control plane still gives addresses under its names from before the rename
     for (const host of LEGACY.companionHostSuffixes) {
@@ -74,48 +74,48 @@ describe("desktop companion endpoint", () => {
     }
     for (const endpoint of [
       "https://unrelated.example.com",
-      `http://${LABEL}.cloud.dusk.bot`,
+      `http://${LABEL}.cloud.madani.bot`,
       "http://10.0.0.4:8810",
       "http://host.local:8810",
       "https://10.0.0.4",
       "http://host.example-tailnet.ts.net/path",
-      `https://${LABEL}.cloud.dusk.bot/path`,
+      `https://${LABEL}.cloud.madani.bot/path`,
       "http://user@host.example-tailnet.ts.net",
       "http://host.example-tailnet.ts.net.evil.test",
-      `https://${LABEL}.cloud.dusk.bot.evil.test`,
-      `http://${LABEL}.cloud.dusk.bot`,
-      `https://${LABEL}.cloud.dusk.bot/path`,
-      `https://${LABEL}.cloud.dusk.bot.evil.test`,
-      "https://cloud.dusk.bot",
-      "cloud.dusk.bot",
-      "https://evilcloud.dusk.bot",
-      `https://${LABEL}.evilcloud.dusk.bot`,
-      "https://dusk.bot",
-      "https://app.cloud.dusk.bot",
-      "https://dusk.bot",
-      "https://c-opaque.cloud.dusk.bot",
-      "https://c-opaque.cloud.dusk.bot",
-      `https://${LABEL.slice(0, -1)}.cloud.dusk.bot`,
-      `https://${LABEL}0.cloud.dusk.bot`,
-      `https://${LABEL.replace("c-", "d-")}.cloud.dusk.bot`,
-      `https://${LABEL}.extra.cloud.dusk.bot`,
-      `https://www.${LABEL}.cloud.dusk.bot`,
+      `https://${LABEL}.cloud.madani.bot.evil.test`,
+      `http://${LABEL}.cloud.madani.bot`,
+      `https://${LABEL}.cloud.madani.bot/path`,
+      `https://${LABEL}.cloud.madani.bot.evil.test`,
+      "https://cloud.madani.bot",
+      "cloud.madani.bot",
+      "https://evilcloud.madani.bot",
+      `https://${LABEL}.evilcloud.madani.bot`,
+      "https://madani.bot",
+      "https://app.cloud.madani.bot",
+      "https://madani.bot",
+      "https://c-opaque.cloud.madani.bot",
+      "https://c-opaque.cloud.madani.bot",
+      `https://${LABEL.slice(0, -1)}.cloud.madani.bot`,
+      `https://${LABEL}0.cloud.madani.bot`,
+      `https://${LABEL.replace("c-", "d-")}.cloud.madani.bot`,
+      `https://${LABEL}.extra.cloud.madani.bot`,
+      `https://www.${LABEL}.cloud.madani.bot`,
     ]) {
       expect(normalizeDesktopCompanionEndpoint(endpoint), endpoint).toBe("");
     }
   });
 
   it("validates, adds, and removes the encrypted credential document field", () => {
-    const hostedAccess = { ...access, endpoint: `https://${LABEL}.cloud.dusk.bot` };
+    const hostedAccess = { ...access, endpoint: `https://${LABEL}.cloud.madani.bot` };
     expect(desktopCompanionAccess({ [DESKTOP_COMPANION_FIELD]: hostedAccess })).toEqual(
       hostedAccess,
     );
-    const secondDomain = { ...access, endpoint: `https://${LABEL}.cloud.dusk.bot` };
+    const secondDomain = { ...access, endpoint: `https://${LABEL}.cloud.madani.bot` };
     expect(desktopCompanionAccess({ [DESKTOP_COMPANION_FIELD]: secondDomain })).toEqual(
       secondDomain,
     );
     expect(
-      desktopCompanionAccess({ [DESKTOP_COMPANION_FIELD]: { ...access, endpoint: "https://app.cloud.dusk.bot" } }),
+      desktopCompanionAccess({ [DESKTOP_COMPANION_FIELD]: { ...access, endpoint: "https://app.cloud.madani.bot" } }),
     ).toBeNull();
 
     expect(desktopCompanionAccess({ [DESKTOP_COMPANION_FIELD]: access })).toEqual(access);
@@ -166,40 +166,40 @@ describe("desktop companion pairing", () => {
       }),
     );
     const paired = await pairDesktopCompanion({
-      endpoint: `https://${LABEL}.cloud.dusk.bot`,
+      endpoint: `https://${LABEL}.cloud.madani.bot`,
       code: "654321",
       deviceName: "Desktop client",
       requestId: "request-https-01",
       fetchImpl,
     });
-    expect(paired).toEqual({ ...access, endpoint: `https://${LABEL}.cloud.dusk.bot` });
+    expect(paired).toEqual({ ...access, endpoint: `https://${LABEL}.cloud.madani.bot` });
     expect(fetchImpl).toHaveBeenCalledWith(
-      `https://${LABEL}.cloud.dusk.bot/api/pair`,
+      `https://${LABEL}.cloud.madani.bot/api/pair`,
       expect.objectContaining({ method: "POST" }),
     );
 
     const secondDomain = await pairDesktopCompanion({
-      endpoint: `${LABEL}.cloud.dusk.bot`,
+      endpoint: `${LABEL}.cloud.madani.bot`,
       code: "654321",
       deviceName: "Desktop client",
       requestId: "request-https-02",
       fetchImpl,
     });
-    expect(secondDomain).toEqual({ ...access, endpoint: `https://${LABEL}.cloud.dusk.bot` });
+    expect(secondDomain).toEqual({ ...access, endpoint: `https://${LABEL}.cloud.madani.bot` });
     expect(fetchImpl).toHaveBeenLastCalledWith(
-      `https://${LABEL}.cloud.dusk.bot/api/pair`,
+      `https://${LABEL}.cloud.madani.bot/api/pair`,
       expect.objectContaining({ method: "POST" }),
     );
 
     await expect(
       pairDesktopCompanion({
-        endpoint: "https://app.cloud.dusk.bot",
+        endpoint: "https://app.cloud.madani.bot",
         code: "654321",
         deviceName: "Desktop client",
         requestId: "request-https-03",
         fetchImpl,
       }),
-    ).rejects.toThrow("dusk bot HTTPS companion address");
+    ).rejects.toThrow("madani bot HTTPS companion address");
     expect(fetchImpl).toHaveBeenCalledTimes(2);
   });
 
@@ -229,7 +229,7 @@ describe("desktop companion loopback relay", () => {
   });
 
   it("serves the UI only on loopback and never includes the bearer in the page", async () => {
-    const directory = fs.mkdtempSync(path.join(os.tmpdir(), "dusk-desktop-client-"));
+    const directory = fs.mkdtempSync(path.join(os.tmpdir(), "madani-desktop-client-"));
     tempDirs.push(directory);
     fs.writeFileSync(path.join(directory, "index.html"), "<h1>Remote client</h1>");
     const relay = await startDesktopCompanionRelay({ access, staticDir: directory, ports: [0] });
@@ -350,7 +350,7 @@ describe("desktop companion loopback relay", () => {
   });
 
   it("answers a request target that is not a URL with 400 and keeps serving", async () => {
-    const directory = fs.mkdtempSync(path.join(os.tmpdir(), "dusk-desktop-client-"));
+    const directory = fs.mkdtempSync(path.join(os.tmpdir(), "madani-desktop-client-"));
     tempDirs.push(directory);
     fs.writeFileSync(path.join(directory, "index.html"), "<h1>Remote client</h1>");
     const relay = await startDesktopCompanionRelay({ access, staticDir: directory, ports: [0] });

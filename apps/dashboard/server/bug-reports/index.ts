@@ -160,7 +160,7 @@ export function createBugReports(options: BugReportsOptions) {
           ...(report.images ? [["images", String(report.images)] as [string, string]] : [])] },
         { t: "log", text: report.description.slice(0, 2_000) },
         { t: "button", label: "open bug reports", href: mail.panelUrl }],
-      reason: "you got this because your address gets the dusk bot alert emails. one email per report, never a repeat." });
+      reason: "you got this because your address gets the madani bot alert emails. one email per report, never a repeat." });
     for (const mailer of mail.mailers) {
       try { await Promise.all(mail.to().map(to => mailer.send({ to, subject, text: body, html }))); return; } catch { /* the next mailer */ }
     }
@@ -188,7 +188,7 @@ export function createBugReports(options: BugReportsOptions) {
   /** a signed question is a Cloud home's: valid only from a known machine, and it may tell about fixes only while its plan runs */
   function homeVerdict(req: IncomingMessage, body: Buffer): "unsigned" | "running" | "ended" {
     const header = (name: string) => { const value = req.headers[name]; return typeof value === "string" ? value : ""; };
-    const machine = header("x-dusk-cloud-machine"), timestamp = header("x-dusk-cloud-timestamp"), nonce = header("x-dusk-cloud-nonce"), signature = header("x-dusk-cloud-signature");
+    const machine = header("x-madani-cloud-machine"), timestamp = header("x-madani-cloud-timestamp"), nonce = header("x-madani-cloud-nonce"), signature = header("x-madani-cloud-signature");
     if (!machine && !signature) return "unsigned";
     const bad = () => new BugReportError(401, "invalid_signature", "The signature is not valid.");
     const cloud = options.clouds?.get(machine);
@@ -257,7 +257,7 @@ export function createBugReports(options: BugReportsOptions) {
       const status = url.searchParams.get("status") || undefined, theme = url.searchParams.get("theme") || undefined;
       if (status !== undefined && !isStatus(status)) throw new BugReportError(400, "invalid_request", "Invalid status.");
       if (theme !== undefined && !isTheme(theme)) throw new BugReportError(400, "invalid_request", "Invalid theme.");
-      const real = req.headers["x-dusk-admin-tests"] !== "show";
+      const real = req.headers["x-madani-admin-tests"] !== "show";
       const [summaries, counts] = await Promise.all([store.summaries({ real, max: THEME_SCAN }), store.counts({ real })]);
       const themed = summaries.map(row => ({ ...row, theme: themeOf(row.description) }));
       const ids = theme ? themed.filter(row => row.theme === theme).map(row => row.id) : undefined;

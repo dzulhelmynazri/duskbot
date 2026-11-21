@@ -26,7 +26,7 @@ export function voiceKeyStore(): VoiceKeyStore | null {
       clear: (provider) => phone.secrets.remove(phoneKeyName(provider)),
     };
   }
-  const desktop = typeof window === "undefined" ? undefined : window.duskDesktop?.voiceInput;
+  const desktop = typeof window === "undefined" ? undefined : window.madaniDesktop?.voiceInput;
   return desktop ? desktop.keys : null;
 }
 

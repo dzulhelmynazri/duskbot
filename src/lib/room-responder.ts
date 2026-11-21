@@ -3,12 +3,12 @@ import { defaultResponderName, effectiveDefaultResponder } from "./group-routing
 import { t } from "./i18n";
 
 /** `leader:<id>` leads the group; `member:<id>` is a room from before leaders, where that bot only answers. `auto` is
- * Jev deciding, `dusk` a quick model of the person's own AI. */
-export type ResponderChoice = `leader:${string}` | `member:${string}` | "auto" | "dusk" | "everyone" | "mentions";
+ * Jev deciding, `madani` a quick model of the person's own AI. */
+export type ResponderChoice = `leader:${string}` | `member:${string}` | "auto" | "madani" | "everyone" | "mentions";
 
 export function responderChoice(responder: GroupDefaultResponder): ResponderChoice {
   if (responder.kind === "member") return responder.leader ? `leader:${responder.botId}` : `member:${responder.botId}`;
-  if (responder.kind === "auto") return responder.by === "dusk" ? "dusk" : "auto";
+  if (responder.kind === "auto") return responder.by === "madani" ? "madani" : "auto";
   return responder.kind;
 }
 
@@ -22,7 +22,7 @@ export function chosenResponder(choice: string, current: GroupDefaultResponder):
   if (choice === "mentions") return { kind: "mentions" };
   const lead = responderLeadId(current);
   if (choice === "auto") return lead ? { kind: "auto", fallbackBotId: lead } : { kind: "auto" };
-  if (choice === "dusk") return lead ? { kind: "auto", fallbackBotId: lead, by: "dusk" } : { kind: "auto", by: "dusk" };
+  if (choice === "madani") return lead ? { kind: "auto", fallbackBotId: lead, by: "madani" } : { kind: "auto", by: "madani" };
   if (choice.startsWith("leader:")) return { kind: "member", botId: choice.slice("leader:".length), leader: true };
   return { kind: "member", botId: choice.slice("member:".length) };
 }
@@ -36,7 +36,7 @@ export function responderTitle(group: Group, members: Bot[], jevOn: boolean): st
     : responder.kind === "mentions"
       ? t("room.responder.mentions")
       : responder.kind === "auto"
-        ? jevOn || responder.by === "dusk"
+        ? jevOn || responder.by === "madani"
           ? t("room.responder.auto")
           : t("room.responder.autoOff", { name: defaultResponderName(group, members) ?? t("room.responder.leadFallback") })
         : responder.leader ? t("room.responder.leader", { name }) : t("room.responder.lead", { name });
@@ -46,7 +46,7 @@ export function responderShortLabel(group: Group, members: Bot[]): string {
   const responder = effectiveDefaultResponder(group, members);
   if (responder.kind === "everyone") return t("room.panel.responder.everyone");
   if (responder.kind === "mentions") return t("room.panel.responder.mentions");
-  if (responder.kind === "auto") return responder.by === "dusk" ? t("room.panel.responder.dusk") : t("room.panel.responder.jev");
+  if (responder.kind === "auto") return responder.by === "madani" ? t("room.panel.responder.madani") : t("room.panel.responder.jev");
   const name = members.find((member) => member.id === responder.botId)?.name ?? t("room.responder.leadFallback");
   return responder.leader ? t("room.panel.responder.leads", { name }) : name;
 }

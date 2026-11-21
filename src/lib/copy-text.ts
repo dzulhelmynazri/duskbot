@@ -54,7 +54,7 @@ export async function copyRichText(text: string, html: string): Promise<CopyResu
 
 async function copyThroughDesktop(text: string): Promise<CopyResult> {
   try {
-    if (typeof window !== "undefined" && (await window.duskDesktop?.copyText?.(text)) === true) return "copied";
+    if (typeof window !== "undefined" && (await window.madaniDesktop?.copyText?.(text)) === true) return "copied";
   } catch {
   }
   return "failed";

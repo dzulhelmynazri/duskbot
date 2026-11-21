@@ -2,7 +2,7 @@ import { useEffect, useRef, useState, type KeyboardEvent as ReactKeyboardEvent }
 import { IslandIntro } from "./IslandIntro";
 import { trapTab } from "./WelcomeFlow";
 
-const OPEN = "dusk:island-intro";
+const OPEN = "madani:island-intro";
 let waiting: (() => void)[] = [];
 
 /** Plays the notch and dock step again over the app (Settings → Appearance); resolves once it closes. */
@@ -16,7 +16,7 @@ export function openIslandIntro(): Promise<void> {
 declare global {
   interface Window {
     /** dev builds only: plays the notch and dock step from the console */
-    duskIslandIntro?: () => Promise<void>;
+    madaniIslandIntro?: () => Promise<void>;
   }
 }
 
@@ -26,7 +26,7 @@ export function IslandIntroHost() {
   useEffect(() => {
     const open = () => setRun((now) => (now > 0 ? now : Date.now()));
     window.addEventListener(OPEN, open);
-    if (import.meta.env.DEV) window.duskIslandIntro = openIslandIntro;
+    if (import.meta.env.DEV) window.madaniIslandIntro = openIslandIntro;
     return () => window.removeEventListener(OPEN, open);
   }, []);
   useEffect(() => { if (run) root.current?.focus({ preventScroll: true }); }, [run]);

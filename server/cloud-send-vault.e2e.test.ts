@@ -28,7 +28,7 @@ let release = "";
 const proxies: ChildProcess[] = [];
 
 beforeAll(async () => {
-  scratch = mkdtempSync(join(tmpdir(), "dusk-vault-move-"));
+  scratch = mkdtempSync(join(tmpdir(), "madani-vault-move-"));
   release = join(scratch, "release");
   fx = await launchCloudSendFixture({ onePasswordToken: TOKEN,
     desktopEngine: `if (process.argv[2] !== "--version") { process.env.FAKE_CLAUDE_MODE = "hang"; process.env.FAKE_CLAUDE_RELEASE = ${JSON.stringify(release)}; process.env.FAKE_CLAUDE_DUMP = ${JSON.stringify(join(scratch, "spawn.json"))}; }` });
@@ -39,7 +39,7 @@ afterAll(async () => {
   if (scratch) rmSync(scratch, { recursive: true, force: true });
 });
 
-/** The bot's own dusk bot tools, as its turn reaches them: the MCP proxy the turn was started with. */
+/** The bot's own madani bot tools, as its turn reaches them: the MCP proxy the turn was started with. */
 async function botTools(home: string) {
   let agents: { command: string; args: string[]; env: Record<string, string> } | undefined;
   await expect.poll(() => {
@@ -80,7 +80,7 @@ it("moves every Vault item with its value, sealed, and no value shows anywhere o
   expect((await local("POST", "/api/logins", { site: "accounts.example.test", username: "alice", password: PASSWORD, totp: TOTP, bots: [bot.id] })).status).toBe(201);
   expect((await local("POST", "/api/logins/1password", { token: TOKEN })).status).toBe(200);
 
-  // The bot asks on two cards: a file for its own commands, and a ref for dusk bot's tools; the person saves both to the Vault.
+  // The bot asks on two cards: a file for its own commands, and a ref for madani bot's tools; the person saves both to the Vault.
   expect((await local("POST", `/api/bots/${bot.id}/messages`, { text: "Set up Stripe test charges and Notion's MCP." })).status).toBe(202);
   const tools = await botTools(join(fx.root, "desktop"));
   const cards = async () => (await local("GET", `/api/threads/${bot.threadId}/messages`)).body.messages.filter((message: any) => message.kind === "secret");
@@ -92,9 +92,9 @@ it("moves every Vault item with its value, sealed, and no value shows anywhere o
   expect(refCard.id).not.toBe(fileCard.id);
   expect((await local("POST", `/api/bots/${bot.id}/secret-cards/${refCard.id}/save`, { threadId: bot.threadId, value: REF_SECRET, remember: true })).status).toBe(200);
   expect((await local("GET", "/api/saved-secrets")).body.secrets.map((secret: { label: string }) => secret.label)).toEqual(["Notion key", "Stripe secret key"]);
-  const desktopFiles = join(fx.root, "desktop", ".duskbot");
+  const desktopFiles = join(fx.root, "desktop", ".madanibot");
   const fileHere = filesHolding(desktopFiles, FILE_SECRET);
-  expect(fileHere).toEqual([expect.stringMatching(new RegExp(`\\.duskbot-secrets/${bot.threadId}/${fileCard.id}$`, "u"))]);
+  expect(fileHere).toEqual([expect.stringMatching(new RegExp(`\\.madanibot-secrets/${bot.threadId}/${fileCard.id}$`, "u"))]);
   writeFileSync(release, "");
   await expect.poll(async () => (await local("GET", "/api/bots")).body.bots.every((entry: { activity?: string; busy?: boolean }) => entry.activity !== "working" && !entry.busy),
     { timeout: 30_000, interval: 200 }).toBe(true);
@@ -117,8 +117,8 @@ it("moves every Vault item with its value, sealed, and no value shows anywhere o
   expect(vault.map((secret: { label: string; bots: string[] }) => [secret.label, secret.bots])).toEqual([["Notion key", [bot.id]], ["Stripe secret key", [bot.id]]]);
   const logins = (await onCloud("GET", "/api/logins")).body;
   expect(JSON.stringify(logins)).toContain("alice");
-  const cloudData = join(fx.root, "cloud", ".duskbot");
-  expect(filesHolding(cloudData, FILE_SECRET)).toEqual([expect.stringMatching(new RegExp(`^workspaces/.*\\.duskbot-secrets/${bot.threadId}/${fileCard.id}$`, "u"))]);
+  const cloudData = join(fx.root, "cloud", ".madanibot");
+  expect(filesHolding(cloudData, FILE_SECRET)).toEqual([expect.stringMatching(new RegExp(`^workspaces/.*\\.madanibot-secrets/${bot.threadId}/${fileCard.id}$`, "u"))]);
   const kept = join(cloudData, filesHolding(cloudData, FILE_SECRET)[0]!);
   expect(readFileSync(kept, "utf8")).toBe(FILE_SECRET);
   expect(lstatSync(kept).mode & 0o777).toBe(0o600);

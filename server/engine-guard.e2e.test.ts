@@ -9,14 +9,14 @@ import { removeTempDir, waitForExit } from "./testing/cleanup.ts";
 import { freePortBlock } from "./testing/ports.ts";
 
 const SERVER_DIR = dirname(fileURLToPath(import.meta.url));
-const home = mkdtempSync(join(tmpdir(), "dusk-engine-guard-e2e-"));
+const home = mkdtempSync(join(tmpdir(), "madani-engine-guard-e2e-"));
 // a stand-in for an installed engine: outside every temporary folder, in an engine package's path; it only leaves a mark
-const installed = join(SERVER_DIR, "..", "node_modules", ".cache", `dusk-engine-guard-${process.pid}`, "@anthropic-ai", "claude-code");
+const installed = join(SERVER_DIR, "..", "node_modules", ".cache", `madani-engine-guard-${process.pid}`, "@anthropic-ai", "claude-code");
 const marker = join(home, "the-engine-ran");
 afterAll(async () => { rmSync(join(installed, "..", ".."), { recursive: true, force: true }); await removeTempDir(home); });
 
 it("a test fixture that would launch a real engine CLI stops at its first attempt, before any runs", async () => {
-  const dataDir = join(home, ".duskbot");
+  const dataDir = join(home, ".madanibot");
   mkdirSync(dataDir, { recursive: true });
   mkdirSync(installed, { recursive: true });
   // the read-only probes (version, help, sign-in status) may run; anything else leaves the mark
@@ -30,14 +30,14 @@ it("a test fixture that would launch a real engine CLI stops at its first attemp
   const roomyDisk = pathToFileURL(join(SERVER_DIR, "testing", "roomy-disk.mjs")).href;
   const child = spawn(process.execPath, ["--import", roomyDisk, "--import", offline, join(SERVER_DIR, "index.ts")], {
     cwd: join(SERVER_DIR, ".."), stdio: ["ignore", "pipe", "pipe"],
-    env: { PATH: process.env.PATH, HOME: home, DUSK_DATA_DIR: dataDir, DUSK_PORT: String(port), DUSK_WEBHOOK_PORT: String(port + 1), DUSK_NO_TEST_BOTS: "1" },
+    env: { PATH: process.env.PATH, HOME: home, MADANI_DATA_DIR: dataDir, MADANI_PORT: String(port), MADANI_WEBHOOK_PORT: String(port + 1), MADANI_NO_TEST_BOTS: "1" },
   });
   let said = "";
   child.stderr.on("data", (chunk) => { said += chunk; });
   const exited = new Promise<number | null>((resolve) => child.once("exit", (code) => resolve(code)));
   try {
     const base = `http://127.0.0.1:${port}`;
-    const ask = (method: string, path: string, body?: unknown) => fetch(`${base}${path}`, { method, headers: { "x-dusk-cli": "1", ...(body ? { "content-type": "application/json" } : {}) }, ...(body ? { body: JSON.stringify(body) } : {}) }).then((res) => res.json(), () => null);
+    const ask = (method: string, path: string, body?: unknown) => fetch(`${base}${path}`, { method, headers: { "x-madani-cli": "1", ...(body ? { "content-type": "application/json" } : {}) }, ...(body ? { body: JSON.stringify(body) } : {}) }).then((res) => res.json(), () => null);
     const started = await Promise.race([exited.then(() => false), (async () => {
       for (let tries = 0; tries < 200; tries++) { if (await fetch(`${base}/api/health`).then((res) => res.ok, () => false)) return true; await new Promise((resolve) => setTimeout(resolve, 100)); }
       return false;

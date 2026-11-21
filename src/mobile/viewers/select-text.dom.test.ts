@@ -34,7 +34,7 @@ async function mount(element: ReturnType<typeof createElement>) {
   style.textContent = selectRules();
   document.head.append(style);
   host = document.createElement("div");
-  host.className = "dusk-mobile";
+  host.className = "madani-mobile";
   document.body.append(host);
   const root = createRoot(host);
   await act(async () => root.render(element));

@@ -2,9 +2,9 @@ import { useSyncExternalStore } from "react";
 import { parseStarred } from "./starred-models";
 
 /** The models picked last on this device, newest first, as starKeys. */
-export const RECENT_MODELS_KEY = "duskbot.recentModels.v1";
+export const RECENT_MODELS_KEY = "madanibot.recentModels.v1";
 export const RECENT_MODELS_KEPT = 6;
-const CHANGED = "dusk-recent-models";
+const CHANGED = "madani-recent-models";
 const NONE: readonly string[] = Object.freeze([]);
 
 export function withRecent(list: readonly string[], key: string): string[] {

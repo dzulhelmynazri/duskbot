@@ -1,25 +1,25 @@
 // The surfaces gallery's layout guard: every settings page, every bot panel tab, the dialogs and sheets the store opens,
 // and the first-run steps a browser gets, in the real app on desktop and phone widths, checked by the chat gallery's
-// layout audit (scoped to the open surface). Screenshots go to DUSK_GALLERY_DIR (default
-// .dusk-scratch/verify-evidence/chat-gallery), beside the chat cards'.
+// layout audit (scoped to the open surface). Screenshots go to MADANI_GALLERY_DIR (default
+// .madani-scratch/verify-evidence/chat-gallery), beside the chat cards'.
 //
-//   DUSK_UI_E2E=1 pnpm exec vitest run scripts/testing/surface-gallery.e2e.test.ts
-//   DUSK_SURFACES_ONLY=settings:appearance,panel:soul  narrows the run.
+//   MADANI_UI_E2E=1 pnpm exec vitest run scripts/testing/surface-gallery.e2e.test.ts
+//   MADANI_SURFACES_ONLY=settings:appearance,panel:soul  narrows the run.
 import { spawn, type ChildProcess } from "node:child_process";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { expect, it } from "vitest";
-import { launchVerificationServer, runControlDusk, type VerificationServer } from "../control-dusk.ts";
+import { launchVerificationServer, runControlMadani, type VerificationServer } from "../control-madani.ts";
 import { waitForExit } from "../../server/testing/cleanup.ts";
-import { ensureUiBrowser } from "./control-dusk-ui.ts";
+import { ensureUiBrowser } from "./control-madani-ui.ts";
 import { fixtureApi, mountPreview, REPO_ROOT, type MountedPreview } from "./preview-fixture.ts";
 import { connect } from "./chat-gallery/cdp.ts";
 import type { LayoutIssue } from "./chat-gallery/layout-audit.ts";
 import type { AppSettingsSection, BotSettingsSection } from "../../src/state/store.tsx";
 import { NOTICES } from "../../src/lib/notices.ts";
 
-const enabled = process.env.DUSK_UI_E2E === "1";
-if (!enabled) console.log("skipping the surfaces gallery: set DUSK_UI_E2E=1 for isolated browser qualification");
+const enabled = process.env.MADANI_UI_E2E === "1";
+if (!enabled) console.log("skipping the surfaces gallery: set MADANI_UI_E2E=1 for isolated browser qualification");
 
 const SETTINGS: AppSettingsSection[] = [
   "general", "appearance", "looks", "bots", "engines", "connections", "apps", "computer", "logins", "usage", "people", "botAccess",
@@ -76,11 +76,11 @@ const ALL_VIEWPORTS = [
   { id: "min", width: 768, height: 520, touch: false },
   { id: "phone", width: 390, height: 844, touch: true },
 ] as const;
-const VIEWPORT_IDS = (process.env.DUSK_SURFACES_VIEWPORTS ?? "desktop,phone").split(",");
+const VIEWPORT_IDS = (process.env.MADANI_SURFACES_VIEWPORTS ?? "desktop,phone").split(",");
 // touch emulation sticks once on, so phones run last
 const VIEWPORTS = ALL_VIEWPORTS.filter((one) => VIEWPORT_IDS.includes(one.id));
-const SKINS = (process.env.DUSK_SURFACES_SKINS ?? "grok").split(",");
-const ONLY = process.env.DUSK_SURFACES_ONLY?.split(",");
+const SKINS = (process.env.MADANI_SURFACES_SKINS ?? "grok").split(",");
+const ONLY = process.env.MADANI_SURFACES_ONLY?.split(",");
 const DIALOG_SCOPE = `[role=dialog], [role=alertdialog], [aria-modal=true]`;
 
 /** Points across the window outside an open modal must hit its scrim or the modal itself (elementFromPoint). */
@@ -173,7 +173,7 @@ const SURFACES: Surface[] = [
   let freshPreview: MountedPreview | undefined;
   let chrome: ChildProcess | undefined;
   let cdp: Awaited<ReturnType<typeof connect>> | undefined;
-  const evidence = process.env.DUSK_GALLERY_DIR || join(process.env.DUSK_UI_EVIDENCE_DIR || join(REPO_ROOT, ".dusk-scratch", "verify-evidence"), "chat-gallery");
+  const evidence = process.env.MADANI_GALLERY_DIR || join(process.env.MADANI_UI_EVIDENCE_DIR || join(REPO_ROOT, ".madani-scratch", "verify-evidence"), "chat-gallery");
   mkdirSync(evidence, { recursive: true });
   const report: Array<{ shot: string; opened: boolean; issues: LayoutIssue[]; probe?: unknown }> = [];
   try {
@@ -184,7 +184,7 @@ const SURFACES: Surface[] = [
     await api("PATCH", "/api/config", { language: "en" });
     const { bots } = await api("GET", "/api/bots");
     for (const bot of bots.filter((bot: { defaultBot?: unknown }) => bot.defaultBot)) await api("PATCH", `/api/bots/${bot.id}`, { welcomed: true });
-    await runControlDusk(["new-bot", "--name", "Pepper", "--url", fixture.info.url]);
+    await runControlMadani(["new-bot", "--name", "Pepper", "--url", fixture.info.url]);
     // one colour every run, so screenshots compare (scripts/testing/visual-baseline.ts); a new bot's colour is picked at random
     for (const one of (await api("GET", "/api/bots")).bots) await api("PATCH", `/api/bots/${one.id}`, { color: one.name === "Pepper" ? "orange" : "silver" });
     preview = await mountPreview(fixture, { entry: "/scripts/testing/surface-gallery-preview.tsx", route: "/__surface-gallery.html", title: "Surfaces gallery", logLevel: "warn", hmr: false });
@@ -267,8 +267,8 @@ const SURFACES: Surface[] = [
         if (opened) issues.push(...await evaluate(COVER_CHECK) as LayoutIssue[]);
         const { data } = await request("Page.captureScreenshot", { format: "png" });
         writeFileSync(join(evidence, `${shot}.png`), Buffer.from(data, "base64"));
-        // DUSK_SURFACES_ENDS=1: a long pane's end as well, scrolled in its own scroller, for a person reading the run
-        if (process.env.DUSK_SURFACES_ENDS === "1" && opened) {
+        // MADANI_SURFACES_ENDS=1: a long pane's end as well, scrolled in its own scroller, for a person reading the run
+        if (process.env.MADANI_SURFACES_ENDS === "1" && opened) {
           const scrolled = await evaluate(`(() => { const scope = document.querySelector(${JSON.stringify(surface.scope)}); if (!scope) return false;
             const all = [scope, ...scope.querySelectorAll("*")].filter((one) => one.scrollHeight - one.clientHeight > 40 && /auto|scroll/.test(getComputedStyle(one).overflowY));
             const longest = all.sort((a, b) => (b.scrollHeight - b.clientHeight) - (a.scrollHeight - a.clientHeight))[0];
@@ -278,7 +278,7 @@ const SURFACES: Surface[] = [
             writeFileSync(join(evidence, `${shot}-end.png`), Buffer.from((await request("Page.captureScreenshot", { format: "png" })).data, "base64"));
           }
         }
-        const probe = process.env.DUSK_GALLERY_PROBE ? await evaluate(process.env.DUSK_GALLERY_PROBE) : undefined;
+        const probe = process.env.MADANI_GALLERY_PROBE ? await evaluate(process.env.MADANI_GALLERY_PROBE) : undefined;
         report.push({ shot, opened, issues, ...(probe === undefined ? {} : { probe }) });
       }
     }

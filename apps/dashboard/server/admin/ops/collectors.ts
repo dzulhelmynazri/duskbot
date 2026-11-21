@@ -148,7 +148,7 @@ export function vnstatMonth(json: string, month: string): { rx: number; tx: numb
     return found ? { rx, tx } : null;
   } catch { return null; }
 }
-/** systemd's view of one backup set's last run: `systemctl show dusk-backup@<set>.service` */
+/** systemd's view of one backup set's last run: `systemctl show madani-backup@<set>.service` */
 export function backupRun(show: string): { result: string; exitedAt: number | null } {
   const value = (name: string) => new RegExp(`^${name}=(.*)$`, "m").exec(show)?.[1]?.trim() ?? "";
   const at = Date.parse(value("ExecMainExitTimestamp").replace(/^\w{3} /, "").replace(/ ([A-Z]{2,5})$/, ""));
@@ -172,7 +172,7 @@ export async function collectHost(input: { now: number; previous: HostData | nul
   const rate = (now: number, before: number | undefined) => before !== undefined && span > 0 && now >= before ? Math.round((now - before) / span) : 0;
   const backups: HostData["backups"] = [];
   for (const set of input.backupSets) {
-    const show = await run("systemctl", ["show", `dusk-backup@${set}.service`, "-p", "Result", "-p", "ExecMainExitTimestamp"], { timeout: 5000 }).then(out => out.stdout, () => null);
+    const show = await run("systemctl", ["show", `madani-backup@${set}.service`, "-p", "Result", "-p", "ExecMainExitTimestamp"], { timeout: 5000 }).then(out => out.stdout, () => null);
     if (show === null) continue;
     const { result, exitedAt } = backupRun(show), before = input.previous?.backups.find(item => item.set === set);
     backups.push({ set, result, lastRunAt: exitedAt, lastOkAt: result === "success" && exitedAt ? Math.max(exitedAt, before?.lastOkAt ?? 0) : before?.lastOkAt ?? null });
@@ -188,7 +188,7 @@ export async function collectHost(input: { now: number; previous: HostData | nul
 
 export interface ProbeTarget { id: string; name: string; url: string; group: "services" | "providers"; expect?: string }
 export interface ProbeResult { id: string; name: string; url: string; group: "services" | "providers"; ok: boolean; status: number | null; latencyMs: number | null }
-/** DUSK_OPS_PROBES: "id=name=https://url,..." replaces the defaults */
+/** MADANI_OPS_PROBES: "id=name=https://url,..." replaces the defaults */
 export function probeTargets(value: string | undefined, self: string | null): ProbeTarget[] {
   if (value) return value.split(",").map(part => part.trim()).filter(Boolean).flatMap(part => {
     const [id, name, ...rest] = part.split("="), url = rest.join("=");
@@ -196,10 +196,10 @@ export function probeTargets(value: string | undefined, self: string | null): Pr
   });
   return [
     ...(self ? [{ id: "account", name: "account service", url: `${self}/v1/health`, group: "services" as const }] : []),
-    { id: "site", name: "dusk.bot", url: "https://dusk.bot/", group: "services" },
-    { id: "preview", name: "preview", url: "https://preview.dusk.bot/v1/health", group: "services" },
-    { id: "link", name: "link service", url: "https://link.dusk.bot/healthz", group: "services" },
-    { id: "broker", name: "composio broker", url: "https://composio.dusk.bot/health", group: "services" },
+    { id: "site", name: "madani.bot", url: "https://madani.bot/", group: "services" },
+    { id: "preview", name: "preview", url: "https://preview.madani.bot/v1/health", group: "services" },
+    { id: "link", name: "link service", url: "https://link.madani.bot/healthz", group: "services" },
+    { id: "broker", name: "composio broker", url: "https://composio.madani.bot/health", group: "services" },
     { id: "instabox", name: "instabox api", url: "https://api.instabox.sh/v1/openapi.json", group: "providers" },
   ];
 }
@@ -207,7 +207,7 @@ export async function collectProbes(targets: readonly ProbeTarget[], fetcher: ty
   return Promise.all(targets.map(async target => {
     const started = performance.now();
     try {
-      const res = await fetcher(target.url, { redirect: "follow", signal: AbortSignal.timeout(8000), headers: { "user-agent": "dusk-ops/1" } });
+      const res = await fetcher(target.url, { redirect: "follow", signal: AbortSignal.timeout(8000), headers: { "user-agent": "madani-ops/1" } });
       await res.body?.cancel().catch(() => {});
       return { id: target.id, name: target.name, url: target.url, group: target.group, ok: res.status < 500, status: res.status, latencyMs: Math.round(performance.now() - started) };
     } catch {

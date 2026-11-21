@@ -10,7 +10,7 @@ import {
 } from "./control-plane-client.mjs";
 
 const ACCOUNT = `signed.${"a".repeat(40)}`;
-const INSTALL = `dusk_install_${"a".repeat(22)}.${"b".repeat(43)}`;
+const INSTALL = `madani_install_${"a".repeat(22)}.${"b".repeat(43)}`;
 const INSTALL_ID = "11111111-1111-4111-8111-111111111111";
 const jsonResponse = (body, init = {}) =>
   new Response(JSON.stringify(body), {
@@ -20,20 +20,20 @@ const jsonResponse = (body, init = {}) =>
 
 describe("control-plane desktop client", () => {
   it("accepts exact HTTPS and loopback development origins only", () => {
-    expect(normalizeControlPlaneURL("https://dusk.bot/")).toBe(
-      "https://dusk.bot",
+    expect(normalizeControlPlaneURL("https://madani.bot/")).toBe(
+      "https://madani.bot",
     );
     expect(normalizeControlPlaneURL("http://127.0.0.1:8787/")).toBe("http://127.0.0.1:8787");
-    expect(normalizeControlPlaneURL("http://dusk.bot")).toBe("");
-    expect(normalizeControlPlaneURL("https://dusk.bot/api")).toBe("");
-    expect(normalizeControlPlaneURL("https://user:secret@dusk.bot")).toBe("");
+    expect(normalizeControlPlaneURL("http://madani.bot")).toBe("");
+    expect(normalizeControlPlaneURL("https://madani.bot/api")).toBe("");
+    expect(normalizeControlPlaneURL("https://user:secret@madani.bot")).toBe("");
   });
 
   it("normalizes an email without accepting malformed input", () => {
     expect(normalizeAccountEmail(" Ada@Example.COM ")).toBe("ada@example.com");
     expect(normalizeAccountEmail("not-an-email")).toBe("");
     expect(normalizeAccountEmail(new String("ada@example.com"))).toBe("");
-    expect(normalizeControlPlaneURL({ toString: () => "https://dusk.bot" })).toBe("");
+    expect(normalizeControlPlaneURL({ toString: () => "https://madani.bot" })).toBe("");
   });
 
   it("accepts plain cross-realm response records", async () => {
@@ -41,7 +41,7 @@ describe("control-plane desktop client", () => {
       "({ user: { id: 'user-1', email: 'ada@example.com' } })",
     );
     const client = createControlPlaneClient({
-      baseURL: "https://dusk.bot",
+      baseURL: "https://madani.bot",
       fetchImpl: vi.fn(async () => ({
         status: 200,
         ok: true,
@@ -63,7 +63,7 @@ describe("control-plane desktop client", () => {
       }
     }
     const client = createControlPlaneClient({
-      baseURL: "https://dusk.bot",
+      baseURL: "https://madani.bot",
       fetchImpl: vi.fn(async () => ({
         status: 200,
         ok: true,
@@ -79,10 +79,10 @@ describe("control-plane desktop client", () => {
     const timeoutSignal = vi.fn(() => new AbortController().signal);
     const fetchImpl = vi
       .fn()
-      .mockResolvedValueOnce(jsonResponse({ ok: true, service: "duskbot-control-plane" }))
+      .mockResolvedValueOnce(jsonResponse({ ok: true, service: "madanibot-control-plane" }))
       .mockResolvedValueOnce(jsonResponse({ ok: true, service: "some-other-service" }));
     const client = createControlPlaneClient({
-      baseURL: "https://dusk.bot",
+      baseURL: "https://madani.bot",
       fetchImpl,
       timeoutSignal,
     });
@@ -91,7 +91,7 @@ describe("control-plane desktop client", () => {
     await expect(client.health()).rejects.toMatchObject({
       code: "control_plane_unavailable",
     });
-    expect(fetchImpl.mock.calls[0][0]).toBe("https://dusk.bot/healthz");
+    expect(fetchImpl.mock.calls[0][0]).toBe("https://madani.bot/healthz");
     expect(fetchImpl.mock.calls[0][1].redirect).toBe("error");
     expect(fetchImpl.mock.calls[0][1].headers.get("origin")).toBeNull();
     expect(timeoutSignal).toHaveBeenNthCalledWith(1, 3_000);
@@ -110,7 +110,7 @@ describe("control-plane desktop client", () => {
       );
     });
     const client = createControlPlaneClient({
-      baseURL: "https://dusk.bot",
+      baseURL: "https://madani.bot",
       fetchImpl,
     });
 
@@ -126,13 +126,13 @@ describe("control-plane desktop client", () => {
       // Undici adds Fetch Metadata after our wrapper; Better Auth 1.7 forbids a browser-shaped request without a trusted Origin.
       const wireHeaders = new Headers(init.headers);
       wireHeaders.set("sec-fetch-mode", "cors");
-      if (wireHeaders.has("sec-fetch-mode") && wireHeaders.get("origin") !== "https://dusk.bot") {
+      if (wireHeaders.has("sec-fetch-mode") && wireHeaders.get("origin") !== "https://madani.bot") {
         return jsonResponse({ error: "forbidden" }, { status: 403 });
       }
       return jsonResponse({ success: true });
     });
     const client = createControlPlaneClient({
-      baseURL: "https://dusk.bot",
+      baseURL: "https://madani.bot",
       fetchImpl,
     });
 
@@ -140,13 +140,13 @@ describe("control-plane desktop client", () => {
       email: "ada@example.com",
     });
     expect(fetchImpl.mock.calls[0][1].headers.get("origin")).toBe(
-      "https://dusk.bot",
+      "https://madani.bot",
     );
   });
 
   it("keeps a valid installation credential without rotating it", async () => {
     const fetchImpl = vi.fn(async (url) => {
-      expect(url).toBe("https://dusk.bot/v1/installations/self");
+      expect(url).toBe("https://madani.bot/v1/installations/self");
       return jsonResponse({
         installation: {
           id: INSTALL_ID,
@@ -158,7 +158,7 @@ describe("control-plane desktop client", () => {
         credentialExpiresAt: Date.now() + 10_000,
       });
     });
-    const client = createControlPlaneClient({ baseURL: "https://dusk.bot", fetchImpl });
+    const client = createControlPlaneClient({ baseURL: "https://madani.bot", fetchImpl });
     const result = await client.ensureInstallation({
       accountToken: ACCOUNT,
       currentCredential: INSTALL,
@@ -172,7 +172,7 @@ describe("control-plane desktop client", () => {
   });
 
   it("recovers a lost installation credential by rotating the matching identity", async () => {
-    const rotated = `dusk_install_${"c".repeat(22)}.${"d".repeat(43)}`;
+    const rotated = `madani_install_${"c".repeat(22)}.${"d".repeat(43)}`;
     const fetchImpl = vi.fn(async (url, init) => {
       if (url.endsWith("/v1/installations")) {
         return jsonResponse({
@@ -183,7 +183,7 @@ describe("control-plane desktop client", () => {
       expect(init.method).toBe("POST");
       return jsonResponse({ credential: rotated, credentialExpiresAt: Date.now() + 10_000 }, { status: 201 });
     });
-    const client = createControlPlaneClient({ baseURL: "https://dusk.bot", fetchImpl });
+    const client = createControlPlaneClient({ baseURL: "https://madani.bot", fetchImpl });
     await expect(client.ensureInstallation({
       accountToken: ACCOUNT,
       clientInstanceId: "client-1",
@@ -195,7 +195,7 @@ describe("control-plane desktop client", () => {
 
   it("lists validated active installations for response-loss cleanup", async () => {
     const fetchImpl = vi.fn(async (url, init) => {
-      expect(url).toBe("https://dusk.bot/v1/installations");
+      expect(url).toBe("https://madani.bot/v1/installations");
       expect(init.headers.get("authorization")).toBe(`Bearer ${ACCOUNT}`);
       return jsonResponse({
         installations: [{
@@ -208,7 +208,7 @@ describe("control-plane desktop client", () => {
       });
     });
     const client = createControlPlaneClient({
-      baseURL: "https://dusk.bot",
+      baseURL: "https://madani.bot",
       fetchImpl,
     });
 
@@ -223,7 +223,7 @@ describe("control-plane desktop client", () => {
 
   it("rejects malformed installation lists instead of skipping cleanup targets", async () => {
     const client = createControlPlaneClient({
-      baseURL: "https://dusk.bot",
+      baseURL: "https://madani.bot",
       fetchImpl: vi.fn(async () => jsonResponse({
         installations: [{ id: "not-an-installation", clientInstanceId: "client-1" }],
       })),
@@ -237,14 +237,14 @@ describe("control-plane desktop client", () => {
   it("validates endpoint material without leaking the connector token into the URL", async () => {
     const connectorToken = `eyJ${"x".repeat(80)}`;
     const fetchImpl = vi.fn(async (url, init) => {
-      expect(url).toBe("https://dusk.bot/v1/installations/self/endpoint");
+      expect(url).toBe("https://madani.bot/v1/installations/self/endpoint");
       expect(init.headers.get("authorization")).toBe(`Bearer ${INSTALL}`);
       expect(url).not.toContain(connectorToken);
-      return jsonResponse({ endpoint: { url: "https://c-opaque.cloud.dusk.bot" }, connectorToken });
+      return jsonResponse({ endpoint: { url: "https://c-opaque.cloud.madani.bot" }, connectorToken });
     });
-    const client = createControlPlaneClient({ baseURL: "https://dusk.bot", fetchImpl });
+    const client = createControlPlaneClient({ baseURL: "https://madani.bot", fetchImpl });
     await expect(client.ensureEndpoint(INSTALL)).resolves.toEqual({
-      endpoint: { url: "https://c-opaque.cloud.dusk.bot" },
+      endpoint: { url: "https://c-opaque.cloud.madani.bot" },
       connectorToken,
     });
   });
@@ -252,16 +252,16 @@ describe("control-plane desktop client", () => {
   it("reports the app's release with an endpoint request only when it is a printable version", async () => {
     const connectorToken = `eyJ${"x".repeat(80)}`;
     const fetchImpl = vi.fn(async () =>
-      jsonResponse({ endpoint: { url: "https://c-opaque.cloud.dusk.bot" }, connectorToken }),
+      jsonResponse({ endpoint: { url: "https://c-opaque.cloud.madani.bot" }, connectorToken }),
     );
-    const client = createControlPlaneClient({ baseURL: "https://dusk.bot", fetchImpl });
+    const client = createControlPlaneClient({ baseURL: "https://madani.bot", fetchImpl });
     const sent = () => {
       const [, init] = fetchImpl.mock.lastCall;
       return { body: init.body, contentType: init.headers.get("content-type") };
     };
 
     await expect(client.ensureEndpoint(INSTALL, { appVersion: " 0.1.104 " })).resolves.toEqual({
-      endpoint: { url: "https://c-opaque.cloud.dusk.bot" },
+      endpoint: { url: "https://c-opaque.cloud.madani.bot" },
       connectorToken,
     });
     expect(sent()).toEqual({ body: JSON.stringify({ appVersion: "0.1.104" }), contentType: "application/json" });
@@ -276,7 +276,7 @@ describe("control-plane desktop client", () => {
 
   it("maps bounded server error codes and hides arbitrary response text", async () => {
     const client = createControlPlaneClient({
-      baseURL: "https://dusk.bot",
+      baseURL: "https://madani.bot",
       fetchImpl: vi.fn(async () => jsonResponse({ error: "rate_limited", detail: "secret detail" }, { status: 429 })),
     });
     await expect(client.requestOTP("ada@example.com")).rejects.toMatchObject({
@@ -289,7 +289,7 @@ describe("control-plane desktop client", () => {
   it("falls back from Better Auth's message-only 429 without exposing its prose", async () => {
     const requestId = "44444444-4444-4444-8444-444444444444";
     const client = createControlPlaneClient({
-      baseURL: "https://dusk.bot",
+      baseURL: "https://madani.bot",
       fetchImpl: vi.fn(async () => jsonResponse(
         { message: "Too many requests. Please try again later." },
         { status: 429, headers: { "x-request-id": requestId } },
@@ -306,7 +306,7 @@ describe("control-plane desktop client", () => {
 
   it("uses stable status errors when a response has no public error contract", async () => {
     const client = createControlPlaneClient({
-      baseURL: "https://dusk.bot",
+      baseURL: "https://madani.bot",
       fetchImpl: vi.fn(async () => jsonResponse(
         { code: "INTERNAL_DEPENDENCY_DETAIL", message: "do not expose this" },
         { status: 400, headers: { "x-request-id": "not-a-safe-request-id" } },
@@ -322,7 +322,7 @@ describe("control-plane desktop client", () => {
 
   it("fails closed on redirects and network errors", async () => {
     const client = createControlPlaneClient({
-      baseURL: "https://dusk.bot",
+      baseURL: "https://madani.bot",
       fetchImpl: vi.fn(async () => {
         throw new TypeError("redirect blocked");
       }),
@@ -340,26 +340,26 @@ describe("control-plane desktop client", () => {
       .fn()
       .mockResolvedValueOnce(jsonResponse({ endpoint: null }))
       .mockResolvedValueOnce(jsonResponse({
-        endpoint: { url: "https://c-opaque.cloud.dusk.bot", hostname: "c-opaque.cloud.dusk.bot", status: "deleting" },
+        endpoint: { url: "https://c-opaque.cloud.madani.bot", hostname: "c-opaque.cloud.madani.bot", status: "deleting" },
       }))
       .mockResolvedValueOnce(jsonResponse({
-        endpoint: { url: "https://c-opaque.cloud.dusk.bot", status: "renamed-by-a-future-server" },
+        endpoint: { url: "https://c-opaque.cloud.madani.bot", status: "renamed-by-a-future-server" },
       }))
-      .mockResolvedValueOnce(jsonResponse({ endpoint: { url: "http://c-opaque.cloud.dusk.bot" } }));
-    const client = createControlPlaneClient({ baseURL: "https://dusk.bot", fetchImpl });
+      .mockResolvedValueOnce(jsonResponse({ endpoint: { url: "http://c-opaque.cloud.madani.bot" } }));
+    const client = createControlPlaneClient({ baseURL: "https://madani.bot", fetchImpl });
 
     await expect(client.getEndpoint(INSTALL)).resolves.toBeNull();
     await expect(client.getEndpoint(INSTALL)).resolves.toEqual({
-      url: "https://c-opaque.cloud.dusk.bot",
+      url: "https://c-opaque.cloud.madani.bot",
       status: "deleting",
     });
     await expect(client.getEndpoint(INSTALL)).resolves.toEqual({
-      url: "https://c-opaque.cloud.dusk.bot",
+      url: "https://c-opaque.cloud.madani.bot",
       status: "unknown",
     });
     await expect(client.getEndpoint(INSTALL)).rejects.toMatchObject({ code: "invalid_response" });
     const [url, init] = fetchImpl.mock.calls[0];
-    expect(url).toBe("https://dusk.bot/v1/installations/self/endpoint");
+    expect(url).toBe("https://madani.bot/v1/installations/self/endpoint");
     expect(init.method).toBe("GET");
     expect(init.headers.get("authorization")).toBe(`Bearer ${INSTALL}`);
     await expect(client.getEndpoint(ACCOUNT)).rejects.toMatchObject({ code: "signed_out", status: 401 });
@@ -376,7 +376,7 @@ describe("control-plane desktop client", () => {
         status: 503,
         headers: { "retry-after": "Wed, 21 Oct 2026 07:28:00 GMT" },
       }));
-    const client = createControlPlaneClient({ baseURL: "https://dusk.bot", fetchImpl });
+    const client = createControlPlaneClient({ baseURL: "https://madani.bot", fetchImpl });
 
     const first = await client.ensureEndpoint(INSTALL).catch((error) => error);
     expect(first).toBeInstanceOf(ControlPlaneError);

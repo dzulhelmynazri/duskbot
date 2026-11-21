@@ -138,14 +138,14 @@ export function AccountRows() {
             {who}
           </button>
           <div className="flex shrink-0 items-center gap-1.5">
-            {window.duskDesktop?.accounts && accounts.noRail && <button type="button" data-settings-open="add-account" className="ui-button" onClick={() => setAdding(true)}>{t("settings.grok.account.add")}</button>}
+            {window.madaniDesktop?.accounts && accounts.noRail && <button type="button" data-settings-open="add-account" className="ui-button" onClick={() => setAdding(true)}>{t("settings.grok.account.add")}</button>}
             {accounts.openSheet && <button type="button" data-settings-open="account" className="ui-button" onClick={() => accounts.openSheet?.()}>{t("settings.rows.account")}</button>}
             <button type="button" data-settings-open="sign-out" className="ui-button" onClick={() => accounts.signOut(active.id)}>{t("settings.grok.account.signOut")}</button>
           </div>
         </div>
       )}
       {/* signed out: sign in continues in the browser for its context (the account context redirect), never an in-app form */}
-      {!active && window.duskDesktop?.accounts && <NavRow data-settings-open="sign-in" title={t("accounts.signIn")} onClick={() => window.duskDesktop?.cloudAccount?.continueInBrowser ? openSignIn() : setAdding(true)} />}
+      {!active && window.madaniDesktop?.accounts && <NavRow data-settings-open="sign-in" title={t("accounts.signIn")} onClick={() => window.madaniDesktop?.cloudAccount?.continueInBrowser ? openSignIn() : setAdding(true)} />}
       <AnimatePresence>{editing && (
         <FormDialog key="profile" data-panel-modal="profile" title={t("settings.w6.group.aboutYou")} width={460} onClose={() => setEditing(false)}>
           <div data-settings-look="simple" className="-mx-2 flex flex-col"><ProfileFields face={face} /></div>
@@ -444,7 +444,7 @@ export function UsagePane({ has, cloudAccount }: { has: Has; cloudAccount: React
   const { at } = useSubPage();
   const { usage, upgrade, dialog } = useCloudUsageSettings();
   const plan = useCloudPlan();
-  // while the plan row offers dusk cloud, a second dusk cloud row would only repeat it; a subscriber manages it there
+  // while the plan row offers madani cloud, a second madani cloud row would only repeat it; a subscriber manages it there
   const subscribed = plan !== null && plan.view.kind !== "signed-out" && plan.view.kind !== "removed" && !buyOfferAllowed(plan.view);
   const limits = useEngineLimits().filter(reportsUsage);
   if (at === "breakdown") {

@@ -37,7 +37,7 @@ async function stubHarness(): Promise<{ url: string; requests: () => number; clo
 
 async function main() {
   const harness = await stubHarness();
-  const folder = await mkdtemp(join(tmpdir(), "dusk-bench-tools-"));
+  const folder = await mkdtemp(join(tmpdir(), "madani-bench-tools-"));
   const toolsFile = join(folder, "tools.json");
   await writeFile(toolsFile, JSON.stringify([
     { name: "lookup", description: "Read one record", inputSchema: { type: "object", properties: { id: { type: "string" } } }, annotations: { readOnlyHint: true } },
@@ -45,13 +45,13 @@ async function main() {
   const agents = {
     command: process.execPath,
     args: [process.env.BENCH_AGENTS_PROXY ?? SPAWNED_PROXIES.agents],
-    env: { DUSK_HARNESS_URL: harness.url, DUSK_BOT_ID: "bench", DUSK_THREAD_ID: "bench-thread", DUSK_COMMS_TOKEN: "bench-token", DUSK_TURN_DEPTH: "0" },
+    env: { MADANI_HARNESS_URL: harness.url, MADANI_BOT_ID: "bench", MADANI_THREAD_ID: "bench-thread", MADANI_COMMS_TOKEN: "bench-token", MADANI_TURN_DEPTH: "0" },
   };
   const fake = { command: process.execPath, args: [join(import.meta.dirname, "../server/testing/fake-mcp-server.ts")], env: { FAKE_MCP_TOOLS_FILE: toolsFile } };
   console.log(`agents proxy: ${agents.args[0]}`);
 
   const { listed } = agentsToolList(agents.env);
-  const bridged = agentsToolList({ ...agents.env, DUSK_AGENTS_TOOL_BRIDGE: "1" }).listed;
+  const bridged = agentsToolList({ ...agents.env, MADANI_AGENTS_TOOL_BRIDGE: "1" }).listed;
   const bytes = (value: unknown) => Buffer.byteLength(JSON.stringify(value));
   console.log(`agents tools/list: ${listed.length} tools, ${bytes(listed)} bytes (~${Math.round(bytes(listed) / 4)} tokens); bridged ${bridged.length} tools, ${bytes(bridged)} bytes`);
 

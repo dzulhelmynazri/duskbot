@@ -17,7 +17,7 @@ import { StoreContext } from "@/state/store";
 import { usePanelPage, type PanelPage } from "@/lib/page-open";
 import { PublishedPageCard } from "./PublishedPageCard";
 
-const URL = "https://abcdefghijklmnopqrstuvwxyz.page.dusk.bot/";
+const URL = "https://abcdefghijklmnopqrstuvwxyz.page.madani.bot/";
 const page = (card: Message["publishedPage"]): Message => ({ id: "m1", at: 1, role: "bot", kind: "text", text: "fallback", publishedPage: card });
 const live = page({ state: "live", title: "Bake sale", pageId: "abcdefghijklmnopqrstuvwxyz", url: URL, usage: { pages: 3, limit: 5 } });
 /** The app's state with Pepper's chat open; Pepper's browser is on and installed. */
@@ -34,10 +34,10 @@ function render(message: Message, state = app()) {
     createElement(PublishedPageCard, { message }), createElement(Panel))));
   return { container, root, panel };
 }
-const desktop = (bridge: Record<string, unknown> = {}) => { (window as { duskDesktop?: unknown }).duskDesktop = { platform: "darwin", ...bridge }; };
+const desktop = (bridge: Record<string, unknown> = {}) => { (window as { madaniDesktop?: unknown }).madaniDesktop = { platform: "darwin", ...bridge }; };
 const buttons = (container: HTMLElement) => [...container.querySelectorAll("button")];
 
-afterEach(() => { vi.clearAllMocks(); delete (window as { duskDesktop?: unknown }).duskDesktop; });
+afterEach(() => { vi.clearAllMocks(); delete (window as { madaniDesktop?: unknown }).madaniDesktop; });
 
 describe("a published page's card", () => {
   it("shows the title, the link and the usage; on the web Open and the link open a new tab; and it unpublishes the page", async () => {
@@ -102,7 +102,7 @@ describe("a published page's card", () => {
     desktop({ cloudAccount: {} });
     const { container, root } = render(page({ state: "limit", title: "Bake sale", plan: "free", upgrade: true, usage: { pages: 5, limit: 5 }, message: "server words" }));
     try {
-      expect(container.textContent).toContain("You’ve used your 5 free pages. dusk cloud gives you more, and pages without the badge.");
+      expect(container.textContent).toContain("You’ve used your 5 free pages. madani cloud gives you more, and pages without the badge.");
       expect(container.textContent).toContain("5 of 5 pages");
       container.querySelector("button")!.click();
       expect(dispatch).toHaveBeenCalledWith({ type: "openCloudAdd", source: "app_pages" });

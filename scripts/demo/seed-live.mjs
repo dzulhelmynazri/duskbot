@@ -1,4 +1,4 @@
-// Seeds the test bots into a running dusk bot with only the requests the app itself makes: a team backup import
+// Seeds the test bots into a running madani bot with only the requests the app itself makes: a team backup import
 // (bots, looks, instructions, memory, room, conversation text), then section moves, approval level, skills, routines,
 // webhooks, reactions and unread marks. Idempotent: anything already there by name in the "Test bots" section is kept
 // as it is and skipped. Never reads, changes or deletes anything outside what it creates.
@@ -6,7 +6,7 @@ import { BOTS, D, MEMORY, ROOMS, ROUTINES, SECTION, SKILLS, WEBHOOKS, threads } 
 import { backupProjection, buildThread } from "./transcripts.mjs";
 
 // the dev app's server takes changes only from the desktop window; its seeding child is handed the same capability
-const OWNER_HEADER = "X-Dusk-Desktop-Owner";
+const OWNER_HEADER = "X-Madani-Desktop-Owner";
 let ownerToken = null;
 /** Sends the desktop owner capability with every request from here on; refuses anything but a well-formed one. */
 export function useOwnerToken(token) {
@@ -45,7 +45,7 @@ const day = (now, daysAgo) => new Date(now - daysAgo * D).toISOString().slice(0,
 const inSection = (record) => (record.section ?? "").trim() === SECTION;
 const lower = (value) => value.trim().toLowerCase();
 
-/** A dusk.backup with the given bots and rooms; every room member must be among the bots. */
+/** A madani.backup with the given bots and rooms; every room member must be among the bots. */
 export function teamBackup(now, bots = BOTS, rooms = ROOMS) {
   const conversations = threads();
   const backupBots = bots.map((bot) => {
@@ -80,7 +80,7 @@ export function teamBackup(now, bots = BOTS, rooms = ROOMS) {
       tasks: [{ key: "main", title: room.name, createdAt: now - room.ago, activeLeafId: messages.at(-1).id, messages }],
     };
   });
-  return { format: "dusk.backup", version: 1, name: "dusk bot test bots", exportedAt: now, warnings: [], bots: backupBots, groups, routines: [] };
+  return { format: "madani.backup", version: 1, name: "madani bot test bots", exportedAt: now, warnings: [], bots: backupBots, groups, routines: [] };
 }
 
 /**
@@ -142,7 +142,7 @@ export async function seedBots(base, now, log = console.log) {
 
   await Promise.all(Object.entries(SKILLS).filter(([key]) => fresh.has(key)).flatMap(([key, skills]) => skills.map((skill) =>
     call(base, "POST", `/api/bots/${ids.get(key)}/skill-template`, {
-      name: skill.name, description: skill.description, warnings: [], source: "duskbot-test-bots", text: skill.text, enabled: true,
+      name: skill.name, description: skill.description, warnings: [], source: "madanibot-test-bots", text: skill.text, enabled: true,
     }))));
 
   const [routineList, webhookList] = await Promise.all([call(base, "GET", "/api/routines"), call(base, "GET", "/api/webhooks")]);

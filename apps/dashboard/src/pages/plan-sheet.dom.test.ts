@@ -81,7 +81,7 @@ test("a switch during the trial and a smaller plan both stop once to say $0 toda
   await act(async () => button(/^switch to pro$/)!.click());
   expect(changePlan).not.toHaveBeenCalled();
   expect(document.body.textContent).toContain("$0 today. your free trial still ends 20 Nov 2026, then $50/mo.");
-  expect(document.body.textContent).not.toMatch(/hello@dusk\.bot/);
+  expect(document.body.textContent).not.toMatch(/hello@madani\.bot/);
   await act(async () => button(/^switch to pro$/)!.click());
   expect(changePlan).toHaveBeenCalledWith(expect.objectContaining({ desktop: "shared-m" }), 0);
 });
@@ -108,14 +108,14 @@ test("buying a work license on its own: one click asks once, the button holds wh
 });
 
 test("back from paying, having come from the app: the page says you're all set and points back to the app, before the plans load", async () => {
-  sessionStorage.setItem("dusk.fromApp", "1");
+  sessionStorage.setItem("madani.fromApp", "1");
   history.replaceState(null, "", "/billing?subscription_id=sub_1&status=active");
   state.cloud = { catalog: null, billing: null, clouds: [], refresh: () => {}, error: null, checkout: vi.fn(), changeCharge: vi.fn(), changePlan: vi.fn() };
   const { BillingPage } = await import("./Billing");
   await mount(createElement(BillingPage));
   expect(document.querySelector("[data-all-set] h1")?.textContent).toBe("you're all set");
-  expect(document.body.textContent).toContain("go back to dusk bot.");
-  expect(document.querySelector<HTMLAnchorElement>("[data-open-app-link]")?.getAttribute("href")).toBe("duskbot://cloud");
+  expect(document.body.textContent).toContain("go back to madani bot.");
+  expect(document.querySelector<HTMLAnchorElement>("[data-open-app-link]")?.getAttribute("href")).toBe("madanibot://cloud");
   await act(async () => button(/^see your plan$/)!.click());
   expect(document.querySelector("[data-all-set]")).toBeNull();
   expect(document.querySelector("[data-plans-skeleton]"), "the plans' own shape while they load, never a blank page").not.toBeNull();
@@ -124,7 +124,7 @@ test("back from paying, having come from the app: the page says you're all set a
 });
 
 test("a payment still confirming keeps the plans page, its skeleton while it loads", async () => {
-  sessionStorage.setItem("dusk.fromApp", "1");
+  sessionStorage.setItem("madani.fromApp", "1");
   history.replaceState(null, "", "/billing?subscription_id=sub_1&status=processing");
   state.cloud = { catalog: null, billing: null, clouds: [], refresh: () => {}, error: null, checkout: vi.fn(), changeCharge: vi.fn(), changePlan: vi.fn() };
   const { BillingPage } = await import("./Billing");

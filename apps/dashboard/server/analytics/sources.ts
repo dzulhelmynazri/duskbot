@@ -1,5 +1,5 @@
 // Source and channel table ported from Minilytics (https://github.com/surendrapandar/minilytics),
-// Copyright (c) 2026 surendrapandar, MIT License. Adapted for dusk bot.
+// Copyright (c) 2026 surendrapandar, MIT License. Adapted for madani bot.
 
 export type Channel = "direct" | "search" | "social" | "ai" | "referral" | "email" | "paid";
 
@@ -67,7 +67,7 @@ export const KNOWN_SOURCES: KnownSource[] = [
   { name: "WhatsApp", domain: "whatsapp.com", channel: "social", match: /^((.*\.)?(whatsapp\.com|wa\.me)|whatsapp)$/ },
   { name: "Slack", domain: "slack.com", channel: "social", match: /^((.*\.)?slack\.com|slack)$/ },
   { name: "Lobsters", domain: "lobste.rs", channel: "social", match: /^(lobste\.rs|lobsters)$/ },
-  { name: "dusk bot", domain: "dusk.bot", channel: "referral", match: /^(.*\.)?dusk\.bot$/ },
+  { name: "madani bot", domain: "madani.bot", channel: "referral", match: /^(.*\.)?madani\.bot$/ },
 ];
 
 const PAID_MEDIUM = /^(cpc|ppc|cpm|paid|paid[_-]?social|paidsearch|ads?|display|retargeting|sponsored)$/i;

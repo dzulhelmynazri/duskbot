@@ -1,4 +1,4 @@
-// Loaded the way the packaged app loads it: from a tree outside node_modules named by DUSK_DUCKDB_DIR.
+// Loaded the way the packaged app loads it: from a tree outside node_modules named by MADANI_DUCKDB_DIR.
 import { cpSync, existsSync, mkdirSync, mkdtempSync, realpathSync, writeFileSync } from "node:fs";
 import { rm } from "node:fs/promises";
 import { createRequire } from "node:module";
@@ -11,7 +11,7 @@ import { DATA_LIMITS, DATA_RESULTS_SCHEMA } from "../../shared/data-surface.ts";
 import { CLOSE_DRAIN_MS, EXTENSION_INSTALL_TIMEOUT_MS, Lane, closeNames, createDataEngine, dataEngine, drainLanes, duckdbDirectory, instanceSettings, levenshtein, likePattern, loadExtensions, type DataEngineOptions } from "./engine.ts";
 import { DataFailure, type BotDatabase, type DataEngine } from "./types.ts";
 
-const root = mkdtempSync(join(tmpdir(), "dusk-data-engine-"));
+const root = mkdtempSync(join(tmpdir(), "madani-data-engine-"));
 const outOfTree = join(root, "duckdb-resources");
 const nodeApi = realpathSync(join(process.cwd(), "node_modules", "@duckdb", "node-api"));
 const bindings = realpathSync(join(nodeApi, "..", "node-bindings"));
@@ -27,7 +27,7 @@ function engine(overrides: Partial<DataEngineOptions> = {}): DataEngine {
   const created = createDataEngine({
     botFolder: (botId) => join(root, "bots", botId),
     dataDir: join(root, "data"),
-    env: { ...process.env, DUSK_DUCKDB_DIR: outOfTree, DUSK_RESOURCES_PATH: undefined },
+    env: { ...process.env, MADANI_DUCKDB_DIR: outOfTree, MADANI_RESOURCES_PATH: undefined },
     ...overrides,
   });
   engines.push(created);
@@ -73,12 +73,12 @@ describe("closing", () => {
 });
 
 describe("loading the binding", () => {
-  it("prefers DUSK_DUCKDB_DIR, then a staged resources tree, then node_modules", () => {
+  it("prefers MADANI_DUCKDB_DIR, then a staged resources tree, then node_modules", () => {
     const staged = join(root, "resources");
     mkdirSync(join(staged, "duckdb"), { recursive: true });
-    expect(duckdbDirectory({ DUSK_DUCKDB_DIR: "/x", DUSK_RESOURCES_PATH: staged })).toBe("/x");
-    expect(duckdbDirectory({ DUSK_RESOURCES_PATH: staged })).toBe(join(staged, "duckdb"));
-    expect(duckdbDirectory({ DUSK_RESOURCES_PATH: join(root, "nowhere") })).toBeNull();
+    expect(duckdbDirectory({ MADANI_DUCKDB_DIR: "/x", MADANI_RESOURCES_PATH: staged })).toBe("/x");
+    expect(duckdbDirectory({ MADANI_RESOURCES_PATH: staged })).toBe(join(staged, "duckdb"));
+    expect(duckdbDirectory({ MADANI_RESOURCES_PATH: join(root, "nowhere") })).toBeNull();
     expect(duckdbDirectory({})).toBeNull();
   });
 
@@ -94,10 +94,10 @@ describe("loading the binding", () => {
 
   it("names the directory and an action when the binding is missing, in one line, without throwing", async () => {
     const missing = join(root, "no-binding-here");
-    const e = engine({ env: { ...process.env, DUSK_DUCKDB_DIR: missing } });
+    const e = engine({ env: { ...process.env, MADANI_DUCKDB_DIR: missing } });
     const reason = e.unavailable();
     expect(reason).toContain(missing);
-    expect(reason).toMatch(/DUSK_DUCKDB_DIR/);
+    expect(reason).toMatch(/MADANI_DUCKDB_DIR/);
     expect(reason).not.toContain("\n");
     const error = await failure(e.forBot("x"));
     expect(error.error.code).toBe("engine_unavailable");
@@ -129,11 +129,11 @@ describe("instance settings", () => {
     expect(settings.autoinstall_known_extensions).toBe("false");
     expect(settings.autoload_known_extensions).toBe("true");
     expect(settings.preserve_insertion_order).toBe("false");
-    expect(instanceSettings("/b", "/d", "v1", { DUSK_DUCKDB_MEMORY_LIMIT: "3GB", DUSK_DUCKDB_MAX_TEMP_SIZE: "1GB" })).toMatchObject({ memory_limit: "3GB", max_temp_directory_size: "1GB" });
+    expect(instanceSettings("/b", "/d", "v1", { MADANI_DUCKDB_MEMORY_LIMIT: "3GB", MADANI_DUCKDB_MAX_TEMP_SIZE: "1GB" })).toMatchObject({ memory_limit: "3GB", max_temp_directory_size: "1GB" });
   });
 
   it("applies them to the opened database", async () => {
-    const e = engine({ env: { ...process.env, DUSK_DUCKDB_DIR: outOfTree, DUSK_DUCKDB_MEMORY_LIMIT: "300MiB" } });
+    const e = engine({ env: { ...process.env, MADANI_DUCKDB_DIR: outOfTree, MADANI_DUCKDB_MEMORY_LIMIT: "300MiB" } });
     const db = await e.forBot("settings");
     const names = ["memory_limit", "threads", "temp_directory", "extension_directory", "allow_persistent_secrets", "preserve_insertion_order", "autoinstall_known_extensions", "autoload_known_extensions"];
     const result = await db.run(`SELECT ${names.map((name) => `current_setting('${name}')`).join(", ")}`, bot);
@@ -396,9 +396,9 @@ describe("a bot's database", () => {
     await db.run("UPDATE counted SET replacement = 9", panel);
     expect((await db.stats("counted")).columns[0]).toMatchObject({ min: "9", max: "9", approxUnique: 1 });
     await db.materialise("SELECT 1 AS before", "cached", bot);
-    await db.stats("dusk_results.cached");
+    await db.stats("madani_results.cached");
     await db.materialise("SELECT 2 AS after", "cached", bot);
-    expect((await db.stats("dusk_results.cached")).columns[0]).toMatchObject({ name: "after", min: "2", max: "2" });
+    expect((await db.stats("madani_results.cached")).columns[0]).toMatchObject({ name: "after", min: "2", max: "2" });
   });
 
   it("bins numbers and dates into twenty equal widths and counts the top text values", async () => {

@@ -29,32 +29,32 @@ export function passwdIds(passwd: string, name: string): { uid: number; gid: num
 }
 
 /** An allow-list by name, so a secret the platform adds later never reaches the server. Every setting the image's ENV
- * gives the server belongs here too (docker-image.test.ts checks): without DUSK_DUCKDB_DIR the server found neither the
+ * gives the server belongs here too (docker-image.test.ts checks): without MADANI_DUCKDB_DIR the server found neither the
  * 1Password SDK nor DuckDB, which the image keeps in /app/duckdb, and said 1Password was "not available in this build". */
 const SERVER_ENV_NAMES = new Set([
   "PATH", "SHELL", "HOSTNAME", "LANG", "LANGUAGE", "TZ", "TERM", "TMPDIR", "NO_COLOR", "NODE_ENV", "NODE_EXTRA_CA_CERTS", "SSL_CERT_FILE", "SSL_CERT_DIR",
-  "AGENT_BROWSER_EXECUTABLE_PATH", "DUSK_STATIC_DIR", "DUSK_DATA_DIR", "DUSK_DUCKDB_DIR",
-  "DUSK_CLOUD_ROLE", "DUSK_CLOUD_MACHINE_ID", "DUSK_CLOUD_ADMIN_URL", "DUSK_CLOUD_IMAGE", "DUSK_PUBLIC_URL", "DUSK_WEBHOOK_PUBLIC_URL", "DUSK_CLOUD_ENTITLEMENT",
-  "DUSK_CLOUD_TEAM_ID", "DUSK_CLOUD_TEAM_NAME", "DUSK_CLOUD_VOICE_URL", "DUSK_CLOUD_DECIDER_URL", "DUSK_CLOUD_X_URL", "DUSK_TTS_DEFAULT_VOICE",
-  "DUSK_COMPOSIO_BROKER_URL",
+  "AGENT_BROWSER_EXECUTABLE_PATH", "MADANI_STATIC_DIR", "MADANI_DATA_DIR", "MADANI_DUCKDB_DIR",
+  "MADANI_CLOUD_ROLE", "MADANI_CLOUD_MACHINE_ID", "MADANI_CLOUD_ADMIN_URL", "MADANI_CLOUD_IMAGE", "MADANI_PUBLIC_URL", "MADANI_WEBHOOK_PUBLIC_URL", "MADANI_CLOUD_ENTITLEMENT",
+  "MADANI_CLOUD_TEAM_ID", "MADANI_CLOUD_TEAM_NAME", "MADANI_CLOUD_VOICE_URL", "MADANI_CLOUD_DECIDER_URL", "MADANI_CLOUD_X_URL", "MADANI_TTS_DEFAULT_VOICE",
+  "MADANI_COMPOSIO_BROKER_URL",
   // The bot box switch (server/bot-box/detect.ts): the Admin may turn a home's box off for support.
-  "DUSK_BOT_BOX",
+  "MADANI_BOT_BOX",
   // a home on its own machine (a managed cloud vm) runs bot computers on that machine's docker, only through the gate's socket.
-  "DUSK_VPS_DOCKER", "DOCKER_HOST",
+  "MADANI_VPS_DOCKER", "DOCKER_HOST",
   // where that machine's own build of the bot computer image says how it goes
-  "DUSK_BOT_DESKTOP_HOST_BUILD",
+  "MADANI_BOT_DESKTOP_HOST_BUILD",
   // An ended Cloud started only for its owner's export: the server runs frozen (server/move-freeze.ts).
-  "DUSK_CLOUD_EXPORT_ONLY",
+  "MADANI_CLOUD_EXPORT_ONLY",
   // the direct screen path (server/screen-direct.ts): its UDP range, and the switch that turns it off
-  "DUSK_SCREEN_DIRECT_PORTS", "DUSK_SCREEN_DIRECT",
+  "MADANI_SCREEN_DIRECT_PORTS", "MADANI_SCREEN_DIRECT",
   // OpenCode's free backup downloaded at the first start, before the first message (server/free-backup.ts)
-  "DUSK_PREINSTALL_FREE_BACKUP",
+  "MADANI_PREINSTALL_FREE_BACKUP",
 ]);
 export function serverEnvironmentAllowed(name: string): boolean {
   return SERVER_ENV_NAMES.has(name) || name.startsWith("LC_");
 }
 
-/** Caddy duration for DUSK_CLOUD_EDGE_HOLD: whole seconds, at most 120; anything else is no hold (0s). */
+/** Caddy duration for MADANI_CLOUD_EDGE_HOLD: whole seconds, at most 120; anything else is no hold (0s). */
 export function edgeHold(raw: string | undefined): string {
   const match = /^(\d{1,3})s$/.exec(raw?.trim() ?? "");
   return match && Number(match[1]) <= 120 ? `${Number(match[1])}s` : "0s";
@@ -66,15 +66,15 @@ export function edgeHold(raw: string | undefined): string {
  * port, so only the Cloudflare tunnel, running in this home's own network namespace, may name a client, in
  * Cf-Connecting-IP; a header from any other peer is ignored. The address feeds the pairing lockout, never authorization.
  */
-export function edgeClientAddress(env: NodeJS.ProcessEnv): { DUSK_CLOUD_EDGE_CLIENT_IP_HEADER: string; DUSK_CLOUD_EDGE_TRUSTED_PROXIES: string } {
+export function edgeClientAddress(env: NodeJS.ProcessEnv): { MADANI_CLOUD_EDGE_CLIENT_IP_HEADER: string; MADANI_CLOUD_EDGE_TRUSTED_PROXIES: string } {
   return env.FLY_APP_NAME?.trim()
-    ? { DUSK_CLOUD_EDGE_CLIENT_IP_HEADER: "Fly-Client-IP", DUSK_CLOUD_EDGE_TRUSTED_PROXIES: "private_ranges" }
-    : { DUSK_CLOUD_EDGE_CLIENT_IP_HEADER: "Cf-Connecting-IP", DUSK_CLOUD_EDGE_TRUSTED_PROXIES: "127.0.0.1/32 ::1/128" };
+    ? { MADANI_CLOUD_EDGE_CLIENT_IP_HEADER: "Fly-Client-IP", MADANI_CLOUD_EDGE_TRUSTED_PROXIES: "private_ranges" }
+    : { MADANI_CLOUD_EDGE_CLIENT_IP_HEADER: "Cf-Connecting-IP", MADANI_CLOUD_EDGE_TRUSTED_PROXIES: "127.0.0.1/32 ::1/128" };
 }
 
 /** The server's data directory on the volume. */
 export function cloudHomeDataDir(env: NodeJS.ProcessEnv, home: string): string {
-  return dataDirFor(env.DUSK_DATA_DIR, home);
+  return dataDirFor(env.MADANI_DATA_DIR, home);
 }
 
 /** flock(1)'s exit status when another process holds the lock (its --conflict-exit-code). */
@@ -103,7 +103,7 @@ export function holdVolume(home: string, lock: VolumeLock = flockVolume): void {
     return;
   }
   closeSync(fd);
-  if (result.status === VOLUME_HELD) throw new Error("Another dusk cloud home is already running on this volume. No data was changed.");
+  if (result.status === VOLUME_HELD) throw new Error("Another madani cloud home is already running on this volume. No data was changed.");
   const why = result.error?.message ?? (String(result.stderr ?? "").trim().split("\n")[0] || `exit ${result.status}`);
   throw new Error(`This home could not lock its volume (${why}), so it will not start: another home might be using it. No data was changed.`);
 }
@@ -136,20 +136,20 @@ export function cloudHomeChildEnvironments(config: CloudHomeConfig, env: NodeJS.
   const dropped = Object.keys(offered).filter((name) => !serverEnvironmentAllowed(name) && name !== "HOME").sort();
   const dataDir = cloudHomeDataDir(env, home);
   const server: NodeJS.ProcessEnv = {
-    ...allowed, HOME: home, DUSK_DATA_DIR: dataDir,
+    ...allowed, HOME: home, MADANI_DATA_DIR: dataDir,
     // Node keys the entries by its own version and the file's hash, so a stale entry is never used after an image upgrade.
     NODE_COMPILE_CACHE: posix.join(dataDir, "cache", "node-compile"),
-    DUSK_PORT: "8799", DUSK_WEBHOOK_PORT: "8800", DUSK_PUBLIC_URL: config.publicOrigin,
-    DUSK_WEBHOOK_PUBLIC_URL: env.DUSK_WEBHOOK_PUBLIC_URL || config.publicOrigin,
+    MADANI_PORT: "8799", MADANI_WEBHOOK_PORT: "8800", MADANI_PUBLIC_URL: config.publicOrigin,
+    MADANI_WEBHOOK_PUBLIC_URL: env.MADANI_WEBHOOK_PUBLIC_URL || config.publicOrigin,
     [CLOUD_SECRETS_FD_ENV]: String(SECRETS_FD),
   };
   const edge: NodeJS.ProcessEnv = {
-    PATH: env.PATH ?? "/usr/local/bin:/usr/bin:/bin", HOME: "/tmp/dusk-edge",
-    XDG_DATA_HOME: "/tmp/dusk-edge/data", XDG_CONFIG_HOME: "/tmp/dusk-edge/config",
-    DUSK_CLOUD_PUBLIC_HOST: cloudHomeHost(config),
-    DUSK_CLOUD_UPSTREAM_HOST: upstreamHost(cloudHomeHost(config), env.DUSK_CLOUD_UPSTREAM_HOST),
+    PATH: env.PATH ?? "/usr/local/bin:/usr/bin:/bin", HOME: "/tmp/madani-edge",
+    XDG_DATA_HOME: "/tmp/madani-edge/data", XDG_CONFIG_HOME: "/tmp/madani-edge/config",
+    MADANI_CLOUD_PUBLIC_HOST: cloudHomeHost(config),
+    MADANI_CLOUD_UPSTREAM_HOST: upstreamHost(cloudHomeHost(config), env.MADANI_CLOUD_UPSTREAM_HOST),
     // A plan whose home sleeps: requests wait this long for the server while it starts (deploy/fly/Caddyfile). Unset: 0s.
-    DUSK_CLOUD_EDGE_HOLD: edgeHold(env.DUSK_CLOUD_EDGE_HOLD),
+    MADANI_CLOUD_EDGE_HOLD: edgeHold(env.MADANI_CLOUD_EDGE_HOLD),
     ...edgeClientAddress(env),
   };
   return { server, edge, secrets: cloudHomeSecrets(env), dropped };
@@ -157,11 +157,11 @@ export function cloudHomeChildEnvironments(config: CloudHomeConfig, env: NodeJS.
 
 /** What root does to the machine before anything runs as `maus` (docs/bot-box.md, "What each layer stops"): /proc hides
  * other users' processes (`hidepid=invisible`), so no `maus` process lists root's, and Fly's local API socket folder is
- * root's alone. Each step is one command; a failure is logged, never fatal, and DUSK_CLOUD_HARDEN=0 skips them all. */
+ * root's alone. Each step is one command; a failure is logged, never fatal, and MADANI_CLOUD_HARDEN=0 skips them all. */
 export function hardenHost(env: NodeJS.ProcessEnv, run: { exec: (command: string, args: string[]) => { status: number | null; stderr?: string }; chmod: (path: string, mode: number) => void; exists: (path: string) => boolean } = {
   exec: (command, args) => spawnSync(command, args, { stdio: ["ignore", "ignore", "pipe"], encoding: "utf8", timeout: 10_000 }), chmod: chmodSync, exists: existsSync,
 }): string[] {
-  if (env.DUSK_CLOUD_HARDEN === "0") return ["hardening skipped (DUSK_CLOUD_HARDEN=0)"];
+  if (env.MADANI_CLOUD_HARDEN === "0") return ["hardening skipped (MADANI_CLOUD_HARDEN=0)"];
   const notes: string[] = [];
   const remount = run.exec("mount", ["-o", "remount,hidepid=invisible", "/proc"]);
   notes.push(remount.status === 0 ? "/proc: hidepid=invisible" : `/proc: hidepid not applied (${String(remount.stderr ?? "").trim().split("\n")[0] || `exit ${remount.status}`})`);
@@ -204,7 +204,7 @@ export function spawnWithSecrets(command: string, args: string[], env: NodeJS.Pr
 export function startCloudHome(env: NodeJS.ProcessEnv = process.env) {
   process.umask(0o077);
   const config = cloudHomeConfiguration(env);
-  if (!config) throw new Error("This image runs a My Cloud machine for dusk cloud; set its boot contract (docs/cloud-pro.md).");
+  if (!config) throw new Error("This image runs a My Cloud machine for madani cloud; set its boot contract (docs/cloud-pro.md).");
   // Logged here once: the server child never sees what they are about.
   for (const warning of config.warnings) console.warn(`cloud home: ${warning}`);
   const home = env.HOME || "/data";
@@ -232,8 +232,8 @@ export function startCloudHome(env: NodeJS.ProcessEnv = process.env) {
   }
   for (const record of prepared.cleared) console.log(`cloud home: cleared a stale data-directory record machine ${record.host} (process ${record.pid}) left on this volume: ${record.path}`);
   const here = dirname(fileURLToPath(import.meta.url));
-  const edgeBin = env.DUSK_CLOUD_EDGE_BIN || "/usr/local/bin/caddy";
-  const edgeConfig = env.DUSK_CLOUD_EDGE_CONFIG || "/app/cloud/Caddyfile";
+  const edgeBin = env.MADANI_CLOUD_EDGE_BIN || "/usr/local/bin/caddy";
+  const edgeConfig = env.MADANI_CLOUD_EDGE_CONFIG || "/app/cloud/Caddyfile";
   if (ids) {
     const problem = codeTrustProblem([process.execPath, fileURLToPath(import.meta.url), join(here, "index.js"), edgeBin, edgeConfig], home);
     if (problem) throw new Error(`This image's code is not safe to run as root: ${problem}. Rebuild it with docker build --target cloud-home.`);

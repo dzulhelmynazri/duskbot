@@ -4,14 +4,14 @@
   "title": "Lindy AI alternatives: pooled credits or separate AI?",
   "nav": "lindy",
   "h1": "lindy ai alternatives for a smaller team of bots",
-  "description": "Compare Lindy's active-user pricing, pooled credits and integrations with dusk bot's separate AI billing, personal desktop option and hosted plans.",
+  "description": "Compare Lindy's active-user pricing, pooled credits and integrations with madani bot's separate AI billing, personal desktop option and hosted plans.",
   "keyword": "lindy ai alternatives",
   "keywords": [
     "lindy ai alternative",
     "lindy ai pricing",
     "lindy ai review"
   ],
-  "answer": "**keep lindy if your team lives in its work channels and shared credit pool.** it offers a hosted assistant for email, meetings, leads and reports. dusk gives you bots with separate jobs, memories and ai choices. the provider bill stays separate too. compare the full work cost: dusk’s free desktop use covers personal jobs; business use needs a license.[^1][^2][^3][^4]",
+  "answer": "**keep lindy if your team lives in its work channels and shared credit pool.** it offers a hosted assistant for email, meetings, leads and reports. madani gives you bots with separate jobs, memories and ai choices. the provider bill stays separate too. compare the full work cost: madani’s free desktop use covers personal jobs; business use needs a license.[^1][^2][^3][^4]",
   "updated": "2026-11-12",
   "review": {
     "status": "approved",
@@ -50,17 +50,17 @@
       "**you want it where work happens.** lindy lists slack, email, imessage and calls.",
       "**your team wants a shared credit pool.** its integration list may also cover a tool you need."
     ],
-    "dusk": [
+    "madani": [
       "**you want distinct jobs.** each bot has its own chats and memory.",
       "**you want to choose the ai.** start with personal jobs on your computer and keep provider billing separate."
     ]
   },
   "compare": {
     "h": "the work plan behind the headline price",
-    "intro": "**count active people before comparing the headline price.** figures are as of 12 november 2026. lindy pools credits across the team; dusk bills ai separately and needs a license for work.",
+    "intro": "**count active people before comparing the headline price.** figures are as of 12 november 2026. lindy pools credits across the team; madani bills ai separately and needs a license for work.",
     "cols": [
       "Lindy",
-      "dusk bot"
+      "madani bot"
     ],
     "rows": [
       {
@@ -113,7 +113,7 @@
         "label": "credit handling",
         "cells": [
           "pooled credits, no rollover; top-ups $10 per 1,000 credits",
-          "ai usage is not on the dusk bill; provider allowances apply"
+          "ai usage is not on the madani bill; provider allowances apply"
         ],
         "src": [
           2,
@@ -146,7 +146,7 @@
         "label": "scheduled work",
         "cells": [
           "scheduled routines and daily briefs",
-          "routines in plain words; your local app must be awake, or use dusk cloud"
+          "routines in plain words; your local app must be awake, or use madani cloud"
         ],
         "src": [
           2,
@@ -155,15 +155,15 @@
       }
     ]
   },
-  "method": "**we compared the offers, not finished-task performance.** we make dusk bot. we read lindy’s homepage and pricing on 12 november 2026 alongside dusk’s docs.\n\nwe did not run identical jobs or measure success. each product counts integrations its own way. lindy’s page uses inconsistent plan names, so we left computer-use features out of the tier comparison.",
+  "method": "**we compared the offers, not finished-task performance.** we make madani bot. we read lindy’s homepage and pricing on 12 november 2026 alongside madani’s docs.\n\nwe did not run identical jobs or measure success. each product counts integrations its own way. lindy’s page uses inconsistent plan names, so we left computer-use features out of the tier comparison.",
   "sections": [
     {
       "h": "try the tool your team cannot work without",
-      "md": "**one missing work app can cost more than the subscription.** lindy lists 3,000+ integrations, model selection and scheduled routines. you can reach it through slack and email.[^1][^2]\n\ndusk lists 60+ connected apps and lets you add trusted mcp servers.[^9] try the exact job before moving your team:\n\n- connect the account your team uses\n- run the read, draft or change you need\n- send the result to the place someone will read it\n\n[lindy versus dusk](/vs/lindy) gives the direct comparison. [ai employees](/ai-employees) helps narrow the job before you buy."
+      "md": "**one missing work app can cost more than the subscription.** lindy lists 3,000+ integrations, model selection and scheduled routines. you can reach it through slack and email.[^1][^2]\n\nmadani lists 60+ connected apps and lets you add trusted mcp servers.[^9] try the exact job before moving your team:\n\n- connect the account your team uses\n- run the read, draft or change you need\n- send the result to the place someone will read it\n\n[lindy versus madani](/vs/lindy) gives the direct comparison. [ai employees](/ai-employees) helps narrow the job before you buy."
     },
     {
       "h": "find out how fast your job spends credits",
-      "md": "**price the emails you need done, then ask what they spend.** as of 12 november 2026, lindy team starts at $29.99 per active user monthly.[^2]\n\n- the starting allowance is 3,000 credits\n- credits pool across the team and do not roll over\n- top-ups cost $10 per 1,000 credits\n\nask how your actual job spends that pool.\n\ndusk’s personal desktop app is free. business use needs a work license. cloud pro is $50 monthly and includes one person’s license.[^3][^4][^8] add your ai provider’s bill before calling either option cheaper."
+      "md": "**price the emails you need done, then ask what they spend.** as of 12 november 2026, lindy team starts at $29.99 per active user monthly.[^2]\n\n- the starting allowance is 3,000 credits\n- credits pool across the team and do not roll over\n- top-ups cost $10 per 1,000 credits\n\nask how your actual job spends that pool.\n\nmadani’s personal desktop app is free. business use needs a work license. cloud pro is $50 monthly and includes one person’s license.[^3][^4][^8] add your ai provider’s bill before calling either option cheaper."
     },
     {
       "h": "test the handoff before building a department",
@@ -180,8 +180,8 @@
       "a": "**lindy lists email, meetings, leads and reports.** pick one slice you can judge before handing over a broader role.[^1]"
     },
     {
-      "q": "is dusk bot cheaper than lindy for work?",
-      "a": "**you need the whole bill to answer that.** lindy charges for active users and credits. dusk needs work licensing, separate ai usage and optional hosting. free personal use is the wrong business comparison.[^2][^3][^4]"
+      "q": "is madani bot cheaper than lindy for work?",
+      "a": "**you need the whole bill to answer that.** lindy charges for active users and credits. madani needs work licensing, separate ai usage and optional hosting. free personal use is the wrong business comparison.[^2][^3][^4]"
     }
   ],
   "sources": [
@@ -196,39 +196,39 @@
       "checked": "2026-11-12"
     },
     {
-      "label": "dusk personal use and ai billing",
+      "label": "madani personal use and ai billing",
       "url": "/docs/account-and-billing"
     },
     {
-      "label": "dusk work licensing",
+      "label": "madani work licensing",
       "url": "/docs/faq"
     },
     {
-      "label": "dusk app and bots",
+      "label": "madani app and bots",
       "url": "/docs/getting-started"
     },
     {
-      "label": "dusk models and voice",
+      "label": "madani models and voice",
       "url": "/docs/bots"
     },
     {
-      "label": "dusk phone browser",
+      "label": "madani phone browser",
       "url": "/docs/phone"
     },
     {
-      "label": "dusk cloud plans",
-      "url": "/docs/dusk-cloud"
+      "label": "madani cloud plans",
+      "url": "/docs/madani-cloud"
     },
     {
-      "label": "dusk files, app coverage and permissions",
+      "label": "madani files, app coverage and permissions",
       "url": "/docs/files-and-apps"
     },
     {
-      "label": "dusk routine review and history",
+      "label": "madani routine review and history",
       "url": "/docs/routines"
     },
     {
-      "label": "dusk bot: sending and full access",
+      "label": "madani bot: sending and full access",
       "url": "/docs/computer"
     }
   ],
@@ -253,7 +253,7 @@
       ],
       [
         "separate bots with different ai choices",
-        "dusk’s bot and model settings"
+        "madani’s bot and model settings"
       ],
       [
         "a business budget",
@@ -264,7 +264,7 @@
   "mistakes": [
     {
       "mistake": "comparing a team plan with free personal use",
-      "fix": "include the work license and ai bill in dusk’s side."
+      "fix": "include the work license and ai bill in madani’s side."
     },
     {
       "mistake": "dividing credits into guessed task counts",

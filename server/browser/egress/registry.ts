@@ -1,4 +1,4 @@
-// dusk bot's own listening ports, which no bot's browser may reach, and one egress gate per running browser.
+// madani bot's own listening ports, which no bot's browser may reach, and one egress gate per running browser.
 import { subscribe } from "node:diagnostics_channel";
 import type { Server } from "node:net";
 
@@ -14,7 +14,7 @@ import { opensReddit, REDDIT_REFUSAL, refusesReddit } from "./reddit.ts";
  * private origin, the Vite dev server and the Local VM's noVNC. */
 const DEFAULT_PORTS = [8799, 18799, 28799, 8800, 8798, 18798, 28798, 8810, 8811, 8812, 5199, 6080];
 const SERVER_PORTS = [8080, 2019];
-const PORT_ENV = ["DUSK_PORT", "DUSK_WEBHOOK_PORT", "DUSK_COMPANION_PORT", "DUSK_CONTROL_PORT"];
+const PORT_ENV = ["MADANI_PORT", "MADANI_WEBHOOK_PORT", "MADANI_COMPANION_PORT", "MADANI_CONTROL_PORT"];
 const DEVTOOLS_SCAN_MS = 2_000;
 const NOTICE_LIMIT = 20;
 const NOTICE_SHOWN = 3;
@@ -50,7 +50,7 @@ function hearDesktopReports(): void {
   hearingReports = true;
   parentPort.on("message", ({ data }) => {
     const message = data as { type?: unknown; ports?: unknown } | undefined;
-    if (message?.type !== "duskbot:own-listeners" || !Array.isArray(message.ports) || message.ports.length > 256) return;
+    if (message?.type !== "madanibot:own-listeners" || !Array.isArray(message.ports) || message.ports.length > 256) return;
     reportedPorts = new Set(message.ports.filter(validPort));
   });
 }
@@ -125,12 +125,12 @@ export class BrowserEgress {
     return dropped;
   }
 
-  /** Why a destination is refused by its name alone on this host: Reddit, from dusk cloud. */
+  /** Why a destination is refused by its name alone on this host: Reddit, from madani cloud. */
   nameRefusal(name: string): Refusal | null {
     return this.setup && refusesReddit(this.setup.host, name) ? "reddit" : null;
   }
 
-  /** What a browser tool call that would open Reddit from dusk cloud is told instead of running, or null. */
+  /** What a browser tool call that would open Reddit from madani cloud is told instead of running, or null. */
   callRefusal(params: unknown): string | null {
     return this.setup && opensReddit(this.setup.host, params) ? REDDIT_REFUSAL : null;
   }

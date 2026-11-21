@@ -2,8 +2,8 @@
 // every Mach-O with the release's Developer ID (hardened runtime, the app's entitlements), zips it for the release, and
 // writes the parts.json the app ships, which pins the zip's size and SHA-256. The app verifies both before using it.
 //   node scripts/pack-browser-part.mjs [--target darwin-arm64] [--version 0.2.13]
-// env: DUSK_PARTS_SIGN_IDENTITY (else MAC_SIGN_IDENTITY, else CSC_NAME, else ad hoc), DUSK_PARTS_KEYCHAIN
-// (else MAC_KEYCHAIN, else CSC_KEYCHAIN), DUSK_PARTS_BASE_URL (default: the public downloads release).
+// env: MADANI_PARTS_SIGN_IDENTITY (else MAC_SIGN_IDENTITY, else CSC_NAME, else ad hoc), MADANI_PARTS_KEYCHAIN
+// (else MAC_KEYCHAIN, else CSC_KEYCHAIN), MADANI_PARTS_BASE_URL (default: the public downloads release).
 import { execFileSync, spawnSync } from "node:child_process";
 import { createHash } from "node:crypto";
 import { existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, statSync, writeFileSync } from "node:fs";
@@ -14,9 +14,9 @@ import { browserBundleSpec } from "../server/browser-bundle-release.ts";
 import { verifyBrowserBundle } from "./prepare-browser.mjs";
 
 const root = fileURLToPath(new URL("../", import.meta.url));
-export const DOWNLOADS_BASE = "https://github.com/DuskBotAI/duskbot-releases/releases/download";
+export const DOWNLOADS_BASE = "https://github.com/dzulhelmynazri/madani-bot-releases/releases/download";
 
-export const partFileName = (version, target) => `DuskBot-${version}-browser-${target}.zip`;
+export const partFileName = (version, target) => `MadaniBot-${version}-browser-${target}.zip`;
 
 /** Same vendor builds, same id: a later app version reuses the browser it already has. */
 export function browserPartId(target) {
@@ -24,13 +24,13 @@ export function browserPartId(target) {
   return `agent-browser-${spec.engine.version}_chrome-${spec.chrome.version}_${target}`;
 }
 
-export function partUrl(version, target, base = process.env.DUSK_PARTS_BASE_URL || DOWNLOADS_BASE) {
+export function partUrl(version, target, base = process.env.MADANI_PARTS_BASE_URL || DOWNLOADS_BASE) {
   return base === DOWNLOADS_BASE ? `${base}/v${version}/${partFileName(version, target)}` : `${base.replace(/\/$/, "")}/${version}/${partFileName(version, target)}`;
 }
 
 export function signingIdentity(env = process.env) {
-  const named = env.DUSK_PARTS_SIGN_IDENTITY || env.MAC_SIGN_IDENTITY || env.CSC_NAME || "-";
-  const keychain = env.DUSK_PARTS_KEYCHAIN || env.MAC_KEYCHAIN || env.CSC_KEYCHAIN || "";
+  const named = env.MADANI_PARTS_SIGN_IDENTITY || env.MAC_SIGN_IDENTITY || env.CSC_NAME || "-";
+  const keychain = env.MADANI_PARTS_KEYCHAIN || env.MAC_KEYCHAIN || env.CSC_KEYCHAIN || "";
   return { identity: named === "-" || named.startsWith("Developer ID Application: ") ? named : `Developer ID Application: ${named}`, keychain };
 }
 

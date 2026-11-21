@@ -1,7 +1,7 @@
 import { DuckDBInstance, type DuckDBConnection } from "@duckdb/node-api";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
-import { DATA_LIMITS, type DataColumn, type DuskChartSpec } from "../../shared/data-surface.ts";
+import { DATA_LIMITS, type DataColumn, type MadaniChartSpec } from "../../shared/data-surface.ts";
 import { CHART_SQL_LIMIT, compileChart } from "./chart-compiler.ts";
 import { chartRenderer } from "./render.ts";
 
@@ -24,7 +24,7 @@ async function run(sql: string): Promise<{ columns: DataColumn[]; rows: Cell[][]
   };
 }
 
-async function chart(spec: DuskChartSpec, table: string) {
+async function chart(spec: MadaniChartSpec, table: string) {
   const columns = await describeTable(table);
   const compiled = compileChart(spec, columns, table);
   const reduced = await run(compiled.sql);

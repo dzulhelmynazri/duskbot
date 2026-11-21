@@ -1,7 +1,7 @@
 // A new Ed25519 key for entitlements (account service) or releases (CI). The private key goes to a 0600 file and is
 // never printed; the public key is printed for the pinned list (shared/entitlement.ts or src/release-signing.ts).
 //
-//   node apps/cloud-service/scripts/keygen.mjs ent-2027-05 ~/.config/duskbot/keys
+//   node apps/cloud-service/scripts/keygen.mjs ent-2027-05 ~/.config/madanibot/keys
 import { createPublicKey, generateKeyPairSync } from "node:crypto";
 import { existsSync, mkdirSync, writeFileSync } from "node:fs";
 import { join } from "node:path";

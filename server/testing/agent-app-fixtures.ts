@@ -1,5 +1,5 @@
 // Homes holding other agent apps as they lay out their folders (OpenClaw 2026.3 and 2026.11, Hermes Agent, Claude
-// Code's and Gemini CLI's agents and saved commands, Codex prompts, Windsurf workflows, OpenHands microagents, dusk
+// Code's and Gemini CLI's agents and saved commands, Codex prompts, Windsurf workflows, OpenHands microagents, madani
 // bot's older builds), for the import's tests and screenshots, built from each app's public docs. Every login, key,
 // session and history file holds SENTINEL.
 import { DatabaseSync } from "node:sqlite";
@@ -272,7 +272,7 @@ Search first, then answer with a link for every claim.
   ];
 }
 
-/** dusk bot's older folder, kept beside the new one: bots.json, workspaces and routines.json, with chats in messages.db. */
+/** madani bot's older folder, kept beside the new one: bots.json, workspaces and routines.json, with chats in messages.db. */
 export function plantOpenMausBot(home: string): string[] {
   const put = putter(home);
   put(".openmausbot/bots.json", JSON.stringify([

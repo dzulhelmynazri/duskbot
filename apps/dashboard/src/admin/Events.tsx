@@ -29,7 +29,7 @@ export function EventsPage() {
   const max = Math.max(1, ...(data?.counts.map((row) => row.count) ?? [1]));
   return (
     <>
-      <AdminHeader title="events" sub={`what people did, newest first. counts and states only.${data?.untracked ? ` ${n(data.untracked)} accounts turned off help improve dusk bot, so none of their events are here; signups and people elsewhere count every account.` : ""}`} action={<Segmented<typeof days> label="window" value={days} options={[...WINDOWS]} onChange={setDays} />} />
+      <AdminHeader title="events" sub={`what people did, newest first. counts and states only.${data?.untracked ? ` ${n(data.untracked)} accounts turned off help improve madani bot, so none of their events are here; signups and people elsewhere count every account.` : ""}`} action={<Segmented<typeof days> label="window" value={days} options={[...WINDOWS]} onChange={setDays} />} />
       <div className="mb-6 flex flex-wrap items-end gap-3">
         <div>
           <label htmlFor={selectId} className="mb-1.5 block text-13 text-ink-2">event</label>

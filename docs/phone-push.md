@@ -32,9 +32,9 @@ The code is in `server/mobile/presence.ts` (where each phone is), `server/mobile
 
 APNs and FCM accept pushes only from whoever holds the app's keys. A workspace sends a push:
 
-1. with its own keys, when `DUSK_APNS_*` or `DUSK_FCM_SERVICE_ACCOUNT_FILE` are set on it (below), else
-2. through a push relay: `DUSK_PUSH_RELAY` if set (`off` turns this off), else the link service its VPS link agent uses,
-   else `DUSK_MOBILE_RELAY`, else `https://link.dusk.bot`.
+1. with its own keys, when `MADANI_APNS_*` or `MADANI_FCM_SERVICE_ACCOUNT_FILE` are set on it (below), else
+2. through a push relay: `MADANI_PUSH_RELAY` if set (`off` turns this off), else the link service its VPS link agent uses,
+   else `MADANI_MOBILE_RELAY`, else `https://link.madani.bot`.
 
 The relay is `POST /v1/push` on the link service (`apps/link-service/src/push-relay.mjs`). It sees the device token, APNs or
 FCM, the bot's name and the ids a tap opens (notification, bot, conversation, room). It never gets a notification's
@@ -47,31 +47,31 @@ None of this is in the repo: keys and Firebase files are secrets or tied to your
 
 ### iOS (APNs)
 
-1. In the Apple Developer account that signs the app (bundle id `bot.dusk.mobile`), open Certificates, IDs &
+1. In the Apple Developer account that signs the app (bundle id `bot.madani.mobile`), open Certificates, IDs &
    Profiles, Keys, and create a key with **Apple Push Notifications service (APNs)** enabled. Download the `.p8` file
    (only once) and note its Key ID and your Team ID.
 2. The `aps-environment` entitlement is already in the project (`apps/mobile/ios/App/App/App.entitlements`). In the
    developer account, turn on **Push Notifications** for the app id, and select your team for the App target in
    `apps/mobile/ios/App/App.xcodeproj` so Xcode makes a profile that carries it.
 3. Put the key where the pushes leave from (the link service host for the relay, or the workspace itself) and set:
-   - `DUSK_APNS_KEY_FILE`: path to the `.p8` file (readable only by the service user, `chmod 600`)
-   - `DUSK_APNS_KEY_ID`: the key's ID
-   - `DUSK_APNS_TEAM_ID`: your Team ID
-   - `DUSK_APNS_TOPIC`: `bot.dusk.mobile`
+   - `MADANI_APNS_KEY_FILE`: path to the `.p8` file (readable only by the service user, `chmod 600`)
+   - `MADANI_APNS_KEY_ID`: the key's ID
+   - `MADANI_APNS_TEAM_ID`: your Team ID
+   - `MADANI_APNS_TOPIC`: `bot.madani.mobile`
 4. Restart the link service (or the workspace). `GET /v1/push` on the link service should answer
    `{"services":["apns",...]}`.
 
 A build run from Xcode gets sandbox tokens; TestFlight and App Store builds get production tokens. The app marks its
 token sandbox only when its web part was built in development mode, so for a push test from Xcode build with
-`DUSK_MOBILE_DEV_URL` (live reload) or use TestFlight; a production-marked sandbox token is refused by APNs and dropped.
+`MADANI_MOBILE_DEV_URL` (live reload) or use TestFlight; a production-marked sandbox token is refused by APNs and dropped.
 
 ### Android (FCM)
 
-1. In the Firebase console, create a project (or use one), add an Android app with package `bot.dusk.mobile`,
+1. In the Firebase console, create a project (or use one), add an Android app with package `bot.madani.mobile`,
    and download `google-services.json` into `apps/mobile/android/app/` (it is already git-ignored there; the build
    applies the Google services plugin only when the file exists). Rebuild the app.
 2. In Project settings, Service accounts, generate a new private key. That JSON file is a secret.
-3. Where the pushes leave from, set `DUSK_FCM_SERVICE_ACCOUNT_FILE` to that file's path (`chmod 600`) and restart.
+3. Where the pushes leave from, set `MADANI_FCM_SERVICE_ACCOUNT_FILE` to that file's path (`chmod 600`) and restart.
 
 ### Check it
 

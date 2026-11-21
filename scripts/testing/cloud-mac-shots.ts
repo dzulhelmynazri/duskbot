@@ -1,5 +1,5 @@
 // Screenshots of "Let my cloud bots use this Mac": the Settings switch, the mac_exec approval card.
-//   DUSK_CHROME=<chrome binary> node --experimental-strip-types scripts/testing/cloud-mac-shots.ts <out dir>
+//   MADANI_CHROME=<chrome binary> node --experimental-strip-types scripts/testing/cloud-mac-shots.ts <out dir>
 import { spawn } from "node:child_process";
 import { existsSync, mkdirSync, mkdtempSync, readFileSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
@@ -8,8 +8,8 @@ import { connect } from "./chat-gallery/cdp.ts";
 import { mountPreview } from "./preview-fixture.ts";
 
 const out = process.argv[2] ?? "cloud-mac-shots";
-const chromePath = process.env.DUSK_CHROME;
-if (!chromePath) throw new Error("set DUSK_CHROME to a Chrome binary");
+const chromePath = process.env.MADANI_CHROME;
+if (!chromePath) throw new Error("set MADANI_CHROME to a Chrome binary");
 mkdirSync(out, { recursive: true });
 const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 const preview = await mountPreview({ info: { url: "http://127.0.0.1:9" } }, { entry: "/scripts/testing/cloud-mac-preview.tsx", route: "/__cloud-mac.html", title: "Cloud bots use this Mac", logLevel: "warn", hmr: false });

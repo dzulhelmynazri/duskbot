@@ -24,18 +24,18 @@ export interface HelperConfig {
 /** Goes into a CLI's argv: never a leading dash, no space or control character. */
 const HELPER_MODEL_ID = /^[A-Za-z0-9][\x21-\x7e]*$/;
 
-/** DUSK_HELPER_INSTANCE / DUSK_HELPER_MODEL win over the file; an empty DUSK_HELPER_INSTANCE switches a saved helper off.
+/** MADANI_HELPER_INSTANCE / MADANI_HELPER_MODEL win over the file; an empty MADANI_HELPER_INSTANCE switches a saved helper off.
  * An invalid model switches the helper off rather than writing with a model the person did not name. */
 export function helperSelection(cfg: HelperConfig, env: Record<string, string | undefined> = process.env): { instanceId: string; model?: string } | null {
-  const instanceId = (env.DUSK_HELPER_INSTANCE ?? cfg.helper?.instanceId)?.trim();
+  const instanceId = (env.MADANI_HELPER_INSTANCE ?? cfg.helper?.instanceId)?.trim();
   if (!instanceId) return null;
-  const model = (env.DUSK_HELPER_MODEL ?? cfg.helper?.model)?.trim();
+  const model = (env.MADANI_HELPER_MODEL ?? cfg.helper?.model)?.trim();
   if (!model) return { instanceId };
   return HELPER_MODEL_ID.test(model) ? { instanceId, model } : null;
 }
 
 /** "representative": a person's assistant answering a teammate's question for them, which must never get tools. */
-/** "room-routing": Dusk deciding who answers a group message, on the engine's quick model. */
+/** "room-routing": Madani deciding who answers a group message, on the engine's quick model. */
 /** "turn-beat": the short ack and progress lines sent while a turn works (turn-beats.ts), on the engine's quick model. */
 /** "frustration-summary": an abstract line about a chat that went badly, for usage-signals.ts; scrubbed before it leaves. */
 /** "side-reply": the quick reply to the person's message sent while a turn works (host/side-replies.ts), on the engine's

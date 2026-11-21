@@ -10,7 +10,7 @@ import { useCloudOffer } from "@/lib/use-cloud-offer";
 import type { LocaleKey } from "@/locales";
 import { AccountsSheet, CloudSignOutConfirm } from "./AccountMenu";
 import { openSignIn } from "@/lib/sign-in-sheet";
-const browserSignIn = () => Boolean(window.duskDesktop?.cloudAccount?.continueInBrowser);
+const browserSignIn = () => Boolean(window.madaniDesktop?.cloudAccount?.continueInBrowser);
 import { Card } from "./SettingsPrimitives";
 import { CloudCancelPlan, type CloudRenewalActions } from "./CloudCancelPlan";
 import { StagingMark } from "./cloud-buy/parts";
@@ -147,7 +147,7 @@ export function CloudPlanOnCloud({ bridge, onConnectPhone }: { bridge: CloudPlan
   }
   const label = cloudPlanLabel(plan?.tier);
   const home = plan?.home === true;
-  const line = plan?.status === "paid" ? t(trialRunning(plan.trial) ? "cloudAccount.trialPlan" : "cloudAccount.pro", { plan: label }) : plan?.status === "attention" ? t("cloudAccount.inactive", { plan: plan.tier ? label : "dusk cloud" })
+  const line = plan?.status === "paid" ? t(trialRunning(plan.trial) ? "cloudAccount.trialPlan" : "cloudAccount.pro", { plan: label }) : plan?.status === "attention" ? t("cloudAccount.inactive", { plan: plan.tier ? label : "madani cloud" })
     : plan?.status === "checking" ? t("cloudAccount.lastPlan", { plan: label }) : plan?.status === "signin" ? (plan.tier ? t("cloudAccount.planName", { plan: label }) : null)
       : plan ? t(home ? "cloudAccount.onCloudNoneHome" : "cloudAccount.onCloudNone") : null;
   const act = (action: () => Promise<void>) => { setFailed(false); void action().catch(() => setFailed(true)); };
@@ -168,7 +168,7 @@ export function CloudPlanOnCloud({ bridge, onConnectPhone }: { bridge: CloudPlan
 }
 
 /** Security: the public native snapshot carries no credential and cannot activate a plan. */
-/** `onSignIn`: the sheet's email-code sign-in (the browser approval stays for duskbot://cloud and Sign in again). */
+/** `onSignIn`: the sheet's email-code sign-in (the browser approval stays for madanibot://cloud and Sign in again). */
 /** On a Team Cloud: its people and plan live on the Cloud page, where the person signs in with their own email. */
 export function TeamPeopleCard({ team }: { team: { name: string; cloudPage?: string } }) {
   return <Card title={t("cloudAccount.teamPeopleTitle")}>
@@ -182,7 +182,7 @@ export function TeamPeopleCard({ team }: { team: { name: string; cloudPage?: str
 export function CloudAccountSettings({ linkRequest = 0, cloudHome = false, teamHome, onConnectPhone, onAddCloud, onSignIn }: {
   linkRequest?: number; cloudHome?: boolean; teamHome?: { name: string; cloudPage?: string }; onConnectPhone?: () => void; onAddCloud?: () => void; onSignIn?: () => void;
 } = {}) {
-  const bridge = window.duskDesktop?.remoteClient?.active ? undefined : window.duskDesktop?.cloudAccount;
+  const bridge = window.madaniDesktop?.remoteClient?.active ? undefined : window.madaniDesktop?.cloudAccount;
   const { platform } = useDesktopCapabilities().capabilities.host;
   const [account, setAccount] = useState<CloudAccountState | null>(null);
   const [busy, setBusy] = useState(false), [error, setError] = useState(false), [confirm, setConfirm] = useState(false);
@@ -243,13 +243,13 @@ export function CloudAccountSettings({ linkRequest = 0, cloudHome = false, teamH
     if (action === "sign-in") void perform(() => bridge.begin());
     if (action === "connect") { link.current.connected = true; connectHome(); }
   }, [bridge, linkRequest, account, busy]);
-  const [moveNotice] = useCloudSendNotice(bridge ? window.duskDesktop?.cloudSendPage : undefined);
+  const [moveNotice] = useCloudSendNotice(bridge ? window.madaniDesktop?.cloudSendPage : undefined);
   const move = moveNotice?.move ? moveLine(moveNotice.move, "local") : null;
   const moving = move && move.kind !== "done" ? move.text : null;
   const offer = useCloudOffer(Boolean(account) && buyOfferAllowed(cloudPlanView(account)), account?.offer);
   const renewal: CloudRenewalActions | null = bridge?.cancelPlan && bridge.keepPlan ? { cancel: survey => bridge.cancelPlan!(survey), keep: () => bridge.keepPlan!() } : null;
   if (!bridge) {
-    const plan = window.duskDesktop?.remoteClient?.active || !cloudHome ? undefined : window.duskDesktop?.cloudPlan;
+    const plan = window.madaniDesktop?.remoteClient?.active || !cloudHome ? undefined : window.madaniDesktop?.cloudPlan;
     return <>
       {cloudHome && teamHome ? <TeamPeopleCard team={teamHome} />
         : plan ? <CloudPlanOnCloud bridge={plan} onConnectPhone={onConnectPhone} /> : <p className="text-[13px] text-ink-secondary">{t("cloudAccount.desktopOnly")}</p>}
@@ -306,8 +306,8 @@ export function CloudAccountSettings({ linkRequest = 0, cloudHome = false, teamH
         {/* its own explicit action, never part of Start fresh: the account page says it cancels the plan, and asks there */}
         {account.status === "connected" && !confirm && <p data-cloud-delete-account="" className="text-[12px] text-ink-secondary">{t("cloudAccount.deleteAccountHint")}{" "}
           <button type="button" disabled={busy} className="underline hover:text-ink" onClick={openAccountDeletion}>{t("cloudAccount.deleteAccount")}</button></p>}
-        {view.kind === "free" && !confirm && <p className="text-[12px] text-ink-secondary">{t(window.duskDesktop?.accounts ? "cloudAccount.otherEmailOrTeam" : "cloudAccount.otherEmail")}{" "}
-          <button type="button" data-cloud-other-email disabled={busy} className="underline hover:text-ink" onClick={() => (window.duskDesktop?.accounts ? setAddingEmail(true) : setConfirm(true))}>{t(window.duskDesktop?.accounts ? "cloudAccount.addOtherEmail" : "cloudAccount.useOtherEmail")}</button></p>}
+        {view.kind === "free" && !confirm && <p className="text-[12px] text-ink-secondary">{t(window.madaniDesktop?.accounts ? "cloudAccount.otherEmailOrTeam" : "cloudAccount.otherEmail")}{" "}
+          <button type="button" data-cloud-other-email disabled={busy} className="underline hover:text-ink" onClick={() => (window.madaniDesktop?.accounts ? setAddingEmail(true) : setConfirm(true))}>{t(window.madaniDesktop?.accounts ? "cloudAccount.addOtherEmail" : "cloudAccount.useOtherEmail")}</button></p>}
         {addingEmail && <AccountsSheet adding="" onClose={() => setAddingEmail(false)} />}
         {/* one ask, the same dialog as every other sign-out (AccountMenu) */}
         <CloudSignOutConfirm open={confirm} pending={busy} onCancel={() => setConfirm(false)} onConfirm={() => void perform(() => bridge.signOut())} />

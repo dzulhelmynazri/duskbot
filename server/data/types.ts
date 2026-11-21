@@ -6,10 +6,10 @@ import type {
   DataPage,
   DataReduction,
   DataSource,
-  DuskChartSpec,
+  MadaniChartSpec,
 } from "../../shared/data-surface.ts";
 
-export type { DataColumn, DataColumnStats, DataError, DataHistogram, DataPage, DataReduction, DataSource, DuskChartSpec };
+export type { DataColumn, DataColumnStats, DataError, DataHistogram, DataPage, DataReduction, DataSource, MadaniChartSpec };
 
 export class DataFailure extends Error {
   readonly error: DataError;
@@ -41,7 +41,7 @@ export interface RunResult {
 }
 
 export interface MaterialiseResult {
-  /** Fully qualified: `dusk_results.<name>`. */
+  /** Fully qualified: `madani_results.<name>`. */
   table: string;
   columns: DataColumn[];
   rowCount: number;
@@ -85,7 +85,7 @@ export interface CompiledChart {
   reduction: Omit<DataReduction, "inputRows" | "outputRows">;
 }
 
-export type ChartCompiler = (spec: DuskChartSpec, columns: DataColumn[], from: string) => CompiledChart;
+export type ChartCompiler = (spec: MadaniChartSpec, columns: DataColumn[], from: string) => CompiledChart;
 
 /** The JSON schema, no inline data, then one headless render; throws DataFailure(spec_invalid) with the validator's message. */
 export type VegaLiteValidator = (spec: unknown) => Promise<Record<string, unknown>>;

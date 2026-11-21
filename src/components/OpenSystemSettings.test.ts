@@ -7,13 +7,13 @@ import { setLocale } from "@/lib/i18n";
 import { withOpenSettings } from "./OpenSystemSettings";
 
 (globalThis as { IS_REACT_ACT_ENVIRONMENT?: boolean }).IS_REACT_ACT_ENVIRONMENT = true;
-afterEach(() => { delete window.duskDesktop; });
+afterEach(() => { delete window.madaniDesktop; });
 
 describe("open System Settings", () => {
   it("follows the line and opens the pane on this computer", async () => {
     setLocale("en");
     const permOpenSettings = vi.fn(async () => {});
-    window.duskDesktop = { permOpenSettings } as unknown as NonNullable<Window["duskDesktop"]>;
+    window.madaniDesktop = { permOpenSettings } as unknown as NonNullable<Window["madaniDesktop"]>;
     const host = document.createElement("div");
     const root = createRoot(host);
     await act(async () => { root.render(createElement("p", null, withOpenSettings("Dictation needs access.", "speech"))); });

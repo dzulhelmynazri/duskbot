@@ -46,7 +46,7 @@
     "when": "when an issue opens in the chosen repository; github events arrive at once while the bot's machine runs",
     "needs": "github read only for that repository's issues, comments and search",
     "output": "quernbridge/widget #42\n- report: espen says settings closes after a theme change.\n- category: bug report; unexpected behaviour\n- proposed label: needs reproduction\n- related: #31 mentions themes, but a different window. compare reproduction steps before linking the cause.\n- missing: app version, operating system, steps from a fresh launch\n\nreply draft: thanks, espen. which app version and operating system? what steps reproduce this from opening the app?",
-    "intro": "**give the maintainer context before asking them to decide.** name one repository. this routine reads new reports and keeps every proposed change in your dusk chat."
+    "intro": "**give the maintainer context before asking them to decide.** name one repository. this routine reads new reports and keeps every proposed change in your madani chat."
   },
   "knobs": [
     "**one repository:** name its owner too. don't sweep every project the account can see.",
@@ -57,7 +57,7 @@
   "fails": [
     "**it calls two reports duplicates from a keyword.** compare observed behaviour and reproduction steps before you close either one.",
     "**the event covers the wrong repository.** inspect the scope and test a report in the intended project.",
-    "**the laptop slept through an issue.** instant events cannot wake a local bot. open github directly; dusk cloud keeps the machine on.",
+    "**the laptop slept through an issue.** instant events cannot wake a local bot. open github directly; madani cloud keeps the machine on.",
     "**a referenced report is missing.** ask if access failed or search found nothing. try opening that project with the connected account."
   ],
   "sections": [
@@ -69,7 +69,7 @@
   "faq": [
     {
       "q": "does it poll github every 15 minutes?",
-      "a": "**no. github events arrive at once.** the 15-minute check belongs to gmail. the bot still needs an awake machine with dusk running."
+      "a": "**no. github events arrive at once.** the 15-minute check belongs to gmail. the bot still needs an awake machine with madani running."
     },
     {
       "q": "will it close duplicate issues on its own?",
@@ -82,11 +82,11 @@
   ],
   "sources": [
     {
-      "label": "dusk bot docs: event routines and run history",
+      "label": "madani bot docs: event routines and run history",
       "url": "/docs/routines"
     },
     {
-      "label": "dusk bot docs: app permissions",
+      "label": "madani bot docs: app permissions",
       "url": "/docs/files-and-apps"
     },
     {

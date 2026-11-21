@@ -11,15 +11,15 @@ import { removeTempDir, waitForExit } from "./testing/cleanup.ts";
 import { freePortBlock } from "./testing/ports.ts";
 
 const SERVER_DIR = dirname(fileURLToPath(import.meta.url));
-const HOST = "dusk-t-0123456789ab.fly.dev";
+const HOST = "madani-t-0123456789ab.fly.dev";
 const FORWARDED = { host: HOST, "x-forwarded-for": "203.0.113.9", "x-forwarded-proto": "https" };
 const CLAUDE = { instanceId: "claude", model: "claude-sonnet-5" };
 const PACKAGE = JSON.parse(readFileSync(join(SERVER_DIR, "..", "shared", "package-fixtures", "full-team.v2.json"), "utf8"));
-const manifest = (name: string) => ({ format: "dusk.team", version: 2, team: { name, members: [{ key: "helper", name: `${name} helper`, appearance: { color: "blue" } }] } });
+const manifest = (name: string) => ({ format: "madani.team", version: 2, team: { name, members: [{ key: "helper", name: `${name} helper`, appearance: { color: "blue" } }] } });
 
 class Cloud {
-  home = mkdtempSync(join(tmpdir(), "dusk-bot-limit-"));
-  dataDir = join(this.home, ".duskbot");
+  home = mkdtempSync(join(tmpdir(), "madani-bot-limit-"));
+  dataDir = join(this.home, ".madanibot");
   gate = join(this.home, "finish");
   dump = join(this.home, "claude.json");
   secret = randomBytes(32).toString("base64url");
@@ -65,9 +65,9 @@ await import(${JSON.stringify(pathToFileURL(join(SERVER_DIR, "testing", "fake-cl
     const prelude = `data:text/javascript,${encodeURIComponent('const real = globalThis.fetch; globalThis.fetch = async (url, init) => String(url).startsWith("http://127.0.0.1:") ? real(url, init) : new Response("{}", { status: 503 });')}`;
     this.child = spawn(process.execPath, ["--import", prelude, join(SERVER_DIR, "index.ts")], {
       cwd: join(SERVER_DIR, ".."),
-      env: { PATH: process.env.PATH, HOME: this.home, USERPROFILE: this.home, DUSK_DATA_DIR: this.dataDir, DUSK_PORT: String(this.port), DUSK_WEBHOOK_PORT: String(this.port + 1),
-        DUSK_CLOUD_ROLE: "home", DUSK_CLOUD_MACHINE_ID: "3f9c2a4e-8b1d-4c6e-9a7f-2d5e8c1b0a93", DUSK_CLOUD_ADMIN_URL: "https://cloud.example.test",
-        DUSK_CLOUD_BOOTSTRAP_SECRET: this.secret, DUSK_PUBLIC_URL: `https://${HOST}` },
+      env: { PATH: process.env.PATH, HOME: this.home, USERPROFILE: this.home, MADANI_DATA_DIR: this.dataDir, MADANI_PORT: String(this.port), MADANI_WEBHOOK_PORT: String(this.port + 1),
+        MADANI_CLOUD_ROLE: "home", MADANI_CLOUD_MACHINE_ID: "3f9c2a4e-8b1d-4c6e-9a7f-2d5e8c1b0a93", MADANI_CLOUD_ADMIN_URL: "https://cloud.example.test",
+        MADANI_CLOUD_BOOTSTRAP_SECRET: this.secret, MADANI_PUBLIC_URL: `https://${HOST}` },
       stdio: ["ignore", "pipe", "pipe"],
     });
     this.child.stdout?.on("data", (chunk) => { this.log += chunk; });
@@ -79,10 +79,10 @@ await import(${JSON.stringify(pathToFileURL(join(SERVER_DIR, "testing", "fake-cl
     if (!this.token) await this.pair();
   }
   async pair() {
-    const body = JSON.stringify({ label: "dusk bot app (Cloud)", ttlSeconds: 300 });
+    const body = JSON.stringify({ label: "madani bot app (Cloud)", ttlSeconds: 300 });
     const timestamp = String(Math.floor(Date.now() / 1000)), nonce = randomBytes(16).toString("base64url");
     const response = await fetch(`${this.base}/api/cloud/pairing`, { method: "POST", headers: { ...FORWARDED, "content-type": "application/json",
-      "x-dusk-cloud-timestamp": timestamp, "x-dusk-cloud-nonce": nonce, "x-dusk-cloud-signature": `v1=${cloudPairingSignature(this.secret, timestamp, nonce, body)}` }, body });
+      "x-madani-cloud-timestamp": timestamp, "x-madani-cloud-nonce": nonce, "x-madani-cloud-signature": `v1=${cloudPairingSignature(this.secret, timestamp, nonce, body)}` }, body });
     const granted = await response.json() as { code: string };
     this.token = (await this.api("POST", "/api/auth/pair", { code: granted.code })).body.token;
   }
@@ -90,7 +90,7 @@ await import(${JSON.stringify(pathToFileURL(join(SERVER_DIR, "testing", "fake-cl
   async tellPlan(tier: string) {
     const body = JSON.stringify({ v: 1, tier }), timestamp = String(Math.floor(Date.now() / 1000)), nonce = randomBytes(16).toString("base64url");
     const response = await fetch(`${this.base}/api/cloud/plan`, { method: "POST", body, headers: { ...FORWARDED, "content-type": "application/json",
-      "x-dusk-cloud-timestamp": timestamp, "x-dusk-cloud-nonce": nonce, "x-dusk-cloud-signature": `v1=${cloudRequestSignature(this.secret, timestamp, nonce, "POST", "/api/cloud/plan", body)}` } });
+      "x-madani-cloud-timestamp": timestamp, "x-madani-cloud-nonce": nonce, "x-madani-cloud-signature": `v1=${cloudRequestSignature(this.secret, timestamp, nonce, "POST", "/api/cloud/plan", body)}` } });
     expect(response.status).toBe(200);
   }
   async bots() { return (await this.api("GET", "/api/bots?messages=0")).body.bots as any[]; }
@@ -105,13 +105,13 @@ await import(${JSON.stringify(pathToFileURL(join(SERVER_DIR, "testing", "fake-cl
   /** The capability of a real turn of this Cloud's Chief, for what the bot's own tools call. */
   async chiefTurn() {
     const chief = (await this.bots()).find((bot) => bot.chiefOfStaff);
-    expect(chief, "a new Cloud's Dusk is its Chief").toBeTruthy();
+    expect(chief, "a new Cloud's Madani is its Chief").toBeTruthy();
     const sent = await this.api("POST", `/api/bots/${chief.id}/messages`, { text: "Add a specialist." });
     expect(sent.status, JSON.stringify(sent.body)).toBe(202);
     await expect.poll(() => existsSync(this.dump), { timeout: 20_000 }).toBe(true);
     const agents = JSON.parse(readFileSync(this.dump, "utf8")).mcpConfig.mcpServers.agents;
-    const env = agents.env.DUSK_GATE_UPSTREAM ? JSON.parse(agents.env.DUSK_GATE_UPSTREAM).env : agents.env;
-    return { chief, token: env.DUSK_COMMS_TOKEN as string };
+    const env = agents.env.MADANI_GATE_UPSTREAM ? JSON.parse(agents.env.MADANI_GATE_UPSTREAM).env : agents.env;
+    return { chief, token: env.MADANI_COMMS_TOKEN as string };
   }
   async internal(path: string, token: string, body: unknown) {
     const response = await fetch(`${this.base}${path}`, { method: "POST", headers: { "content-type": "application/json", authorization: `Bearer ${token}` }, body: JSON.stringify(body) });
@@ -141,11 +141,11 @@ describe("a Starter Cloud's bots, on a real server", () => {
     await cloud.tellPlan(tier);
   };
 
-  it("makes five beside its Dusk, says so in config, then refuses each way of making one and writes nothing", async () => {
+  it("makes five beside its Madani, says so in config, then refuses each way of making one and writes nothing", async () => {
     await starter();
     expect(await cloud.config()).toMatchObject({ cloudStarter: true, botLimit: 5 });
-    const dusk = (await cloud.bots()).filter((bot) => bot.defaultBot);
-    expect(dusk).toHaveLength(1);
+    const madani = (await cloud.bots()).filter((bot) => bot.defaultBot);
+    expect(madani).toHaveLength(1);
     await cloud.fill(5);
     const held = (await cloud.bots()).map((bot) => bot.id).sort();
     expect(held).toHaveLength(6);
@@ -213,7 +213,7 @@ describe("a Starter Cloud's bots, on a real server", () => {
     expect(cloud.child!.pid).toBe(pid);
   }, 120_000);
 
-  it("makes room when a bot is archived, and the Dusk never takes any", async () => {
+  it("makes room when a bot is archived, and the Madani never takes any", async () => {
     await starter();
     await cloud.fill(5);
     const one = (await cloud.bots()).find((bot) => !bot.defaultBot);

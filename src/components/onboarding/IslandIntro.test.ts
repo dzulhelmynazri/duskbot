@@ -27,7 +27,7 @@ beforeEach(() => {
   prefs = { available: true, island: false, dock: true };
   set.mockReset().mockImplementation(async (change: object) => Object.assign(prefs, change));
   onDone.mockReset();
-  vi.stubGlobal("duskDesktop", { ambient: { prefs: async () => ({ ...prefs }), set } });
+  vi.stubGlobal("madaniDesktop", { ambient: { prefs: async () => ({ ...prefs }), set } });
   host = document.createElement("div");
   document.body.append(host);
   root = createRoot(host);

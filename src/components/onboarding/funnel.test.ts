@@ -12,7 +12,7 @@ describe("the funnel's steps", () => {
     expect(funnelSteps({ account: false, desktop: false })).toEqual(["welcome", "ai"]);
   });
 
-  it("skips the hello on a server opened from the desktop app, where the person already met dusk bot", () => {
+  it("skips the hello on a server opened from the desktop app, where the person already met madani bot", () => {
     expect(funnelSteps({ account: false, desktop: false, hello: false })).toEqual(["ai"]);
   });
 
@@ -21,7 +21,7 @@ describe("the funnel's steps", () => {
     expect(funnelSteps({ account: false, desktop: false, cloudBring: true, phone: true, permissions: true, aiAsked: true })).toEqual(["welcome", "bring"]);
   });
 
-  it("asks for an AI once in a whole journey: the desktop's dusk cloud path has the only one", () => {
+  it("asks for an AI once in a whole journey: the desktop's madani cloud path has the only one", () => {
     const desktop = funnelSteps({ account: true, desktop: true, bring: true, path: "cloud" });
     const onCloud = funnelSteps({ account: false, desktop: false, cloudBring: true, aiAsked: true });
     expect([...desktop, ...onCloud].filter((step) => step === "ai")).toHaveLength(1);
@@ -30,7 +30,7 @@ describe("the funnel's steps", () => {
   it("offers bringing things in on this computer's own window, after the place", () => {
     expect(funnelSteps({ account: false, desktop: true, bring: true })).toEqual(["welcome", "place", "ai", "bring"]);
     expect(funnelSteps({ account: false, desktop: true, bring: false })).not.toContain("bring");
-    expect(funnelSteps({ account: false, desktop: true, bring: true, path: "cloud" }), "on dusk cloud too, before the cloud is made")
+    expect(funnelSteps({ account: false, desktop: true, bring: true, path: "cloud" }), "on madani cloud too, before the cloud is made")
       .toEqual(["welcome", "place", "checkout", "ai", "bring", "making"]);
   });
 
@@ -40,7 +40,7 @@ describe("the funnel's steps", () => {
     expect(funnelSteps({ account: false, desktop: true, path: "cloud", phone: true })).not.toContain("phone");
   });
 
-  it("on dusk cloud goes from the place straight to the browser's checkout, then the cloud being made", () => {
+  it("on madani cloud goes from the place straight to the browser's checkout, then the cloud being made", () => {
     const steps = funnelSteps({ account: true, desktop: true, bring: true, path: "cloud", phone: true });
     expect(steps, "the account and the place come before the AI").toEqual(["welcome", "account", "place", "checkout", "ai", "bring", "making"]);
     expect(nextStep(steps, "place")).toBe("checkout");
@@ -81,7 +81,7 @@ describe("the Mac's permissions step", () => {
     expect(funnelSteps({ account: false, desktop: true, bring: true, path: "mac", permissions: false })).not.toContain("permissions");
   });
 
-  it("shows before a place is picked (a resumed run) but never on dusk cloud or a window that isn't this Mac's own", () => {
+  it("shows before a place is picked (a resumed run) but never on madani cloud or a window that isn't this Mac's own", () => {
     expect(funnelSteps({ account: false, desktop: true, permissions: true })).toEqual(["welcome", "place", "ai", "permissions"]);
     expect(funnelSteps({ account: false, desktop: true, path: "cloud", permissions: true })).not.toContain("permissions");
     expect(funnelSteps({ account: false, desktop: false, permissions: true })).not.toContain("permissions");

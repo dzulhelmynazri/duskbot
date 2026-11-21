@@ -1,4 +1,4 @@
-// Every screen of the first run, numbered, for the free path (bots on this computer) and the dusk cloud path (this
+// Every screen of the first run, numbered, for the free path (bots on this computer) and the madani cloud path (this
 // computer's window, then the new cloud's own first run), on an isolated fake-engine server
 // (scripts/testing/ai-once-preview.tsx). A screen is photographed only when the run lands on it, so the numbers are the
 // screens the person sees. Run: node --experimental-strip-types scripts/verify-ai-once.ts <dir>
@@ -6,7 +6,7 @@ import type { IncomingMessage, ServerResponse } from "node:http";
 import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { launchVerificationServer } from "./control-dusk.ts";
+import { launchVerificationServer } from "./control-madani.ts";
 import { openHeadlessChrome } from "./testing/headless-chrome.ts";
 import { mountPreview } from "./testing/preview-fixture.ts";
 
@@ -45,7 +45,7 @@ const ui = await mountPreview(fixture, {
   extraRoutes: [{ path: "/api/instances", method: "GET", handler: (req, res) => instances(fixture.info.url, req, res) },
     { path: "/api/config", method: "GET", handler: (req, res) => cloudConfig(fixture.info.url, req, res) }],
 });
-const profile = mkdtempSync(join(tmpdir(), "dusk-ai-once-"));
+const profile = mkdtempSync(join(tmpdir(), "madani-ai-once-"));
 const page = await openHeadlessChrome(profile);
 
 /** One journey: each [side, beat, cloud picked] the run might show, in order; the ones it lands on, numbered. */

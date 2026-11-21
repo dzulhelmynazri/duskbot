@@ -6,7 +6,7 @@ import { DatabaseSync } from "node:sqlite";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { expect, it } from "vitest";
 
-import { launchVerificationServer, runControlDusk, verificationServerArgs, verificationServerEnvironment } from "../scripts/control-dusk.ts";
+import { launchVerificationServer, runControlMadani, verificationServerArgs, verificationServerEnvironment } from "../scripts/control-madani.ts";
 import { createControlClient } from "./control-client.ts";
 import { conversationOfRun, memberRunThreadId } from "./room-member-runs.ts";
 import { removeTempDir, waitForExit } from "./testing/cleanup.ts";
@@ -16,14 +16,14 @@ import { ownTurnText } from "./testing/room-handoff-agent.ts";
 import { withAnswer } from "./testing/your-computer.ts";
 
 const ROOT = fileURLToPath(new URL("..", import.meta.url));
-const RERUN_NOTE = "dusk bot restarted while your previous turn here was running";
+const RERUN_NOTE = "madani bot restarted while your previous turn here was running";
 const RERUN_CHIP = "Resuming after a restart";
-const SECRET_PROVIDED = "dusk bot credential update: the user securely provided";
+const SECRET_PROVIDED = "madani bot credential update: the user securely provided";
 const SEAT_FREE = "the computer this conversation waited for is free again";
-const INTERRUPTED_OUTWARD = "Interrupted by a dusk bot restart after it already";
+const INTERRUPTED_OUTWARD = "Interrupted by a madani bot restart after it already";
 const SETTLED = "Your downstream room requests have settled.";
 const GOAL_RUN_ENDED = "The goal run this step belonged to ended with the restart.";
-const INTERRUPTED_LINE = "turn interrupted: dusk bot restarted";
+const INTERRUPTED_LINE = "turn interrupted: madani bot restarted";
 
 const jsonl = (path: string): any[] => existsSync(path)
   ? readFileSync(path, "utf8").trim().split("\n").filter(Boolean).map((line) => JSON.parse(line)) : [];
@@ -82,7 +82,7 @@ async function scenario(test: (f: any) => Promise<void>, options: { fake?: Recor
       try { parsed = JSON.parse(raw); } catch {}
       return { status: response.status, body: parsed };
     };
-    const cli = (...args: string[]) => runControlDusk([...args, "--url", url]) as Promise<any>;
+    const cli = (...args: string[]) => runControlMadani([...args, "--url", url]) as Promise<any>;
     const bot = async (name: string, section: string) => (await cli("new-bot", "--name", name, "--section", section)).bot;
     const clive = await bot("Clive", "Leadership");
     const planPath = join(dataDir, "room-plan.json");
@@ -290,7 +290,7 @@ it("R4 Stop in the room cancels the parked root and stops the card; providing af
 const itHost = process.platform === "linux" ? it.skip : it;
 itHost("R5 queues a member's root on the computer seat at the wait ceiling, FIFO with a direct root, and continues it when the seat frees", async () => {
   const CEILING_MS = 1_500;
-  const home = mkdtempSync(join(tmpdir(), "dusk-room-roots-seat-"));
+  const home = mkdtempSync(join(tmpdir(), "madani-room-roots-seat-"));
   const data = join(home, "data");
   const ui = join(home, "static");
   const stateFile = join(home, "vm.json");
@@ -320,9 +320,9 @@ itHost("R5 queues a member's root on the computer seat at the wait ceiling, FIFO
   };
   const dumpFor = (botId: string): Promise<any> => until((): any => {
     if (!existsSync(dumpFile)) return null;
-    try { const sent = JSON.parse(readFileSync(dumpFile, "utf8")); return sent.mcpConfig?.mcpServers?.computer?.env?.DUSK_CONTROL_URL?.includes(botId) ? sent : null; } catch { return null; }
+    try { const sent = JSON.parse(readFileSync(dumpFile, "utf8")); return sent.mcpConfig?.mcpServers?.computer?.env?.MADANI_CONTROL_URL?.includes(botId) ? sent : null; } catch { return null; }
   }, Boolean);
-  const gate = (sent: any) => createControlClient({ url: sent.mcpConfig.mcpServers.computer.env.DUSK_CONTROL_URL, token: sent.mcpConfig.mcpServers.computer.env.DUSK_CONTROL_TOKEN }).state(true);
+  const gate = (sent: any) => createControlClient({ url: sent.mcpConfig.mcpServers.computer.env.MADANI_CONTROL_URL, token: sent.mcpConfig.mcpServers.computer.env.MADANI_CONTROL_TOKEN }).state(true);
   const taskOf = (botId: string, threadId: string) => api("GET", "/api/bots?messages=0").then(({ body }) =>
     body.bots.find((bot: any) => bot.id === botId)?.tasks.find((task: any) => task.threadId === threadId));
   const botOf = (botId: string) => api("GET", "/api/bots?messages=0").then(({ body }) => body.bots.find((bot: any) => bot.id === botId));
@@ -348,10 +348,10 @@ itHost("R5 queues a member's root on the computer seat at the wait ceiling, FIFO
       "--import", pathToFileURL(join(ROOT, "server/testing/desktop-parent.mjs")).href, join(ROOT, "server/index.ts")], {
       cwd: ROOT, env: {
         PATH: dirname(process.execPath), ...(process.env.SystemRoot ? { SystemRoot: process.env.SystemRoot } : {}),
-        HOME: home, USERPROFILE: home, DUSK_DATA_DIR: data, APPDATA: join(home, "appdata"), LOCALAPPDATA: join(home, "localappdata"),
-        TEMP: home, TMP: home, TMPDIR: home, DUSK_PORT: String(port), DUSK_WEBHOOK_PORT: String(port + 1), DUSK_STATIC_DIR: ui, DUSK_TEST_VM_STATE: stateFile,
-        DUSK_TEST_DESKTOP_CUA_CONNECTION: join(home, "user-data", "cua-connection.json"), DUSK_COMPUTER_CALL_WAIT_MS: "4000", DUSK_COMPUTER_CALL_ACT_WITHIN_MS: "1000",
-        DUSK_COMPUTER_WAIT_MAX_MS: String(CEILING_MS),
+        HOME: home, USERPROFILE: home, MADANI_DATA_DIR: data, APPDATA: join(home, "appdata"), LOCALAPPDATA: join(home, "localappdata"),
+        TEMP: home, TMP: home, TMPDIR: home, MADANI_PORT: String(port), MADANI_WEBHOOK_PORT: String(port + 1), MADANI_STATIC_DIR: ui, MADANI_TEST_VM_STATE: stateFile,
+        MADANI_TEST_DESKTOP_CUA_CONNECTION: join(home, "user-data", "cua-connection.json"), MADANI_COMPUTER_CALL_WAIT_MS: "4000", MADANI_COMPUTER_CALL_ACT_WITHIN_MS: "1000",
+        MADANI_COMPUTER_WAIT_MAX_MS: String(CEILING_MS),
       }, stdio: ["ignore", "pipe", "pipe"],
     });
     child = proc;
@@ -461,7 +461,7 @@ it("R6 reruns a member's cut turn once after a restart, in place, with the resta
 }), hostTimeout(90_000));
 
 it("R6 does not rerun a member's cut turn that already pushed: the root ends with what it did, said once in the room", async () => {
-  const home = mkdtempSync(join(tmpdir(), "dusk-room-roots-outward-"));
+  const home = mkdtempSync(join(tmpdir(), "madani-room-roots-outward-"));
   try {
     await scenario(async (f) => {
       const room = await f.room("Engineering", [f.clive.id], { kind: "member", botId: f.clive.id });
@@ -546,7 +546,7 @@ it("R7 a goal step the watchdog stops after it posted a credential card fails as
   f.open("step");
   await expect.poll(async () => (await messages()).find((message) => message.kind === "goal.run")?.goalRun?.status, { timeout: 30_000 }).not.toBe("working");
   expect(nothingLive(f)).toEqual([]);
-}, { fake: { DUSK_TEST_STALL_CLOCK: "1" } }), hostTimeout(60_000));
+}, { fake: { MADANI_TEST_STALL_CLOCK: "1" } }), hostTimeout(60_000));
 
 it("R8 runs a chained @mention as a root of its own, with the hop recorded", () => scenario(async (f) => {
   const mira = await f.bot("Mira", "Engineering");
@@ -569,7 +569,7 @@ it("R8 runs a chained @mention as a root of its own, with the hop recorded", () 
   expect((await f.roomView(room.id))).toMatchObject({ working: false, busyBotId: null });
 }), hostTimeout(60_000));
 
-const goalDone = (detail: string) => `<dusk-goal>${JSON.stringify({ status: "completed", detail })}</dusk-goal>`;
+const goalDone = (detail: string) => `<madani-goal>${JSON.stringify({ status: "completed", detail })}</madani-goal>`;
 const sendGoal = (f: any, bot: { id: string; threadId: string }, text: string) =>
   f.api("POST", `/api/bots/${bot.id}/messages`, { text, mode: "goal", threadId: bot.threadId });
 

@@ -61,8 +61,8 @@ beforeEach(() => {
   fixture.sounds = true;
   fixture.advancedMode = false;
   // these drawings are of the phone app offered; one test hides it
-  vi.stubEnv("VITE_DUSK_PHONE_APP", "1");
-  vi.stubGlobal("window", { addEventListener: vi.fn(), removeEventListener: vi.fn(), duskDesktop: { environments: {}, organization: {}, cloudAccount: {} } });
+  vi.stubEnv("VITE_MADANI_PHONE_APP", "1");
+  vi.stubGlobal("window", { addEventListener: vi.fn(), removeEventListener: vi.fn(), madaniDesktop: { environments: {}, organization: {}, cloudAccount: {} } });
   vi.stubGlobal("document", { addEventListener: vi.fn(), removeEventListener: vi.fn(), documentElement: { dataset: {} } });
   setLocale("en");
 });
@@ -171,13 +171,13 @@ describe("Settings, drawn as Grok Bot's", () => {
   });
 
   it("hides Phone only in a build that hides the phone app, and a link to the phone then lands on General", () => {
-    vi.stubEnv("VITE_DUSK_PHONE_APP", "0");
+    vi.stubEnv("VITE_MADANI_PHONE_APP", "0");
     expect(panes(open("companion"))).not.toContain("texting");
     expect(current(open("companion"))).toBe("general");
     expect(current(open("texting"))).toBe("general");
     expect(markers(open("companion"))).not.toContain("pairing");
     // a build that offers the phone app keeps Phone
-    vi.stubEnv("VITE_DUSK_PHONE_APP", "1");
+    vi.stubEnv("VITE_MADANI_PHONE_APP", "1");
     expect(panes(open("general"))).toEqual(["general", "voice", "computer", "texting", "vault", "models", "usage", "updates", "advanced"]);
     expect(current(open("companion"))).toBe("texting");
     const groups = [...open("general").matchAll(/data-settings-rail-group="([^"]+)" class="settings-nav-group"><p aria-hidden="true" class="settings-nav-label">([^<]+)</g)].map((match) => `${match[1]}:${match[2]}`);
@@ -194,7 +194,7 @@ describe("Settings, drawn as Grok Bot's", () => {
   });
 
   it("puts the phone on Phone, the bots' computer and servers on Computer, and logins in the Vault", () => {
-    vi.stubEnv("VITE_DUSK_PHONE_APP", "1");
+    vi.stubEnv("VITE_MADANI_PHONE_APP", "1");
     expect(markers(open("companion"))).toEqual(["pairing", "companion"]);
     expect(current(open("companion"))).toBe("texting");
     expect(open("computer")).toContain('data-panel-page="computers"');
@@ -223,7 +223,7 @@ describe("Settings, drawn as Grok Bot's", () => {
   });
 
   it("shows a paired remote client General and Computer (Texting while the phone app is offered), with its look in General", () => {
-    vi.stubGlobal("window", { addEventListener: vi.fn(), removeEventListener: vi.fn(), duskDesktop: { remoteClient: { active: true }, environments: {} } });
+    vi.stubGlobal("window", { addEventListener: vi.fn(), removeEventListener: vi.fn(), madaniDesktop: { remoteClient: { active: true }, environments: {} } });
     expect(panes(open("general"))).toEqual(["general", "voice", "computer", "texting"]);
     expect(groups(open("general"))).toEqual(["How it looks", "Notifications"]);
     expect(current(open("looks"))).toBe("general");

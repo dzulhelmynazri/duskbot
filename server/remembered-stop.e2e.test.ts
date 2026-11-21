@@ -4,7 +4,7 @@
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { expect, it } from "vitest";
-import { launchVerificationServer, runControlDusk } from "../scripts/control-dusk.ts";
+import { launchVerificationServer, runControlMadani } from "../scripts/control-madani.ts";
 import { request } from "../scripts/mcp-server.ts";
 import { readHandoffs } from "./testing/handoff-rows.ts";
 
@@ -12,7 +12,7 @@ const SETTLED = "Your downstream room requests have settled.";
 
 it("keeps a teammate the person stopped from getting the same request back, until the person asks again", async () => {
   const session = await launchVerificationServer(process.env, undefined, undefined, undefined, { scripted: true });
-  const cli = (...args: string[]) => runControlDusk(args, { env: { DUSK_URL: session.info.url } }) as Promise<any>;
+  const cli = (...args: string[]) => runControlMadani(args, { env: { MADANI_URL: session.info.url } }) as Promise<any>;
   const api = (path: string, body?: unknown, method = "POST") =>
     request(path, body === undefined ? {} : { method, body: JSON.stringify(body) }, session.info.url) as Promise<any>;
   try {

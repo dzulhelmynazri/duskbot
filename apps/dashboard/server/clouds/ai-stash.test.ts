@@ -16,7 +16,7 @@ const plan: DesktopPlan = { kind: "dedicated", placement: "dedicated", spec: { v
 const auth = JSON.stringify({ tokens: { access_token: "codex-secret-token" } });
 
 function fixture(sealKey: Buffer | null = Buffer.alloc(32, 7)) {
-  const dataDir = mkdtempSync(join(tmpdir(), "dusk-ai-stash-")); cleanup.push(() => rmSync(dataDir, { recursive: true, force: true }));
+  const dataDir = mkdtempSync(join(tmpdir(), "madani-ai-stash-")); cleanup.push(() => rmSync(dataDir, { recursive: true, force: true }));
   let at = 1_790_000_000_000;
   const now = () => at;
   const store = memoryAiStashStore(now), sealer = createSealer(sealKey);
@@ -26,7 +26,7 @@ function fixture(sealKey: Buffer | null = Buffer.alloc(32, 7)) {
   const home = { healthy: vi.fn(async () => true), pair: vi.fn(), signIns: vi.fn(async () => {}) };
   const service = createCloudsService({ dataDir, aiStash, providers: { dedicated: createFakeCloudProvider(), pool: createPoolProvider({ driver }) },
     workspaces: { register: () => "workspace-1", lastReportAt: () => null, remove: () => {} }, home, sealer,
-    config: { adminOrigin: "https://admin.example.test", dashboardUrl: "https://dash.example.test", image: "ghcr.io/example/duskbot-cloud-home:1.2.3", poolQuota: (_k, spec, botComputers) => ({ ...spec, netMbps: 100, pids: 1000, botComputers }) }, now });
+    config: { adminOrigin: "https://admin.example.test", dashboardUrl: "https://dash.example.test", image: "ghcr.io/example/madanibot-cloud-home:1.2.3", poolQuota: (_k, spec, botComputers) => ({ ...spec, netMbps: 100, pids: 1000, botComputers }) }, now });
   cleanup.push(() => service.close());
   const order = (accountId = "a") => service.order({ ...plan, accountId, name: "My desktop", color: "blue", region: "eu" });
   return { service, store, put, home, order, advance: (ms: number) => { at += ms; } };

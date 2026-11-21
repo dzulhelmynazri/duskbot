@@ -54,7 +54,7 @@ describe("rehypeRevealWords", () => {
   });
 
   it("never splits code, math or a link, and does not count them, so the live and landed counts agree", () => {
-    const tree = el("root", [el("p", [txt("run "), el("code", [txt("pnpm test now")]), txt(" then "), el("a", [txt("https://dusk.bot/x")]), txt(" ship")])]);
+    const tree = el("root", [el("p", [txt("run "), el("code", [txt("pnpm test now")]), txt(" then "), el("a", [txt("https://madani.bot/x")]), txt(" ship")])]);
     run(tree, 1);
     expect(spans(tree).map(plain)).toEqual(["then", "ship"]);
     expect(spans(tree).map((span) => span.properties?.style)).toEqual(["--rv:0", "--rv:1"]);

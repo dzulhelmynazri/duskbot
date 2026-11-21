@@ -16,10 +16,10 @@ old locks again, including when the container reuses its home directory.
 The browser recipe uses `launchVerificationServer`, the fake engine and a
 private browser profile. It mounts the real ComputerPanel with synthetic
 desktop transport; it never contacts the host Docker daemon. Set
-`DUSK_AGENT_BROWSER_PATH` and `AGENT_BROWSER_EXECUTABLE_PATH` to reuse installed
+`MADANI_AGENT_BROWSER_PATH` and `AGENT_BROWSER_EXECUTABLE_PATH` to reuse installed
 tools. Its receipt prints the isolated server URL and persistent log path;
-screenshots remain beside that log unless `DUSK_UI_EVIDENCE_DIR` selects another
-directory. Set `DUSK_UI_RECORD=1` with ffmpeg on PATH to also save `resume.mp4`.
+screenshots remain beside that log unless `MADANI_UI_EVIDENCE_DIR` selects another
+directory. Set `MADANI_UI_RECORD=1` with ffmpeg on PATH to also save `resume.mp4`.
 The readiness assertion waits for two actual status reads while the desktop is
 held unready; it uses no fixed delay.
 

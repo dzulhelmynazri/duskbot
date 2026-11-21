@@ -3,7 +3,7 @@ import { writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { DatabaseSync } from "node:sqlite";
 import { expect, it } from "vitest";
-import { launchVerificationServer, runControlDusk } from "../scripts/control-dusk.ts";
+import { launchVerificationServer, runControlMadani } from "../scripts/control-madani.ts";
 import { request } from "../scripts/mcp-server.ts";
 import { HANDOFF_TICK_MS } from "./handoff-ticks.ts";
 import { readHandoffs } from "./testing/handoff-rows.ts";
@@ -11,8 +11,8 @@ import { readHandoffs } from "./testing/handoff-rows.ts";
 const HOUR = 60 * 60_000;
 
 it("starts a hand-off at once on a Cloud that just woke, with a dozen teammates about", async () => {
-  const session = await launchVerificationServer({ ...process.env, DUSK_TEST_RESUME_CLOCK: "1" }, undefined, undefined, undefined, { scripted: true });
-  const cli = (...args: string[]) => runControlDusk(args, { env: { DUSK_URL: session.info.url } }) as Promise<any>;
+  const session = await launchVerificationServer({ ...process.env, MADANI_TEST_RESUME_CLOCK: "1" }, undefined, undefined, undefined, { scripted: true });
+  const cli = (...args: string[]) => runControlMadani(args, { env: { MADANI_URL: session.info.url } }) as Promise<any>;
   const api = (path: string, body: unknown, method: string) => request(path, { method, body: JSON.stringify(body) }, session.info.url) as Promise<any>;
   try {
     const bots = [];

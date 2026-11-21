@@ -23,14 +23,14 @@ let state: CloudMacState = {
   enabled: true,
   mode: view === "restricted" ? "ask" : "auto",
   limitFolders: view === "restricted",
-  folders: ["~/Downloads", "~/dusk bot"],
+  folders: ["~/Downloads", "~/madani bot"],
   cloud: "connected",
   problem: null,
   busy: [],
 };
 const listeners = new Set<(next: CloudMacState) => void>();
 const set = (next: Partial<CloudMacState>) => { state = { ...state, ...next }; listeners.forEach((listener) => listener(state)); return state; };
-window.duskDesktop = {
+window.madaniDesktop = {
   platform: "darwin",
   remoteClient: { active: false },
   getCapabilities: async () => ({}),
@@ -45,7 +45,7 @@ window.duskDesktop = {
     openLog: async () => {},
     onChange: (listener: (next: CloudMacState) => void) => { listeners.add(listener); return () => listeners.delete(listener); },
   },
-} as unknown as typeof window.duskDesktop;
+} as unknown as typeof window.madaniDesktop;
 
 const nova = { id: "nova", name: "Nova", avatar: { kind: "preset", id: "nova" } } as unknown as Bot;
 const card: Message = {

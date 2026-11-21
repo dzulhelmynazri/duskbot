@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-const bridge = () => (typeof window === "undefined" ? undefined : window.duskDesktop?.rail);
+const bridge = () => (typeof window === "undefined" ? undefined : window.madaniDesktop?.rail);
 
 /** On the rail's own page: whether the page beside it draws the window's frame, as main hears from each of its documents.
  * The window opens framed. */

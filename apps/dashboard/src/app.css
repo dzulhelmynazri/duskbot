@@ -6,7 +6,7 @@
 @font-face { font-family: "Pixelify Sans"; src: url("./fonts/pixelify-sans.woff2") format("woff2"); font-weight: 400 700; font-display: swap; }
 @font-face { font-family: "Geist Mono"; src: url("./fonts/geist-mono.woff2") format("woff2"); font-weight: 100 900; font-display: swap; }
 
-/* light is the default and matches dusk.bot: a white page, soft wash cards, flat pills, one ink */
+/* light is the default and matches madani.bot: a white page, soft wash cards, flat pills, one ink */
 :root,
 [data-theme="light"] {
   color-scheme: light;

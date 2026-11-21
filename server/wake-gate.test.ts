@@ -59,7 +59,7 @@ describe("the wake gate", () => {
 
 describe("routines due while the computer slept", () => {
   it("wait until the network is back after a wake, then each runs once", async () => {
-    const dir = mkdtempSync(join(tmpdir(), "dusk-wake-gate-"));
+    const dir = mkdtempSync(join(tmpdir(), "madani-wake-gate-"));
     dirs.push(dir);
     const start = Date.parse("2026-09-13T08:00:00Z");
     let now = start;

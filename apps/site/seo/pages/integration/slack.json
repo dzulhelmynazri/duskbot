@@ -4,7 +4,7 @@
   "title": "Slack AI assistant: find decisions without rereading it all",
   "nav": "slack",
   "h1": "a slack assistant that finds the decision in the thread",
-  "description": "Use dusk bot to read Slack threads, find decisions and draft replies in chat. Try three routines with source links and clear posting limits.",
+  "description": "Use madani bot to read Slack threads, find decisions and draft replies in chat. Try three routines with source links and clear posting limits.",
   "keyword": "claude slack",
   "keywords": [
     "claude slack integration",
@@ -12,7 +12,7 @@
     "slack ai agent",
     "slack mcp"
   ],
-  "answer": "**get yesterday's decision without spending the morning in slack.** a dusk bot searches channels, reads the replies and brings you the outcome with a source link. you choose the ai behind it.\n\nkeep a catch-up private in dusk chat, or let it propose a reply for you to post. read-only slack access is enough for both.",
+  "answer": "**get yesterday's decision without spending the morning in slack.** a madani bot searches channels, reads the replies and brings you the outcome with a source link. you choose the ai behind it.\n\nkeep a catch-up private in madani chat, or let it propose a reply for you to post. read-only slack access is enough for both.",
   "updated": "2026-11-12",
   "review": {
     "status": "approved",
@@ -95,7 +95,7 @@
       "name": "questions that still need a reply",
       "message": "when a new message arrives in #cresselwick-help, see whether it asks a product question. read the thread before deciding whether it still needs a reply. if it does, show the question and suggested wording here. never post or react.",
       "when": "when a new message arrives in the named help channel",
-      "output": "a suggested reply in dusk chat, after reading the thread"
+      "output": "a suggested reply in madani chat, after reading the thread"
     },
     {
       "name": "friday handover",
@@ -104,11 +104,11 @@
       "output": "a handover draft with unfinished work and named owners"
     }
   ],
-  "asks": "**a private catch-up only needs reading access.** the bot can draft in dusk chat while posting, reactions and channel changes stay blocked.\n\nwant it to post? allow the send action and choose **Ask every time** for an **Allow** or **Deny** card. you can grant a daily amount instead.\n\ncareful with **Full access**: a bot there with no sending rule can send up to 25 a day without asking. give it **Ask every time**.\n\nscheduling a message and editing a posted one count as writes, not sends. exclude them, or put \"ask me before you change anything\" in the routine. channel settings and other writes need that review rule too.",
+  "asks": "**a private catch-up only needs reading access.** the bot can draft in madani chat while posting, reactions and channel changes stay blocked.\n\nwant it to post? allow the send action and choose **Ask every time** for an **Allow** or **Deny** card. you can grant a daily amount instead.\n\ncareful with **Full access**: a bot there with no sending rule can send up to 25 a day without asking. give it **Ask every time**.\n\nscheduling a message and editing a posted one count as writes, not sends. exclude them, or put \"ask me before you change anything\" in the routine. channel settings and other writes need that review rule too.",
   "cannot": [
     "**find conversations the account cannot access.** a workspace search does not reveal every company discussion.",
-    "**post with reading access alone.** it can propose text in dusk chat. posting needs the allowed action and follows sending rules.",
-    "**work overnight on a sleeping desktop.** slack events arrive at once, but the bot needs a running machine. dusk cloud keeps routines running."
+    "**post with reading access alone.** it can propose text in madani chat. posting needs the allowed action and follows sending rules.",
+    "**work overnight on a sleeping desktop.** slack events arrive at once, but the bot needs a running machine. madani cloud keeps routines running."
   ],
   "sections": [
     {
@@ -131,24 +131,24 @@
     },
     {
       "q": "can i read the catch-up from my phone?",
-      "a": "**yes, after pairing to the bots' home.** a paired computer must stay awake with dusk open. dusk cloud works with your computer off."
+      "a": "**yes, after pairing to the bots' home.** a paired computer must stay awake with madani open. madani cloud works with your computer off."
     }
   ],
   "sources": [
     {
-      "label": "dusk bot docs: connected apps",
+      "label": "madani bot docs: connected apps",
       "url": "/docs/files-and-apps"
     },
     {
-      "label": "dusk bot docs: scheduled work",
+      "label": "madani bot docs: scheduled work",
       "url": "/docs/routines"
     },
     {
-      "label": "dusk bot docs: sending controls",
+      "label": "madani bot docs: sending controls",
       "url": "/docs/computer"
     },
     {
-      "label": "dusk bot docs: phone access",
+      "label": "madani bot docs: phone access",
       "url": "/docs/phone"
     }
   ],
@@ -167,7 +167,7 @@
     },
     {
       "mistake": "granting posting access for a private brief",
-      "fix": "keep it read only. drafts can stay in dusk chat."
+      "fix": "keep it read only. drafts can stay in madani chat."
     }
   ],
   "worked": {

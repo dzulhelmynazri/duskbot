@@ -31,7 +31,7 @@ export default {
     const url = new URL(request.url);
     const method = request.method;
     const ip = request.headers.get("cf-connecting-ip") ?? "local";
-    if (method === "GET" && (url.pathname === "/" || url.pathname === "/health")) return json(200, { ok: true, service: "dusk link relay" });
+    if (method === "GET" && (url.pathname === "/" || url.pathname === "/health")) return json(200, { ok: true, service: "madani link relay" });
 
     const tunnelPath = /^\/v1\/t\/([a-z2-7]{10})(?:\/(register|vps|app))?$/.exec(url.pathname);
     if (tunnelPath) {

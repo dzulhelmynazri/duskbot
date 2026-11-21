@@ -9,7 +9,7 @@ import { createCloudTeamHost } from "./cloud-team-host.ts";
 function host(team: { id: string; name: string } | null) {
   const starters = new Map([["ada-chat", "p_ada"], ["cleo-chat", "p_cleo"], ["main-chat", "nobody"]]);
   return createCloudTeamHost({
-    team, dataDir: mkdtempSync(join(tmpdir(), "dusk-team-host-")),
+    team, dataDir: mkdtempSync(join(tmpdir(), "madani-team-host-")),
     store: { groupByThread: (threadId) => (threadId === "room-chat" ? { id: "launch" } : undefined) },
     starters, markers: new Set(["nobody"]),
   });
@@ -50,7 +50,7 @@ describe("whose browser a person's live view shows", () => {
 
 describe("which of a bot's folders a conversation's box puts back", () => {
   const made = (team: { id: string; name: string } | null) => {
-    const dataDir = mkdtempSync(join(tmpdir(), "dusk-team-host-"));
+    const dataDir = mkdtempSync(join(tmpdir(), "madani-team-host-"));
     const chats = join(dataDir, "task-workspaces", "scout");
     for (const thread of ["ada-chat", "ada-later", "cleo-chat", "main-chat", "team-later", "room-chat"]) mkdirSync(join(chats, thread), { recursive: true });
     const starters = new Map([["ada-chat", "p_ada"], ["ada-later", "p_ada"], ["cleo-chat", "p_cleo"], ["main-chat", "nobody"]]);

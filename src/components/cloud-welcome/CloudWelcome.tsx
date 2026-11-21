@@ -39,7 +39,7 @@ const ALL_LINES: Array<{ icon: GlyphIcon; key: "cloudWelcome.v2.always" | "cloud
   { icon: Clock, key: "cloudWelcome.v2.routines" },
 ];
 
-/** A fresh dusk cloud, or one this computer's bots just moved to, in one screen: the bots landing on the cloud, what is
+/** A fresh madani cloud, or one this computer's bots just moved to, in one screen: the bots landing on the cloud, what is
  * different now, and one thing to do: connect an AI when none works yet, else start chatting. */
 export function CloudWelcome() {
   const { state, dispatch } = useStore();
@@ -52,7 +52,7 @@ export function CloudWelcome() {
   const heading = useRef<HTMLHeadingElement>(null);
   const visible = state.bots.filter((bot) => !bot.hidden);
   const bot = visible.find((candidate) => candidate.chiefOfStaff) ?? visible[0] ?? null;
-  const sendBridge = window.duskDesktop?.remoteClient?.active ? undefined : window.duskDesktop?.cloudSendPage;
+  const sendBridge = window.madaniDesktop?.remoteClient?.active ? undefined : window.madaniDesktop?.cloudSendPage;
   const [notice] = useCloudSendNotice(sendBridge);
   const sent = sentHere(notice);
   const aiReady = state.instances.some(engineReady);

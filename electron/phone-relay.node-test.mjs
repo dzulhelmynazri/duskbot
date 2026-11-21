@@ -57,7 +57,7 @@ function memoryStore() {
 
 /** a link service, a stand-in harness that answers the sync only for the owner token, and the pieces to drive them */
 async function fixture(t) {
-  const dir = mkdtempSync(join(tmpdir(), "dusk-phone-relay-"));
+  const dir = mkdtempSync(join(tmpdir(), "madani-phone-relay-"));
   const signer = grantSigner();
   const service = createLinkService({ base: "http://link.test", dataDir: join(dir, "data"), scriptPath: join(linkRoot, "install.sh"), agentPath: join(linkRoot, "agent.mjs"), trustProxy: false, grantKeys: signer.keys });
   const relayServer = createServer((req, res) => void service.handler(req, res));
@@ -69,7 +69,7 @@ async function fixture(t) {
     req.on("end", () => {
       const path = req.url.split("?", 1)[0];
       if (path === "/api/mobile/relay/sync") {
-        if (req.headers["x-dusk-desktop-owner"] !== OWNER) return json(res, 403, { error: "only the link agent on this server" });
+        if (req.headers["x-madani-desktop-owner"] !== OWNER) return json(res, 403, { error: "only the link agent on this server" });
         const input = JSON.parse(Buffer.concat(chunks).toString());
         harness.syncs.push(input);
         if (harness.rev > input.applied || !input.wait) return json(res, 200, { rev: harness.rev, channels: harness.channels });
@@ -131,12 +131,12 @@ test("a signed-in computer makes its own tunnel and serves a paired phone end to
   await until(() => f.service.store.channels.has(channel));
 
   const get = await f.phone(channel, sealKeyOf(phone.priv, phone.pub, pub, channel), token);
-  const answer = await get("/api/auth/session", { headers: { authorization: "Bearer dusk_sess_phone", "x-dusk-desktop-owner": OWNER, cookie: "a=b" } });
+  const answer = await get("/api/auth/session", { headers: { authorization: "Bearer madani_sess_phone", "x-madani-desktop-owner": OWNER, cookie: "a=b" } });
   assert.equal(answer.status, 200);
   assert.deepEqual(await answer.json(), { ok: true, path: "/api/auth/session" });
   const seen = f.harness.seen.at(-1);
-  assert.equal(seen.headers.authorization, "Bearer dusk_sess_phone");
-  assert.equal(seen.headers["x-dusk-desktop-owner"], undefined, "a phone can never carry the owner token");
+  assert.equal(seen.headers.authorization, "Bearer madani_sess_phone");
+  assert.equal(seen.headers["x-madani-desktop-owner"], undefined, "a phone can never carry the owner token");
   assert.equal(seen.headers.cookie, undefined);
   assert.match(seen.headers["x-forwarded-for"], /^198\.51\.100\./, "every phone request reaches the harness as remote");
 
@@ -159,7 +159,7 @@ test("a frame from anyone without the phone's key never reaches the harness", as
   assert.equal(f.harness.seen.length, 0);
 });
 
-test("without a dusk account no tunnel is made and the state says so", async (t) => {
+test("without a madani account no tunnel is made and the state says so", async (t) => {
   const f = await fixture(t);
   const relay = f.relay({ linkGrant: async () => null, signedIn: () => false });
   assert.equal((await relay.ready(200)).status, "signed-out");
@@ -205,7 +205,7 @@ test("a tunnel the link service dropped is made again with the same phone keys",
 const reversing = { available: async () => true, encrypt: async (text) => Buffer.from([...Buffer.from(text)].reverse()), decrypt: async (bytes) => ({ result: Buffer.from([...bytes].reverse()).toString() }) };
 
 test("the saved tunnel is encrypted, kept per workspace, and the first save works on a fresh install", async () => {
-  const dir = mkdtempSync(join(tmpdir(), "dusk-phone-relay-store-"));
+  const dir = mkdtempSync(join(tmpdir(), "madani-phone-relay-store-"));
   try {
     const store = phoneRelayStore({ jsonFile, userData: dir, encryption: reversing });
     assert.equal(await store.read("/data/one"), null);
@@ -221,7 +221,7 @@ test("the saved tunnel is encrypted, kept per workspace, and the first save work
 });
 
 test("an unreadable store file is set aside, never overwritten in place", async () => {
-  const dir = mkdtempSync(join(tmpdir(), "dusk-phone-relay-store-"));
+  const dir = mkdtempSync(join(tmpdir(), "madani-phone-relay-store-"));
   try {
     writeFileSync(join(dir, "phone-relay.json"), "{not json");
     const store = phoneRelayStore({ jsonFile, userData: dir, encryption: reversing });
@@ -318,15 +318,15 @@ test("the computer's proxy settings reach the relay hub: the first plain http pr
   assert.equal(proxyFromResolved(""), null);
   const asked = [];
   const proxy = systemProxy(() => ({ resolveProxy: async (url) => { asked.push(url); return "PROXY p.corp:8080"; } }));
-  assert.deepEqual(await proxy(new URL("https://link.dusk.bot/v1/x")), { host: "p.corp", port: 8080 });
-  assert.deepEqual(asked, ["https://link.dusk.bot/v1/x"]);
-  assert.equal(await systemProxy(() => ({ resolveProxy: async () => { throw new Error("no"); } }))(new URL("https://link.dusk.bot")), null);
+  assert.deepEqual(await proxy(new URL("https://link.madani.bot/v1/x")), { host: "p.corp", port: 8080 });
+  assert.deepEqual(asked, ["https://link.madani.bot/v1/x"]);
+  assert.equal(await systemProxy(() => ({ resolveProxy: async () => { throw new Error("no"); } }))(new URL("https://link.madani.bot")), null);
 });
 
 test("installed before the app is ready, the relay still answers the page and asks for the proxy only when it dials", async () => {
-  const dir = mkdtempSync(join(tmpdir(), "dusk-phone-relay-install-"));
-  const before = process.env.DUSK_PHONE_RELAY;
-  process.env.DUSK_PHONE_RELAY = "off";
+  const dir = mkdtempSync(join(tmpdir(), "madani-phone-relay-install-"));
+  const before = process.env.MADANI_PHONE_RELAY;
+  process.env.MADANI_PHONE_RELAY = "off";
   try {
     let ready = false;
     // electron 39's session.defaultSession getter throws until app ready
@@ -341,7 +341,7 @@ test("installed before the app is ready, the relay still answers the page and as
     assert.equal(typeof relay.state().status, "string");
     ready = true;
   } finally {
-    if (before === undefined) delete process.env.DUSK_PHONE_RELAY; else process.env.DUSK_PHONE_RELAY = before;
+    if (before === undefined) delete process.env.MADANI_PHONE_RELAY; else process.env.MADANI_PHONE_RELAY = before;
     rmSync(dir, { recursive: true, force: true });
   }
 });

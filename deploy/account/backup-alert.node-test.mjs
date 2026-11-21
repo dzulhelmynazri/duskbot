@@ -26,16 +26,16 @@ test("mails once when it works again, then stays quiet", () => {
 test("the emails name the set and the way to the logs", () => {
   const failed = message("failed", "make", { log: "upload to r2 failed" });
   assert.match(failed.subject, /backup failed: make/);
-  assert.match(failed.text, /journalctl -u dusk-backup@make/);
+  assert.match(failed.text, /journalctl -u madani-backup@make/);
   assert.match(failed.text, /upload to r2 failed/);
-  assert.match(message("recovered", "dusk", { downFor: 72 * HOUR }).text, /after 3 days/);
+  assert.match(message("recovered", "madani", { downFor: 72 * HOUR }).text, /after 3 days/);
 });
 
 test("with the shared layout, the failed email keeps the command and log in the html and the text", async () => {
   const { render } = await import(new URL("../../apps/dashboard/server/email/layout.ts", import.meta.url).href);
-  const failed = message("failed", "dusk", { log: "restic: Fatal: 403 Forbidden", render });
+  const failed = message("failed", "madani", { log: "restic: Fatal: 403 Forbidden", render });
   assert.match(failed.html, /uh oh, a backup failed/);
-  assert.match(failed.html, /journalctl -u dusk-backup@dusk -n 50/);
+  assert.match(failed.html, /journalctl -u madani-backup@madani -n 50/);
   assert.match(failed.text, /restic: Fatal: 403 Forbidden/);
   assert.doesNotMatch(failed.html + failed.text, /—/);
 });

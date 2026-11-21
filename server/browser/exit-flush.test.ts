@@ -32,7 +32,7 @@ describe("browsers flush before exit", () => {
   it("ignores other messages and refuses a malformed id without closing anything", async () => {
     let calls = 0;
     const flush = createBrowsersFlush({ flush: async () => { calls++; }, reply: () => {} });
-    expect(flush.receive({ type: "duskbot:something-else" })).toBe(false);
+    expect(flush.receive({ type: "madanibot:something-else" })).toBe(false);
     expect(flush.receive(null)).toBe(false);
     expect(flush.receive({ type: BROWSERS_FLUSH, requestId: "../../x" })).toBe(true);
     await tick();

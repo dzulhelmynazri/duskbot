@@ -53,14 +53,14 @@ export function installPress(root: HTMLElement): () => void {
   window.addEventListener("pointercancel", letGo, { passive: true });
   // a press that becomes a scroll, or a held row that opens a menu, lets go too
   root.addEventListener("scroll", letGo, { passive: true, capture: true });
-  root.addEventListener("dusk-press-release", letGo);
+  root.addEventListener("madani-press-release", letGo);
   return () => {
     letGo();
     root.removeEventListener("pointerdown", down);
     window.removeEventListener("pointerup", letGo);
     window.removeEventListener("pointercancel", letGo);
     root.removeEventListener("scroll", letGo, { capture: true });
-    root.removeEventListener("dusk-press-release", letGo);
+    root.removeEventListener("madani-press-release", letGo);
   };
 }
 
@@ -109,13 +109,13 @@ export function installRipple(root: HTMLElement): () => void {
   window.addEventListener("pointerup", letGo, { passive: true });
   window.addEventListener("pointercancel", letGo, { passive: true });
   root.addEventListener("scroll", letGo, { passive: true, capture: true });
-  root.addEventListener("dusk-press-release", letGo);
+  root.addEventListener("madani-press-release", letGo);
   return () => {
     letGo();
     root.removeEventListener("pointerdown", down);
     window.removeEventListener("pointerup", letGo);
     window.removeEventListener("pointercancel", letGo);
     root.removeEventListener("scroll", letGo, { capture: true });
-    root.removeEventListener("dusk-press-release", letGo);
+    root.removeEventListener("madani-press-release", letGo);
   };
 }

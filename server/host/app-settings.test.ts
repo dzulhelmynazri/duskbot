@@ -25,7 +25,7 @@ describe("app_settings", () => {
     const h = harness();
     const set = await h.call({ action: "set", setting: "theme", value: "Midnight" });
     expect(set).toMatchObject({ status: 200, body: { text: expect.stringContaining("Set theme to midnight") } });
-    expect(h.sync.setUi).toHaveBeenCalledWith("dusk-skin", "midnight", 5);
+    expect(h.sync.setUi).toHaveBeenCalledWith("madani-skin", "midnight", 5);
     expect(h.changed).toHaveBeenCalledOnce();
     expect((await h.call({ action: "list" })).body.text).toContain("theme: midnight (one of system,");
   });

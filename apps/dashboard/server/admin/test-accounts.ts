@@ -3,8 +3,8 @@ import { isTestAccount } from "../auth/mail.ts";
 /** reserved example and test domains (RFC 2606, RFC 6761): nobody real signs up there */
 const RESERVED = /@(?:[^@]+\.)?example\.(?:com|net|org)$|\.(?:test|example|invalid|localhost)$/;
 
-/** an account the admin leaves out of its people, signups and money by default: a harness's (isTestAccount: @qa.dusk.test,
- *  qa*@dusk.bot, the e2e inboxes), a reserved domain's, or App Review's demo account. nothing about the account changes */
+/** an account the admin leaves out of its people, signups and money by default: a harness's (isTestAccount: @qa.madani.test,
+ *  qa*@madani.bot, the e2e inboxes), a reserved domain's, or App Review's demo account. nothing about the account changes */
 export function isAdminTestAccount(email: unknown, reviewEmail: string | null = null): boolean {
   if (typeof email !== "string") return false;
   const address = email.trim().toLowerCase();

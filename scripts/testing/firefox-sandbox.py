@@ -11,7 +11,7 @@ import sys
 import tempfile
 import time
 
-with tempfile.TemporaryDirectory(prefix="dusk-firefox-sandbox-") as profile:
+with tempfile.TemporaryDirectory(prefix="madani-firefox-sandbox-") as profile:
     env = dict(os.environ)
     if sys.argv[1] == "disabled":
         env["MOZ_DISABLE_CONTENT_SANDBOX"] = "1"

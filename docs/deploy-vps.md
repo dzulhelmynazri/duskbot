@@ -1,16 +1,16 @@
-# Deploy dusk bot on a VPS
+# Deploy madani bot on a VPS
 
-From a blank Linux server to dusk bot running on it around the clock, reachable from your laptop, the desktop app and your phone, with your bots working while every laptop is closed. It assumes nothing beyond being able to open a terminal and paste commands. About twenty minutes, most of it waiting.
+From a blank Linux server to madani bot running on it around the clock, reachable from your laptop, the desktop app and your phone, with your bots working while every laptop is closed. It assumes nothing beyond being able to open a terminal and paste commands. About twenty minutes, most of it waiting.
 
 Three ways to make the server reachable are covered. Pick one; the rest of the guide is the same.
 
 | | You need | Who can reach it | Best for |
 |---|---|---|---|
-| **A. Public address, no domain** (`serve --tunnel`) | a dusk bot account (email code) | anyone with a pairing code, over HTTPS | the fastest path; a phone on cellular |
+| **A. Public address, no domain** (`serve --tunnel`) | a madani bot account (email code) | anyone with a pairing code, over HTTPS | the fastest path; a phone on cellular |
 | **B. Your own domain** (Docker + Caddy) | a domain name, ports 80/443 | anyone with a pairing code, over HTTPS | a permanent address you own |
 | **C. Your Tailscale network** (`serve --tailscale`) | Tailscale on the server and your devices | only your tailnet | the most private; nothing public at all |
 
-Whichever you pick, the login is the same: you **pair** each device once with a short code and it stays signed in. A session lasts 30 days; using it with half that or less left renews it to a full 30, up to 180 days from pairing (`DUSK_SESSION_TTL_DAYS` and `DUSK_SESSION_MAX_DAYS` change both numbers). There is no password.
+Whichever you pick, the login is the same: you **pair** each device once with a short code and it stays signed in. A session lasts 30 days; using it with half that or less left renews it to a full 30, up to 180 days from pairing (`MADANI_SESSION_TTL_DAYS` and `MADANI_SESSION_MAX_DAYS` change both numbers). There is no password.
 
 ## Hetzner launch check (2026-09-07)
 
@@ -70,21 +70,21 @@ root, sign in again as `maus`; those accounts have different homes and credentia
 
 ## Path A: a public address with one command
 
-No domain, no proxy, no open port. The server gets an address like `https://c-7f3a9c.cloud.dusk.bot` through a Cloudflare tunnel; only traffic through the tunnel reaches it, and that traffic still has to pair.
+No domain, no proxy, no open port. The server gets an address like `https://c-7f3a9c.cloud.madani.bot` through a Cloudflare tunnel; only traffic through the tunnel reaches it, and that traffic still has to pair.
 
 ```sh
-npx duskbot setup          # once: choose AI access, connect, and choose a model
-npx duskbot login          # once: an emailed code signs this machine in and reserves its address
-npx duskbot serve --tunnel # runs the server there and prints the pairing link with a QR code
+npx madanibot setup          # once: choose AI access, connect, and choose a model
+npx madanibot login          # once: an emailed code signs this machine in and reserves its address
+npx madanibot serve --tunnel # runs the server there and prints the pairing link with a QR code
 ```
 
-`setup` connects an AI provider; it is separate from the dusk bot account.
+`setup` connects an AI provider; it is separate from the madani bot account.
 Use Codex's device-code option over SSH, or enter a hidden API key for a
 chat-only connection. More engines can be added later. See [CLI setup](cli-onboarding.md).
 
-`login` asks for your email, sends an 8-digit code, and prints the address it reserved for this machine. `serve --tunnel` downloads `cloudflared` on the first run (a pinned version with a verified digest, into `~/.duskbot`), starts the server, connects the tunnel, and after a few seconds prints `tunnel: live at https://…`. Leave it running; see "Keep it running" for a service.
+`login` asks for your email, sends an 8-digit code, and prints the address it reserved for this machine. `serve --tunnel` downloads `cloudflared` on the first run (a pinned version with a verified digest, into `~/.madanibot`), starts the server, connects the tunnel, and after a few seconds prints `tunnel: live at https://…`. Leave it running; see "Keep it running" for a service.
 
-The account credentials live in `~/.duskbot/tunnel-account.json`, readable only by your user. `npx duskbot logout` releases the address.
+The account credentials live in `~/.madanibot/tunnel-account.json`, readable only by your user. `npx madanibot logout` releases the address.
 
 Skip to "Install and sign the engines in".
 
@@ -103,7 +103,7 @@ One container for the server plus Caddy for HTTPS at `https://maus.example.com`.
 3. **Get the deploy files and set the name:**
 
    ```sh
-   git clone https://github.com/DuskBotAI/duskbot && cd duskbot/deploy
+   git clone https://github.com/dzulhelmynazri/madani-bot && cd madanibot/deploy
    cp .env.example .env
    nano .env                # DOMAIN=maus.example.com ; ENGINES=@anthropic-ai/claude-code @openai/codex
    ```
@@ -113,16 +113,16 @@ One container for the server plus Caddy for HTTPS at `https://maus.example.com`.
 4. **Start it:**
 
    ```sh
-   docker compose pull dusk && docker compose up -d
-   docker compose ps        # dusk "healthy", caddy "running"
+   docker compose pull madani && docker compose up -d
+   docker compose ps        # madani "healthy", caddy "running"
    ```
 
    Caddy requests the certificate on its own; give it a minute. Then `https://maus.example.com` shows a page asking for a pairing code. That is correct: nothing works until you pair.
 
-In this path, every `npx duskbot …` command below is run inside the container instead:
+In this path, every `npx madanibot …` command below is run inside the container instead:
 
 ```sh
-docker compose exec dusk node dist-server/duskbot.js pair --label "My MacBook"
+docker compose exec madani node dist-server/madanibot.js pair --label "My MacBook"
 ```
 
 ## Path C: only your Tailscale network
@@ -130,7 +130,7 @@ docker compose exec dusk node dist-server/duskbot.js pair --label "My MacBook"
 From the administrator shell, install Tailscale on the server and sign in (`curl -fsSL https://tailscale.com/install.sh | sh && sudo tailscale up`). Enable HTTPS certificates for your tailnet once in the admin console (DNS → HTTPS Certificates), then run this from the `maus` shell:
 
 ```sh
-npx duskbot serve --tailscale
+npx madanibot serve --tailscale
 ```
 
 Tailscale terminates HTTPS with its own certificate and the pairing link uses the server's MagicDNS name (`https://maus.tail1234.ts.net`). Only devices on your tailnet can reach it, which is a very good property for a server that can run tools.
@@ -142,13 +142,13 @@ the image. For paths A and C, install Linux system libraries once from the
 administrator shell:
 
 ```sh
-sudo -H npx --yes duskbot browser install --with-deps
+sudo -H npx --yes madanibot browser install --with-deps
 ```
 
 Then install the browser in the service account's home, from the `maus` shell:
 
 ```sh
-npx --yes duskbot browser install
+npx --yes madanibot browser install
 ```
 
 The administrator's browser download is in a different home; it does not install
@@ -162,7 +162,7 @@ gets its own isolated session whose logins persist across restarts.
 
 ## Install and sign the engines in
 
-The npm dusk bot package does not install model engine CLIs. For paths A and C,
+The npm madani bot package does not install model engine CLIs. For paths A and C,
 install the engine you use in the service account, then sign it in. For example,
 from the `maus` shell, for Claude:
 
@@ -175,10 +175,10 @@ claude
 For Codex, use `@openai/codex` as the npm package and run `codex login --device-auth`
 to sign in from a headless server. Complete the CLI's account flow in your browser. Repeat only for the
 engines you use. For path B, run the installed CLI inside the container, for
-example `docker compose exec dusk claude`.
+example `docker compose exec madani claude`.
 
 Engine logins belong to the service user's home (for example `~/.codex` and
-`~/.claude`), separately from dusk bot's `~/.duskbot`. Keep that home when
+`~/.claude`), separately from madani bot's `~/.madanibot`. Keep that home when
 restarting or upgrading. The systemd example below includes `~/.local/bin` in PATH.
 
 ## Pair your first device
@@ -186,13 +186,13 @@ restarting or upgrading. The systemd example below includes `~/.local/bin` in PA
 `serve` already printed a pairing link and QR code when it started. For another device later:
 
 ```sh
-npx duskbot pair --label "Kitchen iPad"
+npx madanibot pair --label "Kitchen iPad"
 ```
 
 ```
 pairing code:  RR8Y-BLR6-H939
 expires:       10:59:45 AM (single use)
-open or scan:  https://c-7f3a9c.cloud.dusk.bot/pair#code=RR8Y-BLR6-H939
+open or scan:  https://c-7f3a9c.cloud.madani.bot/pair#code=RR8Y-BLR6-H939
 ```
 
 - **A browser:** open the link. The code is filled in; press **Connect**. That browser is paired for 30 days, renewed on use as above.
@@ -206,28 +206,28 @@ Worth knowing: a code works **once** and expires after **five minutes**; the lin
 Every paired device is a session:
 
 ```sh
-npx duskbot sessions              # id, device, scope, last seen, expires
-npx duskbot sessions revoke ID    # signs that device out and closes its stream at once
-npx duskbot status                # what the server says about itself
+npx madanibot sessions              # id, device, scope, last seen, expires
+npx madanibot sessions revoke ID    # signs that device out and closes its stream at once
+npx madanibot status                # what the server says about itself
 ```
 
 ## Keep it running
 
-`npx duskbot serve` is a plain foreground process. For systemd (paths A and C),
+`npx madanibot serve` is a plain foreground process. For systemd (paths A and C),
 install a chosen release first, from the `maus` shell. Replace `X.Y.Z` with the
 published version you want to run:
 
 ```sh
-npm install --global --prefix "$HOME/.local" duskbot@X.Y.Z
+npm install --global --prefix "$HOME/.local" madanibot@X.Y.Z
 ```
 
 Stop the foreground server with Ctrl-C before enabling the service. From the
-administrator shell, save this as `/etc/systemd/system/duskbot.service`:
+administrator shell, save this as `/etc/systemd/system/madanibot.service`:
 
 ```ini
-# /etc/systemd/system/duskbot.service
+# /etc/systemd/system/madanibot.service
 [Unit]
-Description=dusk bot server
+Description=madani bot server
 After=network-online.target
 
 [Service]
@@ -235,7 +235,7 @@ User=maus
 WorkingDirectory=/home/maus
 Environment=HOME=/home/maus
 Environment=PATH=/home/maus/.local/bin:/usr/local/bin:/usr/bin:/bin
-ExecStart=/home/maus/.local/bin/duskbot serve --tunnel --no-pair
+ExecStart=/home/maus/.local/bin/madanibot serve --tunnel --no-pair
 Restart=always
 RestartSec=5
 
@@ -244,11 +244,11 @@ WantedBy=multi-user.target
 ```
 
 ```sh
-sudo systemctl daemon-reload && sudo systemctl enable --now duskbot
-journalctl -u duskbot -f            # the server's log, including "tunnel: live at …"
+sudo systemctl daemon-reload && sudo systemctl enable --now madanibot
+journalctl -u madanibot -f            # the server's log, including "tunnel: live at …"
 ```
 
-Use `--tailscale` instead of `--tunnel` for path C. `--no-pair` skips printing a code at every restart; mint one with `npx duskbot pair` when you need it. Docker (path B) restarts on its own (`restart: unless-stopped`).
+Use `--tailscale` instead of `--tunnel` for path C. `--no-pair` skips printing a code at every restart; mint one with `npx madanibot pair` when you need it. Docker (path B) restarts on its own (`restart: unless-stopped`).
 
 Adjust the account, home, and PATH if yours differ; Node 24 must be available on
 that PATH. The service runs the installed CLI directly, so a restart uses the
@@ -260,22 +260,22 @@ same release without an npm install prompt or an implicit upgrade.
   then run these commands from the administrator shell, replacing `X.Y.Z`:
 
   ```sh
-  sudo systemctl stop duskbot
-  sudo -iu maus npm install --global --prefix /home/maus/.local duskbot@X.Y.Z
-  sudo systemctl start duskbot
+  sudo systemctl stop madanibot
+  sudo -iu maus npm install --global --prefix /home/maus/.local madanibot@X.Y.Z
+  sudo systemctl start madanibot
   ```
 
   Check that installation succeeded before starting. A service restart by itself
   does not update the installed package. For foreground `npx` usage, specify the
-  desired release as `npx --yes duskbot@X.Y.Z serve --tunnel`.
-- **Path B:** `cd duskbot/deploy && docker compose pull dusk && docker compose up -d`.
+  desired release as `npx --yes madanibot@X.Y.Z serve --tunnel`.
+- **Path B:** `cd madanibot/deploy && docker compose pull madani && docker compose up -d`.
 
 Routines and queued work survive a restart. A teammate turn running at that moment runs again once at the next start, told to check what it already did, and the bot that asked for it is told. A person's own turn and a running routine are not run again: the conversation says it was interrupted. Update between runs where you can.
 
 ## Back up
 
 Stop the server before copying its SQLite database: Ctrl-C for a foreground
-process, or `sudo systemctl stop duskbot` from the administrator shell for
+process, or `sudo systemctl stop madanibot` from the administrator shell for
 the service above. Stop any engine processes and managed desktops still writing
 files you intend to back up.
 
@@ -284,8 +284,8 @@ credentials, and paired sessions). Run it from the service account's shell:
 
 ```sh
 umask 077
-backup_dir=$(mktemp -d "$PWD/duskbot-backup.XXXXXX")
-tar czf "$backup_dir/duskbot-data.tgz" -C "$HOME" .duskbot
+backup_dir=$(mktemp -d "$PWD/madanibot-backup.XXXXXX")
+tar czf "$backup_dir/madanibot-data.tgz" -C "$HOME" .madanibot
 ```
 
 A full backup also needs your engine credential/configuration paths, such as
@@ -295,20 +295,20 @@ any configured home/data-directory overrides, and workspaces outside the app
 directory. These are not included in the command above.
 
 For path B, the whole `/data` volume includes the container's CLI homes. From
-`dusk bot/deploy`, stop the app before archiving; `deploy_data` is the default
+`madani bot/deploy`, stop the app before archiving; `deploy_data` is the default
 volume name, so use your actual volume name if you changed the Compose project:
 
 ```sh
-docker compose stop dusk
-backup_dir=$(mktemp -d "$PWD/duskbot-backup.XXXXXX")
-docker run --rm -v deploy_data:/data:ro -v "$backup_dir":/b alpine sh -c 'umask 077; tar czf /b/duskbot-data.tgz -C /data .'
+docker compose stop madani
+backup_dir=$(mktemp -d "$PWD/madanibot-backup.XXXXXX")
+docker run --rm -v deploy_data:/data:ro -v "$backup_dir":/b alpine sh -c 'umask 077; tar czf /b/madanibot-data.tgz -C /data .'
 ```
 
 Each command creates a fresh private folder in the current directory, so it
 cannot overwrite an older archive with more permissive access. Keep the
 archive inside that folder privately on another machine. Restore with the server stopped,
 using the same paths and original ownership. After backup or restore, start the
-service with `sudo systemctl start duskbot`, or `docker compose start dusk`.
+service with `sudo systemctl start madanibot`, or `docker compose start madani`.
 
 ## The rules the setup relies on
 
@@ -318,13 +318,13 @@ Read this before putting anything else in front of the server.
 - A request that arrives through a proxy or the tunnel is treated as remote and needs a session, whatever headers it carries. A proxy of your own (nginx, Traefik, Cloudflare Tunnel) must forward the real `Host` and add `X-Forwarded-For` and `X-Forwarded-Proto`, must not buffer the event stream, and must **not** rewrite `Host` to `127.0.0.1`.
 - Pairing is the login. Want a second wall in front of it? Path B's `Caddyfile` has a commented `basic_auth` block for a shared password.
 - The session cookie is marked `Secure`; do not serve this over plain HTTP on the public internet.
-- The one thing a stranger can read is `/.well-known/duskbot/environment` (the server's id, label, version, capabilities) and `/api/health` (only the app name). Everything else answers "pair this device".
+- The one thing a stranger can read is `/.well-known/madanibot/environment` (the server's id, label, version, capabilities) and `/api/health` (only the app name). Everything else answers "pair this device".
 
 ## Troubleshooting
 
-**`serve --tunnel` says "no account on this machine yet".** Run `npx duskbot login` on this machine first; the credentials are per machine.
+**`serve --tunnel` says "no account on this machine yet".** Run `npx madanibot login` on this machine first; the credentials are per machine.
 
-**The tunnel stays on "retrying".** The server is running and usable locally; the public hop is not verified yet. Wait a minute (Cloudflare needs a moment on a fresh address), then check `journalctl`/the terminal for the reason. If it never comes up, `npx duskbot logout && npx duskbot login` issues a fresh address.
+**The tunnel stays on "retrying".** The server is running and usable locally; the public hop is not verified yet. Wait a minute (Cloudflare needs a moment on a fresh address), then check `journalctl`/the terminal for the reason. If it never comes up, `npx madanibot logout && npx madanibot login` issues a fresh address.
 
 **Path B: the page never loads or shows a certificate error.** Caddy could not get a certificate. Check that the name resolves to the server and that ports 80 and 443 are open; `docker compose logs caddy` shows the reason.
 
@@ -334,9 +334,9 @@ Read this before putting anything else in front of the server.
 
 **A bot says the engine is not signed in.** Sign that engine in again on the server.
 
-**What does the server think it is?** `https://<address>/.well-known/duskbot/environment` is public and shows its id, label, version and capabilities; `npx duskbot status` prints the same on the server.
+**What does the server think it is?** `https://<address>/.well-known/madanibot/environment` is public and shows its id, label, version and capabilities; `npx madanibot status` prints the same on the server.
 
-**Something else.** `journalctl -u duskbot --since -10m` (or `docker compose logs dusk --tail 100`) shows the server's startup lines. Paste them with your question in the community channel.
+**Something else.** `journalctl -u madanibot --since -10m` (or `docker compose logs madani --tail 100`) shows the server's startup lines. Paste them with your question in the community channel.
 
 ### Ubuntu 24.04 browser sandbox
 
@@ -357,13 +357,13 @@ placeholder, not a fixed Chrome release. Copy the whole directory, including its
 libraries, to a new location that the service user cannot modify:
 
 ```sh
-sudo install -d -o root -g root -m 0755 /opt/duskbot-browser
-sudo cp -R /home/maus/.agent-browser/browsers/chrome-VERSION /opt/duskbot-browser/
-sudo chown -R root:root /opt/duskbot-browser/chrome-VERSION
-sudo chmod -R go-w /opt/duskbot-browser/chrome-VERSION
+sudo install -d -o root -g root -m 0755 /opt/madanibot-browser
+sudo cp -R /home/maus/.agent-browser/browsers/chrome-VERSION /opt/madanibot-browser/
+sudo chown -R root:root /opt/madanibot-browser/chrome-VERSION
+sudo chmod -R go-w /opt/madanibot-browser/chrome-VERSION
 ```
 
-Save this as the root-owned `/etc/apparmor.d/duskbot-chrome`, replacing
+Save this as the root-owned `/etc/apparmor.d/madanibot-chrome`, replacing
 `VERSION` with the same value. Keep the exact executable path: a wildcard under
 the writable service home would also allow replacement executables.
 
@@ -371,7 +371,7 @@ the writable service home would also allow replacement executables.
 abi <abi/4.0>,
 include <tunables/global>
 
-profile duskbot-chrome /opt/duskbot-browser/chrome-VERSION/chrome flags=(unconfined) {
+profile madanibot-chrome /opt/madanibot-browser/chrome-VERSION/chrome flags=(unconfined) {
   userns,
 }
 ```
@@ -379,15 +379,15 @@ profile duskbot-chrome /opt/duskbot-browser/chrome-VERSION/chrome flags=(unconfi
 Load the profile:
 
 ```sh
-sudo apparmor_parser -r /etc/apparmor.d/duskbot-chrome
+sudo apparmor_parser -r /etc/apparmor.d/madanibot-chrome
 ```
 
 Add the following line under `[Service]` in the systemd unit above, again using
 the exact installed version, then run `sudo systemctl daemon-reload` and
-`sudo systemctl restart duskbot`:
+`sudo systemctl restart madanibot`:
 
 ```ini
-Environment=AGENT_BROWSER_EXECUTABLE_PATH=/opt/duskbot-browser/chrome-VERSION/chrome
+Environment=AGENT_BROWSER_EXECUTABLE_PATH=/opt/madanibot-browser/chrome-VERSION/chrome
 ```
 
 For a foreground server, export `AGENT_BROWSER_EXECUTABLE_PATH` to that same

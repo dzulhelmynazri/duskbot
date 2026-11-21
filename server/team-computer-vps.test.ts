@@ -12,7 +12,7 @@ import { vpsContainerName } from "./vps-computer.ts";
 const directories: string[] = [];
 afterEach(() => { for (const directory of directories.splice(0)) rmSync(directory, { recursive: true, force: true }); });
 const fixture = () => {
-  const directory = mkdtempSync(join(tmpdir(), "dusk-team-vps-"));
+  const directory = mkdtempSync(join(tmpdir(), "madani-team-vps-"));
   directories.push(directory);
   const registry = new TeamComputers(join(directory, "team-computers.json"), randomUUID());
   const computer = registry.create("Research desktop");

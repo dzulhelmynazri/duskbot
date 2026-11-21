@@ -56,7 +56,7 @@
     },
     {
       "h": "choose the place you want the result",
-      "md": "**stay in gemini if a regular brief there does the job.** first confirm account access. compare [chatgpt tasks](/guides/chatgpt-scheduled-tasks) if active limits or event triggers matter. [scheduled ai tasks](/scheduled-ai-tasks) gathers those differences.\n\ndusk routines belong to named bots with their own jobs, chats and memory.[^6] describe the repeat job and review the schedule card. local routines stop during sleep or when dusk closes. dusk cloud runs them on time.[^5]\n\na different scheduler doesn't change google's sign-in rules. choose the ai connection after checking its current terms."
+      "md": "**stay in gemini if a regular brief there does the job.** first confirm account access. compare [chatgpt tasks](/guides/chatgpt-scheduled-tasks) if active limits or event triggers matter. [scheduled ai tasks](/scheduled-ai-tasks) gathers those differences.\n\nmadani routines belong to named bots with their own jobs, chats and memory.[^6] describe the repeat job and review the schedule card. local routines stop during sleep or when madani closes. madani cloud runs them on time.[^5]\n\na different scheduler doesn't change google's sign-in rules. choose the ai connection after checking its current terms."
     }
   ],
   "faq": [
@@ -95,11 +95,11 @@
       "checked": "2026-11-12"
     },
     {
-      "label": "dusk bot: routines",
+      "label": "madani bot: routines",
       "url": "/docs/routines"
     },
     {
-      "label": "dusk bot: bots",
+      "label": "madani bot: bots",
       "url": "/docs/bots"
     }
   ],

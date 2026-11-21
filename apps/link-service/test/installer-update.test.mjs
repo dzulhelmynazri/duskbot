@@ -19,11 +19,11 @@ afterEach(async () => { for (const dir of dirs.splice(0)) await rm(dir, { recurs
 /** a server with `installed` running; `actions` is a shell snippet run after the stubs; returns its log and state */
 async function server({ installed = "1.0.0", state = {}, actions, selfTest = null }) {
   const dir = await mkdtemp(join(tmpdir(), "omb-update-")); dirs.push(dir);
-  const home = join(dir, "home"), stateDir = join(dir, "state"), data = join(home, ".duskbot");
-  await mkdir(join(home, ".local/lib/node_modules/duskbot"), { recursive: true }); await mkdir(join(home, ".local/bin"), { recursive: true });
-  await mkdir(stateDir, { recursive: true }); await mkdir(data, { recursive: true }); await mkdir(join(home, ".cache/duskbot-link"), { recursive: true });
-  await writeFile(join(home, ".local/lib/node_modules/duskbot/package.json"), `{\n  "version": "${installed}"\n}\n`);
-  await writeFile(join(home, ".local/bin/duskbot"), "#!/bin/sh\n", { mode: 0o755 });
+  const home = join(dir, "home"), stateDir = join(dir, "state"), data = join(home, ".madanibot");
+  await mkdir(join(home, ".local/lib/node_modules/madanibot"), { recursive: true }); await mkdir(join(home, ".local/bin"), { recursive: true });
+  await mkdir(stateDir, { recursive: true }); await mkdir(data, { recursive: true }); await mkdir(join(home, ".cache/madanibot-link"), { recursive: true });
+  await writeFile(join(home, ".local/lib/node_modules/madanibot/package.json"), `{\n  "version": "${installed}"\n}\n`);
+  await writeFile(join(home, ".local/bin/madanibot"), "#!/bin/sh\n", { mode: 0o755 });
   for (const [key, value] of Object.entries(state)) await writeFile(join(stateDir, key), `${value}\n`);
   if (selfTest) await writeFile(join(data, "update-state.json"), JSON.stringify({ v: 1, boots: [], selfTest }));
   const file = join(dir, "fixture.sh");
@@ -31,7 +31,7 @@ async function server({ installed = "1.0.0", state = {}, actions, selfTest = nul
 SVC_HOME=${home} STATE=${stateDir} DATA=${data} TMP=${dir} PKGS=${join(dir, "pkgs")} NODE_BIN=${process.execPath} SELFTEST_WAIT=2
 log=${join(dir, "log")}
 get_package() { printf 'package for %s\\n' "$PKG_SHA" > "$1"; }
-as_user() { [ "$1" = npm ] || { "$@"; return; }; printf 'as_user %s\\n' "$*" >> "$log"; eval "f=\\\${$#}"; v=$(sed -n 's/^v=//p' "$f" 2>/dev/null); [ -z "$v" ] || printf '{\\n  "version": "%s"\\n}\\n' "$v" > "$SVC_HOME/.local/lib/node_modules/duskbot/package.json"; }
+as_user() { [ "$1" = npm ] || { "$@"; return; }; printf 'as_user %s\\n' "$*" >> "$log"; eval "f=\\\${$#}"; v=$(sed -n 's/^v=//p' "$f" 2>/dev/null); [ -z "$v" ] || printf '{\\n  "version": "%s"\\n}\\n' "$v" > "$SVC_HOME/.local/lib/node_modules/madanibot/package.json"; }
 retry() { "$@"; }
 chown() { :; }
 install() { while [ $# -gt 1 ]; do shift; done; mkdir -p "$1"; }
@@ -40,13 +40,13 @@ wait_health() { return 0; }
 sleep() { :; }
 ${actions}
 `);
-  const env = { PATH: "/usr/bin:/bin:/usr/sbin:/sbin", TERM: "dumb", DUSK_RELEASE_PUBLIC_KEYS: publicKey };
+  const env = { PATH: "/usr/bin:/bin:/usr/sbin:/sbin", TERM: "dumb", MADANI_RELEASE_PUBLIC_KEYS: publicKey };
   const out = await run("sh", [file], { env }).then(r => r.stdout, e => `${e.stdout}\nexit ${e.code}`);
   const read = async (name) => (await readFile(join(stateDir, name), "utf8").catch(() => "")).trim();
-  return { out, log: (await readFile(join(dir, "log"), "utf8").catch(() => "")).trim().split("\n").filter(Boolean), read, cache: join(home, ".cache/duskbot-link") };
+  return { out, log: (await readFile(join(dir, "log"), "utf8").catch(() => "")).trim().split("\n").filter(Boolean), read, cache: join(home, ".cache/madanibot-link") };
 }
 const shaOf = (version) => createHash("sha256").update(`v=${version}`).digest("hex");
-const sig = (version, sha = shaOf(version)) => signRelease({ kind: "vps-package", name: "duskbot", version, sha256: sha, signedAt: 1 }, signing);
+const sig = (version, sha = shaOf(version)) => signRelease({ kind: "vps-package", name: "madanibot", version, sha256: sha, signedAt: 1 }, signing);
 const policy = (p) => { const doc = signPolicy(p, signing); return { body: Buffer.from(doc.body).toString("base64url"), signature: doc.signature }; };
 /** offers `version` as the link service would; the fixture package's bytes say its version for the npm stub */
 const offer = (version, { signature = sig(version), policyDoc = null } = {}) => `
@@ -62,7 +62,7 @@ describe("installer updates", () => {
   it("updates to a newer signed build, keeps the one before, and settles once its self-test passes", async () => {
     const s = await server({ state: { package: `sha256:${shaOf("1.0.0")}` }, selfTest: { version: "1.1.0", ok: true, at: 1, checks: {} },
       actions: `${offer("1.1.0")}\ndo_app\nprintf 'pending %s\\n' "$(state_get update-pending)" >> "$log"\nupdate_settle 1` });
-    expect(s.log.some(l => l.startsWith("as_user npm install") && l.includes(`duskbot-${shaOf("1.1.0")}.tgz`))).toBe(true);
+    expect(s.log.some(l => l.startsWith("as_user npm install") && l.includes(`madanibot-${shaOf("1.1.0")}.tgz`))).toBe(true);
     expect(s.log).toContain("pending 1.1.0");
     expect(s.out).toContain("Updated to 1.1.0");
     expect(await s.read("package")).toBe(`sha256:${shaOf("1.1.0")}`);
@@ -74,11 +74,11 @@ describe("installer updates", () => {
   it("puts the build before back when the new one fails its self-test, and never takes that version again", async () => {
     const prevSha = shaOf("1.0.0");
     const s = await server({ state: { package: `sha256:${prevSha}` }, selfTest: { version: "1.1.0", ok: false, at: 1, checks: { browser: "failed" } },
-      actions: `printf 'v=1.0.0' > "$SVC_HOME/.cache/duskbot-link/duskbot-${prevSha}.tgz"\n${offer("1.1.0")}\ndo_app\nupdate_settle 1\n${offer("1.1.0")}\ndo_app` });
+      actions: `printf 'v=1.0.0' > "$SVC_HOME/.cache/madanibot-link/madanibot-${prevSha}.tgz"\n${offer("1.1.0")}\ndo_app\nupdate_settle 1\n${offer("1.1.0")}\ndo_app` });
     expect(s.out).toContain("going back to the build before");
     expect(s.out).toContain("Update rolled back, nothing lost");
-    expect(s.log.filter(l => l.startsWith("as_user npm install")).at(-1)).toContain(`duskbot-${prevSha}.tgz`);
-    expect(s.log).toContain("x systemctl restart duskbot.service");
+    expect(s.log.filter(l => l.startsWith("as_user npm install")).at(-1)).toContain(`madanibot-${prevSha}.tgz`);
+    expect(s.log).toContain("x systemctl restart madanibot.service");
     expect(await s.read("package")).toBe(`sha256:${prevSha}`);
     expect(await s.read("update-failed")).toBe("1.1.0");
     expect(s.out).toContain("keeping the installed build: the offered one is not taken (failed_here 1.1.0)");

@@ -7,9 +7,9 @@ import {
 
 const spec: ServiceSpec = {
   node: "/usr/bin/node",
-  script: "/usr/lib/node_modules/duskbot/cli.js",
-  serveArgs: ["--port", "8799", "--data-dir", "/home/maus/.duskbot", "--domain", "maus.example.com", "--no-pair"],
-  dataDir: "/home/maus/.duskbot",
+  script: "/usr/lib/node_modules/madanibot/cli.js",
+  serveArgs: ["--port", "8799", "--data-dir", "/home/maus/.madanibot", "--domain", "maus.example.com", "--no-pair"],
+  dataDir: "/home/maus/.madanibot",
   user: "maus",
   home: "/home/maus",
   bindsLowPorts: true,
@@ -18,102 +18,102 @@ const spec: ServiceSpec = {
 
 describe("service units", () => {
   it("runs the same serve command, with strip-types only for a checkout", () => {
-    expect(serviceCommand(spec)).toEqual(["/usr/bin/node", "/usr/lib/node_modules/duskbot/cli.js", "serve", ...spec.serveArgs]);
-    expect(serviceCommand({ ...spec, script: "/srv/dusk bot/server/duskbot.ts" })[1]).toBe("--experimental-strip-types");
+    expect(serviceCommand(spec)).toEqual(["/usr/bin/node", "/usr/lib/node_modules/madanibot/cli.js", "serve", ...spec.serveArgs]);
+    expect(serviceCommand({ ...spec, script: "/srv/madani bot/server/madanibot.ts" })[1]).toBe("--experimental-strip-types");
   });
 
   it("renders a systemd unit that restarts, runs as the user, and grants low ports only for --domain", () => {
     const unit = systemdUnit(spec);
-    expect(unit).toContain("Description=dusk bot (agentada)");
+    expect(unit).toContain("Description=madani bot (agentada)");
     expect(unit).toContain("User=maus");
-    expect(unit).toContain("Environment=DUSK_DATA_DIR=/home/maus/.duskbot");
-    expect(unit).toContain("ExecStart=/usr/bin/node /usr/lib/node_modules/duskbot/cli.js serve --port 8799 --data-dir /home/maus/.duskbot --domain maus.example.com --no-pair");
+    expect(unit).toContain("Environment=MADANI_DATA_DIR=/home/maus/.madanibot");
+    expect(unit).toContain("ExecStart=/usr/bin/node /usr/lib/node_modules/madanibot/cli.js serve --port 8799 --data-dir /home/maus/.madanibot --domain maus.example.com --no-pair");
     expect(unit).toContain("Restart=always");
     expect(unit).toContain("AmbientCapabilities=CAP_NET_BIND_SERVICE");
     expect(unit).toContain("WantedBy=multi-user.target");
-    const local = systemdUnit({ ...spec, bindsLowPorts: false, serveArgs: ["--port", "8799", "--data-dir", "/home/maus/.duskbot"] });
+    const local = systemdUnit({ ...spec, bindsLowPorts: false, serveArgs: ["--port", "8799", "--data-dir", "/home/maus/.madanibot"] });
     expect(local).not.toContain("CAP_NET_BIND_SERVICE");
-    expect(systemdUnit({ ...spec, dataDir: "/home/maus/My Data", serveArgs: ["--data-dir", "/home/maus/My Data"] })).toContain('ExecStart=/usr/bin/node /usr/lib/node_modules/duskbot/cli.js serve --data-dir "/home/maus/My Data"');
+    expect(systemdUnit({ ...spec, dataDir: "/home/maus/My Data", serveArgs: ["--data-dir", "/home/maus/My Data"] })).toContain('ExecStart=/usr/bin/node /usr/lib/node_modules/madanibot/cli.js serve --data-dir "/home/maus/My Data"');
   });
 
   it("renders a launchd agent that keeps the server alive and logs under the data dir", () => {
-    const plist = launchdPlist({ ...spec, home: "/Users/maus", dataDir: "/Users/maus/.duskbot" });
-    expect(plist).toContain("<string>bot.dusk.serve</string>");
+    const plist = launchdPlist({ ...spec, home: "/Users/maus", dataDir: "/Users/maus/.madanibot" });
+    expect(plist).toContain("<string>bot.madani.serve</string>");
     expect(plist).toContain("<string>/usr/bin/node</string>");
     expect(plist).toContain("<string>serve</string>");
     expect(plist).toContain("<string>maus.example.com</string>");
     expect(plist).toContain("<key>KeepAlive</key>");
-    expect(plist).toContain("/Users/maus/.duskbot/logs/service.log");
+    expect(plist).toContain("/Users/maus/.madanibot/logs/service.log");
     expect(launchdPlist({ ...spec, serveArgs: ["--label", "a & b <c>"] })).toContain("<string>a &amp; b &lt;c&gt;</string>");
   });
 
   it("refuses to point a service at an npx cache, and knows where each platform's file goes", () => {
-    expect(unstableInstallWarning("/home/maus/.npm/_npx/abc123/node_modules/duskbot/cli.js")).toMatch(/npm install --global --prefix "\$HOME\/\.local" \.\/duskbot-private\.tgz/);
-    expect(unstableInstallWarning("/usr/lib/node_modules/duskbot/cli.js")).toBeNull();
-    const linux = servicePlan("linux", "/home/maus/.duskbot");
-    expect(linux?.installed).toBe("/etc/systemd/system/duskbot.service");
-    expect(linux?.activate.join("\n")).toContain("systemctl enable --now duskbot");
-    const mac = servicePlan("darwin", "/Users/maus/.duskbot", "/Users/maus");
-    expect(mac?.installed).toBe("/Users/maus/Library/LaunchAgents/bot.dusk.serve.plist");
+    expect(unstableInstallWarning("/home/maus/.npm/_npx/abc123/node_modules/madanibot/cli.js")).toMatch(/npm install --global --prefix "\$HOME\/\.local" \.\/madanibot-private\.tgz/);
+    expect(unstableInstallWarning("/usr/lib/node_modules/madanibot/cli.js")).toBeNull();
+    const linux = servicePlan("linux", "/home/maus/.madanibot");
+    expect(linux?.installed).toBe("/etc/systemd/system/madanibot.service");
+    expect(linux?.activate.join("\n")).toContain("systemctl enable --now madanibot");
+    const mac = servicePlan("darwin", "/Users/maus/.madanibot", "/Users/maus");
+    expect(mac?.installed).toBe("/Users/maus/Library/LaunchAgents/bot.madani.serve.plist");
     expect(mac?.activate.join("\n")).toContain("launchctl bootstrap gui/$(id -u)");
     expect(servicePlan("win32", "C:\\x")).toBeNull();
   });
 
   it("renders Sentinel as a launchd agent on an interval, under its own label, logging outside the data dir", () => {
-    const out = "/Users/maus/Library/Application Support/duskbot-sentinel";
-    const sentinel = { node: "/usr/bin/node", script: "/usr/lib/node_modules/duskbot/cli.js", dataDir: "/Users/maus/.duskbot", home: "/Users/maus", out };
-    expect(sentinelCommand(sentinel)).toEqual(["/usr/bin/node", "/usr/lib/node_modules/duskbot/cli.js", "sentinel", "--once", "--data-dir", "/Users/maus/.duskbot", "--out", out]);
-    expect(sentinelCommand({ ...sentinel, script: "/srv/dusk bot/server/duskbot.ts" })[1]).toBe("--experimental-strip-types");
+    const out = "/Users/maus/Library/Application Support/madanibot-sentinel";
+    const sentinel = { node: "/usr/bin/node", script: "/usr/lib/node_modules/madanibot/cli.js", dataDir: "/Users/maus/.madanibot", home: "/Users/maus", out };
+    expect(sentinelCommand(sentinel)).toEqual(["/usr/bin/node", "/usr/lib/node_modules/madanibot/cli.js", "sentinel", "--once", "--data-dir", "/Users/maus/.madanibot", "--out", out]);
+    expect(sentinelCommand({ ...sentinel, script: "/srv/madani bot/server/madanibot.ts" })[1]).toBe("--experimental-strip-types");
     const plist = sentinelLaunchdPlist(sentinel);
-    expect(plist).toContain("<string>bot.dusk.sentinel</string>");
+    expect(plist).toContain("<string>bot.madani.sentinel</string>");
     expect(plist).toContain("<key>StartInterval</key>\n\t<integer>120</integer>");
     expect(plist).toContain("<string>sentinel</string>");
     expect(plist).not.toContain("KeepAlive");
     expect(plist).toContain(`<string>${out}/sentinel.log</string>`);
-    expect(plist).not.toContain(".duskbot/logs");
+    expect(plist).not.toContain(".madanibot/logs");
     const mac = sentinelServicePlan("darwin", out, "/Users/maus");
-    expect(mac?.files).toEqual([{ name: "bot.dusk.sentinel.plist", installed: "/Users/maus/Library/LaunchAgents/bot.dusk.sentinel.plist" }]);
+    expect(mac?.files).toEqual([{ name: "bot.madani.sentinel.plist", installed: "/Users/maus/Library/LaunchAgents/bot.madani.sentinel.plist" }]);
     // a path with a space is one argument in the printed commands
-    expect(mac?.activate[0]).toBe("mkdir -p /Users/maus/Library/LaunchAgents && cp '/Users/maus/Library/Application Support/duskbot-sentinel/bot.dusk.sentinel.plist' /Users/maus/Library/LaunchAgents/bot.dusk.sentinel.plist");
-    expect(mac?.deactivate[0]).toBe("launchctl bootout gui/$(id -u)/bot.dusk.sentinel");
+    expect(mac?.activate[0]).toBe("mkdir -p /Users/maus/Library/LaunchAgents && cp '/Users/maus/Library/Application Support/madanibot-sentinel/bot.madani.sentinel.plist' /Users/maus/Library/LaunchAgents/bot.madani.sentinel.plist");
+    expect(mac?.deactivate[0]).toBe("launchctl bootout gui/$(id -u)/bot.madani.sentinel");
   });
 
   it("renders Sentinel as a systemd user timer, with no root", () => {
-    const sentinel = { node: "/usr/bin/node", script: "/usr/lib/node_modules/duskbot/cli.js", dataDir: "/home/maus/My Data", home: "/home/maus", out: "/home/maus/.local/state/duskbot-sentinel" };
+    const sentinel = { node: "/usr/bin/node", script: "/usr/lib/node_modules/madanibot/cli.js", dataDir: "/home/maus/My Data", home: "/home/maus", out: "/home/maus/.local/state/madanibot-sentinel" };
     const unit = sentinelSystemdService(sentinel);
     expect(unit).toContain("Type=oneshot");
-    expect(unit).toContain('ExecStart=/usr/bin/node /usr/lib/node_modules/duskbot/cli.js sentinel --once --data-dir "/home/maus/My Data" --out /home/maus/.local/state/duskbot-sentinel');
+    expect(unit).toContain('ExecStart=/usr/bin/node /usr/lib/node_modules/madanibot/cli.js sentinel --once --data-dir "/home/maus/My Data" --out /home/maus/.local/state/madanibot-sentinel');
     expect(unit).not.toContain("User=");
     expect(sentinelSystemdTimer()).toContain("OnUnitActiveSec=120s");
     expect(sentinelSystemdTimer()).toContain("WantedBy=timers.target");
     const linux = sentinelServicePlan("linux", sentinel.out, "/home/maus");
-    expect(linux?.files.map((file) => file.installed)).toEqual(["/home/maus/.config/systemd/user/duskbot-sentinel.service", "/home/maus/.config/systemd/user/duskbot-sentinel.timer"]);
-    expect(linux?.activate[0]).toContain("cp /home/maus/.local/state/duskbot-sentinel/duskbot-sentinel.service");
-    expect(linux?.activate.join("\n")).toContain("systemctl --user enable --now duskbot-sentinel.timer");
+    expect(linux?.files.map((file) => file.installed)).toEqual(["/home/maus/.config/systemd/user/madanibot-sentinel.service", "/home/maus/.config/systemd/user/madanibot-sentinel.timer"]);
+    expect(linux?.activate[0]).toContain("cp /home/maus/.local/state/madanibot-sentinel/madanibot-sentinel.service");
+    expect(linux?.activate.join("\n")).toContain("systemctl --user enable --now madanibot-sentinel.timer");
     expect(linux?.activate.join("\n")).not.toContain("sudo");
     expect(sentinelServicePlan("win32", "C:\\x")).toBeNull();
   });
 
   it("finds the CLI the installed desktop app ships, and runs it as Node", () => {
-    const app = "/Applications/Dusk Bot.app/Contents";
-    const present = new Set([`${app}/MacOS/Dusk Bot`, `${app}/Resources/server/duskbot.js`]);
-    expect(shippedSentinelCli("darwin", "/Users/maus", (path) => present.has(path))).toEqual({ node: `${app}/MacOS/Dusk Bot`, script: `${app}/Resources/server/duskbot.js` });
-    const user = "/Users/maus/Applications/Dusk Bot.app/Contents";
-    expect(shippedSentinelCli("darwin", "/Users/maus", (path) => path.startsWith(user))?.script).toBe(`${user}/Resources/server/duskbot.js`);
-    expect(shippedSentinelCli("linux", "/home/maus", (path) => path.startsWith("/opt/dusk-bot/"))).toEqual({ node: "/opt/dusk-bot/duskbot", script: "/opt/dusk-bot/resources/server/duskbot.js" });
+    const app = "/Applications/Madani Bot.app/Contents";
+    const present = new Set([`${app}/MacOS/Madani Bot`, `${app}/Resources/server/madanibot.js`]);
+    expect(shippedSentinelCli("darwin", "/Users/maus", (path) => present.has(path))).toEqual({ node: `${app}/MacOS/Madani Bot`, script: `${app}/Resources/server/madanibot.js` });
+    const user = "/Users/maus/Applications/Madani Bot.app/Contents";
+    expect(shippedSentinelCli("darwin", "/Users/maus", (path) => path.startsWith(user))?.script).toBe(`${user}/Resources/server/madanibot.js`);
+    expect(shippedSentinelCli("linux", "/home/maus", (path) => path.startsWith("/opt/madani-bot/"))).toEqual({ node: "/opt/madani-bot/madanibot", script: "/opt/madani-bot/resources/server/madanibot.js" });
     // an app with its script missing, or one released before Sentinel, is no CLI for it
-    expect(shippedSentinelCli("darwin", "/Users/maus", (path) => path.endsWith("MacOS/Dusk Bot"))).toBeNull();
+    expect(shippedSentinelCli("darwin", "/Users/maus", (path) => path.endsWith("MacOS/Madani Bot"))).toBeNull();
     expect(shippedSentinelCli("darwin", "/Users/maus", (path) => present.has(path), () => false)).toBeNull();
     expect(shippedSentinelCli("win32", "C:\\Users\\maus", () => true)).toBeNull();
 
-    const spec = { node: `${app}/MacOS/Dusk Bot`, script: `${app}/Resources/server/duskbot.js`, dataDir: "/Users/maus/.duskbot", home: "/Users/maus", out: "/tmp/s", electronRunAsNode: true };
+    const spec = { node: `${app}/MacOS/Madani Bot`, script: `${app}/Resources/server/madanibot.js`, dataDir: "/Users/maus/.madanibot", home: "/Users/maus", out: "/tmp/s", electronRunAsNode: true };
     expect(sentinelLaunchdPlist(spec)).toContain("<key>ELECTRON_RUN_AS_NODE</key>\n\t\t<string>1</string>");
     expect(sentinelSystemdService(spec)).toContain("Environment=ELECTRON_RUN_AS_NODE=1");
     expect(sentinelLaunchdPlist({ ...spec, electronRunAsNode: false })).not.toContain("ELECTRON_RUN_AS_NODE");
   });
 
   it("keeps every path one quoted value in the systemd unit, and refuses one no unit can hold", () => {
-    const spec = { node: "/usr/bin/node", script: "/srv/omb/cli.js", dataDir: "/home/maus/100% $HOME\\", home: "/home/my maus", out: "/home/my maus/.local/state/duskbot-sentinel" };
+    const spec = { node: "/usr/bin/node", script: "/srv/omb/cli.js", dataDir: "/home/maus/100% $HOME\\", home: "/home/my maus", out: "/home/my maus/.local/state/madanibot-sentinel" };
     const unit = sentinelSystemdService(spec);
     expect(unit).toContain('Environment="HOME=/home/my maus"');
     // % is no specifier, $ no variable, and the trailing backslash no continuation
@@ -127,20 +127,20 @@ describe("service units", () => {
   });
 
   it("reads back what an installed unit runs, and calls it stale when either path is gone", () => {
-    const spec = { node: "/opt/node & co/bin/node", script: "/srv/omb/cli.js", dataDir: "/home/maus/My Data", home: "/home/maus", out: "/home/maus/.local/state/duskbot-sentinel" };
+    const spec = { node: "/opt/node & co/bin/node", script: "/srv/omb/cli.js", dataDir: "/home/maus/My Data", home: "/home/maus", out: "/home/maus/.local/state/madanibot-sentinel" };
     expect(sentinelUnitCommand(sentinelLaunchdPlist(spec))).toEqual({ node: "/opt/node & co/bin/node", script: "/srv/omb/cli.js" });
     expect(sentinelUnitCommand(sentinelSystemdService(spec))).toEqual({ node: "/opt/node & co/bin/node", script: "/srv/omb/cli.js" });
     expect(sentinelUnitCommand("[Service]\nType=oneshot\n")).toBeNull();
 
-    const unit = "/home/maus/.config/systemd/user/duskbot-sentinel.service";
-    const timer = "/home/maus/.config/systemd/user/duskbot-sentinel.timer";
+    const unit = "/home/maus/.config/systemd/user/madanibot-sentinel.service";
+    const timer = "/home/maus/.config/systemd/user/madanibot-sentinel.timer";
     const files = new Map([[unit, sentinelSystemdService(spec)]]);
     const fs = (present: string[]) => ({ exists: (path: string) => files.has(path) || present.includes(path), read: (path: string) => files.get(path)! });
     expect(checkSentinelInstall("linux", "/home/maus", fs([spec.node, spec.script, timer]))).toMatchObject({ status: "ok", unit });
     expect(checkSentinelInstall("linux", "/home/maus", fs([spec.node, timer]))).toMatchObject({ status: "stale", missing: ["/srv/omb/cli.js"] });
     // the service without its timer never runs
     expect(checkSentinelInstall("linux", "/home/maus", fs([spec.node, spec.script]))).toMatchObject({ status: "stale", missing: [timer] });
-    expect(checkSentinelInstall("darwin", "/Users/maus", fs([]))).toEqual({ status: "not_installed", unit: "/Users/maus/Library/LaunchAgents/bot.dusk.sentinel.plist" });
+    expect(checkSentinelInstall("darwin", "/Users/maus", fs([]))).toEqual({ status: "not_installed", unit: "/Users/maus/Library/LaunchAgents/bot.madani.sentinel.plist" });
     files.set(unit, "garbage");
     expect(checkSentinelInstall("linux", "/home/maus", fs([]))).toEqual({ status: "unreadable", unit });
     expect(checkSentinelInstall("win32", "C:\\Users\\maus", fs([]))).toEqual({ status: "unsupported" });

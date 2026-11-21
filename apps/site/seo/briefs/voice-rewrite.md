@@ -1,6 +1,6 @@
-You are rewriting existing SEO page records for dusk.bot in a new voice and adding useful blocks. An editor wrote the exemplars by hand and will reject anything that reads like a manual or like AI filler.
+You are rewriting existing SEO page records for madani.bot in a new voice and adding useful blocks. An editor wrote the exemplars by hand and will reject anything that reads like a manual or like AI filler.
 
-READ FIRST, fully: seo/WRITING.md (especially "voice" and "blocks that make a page useful"); seo/facts/dusk.md (the ONLY Dusk Bot claims allowed); and the hand-written exemplar for each page's type:
+READ FIRST, fully: seo/WRITING.md (especially "voice" and "blocks that make a page useful"); seo/facts/madani.md (the ONLY Madani Bot claims allowed); and the hand-written exemplar for each page's type:
 - pillar: seo/pages/pillar/agents-when-laptop-closed.json
 - guide: seo/pages/guide/is-it-safe-to-let-ai-control-your-computer.json
 - alternative, comparison: seo/pages/alternative/openclaw.json
@@ -11,7 +11,7 @@ READ FIRST, fully: seo/WRITING.md (especially "voice" and "blocks that make a pa
 - routine: seo/pages/routine/weekly-calendar-preview.json
 - glossary: seo/pages/glossary/always-on-ai-agent.json
 - tool: seo/pages/tool/always-on-cost.json
-Compare an exemplar's old version (git show HEAD:sites/dusk/<path>) with its current file to see exactly what "rewritten" means.
+Compare an exemplar's old version (git show HEAD:sites/madani/<path>) with its current file to see exactly what "rewritten" means.
 
 FOR EACH FILE IN YOUR LIST:
 1. Rewrite every prose field (answer, what, intro, sections md, uses, steps, watch, cannot, asks, method, verdict items, safeguards, knobs, fails, faq answers, day/pack text, routine intros) in the new voice: point first in bold, then 2 to 4 short lines; short active sentences (average under 17 words); paragraphs under 60 words; bullets for lists; any maths in a ```text block; real pains and honest trade-offs; plain words a non-technical person gets; lowercase body. Keep title/description sentence case, 30-65 and 70-160 chars.

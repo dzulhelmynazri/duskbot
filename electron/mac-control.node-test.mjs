@@ -10,7 +10,7 @@ import { createMacExecutor, folderName, jobSummary, macLogFile, resolveMacPath }
 const job = (tool, args = {}, extra = {}) => ({ id: `job-${tool}`, tool, arguments: args, bot: { id: "b1", name: "Nova" }, expiresAt: Date.now() + 60_000, ...extra });
 
 function scratchHome(t) {
-  const home = realpathSync(mkdtempSync(path.join(tmpdir(), "dusk-mac-home-")));
+  const home = realpathSync(mkdtempSync(path.join(tmpdir(), "madani-mac-home-")));
   t.after(() => rmSync(home, { recursive: true, force: true }));
   return home;
 }
@@ -21,7 +21,7 @@ test("paths start at the home folder and a bot's name makes one safe folder", ()
   assert.equal(resolveMacPath("notes.txt", "/Users/me"), "/Users/me/notes.txt");
   assert.equal(resolveMacPath("/tmp/a/../b", "/Users/me"), "/tmp/b");
   assert.equal(folderName("../Nova/Bot"), "-Nova-Bot");
-  assert.equal(folderName(""), "Dusk");
+  assert.equal(folderName(""), "Madani");
 });
 
 test("the log line names the command or the paths, never what is written", () => {
@@ -110,7 +110,7 @@ test("a server that refuses this session is asked again only much later", async 
   const waits = [];
   let asked = 0;
   const host = createMacControlHost({
-    fetch: async () => { asked += 1; return Response.json({ error: "Only the owner's own dusk bot app on their Mac can serve this server's bots." }, { status: 403 }); },
+    fetch: async () => { asked += 1; return Response.json({ error: "Only the owner's own madani bot app on their Mac can serve this server's bots." }, { status: 403 }); },
     name: () => "Mac", execute: async () => ({ ok: true, result: { text: "" } }), log: () => {},
     wait: async (ms, signal) => { waits.push(ms); if (waits.length > 1) await new Promise((resolve) => signal.addEventListener("abort", resolve, { once: true })); },
   });

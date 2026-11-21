@@ -4,17 +4,17 @@ import { fileURLToPath } from "node:url";
 import { afterAll, describe, expect, it } from "vitest";
 import { resolveAgentBrowserBinary } from "../../server/browser-engine.ts";
 import { waitForExit } from "../../server/testing/cleanup.ts";
-import { runControlDusk } from "../control-dusk.ts";
+import { runControlMadani } from "../control-madani.ts";
 import { request } from "../mcp-server.ts";
-import { UI_TOOLS_DIR } from "./control-dusk-ui.ts";
+import { UI_TOOLS_DIR } from "./control-madani-ui.ts";
 import { openTemplatesWhenFree } from "./grok-templates.ts";
 
 const ROOT = fileURLToPath(new URL("../..", import.meta.url));
 const binary = resolveAgentBrowserBinary({ dataDir: UI_TOOLS_DIR, env: process.env });
-const forced = process.env.DUSK_UI_E2E === "1";
+const forced = process.env.MADANI_UI_E2E === "1";
 const enabled = forced || Boolean(binary);
 const launchTimeout = forced && !binary ? 600_000 : 180_000;
-if (!enabled) console.log("skipping template UI e2e: set DUSK_UI_E2E=1 to install the pinned browser");
+if (!enabled) console.log("skipping template UI e2e: set MADANI_UI_E2E=1 to install the pinned browser");
 
 describe("additive template imports in the real renderer", () => {
   let child: ChildProcess | undefined;
@@ -24,7 +24,7 @@ describe("additive template imports in the real renderer", () => {
     let stdout = "";
     let stderr = "";
     let info: { ui: string; url: string; botId: string; logPath: string };
-    child = spawn(process.execPath, ["--experimental-strip-types", join(ROOT, "scripts/control-dusk.ts"), "ui", "launch"], {
+    child = spawn(process.execPath, ["--experimental-strip-types", join(ROOT, "scripts/control-madani.ts"), "ui", "launch"], {
       cwd: ROOT, env: process.env, stdio: ["ignore", "pipe", "pipe"],
     });
     child.stdout!.on("data", (chunk: Buffer) => { stdout += String(chunk); });
@@ -34,12 +34,12 @@ describe("additive template imports in the real renderer", () => {
       if (child!.exitCode !== null || child!.signalCode !== null) throw new Error(`UI launcher exited: ${stderr}`);
       try { info = JSON.parse(stdout); return Boolean(info.ui); } catch { return false; }
     }, { timeout: launchTimeout, interval: 250 }).toBe(true);
-    const ui = (verb: string, ...args: string[]) => runControlDusk(["ui", verb, "--ui", info.ui, ...args]) as Promise<Record<string, any>>;
+    const ui = (verb: string, ...args: string[]) => runControlMadani(["ui", verb, "--ui", info.ui, ...args]) as Promise<Record<string, any>>;
     const evaluate = async (js: string) => (await ui("eval", "--js", js)).result;
     const click = (name: string) => ui("click", "--name", name);
     const snapshot = async () => (await ui("snapshot")).snapshot as string;
     const api = (path: string, method = "GET", body?: unknown) => request(path, { method, ...(body === undefined ? {} : { body: JSON.stringify(body) }) }, info.url);
-    const control = (...args: string[]) => runControlDusk([...args, "--url", info.url]);
+    const control = (...args: string[]) => runControlMadani([...args, "--url", info.url]);
     await api(`/api/bots/${info!.botId}`, "PATCH", { section: "Existing work", chiefOfStaff: true });
     await control("new-bot", "--name", "Personal helper", "--section", "Personal");
     await control("send", "--bot", info!.botId, "--text", "Keep this original conversation after importing templates.");
@@ -48,7 +48,7 @@ describe("additive template imports in the real renderer", () => {
     // Viewing a chat marks it read at any moment; an import must leave everything else as it was.
     const withoutReadState = (value: unknown) => JSON.parse(JSON.stringify(value, (key, field) => key === "unread" || key === "lastReadMessageId" ? undefined : field));
     const transcript = await control("messages", "--bot", info!.botId, "--limit", "10");
-    const manifest = { format: "dusk.team", version: 2, team: { name: "Sales crew", members: [
+    const manifest = { format: "madani.team", version: 2, team: { name: "Sales crew", members: [
       { key: "researcher", name: "Lead finder", appearance: { color: "cyan" } },
       { key: "writer", name: "Outreach writer", appearance: { color: "purple" } },
     ] } };
@@ -60,7 +60,7 @@ describe("additive template imports in the real renderer", () => {
       window.fetch = (input, init) => {
         const path = String(input);
         const reply = value => Promise.resolve(new Response(JSON.stringify(value), { headers: { 'content-type': 'application/json' } }));
-        if (path === '/api/team-library/catalog') return reply({ format: 'dusk.catalog', version: 1, repositoryUrl: '', teams: [{ slug: 'sales', name: 'Sales crew', summary: 'Fixture template', category: 'Sales', members: 2, skills: [], requires: { apps: [] } }] });
+        if (path === '/api/team-library/catalog') return reply({ format: 'madani.catalog', version: 1, repositoryUrl: '', teams: [{ slug: 'sales', name: 'Sales crew', summary: 'Fixture template', category: 'Sales', members: 2, skills: [], requires: { apps: [] } }] });
         if (path === '/api/team-library/teams/sales') return reply(window.templateFixture);
         return originalFetch(input, init);
       };
@@ -87,7 +87,7 @@ describe("additive template imports in the real renderer", () => {
       expect(await snapshot()).toContain('button "Existing work"');
       expect(await snapshot()).toContain('button "Personal"');
     }
-    const evidence = join(ROOT, ".dusk-scratch", "verify-evidence", "template-import-sections.png");
+    const evidence = join(ROOT, ".madani-scratch", "verify-evidence", "template-import-sections.png");
     await ui("screenshot", "--out", evidence);
     process.stdout.write(`${JSON.stringify({ fixture: info!, screenshot: evidence, libraryAndFileImports: true, originalConversationUnchanged: true })}\n`);
   }, launchTimeout + 120_000);

@@ -13,15 +13,15 @@ vi.mock("@/components/Avatar", () => ({ MausAvatar: () => createElement("span") 
 let host: HTMLDivElement, root: Root | null;
 let platform: MobilePlatform, secrets: Map<string, string>, prefs: Map<string, string>, listener: ((url: string) => boolean) | undefined, resume: (() => void) | undefined;
 let fetcher: ReturnType<typeof vi.fn<typeof fetch>>;
-const origin = "https://dusk.bot";
+const origin = "https://madani.bot";
 const account = { id: "person", email: "person@example.com" };
 const token = `omc_${"t".repeat(43)}`;
 const response = (value: unknown, status = 200) => new Response(JSON.stringify(value), { status });
 beforeEach(() => {
   host = document.createElement("div"); document.body.append(host); root = null;
-  setLocale("en"); window.history.replaceState({}, "", "/"); vi.stubEnv("VITE_DUSK_ALLOW_SIGNED_OUT", ""); vi.stubEnv("VITE_DUSK_ACCOUNT_ORIGIN", "");
+  setLocale("en"); window.history.replaceState({}, "", "/"); vi.stubEnv("VITE_MADANI_ALLOW_SIGNED_OUT", ""); vi.stubEnv("VITE_MADANI_ACCOUNT_ORIGIN", "");
   // an install launched before: a new one waits for the service before it shows a kept sign-in
-  secrets = new Map(); prefs = new Map([["dusk.mobile.installed", "1"]]); listener = undefined; resume = undefined;
+  secrets = new Map(); prefs = new Map([["madani.mobile.installed", "1"]]); listener = undefined; resume = undefined;
   platform = { ...webPlatform(), native: true, kind: "ios", secrets: {
     get: async key => secrets.get(key) ?? null, set: async (key, value) => { secrets.set(key, value); }, remove: async key => { secrets.delete(key); },
   }, prefs: { get: async key => prefs.get(key) ?? null, set: async (key, value) => { prefs.set(key, value); }, remove: async key => { prefs.delete(key); } },
@@ -38,7 +38,7 @@ const gate = (children: ReactNode = createElement(Probe)) => createElement(Platf
 const mount = (children?: ReactNode, strict = false) => act(async () => {
   root = createRoot(host); root.render(strict ? createElement(StrictMode, null, gate(children)) : gate(children));
 });
-const heading = () => expect(host.querySelector("h1")?.textContent).toBe("Log in to dusk bot");
+const heading = () => expect(host.querySelector("h1")?.textContent).toBe("Log in to madani bot");
 const type = (selector: string, value: string) => act(async () => {
   const field = host.querySelector<HTMLInputElement>(selector)!;
   Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "value")!.set!.call(field, value);
@@ -47,7 +47,7 @@ const type = (selector: string, value: string) => act(async () => {
 const typeEmail = () => type("input[type=email]", account.email);
 const submit = () => act(async () => { host.querySelector("form")!.dispatchEvent(new Event("submit", { bubbles: true, cancelable: true })); });
 
-const save = () => secrets.set("dusk.account", JSON.stringify({ origin, token, expiresAt: Date.now() + 60_000, account, deviceId: "phone" }));
+const save = () => secrets.set("madani.account", JSON.stringify({ origin, token, expiresAt: Date.now() + 60_000, account, deviceId: "phone" }));
 const signedIn = `workspace ${account.email}`;
 
 it("never blocks the native app: signed out, the app shows and the sign-in is something to open", async () => {
@@ -62,7 +62,7 @@ it("passes through browser children and offers no account unless the development
   await mount(createElement(Offered)); expect(host.textContent).toBe("false");
 });
 it("honors the native signed-out development override", () => {
-  vi.stubEnv("VITE_DUSK_ALLOW_SIGNED_OUT", "1"); expect(renderToStaticMarkup(gate(createElement("p", null, "workspace")))).toBe("<p>workspace</p>");
+  vi.stubEnv("VITE_MADANI_ALLOW_SIGNED_OUT", "1"); expect(renderToStaticMarkup(gate(createElement("p", null, "workspace")))).toBe("<p>workspace</p>");
 });
 it("restores an account and provides its identity through context", async () => {
   save(); fetcher.mockResolvedValue(response({}));
@@ -83,7 +83,7 @@ it("a new install shows a sign-in the Keychain kept only once the service says i
   await mount(); expect(host.textContent).not.toContain("workspace");
   await act(async () => { answer(response({})); });
   expect(host.textContent).toBe(signedIn);
-  expect(prefs.get("dusk.mobile.installed")).toBe("1");
+  expect(prefs.get("madani.mobile.installed")).toBe("1");
 });
 it("stays signed in when the app comes back and the service is down", async () => {
   save(); fetcher.mockResolvedValue(response({}));
@@ -101,13 +101,13 @@ it("signs out back to signed-out", async () => {
   await mount(createElement(Child));
   expect(host.querySelector("button")?.textContent).toBe("leave");
   await act(async () => host.querySelector("button")!.click());
-  expect(host.textContent).toBe("signed out"); expect(secrets.has("dusk.account")).toBe(false);
+  expect(host.textContent).toBe("signed out"); expect(secrets.has("madani.account")).toBe(false);
 });
 it("handles auth links, leaves pairing links to ConnectionGate and says why a sign-in failed", async () => {
   fetcher.mockResolvedValue(response({ v: 1, providers: [], signupOpen: true }));
   const closeBrowser = vi.fn(); platform.closeBrowser = closeBrowser;
-  await mount(); heading(); expect(listener?.("duskbot://pair?code=abc")).toBe(false); expect(closeBrowser).not.toHaveBeenCalled();
-  await act(async () => { expect(listener?.("duskbot://auth?code=abc&state=bad")).toBe(true); });
+  await mount(); heading(); expect(listener?.("madanibot://pair?code=abc")).toBe(false); expect(closeBrowser).not.toHaveBeenCalled();
+  await act(async () => { expect(listener?.("madanibot://auth?code=abc&state=bad")).toBe(true); });
   expect(closeBrowser).toHaveBeenCalledOnce();
   expect(host.querySelector("[role=alert]")?.textContent).toContain("This sign-in expired. Please start again.");
 });
@@ -164,33 +164,33 @@ it("the sign-in screen links the terms and the privacy policy", async () => {
   await mount();
   expect(buttons()).toEqual(expect.arrayContaining(["Terms of use", "Privacy policy"]));
   await act(async () => { [...host.querySelectorAll("button")].find(button => button.textContent === "Privacy policy")!.click(); });
-  expect(platform.openExternal).toHaveBeenCalledWith("https://dusk.bot/privacy");
+  expect(platform.openExternal).toHaveBeenCalledWith("https://madani.bot/privacy");
 });
 it("an account signed out or deleted elsewhere is dropped when the app comes back", async () => {
   save(); fetcher.mockResolvedValue(response({}));
   await mount(); expect(host.textContent).toBe(signedIn);
   fetcher.mockResolvedValue(response({ error: "invalid_token" }, 401));
   await act(async () => { resume?.(); await new Promise(resolve => setTimeout(resolve, 0)); });
-  heading(); expect(secrets.has("dusk.account")).toBe(false);
+  heading(); expect(secrets.has("madani.account")).toBe(false);
 });
 it("a resume while the service cannot be reached keeps the account", async () => {
   save(); fetcher.mockResolvedValue(response({}));
   await mount();
   fetcher.mockRejectedValue(new TypeError("offline"));
   await act(async () => { resume?.(); await new Promise(resolve => setTimeout(resolve, 0)); });
-  expect(host.textContent).toBe(signedIn); expect(secrets.has("dusk.account")).toBe(true);
+  expect(host.textContent).toBe(signedIn); expect(secrets.has("madani.account")).toBe(true);
 });
 
 it("allows only bare safe origins in the development query", () => {
   for (const value of ["http://127.0.0.1:9000", "http://localhost:3000", "http://[::1]:9000", "https://fixture.example"]) expect(mobileAccountOrigin(false, new URLSearchParams({ accountOrigin: value }))).toBe(value);
   for (const value of ["http://example.com", "https://example.com/path", "https://u:p@example.com", "file:///tmp/a", "https://example.com?x=1"]) expect(mobileAccountOrigin(false, new URLSearchParams({ accountOrigin: value }))).toBe(origin);
   expect(mobileAccountOrigin(true, new URLSearchParams({ accountOrigin: "https://fixture.example" }))).toBe(origin);
-  vi.stubEnv("VITE_DUSK_ACCOUNT_ORIGIN", "https://configured.example"); expect(mobileAccountOrigin(true, new URLSearchParams())).toBe("https://configured.example");
+  vi.stubEnv("VITE_MADANI_ACCOUNT_ORIGIN", "https://configured.example"); expect(mobileAccountOrigin(true, new URLSearchParams())).toBe("https://configured.example");
 });
 
 it("finishes a cold-launch auth link through StrictMode effect replay", async () => {
-  secrets.set("dusk.account.pending", JSON.stringify({ verifier: "v".repeat(43), state: "state", provider: "google", at: Date.now(), origin }));
-  let launch: string | null = "duskbot://auth?code=abc&state=state";
+  secrets.set("madani.account.pending", JSON.stringify({ verifier: "v".repeat(43), state: "state", provider: "google", at: Date.now(), origin }));
+  let launch: string | null = "madanibot://auth?code=abc&state=state";
   platform.onAppUrl = cb => { if (launch && cb(launch)) launch = null; return () => {}; };
   const closeBrowser = vi.fn(); platform.closeBrowser = closeBrowser;
   fetcher.mockResolvedValue(response({ cloudContractVersion: 1, accessToken: token, expiresAt: Date.now() + 60_000, device: { id: "phone" }, account }));

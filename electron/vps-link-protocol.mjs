@@ -609,7 +609,7 @@ export function openResult({ id, priv, pub, vpsPub, sealed }) {
     && (value.mode === "relay" || (typeof value.origin === "string" && /^https:\/\/[a-z0-9.-]+$/.test(value.origin)
       // tailscale and cloudflare hold their own certificates and change their keys: those addresses alone go unpinned
       && (typeof value.spki === "string" || (value.spki === null && UNPINNED_VIAS.has(value.via)))));
-  if (!ok) throw new Error("The server's answer was not one this app understands. Update dusk bot and try again.");
+  if (!ok) throw new Error("The server's answer was not one this app understands. Update madani bot and try again.");
   return { ...value, name: typeof value.name === "string" && value.name.trim() ? value.name.trim().slice(0, 60) : "My server" };
 }
 
@@ -686,7 +686,7 @@ function clampedDial(host, port) {
  * its own; while the direct path is up the agent dials over that instead, in the direct writer's lane.
  */
 /** Answered by the app's own proxy, never sent to the server: { iceServers } for src/lib/screen-direct.ts. */
-export const SCREEN_ICE_PATH = "/__dusk/screen-ice";
+export const SCREEN_ICE_PATH = "/__madani/screen-ice";
 
 async function answerScreenIce(res, screenIce, link) {
   const iceServers = await Promise.resolve(screenIce?.()).catch(() => null);
@@ -1146,7 +1146,7 @@ export function createTunnelProxy({ base, id, route: givenRoute = null, key: key
         if (res.headersSent) return;
         eventStream = /^text\/event-stream\b/i.test(String(out["content-type"] ?? ""));
         const validator = typeof out.etag === "string" && !out.etag.startsWith("W/") ? out.etag : typeof out["last-modified"] === "string" ? out["last-modified"] : null;
-        const total = Number(out["x-dusk-length"] ?? out["content-length"]);
+        const total = Number(out["x-madani-length"] ?? out["content-length"]);
         if (req.method === "GET" && status === 200 && !headers.range && /\bbytes\b/i.test(String(out["accept-ranges"] ?? "")) && validator && Number.isSafeInteger(total) && total > 0) resumable = { validator, total };
         res.writeHead(status, out);
         res.flushHeaders?.();
@@ -1172,7 +1172,7 @@ export function createTunnelProxy({ base, id, route: givenRoute = null, key: key
     });
     waiting.set(r, entry(null));
     touch();
-    // the trail: which way a request that names itself (x-dusk-trail), a chat stream, a download or an upload went
+    // the trail: which way a request that names itself (x-madani-trail), a chat stream, a download or an upload went
     const first = waiting.get(r), startedAt = Date.now(), firstVia = viaName(first.via), cid = validTrailId(req.headers[TRAIL_HEADER]) ? req.headers[TRAIL_HEADER] : undefined;
     const upload = Number(req.headers["content-length"]) > 1_000_000;
     res.on("close", () => {

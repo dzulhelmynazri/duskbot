@@ -16,7 +16,7 @@ const { version } = JSON.parse(
 ) as { version: string };
 
 const root = fileURLToPath(new URL(".", import.meta.url));
-const workers = Number(process.env.DUSK_VITEST_WORKERS) || 1;
+const workers = Number(process.env.MADANI_VITEST_WORKERS) || 1;
 const page = (file: string) => fileURLToPath(new URL(file, import.meta.url));
 
 /** The desktop window's other pages live in src/windows/ but are served and built at the top, where the server, the
@@ -121,13 +121,13 @@ export default defineConfig({
   },
   // per checkout: a worktree links the same node_modules, and a second dev server rewriting node_modules/.vite under a
   // running one makes that window's later imports (the screen viewer) fail until it restarts
-  cacheDir: fileURLToPath(new URL("./.dusk-scratch/vite", import.meta.url)),
+  cacheDir: fileURLToPath(new URL("./.madani-scratch/vite", import.meta.url)),
   // the screen viewer's dependency is bundled at start: found later, Vite re-bundles and fails the import in flight
   optimizeDeps: { include: ["@novnc/novnc"] },
   test: {
     environment: "node",
     include,
-    // DUSK_VITEST_E2E=host (CI's Windows and macOS shards) leaves the e2e files that run on Linux only.
+    // MADANI_VITEST_E2E=host (CI's Windows and macOS shards) leaves the e2e files that run on Linux only.
     exclude: [...configDefaults.exclude, ...(hostE2eOnly() ? portableE2eFiles(root, include) : [])],
     setupFiles: ["server/testing/setup.ts", "src/testing/all-locales.ts", "src/testing/quiet-canceled-animations.ts", "src/testing/clear-exit-ghosts.ts"],
     // One file at a time by default: the suite spawns fake provider CLIs and real
@@ -152,10 +152,10 @@ export default defineConfig({
     // IPv4 explicitly — a bare ::1 bind makes localhost a coin-flip for
     // clients that resolve IPv4 first
     host: "127.0.0.1",
-    port: Number(process.env.DUSK_UI_PORT) || 5199,
+    port: Number(process.env.MADANI_UI_PORT) || 5199,
     // the desktop window also runs this dev UI on a server's origin (electron/local-ui.mjs), so the client is told
     // where hot reload lives instead of reaching for the page's host
-    hmr: { protocol: "ws", host: "127.0.0.1", clientPort: Number(process.env.DUSK_UI_PORT) || 5199 },
+    hmr: { protocol: "ws", host: "127.0.0.1", clientPort: Number(process.env.MADANI_UI_PORT) || 5199 },
     // packager output lands inside the repo — its HTML files must never
     // trigger dev full-page reloads
     watch: {
@@ -165,9 +165,9 @@ export default defineConfig({
     // the harness server owns every provider process; the app only ever
     // talks to /api — clients hold no transports
     proxy: {
-      "/api": devApiProxy(process.env.DUSK_PORT || 8799),
-      "/.well-known/duskbot/environment": {
-        target: `http://127.0.0.1:${process.env.DUSK_PORT || 8799}`,
+      "/api": devApiProxy(process.env.MADANI_PORT || 8799),
+      "/.well-known/madanibot/environment": {
+        target: `http://127.0.0.1:${process.env.MADANI_PORT || 8799}`,
       },
     },
   },

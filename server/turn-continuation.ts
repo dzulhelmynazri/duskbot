@@ -8,7 +8,7 @@ import { join } from "node:path";
 const HANDOFFS_KEPT = 5;
 
 export function handoffDir(): string {
-  return join(dataDirFor(process.env.DUSK_DATA_DIR, homedir()), "handoffs");
+  return join(dataDirFor(process.env.MADANI_DATA_DIR, homedir()), "handoffs");
 }
 
 export interface HandoffInput {

@@ -6,7 +6,7 @@ import {
   nextTurnActivity, replyFirstLine, turnActivityEnded, turnActivityStart, TURN_ACTIVITY_DISMISS_S, TURN_LINE_SEAL,
   type TurnActivityAttributes, type TurnActivityEvent, type TurnActivityRegistration, type TurnActivityState,
 } from "../../shared/phone-activity.ts";
-import { duskBody } from "../../shared/body-migration.ts";
+import { madaniBody } from "../../shared/body-migration.ts";
 import type { ActivityPush, PushOutcome } from "./push.ts";
 
 /** ActivityKit ends an activity after eight hours whatever it is told */
@@ -28,7 +28,7 @@ interface Activity extends ActivityTarget {
 }
 
 export function turnActivityAttributes(bot: { id: string; name: string; color: string; mascotBody?: string | null }, threadId: string, groupId?: string): TurnActivityAttributes {
-  return { botId: bot.id, botName: [...bot.name].slice(0, 80).join(""), threadId, ...(groupId ? { groupId } : {}), color: bot.color, body: duskBody(bot.mascotBody) };
+  return { botId: bot.id, botName: [...bot.name].slice(0, 80).join(""), threadId, ...(groupId ? { groupId } : {}), color: bot.color, body: madaniBody(bot.mascotBody) };
 }
 
 /** The reply's first line, readable only with the private half of `key` (X25519, base64url). */

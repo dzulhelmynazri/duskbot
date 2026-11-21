@@ -31,7 +31,7 @@ export function TeamPage() {
   const [removing, setRemoving] = useState<TeamView["members"][number] | null>(null);
   const [adding, setAdding] = useState(false);
   if (team === undefined) return <div className="mx-auto max-w-[720px]"><PageHeader title="team" />{error ? <section><p role="alert" className="text-13 text-bad">could not load your team. {error}</p><Button className="mt-4" size="sm" onClick={load}>retry</Button></section> : <div className="flex flex-col gap-4" aria-busy="true" aria-label="loading team"><Skeleton className="h-28 !rounded-card" /><Skeleton className="h-56 !rounded-card" /></div>}</div>;
-  if (team === null) return <SkyEmpty art="cat" title="you're not in a team." action={<ButtonLink to="/billing" variant="primary">see the team plan</ButtonLink>}>the team plan gives a few people one dusk cloud and the bots on it. someone on it can invite you, or you can start one.</SkyEmpty>;
+  if (team === null) return <SkyEmpty art="cat" title="you're not in a team." action={<ButtonLink to="/billing" variant="primary">see the team plan</ButtonLink>}>the team plan gives a few people one madani cloud and the bots on it. someone on it can invite you, or you can start one.</SkyEmpty>;
   const owner = team.role === "owner", seats = team.seats;
   const held = seats.used + seats.pending, free = Math.max(0, seats.paid - held);
   const act = async (key: string, run: () => Promise<TeamView>, done: string) => {
@@ -97,7 +97,7 @@ export function TeamPage() {
     {team.cloud && <section className="mt-10" aria-labelledby="team-cloud-title">
       <SectionTitle id="team-cloud-title">the team's cloud</SectionTitle>
       <p className="text-14 text-ink-3">{team.cloud.joinable
-        ? `everyone in ${team.name} opens it from the dusk bot app, signed in with the email they joined with. removing someone signs them out of it at once.`
+        ? `everyone in ${team.name} opens it from the madani bot app, signed in with the email they joined with. removing someone signs them out of it at once.`
         : "it was made before it became a team cloud, so members can't open it yet. your own access, its size and your seats are all set."}</p>
     </section>}
     <Modal open={removing !== null} onClose={() => busy === null && setRemoving(null)} title={`remove ${removing?.email ?? ""}?`} footer={<><Button disabled={busy !== null} onClick={() => setRemoving(null)}>cancel</Button><Button variant="danger" disabled={busy !== null} onClick={() => removing && void act("remove", () => teamApi.remove(removing.email), `${removing.email} removed`).then(() => setRemoving(null))}>{busy === "remove" ? "removing" : "remove"}</Button></>}>

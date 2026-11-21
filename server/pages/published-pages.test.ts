@@ -14,9 +14,9 @@ import { PASS } from "../routes/table.ts";
 const SITE = { "index.html": "<!doctype html><h1>Bake sale</h1>", "style.css": "h1{color:red}" };
 let dir: string;
 
-beforeEach(() => { dir = mkdtempSync(join(tmpdir(), "dusk-pages-")); });
+beforeEach(() => { dir = mkdtempSync(join(tmpdir(), "madani-pages-")); });
 afterEach(() => {
-  applyIncludedPagesMessage({ type: "duskbot:included-pages", access: null });
+  applyIncludedPagesMessage({ type: "madanibot:included-pages", access: null });
   rmSync(dir, { recursive: true, force: true });
 });
 
@@ -27,7 +27,7 @@ function writeSite(folder: string, files: Record<string, string> = SITE) {
   }
   return folder;
 }
-const signIn = () => applyIncludedPagesMessage({ type: "duskbot:included-pages", access: { url: FAKE_TOKEN_URL, token: FAKE_DESKTOP_TOKEN } });
+const signIn = () => applyIncludedPagesMessage({ type: "madanibot:included-pages", access: { url: FAKE_TOKEN_URL, token: FAKE_DESKTOP_TOKEN } });
 
 function setup(options: { home?: boolean; quota?: number; selfHosted?: boolean } = {}) {
   const service = fakePagesService({ quota: options.quota });
@@ -45,11 +45,11 @@ function setup(options: { home?: boolean; quota?: number; selfHosted?: boolean }
 }
 
 describe("publishing a page", () => {
-  it("asks the person to sign in to Dusk when this app has no account, and publishes nothing", async () => {
+  it("asks the person to sign in to Madani when this app has no account, and publishes nothing", async () => {
     const f = setup();
     writeSite(join(f.work, "site"));
     const outcome = await f.publish({ path: "site" });
-    expect(outcome).toEqual({ status: 403, text: "Publishing a page needs a dusk bot account. Sign in to dusk bot in the app's Settings, then ask again." });
+    expect(outcome).toEqual({ status: 403, text: "Publishing a page needs a madani bot account. Sign in to madani bot in the app's Settings, then ask again." });
     expect(f.service.minted).toEqual([]);
     expect(f.cards).toEqual([]);
   });
@@ -65,14 +65,14 @@ describe("publishing a page", () => {
 
   it("says publishing isn't turned on yet, never \"sign in\", when this signed-in desktop's Admin offers no pages", async () => {
     const f = setup();
-    applyIncludedPagesMessage({ type: "duskbot:included-pages", access: null, offered: false });
+    applyIncludedPagesMessage({ type: "madanibot:included-pages", access: null, offered: false });
     writeSite(join(f.work, "site"));
     const outcome = await f.publish({ path: "site" });
     expect(outcome.text).toBe("Publishing pages isn't turned on for this account yet.");
     expect(f.service.minted).toEqual([]);
     expect(f.cards).toEqual([]);
-    applyIncludedPagesMessage({ type: "duskbot:included-pages", access: null });
-    expect((await f.publish({ path: "site" })).text).toMatch(/^Publishing a page needs a dusk bot account/u);
+    applyIncludedPagesMessage({ type: "madanibot:included-pages", access: null });
+    expect((await f.publish({ path: "site" })).text).toMatch(/^Publishing a page needs a madani bot account/u);
   });
 
   it("publishes a folder to a new link with a card showing the link and the usage, and remembers it", async () => {
@@ -82,10 +82,10 @@ describe("publishing a page", () => {
     const outcome = await f.publish({ path: "site" });
     expect(outcome.status).toBe(200);
     const [page] = [...f.service.pages.keys()];
-    const url = `https://${page}.page.dusk.bot/`;
+    const url = `https://${page}.page.madani.bot/`;
     expect(outcome.text).toContain(`Published “Bake sale” at ${url}`);
     expect(outcome.text).toContain("This account now has 1 of 5 pages.");
-    expect(outcome.text).toContain("Free pages carry a small “Made with Dusk” badge.");
+    expect(outcome.text).toContain("Free pages carry a small “Made with Madani” badge.");
     expect(f.cards).toEqual([{ threadId: "thread-1", id: "m1", text: `Published “Bake sale”: ${url} (1 of 5 pages)`,
       card: { state: "live", title: "Bake sale", pageId: page, url, usage: { pages: 1, limit: 5 } } }]);
     expect(Object.fromEntries(f.service.pages.get(page!)!.files)).toEqual(SITE);
@@ -101,7 +101,7 @@ describe("publishing a page", () => {
     writeFileSync(join(site, "index.html"), "<h1>Tomorrow's menu</h1>");
     const again = await f.publish({ path: join(site), threadId: "routine-run-2" });
     const [page] = [...f.service.pages.keys()];
-    expect(again.text).toContain(`Updated “Bake sale” at the same link: https://${page}.page.dusk.bot/`);
+    expect(again.text).toContain(`Updated “Bake sale” at the same link: https://${page}.page.madani.bot/`);
     expect(f.service.minted.map((call) => call.action)).toEqual(["create", "update"]);
     expect(f.service.pages.size).toBe(1);
     expect(f.service.pages.get(page!)!.files.get("index.html")).toBe("<h1>Tomorrow's menu</h1>");
@@ -111,7 +111,7 @@ describe("publishing a page", () => {
     await f.publish({ path: "other", pageId: page });
     expect(f.service.minted.at(-1)).toEqual({ action: "update", pageId: page, caller: "desktop" });
     expect(f.service.pages.get(page!)!.files.get("index.html")).toBe("<p>Other</p>");
-    expect(f.cards.map((card) => card.card.url)).toEqual(Array(3).fill(`https://${page}.page.dusk.bot/`));
+    expect(f.cards.map((card) => card.card.url)).toEqual(Array(3).fill(`https://${page}.page.madani.bot/`));
   });
 
   it("gives a folder whose page was unpublished elsewhere a new link instead of failing", async () => {
@@ -135,8 +135,8 @@ describe("publishing a page", () => {
     await f.publish({ path: "one" });
     const refused = await f.publish({ path: "two", title: "Second" });
     expect(refused.status).toBe(402);
-    expect(refused.text).toBe("You’ve used your 1 free pages. dusk cloud gives you more, and pages without the badge. Tell the person this in your reply.");
-    expect(f.cards.at(-1)).toMatchObject({ text: "You’ve used your 1 free pages. dusk cloud gives you more, and pages without the badge.",
+    expect(refused.text).toBe("You’ve used your 1 free pages. madani cloud gives you more, and pages without the badge. Tell the person this in your reply.");
+    expect(f.cards.at(-1)).toMatchObject({ text: "You’ve used your 1 free pages. madani cloud gives you more, and pages without the badge.",
       card: { state: "limit", title: "Second", upgrade: true, plan: "free", usage: { pages: 1, limit: 1 } } });
   });
 
@@ -392,14 +392,14 @@ describe("sharing a chat page from its card", () => {
 
 describe("pages access", () => {
   it("takes only a well-formed pages token for the Admin over https from the desktop", () => {
-    expect(applyIncludedPagesMessage({ type: "duskbot:included-x", access: null })).toBe(false);
-    expect(() => applyIncludedPagesMessage({ type: "duskbot:included-pages", access: { url: "http://cloud.example.test/x", token: FAKE_DESKTOP_TOKEN } })).toThrow();
-    expect(() => applyIncludedPagesMessage({ type: "duskbot:included-pages", access: { url: FAKE_TOKEN_URL, token: "dusk_xd_short" } })).toThrow();
-    expect(applyIncludedPagesMessage({ type: "duskbot:included-pages", access: { url: FAKE_TOKEN_URL, token: FAKE_DESKTOP_TOKEN } })).toBe(true);
+    expect(applyIncludedPagesMessage({ type: "madanibot:included-x", access: null })).toBe(false);
+    expect(() => applyIncludedPagesMessage({ type: "madanibot:included-pages", access: { url: "http://cloud.example.test/x", token: FAKE_DESKTOP_TOKEN } })).toThrow();
+    expect(() => applyIncludedPagesMessage({ type: "madanibot:included-pages", access: { url: FAKE_TOKEN_URL, token: "madani_xd_short" } })).toThrow();
+    expect(applyIncludedPagesMessage({ type: "madanibot:included-pages", access: { url: FAKE_TOKEN_URL, token: FAKE_DESKTOP_TOKEN } })).toBe(true);
   });
 
   it("signs a home's request exactly as the Admin checks it", () => {
-    // The same vector is pinned in dusk-cloud tests/cloud-pages.test.ts.
+    // The same vector is pinned in madani-cloud tests/cloud-pages.test.ts.
     expect(pagesHomeSignature("s".repeat(43), "cm-test-home", "1792670400", "nonce-nonce-nonce-1", '{"action":"create"}')).toBe("smys7kDYS99REKsdwsd9OaXv6pH_hP1Wajaq3KrTiVo");
   });
 });

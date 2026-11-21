@@ -1,6 +1,6 @@
-/* dusk.bot's pixel props outside Settings: they tip over when their group is hovered. */
+/* madani.bot's pixel props outside Settings: they tip over when their group is hovered. */
 @media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
-  .dusk-art { transition: rotate 400ms cubic-bezier(0.34, 1.56, 0.64, 1), translate 400ms cubic-bezier(0.34, 1.56, 0.64, 1); }
-  :is([data-settings-art], [data-art-state], [data-art-hover]):hover .dusk-art { rotate: -6deg; translate: 0 -2px; }
+  .madani-art { transition: rotate 400ms cubic-bezier(0.34, 1.56, 0.64, 1), translate 400ms cubic-bezier(0.34, 1.56, 0.64, 1); }
+  :is([data-settings-art], [data-art-state], [data-art-hover]):hover .madani-art { rotate: -6deg; translate: 0 -2px; }
 }
-:root[data-reduced-motion="true"] .dusk-art { transition: none; rotate: none; translate: none; }
+:root[data-reduced-motion="true"] .madani-art { transition: none; rotate: none; translate: none; }

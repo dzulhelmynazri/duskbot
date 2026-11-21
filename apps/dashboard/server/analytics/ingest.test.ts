@@ -9,7 +9,7 @@ import { memoryMailer } from "../auth/mail.ts";
 import { memorySink } from "./sink.ts";
 import { CSRF_HEADER } from "../../../../shared/account-api.ts";
 
-const ORIGIN = "http://127.0.0.1:7998", SITE = "https://dusk.bot";
+const ORIGIN = "http://127.0.0.1:7998", SITE = "https://madani.bot";
 const ADMIN = "owner@example.test", OTHER = "someone@example.test";
 const SAFARI = "Mozilla/5.0 (Macintosh; Intel Mac OS X 14_5) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Safari/605.1.15";
 const VID = "AbCdEfGhIjKlMnOpQrStUv", SID = "ZyXwVuTsRqPoNmLkJiHgFe";
@@ -21,7 +21,7 @@ describe("site tracker and app ingest", () => {
   let dataDir: string, time: number;
   const csrf = new Map<string, string>();
   beforeEach(() => {
-    dataDir = mkdtempSync(join(tmpdir(), "dusk-ingest-test-"));
+    dataDir = mkdtempSync(join(tmpdir(), "madani-ingest-test-"));
     time = Date.parse("2026-11-12T12:00:00Z");
     sink = memorySink(() => time);
     mailer = memoryMailer();
@@ -53,7 +53,7 @@ describe("site tracker and app ingest", () => {
   }
   const beacon = (body: unknown, headers: Record<string, string> = {}) => fetch(`${url}/v1/t`, { method: "POST", body: typeof body === "string" ? body : JSON.stringify(body),
     headers: { "content-type": "text/plain;charset=UTF-8", origin: SITE, "user-agent": SAFARI, ...headers } });
-  const view = (extra: Record<string, unknown> = {}) => ({ v: 1, e: "pageview", vid: VID, sid: SID, pv: "pv000001", h: "dusk.bot", p: "/pricing", w: 1440, ...extra });
+  const view = (extra: Record<string, unknown> = {}) => ({ v: 1, e: "pageview", vid: VID, sid: SID, pv: "pv000001", h: "madani.bot", p: "/pricing", w: 1440, ...extra });
   async function login(email: string) {
     const start = await fetch(`${url}/v1/auth/start`, { method: "POST", headers: { "content-type": "application/json", origin: ORIGIN }, body: JSON.stringify({ email }) });
     const { attempt } = await start.json() as { attempt: string };
@@ -82,26 +82,26 @@ describe("site tracker and app ingest", () => {
     await settle();
     expect(sink.all).toHaveLength(1);
     expect(sink.all[0]).toMatchObject({ name: "site_view", accountId: null, props: { path: "/pricing" },
-      ctx: { visitor: VID, session: SID, pv: "pv000001", host: "dusk.bot", page: "/pricing", referrer: "chatgpt.com", ref: "x-thread", utm: { campaign: "launch" }, channel: "referral",
+      ctx: { visitor: VID, session: SID, pv: "pv000001", host: "madani.bot", page: "/pricing", referrer: "chatgpt.com", ref: "x-thread", utm: { campaign: "launch" }, channel: "referral",
         device: "desktop", os: "mac", browser: "safari", country: "US", city: "Boston", lat: 42.4, lon: -71.1, width: 1440 } });
     expect(JSON.stringify(sink.all)).not.toContain("a@b.c");
     expect(JSON.stringify(sink.all)).not.toContain("203.0.113.4");
   });
 
-  it("counts dusk.bot visits from the apex and www with no DUSK_TRACK_ORIGINS set, and nothing from other hosts", async () => {
+  it("counts madani.bot visits from the apex and www with no MADANI_TRACK_ORIGINS set, and nothing from other hosts", async () => {
     app.close();
     app = createDashboardApp({ dataDir, publicUrl: SITE, mailer, staticDir: null, now: () => time, trustProxy: true, analytics: { sink }, admin: { emails: [ADMIN], env: {} } });
-    expect((await beacon(view({ p: "/" }), { origin: "https://dusk.bot" })).status).toBe(200);
-    expect((await beacon(view({ p: "/", h: "www.dusk.bot", pv: "pv000002" }), { origin: "https://www.dusk.bot" })).status).toBe(200);
-    expect((await beacon(view({ p: "/" }), { origin: "https://preview.dusk.bot" })).status).toBe(403);
-    expect((await beacon(view({ p: "/", h: "preview.dusk.bot" }), { origin: "https://dusk.bot" })).status).toBe(400);
+    expect((await beacon(view({ p: "/" }), { origin: "https://madani.bot" })).status).toBe(200);
+    expect((await beacon(view({ p: "/", h: "www.madani.bot", pv: "pv000002" }), { origin: "https://www.madani.bot" })).status).toBe(200);
+    expect((await beacon(view({ p: "/" }), { origin: "https://preview.madani.bot" })).status).toBe(403);
+    expect((await beacon(view({ p: "/", h: "preview.madani.bot" }), { origin: "https://madani.bot" })).status).toBe(400);
     await settle();
-    expect(sink.all.filter(event => event.name === "site_view").map(event => event.ctx?.host)).toEqual(["dusk.bot", "www.dusk.bot"]);
+    expect(sink.all.filter(event => event.name === "site_view").map(event => event.ctx?.host)).toEqual(["madani.bot", "www.madani.bot"]);
   });
 
   it("stores goals and page ends, and refuses what it should not count", async () => {
-    await beacon({ v: 1, e: "goal", vid: VID, sid: SID, pv: "pv000001", h: "dusk.bot", p: "/", g: "cta_click", m: { to: "/dashboard/signup", from: "/" } });
-    await beacon({ v: 1, e: "leave", vid: VID, sid: SID, pv: "pv000001", h: "dusk.bot", p: "/", s: 140, t: 5200.4 });
+    await beacon({ v: 1, e: "goal", vid: VID, sid: SID, pv: "pv000001", h: "madani.bot", p: "/", g: "cta_click", m: { to: "/dashboard/signup", from: "/" } });
+    await beacon({ v: 1, e: "leave", vid: VID, sid: SID, pv: "pv000001", h: "madani.bot", p: "/", s: 140, t: 5200.4 });
     expect((await beacon({ ...view(), e: "goal", g: "Bad Goal" })).status).toBe(400);
     expect((await beacon(view(), { origin: "https://evil.example" })).status).toBe(403);
     expect((await beacon(view({ h: "evil.example" }))).status).toBe(400);
@@ -115,12 +115,12 @@ describe("site tracker and app ingest", () => {
   });
 
   it("lowercases goal context and drops metadata outside the catalogue", async () => {
-    expect((await beacon(view({ e: "goal", g: "click", m: { section: "Hero_Intro", label: "Get_Dusk", value: "MAC", to: "/Download?email=private@example.com", email: "private@example.com" } }))).status).toBe(200);
+    expect((await beacon(view({ e: "goal", g: "click", m: { section: "Hero_Intro", label: "Get_Madani", value: "MAC", to: "/Download?email=private@example.com", email: "private@example.com" } }))).status).toBe(200);
     await beacon(view({ e: "goal", g: "click", m: { section: "bad section", label: "private@example.com", value: "a".repeat(41) } }));
     await beacon(view({ e: "goal", g: "click", m: { section: 42, label: ["array"], value: { nested: "never" } } }));
     await settle();
     expect(sink.all.map(event => event.props)).toEqual([
-      { goal: "click", to: "/download", section: "hero_intro", label: "get_dusk", value: "mac" }, { goal: "click" }, { goal: "click" },
+      { goal: "click", to: "/download", section: "hero_intro", label: "get_madani", value: "mac" }, { goal: "click" }, { goal: "click" },
     ]);
     expect(JSON.stringify(sink.all)).not.toContain("private@example.com");
   });
@@ -136,7 +136,7 @@ describe("site tracker and app ingest", () => {
     expect(sink.all.map(event => [event.name, event.props])).toEqual([
       ["site_section", { path: "/pricing", section: "hero", ms: 301 }], ["site_section", { path: "/pricing", section: "pricing", ms: 0 }], ["site_section", { path: "/pricing", section: "footer", ms: 86_400_000 }],
     ]);
-    for (const event of sink.all) expect(event.ctx).toMatchObject({ visitor: VID, session: SID, pv: "pv000001", host: "dusk.bot", page: "/pricing" });
+    for (const event of sink.all) expect(event.ctx).toMatchObject({ visitor: VID, session: SID, pv: "pv000001", host: "madani.bot", page: "/pricing" });
     expect((await beacon(JSON.stringify(view({ e: "sections", l: [["infinite", 1]] })).replace('["infinite",1]', '["infinite",1e999]'))).status).toBe(200);
     await settle();
     expect(sink.all).toHaveLength(3);
@@ -161,7 +161,7 @@ describe("site tracker and app ingest", () => {
       expect(first.status).toBe(200);
       expect(await first.json()).toEqual({ persist: false });
       await beacon(view({ vid: "AAAAAAAAAAAAAAAAAAAAAA", sid: "BBBBBBBBBBBBBBBBBBBBBB", pv: "pv000002", p: "/docs" }), EU);
-      await beacon({ v: 1, e: "leave", vid: VID, sid: SID, pv: "pv000002", h: "dusk.bot", p: "/docs", s: 50, t: 1000 }, EU);
+      await beacon({ v: 1, e: "leave", vid: VID, sid: SID, pv: "pv000002", h: "madani.bot", p: "/docs", s: 50, t: 1000 }, EU);
       await settle();
       const [a, b, c] = sink.all.map(event => event.ctx!);
       expect(a!.visitor).toMatch(/^[A-Za-z0-9_-]{22}$/);
@@ -193,7 +193,7 @@ describe("site tracker and app ingest", () => {
     it("still links the day's visitor to the account that signs in", async () => {
       await beacon(view(), EU);
       const cookie = await login(OTHER);
-      await fetch(`${url}/v1/events`, { method: "POST", headers: { "content-type": "application/json", origin: ORIGIN, "user-agent": SAFARI, ...EU, cookie: `${cookie}; dusk_vid=${VID}`, [CSRF_HEADER]: csrf.get(cookie)! },
+      await fetch(`${url}/v1/events`, { method: "POST", headers: { "content-type": "application/json", origin: ORIGIN, "user-agent": SAFARI, ...EU, cookie: `${cookie}; madani_vid=${VID}`, [CSRF_HEADER]: csrf.get(cookie)! },
         body: JSON.stringify({ visitor: VID, events: [{ name: "page_view", props: { path: "/" } }] }) });
       await settle();
       const visitor = sink.all.find(event => event.name === "site_view")!.ctx!.visitor;
@@ -239,7 +239,7 @@ describe("site tracker and app ingest", () => {
 
   it("links a site visitor to the account that signs in on the same domain, once", async () => {
     const cookie = await login(OTHER);
-    for (let n = 0; n < 2; n++) await fetch(`${url}/v1/events`, { method: "POST", headers: { "content-type": "application/json", origin: ORIGIN, cookie: `${cookie}; dusk_vid=${VID}`, [CSRF_HEADER]: csrf.get(cookie)! },
+    for (let n = 0; n < 2; n++) await fetch(`${url}/v1/events`, { method: "POST", headers: { "content-type": "application/json", origin: ORIGIN, cookie: `${cookie}; madani_vid=${VID}`, [CSRF_HEADER]: csrf.get(cookie)! },
       body: JSON.stringify({ events: [{ name: "page_view", props: { path: "/" } }] }) });
     await settle();
     const id = app.auth.accountByEmail(OTHER)!.id;
@@ -250,7 +250,7 @@ describe("site tracker and app ingest", () => {
 
   it("takes app usage anonymously, then identifies the install when the app signs in", async () => {
     const install = "inst_0123456789abcdef";
-    const send = (body: unknown, token?: string) => fetch(`${url}/v1/app/events`, { method: "POST", headers: { "content-type": "application/json", origin: "app://dusk", ...(token ? { authorization: `Bearer ${token}` } : {}) }, body: JSON.stringify(body) });
+    const send = (body: unknown, token?: string) => fetch(`${url}/v1/app/events`, { method: "POST", headers: { "content-type": "application/json", origin: "app://madani", ...(token ? { authorization: `Bearer ${token}` } : {}) }, body: JSON.stringify(body) });
     const events = [{ name: "app_open", props: { kind: "desktop", platform: "darwin", appVersion: "0.3.0" } }, { name: "app_screen", props: { screen: "/bots/ws_abcdefghijk" } },
       { name: "app_messages", props: { sent: 3, replies: 3, latencyMs: 1800, text: "never" } }, { name: "signup" }, { name: "app_feature", props: { feature: "rm_rf" } }];
     const anon = await send({ install, platform: "darwin", version: "0.3.0", session: "sess_0123456789abcdef", events });
@@ -278,7 +278,7 @@ describe("site tracker and app ingest", () => {
       action({ step: "returned", method: "apple", via: "browser" }), action({ step: "cancelled", method: "email", via: "link" }), action({ step: "skipped" }),
       action({ step: "error", method: "email", via: "code", code: "wrong_code" }),
       action({ step: "error", method: "email", code: "failed", email: "someone@example.test" }), action({ step: "error", code: "tok_abc123" }), action({ step: "teleported" })];
-    const answer = await fetch(`${url}/v1/app/events`, { method: "POST", headers: { "content-type": "application/json", origin: "app://dusk" }, body: JSON.stringify({ install, platform: "darwin", version: "0.3.0", events }) });
+    const answer = await fetch(`${url}/v1/app/events`, { method: "POST", headers: { "content-type": "application/json", origin: "app://madani" }, body: JSON.stringify({ install, platform: "darwin", version: "0.3.0", events }) });
     expect(answer.status).toBe(204);
     await settle();
     expect(sink.all.map(event => [event.name, event.props])).toEqual([

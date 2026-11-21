@@ -12,7 +12,7 @@ const KID = /^[a-z0-9][a-z0-9-]{0,31}$/, B64URL = /^[A-Za-z0-9_-]+$/;
 
 /** Extra keys for a development build only: `kid:x,kid:x`. A packaged app trusts the pinned keys alone. */
 export function entitlementKeys(env = process.env, packaged = true) {
-  const extra = packaged ? [] : String(env.DUSK_ENTITLEMENT_DEV_KEYS ?? "").split(",").map((item) => item.trim().split(":"))
+  const extra = packaged ? [] : String(env.MADANI_ENTITLEMENT_DEV_KEYS ?? "").split(",").map((item) => item.trim().split(":"))
     .filter(([kid, x]) => kid && x && KID.test(kid) && B64URL.test(x)).map(([kid, x]) => ({ kid, x }));
   return [...PINNED_ENTITLEMENT_KEYS, ...extra];
 }

@@ -90,7 +90,7 @@ async function screenCalls(server: AgentsIntegration, count: number): Promise<Ar
   const calls: Array<{ ms: number; state: unknown }> = [];
   for (let call = 0; call < count; call += 1) {
     const at = Date.now();
-    const response = await fetch(server.env.DUSK_CONTROL_URL!, { headers: { authorization: `Bearer ${server.env.DUSK_CONTROL_TOKEN}` } });
+    const response = await fetch(server.env.MADANI_CONTROL_URL!, { headers: { authorization: `Bearer ${server.env.MADANI_CONTROL_TOKEN}` } });
     calls.push({ ms: Date.now() - at, state: response.ok ? await response.json() : { status: response.status } });
   }
   return calls;
@@ -105,12 +105,12 @@ export async function runRoomHandoffAgent(argv: string[], planPath: string, prom
   progress?: (text: string) => void, steered: () => readonly string[] = () => []): Promise<string> {
   const arg = (flag: string) => argv[argv.indexOf(flag) + 1];
   const mounted = launch ? [] : Object.values(JSON.parse(readAtLaunch(arg("--mcp-config"))).mcpServers as Record<string, AgentsIntegration>);
-  // With a tool selection every server sits behind the gate, which names its upstream in DUSK_GATE_UPSTREAM.
+  // With a tool selection every server sits behind the gate, which names its upstream in MADANI_GATE_UPSTREAM.
   const agentEnv = (server: AgentsIntegration): Record<string, string> => {
-    if (server.env?.DUSK_COMMS_TOKEN || server.env?.DUSK_BOT_ID) return server.env;
-    try { return (JSON.parse(server.env?.DUSK_GATE_UPSTREAM ?? "") as AgentsIntegration).env ?? {}; } catch { return {}; }
+    if (server.env?.MADANI_COMMS_TOKEN || server.env?.MADANI_BOT_ID) return server.env;
+    try { return (JSON.parse(server.env?.MADANI_GATE_UPSTREAM ?? "") as AgentsIntegration).env ?? {}; } catch { return {}; }
   };
-  const integration = launch?.integration ?? mounted.find(s => agentEnv(s).DUSK_COMMS_TOKEN) ?? mounted.find(s => agentEnv(s).DUSK_BOT_ID);
+  const integration = launch?.integration ?? mounted.find(s => agentEnv(s).MADANI_COMMS_TOKEN) ?? mounted.find(s => agentEnv(s).MADANI_BOT_ID);
   if (!integration) {
     // `${planPath}.gates.json` [{ promptIncludes, gateFile }] holds a delegated reply until its gate exists.
     const gatesPath = `${planPath}.gates.json`;
@@ -128,7 +128,7 @@ export async function runRoomHandoffAgent(argv: string[], planPath: string, prom
     return `Handled without teammate tools: ${taskText}`;
   }
   const agent = agentEnv(integration);
-  const botId = agent.DUSK_BOT_ID;
+  const botId = agent.MADANI_BOT_ID;
   const launchNote = splitLaunchNote(prompt);
   prompt = launchNote.prompt;
   const launchSystem = launch?.system ?? readAtLaunch(arg("--append-system-prompt-file"));
@@ -149,7 +149,7 @@ export async function runRoomHandoffAgent(argv: string[], planPath: string, prom
   const matches = (entry: ScriptEntry) => entry.match.every(text => own.includes(text));
   const entry = script && (script.find(e => !e.repeat && !used.has(e.key) && matches(e)) ?? script.find(e => e.repeat && matches(e)));
   if (script && !entry) {
-    appendFileSync(`${planPath}.evidence.jsonl`, JSON.stringify({ botId, turnIndex, threadId: agent.DUSK_THREAD_ID, unplanned: true, resumed, system, prompt }) + "\n");
+    appendFileSync(`${planPath}.evidence.jsonl`, JSON.stringify({ botId, turnIndex, threadId: agent.MADANI_THREAD_ID, unplanned: true, resumed, system, prompt }) + "\n");
     throw new Error(`Unplanned fixture turn for ${botId}: ${own.slice(0, 300)}`);
   }
   const plan: any = entry ?? (basePlan.turns ? basePlan.turns[turnIndex] : basePlan);
@@ -222,11 +222,11 @@ export async function runRoomHandoffAgent(argv: string[], planPath: string, prom
       if (plan.gateFile || plan.approve || plan.screenCalls) clearTimeout(timer);
       const mounted = launch ? {} : JSON.parse(readAtLaunch(arg("--mcp-config"))).mcpServers as Record<string, AgentsIntegration>;
       if (plan.approve) {
-        if (!mounted.dusk || !argv.includes("--permission-prompt-tool")) throw new Error("A scripted approval needs Claude's permission-prompt tool");
-        approval = await askPermission(mounted.dusk, plan.approve);
+        if (!mounted.madani || !argv.includes("--permission-prompt-tool")) throw new Error("A scripted approval needs Claude's permission-prompt tool");
+        approval = await askPermission(mounted.madani, plan.approve);
       }
       if (plan.screenCalls) {
-        if (!mounted.computer?.env?.DUSK_CONTROL_URL) throw new Error("Scripted screen calls need a mounted computer");
+        if (!mounted.computer?.env?.MADANI_CONTROL_URL) throw new Error("Scripted screen calls need a mounted computer");
         screen = await screenCalls(mounted.computer, plan.screenCalls);
       }
       if (typeof plan.progress === "string") progress?.(plan.progress);
@@ -255,7 +255,7 @@ export async function runRoomHandoffAgent(argv: string[], planPath: string, prom
     closing = true;
     clearTimeout(timer); clearTimeout(delayTimer); clearInterval(gateTimer); lines.close(); child.stdin.destroy();
     await waitForExit(child, { signal: "SIGTERM", graceMs: 500 });
-    appendFileSync(`${planPath}.evidence.jsonl`, JSON.stringify({ botId, turnIndex, threadId: agent.DUSK_THREAD_ID, pid: process.pid,
+    appendFileSync(`${planPath}.evidence.jsonl`, JSON.stringify({ botId, turnIndex, threadId: agent.MADANI_THREAD_ID, pid: process.pid,
       model: argv.includes("--model") ? arg("--model") : undefined,
       permissionMode: argv.includes("--permission-mode") ? arg("--permission-mode") : undefined,
       restricted: argv.includes("--restricted"), permissionPromptTool: argv.includes("--permission-prompt-tool"),

@@ -1,5 +1,5 @@
 // The egress frames ("route traffic through this computer", vps-link-egress.mjs) as records on one byte stream, for
-// the link between the app and its dusk cloud home: a websocket over the home's own https. A record is a type byte, a
+// the link between the app and its madani cloud home: a websocket over the home's own https. A record is a type byte, a
 // 32-bit length and the payload: 0 a JSON control frame (egress, dial, dialed, end, cancel), 1 a stream's bytes with
 // its 12-letter id first. The server reads the same records (server/home-egress-link.ts).
 

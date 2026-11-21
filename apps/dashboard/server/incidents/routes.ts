@@ -23,7 +23,7 @@ export interface IncidentRouteOptions {
   rate(req: IncomingMessage, kind: string, max: number): void;
   /** throws unless the request is an admin's signed-in web session (with the CSRF check on changes) */
   admin(req: IncomingMessage, mutation: boolean): void;
-  /** also told of every client error: the sentry-compatible reporter when DUSK_ERROR_DSN is set */
+  /** also told of every client error: the sentry-compatible reporter when MADANI_ERROR_DSN is set */
   onClientError?(error: Error, page: string): void;
 }
 

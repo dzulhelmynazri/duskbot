@@ -432,7 +432,7 @@ export class CdpPage implements ActionContext, WaitContext {
   /** What a copy or cut key press just put on the page's clipboard, from any frame. */
   async takeCopiedText(): Promise<string> {
     const copies = await Promise.all(this.frames.all().map((frame) =>
-      valueInWorld<string>(this.frames, frame.id, "typeof __duskTakeCopy === 'function' ? __duskTakeCopy() : ''").catch(() => "")));
+      valueInWorld<string>(this.frames, frame.id, "typeof __madaniTakeCopy === 'function' ? __madaniTakeCopy() : ''").catch(() => "")));
     return copies.find((text) => typeof text === "string" && text.length > 0) ?? "";
   }
 

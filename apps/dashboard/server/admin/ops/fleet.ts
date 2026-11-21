@@ -1,5 +1,5 @@
-// GET /v1/ops/fleet (DUSK_OPS_TOKEN): which version every kind of install runs, read only and in counts. Desktops come
-// from the opted-in installs' app_open events, dusk clouds from this service's own records of their updates, own servers
+// GET /v1/ops/fleet (MADANI_OPS_TOKEN): which version every kind of install runs, read only and in counts. Desktops come
+// from the opted-in installs' app_open events, madani clouds from this service's own records of their updates, own servers
 // from the link service's /ops/fleet (the versions they reported when they last asked for an update).
 import type { HomeUpdateState } from "../../../../cloud-service/src/home-update.ts";
 import type { StoredEvent } from "../../analytics/sink.ts";
@@ -63,10 +63,10 @@ export function cloudFleetOf(clouds: readonly CloudLike[], canaryIds: readonly s
 
 /** the link service's counts, or null when it is not configured or does not answer */
 export async function serverFleet(env: Record<string, string | undefined>, fetchImpl: typeof fetch = fetch): Promise<ServerFleet | null> {
-  const token = env.DUSK_LINK_STATS_TOKEN;
+  const token = env.MADANI_LINK_STATS_TOKEN;
   if (!token) return null;
   try {
-    const answer = await fetchImpl(`${(env.DUSK_LINK_URL || "https://link.dusk.bot").replace(/\/$/, "")}/ops/fleet`, { headers: { authorization: `Bearer ${token}` }, signal: AbortSignal.timeout(10_000) });
+    const answer = await fetchImpl(`${(env.MADANI_LINK_URL || "https://link.madani.bot").replace(/\/$/, "")}/ops/fleet`, { headers: { authorization: `Bearer ${token}` }, signal: AbortSignal.timeout(10_000) });
     if (!answer.ok) return null;
     const body = await answer.json() as ServerFleet;
     return Array.isArray(body?.servers) && Array.isArray(body?.agents) ? { windowMs: Number(body.windowMs) || 0, servers: body.servers, agents: body.agents } : null;

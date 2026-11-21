@@ -12,11 +12,11 @@ import type { ServerUpdateCheck } from "./server-update";
 
 export interface ServerBehindHint { text: string; action?: { label: string; onClick: () => void }; seen: () => void }
 
-const seenKey = () => `dusk-server-behind:${location.origin}:${appVersion()}`;
+const seenKey = () => `madani-server-behind:${location.origin}:${appVersion()}`;
 
 /** What the hint says for a server whose update check answered `check` (null: it did not); null for no hint at all. */
 export function serverBehindHint(check: ServerUpdateCheck | null, copy: (text: string) => void): Omit<ServerBehindHint, "seen"> | null {
-  // a managed Cloud is brought up to date by dusk itself, and the desktop app's own server by the app
+  // a managed Cloud is brought up to date by madani itself, and the desktop app's own server by the app
   if (check?.install === "managed" || check?.install === "desktop") return null;
   const command = check?.command?.trim();
   return { text: t("notices.serverBehind"), ...(command ? { action: { label: t("notices.serverBehind.copy"), onClick: () => copy(command) } } : {}) };
@@ -24,7 +24,7 @@ export function serverBehindHint(check: ServerUpdateCheck | null, copy: (text: s
 
 export function useServerBehindHint(): ServerBehindHint | null {
   const compat = useServerCompat();
-  const placePage = window.duskDesktop !== undefined && !localDesktopPage();
+  const placePage = window.madaniDesktop !== undefined && !localDesktopPage();
   const behind = placePage && serverBehind(compat);
   const [hint, setHint] = useState<Omit<ServerBehindHint, "seen"> | null>(null);
   const [done, setDone] = useState(() => { try { return window.localStorage.getItem(seenKey()) === "1"; } catch { return false; } });

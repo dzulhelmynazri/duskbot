@@ -6,16 +6,16 @@ import { packageUrlFromCommandLine, packageUrlFromDeepLink } from "./package-lin
 describe("BotMRR package deep links", () => {
   it("accepts a public GitHub package URL", () => {
     const target = "https://raw.githubusercontent.com/acme/bots/main/reddit-lead-miner.md";
-    assert.equal(packageUrlFromDeepLink(`duskbot://install?url=${encodeURIComponent(target)}`), target);
-    assert.equal(packageUrlFromCommandLine(["dusk bot", "--flag", `duskbot://install?url=${encodeURIComponent(target)}`]), target);
+    assert.equal(packageUrlFromDeepLink(`madanibot://install?url=${encodeURIComponent(target)}`), target);
+    assert.equal(packageUrlFromCommandLine(["madani bot", "--flag", `madanibot://install?url=${encodeURIComponent(target)}`]), target);
   });
 
   it("rejects other commands, hosts, protocols, credentials, and unsupported file types", () => {
-    assert.equal(packageUrlFromDeepLink("duskbot://settings"), null);
-    assert.equal(packageUrlFromDeepLink("duskbot://install?url=https://evil.example/bot.json"), null);
-    assert.equal(packageUrlFromDeepLink("duskbot://install?url=http://raw.githubusercontent.com/a/b/main/bot.json"), null);
-    assert.equal(packageUrlFromDeepLink("duskbot://install?url=https://user@example.com/bot.json"), null);
-    assert.equal(packageUrlFromDeepLink("duskbot://install?url=https://github.com/acme/bot/run.sh"), null);
-    assert.equal(packageUrlFromDeepLink("duskbot://install?url=https://x.ai/bot/d8OshqLZvtcKDcNluPuyo"), null);
+    assert.equal(packageUrlFromDeepLink("madanibot://settings"), null);
+    assert.equal(packageUrlFromDeepLink("madanibot://install?url=https://evil.example/bot.json"), null);
+    assert.equal(packageUrlFromDeepLink("madanibot://install?url=http://raw.githubusercontent.com/a/b/main/bot.json"), null);
+    assert.equal(packageUrlFromDeepLink("madanibot://install?url=https://user@example.com/bot.json"), null);
+    assert.equal(packageUrlFromDeepLink("madanibot://install?url=https://github.com/acme/bot/run.sh"), null);
+    assert.equal(packageUrlFromDeepLink("madanibot://install?url=https://x.ai/bot/d8OshqLZvtcKDcNluPuyo"), null);
   });
 });

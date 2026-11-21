@@ -24,7 +24,7 @@ const ENGINE = `process.env.FAKE_CLAUDE_ROOM_PLAN = process.env.FAKE_CLAUDE_FIXT
 const SECRET = "Zebrafinch42";
 const SHARED = "Okapi77";
 const PASSWORD = "correct horse battery staple";
-const clockDir = mkdtempSync(join(tmpdir(), "dusk-wait-clock-"));
+const clockDir = mkdtempSync(join(tmpdir(), "madani-wait-clock-"));
 const CLOCK = join(clockDir, "offset");
 writeFileSync(CLOCK, "0");
 
@@ -90,7 +90,7 @@ beforeAll(async () => {
   gateway = await startFakeHttpMcp({ tools: [{ name: "lookup_order", inputSchema: { type: "object", properties: {} } }], callResult: () => ({ content: [{ type: "text", text: "ok" }] }) });
   broker = await startBrokerFake();
   fx = await launchCloudSendFixture({ onePasswordToken: `ops_fake-team-${randomBytes(8).toString("hex")}`, broker, team: { id: "team-acme-3", name: "Acme", engine: ENGINE,
-    env: { DUSK_BOT_BOX: "0", DUSK_TEST_WAIT_CLOCK: CLOCK, NODE_OPTIONS: `--import=${new URL("./testing/wait-clock-hooks.mjs", import.meta.url).href}`, FIXTURE_ADMIN_STAND_IN: `http://127.0.0.1:${(adminServer.address() as AddressInfo).port}` } } });
+    env: { MADANI_BOT_BOX: "0", MADANI_TEST_WAIT_CLOCK: CLOCK, NODE_OPTIONS: `--import=${new URL("./testing/wait-clock-hooks.mjs", import.meta.url).href}`, FIXTURE_ADMIN_STAND_IN: `http://127.0.0.1:${(adminServer.address() as AddressInfo).port}` } } });
   team = fx.team!;
   ada = (await team.pair(ADA)).token!;
   mira = (await team.pair(MIRA)).token!;
@@ -183,9 +183,9 @@ it("the Owner's export carries the team's chats and nothing of a member's alone,
   expect(made.status, JSON.stringify(made.body)).toBe(200);
   const download = await fetch(`${team.base}/api/workspace-backup/download/${made.body.id}`, { headers: { ...fx.edge, authorization: `Bearer ${ada}` } });
   expect(download.status).toBe(200);
-  const unpack = mkdtempSync(join(tmpdir(), "dusk-team-export-"));
+  const unpack = mkdtempSync(join(tmpdir(), "madani-team-export-"));
   try {
-    const archive = join(unpack, "export.duskbackup");
+    const archive = join(unpack, "export.madanibackup");
     writeFileSync(archive, Buffer.from(await download.arrayBuffer()));
     const staged = await stageWorkspaceBackup(unpack, archive, { password: PASSWORD, currentAppVersion: made.body.summary.appVersion });
     const { data } = stagedWorkspaceData(unpack, staged.id);
@@ -203,7 +203,7 @@ it("a question left for a day is said in the person's own inbox chat, once the c
   const reporter = await create({ name: "Reporter", title: "Reports", section: "Support", reportsTo: MIRA.email });
   expect((await team.as(ada, "PATCH", `/api/bots/${reporter.id}`, { approvalMode: "ask" })).status).toBe(200);
   const bots = async () => (await team.as(mira, "GET", "/api/bots")).body.bots as Array<Bot & { defaultBot?: unknown; tasks?: Array<{ threadId: string; inbox?: true; openAsks?: number }> }>;
-  // A User's own Dusk: no crown and no Chief's powers, and it cannot reach a bot shared with everyone.
+  // A User's own Madani: no crown and no Chief's powers, and it cannot reach a bot shared with everyone.
   const own = (await bots()).find((bot) => bot.defaultBot) as Bot & { chiefOfStaff?: boolean };
   expect(MIRA.role).toBe("member");
   expect(own.chiefOfStaff).toBeFalsy();

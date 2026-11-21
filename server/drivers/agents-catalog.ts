@@ -15,7 +15,7 @@ import { REACT_TOOL, REACT_TOOL_DEFINITION } from "./agents-react-tool.ts";
 import { PURCHASE_TOOL_DEFINITIONS } from "./agents-purchase-tools.ts";
 import { DOCUMENT_TOOL_DEFINITIONS } from "./agents-document-tools.ts";
 import { WAIT_TOOL_DEFINITIONS, WAIT_TOOL_NAMES } from "./agents-wait-tools.ts";
-import { DUSK_TOOL_DEFINITIONS } from "./agents-dusk-tools.ts";
+import { MADANI_TOOL_DEFINITIONS } from "./agents-madani-tools.ts";
 import { PERSON_TOOL_DEFINITIONS } from "./agents-person-tools.ts";
 import { RESEARCH_TOOL_DEFINITIONS, RESEARCH_TOOL_NAMES, X_TOOL_NAMES } from "./agents-research-tools.ts";
 import { READ_PAGES_DEFINITION, READ_PAGES_TOOL } from "./agents-read-pages.ts";
@@ -166,7 +166,7 @@ const TRIGGER_FIELDS_SCHEMA = {
   },
   run_on_startup: {
     type: "boolean",
-    description: "Repeating schedules only: also run once whenever dusk bot starts, for a computer often off when it is due.",
+    description: "Repeating schedules only: also run once whenever madani bot starts, for a computer often off when it is due.",
   },
 } as const;
 
@@ -212,12 +212,12 @@ const TOOL_DEFINITIONS = [
   },
   {
     name: "list_room_targets",
-    description: "Discover actual dusk bot teammates you can reach, and rooms. Works in a normal bot conversation too; no room is required. Returns bot and room IDs, roles and working folders, never other conversations' history. Use these bots, not native coding helpers with similar names, when the user asks their team to work together.",
+    description: "Discover actual madani bot teammates you can reach, and rooms. Works in a normal bot conversation too; no room is required. Returns bot and room IDs, roles and working folders, never other conversations' history. Use these bots, not native coding helpers with similar names, when the user asks their team to work together.",
     inputSchema: { type: "object", properties: {}, additionalProperties: false },
   },
   {
     name: "coordinate_bots",
-    description: "The one way to hand work on: ask existing dusk bot teammates a question or assign them concrete work. In a room it defaults to this room; use group_id from list_room_targets for a specific room. Outside a room, what you send a teammate from this conversation goes to one standing work thread with them; thread \"new\" opens a fresh one, a thread id picks one you opened. Where work you gave is still open, it goes into that work: it answers the question that work waits on, or reaches the turn running it. Give 1-4 bot_ids, teammate ids as list_bots or your roster prints them; a unique teammate name also resolves: they see only what you send them and use their own model, tools and permissions. They can consult their own specialists; every result returns here and resumes you automatically, so after sending all assignments END your turn: do not poll or wait, and never call assignment_status in the same turn. consult true asks a question the teammate answers from what it knows, acting on nothing; reply \"none\" is a one-way notice nothing comes back from. Include exact file paths, constraints and what must be verified (done_when). On return, resolve tradeoffs, verify the requested outcome and request concrete corrections with rework true if necessary before giving one final answer. Never target whoever assigned you this work or anyone above it: to ask or report back, end your turn and your reply resumes them. Never thank or approve a finished teammate; its result already returned. Never repeat a refused call unchanged.",
+    description: "The one way to hand work on: ask existing madani bot teammates a question or assign them concrete work. In a room it defaults to this room; use group_id from list_room_targets for a specific room. Outside a room, what you send a teammate from this conversation goes to one standing work thread with them; thread \"new\" opens a fresh one, a thread id picks one you opened. Where work you gave is still open, it goes into that work: it answers the question that work waits on, or reaches the turn running it. Give 1-4 bot_ids, teammate ids as list_bots or your roster prints them; a unique teammate name also resolves: they see only what you send them and use their own model, tools and permissions. They can consult their own specialists; every result returns here and resumes you automatically, so after sending all assignments END your turn: do not poll or wait, and never call assignment_status in the same turn. consult true asks a question the teammate answers from what it knows, acting on nothing; reply \"none\" is a one-way notice nothing comes back from. Include exact file paths, constraints and what must be verified (done_when). On return, resolve tradeoffs, verify the requested outcome and request concrete corrections with rework true if necessary before giving one final answer. Never target whoever assigned you this work or anyone above it: to ask or report back, end your turn and your reply resumes them. Never thank or approve a finished teammate; its result already returned. Never repeat a refused call unchanged.",
     inputSchema: { type: "object", additionalProperties: false, properties: {
       group_id: { type: "string", description: "Optional destination room; omit for this room or, outside a room, your thread with each teammate." },
       bot_ids: { type: "array", items: { type: "string", description: "A teammate's id exactly as list_bots or your roster prints it ([id: …]). A teammate's unique display name also resolves; a name shared by two reachable teammates is refused." }, minItems: 1, maxItems: 4, uniqueItems: true },
@@ -259,7 +259,7 @@ const TOOL_DEFINITIONS = [
   {
     name: "select_computer",
     description:
-      "Choose where this conversation does computer work. Call with no arguments to inspect actual available choices and the current place. For a task needing computer interaction, select the requested place, or auto to choose a suitable configured computer without asking the user to use menus. dusk bot reuses an existing computer first; with a configured provider it can start or provision one when needed. Do not provision for ordinary chat or just to inspect availability. A pending result means end this turn immediately: dusk bot updates the conversation selector and resumes the original request with that computer's real tools. Do not use the old tools after requesting a switch, repeat the task, or claim the action is done. This cannot change permissions, override Off, or switch a teammate/routine/channel.",
+      "Choose where this conversation does computer work. Call with no arguments to inspect actual available choices and the current place. For a task needing computer interaction, select the requested place, or auto to choose a suitable configured computer without asking the user to use menus. madani bot reuses an existing computer first; with a configured provider it can start or provision one when needed. Do not provision for ordinary chat or just to inspect availability. A pending result means end this turn immediately: madani bot updates the conversation selector and resumes the original request with that computer's real tools. Do not use the old tools after requesting a switch, repeat the task, or claim the action is done. This cannot change permissions, override Off, or switch a teammate/routine/channel.",
     inputSchema: { type: "object", additionalProperties: false, properties: {
       surface: { type: "string", enum: ["auto", "cloud", "vm", "local", "browser"],
         description: "auto = suitable configured computer, cloud = the bot's sandboxed computer on your own VPS, vm = isolated Local VM, local = user's own desktop, browser = built-in browser. Omit to list." },
@@ -458,7 +458,7 @@ const TOOL_DEFINITIONS = [
   {
     name: "request_credential",
     description:
-      "Ask the person for a secret on a secure card in the app or a QR-paired phone, never in chat. credential_id: a key dusk bot keeps (onePasswordToken: a 1Password service account token; email: a mailbox on any mail host, one card for its address and password; login: a site's password, for fill_login). Other secrets: label, reason, delivery. Pasted in their message (NAME=value)? Call with pasted_as: dusk bot saves it, no card; carry on, never copy the value. You never see the value of a card; end the turn, and you resume when they save or decline.",
+      "Ask the person for a secret on a secure card in the app or a QR-paired phone, never in chat. credential_id: a key madani bot keeps (onePasswordToken: a 1Password service account token; email: a mailbox on any mail host, one card for its address and password; login: a site's password, for fill_login). Other secrets: label, reason, delivery. Pasted in their message (NAME=value)? Call with pasted_as: madani bot saves it, no card; carry on, never copy the value. You never see the value of a card; end the turn, and you resume when they save or decline.",
     inputSchema: {
       type: "object",
       properties: {
@@ -484,7 +484,7 @@ const TOOL_DEFINITIONS = [
   {
     name: "request_sign_in",
     description:
-      "Ask the person for a step only they can do, where you work now: a passkey, phone approval, OAuth consent or one-time code you cannot read, or a human check (human_check true). Do everything else yourself. A missing password: request_credential login. A code sent to the person's own email or messages for a sign-in they asked for: read it there and type it yourself. A human check or bot block: call with human_check true at once, no waiting yourself; dusk bot waits, reloads and tries the person's connection, then says what to do next. They get a card and press Done; a human check also hands back once the page clears. Never ask for a password or code in chat. Then end your turn without restating the card; you are resumed when they finish or decline.",
+      "Ask the person for a step only they can do, where you work now: a passkey, phone approval, OAuth consent or one-time code you cannot read, or a human check (human_check true). Do everything else yourself. A missing password: request_credential login. A code sent to the person's own email or messages for a sign-in they asked for: read it there and type it yourself. A human check or bot block: call with human_check true at once, no waiting yourself; madani bot waits, reloads and tries the person's connection, then says what to do next. They get a card and press Done; a human check also hands back once the page clears. Never ask for a password or code in chat. Then end your turn without restating the card; you are resumed when they finish or decline.",
     inputSchema: {
       type: "object",
       additionalProperties: false,
@@ -500,7 +500,7 @@ const TOOL_DEFINITIONS = [
   {
     name: "request_screen_access",
     description:
-      "Only when a task truly needs this Mac's own desktop apps or screen, never for web work (your built-in browser does that): shows the person one way to let dusk bot control this Mac. Then carry on with what you can do without it, or say in one short line that you will go on once it is allowed.",
+      "Only when a task truly needs this Mac's own desktop apps or screen, never for web work (your built-in browser does that): shows the person one way to let madani bot control this Mac. Then carry on with what you can do without it, or say in one short line that you will go on once it is allowed.",
     inputSchema: {
       type: "object",
       additionalProperties: false,
@@ -513,7 +513,7 @@ const TOOL_DEFINITIONS = [
   {
     name: "fill_login",
     description:
-      "Sign in with a login the person saved in dusk bot or in their connected 1Password. Call it on the login page, in your browser or desktop Chromium: dusk bot types the username, password and any one-time code itself, submits each step, and says where the page went; you never see the password. A login fills only on its own site. None saved: request_credential login first.",
+      "Sign in with a login the person saved in madani bot or in their connected 1Password. Call it on the login page, in your browser or desktop Chromium: madani bot types the username, password and any one-time code itself, submits each step, and says where the page went; you never see the password. A login fills only on its own site. None saved: request_credential login first.",
     inputSchema: {
       type: "object",
       additionalProperties: false,
@@ -905,7 +905,7 @@ export function availableTools(profile: CatalogProfile) {
   return placed.map((tool) => ({ ...tool, inputSchema: advertisedSchema(tool.inputSchema, tool.description) }));
 }
 
-const FULL_INPUT_SCHEMAS = new Map<string, unknown>([...TOOL_DEFINITIONS, ...DUSK_TOOL_DEFINITIONS].map((tool) => [tool.name, tool.inputSchema]));
+const FULL_INPUT_SCHEMAS = new Map<string, unknown>([...TOOL_DEFINITIONS, ...MADANI_TOOL_DEFINITIONS].map((tool) => [tool.name, tool.inputSchema]));
 
 /** A tool's input schema as the catalog writes it, before tools/list leaves anything out: what every call is held to. */
 export function fullInputSchema(name: string): unknown {
@@ -937,5 +937,5 @@ function catalogTools(profile: CatalogProfile) {
       const properties = Object.fromEntries(Object.entries(tool.inputSchema.properties).filter(([key]) => key !== "for_bot_id"));
       return { ...tool, description: tool.description.replace(CHIEF_PROFILE_TARGET, ""), inputSchema: { ...tool.inputSchema, properties } };
     });
-  return [...ROLE_TOOLS, ...(profile.dusk === true ? DUSK_TOOL_DEFINITIONS : [])];
+  return [...ROLE_TOOLS, ...(profile.madani === true ? MADANI_TOOL_DEFINITIONS : [])];
 }

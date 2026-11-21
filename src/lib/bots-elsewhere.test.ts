@@ -27,7 +27,7 @@ describe("bots elsewhere", () => {
     expect(macEmptyFrom({ view: { places: [], known: null }, empty: true, screen: null })).toBeNull();
   });
 
-  it("counts only the person's own bots: Dusk and bots off the sidebar leave a place empty", () => {
+  it("counts only the person's own bots: Madani and bots off the sidebar leave a place empty", () => {
     expect(emptyHere([])).toBe(true);
     expect(emptyHere([{ defaultBot: { person: "" } }, { hidden: true }])).toBe(true);
     expect(emptyHere([{ defaultBot: { person: "" } }, {}])).toBe(false);

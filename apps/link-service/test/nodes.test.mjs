@@ -21,9 +21,9 @@ const GB = 1e9;
 
 describe("parseNodes", () => {
   it("reads the list, the first is the default home", () => {
-    const config = parseNodes("contabo=https://link.dusk.bot@eu,oracle-in=https://link-in.dusk.bot@asia", "oracle-in");
+    const config = parseNodes("contabo=https://link.madani.bot@eu,oracle-in=https://link-in.madani.bot@asia", "oracle-in");
     expect(config.defaultId).toBe("contabo");
-    expect(config.self).toEqual({ id: "oracle-in", url: "https://link-in.dusk.bot", region: "asia" });
+    expect(config.self).toEqual({ id: "oracle-in", url: "https://link-in.madani.bot", region: "asia" });
     expect(parseNodes("", "x")).toBeNull();
     expect(() => parseNodes("contabo=https://a", "nope")).toThrow(/not in LINK_NODES/);
     expect(() => parseNodes("contabo=ftp://a", "contabo")).toThrow(/not id=/);
@@ -112,7 +112,7 @@ describe("two nodes", () => {
 
   /** a node on a real port; LINK_NODES needs the ports first, so the list is filled in by `config` */
   const skew = {};
-  async function boot(nodeId, ports, dir = mkdtempSync(join(tmpdir(), `dusk-node-${nodeId}-`))) {
+  async function boot(nodeId, ports, dir = mkdtempSync(join(tmpdir(), `madani-node-${nodeId}-`))) {
     skew[nodeId] = 0;
     const nodes = parseNodes(`contabo=http://127.0.0.1:${ports.contabo},oracle-in=http://127.0.0.1:${ports["oracle-in"]}@asia`, nodeId);
     const service = createLinkService({ base: nodes.self.url, dataDir: dir, scriptPath: join(root, "install.sh"), agentPath: join(root, "agent.mjs"), statsToken: "s".repeat(30), now: () => Date.now() + skew[nodeId],

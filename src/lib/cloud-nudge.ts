@@ -1,8 +1,8 @@
-// when the sidebar's dusk cloud card shows: at most twice a calendar day, on a day the app is in use, hours apart. Each
+// when the sidebar's madani cloud card shows: at most twice a calendar day, on a day the app is in use, hours apart. Each
 // showing stays until it is closed, clicked or the app quits; closing it brings Give feedback back until the next showing.
 // Counters live on this computer only.
 
-export const NUDGE_KEY = "dusk-cloud-nudge";
+export const NUDGE_KEY = "madani-cloud-nudge";
 /** the least time between two showings, across midnight too */
 export const NUDGE_GAP_MS = 3 * 3600_000;
 /** the most showings in one calendar day */
@@ -46,8 +46,8 @@ export const nudgeDue = (day: NudgeDay, now: number): boolean => {
   return at !== null && at <= now;
 };
 
-/** whether the card may show at all: the offer is allowed here (not a store build, no dusk cloud yet, nobody's
- * organization), first run is over, and no corner dusk cloud card has this launch */
+/** whether the card may show at all: the offer is allowed here (not a store build, no madani cloud yet, nobody's
+ * organization), first run is over, and no corner madani cloud card has this launch */
 export function nudgeEligible({ allowed, settled, cornerCard }: { allowed: boolean | null; settled: boolean; cornerCard: boolean }): boolean {
   return allowed === true && settled && !cornerCard;
 }

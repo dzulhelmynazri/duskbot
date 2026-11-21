@@ -14,7 +14,7 @@ let now = 1_000_000;
 const clock = () => now;
 
 beforeEach(() => {
-  root = mkdtempSync(join(tmpdir(), "dusk-secret-vault-"));
+  root = mkdtempSync(join(tmpdir(), "madani-secret-vault-"));
   now = 1_000_000;
 });
 afterEach(() => rmSync(root, { recursive: true, force: true }));

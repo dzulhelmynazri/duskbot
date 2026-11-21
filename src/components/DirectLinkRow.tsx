@@ -6,7 +6,7 @@ const POLL_MS = 10_000;
 
 /** Settings > Computer > Your computer: the app reaches this linked server straight over its SSH port, relay as fallback. */
 export function DirectLinkRow() {
-  const bridge = typeof window === "undefined" ? undefined : window.duskDesktop?.linkDirect;
+  const bridge = typeof window === "undefined" ? undefined : window.madaniDesktop?.linkDirect;
   const [status, setStatus] = useState<LinkDirectState | null>(null);
   const [pending, setPending] = useState(false);
   const [error, setError] = useState(false);

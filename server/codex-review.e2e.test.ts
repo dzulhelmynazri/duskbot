@@ -25,7 +25,7 @@ const api = async (method: string, path: string, body?: unknown) => {
 };
 const start = async () => {
   child = spawn(process.execPath, [join(root, "server", "index.ts")], {
-    cwd: root, env: { ...process.env, HOME: home, USERPROFILE: home, DUSK_PORT: String(port) },
+    cwd: root, env: { ...process.env, HOME: home, USERPROFILE: home, MADANI_PORT: String(port) },
     stdio: ["ignore", "pipe", "pipe"],
   });
   stderr = "";
@@ -40,9 +40,9 @@ const start = async () => {
 
 beforeAll(async () => {
   chmodSync(fake, 0o755);
-  home = mkdtempSync(join(tmpdir(), "dusk-codex-review-"));
-  mkdirSync(join(home, ".duskbot"));
-  writeFileSync(join(home, ".duskbot", "config.json"), JSON.stringify({ instances: {
+  home = mkdtempSync(join(tmpdir(), "madani-codex-review-"));
+  mkdirSync(join(home, ".madanibot"));
+  writeFileSync(join(home, ".madanibot", "config.json"), JSON.stringify({ instances: {
     codex: { driver: "codex", environment: {
       FAKE_CODEX_MODE: "review-events",
       FAKE_CODEX_DUMP: join(home, "codex-dump.json"),

@@ -1,7 +1,7 @@
-# dusk bot MCP server
+# madani bot MCP server
 
-The dusk bot desktop app includes a local stdio MCP server. It lets another MCP client coordinate your
-dusk bot team while the desktop app and its harness are running.
+The madani bot desktop app includes a local stdio MCP server. It lets another MCP client coordinate your
+madani bot team while the desktop app and its harness are running.
 
 ## What it can do
 
@@ -14,15 +14,15 @@ dusk bot team while the desktop app and its harness are running.
 The v1 server intentionally cannot approve requests, remember permission grants, delete data, import teams,
 change credentials, or control computer/VM lifecycle. Those actions stay in the human-facing app.
 
-## From the duskbot command
+## From the madanibot command
 
-With the `duskbot` npm package installed, the MCP client can run it
+With the `madanibot` npm package installed, the MCP client can run it
 directly; it serves the same tools:
 
 ```json
 {
   "mcpServers": {
-    "duskbot": { "command": "duskbot", "args": ["mcp"], "env": { "DUSK_PORT": "8799" } }
+    "madanibot": { "command": "madanibot", "args": ["mcp"], "env": { "MADANI_PORT": "8799" } }
   }
 }
 ```
@@ -32,14 +32,14 @@ The same operations are also commands of their own, for scripts and CI:
 
 ## From a source checkout
 
-Start dusk bot, then configure the MCP client to run:
+Start madani bot, then configure the MCP client to run:
 
 ```json
 {
   "mcpServers": {
-    "duskbot": {
+    "madanibot": {
       "command": "pnpm",
-      "args": ["--dir", "/absolute/path/to/dusk bot", "mcp"]
+      "args": ["--dir", "/absolute/path/to/madani bot", "mcp"]
     }
   }
 }
@@ -52,7 +52,7 @@ loopback without one. A hosted or shared server with service loopback trust
 session for almost every tool, reads included. To authorize an external MCP
 client:
 
-1. In dusk bot, open **Settings → Phone → Set up a phone** and reveal the
+1. In madani bot, open **Settings → Phone → Set up a phone** and reveal the
    one-time pairing code.
 2. Exchange it locally (remove spaces from the displayed code):
 
@@ -69,8 +69,8 @@ client:
    ```json
    "env": {
      "ELECTRON_RUN_AS_NODE": "1",
-     "DUSK_PORT": "8799",
-     "DUSK_TOKEN": "dusk_sess_..."
+     "MADANI_PORT": "8799",
+     "MADANI_TOKEN": "madani_sess_..."
    }
    ```
 
@@ -87,34 +87,34 @@ macOS example:
 ```json
 {
   "mcpServers": {
-    "duskbot": {
-      "command": "/Applications/Dusk Bot.app/Contents/MacOS/Dusk Bot",
-      "args": ["/Applications/Dusk Bot.app/Contents/Resources/server/mcp-server.js"],
+    "madanibot": {
+      "command": "/Applications/Madani Bot.app/Contents/MacOS/Madani Bot",
+      "args": ["/Applications/Madani Bot.app/Contents/Resources/server/mcp-server.js"],
       "env": { "ELECTRON_RUN_AS_NODE": "1" }
     }
   }
 }
 ```
 
-On Windows, use the installed `Dusk Bot.exe` as `command`, the adjacent
+On Windows, use the installed `Madani Bot.exe` as `command`, the adjacent
 `resources\\server\\mcp-server.js` as the argument, and the same `ELECTRON_RUN_AS_NODE=1` environment value.
-The usual per-user install is under `%LOCALAPPDATA%\\Programs\\dusk bot`.
+The usual per-user install is under `%LOCALAPPDATA%\\Programs\\madani bot`.
 
-On Ubuntu `.deb` installs, the executable is normally `/opt/dusk-bot/duskbot` and the script is
-`/opt/dusk-bot/resources/server/mcp-server.js`. Use the same environment value.
+On Ubuntu `.deb` installs, the executable is normally `/opt/madani-bot/madanibot` and the script is
+`/opt/madani-bot/resources/server/mcp-server.js`. Use the same environment value.
 
 ## Connection discovery
 
-With no configuration, the MCP process probes dusk bot's three desktop ports (`8799`, `18799`, and `28799`)
-and accepts only a health response that identifies itself as dusk bot. This handles the desktop's normal
+With no configuration, the MCP process probes madani bot's three desktop ports (`8799`, `18799`, and `28799`)
+and accepts only a health response that identifies itself as madani bot. This handles the desktop's normal
 fallback when another local process already owns port 8799.
 
-Set `DUSK_PORT` to force one local port, or `DUSK_URL` to use an explicit HTTP(S) origin. Cleartext remote
+Set `MADANI_PORT` to force one local port, or `MADANI_URL` to use an explicit HTTP(S) origin. Cleartext remote
 HTTP is rejected unless `ALLOW_INSECURE_HTTP=true`; HTTPS should be used outside loopback. An optional
-`DUSK_TOKEN` is sent as a bearer token for authenticated reverse proxies. When a token is set, an
-explicit `DUSK_URL` or `DUSK_PORT` is required so the credential is never sent while probing unrelated
-local ports. `DUSK_MCP_TIMEOUT_MS` can set an HTTP timeout between 1,000 and 120,000 milliseconds.
-In packaged builds, `DUSK_TOKEN` is required for mutating tools as
+`MADANI_TOKEN` is sent as a bearer token for authenticated reverse proxies. When a token is set, an
+explicit `MADANI_URL` or `MADANI_PORT` is required so the credential is never sent while probing unrelated
+local ports. `MADANI_MCP_TIMEOUT_MS` can set an HTTP timeout between 1,000 and 120,000 milliseconds.
+In packaged builds, `MADANI_TOKEN` is required for mutating tools as
 described above; it is not a generic reverse-proxy secret.
 
 ## Tools

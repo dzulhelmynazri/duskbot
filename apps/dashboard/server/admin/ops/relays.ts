@@ -1,6 +1,6 @@
 // the link relays at the top of the admin ops page: every link service node (contabo, oracle mumbai, ...) and the
 // cloudflare worker. each answers GET /ops/relay/stats and PUT /ops/relay/limits behind its ops token; this proxies to
-// them. link nodes share DUSK_LINK_STATS_TOKEN; the ones past the first come from DUSK_LINK_NODES and from the first
+// them. link nodes share MADANI_LINK_STATS_TOKEN; the ones past the first come from MADANI_LINK_NODES and from the first
 // node's own list of its peers, so a node added there shows up here by itself.
 import type { OpsRelayCard, OpsRelayId, OpsRelayStats } from "../../../src/admin/ops-types.ts";
 import { linkAccountRef } from "../../link-grant.ts";
@@ -15,7 +15,7 @@ interface RelayTarget { id: OpsRelayId; label: string; url: string; token: strin
 
 const NODE_ID = /^[a-z][a-z0-9-]{1,30}$/;
 const linkLabel = (id: string, region?: string | null) => `${id.replace(/-/g, " ")} relay${region ? ` (${region})` : ""}`;
-/** DUSK_LINK_NODES: "oracle-in=https://link-in.dusk.bot,..." the link nodes past the first, also found on their own */
+/** MADANI_LINK_NODES: "oracle-in=https://link-in.madani.bot,..." the link nodes past the first, also found on their own */
 export function linkNodes(value: string | undefined): Array<{ id: string; url: string }> {
   return (value ?? "").split(",").map(part => part.trim()).flatMap(part => {
     const match = /^([a-z][a-z0-9-]{1,30})=(https?:\/\/[^/\s]+)$/.exec(part);
@@ -23,13 +23,13 @@ export function linkNodes(value: string | undefined): Array<{ id: string; url: s
   });
 }
 
-/** env names: DUSK_LINK_URL + DUSK_LINK_STATS_TOKEN (contabo, and DUSK_LINK_NODES), DUSK_CF_RELAY_URL + DUSK_CF_RELAY_OPS_TOKEN (cloudflare) */
+/** env names: MADANI_LINK_URL + MADANI_LINK_STATS_TOKEN (contabo, and MADANI_LINK_NODES), MADANI_CF_RELAY_URL + MADANI_CF_RELAY_OPS_TOKEN (cloudflare) */
 export function relayTargets(env: NodeJS.ProcessEnv): RelayTarget[] {
-  const token = env.DUSK_LINK_STATS_TOKEN || null;
+  const token = env.MADANI_LINK_STATS_TOKEN || null;
   return [
-    { id: "contabo", label: "contabo relay", url: env.DUSK_LINK_URL || "https://link.dusk.bot", token, tokenEnv: "DUSK_LINK_STATS_TOKEN", link: true },
-    ...linkNodes(env.DUSK_LINK_NODES).map(node => ({ id: node.id, label: linkLabel(node.id), url: node.url, token, tokenEnv: "DUSK_LINK_STATS_TOKEN", link: true })),
-    { id: "cloudflare", label: "cloudflare relay", url: env.DUSK_CF_RELAY_URL || "https://relay.dusk.bot", token: env.DUSK_CF_RELAY_OPS_TOKEN || null, tokenEnv: "DUSK_CF_RELAY_OPS_TOKEN", link: false },
+    { id: "contabo", label: "contabo relay", url: env.MADANI_LINK_URL || "https://link.madani.bot", token, tokenEnv: "MADANI_LINK_STATS_TOKEN", link: true },
+    ...linkNodes(env.MADANI_LINK_NODES).map(node => ({ id: node.id, label: linkLabel(node.id), url: node.url, token, tokenEnv: "MADANI_LINK_STATS_TOKEN", link: true })),
+    { id: "cloudflare", label: "cloudflare relay", url: env.MADANI_CF_RELAY_URL || "https://relay.madani.bot", token: env.MADANI_CF_RELAY_OPS_TOKEN || null, tokenEnv: "MADANI_CF_RELAY_OPS_TOKEN", link: false },
   ];
 }
 
@@ -106,7 +106,7 @@ export function createRelays(options: { env: NodeJS.ProcessEnv; fetch?: typeof f
   };
   const fixtureCard = (target: RelayTarget, who: ReturnType<typeof people>): OpsRelayCard =>
     ({ id: target.id, label: target.label, url: target.url, at: options.now(), configured: true, ok: true, error: null, stats: shapeRelayStats(fixtureStats(options.now(), options.accounts(), sample)[target.id]!, who) });
-  const fixtureOracle: RelayTarget = { id: "oracle-in", label: linkLabel("oracle-in", "mumbai"), url: "https://oracle-in.link.test", token: null, tokenEnv: "DUSK_LINK_STATS_TOKEN", link: true };
+  const fixtureOracle: RelayTarget = { id: "oracle-in", label: linkLabel("oracle-in", "mumbai"), url: "https://oracle-in.link.test", token: null, tokenEnv: "MADANI_LINK_STATS_TOKEN", link: true };
   const fixtureTargets = () => [targets[0]!, fixtureOracle, targets.at(-1)!];
 
   async function call(target: RelayTarget, path: string, init: RequestInit = {}) {
@@ -156,7 +156,7 @@ export function createRelays(options: { env: NodeJS.ProcessEnv; fetch?: typeof f
         if (typeof node?.id !== "string" || !NODE_ID.test(node.id) || typeof node.url !== "string" || !/^https?:\/\/[^/\s]+$/.test(node.url)) continue;
         if (targets.some(target => target.id === node.id) || fresh.some(target => target.id === node.id)) continue;
         if (node.id === "cloudflare" || targets.some(target => target.url === node.url)) continue;
-        fresh.push({ id: node.id, label: linkLabel(node.id, node.region), url: node.url, token: targets[0]!.token, tokenEnv: "DUSK_LINK_STATS_TOKEN", link: true });
+        fresh.push({ id: node.id, label: linkLabel(node.id, node.region), url: node.url, token: targets[0]!.token, tokenEnv: "MADANI_LINK_STATS_TOKEN", link: true });
       }
       if (fresh.length) {
         targets.splice(targets.length - 1, 0, ...fresh);

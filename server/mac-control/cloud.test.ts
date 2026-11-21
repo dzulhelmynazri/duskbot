@@ -1,4 +1,4 @@
-// A dusk cloud's bots on the person's Mac, both halves for real over HTTP: the cloud's /api/mac routes in cloud mode
+// A madani cloud's bots on the person's Mac, both halves for real over HTTP: the cloud's /api/mac routes in cloud mode
 // (sealing with a link key) and the Mac app's core (electron/cloud-mac.mjs: poller, seal, rules, executor in a scratch home).
 import { generateKeyPairSync } from "node:crypto";
 import { existsSync, mkdirSync, mkdtempSync, readFileSync, realpathSync, rmSync } from "node:fs";
@@ -26,8 +26,8 @@ afterEach(async () => {
 });
 
 async function pair(mode: "auto" | "ask" | "never", answer: (reason: string) => string | null = () => null) {
-  const dir = mkdtempSync(join(tmpdir(), "dusk-cloud-mac-srv-"));
-  const home = realpathSync(mkdtempSync(join(tmpdir(), "dusk-cloud-mac-home-")));
+  const dir = mkdtempSync(join(tmpdir(), "madani-cloud-mac-srv-"));
+  const home = realpathSync(mkdtempSync(join(tmpdir(), "madani-cloud-mac-home-")));
   const asked: Array<{ tool: string; reason: string; args: Record<string, unknown> }> = [];
   const mac: MacControl = createMacControl({
     dataDir: dir, offered: () => true, enabled: () => true, setEnabled: () => {}, ownerOrAdmin: () => true, live: () => true,

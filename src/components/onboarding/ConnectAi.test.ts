@@ -69,7 +69,7 @@ beforeEach(() => {
   f.dispatch.mockReset();
   f.row = null;
   f.fail = false;
-  vi.stubGlobal("duskDesktop", undefined);
+  vi.stubGlobal("madaniDesktop", undefined);
   host = document.createElement("div");
   document.body.append(host);
   root = createRoot(host);
@@ -207,13 +207,13 @@ describe("connecting an AI on the first screen", () => {
     await show();
     await otherWays();
     expect(f.row).toBeNull();
-    vi.stubGlobal("duskDesktop", { organization: bridge });
-    window.duskDesktop = { organization: bridge } as unknown as typeof window.duskDesktop;
+    vi.stubGlobal("madaniDesktop", { organization: bridge });
+    window.madaniDesktop = { organization: bridge } as unknown as typeof window.madaniDesktop;
     await show();
     expect(f.row?.bridge).toBe(bridge);
     f.row!.onOpenSettings();
     expect(f.dispatch).toHaveBeenCalledWith({ type: "toggleAppSettings", open: true, section: "organization" });
-    delete window.duskDesktop;
+    delete window.madaniDesktop;
   });
 
   it.each([undefined, "grok", "claude"])("opens with nothing running, whatever AI it was opened for (%s), until the person presses a card (their press is tested above)", async (start) => {

@@ -54,7 +54,7 @@ afterEach(async () => { await act(async () => root.unmount()); closeAddVps(); ho
 it("adding a server by one line shows the line, then each step live, then opens the server it linked", async () => {
   const link = fakeLink();
   const workspaces = { add: vi.fn() };
-  vi.stubGlobal("duskDesktop", { vpsLink: link.bridge, cloudAccount: {}, workspaces });
+  vi.stubGlobal("madaniDesktop", { vpsLink: link.bridge, cloudAccount: {}, workspaces });
   const onClose = vi.fn();
   await act(async () => { root.render(createElement(PlaceSetup, { onClose })); });
   await settle();
@@ -93,7 +93,7 @@ it("adding a server by one line shows the line, then each step live, then opens 
 
 it("a step that failed keeps its line to paste again, with a new line as the second choice", async () => {
   const link = fakeLink();
-  vi.stubGlobal("duskDesktop", { vpsLink: link.bridge });
+  vi.stubGlobal("madaniDesktop", { vpsLink: link.bridge });
   await act(async () => { root.render(createElement(PlaceSetup, { onClose: vi.fn(), start: "install" })); });
   await settle();
   await link.emit({ ...EMPTY_VIEW, stage: "installing", command: "curl -fsSL https://link.example/i/abc | sh", expiresAt: Date.now() + 60_000,
@@ -109,7 +109,7 @@ it("a step that failed keeps its line to paste again, with a new line as the sec
 
 it("arriving with a server linked already makes a new line, so another server can be added", async () => {
   const link = fakeLink();
-  vi.stubGlobal("duskDesktop", { vpsLink: link.bridge });
+  vi.stubGlobal("madaniDesktop", { vpsLink: link.bridge });
   await link.emit({ ...EMPTY_VIEW, stage: "linked", server: SERVER, steps: VPS_STEP_IDS.map((id) => ({ id, status: "done" })) });
   await act(async () => { root.render(createElement(PlaceSetup, { onClose: vi.fn(), start: "install" })); });
   expect(q("[data-install-phase]")?.getAttribute("data-install-phase"), "never the old server's connected screen").not.toBe("done");
@@ -123,7 +123,7 @@ it("a server the bots already live on is found, not installed again: Reconnect o
   const link = fakeLink();
   vi.mocked(link.bridge.where).mockResolvedValue({ place: "vps", server: SERVER });
   const open = vi.fn(async () => ({}));
-  vi.stubGlobal("duskDesktop", { vpsLink: link.bridge, workspaces: { open } });
+  vi.stubGlobal("madaniDesktop", { vpsLink: link.bridge, workspaces: { open } });
   const onClose = vi.fn();
   await act(async () => { root.render(createElement(PlaceSetup, { onClose, start: "install" })); });
   await settle();
@@ -144,7 +144,7 @@ it("a server the bots already live on is found, not installed again: Reconnect o
 
 it("once linked it goes on to signing in the AI and moving the bots", async () => {
   const link = fakeLink();
-  vi.stubGlobal("duskDesktop", { vpsLink: link.bridge });
+  vi.stubGlobal("madaniDesktop", { vpsLink: link.bridge });
   const onClose = vi.fn();
   await act(async () => { root.render(createElement(PlaceSetup, { onClose, start: "install" })); });
   await settle();
@@ -162,7 +162,7 @@ it("once linked it goes on to signing in the AI and moving the bots", async () =
 
 it("a line out of time offers a new one", async () => {
   const link = fakeLink();
-  vi.stubGlobal("duskDesktop", { vpsLink: link.bridge });
+  vi.stubGlobal("madaniDesktop", { vpsLink: link.bridge });
   await act(async () => { root.render(createElement(PlaceSetup, { onClose: vi.fn(), start: "install" })); });
   await settle();
   await link.emit({ ...EMPTY_VIEW, stage: "command", command: "curl x | sh", expiresAt: Date.now() - 1000 });
@@ -176,7 +176,7 @@ it("a line out of time offers a new one", async () => {
 });
 
 it("every way to connect is one row in order, Cloudflare first and recommended, with no art", async () => {
-  vi.stubGlobal("duskDesktop", { vpsLink: fakeLink().bridge, workspaces: { add: vi.fn() } });
+  vi.stubGlobal("madaniDesktop", { vpsLink: fakeLink().bridge, workspaces: { add: vi.fn() } });
   await act(async () => { root.render(createElement(PlaceSetup, { onClose: vi.fn() })); });
   expect([...document.querySelectorAll("[data-setup-method]")].map((row) => row.getAttribute("data-setup-method")))
     .toEqual(["cloudflare", "relay", "tailscale", "ssh", "address"]);
@@ -189,25 +189,25 @@ it("every way to connect is one row in order, Cloudflare first and recommended, 
 });
 
 it("the short line takes its way on the address, and shows on one line", async () => {
-  const short = "curl -fsSL https://dusk.bot/s/k3x9m2p | sh";
+  const short = "curl -fsSL https://madani.bot/s/k3x9m2p | sh";
   const way = (key: string) => wayOf(key) as Parameters<typeof wayLine>[1];
-  expect(wayLine(short, way("cloudflare"))).toBe("curl -fsSL https://dusk.bot/s/k3x9m2p/cloudflare | sh");
-  expect(wayLine(short, way("ssh"))).toBe("curl -fsSL https://dusk.bot/s/k3x9m2p/ssh | sh");
+  expect(wayLine(short, way("cloudflare"))).toBe("curl -fsSL https://madani.bot/s/k3x9m2p/cloudflare | sh");
+  expect(wayLine(short, way("ssh"))).toBe("curl -fsSL https://madani.bot/s/k3x9m2p/ssh | sh");
   expect(wayLine(short, undefined)).toBe(short);
   const link = fakeLink();
-  vi.stubGlobal("duskDesktop", { vpsLink: link.bridge, workspaces: { add: vi.fn() } });
+  vi.stubGlobal("madaniDesktop", { vpsLink: link.bridge, workspaces: { add: vi.fn() } });
   await act(async () => { root.render(createElement(PlaceSetup, { onClose: vi.fn() })); });
   await click(q("[data-setup-method=tailscale]"));
   await settle();
   await link.emit({ ...EMPTY_VIEW, stage: "command", command: short, expiresAt: Date.now() + 60_000 });
   const shown = q("[data-setup-command]")!;
-  expect(shown.textContent).toBe("curl -fsSL https://dusk.bot/s/k3x9m2p/tailscale | sh");
+  expect(shown.textContent).toBe("curl -fsSL https://madani.bot/s/k3x9m2p/tailscale | sh");
   expect(shown.className).toContain("whitespace-nowrap");
 });
 
 it("each way is the same one line with the way on the end, three plain steps, and nothing to type back", async () => {
   const link = fakeLink();
-  vi.stubGlobal("duskDesktop", { vpsLink: link.bridge, workspaces: { add: vi.fn() } });
+  vi.stubGlobal("madaniDesktop", { vpsLink: link.bridge, workspaces: { add: vi.fn() } });
   await act(async () => { root.render(createElement(PlaceSetup, { onClose: vi.fn() })); });
   await click(q("[data-setup-method=tailscale]"));
   await settle();
@@ -218,7 +218,7 @@ it("each way is the same one line with the way on the end, three plain steps, an
   expect(q("[data-setup-code]")).toBeNull();
   // the server asks for a sign-in: shown here with the link, opened outside the app
   const openExternal = vi.fn(async () => {});
-  vi.stubGlobal("duskDesktop", { vpsLink: link.bridge, workspaces: { add: vi.fn() }, openExternal });
+  vi.stubGlobal("madaniDesktop", { vpsLink: link.bridge, workspaces: { add: vi.fn() }, openExternal });
   await link.emit({ ...EMPTY_VIEW, stage: "installing", command: "curl -fsSL https://link.example/i/abc | sh", expiresAt: Date.now() + 60_000,
     steps: VPS_STEP_IDS.map((id, index) => ({ id, status: index < 8 ? "done" : index === 8 ? "running" : "waiting" })),
     ask: { kind: "tailscale-login", url: "https://login.tailscale.com/a/abc123", state: "waiting" } });
@@ -233,20 +233,20 @@ it("each way is the same one line with the way on the end, three plain steps, an
 
 it("a way that could not finish says so in amber, with the installer's reason, once linked through the relay", async () => {
   const link = fakeLink();
-  vi.stubGlobal("duskDesktop", { vpsLink: link.bridge, workspaces: { add: vi.fn() } });
+  vi.stubGlobal("madaniDesktop", { vpsLink: link.bridge, workspaces: { add: vi.fn() } });
   await act(async () => { root.render(createElement(PlaceSetup, { onClose: vi.fn() })); });
   await click(q("[data-setup-method=tailscale]"));
   await settle();
   await link.emit({ ...EMPTY_VIEW, stage: "linked", server: SERVER, mode: "relay", via: "relay", fallback: "Tailscale is not signed in; using the private relay", steps: VPS_STEP_IDS.map((id) => ({ id, status: "done" })) });
   expect(q("[data-setup-via]")?.getAttribute("data-setup-via")).toBe("relay");
-  expect(q("[data-setup-fell-back]")?.textContent).toBe("Tailscale didn't finish, so it's linked through the dusk relay instead. Tailscale is not signed in.");
+  expect(q("[data-setup-fell-back]")?.textContent).toBe("Tailscale didn't finish, so it's linked through the madani relay instead. Tailscale is not signed in.");
   await link.emit({ ...EMPTY_VIEW, stage: "linked", server: SERVER, mode: "direct", via: "tailscale", steps: VPS_STEP_IDS.map((id) => ({ id, status: "done" })) });
   expect(q("[data-setup-fell-back]")).toBeNull();
 });
 
 it("the Cloudflare way is the same line with --cloudflare on the end, and nothing to sign in to", async () => {
   const link = fakeLink();
-  vi.stubGlobal("duskDesktop", { vpsLink: link.bridge, workspaces: { add: vi.fn() } });
+  vi.stubGlobal("madaniDesktop", { vpsLink: link.bridge, workspaces: { add: vi.fn() } });
   await act(async () => { root.render(createElement(PlaceSetup, { onClose: vi.fn() })); });
   await click(q("[data-setup-method=cloudflare]"));
   await settle();
@@ -259,7 +259,7 @@ it("the Cloudflare way is the same line with --cloudflare on the end, and nothin
 
 it("the SSH way shows the tunnel command with the server's own login and address once it says them", async () => {
   const link = fakeLink();
-  vi.stubGlobal("duskDesktop", { vpsLink: link.bridge, workspaces: { add: vi.fn() } });
+  vi.stubGlobal("madaniDesktop", { vpsLink: link.bridge, workspaces: { add: vi.fn() } });
   await act(async () => { root.render(createElement(PlaceSetup, { onClose: vi.fn() })); });
   await click(q("[data-setup-method=ssh]"));
   expect(q("[data-setup-command]")?.textContent).toBe("curl -fsSL https://link.example/i/abc | sh -s -- --ssh");
@@ -270,9 +270,9 @@ it("the SSH way shows the tunnel command with the server's own login and address
   expect(commands).toContain("ssh -N -L 8790:127.0.0.1:8799 ubuntu@203.0.113.7");
 });
 
-it("a dusk bot already running is connected by its address and code, and what was typed is checked", async () => {
+it("a madani bot already running is connected by its address and code, and what was typed is checked", async () => {
   const workspaces = { add: vi.fn(async () => true) };
-  vi.stubGlobal("duskDesktop", { workspaces });
+  vi.stubGlobal("madaniDesktop", { workspaces });
   const onClose = vi.fn();
   await act(async () => { root.render(createElement(PlaceSetup, { onClose })); });
   expect(q("[data-setup-method=tailscale]"), "line ways need the relay").toBeNull();
@@ -294,7 +294,7 @@ it("a dusk bot already running is connected by its address and code, and what wa
 
 it("from the rail it offers a new organization and another account under the two choices", async () => {
   const onAccount = vi.fn();
-  vi.stubGlobal("duskDesktop", { cloudAccount: {}, workspaces: { add: vi.fn() } });
+  vi.stubGlobal("madaniDesktop", { cloudAccount: {}, workspaces: { add: vi.fn() } });
   await act(async () => { root.render(createElement(PlaceSetup, { onClose: vi.fn(), onAccount, choices: { cloud: true, link: true, address: true, organization: true, account: true } })); });
   expect(q("[data-place-add-choice=cloud]")).toBeTruthy();
   expect(q("[data-place-add-choice=server]")).toBeTruthy();
@@ -305,14 +305,14 @@ it("from the rail it offers a new organization and another account under the two
 });
 
 it("a server signed in to the account but not connected here goes straight to its address", async () => {
-  vi.stubGlobal("duskDesktop", { workspaces: { add: vi.fn() } });
+  vi.stubGlobal("madaniDesktop", { workspaces: { add: vi.fn() } });
   await act(async () => { root.render(createElement(PlaceSetup, { onClose: vi.fn(), connect: "studio" })); });
   expect(q("h2")?.textContent).toBe("Connect studio");
   expect(q("[data-place-setup-way=address]")).toBeTruthy();
 });
 
-it("choosing dusk cloud opens the buying sheet, never Settings", async () => {
-  vi.stubGlobal("duskDesktop", { cloudAccount: {} });
+it("choosing madani cloud opens the buying sheet, never Settings", async () => {
+  vi.stubGlobal("madaniDesktop", { cloudAccount: {} });
   const { openPlaceSetup } = await import("@/lib/place-setup");
   const { PlaceSetupHost } = await import("./PlaceSetupHost");
   openPlaceSetup();
@@ -324,7 +324,7 @@ it("choosing dusk cloud opens the buying sheet, never Settings", async () => {
 
 it("the rail's sheet buys a first cloud and hands a server to the app window, each through main", async () => {
   const onBuy = vi.fn(), onServer = vi.fn(), onClose = vi.fn();
-  vi.stubGlobal("duskDesktop", { cloudAccount: {}, workspaces: { add: vi.fn() } });
+  vi.stubGlobal("madaniDesktop", { cloudAccount: {}, workspaces: { add: vi.fn() } });
   await act(async () => { root.render(createElement(PlaceSetup, { onClose, onBuy, onServer, choices: { cloud: true, link: true, address: true } })); });
   await click(q("[data-place-add-choice=cloud]"));
   expect(onBuy).toHaveBeenCalledTimes(1);
@@ -338,7 +338,7 @@ it("this computer with no bots names the server they are on, switches there, or 
   const link = fakeLink();
   vi.mocked(link.bridge.where).mockResolvedValue({ place: "vps", server: SERVER });
   const open = vi.fn(async () => true);
-  vi.stubGlobal("duskDesktop", { vpsLink: link.bridge, platform: "darwin", elsewhere: { open } });
+  vi.stubGlobal("madaniDesktop", { vpsLink: link.bridge, platform: "darwin", elsewhere: { open } });
   const onClose = vi.fn();
   await act(async () => { root.render(createElement(MacEmptyMain, { from: { id: "vps-1", name: "my-vps", why: "moved" }, onClose })); });
   await settle();
@@ -358,7 +358,7 @@ it("this computer with no bots names the server they are on, switches there, or 
 });
 
 it("a switch that fails says so in the dialog", async () => {
-  vi.stubGlobal("duskDesktop", { elsewhere: { open: vi.fn(async () => false) } });
+  vi.stubGlobal("madaniDesktop", { elsewhere: { open: vi.fn(async () => false) } });
   await act(async () => { root.render(createElement(MacEmptyMain, { from: { id: "team", name: "Studio", why: "team" }, onClose: vi.fn() })); });
   await settle();
   await click(q("[data-mac-empty-open]"));
@@ -373,7 +373,7 @@ function PromptHost({ id }: { id: string }) {
 it("the no-bots dialog shows once per place and closes on not now, Escape or a click outside", async () => {
   const store = new Map<string, string>();
   vi.stubGlobal("localStorage", { getItem: (key: string) => store.get(key) ?? null, setItem: (key: string, value: string) => store.set(key, value) });
-  vi.stubGlobal("duskDesktop", {});
+  vi.stubGlobal("madaniDesktop", {});
   await act(async () => { root.render(createElement(PromptHost, { id: "a" })); });
   await click(q("[data-mac-empty-later]"));
   expect(q("[data-mac-empty]")).toBeNull();
@@ -390,7 +390,7 @@ it("the no-bots dialog shows once per place and closes on not now, Escape or a c
 
 it("bots on a place they can't come back from are switched to, with nothing to bring back", async () => {
   const open = vi.fn(async () => true);
-  vi.stubGlobal("duskDesktop", { elsewhere: { open } });
+  vi.stubGlobal("madaniDesktop", { elsewhere: { open } });
   await act(async () => { root.render(createElement(MacEmptyMain, { from: { id: "team", name: "Studio", why: "team" }, onClose: vi.fn() })); });
   await settle();
   expect(q("[role=dialog] [data-place-art=cloud]")).toBeTruthy();
@@ -402,7 +402,7 @@ it("bots on a place they can't come back from are switched to, with nothing to b
 it("before a line exists it says it is making one, with no step waiting yet", async () => {
   const link = fakeLink();
   (link.bridge as unknown as { start: () => Promise<never> }).start = () => new Promise<never>(() => {});
-  vi.stubGlobal("duskDesktop", { vpsLink: link.bridge });
+  vi.stubGlobal("madaniDesktop", { vpsLink: link.bridge });
   await act(async () => { root.render(createElement(PlaceSetup, { onClose: vi.fn(), start: "install" })); });
   await settle();
   expect(q("[data-install-phase]")?.getAttribute("data-install-phase")).toBe("starting");
@@ -412,7 +412,7 @@ it("before a line exists it says it is making one, with no step waiting yet", as
 
 it("the welcome's own server opens on the recommended way's one line, with every other way one back away", async () => {
   const link = fakeLink();
-  vi.stubGlobal("duskDesktop", { vpsLink: link.bridge, cloudAccount: {} });
+  vi.stubGlobal("madaniDesktop", { vpsLink: link.bridge, cloudAccount: {} });
   const { openPlaceSetup, closePlaceSetup } = await import("@/lib/place-setup");
   const { PlaceSetupHost } = await import("./PlaceSetupHost");
   openPlaceSetup("way:cloudflare");
@@ -427,7 +427,7 @@ it("the welcome's own server opens on the recommended way's one line, with every
 });
 
 it("a browser with no way to add a server says where to do it instead of an empty page (bug report dr-s489q74m7b)", async () => {
-  vi.stubGlobal("duskDesktop", undefined);
+  vi.stubGlobal("madaniDesktop", undefined);
   await act(async () => { root.render(createElement(ServerWays, { onPick: vi.fn() })); });
   expect(document.querySelectorAll("button[data-setup-method]")).toHaveLength(0);
   expect(q("[data-setup-method=none]")?.textContent).toBe("Add a server of your own from the desktop app on your computer. It makes the setup line and links the server for you.");

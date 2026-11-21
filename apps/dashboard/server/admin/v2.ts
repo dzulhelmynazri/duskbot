@@ -19,9 +19,9 @@ const int = (value: string | null, fallback: number, min: number, max: number) =
   return n;
 };
 
-/** the data one request reads: this service's, or the live service's read only (preview's admin reading dusk.bot) */
+/** the data one request reads: this service's, or the live service's read only (preview's admin reading madani.bot) */
 export interface V2Source {
-  /** "own", or the live service's label ("dusk.bot") */
+  /** "own", or the live service's label ("madani.bot") */
   data: string;
   /** without test accounts' and harness events unless the panel asked for them */
   sink: AnalyticsSink;

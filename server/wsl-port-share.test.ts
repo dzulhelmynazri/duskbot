@@ -31,7 +31,7 @@ describe("a Windows program sharing the port through WSL", () => {
     try {
       const warning = await wslPortShareWarning(port, { env: {}, read: wsl });
       expect(warning).toContain(`also listens on port ${port}`);
-      expect(warning).toContain("DUSK_PORT=");
+      expect(warning).toContain("MADANI_PORT=");
     } finally { other.close(); }
     expect(await wslPortShareWarning(port, { env: {}, read: wsl })).toBeNull();
   });

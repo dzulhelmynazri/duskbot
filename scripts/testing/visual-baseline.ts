@@ -3,7 +3,7 @@
 // a stray shadow, a dark field, an overlap or a spacing slip is flagged before it ships, not after.
 //
 //   pnpm ui:baseline                capture the key surfaces and diff them against the approved set (exit 1 on a change)
-//   pnpm ui:baseline -- --diff-only diff an existing capture (DUSK_GALLERY_DIR) without capturing again
+//   pnpm ui:baseline -- --diff-only diff an existing capture (MADANI_GALLERY_DIR) without capturing again
 //   pnpm ui:baseline -- --approve   capture, then store the captures as the new approved set (after a person looked)
 //   pnpm ui:baseline -- --approve surface-settings-engines-desktop  approve only the named shots
 //
@@ -46,16 +46,16 @@ const args = process.argv.slice(2).filter((arg) => arg !== "--");
 const approve = args.includes("--approve");
 const diffOnly = args.includes("--diff-only");
 const named = args.filter((arg) => !arg.startsWith("--"));
-const dir = process.env.DUSK_GALLERY_DIR || join(REPO_ROOT, ".dusk-scratch", "visual-baseline");
+const dir = process.env.MADANI_GALLERY_DIR || join(REPO_ROOT, ".madani-scratch", "visual-baseline");
 
 function capture() {
   mkdirSync(dir, { recursive: true });
-  const env = { ...process.env, DUSK_UI_E2E: "1", DUSK_GALLERY_DIR: dir, DUSK_GALLERY_STEADY: "1" };
+  const env = { ...process.env, MADANI_UI_E2E: "1", MADANI_GALLERY_DIR: dir, MADANI_GALLERY_STEADY: "1" };
   const runs = [
-    { test: "scripts/testing/surface-gallery.e2e.test.ts", env: { DUSK_SURFACES_ONLY: [...KEY_SURFACES, ...KEY_SMALL].join(","), DUSK_SURFACES_SKINS: SKINS, DUSK_SURFACES_VIEWPORTS: VIEWPORTS } },
+    { test: "scripts/testing/surface-gallery.e2e.test.ts", env: { MADANI_SURFACES_ONLY: [...KEY_SURFACES, ...KEY_SMALL].join(","), MADANI_SURFACES_SKINS: SKINS, MADANI_SURFACES_VIEWPORTS: VIEWPORTS } },
     // the move done sheet is left out until its preview gets past "Connecting to your bots"
-    { test: "scripts/testing/cloud-sheets.e2e.test.ts", env: { DUSK_SURFACES_SKINS: SKINS, DUSK_CLOUD_SKIP: "move=done" } },
-    { test: "scripts/testing/chat-gallery.e2e.test.ts", env: { DUSK_GALLERY_ONLY: KEY_CHATS.join(","), DUSK_GALLERY_SKINS: SKINS, DUSK_GALLERY_VIEWPORTS: VIEWPORTS, DUSK_GALLERY_MODES: "still" } },
+    { test: "scripts/testing/cloud-sheets.e2e.test.ts", env: { MADANI_SURFACES_SKINS: SKINS, MADANI_CLOUD_SKIP: "move=done" } },
+    { test: "scripts/testing/chat-gallery.e2e.test.ts", env: { MADANI_GALLERY_ONLY: KEY_CHATS.join(","), MADANI_GALLERY_SKINS: SKINS, MADANI_GALLERY_VIEWPORTS: VIEWPORTS, MADANI_GALLERY_MODES: "still" } },
   ];
   const failed: string[] = [];
   for (const run of runs) {

@@ -96,7 +96,7 @@ describe("finding ffmpeg's H.264 encoder", () => {
     const both = exec({ "-encoders": encoders("libopenh264", "libx264"), "-formats": FORMATS, "-version": "ffmpeg version 6.1.1-3ubuntu5 Copyright" });
     expect(await findH264Encoder({}, both)).toEqual({ command: "ffmpeg", library: "libx264", fpsMode: true });
     const open = exec({ "-encoders": encoders("libopenh264"), "-formats": FORMATS, "-version": "ffmpeg version 4.4.2-0ubuntu0.22.04.1" });
-    expect(await findH264Encoder({ DUSK_FFMPEG: "/opt/ff/ffmpeg" }, open)).toEqual({ command: "/opt/ff/ffmpeg", library: "libopenh264", fpsMode: false });
+    expect(await findH264Encoder({ MADANI_FFMPEG: "/opt/ff/ffmpeg" }, open)).toEqual({ command: "/opt/ff/ffmpeg", library: "libopenh264", fpsMode: false });
   });
 
   it("finds none without ffmpeg, without an H.264 encoder or the formats it needs, or when turned off", async () => {
@@ -105,7 +105,7 @@ describe("finding ffmpeg's H.264 encoder", () => {
     expect(await findH264Encoder({}, exec({ "-encoders": encoders("libvpx", "h264_videotoolbox"), "-formats": FORMATS, "-version": "" }))).toBeNull();
     expect(await findH264Encoder({}, exec({ "-encoders": encoders("libx264"), "-formats": "  E flv  FLV\n", "-version": "" }))).toBeNull();
     const run = vi.fn(exec({ "-encoders": encoders("libx264"), "-formats": FORMATS, "-version": "" }));
-    expect(await findH264Encoder({ DUSK_BROWSER_VIDEO: "off" }, run)).toBeNull();
+    expect(await findH264Encoder({ MADANI_BROWSER_VIDEO: "off" }, run)).toBeNull();
     expect(run).not.toHaveBeenCalled();
   });
 });

@@ -1,7 +1,7 @@
 import { forwardRef, useEffect, useImperativeHandle, useLayoutEffect, useMemo, useRef, useState, type CSSProperties } from "react";
 
 import { createPixel, stillFrame, stillSvgPaths, type PixelBot, type PixelState } from "@/pixel/engine";
-import { duskBody } from "../../shared/body-migration";
+import { madaniBody } from "../../shared/body-migration";
 import { EXPRESSION_STATES, pixelReaction, pixelState, type MarkGaze, type MarkPoke, type MarkReaction } from "./mascot-engine";
 import { onMascotCue } from "./mascot-events";
 import { ATTENTION } from "./mascot-attention";
@@ -12,7 +12,7 @@ const useClientLayoutEffect = typeof document === "undefined" ? useEffect : useL
 const WATCH_MS = 1400;
 const COMPOSER_GAZE = { x: 0.15, y: 0.75 };
 
-export interface DuskMarkProps {
+export interface MadaniMarkProps {
   /** Any body id a bot was saved with; unknown ids wear the default. */
   body: string;
   /** CSS paint for the body. */
@@ -38,7 +38,7 @@ export interface DuskMarkProps {
   style?: CSSProperties;
 }
 
-export interface DuskMarkHandle {
+export interface MadaniMarkHandle {
   blink: () => void;
   spin: (durationMs?: number) => void;
   setExpression: (index: number) => void;
@@ -88,11 +88,11 @@ function fitBox(fit: BodyFit, size: number) {
 
 const expressionState = (index: number) => EXPRESSION_STATES[((index % EXPRESSION_STATES.length) + EXPRESSION_STATES.length) % EXPRESSION_STATES.length]!;
 
-export const DuskMark = forwardRef<DuskMarkHandle, DuskMarkProps>(function DuskMark(
+export const MadaniMark = forwardRef<MadaniMarkHandle, MadaniMarkProps>(function MadaniMark(
   { body, colour, eyes, state = "idle", size = 44, animated = true, emphasized = false, gaze = null, expression, label, life = true, cueKey, className, style },
   ref,
 ) {
-  const shape = duskBody(body);
+  const shape = madaniBody(body);
   const box = fitBox(bodyFit(shape), size);
   const el = useRef<HTMLSpanElement>(null);
   const bot = useRef<PixelBot | null>(null);
@@ -153,7 +153,7 @@ export const DuskMark = forwardRef<DuskMarkHandle, DuskMarkProps>(function DuskM
 
   return (
     <span
-      data-dusk-mark=""
+      data-madani-mark=""
       data-body={shape}
       data-state={state}
       data-pixel-state={shown}
@@ -173,7 +173,7 @@ export const DuskMark = forwardRef<DuskMarkHandle, DuskMarkProps>(function DuskM
 
 /** A 1px pixel ring one grid step outside a body's silhouette, for a picker's hovered or chosen shape. */
 export function BodyRing({ body, size, className }: { body: string; size: number; className?: string }) {
-  const shape = duskBody(body);
+  const shape = madaniBody(body);
   const d = useMemo(() => ringPath(shape, size), [shape, size]);
   const { drawn, left, top } = fitBox(bodyFit(shape), size);
   // the viewBox is widened so the ring lands where the fitted mark is drawn

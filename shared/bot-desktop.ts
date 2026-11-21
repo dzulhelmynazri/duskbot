@@ -2,7 +2,7 @@
 // .github/workflows/bot-desktop-image.yml read these two constants. A bump publishes the image from main (amd64 + arm64);
 // servers switch to it only once it is on the host, and keep running the version before until then.
 export const BOT_DESKTOP_VERSION = "6";
-export const BOT_DESKTOP_IMAGE = "ghcr.io/duskbotai/dusk-desktop:v6";
+export const BOT_DESKTOP_IMAGE = "ghcr.io/madanibotai/madani-desktop:v6";
 
 /** Image label carrying BOT_DESKTOP_VERSION; containers made from the image carry it too. */
 export const BOT_DESKTOP_LABEL = DOCKER_NAMES.label("bot-desktop");

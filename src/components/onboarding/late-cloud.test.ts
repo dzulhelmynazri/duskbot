@@ -5,7 +5,7 @@ const done = { completedAt: "2026-11-17T10:00:00.000Z", version: 1, reelSeen: fa
 const mine = (status: string) => ({ status: "connected", clouds: [{ primary: true, runsOn: "cloud", role: "owner", status }] });
 const base = { local: true, canSave: true, config: { onboarding: done }, account: mine("setting_up"), welcomeShown: false };
 
-describe("a dusk cloud plan that comes after the first run", () => {
+describe("a madani cloud plan that comes after the first run", () => {
   it("takes the person into the cloud being made, once, after the first run ended here", () => {
     expect(lateCloudDue(base)).toBe("making");
     expect(lateCloudDue({ ...base, config: { onboarding: { ...done, hintsSeen: [...done.hintsSeen, CLOUD_OPENED_HERE] } } }), "once only").toBeNull();
@@ -36,7 +36,7 @@ describe("a dusk cloud plan that comes after the first run", () => {
     expect(ownCloudStage(mine("checkout")), "not paid yet").toBeNull();
   });
 
-  it("a first run that went the dusk cloud way is kept as the one that made it, with every hint it had", () => {
+  it("a first run that went the madani cloud way is kept as the one that made it, with every hint it had", () => {
     expect(cloudOpenedHere({ onboarding: { completedAt: "x", version: 1 } as { completedAt: string; version: number; hintsSeen?: string[] } }, true, ["a"]).onboarding.hintsSeen).toEqual(["a", CLOUD_OPENED_HERE]);
     expect(cloudOpenedHere({ onboarding: { completedAt: "x", version: 1, hintsSeen: ["a", "b"] } }, true).onboarding.hintsSeen).toEqual(["a", "b", CLOUD_OPENED_HERE]);
     expect(cloudOpenedHere({ onboarding: { completedAt: "x", version: 1 } as { completedAt: string; version: number; hintsSeen?: string[] } }, false).onboarding.hintsSeen).toBeUndefined();

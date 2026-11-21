@@ -94,7 +94,7 @@ export interface MobileLinkDeps {
   push?: PushSender;
   /** whether the person already read this notification (on any device) */
   isRead?: (notificationId: string) => boolean;
-  /** A dusk cloud: its phones sign in with the account instead of pairing, so a phone's own bearer session may ask for a
+  /** A madani cloud: its phones sign in with the account instead of pairing, so a phone's own bearer session may ask for a
    * relay channel, and is listed as a phone once it does. */
   adoptSessions?: boolean;
   fetch?: typeof fetch;
@@ -122,10 +122,10 @@ export function readOnPhones(ids: unknown): void {
   if (activeRead && Array.isArray(ids)) activeRead(ids.filter((id): id is string => typeof id === "string"));
 }
 
-/** DUSK_MOBILE_RELAY: the relay that holds typed-code lookups when no link agent names one ("default" for the public one,
+/** MADANI_MOBILE_RELAY: the relay that holds typed-code lookups when no link agent names one ("default" for the public one,
  * "none" for no typed codes); unset, the desktop app uses the public one and a server none */
 export function mobileLookupRelay(env: NodeJS.ProcessEnv = process.env, desktop = false): string | null {
-  const value = env.DUSK_MOBILE_RELAY?.trim();
+  const value = env.MADANI_MOBILE_RELAY?.trim();
   if (value === "default" || (!value && desktop)) return DEFAULT_MOBILE_RELAY;
   return value && /^https?:\/\/[^/\s]+$/.test(value) ? value : null;
 }
@@ -473,7 +473,7 @@ export function createMobileLink(deps: MobileLinkDeps) {
   activeRead = read;
 
   return {
-    /** the channel sync of a phone hub running in this process (a dusk cloud's), as POST /api/mobile/relay/sync answers it */
+    /** the channel sync of a phone hub running in this process (a madani cloud's), as POST /api/mobile/relay/sync answers it */
     async relaySync(input: Record<string, unknown>): Promise<unknown> {
       const closed = new AbortController();
       if (input.signal instanceof AbortSignal) input.signal.addEventListener("abort", () => closed.abort(), { once: true });

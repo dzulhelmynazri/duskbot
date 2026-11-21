@@ -84,13 +84,13 @@ export async function seedAdminData(app: ReturnType<typeof createDashboardApp>, 
     await analytics.record("sign_in", { accountId: account.id, at: account.createdAt + 1000, props: { kind: "web" } });
     for (const [s, step] of ["name", "plan", "app"].entries()) if (i % 7 !== 3 || s === 0) await analytics.record("onboarding_step", { accountId: account.id, at: account.createdAt + (s + 1) * 60_000, props: { step, ...(s ? { ms: Math.round(20_000 + rand() * 90_000) } : {}) } });
     if (rand() < 0.6) await analytics.record("page_action", { accountId: account.id, at: account.createdAt + 130_000, props: { action: "choose", label: "plan", value: pick(["plus", "plus", "pro"]), path: "/welcome" } });
-    if (rand() < 0.5) await analytics.record("page_action", { accountId: account.id, at: account.createdAt + 200_000, props: { action: "download", label: "download_dusk_bot", value: pick(["mac", "mac", "windows"]), path: "/welcome" } });
+    if (rand() < 0.5) await analytics.record("page_action", { accountId: account.id, at: account.createdAt + 200_000, props: { action: "download", label: "download_madani_bot", value: pick(["mac", "mac", "windows"]), path: "/welcome" } });
     if (i % 7 !== 3) await analytics.record("onboarding_done", { accountId: account.id, at: account.createdAt + 5 * 60_000, props: { ms: Math.round(30_000 + rand() * 120_000) } });
     if (i % 2 === 0) await analytics.record("app_paired", { accountId: account.id, at: account.createdAt + 3_600_000, props: { via: "app", platform: i % 4 === 0 ? "darwin" : "win32" } });
     if (i % 3 !== 2 && i < 12) await analytics.record("first_bot_reply", { accountId: account.id, at: account.createdAt + 2 * 3_600_000 });
     for (let t = account.createdAt + DAY; t < now; t += DAY) {
       if (rand() < (new Date(t).getUTCDay() % 6 === 0 ? 0.35 : 0.65)) {
-        const ctx = { session: vid(), host: "dusk.bot", country: pick(CITIES)[0], device: "desktop" as const, os: i % 4 === 0 ? "mac" as const : "windows" as const, browser: "chrome" as const };
+        const ctx = { session: vid(), host: "madani.bot", country: pick(CITIES)[0], device: "desktop" as const, os: i % 4 === 0 ? "mac" as const : "windows" as const, browser: "chrome" as const };
         for (const [k, path] of ["/", pick(["/bots", "/usage", "/cloud", "/billing"])].entries()) await analytics.record("page_view", { accountId: account.id, at: t + k * 90_000, props: { path }, ctx });
       }
       if (i % 2 === 0 && rand() < 0.7) await analytics.record("app_active", { accountId: account.id, at: t + 3_600_000, props: { platform: i % 4 === 0 ? "darwin" : "win32", appVersion: "0.2.15" } });
@@ -174,7 +174,7 @@ function seedTrials(app: ReturnType<typeof createDashboardApp>, accounts: Seeded
     const visitor = `vtrial${k}`.padEnd(22, "x"), [source, channel] = ([["X", "social"], ["Google", "search"], ["ChatGPT", "ai"], ["Hacker News", "referral"]] as const)[k % 4]!;
     void app.analytics.sink.insert({ id: `ev_trial_vid_${k}`, name: "identify", at: start - 50_000, accountId: account.id, props: { via: "page" }, ctx: { visitor } });
     void app.analytics.sink.insert({ id: `ev_trial_site_${k}`, name: "site_view", at: start - 2 * 3_600_000, accountId: null, props: { path: "/" },
-      ctx: { visitor, session: `strial${k}`, pv: `pvtrial${k}`, page: "/", host: "dusk.bot", source, channel, country: ctx.country, device: "desktop", os: "mac", browser: k % 2 ? "chrome" : "safari" } });
+      ctx: { visitor, session: `strial${k}`, pv: `pvtrial${k}`, page: "/", host: "madani.bot", source, channel, country: ctx.country, device: "desktop", os: "mac", browser: k % 2 ? "chrome" : "safari" } });
     for (const [name, props, after] of [["onboarding_step", { step: "name" }, -40_000], ["onboarding_done", {}, -20_000], ["app_open", { kind: "desktop", platform, appVersion: "0.2.20" }, 0],
       ["first_bot_reply", {}, 120_000]] as const) void app.analytics.sink.insert({ id: `ev_trial_${name}_${k}`, name, at: start + after, accountId: account.id, props, ctx });
     for (let d = 0; start + d * DAY < now; d++) {
@@ -304,7 +304,7 @@ async function seedHistoricEvents(app: ReturnType<typeof createDashboardApp>, no
   const { analytics } = app, state = app.billing.store.state;
   for (const [k, account] of historic.entries()) {
     const touch = TOUCHES[(k * 3) % TOUCHES.length]!, place = CITIES[(k * 5) % CITIES.length]!, visitor = vid(), at = account.createdAt - Math.round((1 + k % 5) * 3_600_000);
-    const ctx = { visitor, session: vid(), pv: vid(), page: "/", host: "dusk.bot", source: touch.source, channel: touch.channel, ...(touch.referrer ? { referrer: touch.referrer } : {}),
+    const ctx = { visitor, session: vid(), pv: vid(), page: "/", host: "madani.bot", source: touch.source, channel: touch.channel, ...(touch.referrer ? { referrer: touch.referrer } : {}),
       ...(touch.campaign ? { utm: { campaign: touch.campaign } } : {}), country: place[0], region: place[1], city: place[2], device: "desktop" as const, os: "mac" as const, browser: "chrome" as const };
     await analytics.record("site_view", { at, visitor, props: { path: "/" }, ctx });
     await analytics.record("identify", { accountId: account.id, at: account.createdAt, props: { via: "page" }, ctx: { visitor } });
@@ -343,9 +343,9 @@ async function seedWeb(app: ReturnType<typeof createDashboardApp>, accounts: See
   const { analytics } = app;
   const visit = async (visitor: string, start: number, opts: { pages?: string[]; goals?: Array<[string, Record<string, string>?]>; touch?: (typeof TOUCHES)[number]; place?: (typeof CITIES)[number] } = {}) => {
     const touch = opts.touch ?? weightedTouch(), place = opts.place ?? placeOf(), mobile = rand() < 0.32;
-    const term = touch.channel === "search" && rand() < 0.6 ? pick(["ai-assistant", "dusk-bot", "personal-ai-agent", "local-ai-assistant", "ai-for-work"]) : undefined;
+    const term = touch.channel === "search" && rand() < 0.6 ? pick(["ai-assistant", "madani-bot", "personal-ai-agent", "local-ai-assistant", "ai-for-work"]) : undefined;
     const session = vid(), pages = opts.pages ?? ["/", ...(rand() < 0.55 ? [pick(PATHS.slice(1))] : []), ...(rand() < 0.25 ? [pick(PATHS.slice(1))] : [])];
-    const base = { session, host: rand() < 0.92 ? "dusk.bot" : "preview.dusk.bot", country: place[0], region: place[1], city: place[2], lat: place[3], lon: place[4], device: mobile ? "mobile" as const : "desktop" as const,
+    const base = { session, host: rand() < 0.92 ? "madani.bot" : "preview.madani.bot", country: place[0], region: place[1], city: place[2], lat: place[3], lon: place[4], device: mobile ? "mobile" as const : "desktop" as const,
       os: mobile ? (rand() < 0.6 ? "ios" as const : "android" as const) : pick(["mac", "windows", "linux"] as const), browser: pick(["chrome", "safari", "firefox", "edge"] as const) };
     let at = start;
     for (const [k, path] of pages.entries()) {
@@ -417,7 +417,7 @@ async function seedWeb(app: ReturnType<typeof createDashboardApp>, accounts: See
   await visit(story, mira.createdAt - 18 * 60_000, { pages: ["/", "/pricing"], touch: TOUCHES[0], place: CITIES[0], goals: [["cta_click", { to: "/dashboard/signup", from: "/pricing", value: "plus" }]] });
   await analytics.record("identify", { accountId: mira.id, at: mira.createdAt + 1500, props: { via: "page" }, ctx: { visitor: story } });
   await analytics.record("plan_chosen", { accountId: mira.id, at: mira.createdAt + 150_000, props: { plan: "plus", period: "month" } });
-  const dash = { session: vid(), host: "dusk.bot", device: "desktop" as const, os: "mac" as const, browser: "arc" as const, country: "US", region: "California", city: "San Francisco" };
+  const dash = { session: vid(), host: "madani.bot", device: "desktop" as const, os: "mac" as const, browser: "arc" as const, country: "US", region: "California", city: "San Francisco" };
   await analytics.record("page_view", { accountId: mira.id, at: paidAt - 12 * 60_000, props: { path: "/" }, ctx: { ...dash, source: "direct", channel: "direct", page: "/" } });
   await analytics.record("page_action", { accountId: mira.id, at: paidAt - 11 * 60_000, props: { action: "upsell_shown", label: "dash_sidebar", path: "/" }, ctx: dash });
   await analytics.record("page_action", { accountId: mira.id, at: paidAt - 6 * 60_000, props: { action: "upsell_click", label: "dash_sidebar", path: "/", ms: 12_000 }, ctx: dash });
@@ -440,7 +440,7 @@ async function seedWeb(app: ReturnType<typeof createDashboardApp>, accounts: See
   await analytics.record("cloud_state", { accountId: mira.id, at: paidAt + 4 * 60_000, props: { cloudId: "c0123456789abcdef01234567", kind: "starter", region: "us-east", from: "provisioning", to: "running" } });
   for (let v = 0; v < 9; v++) await visit(vid(), now - Math.round(rand() * 25 * 60_000), { pages: rand() < 0.5 ? ["/", "/pricing"] : ["/"], goals: rand() < 0.3 ? [["waitlist_join"]] : [] });
   const BOTS: Array<[string, "answers" | "indexing" | "training"]> = [["GPTBot", "training"], ["ChatGPT-User", "answers"], ["ClaudeBot", "training"], ["PerplexityBot", "indexing"], ["OAI-SearchBot", "indexing"], ["Claude-User", "answers"]];
-  for (let c = 0; c < 140; c++) { const [bot, kind] = pick(BOTS); await analytics.sink.crawl({ at: now - Math.round(rand() * 29 * DAY), bot, kind, path: pick([...PATHS, "/robots.txt", "/llms.txt", "/docs/getting-started"]), host: "preview.dusk.bot" }); }
+  for (let c = 0; c < 140; c++) { const [bot, kind] = pick(BOTS); await analytics.sink.crawl({ at: now - Math.round(rand() * 29 * DAY), bot, kind, path: pick([...PATHS, "/robots.txt", "/llms.txt", "/docs/getting-started"]), host: "preview.madani.bot" }); }
   await analytics.sink.saveNote({ id: "note_launchx1", at: now - 12 * DAY, text: "launch thread on x", by: accounts[0]!.id, createdAt: now });
   await analytics.sink.saveNote({ id: "note_pricing2", at: now - 4 * DAY, text: "new pricing page", by: accounts[0]!.id, createdAt: now });
 }

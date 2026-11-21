@@ -27,7 +27,7 @@ const BACK: Record<string, VpsMoveBack | undefined> = {
 const where: VpsWhere = { place: "mac", server: null, bring: [SERVER], ...(view === "refused" ? { blocked: "own-bots" as const } : {}) };
 const linkView: VpsLinkView = { ...EMPTY_VIEW, ...(BACK[view] ? { back: BACK[view] } : {}) } as VpsLinkView;
 
-window.duskDesktop = {
+window.madaniDesktop = {
   platform: "darwin",
   remoteClient: { active: false },
   getCapabilities: async () => ({}),
@@ -40,7 +40,7 @@ window.duskDesktop = {
     backups: async () => [],
     moveBack: async () => ({ ok: true }),
   },
-} as unknown as typeof window.duskDesktop;
+} as unknown as typeof window.madaniDesktop;
 
 const now = Date.now();
 const googleFlow = {

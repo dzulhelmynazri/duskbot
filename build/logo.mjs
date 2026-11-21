@@ -1,4 +1,4 @@
-// the dusk logo: kit, the white pixel cat, in front of a sunrise, one cell per pixel of a 33 by 33 grid
+// the madani logo: kit, the white pixel cat, in front of a sunrise, one cell per pixel of a 33 by 33 grid
 
 export const LOGO_SIZE = 33;
 export const KIT = "#ffffff";

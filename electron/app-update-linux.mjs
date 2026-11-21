@@ -18,9 +18,9 @@ export function swappedVersion(dir) {
 }
 
 /** the release's AppImage in a SHA256SUMS text: `{ name, sha256 }`, or null (only x64 AppImages are built) */
-export const appImageIn = (sums, version) => assetIn(sums, `DuskBot-${version}-x86_64.AppImage`);
-/** dusk.bot's copy, then the downloads repo's stable name (the same bytes, checked against the same sha256) */
-export const appImageSources = (version, name) => [mirrorUrl(version, name), zipUrl(version, "DuskBot.AppImage")];
+export const appImageIn = (sums, version) => assetIn(sums, `MadaniBot-${version}-x86_64.AppImage`);
+/** madani.bot's copy, then the downloads repo's stable name (the same bytes, checked against the same sha256) */
+export const appImageSources = (version, name) => [mirrorUrl(version, name), zipUrl(version, "MadaniBot.AppImage")];
 
 const writableDir = (dir) => { try { accessSync(dir, constants.W_OK); return true; } catch { return false; } };
 const isFile = (file) => { try { return statSync(file).isFile(); } catch { return false; } };
@@ -81,7 +81,7 @@ function flush(file) {
 }
 
 /** the arguments the relaunched AppImage gets: the person's own switches (--no-sandbox and the like), never a one-shot link */
-export const relaunchArgs = (argv) => argv.filter((arg) => arg.startsWith("--") && arg !== "--dusk-hidden");
+export const relaunchArgs = (argv) => argv.filter((arg) => arg.startsWith("--") && arg !== "--madani-hidden");
 
 /** createAppUpdater's options for the AppImage at `env.APPIMAGE` (main adds what every platform shares) */
 export function appImageUpdates({ app, dir, env = process.env, argv = process.argv, log }) {

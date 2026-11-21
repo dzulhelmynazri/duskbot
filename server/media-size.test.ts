@@ -69,7 +69,7 @@ function webpLossless(w: number, h: number): Buffer {
 const dirs: string[] = [];
 afterEach(() => { for (const dir of dirs.splice(0)) rmSync(dir, { recursive: true, force: true }); });
 function store(files: Record<string, Buffer>): string {
-  const dir = mkdtempSync(join(tmpdir(), "dusk-media-"));
+  const dir = mkdtempSync(join(tmpdir(), "madani-media-"));
   dirs.push(dir);
   for (const [name, bytes] of Object.entries(files)) writeFileSync(join(dir, name), bytes);
   return dir;

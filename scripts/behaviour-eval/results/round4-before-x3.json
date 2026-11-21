@@ -192,7 +192,7 @@
       "tools": [],
       "state": "idle",
       "ms": 3605,
-      "output": "I can’t rename the folder because Works on is Off in my settings, so I don’t have access to your Documents. Turn it on, and I can rename `dusk-bto` to `dusk-bot`."
+      "output": "I can’t rename the folder because Works on is Off in my settings, so I don’t have access to your Documents. Turn it on, and I can rename `madani-bto` to `madani-bot`."
     },
     {
       "model": "gpt-6.1-terra",
@@ -438,7 +438,7 @@
       "tools": [],
       "state": "idle",
       "ms": 4518,
-      "output": "I can’t rename the folder because Works on is Off in my settings, so I can’t access your Documents. Turn Works on back on, and I can rename `dusk-bto` to `dusk-bot`."
+      "output": "I can’t rename the folder because Works on is Off in my settings, so I can’t access your Documents. Turn Works on back on, and I can rename `madani-bto` to `madani-bot`."
     },
     {
       "model": "gpt-6.1-terra",
@@ -683,7 +683,7 @@
       "tools": [],
       "state": "idle",
       "ms": 3622,
-      "output": "I can’t rename the folder because Works on is Off in this bot’s settings. Turn it on, and I can rename `dusk-bto` to `dusk-bot` in Documents."
+      "output": "I can’t rename the folder because Works on is Off in this bot’s settings. Turn it on, and I can rename `madani-bto` to `madani-bot` in Documents."
     },
     {
       "model": "gpt-6.1-terra",
@@ -909,7 +909,7 @@
       "tools": [],
       "state": "idle",
       "ms": 2952,
-      "output": "Works on is Off, so I can’t rename the folder for you. You’ll need to rename “dusk‑bto” to “dusk‑bot” in your Documents manually or enable Works on in the bot settings."
+      "output": "Works on is Off, so I can’t rename the folder for you. You’ll need to rename “madani‑bto” to “madani‑bot” in your Documents manually or enable Works on in the bot settings."
     },
     {
       "model": "gpt-oss-120b-medium",
@@ -1524,7 +1524,7 @@
       ],
       "state": "idle",
       "ms": 5949,
-      "output": "Here is a content plan for your bakery's Instagram, covering four short-form video types designed to drive engagement and cravings.\n\n### 1. The Behind-the-Scenes Morning Prep (ASMR)\n* **Hook:** The soothing sounds of the 4:00 AM dough stretch and crackle.\n* **4-Shot List:**\n  1. Close-up of flour being sifted onto the marble counter in slow motion.\n  2. The rhythmic kneading of sourdough or laminated croissant dough.\n  3. Golden loaves sliding out of the steaming deck oven.\n  4. A quick knife tap on a crusty crust to show the crunch.\n* **Best Posting Day:** Tuesday morning, to catch early-week scrollers looking for comfort.\n\n### 2. The Signature Product Spotlight\n* **Hook:** Why people line up before we even unlock the front doors.\n* **4-Shot List:**\n  1. Quick pan across the display case filled with your best-selling pastry.\n  2. A satisfying cross-section cut revealing gooey layers or rich filling.\n  3. Steam rising as a fresh batch is glazed or dusted with powdered sugar.\n  4. A happy customer taking their very first bite in the shop.\n* **Best Posting Day:** Thursday afternoon, building anticipation for the weekend.\n\n### 3. Quick Baking Tip or Myth-Busting\n* **Hook:** Stop making this one mistake with your home-baked cookies.\n* **4-Shot List:**\n  1. Head-on shot of the baker holding up two contrasting baked goods.\n  2. Fast-paced demo showing the correct technique versus the wrong one.\n  3. Close-up of the resulting texture difference side by side.\n  4. Pointing finger or text overlay directing them to save the post.\n* **Best Posting Day:** Saturday morning, when people have time to bake at home.\n\n### 4. The Weekend Countdown / Special Menu Reveal\n* **Hook:** Three things you need to grab this weekend before they sell out.\n* **4-Shot List:**\n  1. Fast cuts of three limited-edition items spinning on a cake stand.\n  2. Text overlay counting down the days or hours until opening.\n  3. A hand boxing up the treats with a custom branded sticker.\n  4. Shot of the neon shop sign glowing at dusk.\n* **Best Posting Day:** Friday morning, right as weekend plans are being made.\n\nWant me to write out sample captions and hashtag sets for any of these?"
+      "output": "Here is a content plan for your bakery's Instagram, covering four short-form video types designed to drive engagement and cravings.\n\n### 1. The Behind-the-Scenes Morning Prep (ASMR)\n* **Hook:** The soothing sounds of the 4:00 AM dough stretch and crackle.\n* **4-Shot List:**\n  1. Close-up of flour being sifted onto the marble counter in slow motion.\n  2. The rhythmic kneading of sourdough or laminated croissant dough.\n  3. Golden loaves sliding out of the steaming deck oven.\n  4. A quick knife tap on a crusty crust to show the crunch.\n* **Best Posting Day:** Tuesday morning, to catch early-week scrollers looking for comfort.\n\n### 2. The Signature Product Spotlight\n* **Hook:** Why people line up before we even unlock the front doors.\n* **4-Shot List:**\n  1. Quick pan across the display case filled with your best-selling pastry.\n  2. A satisfying cross-section cut revealing gooey layers or rich filling.\n  3. Steam rising as a fresh batch is glazed or dusted with powdered sugar.\n  4. A happy customer taking their very first bite in the shop.\n* **Best Posting Day:** Thursday afternoon, building anticipation for the weekend.\n\n### 3. Quick Baking Tip or Myth-Busting\n* **Hook:** Stop making this one mistake with your home-baked cookies.\n* **4-Shot List:**\n  1. Head-on shot of the baker holding up two contrasting baked goods.\n  2. Fast-paced demo showing the correct technique versus the wrong one.\n  3. Close-up of the resulting texture difference side by side.\n  4. Pointing finger or text overlay directing them to save the post.\n* **Best Posting Day:** Saturday morning, when people have time to bake at home.\n\n### 4. The Weekend Countdown / Special Menu Reveal\n* **Hook:** Three things you need to grab this weekend before they sell out.\n* **4-Shot List:**\n  1. Fast cuts of three limited-edition items spinning on a cake stand.\n  2. Text overlay counting down the days or hours until opening.\n  3. A hand boxing up the treats with a custom branded sticker.\n  4. Shot of the neon shop sign glowing at madani.\n* **Best Posting Day:** Friday morning, right as weekend plans are being made.\n\nWant me to write out sample captions and hashtag sets for any of these?"
     },
     {
       "model": "gemini-3.1-flash-lite",
@@ -1851,7 +1851,7 @@
       ],
       "state": "idle",
       "ms": 3445,
-      "output": "Works on is Off in this bot's settings, so I cannot run shell commands or rename the folder on your computer directly. You can rename `dusk-bto` to `dusk-bot` in your Documents folder using Finder or the Terminal."
+      "output": "Works on is Off in this bot's settings, so I cannot run shell commands or rename the folder on your computer directly. You can rename `madani-bto` to `madani-bot` in your Documents folder using Finder or the Terminal."
     },
     {
       "model": "gemini-3.1-flash-lite",
@@ -2024,7 +2024,7 @@
       ],
       "state": "completed",
       "ms": 6917,
-      "output": "On it, creating your new spending bot now.\n---\nDone, I've asked dusk bot to create the Ledger bot for you."
+      "output": "On it, creating your new spending bot now.\n---\nDone, I've asked madani bot to create the Ledger bot for you."
     },
     {
       "model": "gemini-3.1-flash-lite",

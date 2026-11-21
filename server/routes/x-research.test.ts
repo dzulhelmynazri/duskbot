@@ -36,7 +36,7 @@ async function callInternal(
 }
 
 describe("X research internal routes", () => {
-  const included: ServiceCredential = { token: "dusk_xd_t", api: "https://cloud.example.test/api/cloud/services/x", included: true };
+  const included: ServiceCredential = { token: "madani_xd_t", api: "https://cloud.example.test/api/cloud/services/x", included: true };
   const enabled = (client = fakeClient(), credential: () => ServiceCredential | null = () => included) =>
     ({ client, handler: createXResearchInternalRoutes({ credential, botEnabled: (id) => id === "bot-1", client: () => client }) });
 

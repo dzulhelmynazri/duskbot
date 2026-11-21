@@ -52,12 +52,12 @@ export function cleanAppEvent(input, at = Date.now()) {
 }
 
 /** Usage analytics leave only an installed (packaged) app, and never a CI, e2e or smoke launch: those set
- * DUSK_ANALYTICS=0 (or run with CI set), so test builds never count as installs. */
+ * MADANI_ANALYTICS=0 (or run with CI set), so test builds never count as installs. */
 export function analyticsAllowed({ packaged, env = process.env, custom = false }) {
   const ci = typeof env.CI === "string" && env.CI !== "" && env.CI !== "0" && env.CI.toLowerCase() !== "false";
-  // a verification run against preview (a custom origin) may opt in with DUSK_ANALYTICS=1; never toward dusk.bot
-  const asked = env.DUSK_ANALYTICS === "1" && custom === true;
-  return (packaged === true || asked) && env.DUSK_ANALYTICS !== "0" && !ci;
+  // a verification run against preview (a custom origin) may opt in with MADANI_ANALYTICS=1; never toward madani.bot
+  const asked = env.MADANI_ANALYTICS === "1" && custom === true;
+  return (packaged === true || asked) && env.MADANI_ANALYTICS !== "0" && !ci;
 }
 
 /** Posts the desktop renderer's usage events to the account service from main, with this computer's account token when

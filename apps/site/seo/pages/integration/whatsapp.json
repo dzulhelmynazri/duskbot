@@ -4,8 +4,8 @@
   "title": "WhatsApp Business AI assistant for replies and reminders",
   "nav": "whatsapp",
   "h1": "a whatsapp business bot for replies and reminders",
-  "description": "Get WhatsApp Business templates and customer reply drafts ready with a dusk bot. Review message status and business details from the connected account.",
-  "answer": "**get customer replies ready before the support handover.** a dusk bot can inspect available whatsapp business history, read template status and prepare replies here. start read only while you review the results.[^3] this uses whatsapp business, so personal chats stay outside it. to text your own bots from a phone, use dusk's separate phone connection.",
+  "description": "Get WhatsApp Business templates and customer reply drafts ready with a madani bot. Review message status and business details from the connected account.",
+  "answer": "**get customer replies ready before the support handover.** a madani bot can inspect available whatsapp business history, read template status and prepare replies here. start read only while you review the results.[^3] this uses whatsapp business, so personal chats stay outside it. to text your own bots from a phone, use madani's separate phone connection.",
   "tags": [
     "business-messaging",
     "customer-support",
@@ -94,12 +94,12 @@
     "**use whatsapp business for this connection.** it cannot read family groups or an ordinary personal whatsapp inbox.",
     "**show the gaps when history is missing.** the bot should say what it could not read and leave the rest open.",
     "**keep reply preparation read only.** it can write text here while whatsapp stays untouched; read only blocks customer sends.",
-    "**give scheduled work an awake host.** local runs need dusk open and the computer awake. dusk cloud keeps the routine running."
+    "**give scheduled work an awake host.** local runs need madani open and the computer awake. madani cloud keeps the routine running."
   ],
   "sections": [
     {
       "h": "texting your bots is a separate connection",
-      "md": "**text your own bots through dusk phone pairing.** scan the code on an iphone or android phone. store apps are on their way; today's version opens in your phone browser.[^4]\n\nif a customer answer needs [hubspot](/integrations/hubspot) records or a [shopify](/integrations/shopify) order, connect that app separately.\n\nuse the order record for shipment status. the message history alone can't tell you the parcel shipped."
+      "md": "**text your own bots through madani phone pairing.** scan the code on an iphone or android phone. store apps are on their way; today's version opens in your phone browser.[^4]\n\nif a customer answer needs [hubspot](/integrations/hubspot) records or a [shopify](/integrations/shopify) order, connect that app separately.\n\nuse the order record for shipment status. the message history alone can't tell you the parcel shipped."
     },
     {
       "h": "give the reply a source it can point to",
@@ -113,7 +113,7 @@
     },
     {
       "q": "can i text my bots from my phone?",
-      "a": "**yes, use dusk phone pairing.** scan the code and use the browser version until store apps arrive. pairing to your computer needs that computer on with dusk running."
+      "a": "**yes, use madani phone pairing.** scan the code and use the browser version until store apps arrive. pairing to your computer needs that computer on with madani running."
     },
     {
       "q": "will it automatically answer customers?",
@@ -122,19 +122,19 @@
   ],
   "sources": [
     {
-      "label": "dusk bot docs: files and apps",
+      "label": "madani bot docs: files and apps",
       "url": "/docs/files-and-apps"
     },
     {
-      "label": "dusk bot docs: routines",
+      "label": "madani bot docs: routines",
       "url": "/docs/routines"
     },
     {
-      "label": "dusk bot docs: approval and sending",
+      "label": "madani bot docs: approval and sending",
       "url": "/docs/computer"
     },
     {
-      "label": "dusk bot docs: phone",
+      "label": "madani bot docs: phone",
       "url": "/docs/phone"
     }
   ],

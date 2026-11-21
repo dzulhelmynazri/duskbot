@@ -36,7 +36,7 @@ export interface ModelProviderDef {
   keyPlaceholder?: string;
   /** A server on this machine or its network that needs no key. */
   keyless?: true;
-  /** Runs on the machine itself: offered only where it can be reached, never on dusk cloud. */
+  /** Runs on the machine itself: offered only where it can be reached, never on madani cloud. */
   local?: { port: number };
   /** Engines that sign in with a subscription, by driver kind; their instances count as this provider connected. */
   signIn?: { label: string; driverKinds: readonly string[] };
@@ -214,12 +214,12 @@ export function requiredFields(def: Pick<ModelProviderDef, "fields">): ProviderF
 
 export interface ProviderOffer {
   offered: boolean;
-  /** Why not, or why it is marked: a local server dusk cloud cannot reach, or one this machine does not run. */
+  /** Why not, or why it is marked: a local server madani cloud cannot reach, or one this machine does not run. */
   reason?: "cloud" | "not-running";
 }
 
 /** Whether a provider is offered where the bots run. A local server is offered on a computer (marked when it is not
- * running), on a server only when that server runs it, and never on dusk cloud, which reaches no one's local models. */
+ * running), on a server only when that server runs it, and never on madani cloud, which reaches no one's local models. */
 export function providerOffer(def: ModelProviderDef, place: Place, running: ReadonlySet<string>): ProviderOffer {
   if (!def.local) return { offered: true };
   if (place === "cloud") return { offered: false, reason: "cloud" };
@@ -229,9 +229,9 @@ export function providerOffer(def: ModelProviderDef, place: Place, running: Read
 
 /** The place a server runs as, from its environment. */
 export function placeFromEnv(env: Record<string, string | undefined>): Place {
-  if (env.DUSK_CLOUD_ROLE === "home" || env.DUSK_CLOUD_ROLE === "team") return "cloud";
-  // a source checkout's `pnpm dev:app` runs the harness as the desktop app's own child too (DUSK_DEV_OWN_SERVER)
-  return env.DUSK_DESKTOP_PARENT === "1" || env.DUSK_DEV_OWN_SERVER === "1" ? "computer" : "server";
+  if (env.MADANI_CLOUD_ROLE === "home" || env.MADANI_CLOUD_ROLE === "team") return "cloud";
+  // a source checkout's `pnpm dev:app` runs the harness as the desktop app's own child too (MADANI_DEV_OWN_SERVER)
+  return env.MADANI_DESKTOP_PARENT === "1" || env.MADANI_DEV_OWN_SERVER === "1" ? "computer" : "server";
 }
 
 export interface ConnectableInstance {

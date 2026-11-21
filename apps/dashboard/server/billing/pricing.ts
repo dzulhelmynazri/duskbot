@@ -61,7 +61,7 @@ export function quote(cart: Cart, config: BillingConfig = BILLING_CONFIG): Quote
   if (cart.desktop.kind !== "none") {
     const desktop = config.desktops[cart.desktop.kind];
     machine = { ...(cart.desktop.spec ?? desktop.machine) }; botComputers = desktop.botComputers;
-    lines.push({ kind: "desktop", label: cart.desktop.kind === "dedicated" ? `dusk cloud dedicated, ${machine.vcpu} vCPU, ${machine.ramGb} GB, ${machine.diskGb} GB` : `dusk cloud ${desktop.label.toLowerCase()}`,
+    lines.push({ kind: "desktop", label: cart.desktop.kind === "dedicated" ? `madani cloud dedicated, ${machine.vcpu} vCPU, ${machine.ramGb} GB, ${machine.diskGb} GB` : `madani cloud ${desktop.label.toLowerCase()}`,
       amountCents: (cart.desktop.kind === "dedicated" ? dedicatedMonthlyCents(machine, config) : desktop.monthlyCents!) * multiplier });
   }
   const sum = lines.reduce((sum, line) => sum + line.amountCents, 0);
@@ -77,7 +77,7 @@ export function planBundle(cart: Cart, config: BillingConfig = BILLING_CONFIG) {
   const same = (a: Cart["desktop"], b: Cart["desktop"]) => a.kind === b.kind && a.spec?.vcpu === b.spec?.vcpu && a.spec?.ramGb === b.spec?.ramGb && a.spec?.diskGb === b.spec?.diskGb;
   return config.bundles.find(item => item.cart.license.kind === cart.license.kind && item.cart.desktop.kind !== "none" && same(item.cart.desktop, cart.desktop)) ?? null;
 }
-/** the DUSK_DODO_PRODUCTS keys a cart needs, base product first, each add-on with the quantity it is sent with. A plan (pro, team) is one
+/** the MADANI_DODO_PRODUCTS keys a cart needs, base product first, each add-on with the quantity it is sent with. A plan (pro, team) is one
  *  product at its full price, never a licence line plus a cloud line; only extra team seats are an add-on, so only they show a quantity */
 export function dodoCartKeys(cart: Cart, config: BillingConfig = BILLING_CONFIG): Array<{ key: string; quantity: number }> {
   const hasLicense = cart.license.kind !== "none";
@@ -98,7 +98,7 @@ export function dodoCartKeys(cart: Cart, config: BillingConfig = BILLING_CONFIG)
   }
   return keys;
 }
-/** the cart as dodo ids, or null when it is empty or any key it needs is missing from DUSK_DODO_PRODUCTS */
+/** the cart as dodo ids, or null when it is empty or any key it needs is missing from MADANI_DODO_PRODUCTS */
 export function dodoCart(cart: Cart, products: Record<string, string>, config: BillingConfig = BILLING_CONFIG): ProviderCartLine[] | null {
   const keys = dodoCartKeys(cart, config);
   if (!keys.length || keys.some(({ key }) => !products[key])) return null;

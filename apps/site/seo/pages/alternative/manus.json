@@ -4,7 +4,7 @@
   "title": "Manus alternatives: compare credits with your own AI",
   "nav": "manus",
   "h1": "manus alternatives when you want a different ai bill",
-  "description": "Choose between Manus cloud tasks and ongoing dusk bot teammates. Compare dated prices, credit limits and separate AI bills, plus the ownership update.",
+  "description": "Choose between Manus cloud tasks and ongoing madani bot teammates. Compare dated prices, credit limits and separate AI bills, plus the ownership update.",
   "keyword": "manus alternatives",
   "keywords": [
     "manus alternative",
@@ -13,7 +13,7 @@
     "manus ai review",
     "manus ai vs claude"
   ],
-  "answer": "**need a finished deck, or a bot that knows next week's job?** manus bundles cloud tasks, models and credits. dusk keeps ongoing bots on the ai you choose, with your provider billing usage.[^1][^2][^3]\n\nas of 12 november 2026, manus is independent again after the meta deal unwound. old meta-owned descriptions miss the second half.[^10]",
+  "answer": "**need a finished deck, or a bot that knows next week's job?** manus bundles cloud tasks, models and credits. madani keeps ongoing bots on the ai you choose, with your provider billing usage.[^1][^2][^3]\n\nas of 12 november 2026, manus is independent again after the meta deal unwound. old meta-owned descriptions miss the second half.[^10]",
   "updated": "2026-11-12",
   "review": {
     "status": "approved",
@@ -52,7 +52,7 @@
       "**you want a finished deliverable.** manus packages research, websites, slides and media in one cloud product.",
       "**you prefer its models and credits.** pro also offers manus flex for your own keys."
     ],
-    "dusk": [
+    "madani": [
       "**you want bots you keep.** give each one a job, chats, memory and its own ai.",
       "**you want a separate ai bill.** start with personal desktop use and pay your provider for usage."
     ]
@@ -62,7 +62,7 @@
     "intro": "**the same $20 buys credits here and hosting there.** prices and ownership are as of 12 november 2026. compare what you need delivered before comparing the allowances.",
     "cols": [
       "Manus",
-      "dusk bot"
+      "madani bot"
     ],
     "rows": [
       {
@@ -148,11 +148,11 @@
       }
     ]
   },
-  "method": "**use the published offer to choose your trial.** we read manus pricing and product pages against dusk docs on 12 november 2026. we make dusk bot.\n\nwe haven't run identical creation or research jobs through both, so we can't turn credits into a price for your finished work.\n\nthe ownership update comes from a press report. the older acquisition announcement shows how the story started.",
+  "method": "**use the published offer to choose your trial.** we read manus pricing and product pages against madani docs on 12 november 2026. we make madani bot.\n\nwe haven't run identical creation or research jobs through both, so we can't turn credits into a price for your finished work.\n\nthe ownership update comes from a press report. the older acquisition announcement shows how the story started.",
   "sections": [
     {
       "h": "daily credits and monthly credits are different",
-      "md": "**the free daily allowance won't tell you what pro gets done.** manus free lists 300 credits a day; pro lists 4,000 a month. pro allows 20 tasks at once, versus 3 on free.[^1]\n\ntry a job you actually need and see how much allowance it uses. dusk leaves ai usage with your provider.[^2] free personal desktop use still needs that ai.\n\ncompare the recurring job, your existing ai allowance and hosting needs. the [agent cost guide](/guides/how-much-does-an-ai-agent-cost) separates those costs."
+      "md": "**the free daily allowance won't tell you what pro gets done.** manus free lists 300 credits a day; pro lists 4,000 a month. pro allows 20 tasks at once, versus 3 on free.[^1]\n\ntry a job you actually need and see how much allowance it uses. madani leaves ai usage with your provider.[^2] free personal desktop use still needs that ai.\n\ncompare the recurring job, your existing ai allowance and hosting needs. the [agent cost guide](/guides/how-much-does-an-ai-agent-cost) separates those costs."
     },
     {
       "h": "the ownership story has a second half",
@@ -160,7 +160,7 @@
     },
     {
       "h": "a deliverable or a bot you keep",
-      "md": "**keep manus on the shortlist if you want its creation package.** it offers websites, slides and media alongside research.[^4] dusk's different focus is a bot with an ongoing job.\n\nthat bot can keep several threads sharing memory and switch ai without losing chats or files.[^5] [ai teammates](/ai-teammates) explains the setup. [manus versus dusk bot](/vs/manus) covers the direct choice.\n\ntry one narrow recurring job first. inspect its early runs before handing over more."
+      "md": "**keep manus on the shortlist if you want its creation package.** it offers websites, slides and media alongside research.[^4] madani's different focus is a bot with an ongoing job.\n\nthat bot can keep several threads sharing memory and switch ai without losing chats or files.[^5] [ai teammates](/ai-teammates) explains the setup. [manus versus madani bot](/vs/manus) covers the direct choice.\n\ntry one narrow recurring job first. inspect its early runs before handing over more."
     }
   ],
   "faq": [
@@ -170,7 +170,7 @@
     },
     {
       "q": "what are people switching to instead of manus?",
-      "a": "**switch for the job you want to keep doing.** dusk fits ongoing bots and separate ai billing.[^2][^3] manus may fit better for finished slides or websites.[^4] we have no survey of people leaving."
+      "a": "**switch for the job you want to keep doing.** madani fits ongoing bots and separate ai billing.[^2][^3] manus may fit better for finished slides or websites.[^4] we have no survey of people leaving."
     },
     {
       "q": "is manus still owned by meta?",
@@ -184,11 +184,11 @@
       "checked": "2026-11-12"
     },
     {
-      "label": "dusk billing",
+      "label": "madani billing",
       "url": "/docs/account-and-billing"
     },
     {
-      "label": "dusk getting started",
+      "label": "madani getting started",
       "url": "/docs/getting-started"
     },
     {
@@ -197,12 +197,12 @@
       "checked": "2026-11-12"
     },
     {
-      "label": "dusk bots",
+      "label": "madani bots",
       "url": "/docs/bots"
     },
     {
-      "label": "dusk cloud plans",
-      "url": "/docs/dusk-cloud"
+      "label": "madani cloud plans",
+      "url": "/docs/madani-cloud"
     },
     {
       "label": "manus telegram agents",
@@ -210,11 +210,11 @@
       "checked": "2026-11-12"
     },
     {
-      "label": "dusk routines",
+      "label": "madani routines",
       "url": "/docs/routines"
     },
     {
-      "label": "dusk phone pairing",
+      "label": "madani phone pairing",
       "url": "/docs/phone"
     },
     {
@@ -244,7 +244,7 @@
       ],
       [
         "ongoing bots with separate memories and ai choices",
-        "dusk bot"
+        "madani bot"
       ],
       [
         "a guaranteed cost per finished job",
@@ -252,7 +252,7 @@
       ],
       [
         "using an ai plan you already pay for",
-        "compare dusk with your provider's current terms"
+        "compare madani with your provider's current terms"
       ]
     ]
   },

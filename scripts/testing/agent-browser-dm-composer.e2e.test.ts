@@ -2,7 +2,7 @@
 // DM thread whose composer is a contenteditable the page swaps on focus and on re-render, the other opens a page of its
 // own (a tab switch, which clears the engine's refs), and the first then clicks and types a multi-line draft with the
 // refs it read before. A later turn of the same conversation keeps its refs, since its tab is already in front. Runs
-// when agent-browser resolves (tools directory, DUSK_AGENT_BROWSER_PATH or PATH) or DUSK_UI_E2E=1 asks for the
+// when agent-browser resolves (tools directory, MADANI_AGENT_BROWSER_PATH or PATH) or MADANI_UI_E2E=1 asks for the
 // download; otherwise skipped.
 import { randomBytes } from "node:crypto";
 import { mkdirSync, mkdtempSync } from "node:fs";
@@ -19,12 +19,12 @@ import { openGate, type EgressGate } from "../../server/browser/egress/gate.ts";
 import { refusalFor } from "../../server/browser/egress/policy.ts";
 import { threadPage } from "../../server/browser/testing/dm-composer.ts";
 import { removeTempDir } from "../../server/testing/cleanup.ts";
-import { ensureUiBrowser, UI_TOOLS_DIR } from "./control-dusk-ui.ts";
+import { ensureUiBrowser, UI_TOOLS_DIR } from "./control-madani-ui.ts";
 
-const forced = process.env.DUSK_UI_E2E === "1";
+const forced = process.env.MADANI_UI_E2E === "1";
 const enabled = forced || Boolean(resolveAgentBrowserBinary({ dataDir: UI_TOOLS_DIR, env: process.env }));
 if (!enabled) {
-  console.log(`skipping agent-browser DM composer e2e: no agent-browser binary resolves (looked in ${UI_TOOLS_DIR}, DUSK_AGENT_BROWSER_PATH and PATH); set DUSK_UI_E2E=1 to install the pinned release`);
+  console.log(`skipping agent-browser DM composer e2e: no agent-browser binary resolves (looked in ${UI_TOOLS_DIR}, MADANI_AGENT_BROWSER_PATH and PATH); set MADANI_UI_E2E=1 to install the pinned release`);
 }
 const run = enabled ? it : it.skip;
 const posix = process.platform !== "win32";
@@ -39,7 +39,7 @@ describe("a DM composer a bot types into with refs from before another conversat
   let spec: BrowserSpawnSpec;
   let runtime: BrowserRuntime;
   let gate: EgressGate | undefined;
-  const session = `dusk-dm-${randomBytes(3).toString("hex")}`;
+  const session = `madani-dm-${randomBytes(3).toString("hex")}`;
 
   beforeAll(async () => {
     if (!enabled) return;
@@ -50,9 +50,9 @@ describe("a DM composer a bot types into with refs from before another conversat
     });
     await new Promise<void>((resolve) => server.listen(0, "127.0.0.1", resolve));
     base = `http://127.0.0.1:${(server.address() as { port: number }).port}`;
-    home = mkdtempSync(join(tmpdir(), "dusk-dm-e2e-"));
+    home = mkdtempSync(join(tmpdir(), "madani-dm-e2e-"));
     // Unix socket paths must stay short (macOS temp paths are long).
-    sockets = mkdtempSync(join(posix ? "/tmp" : tmpdir(), "dusk-dm-"));
+    sockets = mkdtempSync(join(posix ? "/tmp" : tmpdir(), "madani-dm-"));
     mkdirSync(join(home, "tmp"), { recursive: true });
     gate = await openGate({ decide: (destination, addresses) => refusalFor(destination, addresses, {
       host: "desktop", ownPort: () => false, botPort: async () => false, localNetwork: true, allowed: () => false,

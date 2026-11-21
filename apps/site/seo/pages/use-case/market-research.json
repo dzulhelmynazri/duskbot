@@ -81,15 +81,15 @@
   ],
   "sources": [
     {
-      "label": "dusk bot docs: a bot’s computer",
+      "label": "madani bot docs: a bot’s computer",
       "url": "/docs/computer"
     },
     {
-      "label": "dusk bot docs: routines",
+      "label": "madani bot docs: routines",
       "url": "/docs/routines"
     },
     {
-      "label": "dusk bot docs: bots",
+      "label": "madani bot docs: bots",
       "url": "/docs/bots"
     }
   ],

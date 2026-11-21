@@ -38,7 +38,7 @@ const FIXTURE_TOOLS: Record<string, Array<{ name: string; read: boolean; ms: num
   data: [{ name: "query", read: true, ms: 50 }],
 };
 
-const dir = mkdtempSync(join(tmpdir(), "dusk-everyday-"));
+const dir = mkdtempSync(join(tmpdir(), "madani-everyday-"));
 const log = join(dir, "effects.jsonl");
 const server = join(dir, "fixture-mcp.mjs");
 writeFileSync(server, `import { appendFileSync } from "node:fs";
@@ -90,7 +90,7 @@ const instance = await OpenAICompatDriver.create({
 });
 const recorder = recordEvents(instance.adapter);
 const custom = Object.fromEntries(Object.entries(FIXTURE_TOOLS).map(([name, tools]) => [name, { command: process.execPath, args: [server], env: { TOOLS: JSON.stringify(tools), LOG: log, NAME: name } }]));
-const agents = { command: process.execPath, args: [SPAWNED_PROXIES.agents], env: { DUSK_HARNESS_URL: harnessUrl, DUSK_BOT_ID: "everyday", DUSK_THREAD_ID: "everyday", DUSK_COMMS_TOKEN: "fixture", DUSK_TURN_DEPTH: "0" } };
+const agents = { command: process.execPath, args: [SPAWNED_PROXIES.agents], env: { MADANI_HARNESS_URL: harnessUrl, MADANI_BOT_ID: "everyday", MADANI_THREAD_ID: "everyday", MADANI_COMMS_TOKEN: "fixture", MADANI_TURN_DEPTH: "0" } };
 
 const rows: string[] = [];
 let passed = 0, total = 0;

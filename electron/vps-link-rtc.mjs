@@ -8,7 +8,7 @@ import { join } from "node:path";
 import { Duplex } from "node:stream";
 
 // ---- shared with apps/link-service/agent.mjs (keep both in step; a test checks they interoperate) ----
-export const RTC_LABEL = "dusk-link";
+export const RTC_LABEL = "madani-link";
 /** a stream write goes out in messages this size: every webrtc stack takes 64 KB */
 export const RTC_PIECE = 64 * 1024;
 const RTC_HIGH = 4 * 1024 * 1024;
@@ -64,8 +64,8 @@ export function iceServers(list) {
 }
 
 /** node-datachannel from the app's native tree (resources/duckdb/node_modules) or beside this file; null when missing */
-export function loadDataChannel(dirs = [process.env.DUSK_DUCKDB_DIR, process.resourcesPath && join(process.resourcesPath, "duckdb")].filter(Boolean)) {
-  if (process.env.DUSK_LINK_RTC === "off") return null;
+export function loadDataChannel(dirs = [process.env.MADANI_DUCKDB_DIR, process.resourcesPath && join(process.resourcesPath, "duckdb")].filter(Boolean)) {
+  if (process.env.MADANI_LINK_RTC === "off") return null;
   for (const anchor of [...dirs.map((dir) => join(dir, "node_modules", "anchor.js")), import.meta.url]) {
     try {
       const loaded = createRequire(anchor)("node-datachannel");
@@ -91,7 +91,7 @@ export function rtcConnector({ ndc, signal, turn = async () => [], stun = RTC_ST
   return async () => {
     const started = now();
     const relays = await Promise.race([turn().catch(() => []), new Promise((resolve) => setTimeout(() => resolve([]), 1500))]);
-    const pc = new ndc.PeerConnection("dusk-link", { iceServers: [...iceServers(stun.map((urls) => ({ urls }))), ...iceServers(relays)], maxMessageSize: 256 * 1024 });
+    const pc = new ndc.PeerConnection("madani-link", { iceServers: [...iceServers(stun.map((urls) => ({ urls }))), ...iceServers(relays)], maxMessageSize: 256 * 1024 });
     const fail = (error) => { try { pc.close(); } catch { /* closed */ } throw error; };
     let dc;
     try {

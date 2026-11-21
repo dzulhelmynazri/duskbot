@@ -108,7 +108,7 @@ export function createMobileAdmission({ harnessPort, now = Date.now }: { harness
     /** the running workspace's id, or null when the harness did not say */
     async environment(): Promise<string | null> {
       try {
-        const answer = await ask(harnessPort, "/.well-known/duskbot/environment", {});
+        const answer = await ask(harnessPort, "/.well-known/madanibot/environment", {});
         return answer.status === 200 ? environmentIdOf(answer.body) : null;
       } catch {
         return null;

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { launchVerificationServer } from "../scripts/control-dusk.ts";
+import { launchVerificationServer } from "../scripts/control-madani.ts";
 
 describe("skills library config visibility", () => {
   it("returns the saved opt-in flag to the actual settings client", async () => {

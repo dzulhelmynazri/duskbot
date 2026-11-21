@@ -37,7 +37,7 @@ afterEach(async () => {
 });
 
 function profile(session = "work") {
-  const home = mkdtempSync(join(tmpdir(), "dusk-browser-sites-"));
+  const home = mkdtempSync(join(tmpdir(), "madani-browser-sites-"));
   scratch.push(home);
   const directory = join(home, ".agent-browser", "sessions");
   mkdirSync(directory, { recursive: true });

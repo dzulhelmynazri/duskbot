@@ -15,10 +15,10 @@ export function tunnelOrigin(origin) {
 }
 
 /** "yes" when anything answers at `origin` (any HTTP status but a 5xx from a proxy in front of a stopped app), "gone" for a
- * dusk cloud that was deleted, else "no". */
+ * madani cloud that was deleted, else "no". */
 export async function serverLook(origin, fetchImpl, timeoutMs = SERVER_LOOK_MS) {
   try {
-    const response = await fetchImpl(`${origin}/.well-known/duskbot/environment`, {
+    const response = await fetchImpl(`${origin}/.well-known/madanibot/environment`, {
       cache: "no-store", redirect: "manual", credentials: "omit", signal: AbortSignal.timeout(timeoutMs), headers: { accept: "application/json" },
     });
     await response.body?.cancel?.().catch(() => {});
@@ -29,7 +29,7 @@ export async function serverLook(origin, fetchImpl, timeoutMs = SERVER_LOOK_MS) 
   }
 }
 
-/** Whether anything answers at `origin`; a deleted dusk cloud does not. */
+/** Whether anything answers at `origin`; a deleted madani cloud does not. */
 export async function serverAnswers(origin, fetchImpl, timeoutMs = SERVER_LOOK_MS) {
   return (await serverLook(origin, fetchImpl, timeoutMs)) === "yes";
 }

@@ -76,7 +76,7 @@ export const WOKE_BY_MS = 30_000;
 /** Each kind of request, as a fixed code, by its path: never more of the request than that. Anything else is a page. */
 const WAKE_CODES: readonly [RegExp, string][] = [
   [/^\/api\/events$/, "events"], [/^\/api\/sync(\/|$)/, "sync"],
-  [/^\/\.well-known\/duskbot\/environment$/, "version"], [/^\/api\/phones(\/|$)/, "phone"], [/^\/api\/presence(\/|$)/, "presence"],
+  [/^\/\.well-known\/madanibot\/environment$/, "version"], [/^\/api\/phones(\/|$)/, "phone"], [/^\/api\/presence(\/|$)/, "presence"],
   [/^\/api\/auth\/session$/, "session"], [/^\/(?:api\/)?(?:auth\/)?pair(?:ing)?(?:\/|$)/, "pair"], [/^\/api\/cloud\//, "admin"],
   [/^\/api\/health$/, "health"], [/^\/hooks(\/|$)/, "webhook"], [/^\/mcp-oauth\//, "sign-in"], [/^\/api\//, "api"],
 ];
@@ -93,8 +93,8 @@ const BACKGROUND = [/^\/api\/events$/, /^\/api\/health$/, /^\/api\/sync(\/|$)/, 
   /^\/api\/mac\/self\/jobs$/];
 export const CLOUD_POWER_PATH = "/api/cloud/power";
 export const CLOUD_POWER_SLEEP_PATH = "/api/cloud/power/sleep";
-export const CLOUD_BACKGROUND_HEADER = "x-dusk-background";
-export const CLOUD_POWER_HEADER = "x-dusk-cloud-power";
+export const CLOUD_BACKGROUND_HEADER = "x-madani-background";
+export const CLOUD_POWER_HEADER = "x-madani-cloud-power";
 const MARKER = "cloud-sleep.json";
 /** Long-polls and streams that stay open by design: never "in flight" work. An open screen is not either: its input is
  * someone using the home and the screen itself a hint (server/routes/desktop-viewer.ts `presence`). */

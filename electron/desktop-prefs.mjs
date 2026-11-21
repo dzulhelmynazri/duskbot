@@ -90,7 +90,7 @@ export function createDesktopPrefs({ read, write, frameByDefault = true }) {
       return true;
     },
     /** crash and error reports, only ever sent by a build that names where to (electron/error-report.mjs); they follow
-     * the one "help improve dusk bot" switch, unset counting as on */
+     * the one "help improve madani bot" switch, unset counting as on */
     errorReports: () => current().analytics !== false,
     talkShortcut: () => current().talkShortcut ?? false,
     setTalkShortcut(enabled) { save({ ...current(), talkShortcut: enabled === true }); },
@@ -126,7 +126,7 @@ export function createDesktopPrefs({ read, write, frameByDefault = true }) {
 /**
  * `page(event)`: "local" for this computer's page, "cloud" for My Cloud's own page as main verifies it, "server" for
  * another saved server open in this desktop's window, null for anything else. `cloudOffered()`: this desktop sells
- * dusk cloud, asked once its Cloud sign-in is restored. `localConfig()`: This computer's own workspace's config.json.
+ * madani cloud, asked once its Cloud sign-in is restored. `localConfig()`: This computer's own workspace's config.json.
  * `languageChanged(language, sender)`: tells this desktop's other pages the language picked on one of them.
  */
 export function registerDesktopPrefs({ prefs: given, ipcMain, read, write, page, cloudOffered, localConfig = () => null, languageChanged = () => {}, analyticsChanged = () => {}, frame = null, systemName = accountFullName, loginName = () => os.userInfo().username }) {

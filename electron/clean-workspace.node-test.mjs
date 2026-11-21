@@ -8,15 +8,15 @@ import { cleanWorkspaceConfig, cleanWorkspaceDir, createCleanWorkspace } from ".
 import { installOneHome } from "./one-home-main.mjs";
 import { WELCOME_VERSION } from "./onboarding-record.mjs";
 
-const CLOUD = "https://dusk-t-1.fly.dev";
+const CLOUD = "https://madani-t-1.fly.dev";
 const json = (value, status = 200) => new Response(JSON.stringify(value), { status });
 
 /** A computer's data folder on disk, frozen for My Cloud, with the one server the app runs at a time: `running`, and each
  * request as [the folder it reached, method, route]. */
 function computer(t, { frozen = { v: 1, at: 1, cloud: CLOUD } } = {}) {
-  const parent = mkdtempSync(join(tmpdir(), "dusk-clean-"));
+  const parent = mkdtempSync(join(tmpdir(), "madani-clean-"));
   t.after(() => rmSync(parent, { recursive: true, force: true }));
-  const dataDir = join(parent, ".duskbot");
+  const dataDir = join(parent, ".madanibot");
   const w = { dataDir, cleanDir: cleanWorkspaceDir(dataDir), running: dataDir, swaps: [], requests: [], swapFails: false, changes: 0 };
   mkdirSync(dataDir, { recursive: true });
   w.write = (name, text) => { writeFileSync(join(dataDir, name), text); };
@@ -32,7 +32,7 @@ function computer(t, { frozen = { v: 1, at: 1, cloud: CLOUD } } = {}) {
 }
 
 test("a clean workspace sits beside the data folder, never in it: a move carries that folder and forgetting the copy empties it", () => {
-  assert.equal(cleanWorkspaceDir("/Users/a/.duskbot"), "/Users/a/.duskbot-clean");
+  assert.equal(cleanWorkspaceDir("/Users/a/.madanibot"), "/Users/a/.madanibot-clean");
 });
 
 test("opening it starts the server on its own folder, once, set up so the new-user setup never shows", async (t) => {
@@ -115,7 +115,7 @@ test("the move's server, while the clean workspace runs: the copy's own marker a
   w.requests.length = 0;
   await w.clean.enter();
   assert.deepEqual(await (await request("/api/move/freeze")).json(), { frozen: true, cloud: CLOUD });
-  assert.deepEqual(await (await request("/.well-known/duskbot/environment")).json(), { environmentId: "own-copy-id" }, "the Admin never hears the clean folder's identity as this computer's");
+  assert.deepEqual(await (await request("/.well-known/madanibot/environment")).json(), { environmentId: "own-copy-id" }, "the Admin never hears the clean folder's identity as this computer's");
   for (const [route, init] of [["/api/bots?messages=0"], ["/api/cloud-send?move=1"], ["/api/config"], ["/api/move/freeze", { method: "POST" }], ["/api/move/freeze", { method: "DELETE" }], ["/api/move/forget", { method: "POST" }], ["/api/workspace-backup/upload", { method: "POST" }]]) {
     await assert.rejects(request(route, init), { code: "clean-workspace" }, `${init?.method ?? "GET"} ${route}`);
   }
@@ -163,7 +163,7 @@ function moved(t, { state, journal = null, marker, gone = null, version = "0.1.1
   t.after(() => w.main.close());
   return w;
 }
-const owner = { id: "acct-1", email: "a@dusk-test.example" };
+const owner = { id: "acct-1", email: "a@madani-test.example" };
 const ready = (extra = {}) => ({ status: "connected", account: owner, deviceId: "d1", entitlement: { plan: "pro", status: "active" }, machine: { status: "ready", origin: CLOUD, moves: true }, ...extra });
 const done = (extra = {}) => ({ v: 1, phase: "done", cloud: { origin: CLOUD, account: owner.id, machine: CLOUD }, startedAt: 1, doneAt: 2, frozenAt: 2, version: "0.1.140", reported: "d1", lent: true, phoneStopped: true, ...extra });
 const onClean = (w) => w.requests.filter(([folder]) => folder === w.cleanDir);
@@ -228,7 +228,7 @@ test("no first move and no freeze from the clean workspace: the frozen copy's ow
 });
 
 test("another account leaves the journal alone, and nothing reaches the clean workspace", async (t) => {
-  const w = moved(t, { state: ready({ account: { id: "acct-2", email: "b@dusk-test.example" } }), journal: done() });
+  const w = moved(t, { state: ready({ account: { id: "acct-2", email: "b@madani-test.example" } }), journal: done() });
   await w.clean.enter();
   const before = structuredClone(w.journal);
   await w.main.kick();
@@ -237,7 +237,7 @@ test("another account leaves the journal alone, and nothing reaches the clean wo
 });
 
 test("a Cloud that's gone still brings this computer home from the clean workspace: the lift reaches the frozen copy, not the clean one", async (t) => {
-  const elsewhere = "https://dusk-other-2.fly.dev";
+  const elsewhere = "https://madani-other-2.fly.dev";
   const w = moved(t, { state: ready({ machine: { status: "ready", origin: elsewhere, moves: true } }), journal: null, gone: "deleted" });
   await w.clean.enter();
   await w.main.kick();

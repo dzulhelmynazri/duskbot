@@ -7,7 +7,7 @@ import { randomUUID } from "node:crypto";
 import { readdirSync, statSync } from "node:fs";
 import { get, request } from "node:http";
 import { join } from "node:path";
-import { launchVerificationServer } from "../control-dusk.ts";
+import { launchVerificationServer } from "../control-madani.ts";
 import { fixtureApi } from "../testing/preview-fixture.ts";
 
 const MB = 1024 * 1024;

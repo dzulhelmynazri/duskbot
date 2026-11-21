@@ -1,11 +1,11 @@
 // Read-only dry run of "bring what you already use" against this computer's real home: what each tool would bring,
-// in counts and kinds only. Writes nothing (dusk bot's data folder is pointed at a throwaway one), uploads nothing,
+// in counts and kinds only. Writes nothing (madani bot's data folder is pointed at a throwaway one), uploads nothing,
 // prints no names, text or values. Run: node --experimental-strip-types scripts/import-dry-run.ts
 import { mkdtempSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 
-process.env.DUSK_DATA_DIR = mkdtempSync(join(tmpdir(), "dusk-dry-run-"));
+process.env.MADANI_DATA_DIR = mkdtempSync(join(tmpdir(), "madani-dry-run-"));
 const { lookForBots } = await import("../server/bot-move-local.ts");
 const { detectSetup, thisMachine } = await import("../server/setup-import.ts");
 const { grokMovePlan } = await import("../shared/grok-import.ts");

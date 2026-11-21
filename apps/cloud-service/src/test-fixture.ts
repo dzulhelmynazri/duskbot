@@ -30,7 +30,7 @@ export const BACKUP_SECRET = Buffer.alloc(32, 9);
 
 export async function homeFixture(options: { costProfile?: ProviderCostProfile; retentionDays?: number; setupPolls?: number; settings?: Partial<ManagedSettings>; releaseKeys?: ReleaseKey[]; edgeToken?: string;
   entitlements?: { sign(cloud: StoredCloud): string }; release?: () => HomeRelease | null; updatePolicy?: PolicySource } = {}) {
-  const dataDir = mkdtempSync(join(tmpdir(), "dusk-home-")); cleanup.push(() => rmSync(dataDir, { recursive: true, force: true }));
+  const dataDir = mkdtempSync(join(tmpdir(), "madani-home-")); cleanup.push(() => rmSync(dataDir, { recursive: true, force: true }));
   let at = Date.UTC(2026, 10, 9, 12);
   const now = () => at;
   const api = await startFakeInstaboxApi({ now, setupPolls: options.setupPolls }); cleanup.push(() => api.close());

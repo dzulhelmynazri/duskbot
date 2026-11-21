@@ -58,9 +58,9 @@ export function keepWarmArgs(
 
 export function keepWarmMcpServers(mcpServers: Record<string, unknown>, deadSocket: string): Record<string, unknown> {
   const out: Record<string, unknown> = { ...mcpServers };
-  const dusk = out.dusk as { args?: unknown } | undefined;
-  if (dusk && Array.isArray(dusk.args) && dusk.args.length >= 2) {
-    out.dusk = { ...dusk, args: [...dusk.args.slice(0, -1), deadSocket] };
+  const madani = out.madani as { args?: unknown } | undefined;
+  if (madani && Array.isArray(madani.args) && madani.args.length >= 2) {
+    out.madani = { ...madani, args: [...madani.args.slice(0, -1), deadSocket] };
   }
   return out;
 }
@@ -74,7 +74,7 @@ export function keepWarmSettings(settings: Record<string, unknown> | null, denyC
   };
 }
 
-export const KEEP_WARM_DENY_HOOK = `process.stdout.write(JSON.stringify({ hookSpecificOutput: { hookEventName: "PreToolUse", permissionDecision: "deny", permissionDecisionReason: "dusk bot keep-warm ping: no tools" } }));\n`;
+export const KEEP_WARM_DENY_HOOK = `process.stdout.write(JSON.stringify({ hookSpecificOutput: { hookEventName: "PreToolUse", permissionDecision: "deny", permissionDecisionReason: "madani bot keep-warm ping: no tools" } }));\n`;
 
 const count = (value: unknown): number => typeof value === "number" && Number.isFinite(value) && value >= 0 ? value : 0;
 
@@ -140,7 +140,7 @@ export function runForkedPrompt<T>(opts: {
   const { contract, what } = opts;
   let dir: string;
   try {
-    dir = mkdtempSync(join(tmpdir(), "dusk-keepwarm-"));
+    dir = mkdtempSync(join(tmpdir(), "madani-keepwarm-"));
   } catch (error) {
     return Promise.resolve(opts.failed(`the ${what} could not start: ${(error as Error).message}`));
   }
@@ -164,7 +164,7 @@ export function runForkedPrompt<T>(opts: {
     }
     args = keepWarmArgs(contract.args, { sessionId: opts.sessionId, mcpConfigPath, settingsPath, systemPromptPath }, opts.persist);
     // The harness's hook helper must never hear about a fork.
-    for (const key of Object.keys(env)) if (key.startsWith("DUSK_HOOK_")) delete env[key];
+    for (const key of Object.keys(env)) if (key.startsWith("MADANI_HOOK_")) delete env[key];
     // In the packaged app process.execPath is Electron: the deny hook runs it as node.
     if (process.versions.electron) env.ELECTRON_RUN_AS_NODE = "1";
   } catch (error) {

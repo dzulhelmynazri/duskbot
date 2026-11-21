@@ -34,14 +34,14 @@ afterEach(() => {
   act(() => root.unmount());
   resetLiveScreen();
   vi.useRealTimers();
-  delete (window as { duskDesktop?: unknown }).duskDesktop;
+  delete (window as { madaniDesktop?: unknown }).madaniDesktop;
   Object.defineProperty(navigator, "mediaDevices", { value: undefined, configurable: true });
 });
 
 describe("this computer's live screen", () => {
   it("starts without a click through the desktop app's live permission and shares one capture", async () => {
     const beginScreenLiveIntent = vi.fn(() => Promise.resolve(true));
-    (window as { duskDesktop?: unknown }).duskDesktop = { screenLive: { begin: beginScreenLiveIntent } };
+    (window as { madaniDesktop?: unknown }).madaniDesktop = { screenLive: { begin: beginScreenLiveIntent } };
     await render({ name: "preview", enabled: true, fps: LIVE_FPS.preview }, { name: "full", enabled: true, fps: LIVE_FPS.full });
     expect(beginScreenLiveIntent).toHaveBeenCalledTimes(1);
     expect(getDisplayMedia).toHaveBeenCalledTimes(1);
@@ -52,7 +52,7 @@ describe("this computer's live screen", () => {
   });
 
   it("slows down when nothing shows it and stops after the linger", async () => {
-    (window as { duskDesktop?: unknown }).duskDesktop = { screenLive: { begin: () => Promise.resolve(true) } };
+    (window as { madaniDesktop?: unknown }).madaniDesktop = { screenLive: { begin: () => Promise.resolve(true) } };
     await render({ name: "preview", enabled: true, fps: LIVE_FPS.preview });
     await render({ name: "preview", enabled: false, fps: LIVE_FPS.preview });
     expect(made.track.applyConstraints).toHaveBeenLastCalledWith({ frameRate: { ideal: 1, max: 1 } });
@@ -64,7 +64,7 @@ describe("this computer's live screen", () => {
 
   it("never captures unasked in an app without the live permission, but a click can start it", async () => {
     const beginScreenPreviewIntent = vi.fn(() => true);
-    (window as { duskDesktop?: unknown }).duskDesktop = { beginScreenPreviewIntent };
+    (window as { madaniDesktop?: unknown }).madaniDesktop = { beginScreenPreviewIntent };
     await render({ name: "preview", enabled: true, fps: LIVE_FPS.preview });
     expect(getDisplayMedia).not.toHaveBeenCalled();
     expect(seen.preview.status).toBe("idle");
@@ -76,7 +76,7 @@ describe("this computer's live screen", () => {
   it("survives a desktop app whose main process predates the live permission", async () => {
     const noHandler = new Error("Error invoking remote method 'screen:live-intent': Error: No handler registered for 'screen:live-intent'");
     const beginScreenPreviewIntent = vi.fn(() => true);
-    (window as { duskDesktop?: unknown }).duskDesktop = { screenLive: { begin: vi.fn(() => Promise.reject(noHandler)) }, beginScreenPreviewIntent };
+    (window as { madaniDesktop?: unknown }).madaniDesktop = { screenLive: { begin: vi.fn(() => Promise.reject(noHandler)) }, beginScreenPreviewIntent };
     await render({ name: "preview", enabled: true, fps: LIVE_FPS.preview });
     expect(getDisplayMedia).not.toHaveBeenCalled();
     expect(seen.preview).toMatchObject({ status: "failed", stream: null });
@@ -87,7 +87,7 @@ describe("this computer's live screen", () => {
 
   it("ignores a stale page bridge that only has the old synchronous live permission", async () => {
     const beginScreenLiveIntent = vi.fn(() => { throw new Error("no listeners"); });
-    (window as { duskDesktop?: unknown }).duskDesktop = { beginScreenLiveIntent };
+    (window as { madaniDesktop?: unknown }).madaniDesktop = { beginScreenLiveIntent };
     await render({ name: "preview", enabled: true, fps: LIVE_FPS.preview });
     expect(beginScreenLiveIntent).not.toHaveBeenCalled();
     expect(getDisplayMedia).not.toHaveBeenCalled();
@@ -95,11 +95,11 @@ describe("this computer's live screen", () => {
   });
 
   it("treats a live permission that throws or answers no as no live screen", async () => {
-    (window as { duskDesktop?: unknown }).duskDesktop = { screenLive: { begin: () => { throw new Error("gone"); } } };
+    (window as { madaniDesktop?: unknown }).madaniDesktop = { screenLive: { begin: () => { throw new Error("gone"); } } };
     await render({ name: "preview", enabled: true, fps: LIVE_FPS.preview });
     expect(seen.preview.status).toBe("failed");
     resetLiveScreen();
-    (window as { duskDesktop?: unknown }).duskDesktop = { screenLive: { begin: () => Promise.resolve(false) } };
+    (window as { madaniDesktop?: unknown }).madaniDesktop = { screenLive: { begin: () => Promise.resolve(false) } };
     await render({ name: "preview", enabled: false, fps: LIVE_FPS.preview });
     await render({ name: "preview", enabled: true, fps: LIVE_FPS.preview });
     expect(seen.preview.status).toBe("failed");
@@ -107,7 +107,7 @@ describe("this computer's live screen", () => {
   });
 
   it("does not restart a capture that was stopped from outside", async () => {
-    (window as { duskDesktop?: unknown }).duskDesktop = { screenLive: { begin: () => Promise.resolve(true) } };
+    (window as { madaniDesktop?: unknown }).madaniDesktop = { screenLive: { begin: () => Promise.resolve(true) } };
     await render({ name: "preview", enabled: true, fps: LIVE_FPS.preview });
     const ended = made.track.addEventListener.mock.calls.find(([type]) => type === "ended")?.[1] as () => void;
     await act(async () => { ended(); });

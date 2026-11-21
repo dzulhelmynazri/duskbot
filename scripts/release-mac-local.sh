@@ -9,17 +9,17 @@
 # options: --skip-build (reuse release/ from an earlier run of the same mode), --arch arm64|x64 (default both)
 #
 # credentials, never printed:
-#   ~/.config/duskbot/apple/developer-id.key        private key behind the CSR (mode 600)
-#   ~/.config/duskbot/apple/developer_id.cer        the Developer ID Application certificate from developer.apple.com
-#   ~/.config/duskbot/dusk.env                      APPLE_TEAM_ID, APPLE_API_KEY_ID, APPLE_API_ISSUER, APPLE_API_KEY_PATH (.p8)
-# the script makes ~/.config/duskbot/apple/developer-id.p12 (password APPLE_DEVELOPER_ID_P12_PASSWORD in dusk.env) and
+#   ~/.config/madanibot/apple/developer-id.key        private key behind the CSR (mode 600)
+#   ~/.config/madanibot/apple/developer_id.cer        the Developer ID Application certificate from developer.apple.com
+#   ~/.config/madanibot/madani.env                      APPLE_TEAM_ID, APPLE_API_KEY_ID, APPLE_API_ISSUER, APPLE_API_KEY_PATH (.p8)
+# the script makes ~/.config/madanibot/apple/developer-id.p12 (password APPLE_DEVELOPER_ID_P12_PASSWORD in madani.env) and
 # signs from a throwaway keychain it deletes on exit, so the login keychain is never touched and nothing prompts.
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
-APPLE_DIR="${DUSK_APPLE_DIR:-$HOME/.config/duskbot/apple}"
-ENV_FILE="${DUSK_ENV_FILE:-$HOME/.config/duskbot/dusk.env}"
-APP_NAME="Dusk Bot"
+APPLE_DIR="${MADANI_APPLE_DIR:-$HOME/.config/madanibot/apple}"
+ENV_FILE="${MADANI_ENV_FILE:-$HOME/.config/madanibot/madani.env}"
+APP_NAME="Madani Bot"
 MODE=release
 SKIP_BUILD=0
 ARCHES=(arm64 x64)
@@ -42,7 +42,7 @@ ok() { printf '  ok    %s\n' "$*"; }
 miss() { printf '  MISSING  %s\n' "$*"; MISSING=$((MISSING + 1)); }
 die() { printf '\033[31merror:\033[0m %s\n' "$*" >&2; exit 1; }
 
-# one value from dusk.env without sourcing the whole file (it holds unrelated secrets)
+# one value from madani.env without sourcing the whole file (it holds unrelated secrets)
 envget() {
   [ -f "$ENV_FILE" ] || return 0
   local v
@@ -129,20 +129,20 @@ preflight() {
 
   say "team"
   if [ -n "$CERT_TEAM" ] && [ -z "$TEAM_ID" ]; then
-    TEAM_ID="$CERT_TEAM"; envset APPLE_TEAM_ID "$TEAM_ID"; ok "APPLE_TEAM_ID taken from the certificate: $TEAM_ID (saved to dusk.env)"
+    TEAM_ID="$CERT_TEAM"; envset APPLE_TEAM_ID "$TEAM_ID"; ok "APPLE_TEAM_ID taken from the certificate: $TEAM_ID (saved to madani.env)"
   elif [ -n "$TEAM_ID" ] && [ -n "$CERT_TEAM" ] && [ "$TEAM_ID" != "$CERT_TEAM" ]; then
-    miss "APPLE_TEAM_ID in dusk.env ($TEAM_ID) is not the certificate's team ($CERT_TEAM)"
+    miss "APPLE_TEAM_ID in madani.env ($TEAM_ID) is not the certificate's team ($CERT_TEAM)"
   elif [ -n "$TEAM_ID" ]; then
     ok "APPLE_TEAM_ID $TEAM_ID"
   else
-    miss "APPLE_TEAM_ID in dusk.env (the 10 characters at https://developer.apple.com/account under Membership details; filled in automatically once the certificate is here)"
+    miss "APPLE_TEAM_ID in madani.env (the 10 characters at https://developer.apple.com/account under Membership details; filled in automatically once the certificate is here)"
   fi
 
   say "notarization (App Store Connect API key)"
   if [ "$MODE" = signed ]; then echo "  skipped (--no-notarize)"; return 0; fi
-  [ -n "$API_KEY_ID" ] && ok "APPLE_API_KEY_ID" || miss "APPLE_API_KEY_ID in dusk.env (App Store Connect > Users and Access > Integrations > App Store Connect API, the key's Key ID)"
+  [ -n "$API_KEY_ID" ] && ok "APPLE_API_KEY_ID" || miss "APPLE_API_KEY_ID in madani.env (App Store Connect > Users and Access > Integrations > App Store Connect API, the key's Key ID)"
   if [ -n "$API_KEY_PATH" ] && [ -f "$API_KEY_PATH" ]; then ok "APPLE_API_KEY_PATH $API_KEY_PATH"
-  else miss "APPLE_API_KEY_PATH in dusk.env, pointing at the downloaded AuthKey_<KEYID>.p8 (keep it in $APPLE_DIR, mode 600)"; fi
+  else miss "APPLE_API_KEY_PATH in madani.env, pointing at the downloaded AuthKey_<KEYID>.p8 (keep it in $APPLE_DIR, mode 600)"; fi
   if [ -n "$API_ISSUER" ]; then ok "APPLE_API_ISSUER"
   else echo "  note  APPLE_API_ISSUER is empty: fine for an Individual API key, required for a Team key (the Issuer ID above the keys list)"; fi
 }
@@ -173,7 +173,7 @@ fi
 
 # ---------------------------------------------------------------- signing keychain
 # the real path, the form the keychain search list stores (TMPDIR is /var/..., the list says /private/var/...)
-WORK="$(cd "$(mktemp -d "${TMPDIR:-/tmp}/dusk-mac-release.XXXXXX")" && pwd -P)"
+WORK="$(cd "$(mktemp -d "${TMPDIR:-/tmp}/madani-mac-release.XXXXXX")" && pwd -P)"
 KEYCHAIN=""
 # the user keychain search list, one path per line
 user_keychains() {
@@ -183,13 +183,13 @@ user_keychains() {
     [ -n "$line" ] && printf '%s\n' "$line"
   done
 }
-# rewrites the search list without $1, without duplicates, and without any dusk-signing keychain whose file is gone
+# rewrites the search list without $1, without duplicates, and without any madani-signing keychain whose file is gone
 # (a run killed with SIGKILL leaves one behind); the order of the rest and the default keychain are left alone
 prune_keychains() {
   local drop="${1:-}" kept=() line k seen
   while IFS= read -r line; do
     [ -n "$drop" ] && [ "$line" = "$drop" ] && continue
-    case "$line" in */dusk-signing.keychain-db) [ -e "$line" ] || continue ;; esac
+    case "$line" in */madani-signing.keychain-db) [ -e "$line" ] || continue ;; esac
     seen=0
     for k in ${kept[@]+"${kept[@]}"}; do [ "$k" = "$line" ] && seen=1; done
     [ "$seen" = 1 ] || kept+=("$line")
@@ -228,9 +228,9 @@ if [ "$MODE" = release ] || [ "$MODE" = signed ]; then
       tmp="$(mktemp "$ENV_FILE.XXXXXX")"; grep -v '^APPLE_DEVELOPER_ID_P12_PASSWORD=' "$ENV_FILE" > "$tmp"; chmod 600 "$tmp"; mv "$tmp" "$ENV_FILE"
     fi
     envset APPLE_DEVELOPER_ID_P12_PASSWORD "$P12_PASSWORD"
-    ok "made $P12_FILE (its password is APPLE_DEVELOPER_ID_P12_PASSWORD in dusk.env)"
+    ok "made $P12_FILE (its password is APPLE_DEVELOPER_ID_P12_PASSWORD in madani.env)"
   fi
-  KEYCHAIN="$WORK/dusk-signing.keychain-db"
+  KEYCHAIN="$WORK/madani-signing.keychain-db"
   KC_PASSWORD="$(openssl rand -hex 24)"
   prune_keychains
   security create-keychain -p "$KC_PASSWORD" "$KEYCHAIN"
@@ -260,7 +260,7 @@ app_dir() { [ "$1" = arm64 ] && echo "release/mac-arm64" || echo "release/mac"; 
 if [ "$SKIP_BUILD" = 0 ]; then
   say "building $VERSION for ${ARCHES[*]} ($([ "$IDENTITY" = "-" ] && echo ad-hoc || echo Developer ID) signed)"
   rm -rf dist dist-server dist-native release
-  # the one-click OAuth clients the release workflow bakes in (scripts/bundle-server.mjs), when dusk.env has them
+  # the one-click OAuth clients the release workflow bakes in (scripts/bundle-server.mjs), when madani.env has them
   while IFS= read -r name; do
     v="$(envget "$name")"; [ -n "$v" ] && export "$name=$v"
   done < <(node -e 'for (const c of require("./shared/native-connectors.json").connectors) for (const n of [c.clientIdEnv, c.clientSecretEnv]) if (n) console.log(n)')
@@ -273,7 +273,7 @@ if [ "$SKIP_BUILD" = 0 ]; then
   # never let electron-builder notarize or open anything; notarization happens below
   if [ "$IDENTITY" != "-" ]; then
     CSC_NAME="${IDENTITY#Developer ID Application: }" CSC_KEYCHAIN="$KEYCHAIN" CSC_IDENTITY_AUTO_DISCOVERY=false \
-      DUSK_PARTS_SIGN_IDENTITY="$IDENTITY" DUSK_PARTS_KEYCHAIN="$KEYCHAIN" \
+      MADANI_PARTS_SIGN_IDENTITY="$IDENTITY" MADANI_PARTS_KEYCHAIN="$KEYCHAIN" \
       pnpm run package:mac ${arch_flags[@]+"${arch_flags[@]}"}
   else
     pnpm run package:mac -c.mac.identity=- ${arch_flags[@]+"${arch_flags[@]}"}
@@ -366,10 +366,10 @@ staple() {
   return 1
 }
 
-dmg_for() { echo "release/DuskBot-$VERSION-$1.dmg"; }
-zip_for() { echo "release/DuskBot-$VERSION-$1.zip"; }
+dmg_for() { echo "release/MadaniBot-$VERSION-$1.dmg"; }
+zip_for() { echo "release/MadaniBot-$VERSION-$1.zip"; }
 # the bots' browser, left out of the installer: the app downloads it from the release and checks the sha256 it pins
-part_for() { echo "release/DuskBot-$VERSION-browser-darwin-$1.zip"; }
+part_for() { echo "release/MadaniBot-$VERSION-browser-darwin-$1.zip"; }
 for a in "${ARCHES[@]}"; do [ -s "$(part_for "$a")" ] || die "missing $(part_for "$a") (scripts/pack-browser-part.mjs)"; done
 mkdir -p release/notary
 
@@ -408,7 +408,7 @@ for a in "${ARCHES[@]}"; do
   ditto -c -k --sequesterRsrc --keepParent "$(app_dir "$a")/$APP_NAME.app" "$(zip_for "$a")"
 done
 for a in "${ARCHES[@]}"; do
-  case "$a" in arm64) cp "$(dmg_for arm64)" release/DuskBot.dmg ;; x64) cp "$(dmg_for x64)" release/DuskBot-intel.dmg ;; esac
+  case "$a" in arm64) cp "$(dmg_for arm64)" release/MadaniBot.dmg ;; x64) cp "$(dmg_for x64)" release/MadaniBot-intel.dmg ;; esac
 done
 
 # ---------------------------------------------------------------- the checks a person's mac will run
@@ -457,5 +457,5 @@ fi
 
 case "$MODE" in dry) d="dry run, ad-hoc signed, not notarized" ;; signed) d="Developer ID signed, not notarized" ;; *) d="signed, notarized and stapled" ;; esac
 say "done ($d)"
-(cd release && shasum -a 256 DuskBot*.dmg DuskBot-*.zip | tee SHA256SUMS-mac | sed 's/^/  /')
+(cd release && shasum -a 256 MadaniBot*.dmg MadaniBot-*.zip | tee SHA256SUMS-mac | sed 's/^/  /')
 echo "  upload with the installers: $(for a in "${ARCHES[@]}"; do printf '%s ' "$(part_for "$a")"; done)(the apps download them from the downloads release)"

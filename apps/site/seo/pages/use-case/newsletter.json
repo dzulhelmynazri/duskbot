@@ -10,7 +10,7 @@
     "ai newsletter generator",
     "ai agent content repurposing"
   ],
-  "answer": "**get thursday's first draft without losing thursday afternoon.** give the bot your audience brief, source links and past issues. it picks fresh material, drafts the issue and keeps links beside the claims.\n\nyou get something to edit in dusk chat. the routine stops there; you choose what deserves a place in readers' inboxes.",
+  "answer": "**get thursday's first draft without losing thursday afternoon.** give the bot your audience brief, source links and past issues. it picks fresh material, drafts the issue and keeps links beside the claims.\n\nyou get something to edit in madani chat. the routine stops there; you choose what deserves a place in readers' inboxes.",
   "updated": "2026-11-12",
   "review": {
     "status": "approved",
@@ -55,11 +55,11 @@
     },
     {
       "h": "skipping an issue is a valid result",
-      "md": "**send the good issue, skip the filler.** sources can be inaccessible, undated or thin. ask for an editorial question when the material won't carry an issue. read the original before putting your name on its claim.\n\nfor letters about product changes, [competitor monitoring](/use-cases/competitor-monitoring) can help keep a dated change list.\n\nlocal drafting needs an awake machine and dusk running. [dusk cloud](/docs/dusk-cloud) keeps the job available while your computer is off."
+      "md": "**send the good issue, skip the filler.** sources can be inaccessible, undated or thin. ask for an editorial question when the material won't carry an issue. read the original before putting your name on its claim.\n\nfor letters about product changes, [competitor monitoring](/use-cases/competitor-monitoring) can help keep a dated change list.\n\nlocal drafting needs an awake machine and madani running. [madani cloud](/docs/madani-cloud) keeps the job available while your computer is off."
     }
   ],
   "safeguards": [
-    "**keep the issue in draft.** this routine ends in dusk chat; publish from your editor.",
+    "**keep the issue in draft.** this routine ends in madani chat; publish from your editor.",
     "**get permission for private notes.** ask before quoting, and keep quotations brief.",
     "**open the links in your editor.** make sure each leads to the source you used.",
     "**cut unsupported claims.** a stronger subject line is no reason to invent a result."
@@ -80,15 +80,15 @@
   ],
   "sources": [
     {
-      "label": "dusk bot docs: routines",
+      "label": "madani bot docs: routines",
       "url": "/docs/routines"
     },
     {
-      "label": "dusk bot docs: files and apps",
+      "label": "madani bot docs: files and apps",
       "url": "/docs/files-and-apps"
     },
     {
-      "label": "dusk bot docs: a bot’s computer",
+      "label": "madani bot docs: a bot’s computer",
       "url": "/docs/computer"
     }
   ],

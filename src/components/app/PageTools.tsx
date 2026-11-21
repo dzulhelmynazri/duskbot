@@ -194,7 +194,7 @@ export function PageNotes({ version, point, share, className }: Pick<PageToolsPr
     rows.push(
       <div key="refused" role="alert" className="flex items-center gap-2 px-1 text-[13px] text-ink-secondary">
         <span dir="auto" className="min-w-0 flex-1">{state.text}</span>
-        {state.card?.upgrade && window.duskDesktop?.cloudAccount && !window.duskDesktop.remoteClient?.active && (
+        {state.card?.upgrade && window.madaniDesktop?.cloudAccount && !window.madaniDesktop.remoteClient?.active && (
           <button type="button" className={ASK_PRIMARY_BUTTON} onClick={() => dispatch({ type: "openCloudAdd", source: "app_pages" })}>{t("chat.page.morePages")}</button>
         )}
       </div>,

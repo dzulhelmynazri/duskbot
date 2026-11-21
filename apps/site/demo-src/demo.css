@@ -4,7 +4,7 @@
 :host { -webkit-tap-highlight-color: transparent; }
 
 /* on a phone the panel is a sheet of its own, shown only once it is opened */
-@container dusk-demo (width < 48rem) {
+@container madani-demo (width < 48rem) {
   :host(:not([data-phone-panel])) [data-panel-slot] { display: none; }
   aside[data-sidebar-root] { transition: transform 280ms cubic-bezier(0.22, 1, 0.36, 1); }
 }

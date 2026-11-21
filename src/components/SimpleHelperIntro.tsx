@@ -30,10 +30,10 @@ const LOOK_MS = 3_000;
 const ALL = 6;
 const DELAYS = [INTRO_TIMING.first, INTRO_TIMING.line, INTRO_TIMING.line, INTRO_TIMING.typing, INTRO_TIMING.followup, INTRO_TIMING.chips];
 
-/** Dusk's three lines: who it is, what it does here, and that it is looking around. A Dusk that is not the Chief
+/** Madani's three lines: who it is, what it does here, and that it is looking around. A Madani that is not the Chief
  * keeps its helper's lines; a Team Cloud member's leaves their day to the team's Chief. */
 /** `fromComputer`: a cloud the desktop app set up, where the Chief greets the person by the name it brought along;
- * `carried`: what they told dusk bot there about themselves came too. */
+ * `carried`: what they told madani bot there about themselves came too. */
 export function introLines(input: { name: string; chief: boolean; person?: string; team?: string; fromComputer?: boolean; carried?: boolean }): string[] {
   const team = input.team ? t("helperIntro.team", { team: input.team }) : "";
   const carried = input.carried ? t("helperIntro.carried") : "";
@@ -120,7 +120,7 @@ function useArrival(first: boolean, ai: boolean, ready: boolean): { shown: numbe
   return { shown: run ?? (animate ? 0 : ALL), staged: run !== null };
 }
 
-/** Dusk's first messages in Simple mode, in the viewer's language: three short bubbles, its follow-up once it has looked
+/** Madani's first messages in Simple mode, in the viewer's language: three short bubbles, its follow-up once it has looked
  * around (a real message, helperFollowup, which a first run asks the server for) and chips for what is still missing.
  * The chips go once the person writes anything after it (`answered`). */
 export function SimpleHelperIntro({ botId, threadId, message, answered, followup }: {
@@ -180,7 +180,7 @@ export function SimpleHelperIntro({ botId, threadId, message, answered, followup
     ownBots: state.bots.filter((candidate) => !candidate.hidden && !candidate.defaultBot).length,
     onCloud: state.config?.cloudHome === true,
     team: Boolean(state.config?.team),
-    remote: typeof window !== "undefined" && window.duskDesktop?.remoteClient?.active === true,
+    remote: typeof window !== "undefined" && window.madaniDesktop?.remoteClient?.active === true,
     appsConnected: Boolean(look.apps?.length),
     phonePaired: look.phonePaired,
     phoneApp: phoneAppPrompted(),

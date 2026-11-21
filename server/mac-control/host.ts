@@ -29,7 +29,7 @@ type MacBot = { id: string; name: string; macControl?: boolean };
 /** a Mac not seen for this long no longer gets the tools mounted */
 const FORGET_MS = 30 * 24 * 60 * 60_000;
 const SAVE_SEEN_MS = 10 * 60_000;
-const NOT_HOST = "Only the owner's own dusk bot app on their Mac can serve this server's bots.";
+const NOT_HOST = "Only the owner's own madani bot app on their Mac can serve this server's bots.";
 const OFF_TEXT = "Using the person's Mac is switched off for this bot or in Settings.";
 const NOT_OWNER_TEXT = "This conversation can't use the person's Mac: only the owner's own turns can.";
 
@@ -49,7 +49,7 @@ export interface MacControlDeps {
   openFile(turn: Turn, source: string): Promise<MacDownload>;
   /** A file in the bot's cloud computer's home. */
   computerFile(botId: string, source: string): Promise<MacDownload>;
-  /** A dusk cloud (docs/cloud-uses-mac.md): its own catalog, sealed jobs, and the person's answer first when the Mac asks for that. */
+  /** A madani cloud (docs/cloud-uses-mac.md): its own catalog, sealed jobs, and the person's answer first when the Mac asks for that. */
   cloud?: {
     /** null to go ahead, else what the bot is told instead. */
     approve(bot: MacBot, turn: Turn, tool: CloudMacToolName, args: Record<string, unknown>, reason: string): Promise<string | null>;
@@ -179,7 +179,7 @@ export function createMacControl(deps: MacControlDeps) {
     }
     if (path === "/api/mac/self/jobs" && method === "GET") {
       const macKey = url.searchParams.get("key");
-      if (cloud && !isMacSealKey(macKey)) return json(res, 400, { error: "Send this Mac's sealing key: update dusk bot on the Mac." });
+      if (cloud && !isMacSealKey(macKey)) return json(res, 400, { error: "Send this Mac's sealing key: update madani bot on the Mac." });
       const signer = cloud ? linkKey() : null;
       if (cloud && !signer) return json(res, 503, { error: "This cloud has no link key yet, so it cannot reach your Mac safely." });
       remember(cleanName(url.searchParams.get("name")));

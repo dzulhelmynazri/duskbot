@@ -4,13 +4,13 @@ import type { MobileCloud, MobileComputer, MobileTeamCloud } from "../account/ac
 import { mergePlaces, pairingText } from "./places";
 
 const record = (id: string, label: string, origin?: string): MobileConnectionRecord => ({ id, environmentId: `env-${id}`, label, transport: "https", origin, sessionRef: `token.${id}`, capabilities: {} as MobileConnectionRecord["capabilities"], addedAt: 1, lastUsedAt: 1 });
-const cloud = (id: string, extra: Partial<MobileCloud> = {}): MobileCloud => ({ id, name: `Cloud ${id}`, status: "ready", origin: `https://${id}.dusk.bot`, primary: false, asleep: false, ...extra });
+const cloud = (id: string, extra: Partial<MobileCloud> = {}): MobileCloud => ({ id, name: `Cloud ${id}`, status: "ready", origin: `https://${id}.madani.bot`, primary: false, asleep: false, ...extra });
 const computer = (id: string, extra: Partial<MobileComputer> = {}): MobileComputer => ({ id: `ws_${id}`, name: `Computer ${id}`, kind: "mac", presence: "online", environmentId: `env-${id}`, ...extra });
-const team = (id: string, extra: Partial<MobileTeamCloud> = {}): MobileTeamCloud => ({ id, name: `Team ${id}`, status: "ready", origin: `https://${id}.dusk.bot`, asleep: false, ...extra });
+const team = (id: string, extra: Partial<MobileTeamCloud> = {}): MobileTeamCloud => ({ id, name: `Team ${id}`, status: "ready", origin: `https://${id}.madani.bot`, asleep: false, ...extra });
 
 describe("places", () => {
   it("lists linked places first, then the account's clouds and team clouds the phone does not link to yet", () => {
-    const places = mergePlaces({ records: [record("mac", "Studio Mac", "https://192.168.1.4:5331"), record("home", "Home cloud", "https://c1.dusk.bot")], activeId: "mac", connected: true,
+    const places = mergePlaces({ records: [record("mac", "Studio Mac", "https://192.168.1.4:5331"), record("home", "Home cloud", "https://c1.madani.bot")], activeId: "mac", connected: true,
       account: { clouds: [cloud("c1"), cloud("c2", { asleep: true })], teams: [team("t1")], computers: [] } });
     expect(places.map((place) => [place.name, place.status, place.target.kind])).toEqual([
       ["Studio Mac", "online", "linked"], ["Home cloud", "online", "linked"], ["Cloud c2", "asleep", "cloud"], ["Team t1", "online", "team"],
@@ -38,7 +38,7 @@ describe("places", () => {
   });
 
   it("lists the clouds of the phone's other accounts too, each opened through its own account, and a linked one once", () => {
-    const places = mergePlaces({ records: [record("a", "Alice cloud", "https://ca.dusk.bot")], activeId: "a", connected: true,
+    const places = mergePlaces({ records: [record("a", "Alice cloud", "https://ca.madani.bot")], activeId: "a", connected: true,
       account: { clouds: [cloud("ca")], teams: [], computers: [] },
       others: [{ accountId: "bob", places: { clouds: [cloud("cb"), cloud("ca")], teams: [team("tb")], computers: [] } }] });
     expect(places.map((place) => [place.name, place.target.kind, "accountId" in place.target ? place.target.accountId : undefined])).toEqual([
@@ -47,6 +47,6 @@ describe("places", () => {
   });
 
   it("hands the pairing step the cloud's address and its code", () => {
-    expect(pairingText({ origin: "https://c1.dusk.bot", code: "ABCD-EFGH-JKLM", expiresAt: 1 })).toBe("https://c1.dusk.bot ABCDEFGHJKLM");
+    expect(pairingText({ origin: "https://c1.madani.bot", code: "ABCD-EFGH-JKLM", expiresAt: 1 })).toBe("https://c1.madani.bot ABCDEFGHJKLM");
   });
 });

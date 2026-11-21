@@ -27,7 +27,7 @@ readline.createInterface({input: process.stdin}).on("line", (line) => {
   process.stdout.write(JSON.stringify({jsonrpc:"2.0",id:message.id,result:{
     forwarded:message.method,calls,
     marker:process.env.CUA_FIXTURE_MARKER,
-    tokenPresent:Boolean(process.env.DUSK_CONTROL_TOKEN),
+    tokenPresent:Boolean(process.env.MADANI_CONTROL_TOKEN),
     path:process.env.PATH,
     argv:process.argv.slice(1),
     tail:message.params?.large ? "x".repeat(150000) : ""
@@ -93,7 +93,7 @@ describe("local computer proxy (isolated child and control endpoint)", () => {
     };
     const control = { url: `http://127.0.0.1:${(server.address() as AddressInfo).port}/control`, token: "isolated-control-token" };
     let connection = gatedLocalComputer(original, control);
-    const home = mkdtempSync(join(tmpdir(), "dusk-cua-launch-"));
+    const home = mkdtempSync(join(tmpdir(), "madani-cua-launch-"));
     let child: ChildProcess | undefined;
     try {
       if (runtime === "electron") {
@@ -103,10 +103,10 @@ describe("local computer proxy (isolated child and control endpoint)", () => {
         const moduleUrl = new URL("./local-computer.ts", import.meta.url).href;
         const bootstrap = spawnSync(electron, ["--input-type=module", "-e", `
           const { gatedLocalComputer } = await import(${JSON.stringify(moduleUrl)});
-          const { original, control } = JSON.parse(process.env.DUSK_FIXTURE_CONNECTION);
+          const { original, control } = JSON.parse(process.env.MADANI_FIXTURE_CONNECTION);
           process.stdout.write(JSON.stringify(gatedLocalComputer(original, control)));
         `], {
-          env: { ...process.env, HOME: home, USERPROFILE: home, ELECTRON_RUN_AS_NODE: "1", DUSK_FIXTURE_CONNECTION: JSON.stringify({ original, control }) },
+          env: { ...process.env, HOME: home, USERPROFILE: home, ELECTRON_RUN_AS_NODE: "1", MADANI_FIXTURE_CONNECTION: JSON.stringify({ original, control }) },
           encoding: "utf8", timeout: 10_000,
         });
         expect(bootstrap.status, bootstrap.stderr).toBe(0);
@@ -115,7 +115,7 @@ describe("local computer proxy (isolated child and control endpoint)", () => {
       }
       expect(connection.env.ELECTRON_RUN_AS_NODE).toBe("1");
       child = spawn(connection.command, connection.args, { env: { ...process.env, ...connection.env,
-        HOME: home, USERPROFILE: home, DUSK_EXTRA_PATH: dirname(process.execPath), PATH: "",
+        HOME: home, USERPROFILE: home, MADANI_EXTRA_PATH: dirname(process.execPath), PATH: "",
       }, stdio: ["pipe", "pipe", "pipe"] });
       const input = createInterface({ input: child.stdout! });
       const replies = new Map<number, (value: any) => void>();
@@ -353,13 +353,13 @@ readline.createInterface({input: process.stdin}).on("line", (line) => {
 
   it("rejects malformed environment and missing authority without printing connection secrets", () => {
     for (const overrides of [
-      { DUSK_CUA_ARGS: "not-json-private-value" },
-      { DUSK_CUA_ARGS: '["mcp",7]' },
-      { DUSK_CONTROL_TOKEN: "" },
-      { DUSK_CONTROL_URL: "https://outside.example/control" },
+      { MADANI_CUA_ARGS: "not-json-private-value" },
+      { MADANI_CUA_ARGS: '["mcp",7]' },
+      { MADANI_CONTROL_TOKEN: "" },
+      { MADANI_CONTROL_URL: "https://outside.example/control" },
     ]) {
       const result = spawnSync(process.execPath, ["--experimental-strip-types", SPAWNED_PROXIES.localComputer], {
-        env: { ...process.env, DUSK_CUA_COMMAND: process.execPath, DUSK_CUA_ARGS: "[]", DUSK_CONTROL_URL: "http://127.0.0.1:1/control", DUSK_CONTROL_TOKEN: "private-fixture-token", ...overrides },
+        env: { ...process.env, MADANI_CUA_COMMAND: process.execPath, MADANI_CUA_ARGS: "[]", MADANI_CONTROL_URL: "http://127.0.0.1:1/control", MADANI_CONTROL_TOKEN: "private-fixture-token", ...overrides },
         encoding: "utf8", timeout: 5_000,
       });
       expect(result.status).toBe(2);

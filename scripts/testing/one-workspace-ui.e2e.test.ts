@@ -1,6 +1,6 @@
 // Once the person's bots moved to My Cloud, the desktop window is one window onto it: main's own handlers in a real
 // headless Chrome (testing/one-workspace-fixture.ts), My Cloud a real Cloud-mode server and this computer its real,
-// frozen server (testing/cloud-send-fixture.ts). Screenshots go to DUSK_ONE_WORKSPACE_SHOTS, else the fixture's folder.
+// frozen server (testing/cloud-send-fixture.ts). Screenshots go to MADANI_ONE_WORKSPACE_SHOTS, else the fixture's folder.
 import { randomBytes } from "node:crypto";
 import { join } from "node:path";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
@@ -8,11 +8,11 @@ import { resolveAgentBrowserBinary } from "../../server/browser-engine.ts";
 import { hostTimeout } from "../../server/testing/host-timeout.ts";
 import { freePortBlock } from "../../server/testing/ports.ts";
 import { launchCloudSendFixture, type CloudSendFixture } from "./cloud-send-fixture.ts";
-import { ensureUiBrowser, UI_TOOLS_DIR } from "./control-dusk-ui.ts";
+import { ensureUiBrowser, UI_TOOLS_DIR } from "./control-madani-ui.ts";
 import { launchHomeWorld, shotsDir, welcomed, type HomeWorld } from "./one-workspace-fixture.ts";
 
-const enabled = process.env.DUSK_UI_E2E === "1" || Boolean(resolveAgentBrowserBinary({ dataDir: UI_TOOLS_DIR, env: process.env }));
-if (!enabled) console.info("skipping the one-window UI e2e: set DUSK_UI_E2E=1 to install the pinned browser");
+const enabled = process.env.MADANI_UI_E2E === "1" || Boolean(resolveAgentBrowserBinary({ dataDir: UI_TOOLS_DIR, env: process.env }));
+if (!enabled) console.info("skipping the one-window UI e2e: set MADANI_UI_E2E=1 to install the pinned browser");
 
 const PAIR_FORM = "Boolean(document.querySelector('form input') && /pairing code|Connect to|Sign in to/.test(document.body.innerText))";
 
@@ -156,7 +156,7 @@ const PAIR_FORM = "Boolean(document.querySelector('form input') && /pairing code
     const sessions = (await fx.onCloud("GET", "/api/auth/sessions")).body.sessions as Array<{ id: string; label: string }>;
     const cookie = (await world.cloudCookies()).length;
     expect(cookie).toBeGreaterThan(0);
-    for (const session of sessions.filter((entry) => !entry.label.startsWith("dusk bot app (Cloud)"))) await fx.onCloud("DELETE", `/api/auth/sessions/${session.id}`);
+    for (const session of sessions.filter((entry) => !entry.label.startsWith("madani bot app (Cloud)"))) await fx.onCloud("DELETE", `/api/auth/sessions/${session.id}`);
     expect(await page("fetch('/api/auth/session').then((response) => response.status)")).toBe(401);
     let formSeen = false;
     const watching = (async () => {
@@ -174,7 +174,7 @@ const PAIR_FORM = "Boolean(document.querySelector('form input') && /pairing code
 
   it("an ended Admin grant with a lapsed session shows one Sign in, and My Cloud opens by itself once signed in", async () => {
     const sessions = (await fx.onCloud("GET", "/api/auth/sessions")).body.sessions as Array<{ id: string; label: string }>;
-    for (const session of sessions.filter((entry) => !entry.label.startsWith("dusk bot app (Cloud)"))) await fx.onCloud("DELETE", `/api/auth/sessions/${session.id}`);
+    for (const session of sessions.filter((entry) => !entry.label.startsWith("madani bot app (Cloud)"))) await fx.onCloud("DELETE", `/api/auth/sessions/${session.id}`);
     world.account.state = { status: "reauth-required", message: "access-ended", account: { id: "acct-fixture", email: "person@example.test" }, lastPlan: { tier: "pro", active: true } };
     await blank();
     await world.home.show();
@@ -226,7 +226,7 @@ const PAIR_FORM = "Boolean(document.querySelector('form input') && /pairing code
 
   it("chat links and the Settings key open on My Cloud's page", async () => {
     await onCloudPage();
-    expect(world.openLink(`duskbot://bot/${nova}`)).toBe(true);
+    expect(world.openLink(`madanibot://bot/${nova}`)).toBe(true);
     await until(() => page<string | null>("document.querySelector('textarea[aria-label^=\"Message\"]')?.getAttribute('aria-label') ?? null"), (label) => label === "Message Nova", 20_000, "Nova's chat");
     expect(new URL(world.window.url).origin).toBe(world.cloudOrigin);
     await world.window.screenshot(join(shots, "6-chat-link.png"));
@@ -241,10 +241,10 @@ const PAIR_FORM = "Boolean(document.querySelector('form input') && /pairing code
     await page("window.__sameLoad = true");
     await new Promise((resolve) => setTimeout(resolve, 4_000));
     expect(await page("window.__sameLoad === true"), "no reload while the version stays").toBe(true);
-    await fx.relaunch({ kill: false, cloud: { DUSK_APP_VERSION: "0.1.999" } });
+    await fx.relaunch({ kill: false, cloud: { MADANI_APP_VERSION: "0.1.999" } });
     await until(() => page<boolean>("window.__sameLoad === true"), (same) => same === false, 30_000, "the page to reload");
     await onCloudPage();
-    expect(await page("fetch('/.well-known/duskbot/environment').then((response) => response.json()).then((env) => env.version)")).toBe("0.1.999");
+    expect(await page("fetch('/.well-known/madanibot/environment').then((response) => response.json()).then((env) => env.version)")).toBe("0.1.999");
   }, hostTimeout(180_000));
 
   // T3: the team switcher. The session lists a team; its Cloud is the team server at world.teamOrigin.
@@ -252,7 +252,7 @@ const PAIR_FORM = "Boolean(document.querySelector('form input') && /pairing code
   const onTeamPage = () => until(() => page<boolean>("Boolean(document.querySelector('textarea[aria-label^=\"Message\"]'))"), Boolean, 60_000, "the team's page")
     .then(() => expect(new URL(world.window.url).origin).toBe(world.teamOrigin));
   const homeLine = () => page<string | null>("document.querySelector('[data-home-line]')?.textContent ?? null");
-  const bridgeState = () => page<Record<string, unknown>>("window.duskDesktop.workspaces.state()");
+  const bridgeState = () => page<Record<string, unknown>>("window.madaniDesktop.workspaces.state()");
 
   it("with a team in the session the switcher lists My Cloud and Acme; choosing Acme pairs through the Admin's team route, opens the team's page, and is remembered after a relaunch", async () => {
     await onCloudPage();
@@ -260,7 +260,7 @@ const PAIR_FORM = "Boolean(document.querySelector('form input') && /pairing code
     world.account.state.teams = [ACME()];
     await world.sync();
     await onCloudPage();
-    expect(world.menu().map((item) => [item.label, item.sublabel])).toEqual([["dusk cloud", new URL(world.cloudOrigin).host], ["Acme", "Admin"]]);
+    expect(world.menu().map((item) => [item.label, item.sublabel])).toEqual([["madani cloud", new URL(world.cloudOrigin).host], ["Acme", "Admin"]]);
     expect((await bridgeState()).home, "two places: the switcher shows").toBeUndefined();
     expect(await homeLine()).toBeNull();
     await world.home.show({ place: { team: "team-acme" } });
@@ -287,7 +287,7 @@ const PAIR_FORM = "Boolean(document.querySelector('form input') && /pairing code
     await onTeamPage();
     const sessions = (await fx.onCloud("GET", "/api/auth/sessions")).body.sessions as Array<{ id: string; label: string }>;
     // The window's sessions (the page labels them itself); the fixture's own owner sessions stay.
-    for (const session of sessions.filter((entry) => !entry.label.startsWith("dusk bot app (Cloud)"))) await fx.onCloud("DELETE", `/api/auth/sessions/${session.id}`);
+    for (const session of sessions.filter((entry) => !entry.label.startsWith("madani bot app (Cloud)"))) await fx.onCloud("DELETE", `/api/auth/sessions/${session.id}`);
     expect(await page("fetch('/api/auth/session').then((response) => response.status)")).toBe(401);
     const pairings = world.admin.teamPairings.length;
     world.window.webContents.reload();
@@ -331,7 +331,7 @@ const PAIR_FORM = "Boolean(document.querySelector('form input') && /pairing code
     const after = await sessions();
     expect(after.filter((entry) => !known.includes(entry.id)).length, "a new session, made in the background").toBe(1);
     // The window's older sessions end (the fixture's own owner session stays): the page keeps working on the new one.
-    for (const entry of after) if (known.includes(entry.id) && !entry.label.startsWith("dusk bot app (Cloud)")) await fx.onCloud("DELETE", `/api/auth/sessions/${entry.id}`);
+    for (const entry of after) if (known.includes(entry.id) && !entry.label.startsWith("madani bot app (Cloud)")) await fx.onCloud("DELETE", `/api/auth/sessions/${entry.id}`);
     expect(await page("fetch('/api/auth/session').then((response) => response.json()).then((session) => session.kind)")).toBe("session");
     expect(await page("window.__samePage === true"), "the page never moved").toBe(true);
     expect(new URL(world.window.url).origin).toBe(world.teamOrigin);
@@ -341,11 +341,11 @@ const PAIR_FORM = "Boolean(document.querySelector('form input') && /pairing code
     await world.home.renew();
     await onCloudPage();
     await until(() => homeLine(), (text) => text === "You're no longer in Acme.", 20_000, "the one line");
-    expect(world.menu().map((item) => item.label), "gone from the switcher at once").toEqual(["dusk cloud"]);
+    expect(world.menu().map((item) => item.label), "gone from the switcher at once").toEqual(["madani cloud"]);
     expect(world.places.remembered()).toBeNull();
     world.admin.removed.clear();
     await world.sync();
-    expect(world.menu().map((item) => item.label), "the session still lists Acme: back").toEqual(["dusk cloud", "Acme"]);
+    expect(world.menu().map((item) => item.label), "the session still lists Acme: back").toEqual(["madani cloud", "Acme"]);
   }, hostTimeout(180_000));
 
   it("removed from the team: after the next session check Acme is gone from the switcher, My Cloud opens, and one line says so", async () => {
@@ -357,7 +357,7 @@ const PAIR_FORM = "Boolean(document.querySelector('form input') && /pairing code
     await until(() => homeLine(), (text) => text === "You're no longer in Acme.", 20_000, "the one line");
     await world.window.screenshot(join(shots, "10-team-left.png"));
     expect(world.environments().environments.some((entry: any) => entry.team)).toBe(false);
-    expect(world.menu().map((item) => item.label)).toEqual(["dusk cloud"]);
+    expect(world.menu().map((item) => item.label)).toEqual(["madani cloud"]);
     expect(world.places.remembered()).toBeNull();
     expect((await bridgeState()).home, "My Cloud alone again: no switcher").toBe(true);
     world.window.webContents.reload();

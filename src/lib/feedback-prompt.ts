@@ -1,6 +1,6 @@
 import { action, feedback, usageAnalyticsEnabled } from "./product-analytics";
 
-const KEY = "dusk-feedback-prompt";
+const KEY = "madani-feedback-prompt";
 const DAY = 86_400_000;
 /** asked after this many distinct days of use, then at most once per GAP, and never again after two dismissals */
 export const DAYS_BEFORE = 3;

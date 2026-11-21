@@ -20,7 +20,7 @@ const CHIPS: Record<IntroChip, { label: LocaleKey; icon: GlyphIcon }> = {
   cloud: { label: "helperIntro.chip.cloud", icon: Cloud },
 };
 
-/** First jobs to hand Dusk in one tap (introAsks picks three): each is sent as the person's first message. */
+/** First jobs to hand Madani in one tap (introAsks picks three): each is sent as the person's first message. */
 const ASKS: Record<IntroAsk, { label: LocaleKey; icon: GlyphIcon }> = {
   day: { label: "helperIntro.ask.day", icon: Eye },
   today: { label: "helperIntro.ask.today", icon: Calendar },
@@ -44,7 +44,7 @@ function IntroConnectAi({ onClose }: { onClose: () => void }) {
   return <ConnectAiDialog tested={useWelcomeAi(state.instances, true)} onClose={onClose} />;
 }
 
-/** What is still missing, as chips under Dusk's follow-up (Simple mode): at most INTRO_CHIPS. A tapped chip stays, so it
+/** What is still missing, as chips under Madani's follow-up (Simple mode): at most INTRO_CHIPS. A tapped chip stays, so it
  * can be tapped again if its flow was closed. */
 export function IntroChips({ chips, asks = [], onAsk }: { chips: readonly IntroChip[]; asks?: readonly IntroAsk[]; onAsk?: (text: string) => void }) {
   const { dispatch } = useStore();

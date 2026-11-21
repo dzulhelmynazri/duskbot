@@ -16,7 +16,7 @@
 // and to build the image when the registry has no copy of BOT_DESKTOP_IMAGE.
 // The same deploy/bot-desktop/ also goes inside the package, beside dist-server/,
 // so the installed server builds the image itself after an update (server/bot-desktop.ts).
-// With DUSK_RELEASE_SIGNING_KEY set (CI's release environment) the build is signed (kind vps-package, its version and
+// With MADANI_RELEASE_SIGNING_KEY set (CI's release environment) the build is signed (kind vps-package, its version and
 // sha256) and the signature rides in manifest.json and current.json: an install that has once taken a signed build takes
 // only signed ones after, and never one older than it runs, below the signed floor or blocked (apps/link-service/install.sh).
 import { execFileSync } from "node:child_process";
@@ -85,11 +85,11 @@ const bytes = readFileSync(join(out, packed));
 const sha256 = createHash("sha256").update(bytes).digest("hex");
 let commit = "";
 try { commit = quiet("git", ["rev-parse", "--short=12", "HEAD"]); } catch { /* not a checkout */ }
-const name = `duskbot-${pkg.version}-${sha256.slice(0, 12)}.tgz`;
+const name = `madanibot-${pkg.version}-${sha256.slice(0, 12)}.tgz`;
 renameSync(join(out, packed), join(out, name));
 let signature = null;
-if (process.env.DUSK_RELEASE_SIGNING_KEY) {
-  run(process.execPath, ["--experimental-strip-types", join(root, "apps", "cloud-service", "scripts", "sign-release.ts"), join(out, name), "--kind", "vps-package", "--name", "duskbot", "--version", pkg.version]);
+if (process.env.MADANI_RELEASE_SIGNING_KEY) {
+  run(process.execPath, ["--experimental-strip-types", join(root, "apps", "cloud-service", "scripts", "sign-release.ts"), join(out, name), "--kind", "vps-package", "--name", "madanibot", "--version", pkg.version]);
   signature = readFileSync(join(out, `${name}.sig`), "utf8").trim();
   rmSync(join(out, `${name}.sig`));
 }

@@ -12,7 +12,7 @@ const dirs: string[] = [];
 afterEach(() => { for (const dir of dirs.splice(0)) rmSync(dir, { recursive: true, force: true }); });
 
 function fixture() {
-  const directory = mkdtempSync(join(tmpdir(), "dusk-routine-concurrency-"));
+  const directory = mkdtempSync(join(tmpdir(), "madani-routine-concurrency-"));
   dirs.push(directory);
   let now = START;
   let task = 0;

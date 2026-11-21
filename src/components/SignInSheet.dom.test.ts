@@ -16,13 +16,13 @@ function desktop() {
   let status = "signed-out";
   const listeners = new Set<(state: unknown) => void>();
   const cloudAccount = {
-    state: vi.fn(async () => ({ status, ...(status === "connected" ? { account: { id: "a", email: "p@qa.dusk.test" } } : {}) })),
+    state: vi.fn(async () => ({ status, ...(status === "connected" ? { account: { id: "a", email: "p@qa.madani.test" } } : {}) })),
     continueInBrowser: vi.fn(async () => { status = "connecting"; return { outcome: "browser", state: { status } }; }),
     reopen: vi.fn(async () => ({ status })), cancel: vi.fn(async () => { status = "signed-out"; return { status }; }),
     onState: vi.fn((callback: (state: unknown) => void) => { listeners.add(callback); return () => listeners.delete(callback); }),
   };
   const accounts = { list: vi.fn(async () => ({ active: null, saved: [] })), onChanged: vi.fn(() => () => {}), signOut: vi.fn() };
-  vi.stubGlobal("duskDesktop", { cloudAccount, accounts });
+  vi.stubGlobal("madaniDesktop", { cloudAccount, accounts });
   const become = async (next: string) => { status = next; await act(async () => { for (const listen of listeners) listen({ status, ...(next === "connected" ? { account: { id: "a" } } : {}) }); }); await settle(); };
   return { cloudAccount, become };
 }

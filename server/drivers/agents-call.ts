@@ -23,7 +23,7 @@ import { callReactTool, REACT_TOOL } from "./agents-react-tool.ts";
 import { callPurchaseTool, PURCHASE_TOOL_NAMES } from "./agents-purchase-tools.ts";
 import { callDocumentTool, DOCUMENT_TOOL_NAMES } from "./agents-document-tools.ts";
 import { callWaitTool, WAIT_TOOL_NAMES } from "./agents-wait-tools.ts";
-import { callDuskTool, DUSK_TOOL_NAMES } from "./agents-dusk-tools.ts";
+import { callMadaniTool, MADANI_TOOL_NAMES } from "./agents-madani-tools.ts";
 import { callPageTool, PAGE_TOOL_NAMES } from "./agents-pages-tools.ts";
 import { callSlackTool, SLACK_TOOL_NAMES } from "./agents-slack-tools.ts";
 import { callPersonTool, PERSON_TOOL_NAMES } from "./agents-person-tools.ts";
@@ -52,9 +52,9 @@ export function toolCallContextFromEnv(env: NodeJS.ProcessEnv, stop?: AbortSigna
   const profile = catalogProfileFromEnv(env);
   return {
     botId: profile.botId,
-    threadId: env.DUSK_THREAD_ID ?? "",
-    depth: Number(env.DUSK_TURN_DEPTH ?? "0") || 0,
-    externalRuntime: env.DUSK_EXTERNAL_RUNTIME === "1",
+    threadId: env.MADANI_THREAD_ID ?? "",
+    depth: Number(env.MADANI_TURN_DEPTH ?? "0") || 0,
+    externalRuntime: env.MADANI_EXTERNAL_RUNTIME === "1",
     client: harnessClientFromEnv(env, stop),
   };
 }
@@ -66,17 +66,17 @@ const SIGN_IN_PLACES: Record<string, string> = {
   cloud: "your VPS computer",
 };
 
-/** What a bot does after request_sign_in with human_check: dusk bot's own recovery already ran on the server. */
+/** What a bot does after request_sign_in with human_check: madani bot's own recovery already ran on the server. */
 export function humanCheckAnswer(r: Json, site: string, where: string): string {
-  const tried = `dusk bot waited about 45 s and reloaded once${r.homeTried === true ? ", then tried the person's own internet connection" : ""}`;
+  const tried = `madani bot waited about 45 s and reloaded once${r.homeTried === true ? ", then tried the person's own internet connection" : ""}`;
   const hint = typeof r.hint === "string" ? ` ${r.hint}` : "";
   switch (r.outcome) {
     case "cleared":
       return r.via === "home"
-        ? `The check on ${site} cleared once dusk bot sent ${site} through the person's own internet connection; it stays on that route for this session. Look at the page again and carry on; do not mention the check.`
-        : `The check on ${site} cleared by itself while dusk bot waited. Look at the page again and carry on; do not mention the check.`;
+        ? `The check on ${site} cleared once madani bot sent ${site} through the person's own internet connection; it stays on that route for this session. Look at the page again and carry on; do not mention the check.`
+        : `The check on ${site} cleared by itself while madani bot waited. Look at the page again and carry on; do not mention the check.`;
     case "no-check":
-      return `dusk bot sees no human check or bot block on the ${site} page now. Look at the page again and carry on. A sign-in page is request_sign_in without human_check; do not call this again for a page with no check.`;
+      return `madani bot sees no human check or bot block on the ${site} page now. Look at the page again and carry on. A sign-in page is request_sign_in without human_check; do not call this again for a page with no check.`;
     case "other-routes":
       return `The check on ${site} is still there: ${tried}. Before anyone is asked, reach the same goal another way.${hint} Use one now if it does the job, and do not mention the check. Only if none fits, or the person asked for this exact site, call request_sign_in again with human_check true and other_routes saying in a few words what you tried or why none fits.`;
     case "blocked":
@@ -250,7 +250,7 @@ export async function callTool(called: string, input: Json, context: ToolCallCon
   if (RESEARCH_TOOL_NAMES.has(name)) return callResearchTool(name, args, context);
   if (name === READ_PAGES_TOOL) return callReadPages(args);
   if (HELPER_TOOL_NAMES.has(name)) return callHelperTool(name, args, context);
-  if (DUSK_TOOL_NAMES.has(name)) return callDuskTool(name, args, context);
+  if (MADANI_TOOL_NAMES.has(name)) return callMadaniTool(name, args, context);
   if (PAGE_TOOL_NAMES.has(name)) return callPageTool(name, args, context);
   if (SLACK_TOOL_NAMES.has(name)) return callSlackTool(name, args, context);
   if (PERSON_TOOL_NAMES.has(name)) return callPersonTool(name, args, context);
@@ -611,10 +611,10 @@ export async function callTool(called: string, input: Json, context: ToolCallCon
       return { text: `${r.label ?? CREDENTIAL_TARGETS[credentialId].label} is already configured. Continue the task.` };
     }
     if (credentialId === "onePasswordToken") {
-      return { text: `A secure ${r.label ?? CREDENTIAL_TARGETS[credentialId].label} request is ready: the person pastes it into its card in dusk bot, on their computer or in My Cloud, and dusk bot checks it with 1Password before keeping it. End this turn; dusk bot will resume the task after they save or decline. Never ask them to paste the token into chat, and never pass it to a command line.` };
+      return { text: `A secure ${r.label ?? CREDENTIAL_TARGETS[credentialId].label} request is ready: the person pastes it into its card in madani bot, on their computer or in My Cloud, and madani bot checks it with 1Password before keeping it. End this turn; madani bot will resume the task after they save or decline. Never ask them to paste the token into chat, and never pass it to a command line.` };
     }
     return {
-      text: `A secure ${r.label ?? CREDENTIAL_TARGETS[credentialId].label} request is now in this conversation, and the person was notified. The desktop app and a freshly QR-paired mobile app show its secure entry card; older mobile pairings explain how to pair again or finish on the computer. End this turn; dusk bot will resume the task after the user saves or declines. Never ask them to paste the key into chat.`,
+      text: `A secure ${r.label ?? CREDENTIAL_TARGETS[credentialId].label} request is now in this conversation, and the person was notified. The desktop app and a freshly QR-paired mobile app show its secure entry card; older mobile pairings explain how to pair again or finish on the computer. End this turn; madani bot will resume the task after the user saves or declines. Never ask them to paste the key into chat.`,
     };
   }
   if (name === "request_sign_in") {
@@ -631,15 +631,15 @@ export async function callTool(called: string, input: Json, context: ToolCallCon
     const host = typeof r.site === "string" ? r.site : site;
     if (check) return { text: humanCheckAnswer(r, host, where) };
     return {
-      text: `The person was asked to sign in to ${host} on ${where}. Your turn ends now. The card already says what to do, so do not repeat it: write nothing more, or at most one short line, then stop. dusk bot resumes you when they finish or decline. Never ask for the password or a code in chat.`,
+      text: `The person was asked to sign in to ${host} on ${where}. Your turn ends now. The card already says what to do, so do not repeat it: write nothing more, or at most one short line, then stop. madani bot resumes you when they finish or decline. Never ask for the password or a code in chat.`,
     };
   }
   if (name === "request_screen_access") {
     const reason = typeof args.reason === "string" ? args.reason.trim().slice(0, 200) : "";
     if (!reason) return { text: "request_screen_access needs reason: one short line on what you need the screen for.", isError: true };
     const r = await api("/api/internal/request-screen-access", { method: "POST", body: JSON.stringify({ fromBotId: BOT_ID, fromThreadId: THREAD_ID, reason }) });
-    if (r.shown !== true) return { text: "dusk bot can already control this Mac's screen, or this conversation does not work on it: carry on with the tools you have." };
-    return { text: "The person now sees a notice to let dusk bot control this Mac. Do not explain permissions or settings. Carry on with what you can do without it, such as your built-in browser, or say in one short line that you will go on once it is allowed, then stop." };
+    if (r.shown !== true) return { text: "madani bot can already control this Mac's screen, or this conversation does not work on it: carry on with the tools you have." };
+    return { text: "The person now sees a notice to let madani bot control this Mac. Do not explain permissions or settings. Carry on with what you can do without it, such as your built-in browser, or say in one short line that you will go on once it is allowed, then stop." };
   }
   if (name === "fill_login") {
     const username = typeof args.username === "string" ? args.username.trim().slice(0, 512) : "";
@@ -939,7 +939,7 @@ async function requestEmailCard(args: Json, context: ToolCallContext): Promise<T
   });
   if (!r.ok) return { text: String(r.body.error ?? `request_credential failed (HTTP ${r.status}).`), isError: true };
   if (r.body.alreadyConfigured === true) return { text: `${String(r.body.label)} is already connected. Use the email tools.` };
-  return { text: "A secure card for the mailbox is ready in dusk bot, on the computer and on a freshly QR-paired phone. End this turn now and say in one line that you are waiting for it; dusk bot resumes you when the person connects it or declines." };
+  return { text: "A secure card for the mailbox is ready in madani bot, on the computer and on a freshly QR-paired phone. End this turn now and say in one line that you are waiting for it; madani bot resumes you when the person connects it or declines." };
 }
 
 /** A website login on a sealed card: kept for fill_login, which types it; the bot never gets it back. */
@@ -951,10 +951,10 @@ async function requestLoginCard(args: Json, context: ToolCallContext): Promise<T
   if (!r.ok) return { text: String(r.body.error ?? `request_credential failed (HTTP ${r.status}).`), isError: true };
   if (typeof r.body.text === "string") return { text: r.body.text };
   const site = typeof r.body.site === "string" ? r.body.site : "the site";
-  return { text: `A secure login card for ${site} is now in this conversation, and the person was notified. End this turn now and say in one line that you are waiting for it; dusk bot resumes you when they save it or decline, and then you sign in with fill_login. Never ask for the password in chat.` };
+  return { text: `A secure login card for ${site} is now in this conversation, and the person was notified. End this turn now and say in one line that you are waiting for it; madani bot resumes you when they save it or decline, and then you sign in with fill_login. Never ask for the password in chat.` };
 }
 
-/** A secret dusk bot does not keep: the person agrees to one use, and the bot gets a secretRef or a file path back. */
+/** A secret madani bot does not keep: the person agrees to one use, and the bot gets a secretRef or a file path back. */
 async function requestCustomSecret(args: Json, context: ToolCallContext): Promise<ToolCallResult> {
   const r = await context.client.apiResponse("/api/internal/request-credential", {
     method: "POST",
@@ -964,11 +964,11 @@ async function requestCustomSecret(args: Json, context: ToolCallContext): Promis
   if (!r.ok) return { text: String(r.body.error ?? `request_credential failed (HTTP ${r.status}).`), isError: true };
   if (typeof r.body.text === "string") return { text: `${r.body.text} Continue the task.` };
   const asked = r.body.savedAs === "ref"
-    ? ` ${label} was saved earlier for dusk bot's tools only, not as a file for your commands (not a file request), so this card asks for it again.`
+    ? ` ${label} was saved earlier for madani bot's tools only, not as a file for your commands (not a file request), so this card asks for it again.`
     : r.body.savedAs === "file" ? ` ${label} was saved earlier as a file for your commands, not as a secretRef, so this card asks for it again.` : "";
-  const vault = r.body.vault === "removed" ? ` The service said the saved ${label} is wrong, so dusk bot removed it from the Vault; the card tells the person and asks for a new one, so do not repeat that.`
-    : r.body.vault === "flagged" ? ` The saved ${label} may be wrong, so dusk bot marked it for the person to check; the card asks them for a new one, so do not repeat that.` : "";
+  const vault = r.body.vault === "removed" ? ` The service said the saved ${label} is wrong, so madani bot removed it from the Vault; the card tells the person and asks for a new one, so do not repeat that.`
+    : r.body.vault === "flagged" ? ` The saved ${label} may be wrong, so madani bot marked it for the person to check; the card asks them for a new one, so do not repeat that.` : "";
   return {
-    text: `A secure card for ${label} is now in this conversation, in the app and on a QR-paired phone, and the person was notified. If they can't find it, tell them it is in this conversation, and the notification opens it.${asked}${vault} End this turn now with one short line in Sentence case, such as "Add your ${label} in the card above.", and nothing more; dusk bot resumes you when the person saves or declines, and tells you how to use it. Never ask for it in chat.`,
+    text: `A secure card for ${label} is now in this conversation, in the app and on a QR-paired phone, and the person was notified. If they can't find it, tell them it is in this conversation, and the notification opens it.${asked}${vault} End this turn now with one short line in Sentence case, such as "Add your ${label} in the card above.", and nothing more; madani bot resumes you when the person saves or declines, and tells you how to use it. Never ask for it in chat.`,
   };
 }

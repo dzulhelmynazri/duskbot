@@ -1,6 +1,6 @@
-/** Names dusk bot gives its own MCP servers; a custom server may not take one. */
+/** Names madani bot gives its own MCP servers; a custom server may not take one. */
 export const RESERVED_MCP_NAMES: ReadonlySet<string> = new Set([
-  "dusk",
+  "madani",
   "computer",
   "agents",
   "composio",
@@ -8,8 +8,8 @@ export const RESERVED_MCP_NAMES: ReadonlySet<string> = new Set([
   "browser",
   "phone",
   "dweb",
-  "duskbot_connectors",
-  "duskbot_phone",
+  "madanibot_connectors",
+  "madanibot_phone",
 ]);
 
 /** A server name from any text: lowercase letters, numbers, `_` and `-`, starting with a letter, at most 32. */
@@ -18,7 +18,7 @@ export function slugMcpName(raw: string): string {
   return /^[a-z]/.test(slug) ? slug : slug ? `mcp-${slug}`.slice(0, 32) : "";
 }
 
-/** What dusk bot names a server another tool calls `raw`; a name dusk bot keeps for itself gets an mcp- prefix. */
+/** What madani bot names a server another tool calls `raw`; a name madani bot keeps for itself gets an mcp- prefix. */
 export function importedMcpServerName(raw: string): string {
   const slug = slugMcpName(raw);
   return RESERVED_MCP_NAMES.has(slug) ? `mcp-${slug}`.slice(0, 32) : slug;

@@ -1,4 +1,4 @@
-// The account context redirect, the app side: every account step (sign in, upgrade or buy dusk cloud, move bots to the
+// The account context redirect, the app side: every account step (sign in, upgrade or buy madani cloud, move bots to the
 // cloud, billing) goes to the browser for its context, and the app shows one calm "Continue in your browser" sheet with
 // Open again and Cancel while it waits. Returning to the app is optional: the app signs itself in when the browser
 // sign-in is approved, and a purchase is picked up when the account changes.
@@ -20,7 +20,7 @@ const tell = () => { for (const watch of Array.from(watchers)) watch(); };
 
 /** Opens the browser for `intent`; while a sign-in is under way the app shows the "Continue in your browser" sheet. */
 export async function continueInBrowser(intent: AccountIntent): Promise<ContinueOutcome> {
-  const bridge = typeof window === "undefined" ? undefined : window.duskDesktop?.cloudAccount;
+  const bridge = typeof window === "undefined" ? undefined : window.madaniDesktop?.cloudAccount;
   if (!bridge?.continueInBrowser) return "unavailable";
   const answer = await bridge.continueInBrowser(intent);
   if (answer.outcome === "browser") { waiting = intent; tell(); }

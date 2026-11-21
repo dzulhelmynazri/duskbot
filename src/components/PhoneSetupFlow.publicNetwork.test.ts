@@ -31,7 +31,7 @@ const controller = (over: Partial<PhoneSetupController>): PhoneSetupController =
   accountBusy: false,
   error: null,
   accountError: null,
-  pairingLink: "duskbot://pair?address=192.168.1.34%3A8810",
+  pairingLink: "madanibot://pair?address=192.168.1.34%3A8810",
   secondsLeft: 120,
   address: "192.168.1.34",
   pairingPort: 8810,

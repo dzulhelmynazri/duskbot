@@ -83,7 +83,7 @@ export async function neverVisibleCheck(root, profile) {
   mkdirSync(join(profile, "never-visible"), { recursive: true });
   const child = spawn(binary, ["-r", join(root, "scripts", "smoke", "electron-smoke-shim.cjs"), join(root, "scripts", "smoke", "never-visible-check.mjs"),
     `--user-data-dir=${join(profile, "never-visible")}`, "--use-mock-keychain", "--password-store=basic"],
-  { cwd: root, env: { PATH: process.env.PATH, HOME: join(profile, "never-visible"), DUSK_SMOKE_EVENTS: events, DUSK_SMOKE_PROFILE: join(profile, "never-visible") }, stdio: ["ignore", "pipe", "pipe"], detached: true });
+  { cwd: root, env: { PATH: process.env.PATH, HOME: join(profile, "never-visible"), MADANI_SMOKE_EVENTS: events, MADANI_SMOKE_PROFILE: join(profile, "never-visible") }, stdio: ["ignore", "pipe", "pipe"], detached: true });
   launched.add(child);
   let output = "";
   child.stdout.on("data", (chunk) => { output += chunk; });
@@ -99,7 +99,7 @@ export async function neverVisibleCheck(root, profile) {
 export async function launchSmokeApp({ root, profile, env: extra = {}, log: print = () => {} }) {
   trapExit();
   await neverVisibleCheck(root, profile);
-  const home = join(profile, "home"), userData = join(profile, "electron"), dataDir = join(home, ".duskbot");
+  const home = join(profile, "home"), userData = join(profile, "electron"), dataDir = join(home, ".madanibot");
   for (const dir of [home, userData, dataDir]) mkdirSync(dir, { recursive: true });
   const eventsFile = join(profile, "events.jsonl");
   rmSync(eventsFile, { force: true });
@@ -107,8 +107,8 @@ export async function launchSmokeApp({ root, profile, env: extra = {}, log: prin
   rmSync(join(userData, "DevToolsActivePort"), { force: true });
   const port = await freePort(), uiPort = await freePort(), webhookPort = await freePort();
   const requireFromRoot = createRequire(join(root, "package.json"));
-  // vite.config.ts reads DUSK_PORT for its /api proxy when it loads
-  process.env.DUSK_PORT = String(port);
+  // vite.config.ts reads MADANI_PORT for its /api proxy when it loads
+  process.env.MADANI_PORT = String(port);
   const { createServer } = await import(pathToFileURL(requireFromRoot.resolve("vite")).href);
   const vite = await createServer({
     root, configFile: join(root, "vite.config.ts"), logLevel: "error",
@@ -120,11 +120,11 @@ export async function launchSmokeApp({ root, profile, env: extra = {}, log: prin
   let output = "";
   const env = {
     PATH: process.env.PATH, HOME: home, USERPROFILE: home, TMPDIR: join(profile, "tmp"), LANG: "en_US.UTF-8",
-    DUSK_PORT: String(port), DUSK_WEBHOOK_PORT: String(webhookPort), DUSK_DATA_DIR: dataDir,
-    DUSK_DEV_OWN_SERVER: "1", DUSK_DEV_SERVER_WATCH: "0", DUSK_NO_TEST_BOTS: "1",
-    DUSK_CLOUD_STAGING: "1", DUSK_ERROR_REPORTS: "0", DUSK_ANALYTICS: "0",
+    MADANI_PORT: String(port), MADANI_WEBHOOK_PORT: String(webhookPort), MADANI_DATA_DIR: dataDir,
+    MADANI_DEV_OWN_SERVER: "1", MADANI_DEV_SERVER_WATCH: "0", MADANI_NO_TEST_BOTS: "1",
+    MADANI_CLOUD_STAGING: "1", MADANI_ERROR_REPORTS: "0", MADANI_ANALYTICS: "0",
     ELECTRON_START_URL: `http://127.0.0.1:${uiPort}`,
-    DUSK_SMOKE_EVENTS: eventsFile, DUSK_SMOKE_LINKS: join(profile, "links.txt"), DUSK_SMOKE_PROFILE: profile, DUSK_LOG_DIR: join(profile, "app-paths", "logs"),
+    MADANI_SMOKE_EVENTS: eventsFile, MADANI_SMOKE_LINKS: join(profile, "links.txt"), MADANI_SMOKE_PROFILE: profile, MADANI_LOG_DIR: join(profile, "app-paths", "logs"),
     ...extra,
   };
   mkdirSync(env.TMPDIR, { recursive: true });
@@ -159,7 +159,7 @@ export async function launchSmokeApp({ root, profile, env: extra = {}, log: prin
   const app = {
     root, profile, port, uiPort, cdpPort, eventsFile,
     output: () => output,
-    /** hands a duskbot:// link to the app, as the OS does when a page opens one */
+    /** hands a madanibot:// link to the app, as the OS does when a page opens one */
     openLink: (url) => appendFileSync(join(profile, "links.txt"), `${url}\n`),
     events: () => { try { return readFileSync(eventsFile, "utf8").split("\n").filter(Boolean).map((line) => JSON.parse(line)); } catch { return []; } },
     /** windows the shim caught visible: any is a failure of the run */

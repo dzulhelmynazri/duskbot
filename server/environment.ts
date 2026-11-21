@@ -1,4 +1,4 @@
-// Served without auth at /.well-known/duskbot/environment, so a saved connection can check it still reaches the same server.
+// Served without auth at /.well-known/madanibot/environment, so a saved connection can check it still reaches the same server.
 import { randomUUID } from "node:crypto";
 import {
   closeSync,
@@ -31,7 +31,7 @@ export interface EnvironmentDescriptor {
     minMobile: number;
     /** Pairing and sessions are available (this build). */
     remoteSessions: true;
-    /** A person's own dusk cloud home. */
+    /** A person's own madani cloud home. */
     cloudHome?: true;
     /** A team's Cloud home: `label` is the team's name. */
     cloudTeam?: true;
@@ -117,13 +117,13 @@ export function loadEnvironmentId(dataDir: string): string {
 let stamp: string | undefined;
 /** This server's release and, on a Cloud, its image: what it runs changes with either, the engines' CLIs included. */
 export function buildStamp(): string {
-  stamp ??= [serverVersion(), process.env.DUSK_CLOUD_IMAGE?.trim()].filter(Boolean).join(" ");
+  stamp ??= [serverVersion(), process.env.MADANI_CLOUD_IMAGE?.trim()].filter(Boolean).join(" ");
   return stamp;
 }
 
 /** The desktop's own version, else the bundle's package.json (scripts/bundle-server.mjs), else the checkout's. */
 export function serverVersion(root = SERVER_ROOT): string {
-  const fromEnv = process.env.DUSK_APP_VERSION?.trim();
+  const fromEnv = process.env.MADANI_APP_VERSION?.trim();
   if (fromEnv) return fromEnv;
   for (const file of [join(root, "package.json"), join(root, "..", "package.json")]) {
     try {
@@ -138,7 +138,7 @@ export function serverVersion(root = SERVER_ROOT): string {
 export function environmentDescriptor(input: { environmentId: string; desktopManaged: boolean; emailSignIn?: boolean; cloudHome?: boolean; cloudTeam?: boolean; ownHome?: boolean; label?: string }): EnvironmentDescriptor {
   return {
     environmentId: input.environmentId,
-    label: input.label?.trim() || process.env.DUSK_ENVIRONMENT_LABEL?.trim() || hostname(),
+    label: input.label?.trim() || process.env.MADANI_ENVIRONMENT_LABEL?.trim() || hostname(),
     platform: process.platform,
     version: serverVersion(),
     capabilities: {

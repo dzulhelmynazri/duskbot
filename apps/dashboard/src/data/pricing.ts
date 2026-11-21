@@ -52,7 +52,7 @@ export function priceCart(sel: Selection, c: PlanCatalog): Cart {
   const desk = sel.desktop === "none" ? null : desktopOf(c, sel.desktop);
   if (desk) {
     const spec = desk.sizable && sel.size ? sel.size : desk;
-    lines.push({ key: "desktop", label: `dusk cloud, ${desk.name}`, detail: specLine(spec), monthly: desktopMonthly(desk, sel.size, c.custom) });
+    lines.push({ key: "desktop", label: `madani cloud, ${desk.name}`, detail: specLine(spec), monthly: desktopMonthly(desk, sel.size, c.custom) });
   }
   const subtotal = lines.reduce((n, l) => n + l.monthly, 0);
   const bundle = matchBundle(sel, c);

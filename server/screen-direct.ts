@@ -68,7 +68,7 @@ export class DirectRefused extends Error {
 
 /** Finds node-datachannel beside the server; null (direct off) when it is missing, broken or turned off. */
 export function loadDataChannel(env: NodeJS.ProcessEnv = process.env): DataChannelModule | null {
-  if (env.DUSK_SCREEN_DIRECT === "off") return null;
+  if (env.MADANI_SCREEN_DIRECT === "off") return null;
   for (const directory of [undefined, null]) {
     try {
       const loaded = nativeRequire(directory)("node-datachannel") as Partial<DataChannelModule> | undefined;
@@ -78,7 +78,7 @@ export function loadDataChannel(env: NodeJS.ProcessEnv = process.env): DataChann
   return null;
 }
 
-/** `DUSK_SCREEN_DIRECT_PORTS=50000-50100` keeps the peers' UDP ports in a range a firewall can open. */
+/** `MADANI_SCREEN_DIRECT_PORTS=50000-50100` keeps the peers' UDP ports in a range a firewall can open. */
 export function directPortRange(value: string | undefined): { portRangeBegin: number; portRangeEnd: number } | undefined {
   const match = /^(\d{4,5})-(\d{4,5})$/.exec(value?.trim() ?? "");
   if (!match) return undefined;
@@ -131,7 +131,7 @@ export function createScreenDirect(options: {
     if (peers.size >= (options.maxPeers ?? DEFAULT_MAX_PEERS)) throw new DirectRefused(503, "direct path is busy");
     const sdp = screenOffer(offer);
     if (!sdp) throw new DirectRefused(400, "not a screen offer");
-    const pc = new ndc.PeerConnection("dusk-screen", { iceServers: [...(options.iceServers ?? SCREEN_DIRECT_ICE_SERVERS)], ...options.ports, maxMessageSize: 256 * 1024 });
+    const pc = new ndc.PeerConnection("madani-screen", { iceServers: [...(options.iceServers ?? SCREEN_DIRECT_ICE_SERVERS)], ...options.ports, maxMessageSize: 256 * 1024 });
     peers.add(pc);
     let ended = false, opened = false, channel: DataChannel | undefined;
     const closers: Array<() => void> = [];

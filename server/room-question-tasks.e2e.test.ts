@@ -8,12 +8,12 @@ import { fileURLToPath } from "node:url";
 import { expect, it } from "vitest";
 import { z } from "zod";
 
-import { launchVerificationServer, verificationServerEnvironment } from "../scripts/control-dusk.ts";
+import { launchVerificationServer, verificationServerEnvironment } from "../scripts/control-madani.ts";
 import type { GroupTask, WireBot, WireGroup, WireMessage } from "../shared/wire.ts";
 import { removeTempDir, waitForExit } from "./testing/cleanup.ts";
 
 it("keeps live room questions fenced but allows task changes after their turn settles and restarts", async () => {
-  const gates = mkdtempSync(join(tmpdir(), "dusk-room-question-gates-"));
+  const gates = mkdtempSync(join(tmpdir(), "madani-room-question-gates-"));
   const finishGate = join(gates, "finish");
   const env = { FAKE_CLAUDE_MODE: "hang", FAKE_CLAUDE_FINISH_GATE: finishGate };
   const fixture = await launchVerificationServer(env);
@@ -48,9 +48,9 @@ it("keeps live room questions fenced but allows task changes after their turn se
     })).status).toBe(202);
     await expect.poll(() => existsSync(fixture.fixtureDumpPath), { timeout: 10_000 }).toBe(true);
     const dump = z.object({ mcpConfig: z.object({ mcpServers: z.object({
-      dusk: z.object({ args: z.array(z.string()) }),
+      madani: z.object({ args: z.array(z.string()) }),
     }) }) }).parse(JSON.parse(readFileSync(fixture.fixtureDumpPath, "utf8")));
-    questionSocket = connect(dump.mcpConfig.mcpServers.dusk.args[1]!);
+    questionSocket = connect(dump.mcpConfig.mcpServers.madani.args[1]!);
     let socketBuffer = "";
     let providerReply: unknown;
     questionSocket.on("data", (chunk) => {

@@ -4,9 +4,9 @@ const DAY = 86_400_000, GB_BYTES = 1e9;
 const dayKey = (t: number) => new Date(t).toISOString().slice(0, 10);
 
 export const FIXTURE_PEOPLE = [
-  ["acct_fx_mara", "mara@duskbot.test", "pro"], ["acct_fx_oskar", "oskar@duskbot.test", "starter"], ["acct_fx_lin", "lin@duskbot.test", "pro"],
-  ["acct_fx_tess", "tess@duskbot.test", "starter"], ["acct_fx_ravi", "ravi@duskbot.test", "max"], ["acct_fx_juno", "juno@duskbot.test", "starter"],
-  ["acct_fx_ikaika", "ikaika@duskbot.test", "pro"], ["acct_fx_bo", "bo@duskbot.test", "starter"],
+  ["acct_fx_mara", "mara@madanibot.test", "pro"], ["acct_fx_oskar", "oskar@madanibot.test", "starter"], ["acct_fx_lin", "lin@madanibot.test", "pro"],
+  ["acct_fx_tess", "tess@madanibot.test", "starter"], ["acct_fx_ravi", "ravi@madanibot.test", "max"], ["acct_fx_juno", "juno@madanibot.test", "starter"],
+  ["acct_fx_ikaika", "ikaika@madanibot.test", "pro"], ["acct_fx_bo", "bo@madanibot.test", "starter"],
 ] as const;
 /** sign-in emails in the made-up month: account, emails sent, of them codes */
 export const FIXTURE_MAIL: ReadonlyArray<readonly [string, number, number]> = [
@@ -64,27 +64,27 @@ export function opsFixture(now: number): OpsAnswer {
         days: days.map((day, i) => ({ day, costCents: wave(i, instaCost / days.length, instaCost / days.length / 4), egressGb: wave(i, 30, 12), awakeHours: wave(i, 70, 20) })),
         machines, customers: [...customers].sort((a, b) => b.costCents - a.costCents),
         outliers: [
-          { accountId: "acct_fx_ravi", email: "ravi@duskbot.test", metric: "egress", value: 412, median: 18, ratio: 22.9, z: 14.2 },
-          { accountId: "acct_fx_ravi", email: "ravi@duskbot.test", metric: "awake", value: 690, median: 120, ratio: 5.8, z: 6.1 },
-          { accountId: "acct_fx_oskar", email: "oskar@duskbot.test", metric: "egress", value: 140, median: 18, ratio: 7.8, z: 4.5 },
+          { accountId: "acct_fx_ravi", email: "ravi@madanibot.test", metric: "egress", value: 412, median: 18, ratio: 22.9, z: 14.2 },
+          { accountId: "acct_fx_ravi", email: "ravi@madanibot.test", metric: "awake", value: 690, median: 120, ratio: 5.8, z: 6.1 },
+          { accountId: "acct_fx_oskar", email: "oskar@madanibot.test", metric: "egress", value: 140, median: 18, ratio: 7.8, z: 4.5 },
         ],
-        limited: [{ accountId: "acct_fx_ravi", email: "ravi@duskbot.test", cloudId: machines.find(m => m.accountId === "acct_fx_ravi")!.cloudId, state: "paused", egressGb: 412 },
-          { accountId: "acct_fx_oskar", email: "oskar@duskbot.test", cloudId: machines.find(m => m.accountId === "acct_fx_oskar")!.cloudId, state: "slowed", egressGb: 140 }],
+        limited: [{ accountId: "acct_fx_ravi", email: "ravi@madanibot.test", cloudId: machines.find(m => m.accountId === "acct_fx_ravi")!.cloudId, state: "paused", egressGb: 412 },
+          { accountId: "acct_fx_oskar", email: "oskar@madanibot.test", cloudId: machines.find(m => m.accountId === "acct_fx_oskar")!.cloudId, state: "slowed", egressGb: 140 }],
       },
       workers: {
         plan: { label: "workers paid", baseCents: 500, includedRequests: 10_000_000, includedCpuMs: 30_000_000, requestCentsPerMillion: 30, cpuCentsPerMillionMs: 2 },
         requests: { used: workersReq, limit: 10_000_000, projected: Math.round(workersReq / elapsed), level: "ok" },
         cpuMs: { used: workersCpu, limit: 30_000_000, projected: Math.round(workersCpu / elapsed), level: "ok" }, overageCents: 0,
-        scripts: [{ name: "dusk-edge", requests: 1_920_000, cpuMs: 3_300_000, errors: 41, todayRequests: 88_000, todayCpuMs: 150_000 },
-          { name: "duskbot-composio", requests: 560_000, cpuMs: 800_000, errors: 3, todayRequests: 24_000, todayCpuMs: 36_000 }],
+        scripts: [{ name: "madani-edge", requests: 1_920_000, cpuMs: 3_300_000, errors: 41, todayRequests: 88_000, todayCpuMs: 150_000 },
+          { name: "madanibot-composio", requests: 560_000, cpuMs: 800_000, errors: 3, todayRequests: 24_000, todayCpuMs: 36_000 }],
         days: days.map((day, i) => ({ day, requests: wave(i, workersReq / days.length, 30_000), cpuMs: wave(i, workersCpu / days.length, 40_000) })),
       },
       r2: { freeBytes: 10 * GB_BYTES, total: { used: r2Bytes, limit: 10 * GB_BYTES, projected: null, level: "ok" }, overageCents: 0,
-        buckets: [{ name: "makedesign", bytes: 3.8 * GB_BYTES, objects: 7025 }, { name: "dusk-backups", bytes: 0.4 * GB_BYTES, objects: 22 }] },
+        buckets: [{ name: "makedesign", bytes: 3.8 * GB_BYTES, objects: 7025 }, { name: "madani-backups", bytes: 0.4 * GB_BYTES, objects: 22 }] },
       composio: {
         limits: { installation: 10_000, account: 50_000 }, today: { calls: 10_650, installations: 31 }, week: { calls: 41_300 },
         days: days.slice(-7).map((day, i) => ({ day, calls: wave(i, 5_900, 1_200) })),
-        top: [["inst_fx_a", "acct_fx_ravi", "ravi@duskbot.test", 8_420], ["inst_fx_b", "acct_fx_mara", "mara@duskbot.test", 1_210], ["inst_fx_c", null, null, 640], ["inst_fx_d", "acct_fx_lin", "lin@duskbot.test", 380]]
+        top: [["inst_fx_a", "acct_fx_ravi", "ravi@madanibot.test", 8_420], ["inst_fx_b", "acct_fx_mara", "mara@madanibot.test", 1_210], ["inst_fx_c", null, null, 640], ["inst_fx_d", "acct_fx_lin", "lin@madanibot.test", 380]]
           .map(([installationId, accountId, email, today]) => ({ installationId: installationId as string, accountId: accountId as string | null, email: email as string | null, today: today as number, week: (today as number) * 5, share: Math.round((today as number) / 10_650 * 1000) / 1000 })),
         nearLimit: 1, queue: { events: 14, bytes: 42_000 }, registrationsTopIp: [{ ip: "203.0.113.9", today: 22 }, { ip: "198.51.100.4", today: 3 }],
       },
@@ -99,7 +99,7 @@ export function opsFixture(now: number): OpsAnswer {
       relay: {
         dailyLimitBytes: 20 * 1024 ** 3, today: { bytes: 6.1 * GB_BYTES, tunnels: 23, limited: 2 }, month: { bytes: 74 * GB_BYTES },
         days: days.map((day, i) => ({ day, bytes: wave(i, 5 * GB_BYTES, 1.5 * GB_BYTES) })),
-        top: [["tun_fx_1", "acct_fx_oskar", "oskar@duskbot.test", 3.9 * GB_BYTES, 31 * GB_BYTES, 2], ["tun_fx_2", "acct_fx_mara", "mara@duskbot.test", 0.9 * GB_BYTES, 12 * GB_BYTES, 0], ["tun_fx_3", "acct_fx_tess", "tess@duskbot.test", 0.4 * GB_BYTES, 6 * GB_BYTES, 0]]
+        top: [["tun_fx_1", "acct_fx_oskar", "oskar@madanibot.test", 3.9 * GB_BYTES, 31 * GB_BYTES, 2], ["tun_fx_2", "acct_fx_mara", "mara@madanibot.test", 0.9 * GB_BYTES, 12 * GB_BYTES, 0], ["tun_fx_3", "acct_fx_tess", "tess@madanibot.test", 0.4 * GB_BYTES, 6 * GB_BYTES, 0]]
           .map(([tunnelId, accountId, email, todayBytes, monthBytes, limited]) => ({ tunnelId: tunnelId as string, accountId: accountId as string, email: email as string, todayBytes: todayBytes as number, monthBytes: monthBytes as number, limited: limited as number })),
       },
     },
@@ -108,17 +108,17 @@ export function opsFixture(now: number): OpsAnswer {
       checks: [
         check("box-contabo-disk", "boxes", "contabo disk", "ok", "27%"), check("box-contabo-mem", "boxes", "contabo memory", "ok", "42%"), check("box-oracle-disk", "boxes", "oracle disk", "ok", "61%"),
         check("probe-account", "services", "account service", "ok", "up", null, 38), check("probe-preview", "services", "preview", "ok", "up", null, 51), check("probe-link", "services", "link service", "ok", "up", null, 44),
-        check("probe-broker", "services", "composio broker", "ok", "up", null, 92), check("probe-site", "services", "dusk.bot", "ok", "up", null, 61), check("probe-instabox", "providers", "instabox api", "ok", "up", null, 210),
+        check("probe-broker", "services", "composio broker", "ok", "up", null, 92), check("probe-site", "services", "madani.bot", "ok", "up", null, 61), check("probe-instabox", "providers", "instabox api", "ok", "up", null, 210),
         check("mongo", "data", "mongodb", "ok", "primary", "rs0 · oplog 41h · 212 MB"), check("dodo-webhook", "providers", "dodo webhooks", "ok", "3h ago"), check("brevo-send", "providers", "brevo sending", "ok", "40 of 41 delivered today"),
         check("errors", "services", "server errors", "watch", "7 in the last hour", "3 open incidents"),
-        check("backup-dusk", "backups", "dusk backup", "ok", "2h ago"), check("backup-make", "backups", "make backup", "ok", "11h ago"), check("backup-oracle", "backups", "oracle copy", "ok", "2h ago"),
-        check("cert-dusk.bot", "certs", "dusk.bot", "ok", "71 days"), check("cert-link.dusk.bot", "certs", "link.dusk.bot", "watch", "12 days"), check("dns-dusk.bot", "certs", "dns dusk.bot", "ok", "resolves"),
+        check("backup-madani", "backups", "madani backup", "ok", "2h ago"), check("backup-make", "backups", "make backup", "ok", "11h ago"), check("backup-oracle", "backups", "oracle copy", "ok", "2h ago"),
+        check("cert-madani.bot", "certs", "madani.bot", "ok", "71 days"), check("cert-link.madani.bot", "certs", "link.madani.bot", "watch", "12 days"), check("dns-madani.bot", "certs", "dns madani.bot", "ok", "resolves"),
       ],
     },
     abuse: [
-      { key: "acct_fx_ravi", accountId: "acct_fx_ravi", email: "ravi@duskbot.test", ip: null, score: 31.6, why: "egress 23x the median, awake 5.8x, 8,420 tool calls today (84% of the limit)",
+      { key: "acct_fx_ravi", accountId: "acct_fx_ravi", email: "ravi@madanibot.test", ip: null, score: 31.6, why: "egress 23x the median, awake 5.8x, 8,420 tool calls today (84% of the limit)",
         signals: [{ kind: "egress", value: 412, median: 18, ratio: 22.9, label: "412 gb egress" }, { kind: "awake", value: 690, median: 120, ratio: 5.8, label: "690 h awake" }, { kind: "tool_calls", value: 8_420, median: 380, ratio: 22.2, label: "8,420 tool calls today" }] },
-      { key: "acct_fx_oskar", accountId: "acct_fx_oskar", email: "oskar@duskbot.test", ip: null, score: 12.1, why: "egress 7.8x the median, 31 gb through the relay, hit the relay limit twice",
+      { key: "acct_fx_oskar", accountId: "acct_fx_oskar", email: "oskar@madanibot.test", ip: null, score: 12.1, why: "egress 7.8x the median, 31 gb through the relay, hit the relay limit twice",
         signals: [{ kind: "egress", value: 140, median: 18, ratio: 7.8, label: "140 gb egress" }, { kind: "relay", value: 31, median: 6, ratio: 5.2, label: "31 gb relay" }] },
       { key: "ip:203.0.113.9", accountId: null, email: null, ip: "203.0.113.9", score: 7.3, why: "22 broker registrations from one address today",
         signals: [{ kind: "signups_ip", value: 22, median: 1, ratio: 22, label: "22 registrations today" }] },
@@ -130,7 +130,7 @@ export function opsFixture(now: number): OpsAnswer {
       { id: "box-contabo-mem", label: "contabo memory", threshold: "> 90% for 10 min", state: "ok", since: null, value: "42%", lastFiredAt: null },
       { id: "service-down", label: "a service down", threshold: "2 checks in a row", state: "ok", since: null, value: "all up", lastFiredAt: now - 4 * DAY },
       { id: "backup-age", label: "backup age", threshold: "> 26 h", state: "ok", since: null, value: "2h", lastFiredAt: null },
-      { id: "outlier", label: "a customer past 3x the median", threshold: "> 3x median and > $10", state: "firing", since: now - 5 * 3_600_000, value: "ravi@duskbot.test egress 23x", lastFiredAt: now - 5 * 3_600_000 },
+      { id: "outlier", label: "a customer past 3x the median", threshold: "> 3x median and > $10", state: "firing", since: now - 5 * 3_600_000, value: "ravi@madanibot.test egress 23x", lastFiredAt: now - 5 * 3_600_000 },
     ],
   };
 }

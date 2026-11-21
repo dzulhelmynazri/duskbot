@@ -1,4 +1,4 @@
-// Records each turn's AI steps and tool calls from the runtime events every engine emits, plus the receipts dusk bot's own tools
+// Records each turn's AI steps and tool calls from the runtime events every engine emits, plus the receipts madani bot's own tools
 // send, and hands the turn's timing, parent and outcome to its usage row when the turn is booked.
 import type { IncomingMessage, ServerResponse } from "node:http";
 import type { RuntimeEvent } from "../../shared/runtime-events.ts";
@@ -26,7 +26,7 @@ export interface TurnTraceFields {
   usageStatus: TraceUsageStatus;
 }
 
-/** A tool call dusk bot itself served, timed on the server whatever engine made it. */
+/** A tool call madani bot itself served, timed on the server whatever engine made it. */
 export interface ToolReceipt {
   name: string;
   startedAt: number;
@@ -342,7 +342,7 @@ export function createTraceRecorder(options: { dataDir: string; now?: () => numb
     }
   }
 
-  /** dusk bot's own record of a tool it served: its timing replaces the engine's, or it stands alone when the engine reported none. */
+  /** madani bot's own record of a tool it served: its timing replaces the engine's, or it stands alone when the engine reported none. */
   function receipt(threadId: string, served: ToolReceipt): void {
     const turn = live.get(threadId) ?? ended.get(threadId)?.turn;
     if (!turn || !Number.isFinite(served.startedAt) || !Number.isFinite(served.endedAt) || served.endedAt < served.startedAt) return;
@@ -356,11 +356,11 @@ export function createTraceRecorder(options: { dataDir: string; now?: () => numb
       span = tool;
       span.startedAt = served.startedAt;
       span.endedAt = served.endedAt;
-      span.timedBy = "dusk";
+      span.timedBy = "madani";
     } else {
-      const id = `${turn.threadId}:${turn.turnId}:dusk-${served.startedAt}-${turn.tools.size}`;
+      const id = `${turn.threadId}:${turn.turnId}:madani-${served.startedAt}-${turn.tools.size}`;
       span = { kind: "tool", id, threadId: turn.threadId, turnId: turn.turnId, name: served.name, startedAt: served.startedAt,
-        endedAt: served.endedAt, status: "ok", timedBy: "dusk" };
+        endedAt: served.endedAt, status: "ok", timedBy: "madani" };
       turn.tools.set(id, span);
       turn.receipts.push(span);
       const step = turn.openStep;
@@ -407,7 +407,7 @@ export function createTraceRecorder(options: { dataDir: string; now?: () => numb
     };
   }
 
-  /** Times one MCP request dusk bot serves itself (browser, computer, data, connected apps): a receipt once its answer is sent. */
+  /** Times one MCP request madani bot serves itself (browser, computer, data, connected apps): a receipt once its answer is sent. */
   function timeServed(req: IncomingMessage, res: ServerResponse, threadId: string): void {
     const startedAt = now();
     onJsonBody(res, (body) => {

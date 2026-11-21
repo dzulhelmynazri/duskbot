@@ -58,13 +58,13 @@ export function useScreenAccessMissing(): boolean {
 export function ScreenAccessCard({ onDismiss }: { onDismiss: () => void }) {
   const [asking, setAsking] = useState(false);
   const bridge = macPermissionsBridge();
-  const recheck = () => { void window.duskDesktop?.localControl?.retry?.().catch(() => {}); };
+  const recheck = () => { void window.madaniDesktop?.localControl?.retry?.().catch(() => {}); };
   return (
     <div className="mb-2 w-full px-5" data-screen-access="">
       <ChatErrorCard tone="info" icon="offline" title={t("screenAccess.title")} onDismiss={onDismiss}
         actions={bridge && <button type="button" data-screen-access-allow="" onClick={() => setAsking(true)} className={CARD_ACTION}>{t("screenAccess.allow")}</button>} />
       <AnimatePresence>{asking && bridge && <MacPermissionsDialog key="mac-permissions-dialog" bridge={bridge} onClose={() => { setAsking(false); recheck(); }} onAllowed={recheck}
-        relaunch={typeof window.duskDesktop?.relaunch === "function" ? () => void window.duskDesktop!.relaunch!() : null} />}</AnimatePresence>
+        relaunch={typeof window.madaniDesktop?.relaunch === "function" ? () => void window.madaniDesktop!.relaunch!() : null} />}</AnimatePresence>
     </div>
   );
 }

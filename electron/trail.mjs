@@ -13,7 +13,7 @@ const DAY_MS = 24 * 60 * 60 * 1000;
 const MB = 1024 * 1024;
 /** the whole trail on disk, across main's and the server's files */
 export const TRAIL_CAP_BYTES = { packaged: 20 * MB, dev: 50 * MB };
-export const TRAIL_HEADER = "x-dusk-trail";
+export const TRAIL_HEADER = "x-madani-trail";
 export const TRAIL_EXPORT_PREVIEW = "App actions, connection routes, errors from the last 7 days. No messages, passwords or personal files";
 
 const EVENT_NAME = /^[a-z][a-z0-9_.-]{0,63}$/;
@@ -83,7 +83,7 @@ const TOOL_KEY = /^(?:tool|toolname)$/i;
 const TOOL_NAME = /^[A-Za-z_][\w:.-]{0,63}$/;
 const TOOL_FILE = /\.(?:m?[jt]sx?|cjs|json|jsonl|log|txt|md|png|jpe?g|gif|svg|webp|html?|css|sh|py|rb|zip|pdf|csv|xlsx?|docx?|ya?ml|toml)$/i;
 
-/** a tool's own name ("Bash", "browser_open", "mcp__dusk__get_url"), or undefined for anything else a tool field may
+/** a tool's own name ("Bash", "browser_open", "mcp__madani__get_url"), or undefined for anything else a tool field may
  * hold: a shell command, a script, a file name or a sentence is never a name */
 export function toolName(value) {
   if (typeof value !== "string") return undefined;
@@ -141,7 +141,7 @@ export function redactEvent(event) {
 
 // ---- the export scrubber: a second, stricter pass over what leaves the computer ----
 
-const KNOWN_HOSTS = /(?:^|\.)(?:dusk\.bot|trycloudflare\.com|cloudflare\.com|github\.com|localhost)$/i;
+const KNOWN_HOSTS = /(?:^|\.)(?:madani\.bot|trycloudflare\.com|cloudflare\.com|github\.com|localhost)$/i;
 const FILE_EXT = /\.(?:m?[jt]sx?|cjs|json|jsonl|log|txt|md|png|jpe?g|gif|svg|webp|html?|css|sh|py|zip|pdf|csv|ya?ml|toml|lock|node|dylib|so|dll|exe|app|plist|db|sqlite)$/i;
 const HOSTNAME = /\b(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,24}\b/gi;
 const IPV4 = /\b(?:25[0-5]|2[0-4]\d|1?\d?\d)(?:\.(?:25[0-5]|2[0-4]\d|1?\d?\d)){3}\b/g;

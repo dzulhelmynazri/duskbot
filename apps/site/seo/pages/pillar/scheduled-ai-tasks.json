@@ -1,10 +1,10 @@
 {
   "path": "/scheduled-ai-tasks",
   "type": "pillar",
-  "title": "Scheduled AI tasks: compare four vendors and dusk bot",
+  "title": "Scheduled AI tasks: compare four vendors and madani bot",
   "nav": "scheduled ai tasks",
   "h1": "scheduled ai tasks: what runs, where and when",
-  "description": "Compare Claude, ChatGPT, Gemini and Grok schedulers with dusk bot routines, including current limits and ten small jobs worth repeating.",
+  "description": "Compare Claude, ChatGPT, Gemini and Grok schedulers with madani bot routines, including current limits and ten small jobs worth repeating.",
   "keyword": "claude scheduled tasks",
   "keywords": [
     "chatgpt scheduled tasks",
@@ -14,7 +14,7 @@
     "ai cron jobs",
     "schedule ai tasks"
   ],
-  "answer": "**stop asking for the same morning brief every morning.** claude, chatgpt, gemini and grok can repeat work, with different timers, triggers and limits as of 12 november 2026. dusk routines belong to a bot whose ai you choose. start in the app you already use if it fits. choose a separate bot when its own job, chats and memory help.",
+  "answer": "**stop asking for the same morning brief every morning.** claude, chatgpt, gemini and grok can repeat work, with different timers, triggers and limits as of 12 november 2026. madani routines belong to a bot whose ai you choose. start in the app you already use if it fits. choose a separate bot when its own job, chats and memory help.",
   "updated": "2026-11-12",
   "review": {
     "status": "approved",
@@ -107,10 +107,10 @@
         ]
       },
       {
-        "label": "dusk routines",
+        "label": "madani routines",
         "cells": [
           "a bot job on a schedule or a connected-app event",
-          "your computer must be awake with dusk open, or put the bot on dusk cloud"
+          "your computer must be awake with madani open, or put the bot on madani cloud"
         ],
         "src": [
           8
@@ -128,12 +128,12 @@
       "md": "**repeat the job, not the same stale answer.** these are prompts to adapt, not measured results or vendor feature promises. give the bot access to the named files or connected app first.\n\n- **daily priority, weekdays at 8:** read the current plan in the project folder. suggest the first decision. stay quiet if nothing changed.\n- **meeting rehearsal, tuesdays at 9:** read this week's new briefing files. give three questions to practise. skip old briefs.\n- **friday reflection at 4:** read this week's project log. ask what went well and what to change. don't infer outcomes from task names.\n- **evening study check:** read new study notes in the course folder. quiz me on five terms. use memory notes to avoid repeating mastered terms.\n- **monday writing nudge:** read drafts changed this week in the writing folder. give one prompt for the unfinished part.\n- **wednesday vocabulary:** read new project documents. explain one unfamiliar term and keep a memory note of terms covered.\n- **thursday contradiction check:** inspect changed proposals in the proposals folder. flag conflicting statements. skip unchanged files.\n- **saturday travel prep:** until the trip, read the current travel checklist file. ask which unresolved items need a decision.\n- **sunday reading review:** compare articles added to the reading folder this week. list disagreements. skip weeks with fewer than two articles.\n- **monthly reset:** on the first, read the current goals file and last month's log. ask what to keep before suggesting new goals.\n\nkeep the first version read only. a question can help without granting permission to edit your work."
     },
     {
-      "h": "make a dusk routine by saying the job",
+      "h": "make a madani routine by saying the job",
       "md": "**the schedule card is where you catch a misunderstanding.** tell the bot what to repeat, when and where the result goes. its card shows the schedule and next runs. edit, pause or undo there. automations has a calendar and run history.[^8]\n\nadd a quiet rule, such as \"if the document hasn't changed, say nothing\". inspect the first few runs. if the time is wrong, ask which time zone the routine uses.[^8][^9]\n\n**start with reports in chat.** reading and drafting can happen freely. keep these routines read only. for later app edits, write \"ask me before you change anything\"; they do not automatically wait for approval.[^10]"
     },
     {
       "h": "a timer cannot keep a laptop awake",
-      "md": "**a morning brief that never came usually needs an awake machine.** as of 12 november 2026, current cowork tasks run remotely. older local tasks created before 6 october stay local. claude code desktop tasks need an awake machine; grok bot lists cloud routines.[^1][^11][^6]\n\nlocal dusk routines stop during sleep or when the app closes. missed by less than 12 hours? a run happens once on return. older runs skip.[^8] [choose an always-on home](/agents-when-laptop-closed) if the delay makes the result useless.\n\n[gemini schedules](/guides/gemini-scheduled-actions) prepare within their own delivery window. [grok tasks](/guides/grok-tasks) distinguish automations from bot routines. read current provider terms and scheduler docs before moving unattended work."
+      "md": "**a morning brief that never came usually needs an awake machine.** as of 12 november 2026, current cowork tasks run remotely. older local tasks created before 6 october stay local. claude code desktop tasks need an awake machine; grok bot lists cloud routines.[^1][^11][^6]\n\nlocal madani routines stop during sleep or when the app closes. missed by less than 12 hours? a run happens once on return. older runs skip.[^8] [choose an always-on home](/agents-when-laptop-closed) if the delay makes the result useless.\n\n[gemini schedules](/guides/gemini-scheduled-actions) prepare within their own delivery window. [grok tasks](/guides/grok-tasks) distinguish automations from bot routines. read current provider terms and scheduler docs before moving unattended work."
     }
   ],
   "faq": [
@@ -143,7 +143,7 @@
     },
     {
       "q": "can scheduled tasks run when my laptop is closed?",
-      "a": "**only if their running machine stays on.** as of 12 november 2026, cowork and code offer remote tasks; grok bot offers cloud routines. local dusk needs an awake machine, or dusk cloud.[^1][^2][^6][^8]"
+      "a": "**only if their running machine stays on.** as of 12 november 2026, cowork and code offer remote tasks; grok bot offers cloud routines. local madani needs an awake machine, or madani cloud.[^1][^2][^6][^8]"
     },
     {
       "q": "is the old chatgpt agent still the scheduler to use?",
@@ -187,15 +187,15 @@
       "checked": "2026-11-12"
     },
     {
-      "label": "dusk bot: routines",
+      "label": "madani bot: routines",
       "url": "/docs/routines"
     },
     {
-      "label": "dusk bot: troubleshooting",
+      "label": "madani bot: troubleshooting",
       "url": "/docs/troubleshooting"
     },
     {
-      "label": "dusk bot: connected apps",
+      "label": "madani bot: connected apps",
       "url": "/docs/files-and-apps"
     },
     {

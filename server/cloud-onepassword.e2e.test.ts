@@ -1,6 +1,6 @@
 // A real server started the way a Cloud home's root supervisor starts it: the environment is what cloudHomeChildEnvironments
 // hands the server from the image's ENV, and the secrets come over the launcher's pipe. The 1Password SDK is a fake kept
-// where the image keeps the real one, in the native-module tree DUSK_DUCKDB_DIR names. Disposable home; no network.
+// where the image keeps the real one, in the native-module tree MADANI_DUCKDB_DIR names. Disposable home; no network.
 import { randomBytes } from "node:crypto";
 import { type ChildProcess } from "node:child_process";
 import { mkdirSync, mkdtempSync, readFileSync, writeFileSync } from "node:fs";
@@ -21,7 +21,7 @@ import { fetchSealKey } from "./testing/sealed-config.ts";
 import { sealValues } from "../src/lib/card-seal.ts";
 
 const SERVER_DIR = dirname(fileURLToPath(import.meta.url));
-const HOST = "dusk-t-0123456789ab.fly.dev";
+const HOST = "madani-t-0123456789ab.fly.dev";
 // Obvious fakes only.
 const TOKEN = `ops_fake-cloud-service-account-${randomBytes(12).toString("hex")}`;
 const VAULT_PASSWORD = `fake-vault-Passw0rd-${randomBytes(6).toString("hex")}`;
@@ -59,11 +59,11 @@ async function connectOnePassword(token: string) {
 }
 
 async function pairOwner(): Promise<string> {
-  const body = JSON.stringify({ label: "dusk bot app (Cloud)", ttlSeconds: 300 });
+  const body = JSON.stringify({ label: "madani bot app (Cloud)", ttlSeconds: 300 });
   const timestamp = String(Math.floor(Date.now() / 1000)), nonce = randomBytes(16).toString("base64url");
   const response = await fetch(`${base}/api/cloud/pairing`, { method: "POST", headers: {
     host: HOST, "x-forwarded-for": "203.0.113.9", "x-forwarded-proto": "https", "content-type": "application/json",
-    "x-dusk-cloud-timestamp": timestamp, "x-dusk-cloud-nonce": nonce, "x-dusk-cloud-signature": `v1=${cloudPairingSignature(secret, timestamp, nonce, body)}`,
+    "x-madani-cloud-timestamp": timestamp, "x-madani-cloud-nonce": nonce, "x-madani-cloud-signature": `v1=${cloudPairingSignature(secret, timestamp, nonce, body)}`,
   }, body });
   const granted = await response.json() as { code: string };
   const paired = await api("POST", "/api/auth/pair", { code: granted.code });
@@ -84,7 +84,7 @@ exports.createClient = async ({ auth }) => {
   if (auth.length < 24) throw new Error("invalid user input: encountered the following errors: service account token had invalid format");
   if (auth !== TOKEN) throw new Error("error authenticating: invalid service account token");
   return {
-    vaults: { list: async () => [{ id: "v1", title: "Shared with dusk bot" }] },
+    vaults: { list: async () => [{ id: "v1", title: "Shared with madani bot" }] },
     items: {
       list: async () => [{ id: "i1", title: "CRM", category: "Login", websites: [{ url: "https://crm.example.test/login" }] }],
       getAll: async (vaultId, ids) => ({ individualResponses: ids.map((id) => ({ content: { id, fields } })) }),
@@ -117,14 +117,14 @@ async function proxyFor(start: () => Promise<void>) {
 
 /** The server alone, as the supervisor starts it; resolves once it answers health. */
 async function startCloudHome(at: string, tree: string, port: number, onLog: (chunk: string) => void): Promise<ChildProcess> {
-  const contract = { DUSK_CLOUD_ROLE: "home", DUSK_CLOUD_MACHINE_ID: "3f9c2a4e-8b1d-4c6e-9a7f-2d5e8c1b0a93", DUSK_CLOUD_ADMIN_URL: "https://cloud.example.test",
-    DUSK_CLOUD_BOOTSTRAP_SECRET: secret, DUSK_PUBLIC_URL: `https://${HOST}` };
+  const contract = { MADANI_CLOUD_ROLE: "home", MADANI_CLOUD_MACHINE_ID: "3f9c2a4e-8b1d-4c6e-9a7f-2d5e8c1b0a93", MADANI_CLOUD_ADMIN_URL: "https://cloud.example.test",
+    MADANI_CLOUD_BOOTSTRAP_SECRET: secret, MADANI_PUBLIC_URL: `https://${HOST}` };
   // What the image's ENV sets for the native modules, then the supervisor's own allow-list and secrets pipe.
-  const imageEnv = { PATH: process.env.PATH, DUSK_DUCKDB_DIR: tree, ...contract };
+  const imageEnv = { PATH: process.env.PATH, MADANI_DUCKDB_DIR: tree, ...contract };
   const { server, secrets } = cloudHomeChildEnvironments(cloudHomeConfiguration(imageEnv)!, imageEnv, at);
   const offline = `data:text/javascript,${encodeURIComponent('const real = globalThis.fetch; globalThis.fetch = async (url, init) => String(url).startsWith("http://127.0.0.1:") ? real(url, init) : new Response("offline fixture", { status: 503 });')}`;
   const started = spawnWithSecrets(process.execPath, ["--import", offline, join(SERVER_DIR, "index.ts")], {
-    ...server, DUSK_PORT: String(port), DUSK_WEBHOOK_PORT: String(port + 1), USERPROFILE: at,
+    ...server, MADANI_PORT: String(port), MADANI_WEBHOOK_PORT: String(port + 1), USERPROFILE: at,
     ...(process.env.SystemRoot ? { SystemRoot: process.env.SystemRoot } : {}),
   }, secrets, null, true);
   let seen = "";
@@ -141,8 +141,8 @@ async function startCloudHome(at: string, tree: string, port: number, onLog: (ch
 }
 
 beforeAll(async () => {
-  home = mkdtempSync(join(tmpdir(), "dusk-cloud-1password-"));
-  const dataDir = join(home, ".duskbot");
+  home = mkdtempSync(join(tmpdir(), "madani-cloud-1password-"));
+  const dataDir = join(home, ".madanibot");
   mkdirSync(dataDir, { recursive: true });
   const cli = join(home, "fixture-claude.mjs");
   writeFileSync(cli, `#!/usr/bin/env node
@@ -168,7 +168,7 @@ afterAll(async () => {
 });
 
 it("when an image lacks the SDK, says so plainly and never blames the token", async () => {
-  const other = mkdtempSync(join(tmpdir(), "dusk-cloud-1password-missing-"));
+  const other = mkdtempSync(join(tmpdir(), "madani-cloud-1password-missing-"));
   const port = await freePortBlock([0, 1]);
   let missingLog = "";
   const started = await startCloudHome(other, join(other, "empty-tree"), port, (chunk) => { missingLog += chunk; });
@@ -195,7 +195,7 @@ it("connects a 1Password service account on a Cloud home, and says plainly what 
   expect((await connectOnePassword(`ops_wrong-${"x".repeat(30)}`)).body.error).toBe(ONE_PASSWORD_REFUSED);
   expect((await connectOnePassword("ops_short")).body.error).toMatch(/^That is not a whole 1Password service account token/u);
   const connected = await connectOnePassword(TOKEN);
-  expect(connected, log).toMatchObject({ status: 200, body: { onePassword: { connected: true, vaults: [{ id: "v1", title: "Shared with dusk bot", items: 1 }], items: 1 } } });
+  expect(connected, log).toMatchObject({ status: 200, body: { onePassword: { connected: true, vaults: [{ id: "v1", title: "Shared with madani bot", items: 1 }], items: 1 } } });
   expect((await api("GET", "/api/logins")).body.logins).toEqual([expect.objectContaining({ site: "example.test", username: "person@example.test", source: "1password" })]);
   expect(log).not.toContain("SDK did not load");
   expect(log).not.toContain("not available in this build");
@@ -225,6 +225,6 @@ it("a bot asks for the 1Password token through request_credential's own slot, an
   expect((await connectOnePassword(TOKEN)).status).toBe(200);
   expect(await provided()).toMatchObject({ status: 200, body: { provided: true } });
   expect((await tools.call("request_credential", { credential_id: "onePasswordToken" })).content[0].text).toBe("1Password service account token is already configured. Continue the task.");
-  expect(readFileSync(join(home, ".duskbot", "config.json"), "utf8")).not.toContain(TOKEN);
+  expect(readFileSync(join(home, ".madanibot", "config.json"), "utf8")).not.toContain(TOKEN);
   for (const where of [...answers, log]) expect(where).not.toContain(TOKEN);
 });

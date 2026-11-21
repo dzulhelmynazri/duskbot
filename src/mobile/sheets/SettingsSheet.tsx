@@ -41,9 +41,9 @@ import type { SheetPageProps } from "./registry";
 import type { MobileConnectionRecord } from "../../../shared/mobile-link";
 
 /** The account rows Settings shows. The account dashboard sells plans, so the store apps never link to it (App Store
- * guideline 3.1.1, Play payments policy); a phone on an account (its session, or a dusk cloud of it) signs out here, and
+ * guideline 3.1.1, Play payments policy); a phone on an account (its session, or a madani cloud of it) signs out here, and
  * deletes the account with its session (App Store 5.1.1(v)). Log in leads only on a phone that links nothing; one with
- * only its own computers (they need no account) gets the dusk cloud sign-in lower down, apart from who it is. */
+ * only its own computers (they need no account) gets the madani cloud sign-in lower down, apart from who it is. */
 export function accountRows(input: { native: boolean; identity: PhoneIdentity; offered?: boolean }): { dashboard: boolean; signOut: boolean; deleteAccount: boolean; signIn: boolean; cloudSignIn: boolean } {
   const { identity } = input;
   const onAccount = identity.kind === "account" || identity.kind === "cloud";
@@ -61,7 +61,7 @@ export function readableWorkspace(label: string | null | undefined): string | nu
   return value;
 }
 
-/** The header's two lines: the person's name, then the account's email, the dusk cloud, or the computer they're linked to. */
+/** The header's two lines: the person's name, then the account's email, the madani cloud, or the computer they're linked to. */
 export function settingsIdentity(input: { name?: string | null; identity: PhoneIdentity }): { title: string; subtitle: string } {
   const { identity } = input;
   const email = identity.kind === "account" ? identity.email.trim() : "";
@@ -73,7 +73,7 @@ export function settingsIdentity(input: { name?: string | null; identity: PhoneI
   return { title, subtitle };
 }
 
-/** dusk cloud, as its own quiet card under the settings, only where the dashboard may be linked and the phone is not
+/** madani cloud, as its own quiet card under the settings, only where the dashboard may be linked and the phone is not
  * already talking to a cloud */
 function CloudCard({ onOpen }: { onOpen: () => void }) {
   const shown = useRef(false);
@@ -189,7 +189,7 @@ function SettingsList({ onClose, push }: { onClose: () => void; push: (page: Set
     const linked = [...connections].sort((a, b) => b.lastUsedAt - a.lastUsedAt).find((one) => one.account?.id === id);
     if (linked) { await switchTo(linked.id); return; }
     onClose();
-    window.dispatchEvent(new Event("dusk:sign-in"));
+    window.dispatchEvent(new Event("madani:sign-in"));
   };
 
   const choosePlace = async (place: Place) => {
@@ -222,16 +222,16 @@ function SettingsList({ onClose, push }: { onClose: () => void; push: (page: Set
           </span>
         </div>
         {rows.dashboard && <SettingsRow icon={<LayoutDashboard />} label={t("mobile.settings.accountDashboard")} onClick={() => void accountDashboardUrl().then((url) => platform.openExternal(url))} />}
-        {rows.signIn && <SettingsRow icon={<UserRound />} label={t("mobile.entry.signIn")} detail={t("mobile.settings.signInDetail")} onClick={() => { onClose(); window.dispatchEvent(new Event("dusk:sign-in")); }} />}
+        {rows.signIn && <SettingsRow icon={<UserRound />} label={t("mobile.entry.signIn")} detail={t("mobile.settings.signInDetail")} onClick={() => { onClose(); window.dispatchEvent(new Event("madani:sign-in")); }} />}
         {otherAccounts.map((other) => (
           <SettingsRow key={other.id} icon={<UserFace account={other} size={24} className="size-6 rounded-full" />} label={other.email} detail={t("mobile.settings.otherAccount")} onClick={() => void useAccount(other.id)} />
         ))}
-        {account?.account && account.offered && <SettingsRow icon={<UserPlus />} label={t("mobile.settings.addAccount")} onClick={() => { haptic("pick"); onClose(); window.dispatchEvent(new Event("dusk:add-account")); }} />}
+        {account?.account && account.offered && <SettingsRow icon={<UserPlus />} label={t("mobile.settings.addAccount")} onClick={() => { haptic("pick"); onClose(); window.dispatchEvent(new Event("madani:add-account")); }} />}
       </SettingsSection>
 
       <SettingsSection card title={t("mobile.settings.workspaces")} hint={error ? <span role="alert" className="text-danger">{error}</span> : email ? t("mobile.settings.workspacesHint") : undefined}>
         {(places === null || places.length > 0) && <PlacesList places={places} expected={expected} opening={opening} onChoose={(place) => { void choosePlace(place); }} />}
-        <SettingsRow icon={<Plus />} label={t("mobile.settings.addPlace")} onClick={() => { haptic("pick"); onClose(); window.dispatchEvent(new Event("dusk:add-place")); }} />
+        <SettingsRow icon={<Plus />} label={t("mobile.settings.addPlace")} onClick={() => { haptic("pick"); onClose(); window.dispatchEvent(new Event("madani:add-place")); }} />
       </SettingsSection>
 
       <SettingsSection card>
@@ -278,12 +278,12 @@ function SettingsList({ onClose, push }: { onClose: () => void; push: (page: Set
       {(serversShown || environment) && platform.native && (
         <SettingsSection card>
           <SettingsRow icon={<Server />} label={t("mobile.settings.servers")} detail={t(switching ? "mobile.settings.serversConfirm" : "mobile.settings.serversHint")}
-            value={environment ?? "dusk.bot"} onClick={switchServers} />
+            value={environment ?? "madani.bot"} onClick={switchServers} />
         </SettingsSection>
       )}
       {rows.cloudSignIn && (
         <SettingsSection card>
-          <SettingsRow icon={<UserRound />} label={t("mobile.settings.cloudSignIn")} detail={t("mobile.settings.signInDetail")} onClick={() => { onClose(); window.dispatchEvent(new Event("dusk:sign-in")); }} />
+          <SettingsRow icon={<UserRound />} label={t("mobile.settings.cloudSignIn")} detail={t("mobile.settings.signInDetail")} onClick={() => { onClose(); window.dispatchEvent(new Event("madani:sign-in")); }} />
         </SettingsSection>
       )}
       {(rows.signOut || computer) && (

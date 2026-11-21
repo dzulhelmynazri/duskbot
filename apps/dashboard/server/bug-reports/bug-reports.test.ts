@@ -13,10 +13,10 @@ import type { DevsReportPayload, FeedbackPayload } from "../../../../server/devs
 import { bugReportsHomeSignature, RATES } from "./index.ts";
 import { memoryBugReportStore } from "./store.ts";
 
-const ADMIN = "owner@example.test", OTHER = "someone@example.test", ALERT = "owner@qa.dusk.test";
+const ADMIN = "owner@example.test", OTHER = "someone@example.test", ALERT = "owner@qa.madani.test";
 const INSTALL = "test-install-0001";
 const payload = (over: Partial<DevsReportPayload> = {}): DevsReportPayload => ({ installId: INSTALL, source: "bot", description: "pictures never load\n\nWhere: Scout's chat",
-  appVersion: "0.1.150", platform: "darwin arm64, desktop app", diagnostics: "dusk bot @devs report\nApp version: 0.1.150", contactEmail: "ada@example.com", contact: "ada@example.com", ...over });
+  appVersion: "0.1.150", platform: "darwin arm64, desktop app", diagnostics: "madani bot @devs report\nApp version: 0.1.150", contactEmail: "ada@example.com", contact: "ada@example.com", ...over });
 
 describe("bug reports", () => {
   let mailer: ReturnType<typeof memoryMailer>;
@@ -32,7 +32,7 @@ describe("bug reports", () => {
   const endpoint = () => `${url}/api/bug-reports`;
 
   beforeEach(async () => {
-    dataDir = mkdtempSync(join(tmpdir(), "dusk-bug-reports-test-"));
+    dataDir = mkdtempSync(join(tmpdir(), "madani-bug-reports-test-"));
     time = Date.parse("2026-11-16T12:00:00Z");
     mailer = memoryMailer();
     store = memoryBugReportStore();
@@ -167,7 +167,7 @@ describe("bug reports", () => {
     expect(list.counts.new).toBe(2);
     expect(list.themes).toEqual([{ theme: "phone", count: 1, open: 1 }, { theme: "updates", count: 1, open: 1 }]);
     expect(list.reports.find(report => report.id === phone.id)?.theme).toBe("phone");
-    const all = await (await fetch(`${url}/v1/admin/bug-reports`, { headers: { cookie: owner, "x-dusk-admin-tests": "show" } })).json() as List;
+    const all = await (await fetch(`${url}/v1/admin/bug-reports`, { headers: { cookie: owner, "x-madani-admin-tests": "show" } })).json() as List;
     expect(all.counts.new).toBe(4);
     const phones = await (await fetch(`${url}/v1/admin/bug-reports?theme=phone`, { headers: { cookie: owner } })).json() as List;
     expect(phones.reports.map(report => report.id)).toEqual([phone.id]);

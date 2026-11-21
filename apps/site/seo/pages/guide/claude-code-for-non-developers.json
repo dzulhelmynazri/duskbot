@@ -4,14 +4,14 @@
   "title": "Claude Code for non-developers: a small first task",
   "nav": "claude code for non-developers",
   "h1": "claude code for non-developers: start with one folder",
-  "description": "Try Claude Code on a few files you understand. Write a clear first request, check the result, and compare dusk bot with Claude’s own Cowork experience.",
+  "description": "Try Claude Code on a few files you understand. Write a clear first request, check the result, and compare madani bot with Claude’s own Cowork experience.",
   "keyword": "claude code for non developers",
   "keywords": [
     "claude code for non programmers",
     "claude code tutorial for non developers",
     "claude code without terminal"
   ],
-  "answer": "**that folder of notes can become a useful outline without you learning to code.** give claude code a few files you understand and a clear job. dusk runs the official command-line app while you text a bot. prefer anthropic's own route without a terminal? cowork is another option, now becoming part of claude.[^1][^2][^3]",
+  "answer": "**that folder of notes can become a useful outline without you learning to code.** give claude code a few files you understand and a clear job. madani runs the official command-line app while you text a bot. prefer anthropic's own route without a terminal? cowork is another option, now becoming part of claude.[^1][^2][^3]",
   "updated": "2026-11-12",
   "review": {
     "status": "approved",
@@ -46,7 +46,7 @@
     },
     {
       "h": "make one bot for the job",
-      "md": "**give the bot the job you wish you had finished yesterday.** choose new bot, then a name, shape, colour and plain-word job. pick its ai.\n\ndusk has no model of its own. it runs vendors' official command-line apps where your bots live; you sign in yourself.[^8]\n\nread your provider's current terms before choosing sign-in. dusk also accepts an api key or local model if another route fits better.[^1]"
+      "md": "**give the bot the job you wish you had finished yesterday.** choose new bot, then a name, shape, colour and plain-word job. pick its ai.\n\nmadani has no model of its own. it runs vendors' official command-line apps where your bots live; you sign in yourself.[^8]\n\nread your provider's current terms before choosing sign-in. madani also accepts an api key or local model if another route fits better.[^1]"
     },
     {
       "h": "give it only the files it needs",
@@ -58,17 +58,17 @@
     },
     {
       "h": "give corrections it can use",
-      "md": "**\"you missed the decision in paragraph three\" beats \"try again\".** point to the source. if the tone is wrong, name the change you want.\n\ndusk remembers what you tell it. read or edit notes in memory, or turn memory off.[^7]\n\nkeep lasting preferences apart from one-off facts. \"short paragraphs\" can travel; one document's deadline should not become a rule. [skills](/guides/claude-skills) can hold a way of working you want to reuse."
+      "md": "**\"you missed the decision in paragraph three\" beats \"try again\".** point to the source. if the tone is wrong, name the change you want.\n\nmadani remembers what you tell it. read or edit notes in memory, or turn memory off.[^7]\n\nkeep lasting preferences apart from one-off facts. \"short paragraphs\" can travel; one document's deadline should not become a rule. [skills](/guides/claude-skills) can hold a way of working you want to reuse."
     },
     {
       "h": "when claude’s own app fits better",
-      "md": "**try cowork if you want claude's own file-work interface.** as of 12 november 2026, anthropic includes it in paid plans without a terminal. it now describes cowork and chat as one claude, bringing in cowork for file work.[^2][^3]\n\nread the [pricing guide](/guides/claude-cowork-pricing) for that route. choose dusk when you want named bots, separate conversations and an ai per bot.\n\nuse the same small packet to see which way of working fits you."
+      "md": "**try cowork if you want claude's own file-work interface.** as of 12 november 2026, anthropic includes it in paid plans without a terminal. it now describes cowork and chat as one claude, bringing in cowork for file work.[^2][^3]\n\nread the [pricing guide](/guides/claude-cowork-pricing) for that route. choose madani when you want named bots, separate conversations and an ai per bot.\n\nuse the same small packet to see which way of working fits you."
     }
   ],
   "faq": [
     {
       "q": "can i use claude code without a terminal?",
-      "a": "**yes, with a different interface.** dusk lets you text a bot running the official command-line app. anthropic offers cowork for knowledge work without a terminal.[^1][^2]"
+      "a": "**yes, with a different interface.** madani lets you text a bot running the official command-line app. anthropic offers cowork for knowledge work without a terminal.[^1][^2]"
     },
     {
       "q": "do i need to learn programming first?",
@@ -81,7 +81,7 @@
   ],
   "sources": [
     {
-      "label": "dusk bot docs: getting started",
+      "label": "madani bot docs: getting started",
       "url": "/docs/getting-started"
     },
     {
@@ -95,23 +95,23 @@
       "checked": "2026-11-12"
     },
     {
-      "label": "dusk bot docs: bots",
+      "label": "madani bot docs: bots",
       "url": "/docs/bots"
     },
     {
-      "label": "dusk bot docs: files and apps",
+      "label": "madani bot docs: files and apps",
       "url": "/docs/files-and-apps"
     },
     {
-      "label": "dusk bot docs: a bot computer and approvals",
+      "label": "madani bot docs: a bot computer and approvals",
       "url": "/docs/computer"
     },
     {
-      "label": "dusk bot docs: memory",
+      "label": "madani bot docs: memory",
       "url": "/docs/memory"
     },
     {
-      "label": "dusk bot docs: official ai apps and sign-in",
+      "label": "madani bot docs: official ai apps and sign-in",
       "url": "/docs/your-own-server"
     }
   ],

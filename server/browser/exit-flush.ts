@@ -2,8 +2,8 @@
 // on Windows, where Electron's utilityProcess.kill() ends this server without a signal: a Chrome that is only killed
 // loses the cookies it has not written yet, so sign-ins made just before are gone on the next start.
 
-export const BROWSERS_FLUSH = "duskbot:browsers-flush";
-export const BROWSERS_FLUSHED = "duskbot:browsers-flushed";
+export const BROWSERS_FLUSH = "madanibot:browsers-flush";
+export const BROWSERS_FLUSHED = "madanibot:browsers-flushed";
 
 export interface BrowsersFlushRequest {
   type: typeof BROWSERS_FLUSH;

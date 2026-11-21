@@ -40,7 +40,7 @@ describe("the fleet", () => {
     expect(await serverFleet({})).toBeNull();
     const seen: string[] = [];
     const fetcher = (async (url: string, init: RequestInit) => { seen.push(`${url} ${(init.headers as Record<string, string>).authorization}`); return new Response(JSON.stringify({ windowMs: 1, servers: [{ version: "0.2.25", count: 3 }], agents: [] })); }) as unknown as typeof fetch;
-    expect(await serverFleet({ DUSK_LINK_STATS_TOKEN: "t", DUSK_LINK_URL: "https://link.example/" }, fetcher)).toEqual({ windowMs: 1, servers: [{ version: "0.2.25", count: 3 }], agents: [] });
+    expect(await serverFleet({ MADANI_LINK_STATS_TOKEN: "t", MADANI_LINK_URL: "https://link.example/" }, fetcher)).toEqual({ windowMs: 1, servers: [{ version: "0.2.25", count: 3 }], agents: [] });
     expect(seen).toEqual(["https://link.example/ops/fleet Bearer t"]);
   });
 });
@@ -55,10 +55,10 @@ describe("GET /v1/ops/fleet", () => {
   });
 
   it("answers counts to the ops token only, and hides itself from everyone else", async () => {
-    dataDir = mkdtempSync(join(tmpdir(), "dusk-fleet-test-"));
+    dataDir = mkdtempSync(join(tmpdir(), "madani-fleet-test-"));
     const sink = memorySink(() => NOW);
     await sink.insert(open("a", "0.2.25", NOW - DAY));
-    app = createDashboardApp({ dataDir, publicUrl: "http://127.0.0.1:7999", mailer: memoryMailer(), staticDir: null, now: () => NOW, analytics: { sink }, admin: { emails: [], env: { DUSK_OPS_TOKEN: TOKEN } } });
+    app = createDashboardApp({ dataDir, publicUrl: "http://127.0.0.1:7999", mailer: memoryMailer(), staticDir: null, now: () => NOW, analytics: { sink }, admin: { emails: [], env: { MADANI_OPS_TOKEN: TOKEN } } });
     server = createServer(app.handle);
     await new Promise<void>(resolve => server.listen(0, "127.0.0.1", resolve));
     const base = `http://127.0.0.1:${(server.address() as { port: number }).port}`;

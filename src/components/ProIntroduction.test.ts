@@ -29,7 +29,7 @@ beforeEach(() => {
   vi.clearAllMocks(); f.values = []; f.index = 0; f.effects = []; f.dispatch = vi.fn(); offer = TRIAL;
   openExternal = vi.fn().mockResolvedValue(true);
   bridge = { state: vi.fn(async () => signedOut), onState: vi.fn(() => () => {}), offer: vi.fn(async () => offer) };
-  vi.stubGlobal("window", { duskDesktop: { cloudAccount: bridge, openExternal } });
+  vi.stubGlobal("window", { madaniDesktop: { cloudAccount: bridge, openExternal } });
 });
 afterEach(() => vi.unstubAllGlobals());
 
@@ -50,9 +50,9 @@ const press = (label: string, Component = ProSettingsCard) => {
 
 it("for someone who may buy: what Cloud does, the Admin's lowest price and money-back; Start free trial and Compare plans both open the sheet, never the website", async () => {
   const html = await card(signedOut);
-  for (const text of ["dusk cloud", "Keeps your bots and routines running, even when this computer is off.", "dusk cloud plans from $15/month + tax where applicable.",
-    "14-day money-back on every plan.", "dusk bot on this computer stays free for noncommercial use.", "Compare plans", "Start free trial", "Sign in to your cloud plan"]) expect(html).toContain(text);
-  for (const gone of [LEGACY.envPrefixes[0].slice(0, -1), "$89", "launch price", "New features first", "Get Pro", `${LEGACY.product} Pro`, `${LEGACY.product} Cloud`, "dusk bot Pro", "dusk bot Cloud"]) expect(html).not.toContain(gone);
+  for (const text of ["madani cloud", "Keeps your bots and routines running, even when this computer is off.", "madani cloud plans from $15/month + tax where applicable.",
+    "14-day money-back on every plan.", "madani bot on this computer stays free for noncommercial use.", "Compare plans", "Start free trial", "Sign in to your cloud plan"]) expect(html).toContain(text);
+  for (const gone of [LEGACY.envPrefixes[0].slice(0, -1), "$89", "launch price", "New features first", "Get Pro", `${LEGACY.product} Pro`, `${LEGACY.product} Cloud`, "madani bot Pro", "madani bot Cloud"]) expect(html).not.toContain(gone);
   press("Start free trial");
   expect(f.dispatch).toHaveBeenCalledWith({ type: "openCloudAdd", source: "app_settings" });
   f.dispatch.mockClear();
@@ -76,20 +76,20 @@ it("without a trial it says Add a Cloud; signed in, no sign-in link; without the
 
 it("someone with a plan sees that plan and the way to it, never an offer, and Cloud is never asked", async () => {
   for (const [state, text] of [
-    [plan({ entitlement: paid("max") }), "Max active · verified by dusk cloud"],
+    [plan({ entitlement: paid("max") }), "Max active · verified by madani cloud"],
     [plan({ entitlement: paid("pro", "inactive") }), "Pro · not active right now"],
     [plan({ purchase: { state: "confirming", tier: "personal" } }), "Personal · payment received"],
-    [{ status: "unavailable", lastPlan: { tier: "personal", active: true } }, "Personal · checking with dusk cloud…"],
+    [{ status: "unavailable", lastPlan: { tier: "personal", active: true } }, "Personal · checking with madani cloud…"],
     [{ status: "reauth-required", message: "expired", lastPlan: { tier: "max", active: true } }, "Sign in again to use the cloud on this computer. Your plan is not affected."],
   ] as const) {
     const html = await card(state as CloudAccountState);
-    expect(html).toContain(text); expect(html).toContain("dusk cloud settings");
+    expect(html).toContain(text); expect(html).toContain("madani cloud settings");
     expect(html).not.toContain("Start free trial"); expect(html).not.toContain("$15");
   }
   expect(bridge.offer).not.toHaveBeenCalled();
   for (const state of [{ status: "unavailable" }, { status: "connecting" }, { status: "signed-out", message: "restoring" }] as CloudAccountState[]) expect(await card(state)).toBe("");
   await card(plan({ entitlement: paid("max") }));
-  press("dusk cloud settings");
+  press("madani cloud settings");
   expect(f.dispatch).toHaveBeenCalledWith({ type: "toggleAppSettings", open: true, section: "cloudAccount" });
 });
 
@@ -104,7 +104,7 @@ it("never offers a plan to anyone who pays, may pay, or whose state is unknown; 
   ];
   for (const state of nobodyToSell) expect(proOfferAvailable(state), JSON.stringify(state)).toBe(false);
   expect(proOfferAvailable(signedOut)).toBe(true); expect(proOfferAvailable(plan())).toBe(true);
-  vi.stubGlobal("window", { duskDesktop: { remoteClient: { active: true }, cloudAccount: bridge } });
+  vi.stubGlobal("window", { madaniDesktop: { remoteClient: { active: true }, cloudAccount: bridge } });
   expect(await card(signedOut)).toBe("");
   vi.stubGlobal("window", {});
   expect(await card(signedOut)).toBe("");

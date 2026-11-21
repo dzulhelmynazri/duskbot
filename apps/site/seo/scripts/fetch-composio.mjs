@@ -1,5 +1,5 @@
 // pulls a connected app's real action list from Composio's public toolkit page (docs.composio.dev/toolkits/<slug>), the
-// catalog dusk bot's connected apps come from, into seo/facts/connectors/<slug>.json with where and when it was read.
+// catalog madani bot's connected apps come from, into seo/facts/connectors/<slug>.json with where and when it was read.
 // integration pages build their action tables from these files, never from typed lists. zero deps.
 //   node seo/scripts/fetch-composio.mjs gmail slack ...     (no names: refresh every file already there)
 import fs from 'node:fs';
@@ -9,10 +9,10 @@ import { localDay } from '../quality.mjs';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const dir = path.join(here, '..', 'facts', 'connectors');
-// the same rule dusk bot uses to tell a read from a write for a bot's per-app read or write access
-// (shared/connector-scopes.ts isReadOnlyAction in the dusk bot repo): the first word of the action is a read verb
+// the same rule madani bot uses to tell a read from a write for a bot's per-app read or write access
+// (shared/connector-scopes.ts isReadOnlyAction in the madani bot repo): the first word of the action is a read verb
 const READ_VERBS = new Set(['GET', 'LIST', 'FETCH', 'SEARCH', 'READ', 'FIND', 'RETRIEVE', 'LOOKUP', 'DOWNLOAD', 'VIEW', 'CHECK', 'COUNT']);
-// composio reads dusk bot knows by name, since their names put the noun first (shared/outbound.ts KNOWN_READ_SLUGS)
+// composio reads madani bot knows by name, since their names put the noun first (shared/outbound.ts KNOWN_READ_SLUGS)
 const KNOWN_READS = new Set(['GMAIL_FETCH_EMAILS', 'GMAIL_GET_PROFILE', 'GMAIL_FETCH_MESSAGE_BY_MESSAGE_ID', 'GMAIL_FETCH_MESSAGE_BY_THREAD_ID',
   'GOOGLECALENDAR_EVENTS_LIST', 'GOOGLECALENDAR_EVENTS_GET', 'GOOGLECALENDAR_FIND_EVENT', 'GOOGLECALENDAR_LIST_CALENDARS']);
 const tokens = (slug, toolkit) => slug.slice(toolkit.length + 1).split(/[^A-Z0-9]+/).filter(Boolean);
@@ -96,7 +96,7 @@ export function parse(html, slug) {
 
 async function fetchOne(slug) {
   const source = `https://docs.composio.dev/toolkits/${slug}`;
-  const res = await fetch(source, { headers: { 'user-agent': 'dusk.bot facts refresher (hello@dusk.bot)' } });
+  const res = await fetch(source, { headers: { 'user-agent': 'madani.bot facts refresher (hello@madani.bot)' } });
   if (!res.ok) throw new Error(`${slug}: ${source} answered ${res.status}`);
   const facts = parse(await res.text(), slug);
   if (!facts.tools.length) throw new Error(`${slug}: no actions found on ${source}; the page layout may have changed`);

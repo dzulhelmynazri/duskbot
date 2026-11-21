@@ -421,7 +421,7 @@ export class ConnectFlow {
       const method = instance.authentication!.method;
       const provider = signInProvider(instance.driverKind);
       // the provider's normal sign-in when the browser can reach the CLI's loopback: on this machine, or relayed here.
-      // a server from before the relay (dusk cloud on 0.2.8) sends neither `loopback` nor `sameMachine`: it is remote,
+      // a server from before the relay (madani cloud on 0.2.8) sends neither `loopback` nor `sameMachine`: it is remote,
       // and a callback sign-in's loopback is read from the link's own redirect_uri
       const sameMachine = started.sameMachine === true;
       const loopback = auth.loopback && httpsLink(auth.loopback.authorizationUrl) ? auth.loopback

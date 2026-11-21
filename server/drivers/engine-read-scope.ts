@@ -1,5 +1,5 @@
 // What an engine's own file tools may touch on a host where the bot box is off, and inside it as a second line: the
-// server's data folder minus this bot's own folders, the server's SSH keys and app settings, and dusk bot's other
+// server's data folder minus this bot's own folders, the server's SSH keys and app settings, and madani bot's other
 // install folders. The bot box (server/bot-box) is the real boundary; these rules are what the engines enforce themselves.
 import { DATA_DIR_NAMES, LEGACY } from "../../electron/legacy-names.mjs";
 import { existsSync, readdirSync } from "node:fs";
@@ -13,7 +13,7 @@ const ID = /^[A-Za-z0-9_-]{1,128}$/;
 /** Hidden even before they exist, so a warm engine process does not miss one made after it started. */
 const ALWAYS_HIDDEN_DATA = ["config.json", "messages.db", "runtime.db", "bots.json", "engine-homes", "providers", "ssh", "people", "browser"];
 // a server installed before the rename keeps its old folder names until its installer runs again
-const INSTALL_FAMILIES = ["duskbot", LEGACY.devName].flatMap((name) => [["/var/lib", name], ["/etc", name], ["/run", name]] as const);
+const INSTALL_FAMILIES = ["madanibot", LEGACY.devName].flatMap((name) => [["/var/lib", name], ["/etc", name], ["/run", name]] as const);
 
 export interface ReadScopeInput {
   dataDir: string;
@@ -105,7 +105,7 @@ export function claudeDenyRules(scope: EngineReadScope, platform: NodeJS.Platfor
   return rules;
 }
 
-export const CODEX_WORKSPACE_PROFILE = "dusk-workspace";
+export const CODEX_WORKSPACE_PROFILE = "madani-workspace";
 
 /** A Codex 0.167 `[permissions.<id>.filesystem]` table: the whole disk readable, the workspace roots and temp folders
  * writable, the hidden paths not even listable. The narrower entry wins. */

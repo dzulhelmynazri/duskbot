@@ -1,5 +1,5 @@
 // A provider CLI's own browser sign-in ends on http://localhost:<port>/<path> on the machine running the CLI. When
-// the browser is on another computer (dusk cloud, the person's server), the desktop app listens on that same port
+// the browser is on another computer (madani cloud, the person's server), the desktop app listens on that same port
 // there and hands the callback here over the authenticated link; this file checks it belongs to the sign-in and gives
 // it to the CLI's own listener. The CLI does its own token exchange: no token ever crosses the link, and none is logged.
 import { request } from "node:http";
@@ -93,7 +93,7 @@ export async function forwardLoopbackCallback(expected: Loopback, callbackUrl: s
  * and the app opens the link where the person is. POSIX only; Windows CLIs keep their own behaviour. */
 export function browserRecorder(): { env: Record<string, string>; read(): string | null; dispose(): void } | null {
   if (process.platform === "win32") return null;
-  const dir = mkdtempSync(join(tmpdir(), "dusk-signin-"));
+  const dir = mkdtempSync(join(tmpdir(), "madani-signin-"));
   chmodSync(dir, 0o700);
   const script = join(dir, "open");
   const file = join(dir, "link");

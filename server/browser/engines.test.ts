@@ -61,9 +61,9 @@ describe("which engine runs a session", () => {
   });
 
   it("gives a bot its own profile, a shared profile's bots one profile, and a temporary browser its session's", () => {
-    expect(profileKey("a", "dusk-a", { guest: false, partitionId: null })).toBe("bot:a");
-    expect(profileKey("a", "dusk-p", { guest: false, partitionId: "p1" })).toBe("shared:p1");
-    expect(profileKey("a", "dusk-a-guest-1", { guest: true, partitionId: null })).toBe("temp:dusk-a-guest-1");
+    expect(profileKey("a", "madani-a", { guest: false, partitionId: null })).toBe("bot:a");
+    expect(profileKey("a", "madani-p", { guest: false, partitionId: "p1" })).toBe("shared:p1");
+    expect(profileKey("a", "madani-a-guest-1", { guest: true, partitionId: null })).toBe("temp:madani-a-guest-1");
   });
 });
 
@@ -106,7 +106,7 @@ describe("the runtime router", () => {
     { name: "agent_browser_tab_new", arguments: { url: "https://www.reddit.com/" } },
   ];
 
-  it("tells a bot on dusk cloud why its browser doesn't open Reddit, on either engine, without reaching it", async () => {
+  it("tells a bot on madani cloud why its browser doesn't open Reddit, on either engine, without reaching it", async () => {
     const { old, chrome, runtime } = onHost("cloud");
     for (const spec of [AGENT_BROWSER, CHROME]) {
       for (const call of OPENS_REDDIT) {
@@ -252,7 +252,7 @@ describe("the new engine's minute", () => {
   });
 
   function engine() {
-    const dataDir = mkdtempSync(join(tmpdir(), "dusk-chrome-engine-"));
+    const dataDir = mkdtempSync(join(tmpdir(), "madani-chrome-engine-"));
     const value = new ChromeEngine({ dataDir, host: "container", env: {}, platform: "linux", egressPort: async () => 0, idleMs: () => 180_000, egressNotice: () => null });
     cleanups.push(async () => { await value.close(); await removeTempDir(dataDir); });
     const closeIdle = vi.spyOn(value.service, "closeIdle").mockResolvedValue([]);

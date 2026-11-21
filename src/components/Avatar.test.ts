@@ -72,7 +72,7 @@ describe("mascot facial feature colors", () => {
   it("does not paint features over an uploaded image", () => {
     const markup = renderBot({ mascotFaceColor: "black", avatarUrl: "/api/attachments/photo.png", avatarCrop: "circle" });
     expect(markup).toContain("<img");
-    expect(markup).not.toContain("data-dusk-mark");
+    expect(markup).not.toContain("data-madani-mark");
   });
 });
 
@@ -107,13 +107,13 @@ describe("BotAvatar's two avatar outcomes", () => {
   it("renders the gradient mascot when the crop is mascot, image or not", () => {
     const markup = renderBot({ avatarUrl: "/api/attachments/cat.webp", avatarCrop: "mascot" });
     expect(markup).not.toContain("<img");
-    expect(markup).toContain("data-dusk-mark");
+    expect(markup).toContain("data-madani-mark");
   });
 
   it("falls back to the gradient mascot when a flat crop has no valid image", () => {
     const markup = renderBot({ avatarUrl: undefined, avatarCrop: "circle" });
     expect(markup).not.toContain("<img");
-    expect(markup).toContain("data-dusk-mark");
+    expect(markup).toContain("data-madani-mark");
   });
 });
 

@@ -1,4 +1,4 @@
-// Signing in to a dusk bot account, as one step of the first run: Google (and any other provider the account service
+// Signing in to a madani bot account, as one step of the first run: Google (and any other provider the account service
 // offers) in the browser, or an emailed one-time code. The attempt and the token stay in main (funnel-account.ts).
 import { useEffect, useId, useRef, useState, type FormEvent, type ReactElement } from "react";
 import { phoneAppEnabled } from "@/lib/feature-flags";

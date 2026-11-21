@@ -2,15 +2,15 @@
 // the app's bridge is here, so these pages can read and do no more than this.
 const { contextBridge, ipcRenderer } = require("electron");
 
-const surface = process.argv.find((arg) => arg.startsWith("--dusk-ambient="))?.slice("--dusk-ambient=".length) ?? "";
+const surface = process.argv.find((arg) => arg.startsWith("--madani-ambient="))?.slice("--madani-ambient=".length) ?? "";
 const listen = (channel) => (cb) => {
   const handler = (_event, payload) => cb(payload);
   ipcRenderer.on(channel, handler);
   return () => ipcRenderer.removeListener(channel, handler);
 };
 const word = (value) => (typeof value === "string" ? value.slice(0, 128) : "");
-// DUSK_AMBIENT_TRACE (electron/ambient-trace.mjs): the page adds its own side of the timeline, never any message text
-const tracing = process.argv.includes("--dusk-ambient-trace=1");
+// MADANI_AMBIENT_TRACE (electron/ambient-trace.mjs): the page adds its own side of the timeline, never any message text
+const tracing = process.argv.includes("--madani-ambient-trace=1");
 
 contextBridge.exposeInMainWorld("ambient", {
   surface: surface === "island" || surface === "dock" ? surface : "",

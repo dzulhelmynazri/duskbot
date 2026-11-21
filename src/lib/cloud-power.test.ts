@@ -52,13 +52,13 @@ describe("a page of a Cloud home that sleeps", () => {
     const [path, init] = fetch.mock.calls[0];
     expect(path).toBe("/api/cloud/wake");
     expect(JSON.parse(String(init?.body))).toEqual({ intent: "click" });
-    expect(new Headers(init?.headers).get("x-dusk-background")).toBeNull();
+    expect(new Headers(init?.headers).get("x-madani-background")).toBeNull();
   });
 
   it("knows the home's asleep answer and its sleeping frame", () => {
-    expect(asleepAnswer({ status: 503, headers: new Headers({ "x-dusk-cloud-power": "asleep" }) })).toBe(true);
+    expect(asleepAnswer({ status: 503, headers: new Headers({ "x-madani-cloud-power": "asleep" }) })).toBe(true);
     expect(asleepAnswer({ status: 503, headers: new Headers() })).toBe(false);
-    expect(asleepAnswer({ status: 200, headers: new Headers({ "x-dusk-cloud-power": "asleep" }) })).toBe(false);
+    expect(asleepAnswer({ status: 200, headers: new Headers({ "x-madani-cloud-power": "asleep" }) })).toBe(false);
     expect(sleepingFrame({ kind: "power", state: "sleeping" })).toBe(true);
     expect(sleepingFrame({ kind: "power", state: "awake" })).toBe(false);
     expect(sleepingFrame({ kind: "message" })).toBe(false);

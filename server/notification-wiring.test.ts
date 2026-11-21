@@ -51,10 +51,10 @@ const api = async (
 posixOnly("routine failure notification wiring", () => {
   beforeAll(async () => {
     chmodSync(FAKE_CLI, 0o755);
-    home = mkdtempSync(join(tmpdir(), "dusk-notifications-e2e-"));
-    mkdirSync(join(home, ".duskbot"), { recursive: true });
+    home = mkdtempSync(join(tmpdir(), "madani-notifications-e2e-"));
+    mkdirSync(join(home, ".madanibot"), { recursive: true });
     writeFileSync(
-      join(home, ".duskbot", "config.json"),
+      join(home, ".madanibot", "config.json"),
       JSON.stringify({
         instances: {
           grok: {
@@ -70,8 +70,8 @@ posixOnly("routine failure notification wiring", () => {
     const env: NodeJS.ProcessEnv = {
       HOME: home,
       USERPROFILE: home,
-      DUSK_PORT: String(PORT),
-      DUSK_WEBHOOK_PORT: String(WEBHOOK_PORT),
+      MADANI_PORT: String(PORT),
+      MADANI_WEBHOOK_PORT: String(WEBHOOK_PORT),
     };
     if (process.env.PATH) env.PATH = process.env.PATH;
     if (process.env.SystemRoot) env.SystemRoot = process.env.SystemRoot;

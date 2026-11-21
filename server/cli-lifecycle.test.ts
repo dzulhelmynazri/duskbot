@@ -82,7 +82,7 @@ beforeEach(() => {
   mocks.tailscaleServeOff.mockResolvedValue(undefined);
   mocks.createTunnelAccount.mockReturnValue({ credentials: { status: "available", read: () => ({}) }, service: { retry: async () => ({}), restore: async () => ({}), dispose: vi.fn() } });
   mocks.describeTunnelAccount.mockReturnValue({ email: "fixture@example.test" });
-  mocks.tunnelAccess.mockReturnValue({ endpoint: "https://fixture.duskbot.test" });
+  mocks.tunnelAccess.mockReturnValue({ endpoint: "https://fixture.madanibot.test" });
   mocks.ensureCloudflared.mockResolvedValue("/fixture/cloudflared");
   mocks.guardianEntry.mockReturnValue("/fixture/guardian");
   mocks.createTunnelOrigin.mockReturnValue({ socketPath: join(dataDir, "fixture.sock") });
@@ -152,7 +152,7 @@ describe("CLI startup lifecycle", () => {
       healthRequests++;
       if (healthRequests === 1) return Response.json({}, { status: 503 });
       if (healthRequests === 3) interrupt();
-      return Response.json({ app: "duskbot", pid: childPid });
+      return Response.json({ app: "madanibot", pid: childPid });
     }));
     expect(await runServe({ ...options, tunnel: true }, vi.fn())).toBe(0);
     expect(healthRequests).toBe(3);
@@ -166,7 +166,7 @@ describe("CLI startup lifecycle", () => {
     // Nothing answers before serve starts its server; then it is up.
     vi.stubGlobal("fetch", vi.fn(async () => (++healthRequests === 1
       ? Response.json({}, { status: 503 })
-      : Response.json({ app: "duskbot", pid: childPid }))));
+      : Response.json({ app: "madanibot", pid: childPid }))));
     const service = { retry: vi.fn(async () => ({})), restore: vi.fn(), dispose: vi.fn() };
     mocks.createTunnelAccount.mockReturnValue({ credentials: { status: "available", read: () => ({}) }, service });
     const running = { started: Promise.resolve(), stop: vi.fn().mockResolvedValue(undefined) };
@@ -192,13 +192,13 @@ describe("CLI startup lifecycle", () => {
 
   it("reopens a matching desktop workspace even when its server PID differs from the lease owner", async () => {
     writeFileSync(join(dataDir, "environment-id"), workspaceId);
-    writeFileSync(join(dataDir, "duskbot-server.lease"), JSON.stringify({
+    writeFileSync(join(dataDir, "madanibot-server.lease"), JSON.stringify({
       version: 1, pid: process.pid, host: hostname(), token: workspaceId, createdAt: Date.now(),
     }));
-    vi.stubEnv("DUSK_DATA_DIR", process.env.DUSK_DATA_DIR);
+    vi.stubEnv("MADANI_DATA_DIR", process.env.MADANI_DATA_DIR);
     for (const stream of [process.stdin, process.stdout]) Object.defineProperty(stream, "isTTY", { value: true, configurable: true });
     vi.stubGlobal("fetch", vi.fn(async (url: string | URL | Request) => String(url).endsWith("/api/health")
-      ? Response.json({ app: "duskbot", pid: childPid })
+      ? Response.json({ app: "madanibot", pid: childPid })
       : Response.json({ environmentId: workspaceId })));
     const start = vi.fn();
     const open = vi.fn().mockResolvedValue(true);
@@ -211,7 +211,7 @@ describe("CLI startup lifecycle", () => {
 
   it("does not mistake another workspace on the same port for this one", async () => {
     writeFileSync(join(dataDir, "environment-id"), workspaceId);
-    vi.stubGlobal("fetch", vi.fn().mockResolvedValueOnce(Response.json({ app: "duskbot", pid: childPid }))
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValueOnce(Response.json({ app: "madanibot", pid: childPid }))
       .mockResolvedValueOnce(Response.json({ environmentId: "different-workspace" })));
     expect(await isWorkspaceRunning(options)).toBe(false);
   });
@@ -223,12 +223,12 @@ describe("CLI startup lifecycle", () => {
     vi.stubGlobal("fetch", vi.fn(async (url: string | URL | Request, init?: RequestInit) => {
       const address = String(url);
       if (address.endsWith("/api/health")) {
-        return ++healthRequests === 1 ? Response.json({}, { status: 503 }) : Response.json({ app: "duskbot", pid: childPid });
+        return ++healthRequests === 1 ? Response.json({}, { status: 503 }) : Response.json({ app: "madanibot", pid: childPid });
       }
       expect(address).toBe(`http://127.0.0.1:${options.port}/api/auth/pairing`);
       expect(init?.method).toBe("POST");
       pairings.push(JSON.parse(String(init?.body)));
-      return Response.json({ code, url: null, expiresAt: Date.now() + 120_000, hint: "set DUSK_PUBLIC_URL" });
+      return Response.json({ code, url: null, expiresAt: Date.now() + 120_000, hint: "set MADANI_PUBLIC_URL" });
     }));
     const log = vi.fn((line: string) => { if (line.includes(guided ? "Keep this terminal open" : "stop with Ctrl+C")) interrupt(); });
     expect(await runServe({ ...options, guided, pair: true }, log)).toBe(0);
@@ -247,7 +247,7 @@ describe("CLI startup lifecycle", () => {
       requests.push(address);
       expect(init?.method).not.toBe("POST");
       if (address.endsWith("/api/health")) {
-        return ++healthRequests === 1 ? Response.json({}, { status: 503 }) : Response.json({ app: "duskbot", pid: childPid });
+        return ++healthRequests === 1 ? Response.json({}, { status: 503 }) : Response.json({ app: "madanibot", pid: childPid });
       }
       if (address.startsWith("https://")) {
         if (failure === "unreachable") throw new Error("Fixture endpoint offline");
@@ -259,7 +259,7 @@ describe("CLI startup lifecycle", () => {
     expect(await runServe({ ...options, pair: true, phone: "android", publicUrl: "https://fixture.example.test" }, log)).toBe(0);
     expect(log).toHaveBeenCalledWith(expect.stringContaining("no phone pairing code was created"));
     expect(requests.some((url) => url.includes("/api/auth/pairing"))).toBe(false);
-    expect(requests).toContain("https://fixture.example.test/.well-known/duskbot/environment");
+    expect(requests).toContain("https://fixture.example.test/.well-known/madanibot/environment");
   });
 
   it("offers Android client pairing only after verifying the same workspace, without claiming it is connected", async () => {
@@ -267,24 +267,24 @@ describe("CLI startup lifecycle", () => {
     const code = "ABCD-EFGH-JKLM";
     const expiresAt = Date.now() + 300_000;
     const pairingUrl = `${origin}/pair#code=${code}`;
-    // A real server mints both encodings of one window; Android can only scan the duskbot:// one.
+    // A real server mints both encodings of one window; Android can only scan the madanibot:// one.
     const credential = `omb_pair_${"a".repeat(43)}`;
-    const inviteUrl = `duskbot://pair?address=${encodeURIComponent(origin)}&token=${credential}&name=fixture`;
+    const inviteUrl = `madanibot://pair?address=${encodeURIComponent(origin)}&token=${credential}&name=fixture`;
     let healthRequests = 0;
     const fetcher = vi.fn(async (url: string | URL | Request, init?: RequestInit) => {
       const address = String(url);
       if (address.endsWith("/api/health")) {
-        return ++healthRequests === 1 ? Response.json({}, { status: 503 }) : Response.json({ app: "duskbot", pid: childPid });
+        return ++healthRequests === 1 ? Response.json({}, { status: 503 }) : Response.json({ app: "madanibot", pid: childPid });
       }
       if (address === `http://127.0.0.1:${options.port}/api/auth/pairing`) {
         expect(init?.method).toBe("POST");
         expect(JSON.parse(String(init?.body))).toEqual({ label: "Android", scopes: ["client"] });
-        // A server started without DUSK_PUBLIC_URL: it mints the credential but
+        // A server started without MADANI_PUBLIC_URL: it mints the credential but
         // cannot name itself, so it returns no links at all. The CLI was told
         // the public address with --public-url and must build both from that.
-        return Response.json({ code, url: null, expiresAt, credential, serverName: "fixture", hint: "set DUSK_PUBLIC_URL" });
+        return Response.json({ code, url: null, expiresAt, credential, serverName: "fixture", hint: "set MADANI_PUBLIC_URL" });
       }
-      expect(address).toMatch(/\/\.well-known\/duskbot\/environment$/);
+      expect(address).toMatch(/\/\.well-known\/madanibot\/environment$/);
       expect(init?.method).not.toBe("POST");
       expect(init?.body).toBeUndefined();
       return Response.json({ environmentId: workspaceId });
@@ -295,16 +295,16 @@ describe("CLI startup lifecycle", () => {
     const requests = fetcher.mock.calls.map(([url]) => String(url));
     const pairingRequest = `http://127.0.0.1:${options.port}/api/auth/pairing`;
     expect(requests.filter((url) => url === pairingRequest)).toHaveLength(1);
-    expect(requests).toContain(`http://127.0.0.1:${options.port}/.well-known/duskbot/environment`);
-    expect(requests).toContain(`${origin}/.well-known/duskbot/environment`);
-    expect(requests.indexOf(`${origin}/.well-known/duskbot/environment`)).toBeLessThan(requests.indexOf(pairingRequest));
+    expect(requests).toContain(`http://127.0.0.1:${options.port}/.well-known/madanibot/environment`);
+    expect(requests).toContain(`${origin}/.well-known/madanibot/environment`);
+    expect(requests.indexOf(`${origin}/.well-known/madanibot/environment`)).toBeLessThan(requests.indexOf(pairingRequest));
     const output = log.mock.calls.map(([line]) => line).join("\n");
     expect(output).toContain(`pairing code:  ${code}`);
     expect(output).toContain(`expires:       ${new Date(expiresAt).toLocaleTimeString()} (single use)`);
     expect(output).toContain(`web browser:   ${pairingUrl}`);
     expect(output).toMatch(/[▀▄█]/);
     expect(output).toContain(`Or open ${origin}/pair on your phone and enter the code.`);
-    expect(output).toContain("On Android, open the dusk bot app and scan the QR with its pairing scanner.");
+    expect(output).toContain("On Android, open the madani bot app and scan the QR with its pairing scanner.");
     expect(output).toContain(qrToString(inviteUrl));
     expect(output).not.toContain(qrToString(pairingUrl));
     expect(output).toContain("client access: chat and approvals, not settings or pairing administration");

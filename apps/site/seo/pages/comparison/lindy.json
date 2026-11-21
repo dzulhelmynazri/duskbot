@@ -1,10 +1,10 @@
 {
   "path": "/vs/lindy",
-  "title": "Lindy vs dusk bot: team credits or separate bots?",
+  "title": "Lindy vs madani bot: team credits or separate bots?",
   "nav": "lindy",
-  "h1": "lindy vs dusk bot: shared work, credits and control",
-  "description": "Compare Lindy’s active-user pricing, pooled credits and scheduled routines with dusk bot’s separate bot roles, permissions and hosting costs.",
-  "answer": "**lindy puts the helper where your team already talks. dusk gives each job its own home.** lindy handles email, meetings, leads and reports through tools such as slack and email.[^1] its team plan pools credits and charges per active user. dusk separates bot jobs, memory and ai choices, with ai usage and hosting billed separately.[^2][^5]",
+  "h1": "lindy vs madani bot: shared work, credits and control",
+  "description": "Compare Lindy’s active-user pricing, pooled credits and scheduled routines with madani bot’s separate bot roles, permissions and hosting costs.",
+  "answer": "**lindy puts the helper where your team already talks. madani gives each job its own home.** lindy handles email, meetings, leads and reports through tools such as slack and email.[^1] its team plan pools credits and charges per active user. madani separates bot jobs, memory and ai choices, with ai usage and hosting billed separately.[^2][^5]",
   "tags": [
     "lindy",
     "comparison",
@@ -36,7 +36,7 @@
       "**you want one hosted service for shared work.** reach it through slack, email and text.",
       "**you prefer a team credit pool.** choose models within that service."
     ],
-    "dusk": [
+    "madani": [
       "**you want distinct bot roles.** choose each bot’s ai and app permissions.",
       "**you want to try jobs before choosing hosting.** start on your own computer and move later."
     ]
@@ -46,7 +46,7 @@
     "intro": "**price the routine your team will actually run.** monthly usd prices are as of 12 november 2026. lindy pools credits; how far they go depends on the work.",
     "cols": [
       "lindy",
-      "dusk bot"
+      "madani bot"
     ],
     "rows": [
       {
@@ -100,7 +100,7 @@
         "label": "usage accounting",
         "cells": [
           "pooled credits; no rollover; top-ups are $10 per 1,000 credits",
-          "ai billed by its provider; dusk hosting has its own plan"
+          "ai billed by its provider; madani hosting has its own plan"
         ],
         "src": [
           2,
@@ -132,11 +132,11 @@
       }
     ]
   },
-  "method": "**run the weekly report before betting the team’s workflow on it.** we make dusk bot. this compares the billing and features listed on 12 november 2026. we did not run matching tasks or measure credit use.\n\nlindy’s integration count comes from lindy. we did not test every workflow or verify compliance claims. use the table to choose your trial and look at the actual output before committing.",
+  "method": "**run the weekly report before betting the team’s workflow on it.** we make madani bot. this compares the billing and features listed on 12 november 2026. we did not run matching tasks or measure credit use.\n\nlindy’s integration count comes from lindy. we did not test every workflow or verify compliance claims. use the table to choose your trial and look at the actual output before committing.",
   "sections": [
     {
       "h": "try the approval on a job with consequences",
-      "md": "**find out where the bot stops before it touches a customer’s work.** lindy says actions with outside impact need approval.[^1] ask it to show that pause on the job your team needs.\n\nin dusk, start with connected apps read only. for writes, say \"ask me before you change anything\". command and file approval levels are separate controls.[^9][^10]\n\nthen ask lindy what counts as an active user. [lindy alternatives](/alternatives/lindy) covers the credit pool and pricing in more detail."
+      "md": "**find out where the bot stops before it touches a customer’s work.** lindy says actions with outside impact need approval.[^1] ask it to show that pause on the job your team needs.\n\nin madani, start with connected apps read only. for writes, say \"ask me before you change anything\". command and file approval levels are separate controls.[^9][^10]\n\nthen ask lindy what counts as an active user. [lindy alternatives](/alternatives/lindy) covers the credit pool and pricing in more detail."
     }
   ],
   "faq": [
@@ -146,7 +146,7 @@
     },
     {
       "q": "can i text lindy?",
-      "a": "**yes, its pricing lists imessage.** it also lists slack, email and phone calls.[^2] dusk uses a paired phone browser today; store apps are still on the way.[^7]"
+      "a": "**yes, its pricing lists imessage.** it also lists slack, email and phone calls.[^2] madani uses a paired phone browser today; store apps are still on the way.[^7]"
     },
     {
       "q": "is lindy better than openclaw for a business owner?",
@@ -170,35 +170,35 @@
       "checked": "2026-11-12"
     },
     {
-      "label": "dusk bot: distinct jobs and ai choices",
+      "label": "madani bot: distinct jobs and ai choices",
       "url": "/docs/bots"
     },
     {
-      "label": "dusk bot: billing and personal use",
+      "label": "madani bot: billing and personal use",
       "url": "/docs/account-and-billing"
     },
     {
-      "label": "dusk bot: team hosting",
-      "url": "/docs/dusk-cloud"
+      "label": "madani bot: team hosting",
+      "url": "/docs/madani-cloud"
     },
     {
-      "label": "dusk bot: phone access",
+      "label": "madani bot: phone access",
       "url": "/docs/phone"
     },
     {
-      "label": "dusk bot: recurring work",
+      "label": "madani bot: recurring work",
       "url": "/docs/routines"
     },
     {
-      "label": "dusk bot: attachments and app permissions",
+      "label": "madani bot: attachments and app permissions",
       "url": "/docs/files-and-apps"
     },
     {
-      "label": "dusk bot: file and command approvals",
+      "label": "madani bot: file and command approvals",
       "url": "/docs/computer"
     },
     {
-      "label": "dusk bot: work license",
+      "label": "madani bot: work license",
       "url": "/docs/faq"
     }
   ],
@@ -220,7 +220,7 @@
       "choose one weekly team job",
       "list who will use the assistant",
       "read lindy’s active-user rule and the trial expiry",
-      "compare that job with a dusk bot draft you can inspect"
+      "compare that job with a madani bot draft you can inspect"
     ]
   },
   "decide": {
@@ -240,11 +240,11 @@
       ],
       [
         "separate jobs, ai choices and permissions",
-        "dusk bots"
+        "madani bots"
       ],
       [
         "choosing your own bot location",
-        "dusk on your computer, server or cloud"
+        "madani on your computer, server or cloud"
       ]
     ]
   },

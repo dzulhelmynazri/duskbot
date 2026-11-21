@@ -9,8 +9,8 @@ from playwright.async_api import async_playwright
 from PIL import Image
 
 here = os.path.dirname(os.path.abspath(__file__))
-dusk = os.path.abspath(os.path.join(here, '..', '..'))
-art = os.path.join(dusk, 'public', 'landing', 'art')
+madani = os.path.abspath(os.path.join(here, '..', '..'))
+art = os.path.join(madani, 'public', 'landing', 'art')
 out = os.path.join(art, 'seo')
 done_file = os.path.join(here, 'rendered.json')
 

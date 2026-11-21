@@ -15,7 +15,7 @@ const routine = (probe: Routine["probe"]): Routine => ({ id: "r1", name: "Watch"
   schedule: { type: "interval", everyMinutes: 60, anchorAt: 0 }, durationMinutes: 30, checks: ["probe"], probe, nextRunAt: 0, createdAt: 0, updatedAt: 0 });
 
 function harness() {
-  const dataDir = mkdtempSync(join(tmpdir(), "dusk-probe-"));
+  const dataDir = mkdtempSync(join(tmpdir(), "madani-probe-"));
   dirs.push(dataDir);
   let answer: PublicPage = page("<p>hello</p>");
   const failed: string[] = [];

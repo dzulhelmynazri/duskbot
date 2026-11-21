@@ -226,8 +226,8 @@ export function VoiceSettings({
     if (!nextKey || !cloudProvider || keyDraft.provider !== cloudProvider.id) return Promise.resolve();
     setSaving(true);
     setError(null);
-    const request = window.duskDesktop?.setCredential
-      ? window.duskDesktop.setCredential(cloudProvider.credential, nextKey)
+    const request = window.madaniDesktop?.setCredential
+      ? window.madaniDesktop.setCredential(cloudProvider.credential, nextKey)
       : api("/api/config", {
           method: "PUT",
           body: JSON.stringify({ tts: { [cloudProvider.configField]: nextKey } }),

@@ -1,4 +1,4 @@
-# Store launch: dusk bot for iPhone and Android
+# Store launch: madani bot for iPhone and Android
 
 What it takes to put the phone app (`apps/mobile`, Capacitor 8) on the App Store and Google Play, what is already done,
 and the steps only the owner can take. iPhone first, Android second. Written 2026-11-14.
@@ -10,22 +10,22 @@ and FCM keys), `docs/store/ios-listing.md` (the first listing draft; this file s
 
 Apple (developer.apple.com and appstoreconnect.apple.com). Done on 2026-11-14:
 
-- App ID `bot.dusk.mobile` with Push Notifications, Sign in with Apple, Associated Domains.
-- App Store Connect API key (App Manager), in dusk.env as `APPLE_API_KEY_ID`, `APPLE_API_ISSUER`, `APPLE_API_KEY_PATH`.
-- Apple Distribution certificate `XF67DLXJYQ` (expires 2027-11-14; key and certificate in `~/.config/duskbot/apple/`,
-  `apple-distribution.key`, `.cer`) and the App Store profile "dusk bot App Store" `VAM3U2NSG6`
-  (`dusk-bot-app-store.mobileprovision`), both made through the API. No registered device is needed.
-- App record "dusk bot", Apple ID `6834725640`, SKU `dusk-mobile-ios`, English (U.S.).
-- Build 1.0 (2611140813) uploaded, processed, in internal TestFlight (group "dusk team"); the owner's Apple ID is
+- App ID `bot.madani.mobile` with Push Notifications, Sign in with Apple, Associated Domains.
+- App Store Connect API key (App Manager), in madani.env as `APPLE_API_KEY_ID`, `APPLE_API_ISSUER`, `APPLE_API_KEY_PATH`.
+- Apple Distribution certificate `XF67DLXJYQ` (expires 2027-11-14; key and certificate in `~/.config/madanibot/apple/`,
+  `apple-distribution.key`, `.cer`) and the App Store profile "madani bot App Store" `VAM3U2NSG6`
+  (`madani-bot-app-store.mobileprovision`), both made through the API. No registered device is needed.
+- App record "madani bot", Apple ID `6834725640`, SKU `madani-mobile-ios`, English (U.S.).
+- Build 1.0 (2611140813) uploaded, processed, in internal TestFlight (group "madani team"); the owner's Apple ID is
   invited as an internal tester.
-- APNs key "dusk bot push" `P6RM334469` (Sandbox and Production, team scoped), in dusk.env as `APPLE_APNS_KEY_ID` and
+- APNs key "madani bot push" `P6RM334469` (Sandbox and Production, team scoped), in madani.env as `APPLE_APNS_KEY_ID` and
   `APPLE_APNS_KEY_PATH`.
 - App Privacy: Name, Email Address, User ID, Device ID, Photos or Videos, Other User Content, all linked, App
   Functionality, no tracking (Name and Photos or Videos added 2026-11-15).
 
 Left for you:
 
-1. Accept the TestFlight invite email, install the TestFlight app, install dusk bot, and test it on your iPhone.
+1. Accept the TestFlight invite email, install the TestFlight app, install madani bot, and test it on your iPhone.
 2. Give the APNs key to the link service so pushes reach phones (`docs/phone-push.md`).
 3. Nothing left in App Privacy unless the app starts collecting more (see "App Privacy" below).
 
@@ -38,7 +38,7 @@ browser, so the two stay the same.
 
 Google (play.google.com/console):
 
-1. Create the app: name **dusk bot**, default language English (United States), App, Free.
+1. Create the app: name **madani bot**, default language English (United States), App, Free.
 2. Start **closed testing now**: personal accounts made after 13 Nov 2023 need 12 testers opted in for 14 days in a row
    before production access unlocks (section "Android, closed testing").
 3. Testing, Closed testing, create track, upload `app-release.aab` from `apps/mobile/scripts/build-android-release.sh`,
@@ -84,14 +84,14 @@ elsewhere. That is what the iPhone app already is, so it is not worth a second M
 
 | Setting | Value |
 |---|---|
-| Bundle ID | `bot.dusk.mobile` |
-| Team | `APPLE_TEAM_ID` in dusk.env (Individual account) |
+| Bundle ID | `bot.madani.mobile` |
+| Team | `APPLE_TEAM_ID` in madani.env (Individual account) |
 | Version | 1.0 (`MARKETING_VERSION`) |
-| Build | `DUSK_IOS_BUILD_NUMBER`, default a UTC timestamp `yymmddHHMM`, so every upload is higher |
+| Build | `MADANI_IOS_BUILD_NUMBER`, default a UTC timestamp `yymmddHHMM`, so every upload is higher |
 | Devices | **iPhone only** (`TARGETED_DEVICE_FAMILY = 1`). Chosen on purpose: the phone layout is a single portrait column and has not been designed or tested for iPad; iPhone-only means no iPad screenshots and no review on iPad layouts. The app still runs on iPad in iPhone compatibility mode, which Apple accepts |
 | Minimum iOS | 17.0 (the relay needs X25519 in WebCrypto) |
 | Orientation | portrait |
-| Entitlements | `aps-environment`, `com.apple.developer.applesignin` (Default), `com.apple.developer.associated-domains` (`applinks:dusk.bot`) |
+| Entitlements | `aps-environment`, `com.apple.developer.applesignin` (Default), `com.apple.developer.associated-domains` (`applinks:madani.bot`) |
 | Push environment | the source file says `development` for Debug; the store build is signed with the App Store profile, which sets `production`. `build-ios-release.sh` checks the signed app and stops if it is not production |
 | Background modes | none |
 
@@ -106,7 +106,7 @@ with a development profile, which Apple only makes for a team with a registered 
   capability to the App ID (it replaces the old one by name).
 - `build-ios-release.sh` imports the key and certificate into a throwaway keychain (deleted on exit, the login keychain
   is never touched), installs the profile, and archives with `CODE_SIGN_STYLE=Manual`,
-  `CODE_SIGN_IDENTITY="Apple Distribution"` and `PROVISIONING_PROFILE_SPECIFIER="dusk bot App Store"` passed to
+  `CODE_SIGN_IDENTITY="Apple Distribution"` and `PROVISIONING_PROFILE_SPECIFIER="madani bot App Store"` passed to
   `xcodebuild` only, so the project and Debug stay on automatic signing. It checks the signed app carries push in
   production and Sign in with Apple before anything leaves the machine.
 
@@ -116,11 +116,11 @@ apps/mobile/scripts/build-ios-release.sh --unsigned   # proves the project archi
 apps/mobile/scripts/build-ios-release.sh              # signed archive + .ipa in apps/mobile/ios/App/build/export
 apps/mobile/scripts/build-ios-release.sh --upload     # signed archive, uploaded straight to App Store Connect
 node apps/mobile/scripts/asc.mjs status               # the app record and its builds' processing state
-node apps/mobile/scripts/asc.mjs testflight you@x.com # internal TestFlight group "dusk team" (all builds) + testers
+node apps/mobile/scripts/asc.mjs testflight you@x.com # internal TestFlight group "madani team" (all builds) + testers
 ```
 
 Each upload takes a new build number (default a UTC timestamp). `ITSAppUsesNonExemptEncryption = false` means
-TestFlight asks no export question per build. The group "dusk team" has every build, so a processed upload reaches
+TestFlight asks no export question per build. The group "madani team" has every build, so a processed upload reaches
 internal testers by itself (5 to 30 minutes). Internal testers must be users of the App Store Connect team.
 
 ### Icons and launch screen
@@ -162,7 +162,7 @@ browsing or search history, purchases, financial, health, usage data, diagnostic
 
 Two switches that would change these answers, both off in the store build today:
 
-- **Crash reports** go out only when a build sets `DUSK_ERROR_DSN`; the store scripts do not. Turning it on adds
+- **Crash reports** go out only when a build sets `MADANI_ERROR_DSN`; the store scripts do not. Turning it on adds
   Diagnostics: Crash Data.
 - **Product analytics** (`src/lib/product-analytics.ts`) is opt-in and the phone app has no switch for it, so it never
   sends. Adding the switch adds Usage Data: Product Interaction.
@@ -202,25 +202,25 @@ Expect 13+ to 18+ from the web access and AI answers. That is honest; do not low
 your team, text them, they do the work, say yes from anywhere, routines (dark), group chats. They are the app's real
 screens against an isolated fixture (no real people, businesses or accounts), framed with headlines.
 
-Left out of the iOS set on purpose: dusk cloud (a paid service sold on the web, 3.1.1), connected apps (other
+Left out of the iOS set on purpose: madani cloud (a paid service sold on the web, 3.1.1), connected apps (other
 companies' marks, 5.2.1), choosing an AI model (names a third-party AI, 2.3.7, and bring-your-own sign-in is hidden on
-iOS v1), and the pairing screen (it names dusk cloud).
+iOS v1), and the pairing screen (it names madani cloud).
 
 **Retake before submitting**: the chat headers still show the screen view button, which iOS v1 hides (4.2.7). Once
 that change is on main, rerun with the iOS layout and check no chat header shows it:
 
 ```sh
-node --experimental-strip-types apps/mobile/store/capture.ts /tmp/dusk-store/raw
-node --experimental-strip-types apps/mobile/store/compose.ts /tmp/dusk-store /tmp/dusk-store/sheet.png
-cp -R /tmp/dusk-store/ios/6.9 /tmp/dusk-store/ios/6.5 docs/store/ios/ && cp -R /tmp/dusk-store/play/* docs/store/play/
+node --experimental-strip-types apps/mobile/store/capture.ts /tmp/madani-store/raw
+node --experimental-strip-types apps/mobile/store/compose.ts /tmp/madani-store /tmp/madani-store/sheet.png
+cp -R /tmp/madani-store/ios/6.9 /tmp/madani-store/ios/6.5 docs/store/ios/ && cp -R /tmp/madani-store/play/* docs/store/play/
 ```
 
 (`STORE_ONLY='^chat-'` retakes only matching screens.)
 
 ### Listing (App Store Connect)
 
-Name: **dusk bot** (8). App Store names are unique; nothing called "dusk bot" is public today, but an unreleased
-reservation would not show. Fallbacks in order: "dusk bot: your ai team" (22), "dusk bot app" (12). The store shows the
+Name: **madani bot** (8). App Store names are unique; nothing called "madani bot" is public today, but an unreleased
+reservation would not show. Fallbacks in order: "madani bot: your ai team" (22), "madani bot app" (12). The store shows the
 name exactly as typed, so lowercase is fine.
 
 | Field | Text |
@@ -228,16 +228,16 @@ name exactly as typed, so lowercase is fine.
 | Subtitle (30) | Text your team of AI bots (25) |
 | Primary / secondary category | Productivity / Utilities |
 | Keywords (100) | `ai,agents,assistant,automation,remote,tasks,routines,approvals,chat,team,productivity,companion` (95) |
-| Support URL | https://dusk.bot/support |
-| Marketing URL | https://dusk.bot |
-| Privacy Policy URL | https://dusk.bot/privacy (live; covers the phone app, push, AI providers) |
+| Support URL | https://madani.bot/support |
+| Marketing URL | https://madani.bot |
+| Privacy Policy URL | https://madani.bot/privacy (live; covers the phone app, push, AI providers) |
 | Copyright | 2026 [your legal name, as on the developer account] |
 | Promotional text (170) | Your AI bots keep working on your computer while you are out. Text them, approve what matters, and get a ping when the work is done. (132) |
 
 Description:
 
 ```text
-dusk bot is your own team of AI bots, and this app puts them in your pocket.
+madani bot is your own team of AI bots, and this app puts them in your pocket.
 
 Your bots run on your computer or server, where they do real work: read and answer email, book things, keep an eye on
 your site, run your routines. This app is how you stay in touch with them when you are away from your desk.
@@ -252,7 +252,7 @@ WHAT YOU CAN DO
 - Start a new bot from your phone
 
 HOW IT WORKS
-Pair the app once by scanning the code dusk bot shows on your computer, or sign in to your dusk bot account. From then on
+Pair the app once by scanning the code madani bot shows on your computer, or sign in to your madani bot account. From then on
 your phone talks to your bots directly, or through an end-to-end encrypted link when you are away.
 
 PRIVATE BY DESIGN
@@ -267,17 +267,17 @@ who receives it and asks you first.
 The last paragraph must match what the in-app consent screen actually does (5.1.2(i)); adjust it once that screen is
 final. The copy names no other platform, no price or plan, and no third-party AI brand.
 
-What's New: "The first release of dusk bot for iPhone."
+What's New: "The first release of madani bot for iPhone."
 
 ### Review Notes
 
 ```text
-dusk bot for iPhone is the remote control for a person's own AI bots. The bots run on the person's own computer or
-server, or on a dusk cloud computer we host, and do the work there; the phone sends messages, shows replies and lets
+madani bot for iPhone is the remote control for a person's own AI bots. The bots run on the person's own computer or
+server, or on a madani cloud computer we host, and do the work there; the phone sends messages, shows replies and lets
 the person approve actions. Nothing runs on the phone except the interface, which is bundled in the app.
 
 Pairing your own computer needs no account: the first screen offers "scan QR code" and "enter a link or code". Only a
-dusk cloud needs sign-in, through the quieter "Have a dusk cloud? Log in" link. The review account below has a dusk
+madani cloud needs sign-in, through the quieter "Have a madani cloud? Log in" link. The review account below has a madani
 cloud with one demo bot, so you can use the app without a computer of your own.
 
 DEMO ACCOUNT
@@ -286,7 +286,7 @@ Sign-in code: [REVIEW CODE, 8 digits, fixed for this account; no email is sent]
 The first reply may take up to a minute while the bot's computer wakes; after that replies arrive within seconds.
 
 STEPS
-1. Launch the app. Tap "Have a dusk cloud? Log in", then "email", enter the review email, then the code above.
+1. Launch the app. Tap "Have a madani cloud? Log in", then "email", enter the review email, then the code above.
 2. The home screen lists the demo bot. Tap it to open its chat and send a message.
 3. Before the first message goes out, the app shows "before you chat": who receives what you write (the computer
    running the bots, the AI they use, apps connected to the bots, our relay). Tap "allow". "not now" keeps the app
@@ -304,7 +304,7 @@ sheet, push notifications for replies and approvals, haptics, the system share s
 the connection returns, a local network connection to the person's own computer on the same Wi-Fi.
 
 NOTES
-- Purchases: the app sells nothing and shows no prices, plans or links to buy. dusk cloud is set up on the website.
+- Purchases: the app sells nothing and shows no prices, plans or links to buy. madani cloud is set up on the website.
 - Camera: only for the pairing code and photos the person attaches. Microphone: only for dictation and voice notes.
   Local network: only to reach the person's own computer.
 - AI: replies come from the AI provider connected on the computer running the bots. The app asks before sending.
@@ -320,17 +320,17 @@ keep the account and its bot running for the whole review.
 
 | Setting | Value |
 |---|---|
-| Package name | `bot.dusk.mobile` |
-| versionCode / versionName | `DUSK_ANDROID_VERSION_CODE` (default 1; raise it for every upload) / `DUSK_ANDROID_VERSION_NAME` (default 1.0) |
+| Package name | `bot.madani.mobile` |
+| versionCode / versionName | `MADANI_ANDROID_VERSION_CODE` (default 1; raise it for every upload) / `MADANI_ANDROID_VERSION_NAME` (default 1.0) |
 | minSdk / compileSdk / targetSdk | 24 / 36 / 36. Play requires new apps and updates to target API 36 (Android 16) since 31 Aug 2026; 36 passes. Expect API 37 to be required from Aug 2027 |
 | Permissions (merged manifest) | INTERNET, ACCESS_NETWORK_STATE, CAMERA, VIBRATE, POST_NOTIFICATIONS, WAKE_LOCK, c2dm RECEIVE (push) |
 
 ### Upload key and Play App Signing
 
-The upload key is at `~/.config/duskbot/android/dusk-upload.p12` (PKCS12, RSA 4096, alias `dusk-upload`, valid to
+The upload key is at `~/.config/madanibot/android/madani-upload.p12` (PKCS12, RSA 4096, alias `madani-upload`, valid to
 2056-11-06; directory mode 700, file mode 600). Its passwords are `ANDROID_UPLOAD_STORE_PASSWORD` and
-`ANDROID_UPLOAD_KEY_PASSWORD` in dusk.env (the same value: PKCS12 keeps one password). **Back the file and the password
-up together** (the encrypted backup you use for dusk.env); if the upload key is lost, Play support can reset it, which
+`ANDROID_UPLOAD_KEY_PASSWORD` in madani.env (the same value: PKCS12 keeps one password). **Back the file and the password
+up together** (the encrypted backup you use for madani.env); if the upload key is lost, Play support can reset it, which
 takes days.
 
 Upload certificate fingerprints (public, for Play or Firebase forms):
@@ -349,7 +349,7 @@ Without all four the release build is unsigned (Play refuses it). Nothing secret
 
 ```sh
 apps/mobile/scripts/build-android-release.sh
-DUSK_ANDROID_VERSION_CODE=2 DUSK_ANDROID_VERSION_NAME=1.0.1 apps/mobile/scripts/build-android-release.sh
+MADANI_ANDROID_VERSION_CODE=2 MADANI_ANDROID_VERSION_NAME=1.0.1 apps/mobile/scripts/build-android-release.sh
 # -> apps/mobile/android/app/build/outputs/bundle/release/app-release.aab, and the signing fingerprint
 ```
 
@@ -369,7 +369,7 @@ resets if the count drops below 12.
 ### Data safety form
 
 Data is encrypted in transit: **Yes**. People can request deletion: **Yes** (in the app, and at a web address Play
-requires: https://dusk.bot/delete-account, which works without the app installed).
+requires: https://madani.bot/delete-account, which works without the app installed).
 
 | Data type | Collected | Shared | Purpose | Optional |
 |---|---|---|---|---|
@@ -394,17 +394,17 @@ generative AI: yes. Target audience: 18 and over (keeps the Families policy out 
 
 | Field | Text |
 |---|---|
-| App name (30) | dusk bot (8); fallback "dusk bot: your ai team" (22). Play does not require unique names |
+| App name (30) | madani bot (8); fallback "madani bot: your ai team" (22). Play does not require unique names |
 | Short description (80) | Text the AI bots on your own computer. Approve what matters, from anywhere. (75) |
 | Full description | the iOS description, with "iPhone Keychain" changed to "Android Keystore" |
 | Category | Productivity |
 | Contact email | a real support address (required, shown publicly) |
-| Privacy policy | https://dusk.bot/privacy |
+| Privacy policy | https://madani.bot/privacy |
 | App icon | `docs/store/play/icon-512.png` (512 x 512) |
 | Feature graphic | `docs/store/play/feature-graphic.png` (1024 x 500) |
 | Phone screenshots | `docs/store/play/phone/*.png` (1080 x 1920, eight) |
 
-The Play set keeps "plugged into your apps" (shows other companies' app marks) and "on 24/7 with dusk cloud". Play
+The Play set keeps "plugged into your apps" (shows other companies' app marks) and "on 24/7 with madani cloud". Play
 allows both, but drop the apps shot if a reviewer cites impersonation or trademark.
 
 ### Android gaps (decide before production)
@@ -441,7 +441,7 @@ account exactly as written, walk every Review Notes step, and screen-record it i
 
 ## Site URLs
 
-Live on 2026-11-14: https://dusk.bot/support, https://dusk.bot/privacy, https://dusk.bot/terms,
-https://dusk.bot/delete-account (Play's account deletion URL), and
-https://dusk.bot/.well-known/apple-app-site-association (applinks for `S85QBF7KWC.bot.dusk.mobile`, `/m/open`,
-`/m/pair`). Marketing URL: https://dusk.bot.
+Live on 2026-11-14: https://madani.bot/support, https://madani.bot/privacy, https://madani.bot/terms,
+https://madani.bot/delete-account (Play's account deletion URL), and
+https://madani.bot/.well-known/apple-app-site-association (applinks for `S85QBF7KWC.bot.madani.mobile`, `/m/open`,
+`/m/pair`). Marketing URL: https://madani.bot.

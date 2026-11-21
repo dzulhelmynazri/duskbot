@@ -17,7 +17,7 @@ export interface AgentsConversation {
   host: { skillAuthoring: boolean; cloudHome: boolean; team: boolean; voiceNotes: boolean; x: boolean; research: boolean; slack?: boolean };
   /** The engine's driver kind: it decides whether the engine searches and reads the web on its own. */
   engine?: string;
-  /** The bot works on this Mac and macOS has not let dusk bot control its screen: request_screen_access is mounted. */
+  /** The bot works on this Mac and macOS has not let madani bot control its screen: request_screen_access is mounted. */
   screenAccessMissing?: boolean;
 }
 
@@ -42,23 +42,23 @@ export function agentsServerEnv(conversation: AgentsConversation, turn: AgentsTu
   const { bot, host } = conversation;
   return {
     ...AGENTS_PROXY_ENV,
-    DUSK_HARNESS_URL: harnessUrl,
-    DUSK_BOT_ID: bot.id,
-    DUSK_THREAD_ID: conversation.threadId,
-    DUSK_COMMS_TOKEN: bearer(turn),
-    DUSK_TURN_DEPTH: String(turn.depth),
-    DUSK_SKILL_AUTHORING_ENABLED: flag(host.skillAuthoring),
-    DUSK_MEMORY_ENABLED: flag(bot.memoryEnabled !== false),
-    DUSK_CLOUD_HOME: flag(host.cloudHome), DUSK_TEAM_PEOPLE: flag(host.team), DUSK_ROOM: flag(conversation.room),
-    DUSK_VOICE_NOTES: flag(host.voiceNotes),
-    DUSK_SLACK: flag(host.slack === true),
-    DUSK_X_RESEARCH: flag(host.x && bot.xResearch !== false),
-    DUSK_RESEARCH: flag(host.x && host.research && bot.xResearch !== false),
-    DUSK_NATIVE_WEB: flag(engineHasNativeWeb(conversation.engine)),
-    DUSK_PAGE_READER: flag(conversation.engine !== undefined && !engineHasNativeWeb(conversation.engine)),
+    MADANI_HARNESS_URL: harnessUrl,
+    MADANI_BOT_ID: bot.id,
+    MADANI_THREAD_ID: conversation.threadId,
+    MADANI_COMMS_TOKEN: bearer(turn),
+    MADANI_TURN_DEPTH: String(turn.depth),
+    MADANI_SKILL_AUTHORING_ENABLED: flag(host.skillAuthoring),
+    MADANI_MEMORY_ENABLED: flag(bot.memoryEnabled !== false),
+    MADANI_CLOUD_HOME: flag(host.cloudHome), MADANI_TEAM_PEOPLE: flag(host.team), MADANI_ROOM: flag(conversation.room),
+    MADANI_VOICE_NOTES: flag(host.voiceNotes),
+    MADANI_SLACK: flag(host.slack === true),
+    MADANI_X_RESEARCH: flag(host.x && bot.xResearch !== false),
+    MADANI_RESEARCH: flag(host.x && host.research && bot.xResearch !== false),
+    MADANI_NATIVE_WEB: flag(engineHasNativeWeb(conversation.engine)),
+    MADANI_PAGE_READER: flag(conversation.engine !== undefined && !engineHasNativeWeb(conversation.engine)),
     ...roleToolEnv(bot),
-    DUSK_COMPUTER_SELECTION: flag(!conversation.room && bot.computer !== "off" && !conversation.teamComputer),
-    DUSK_SCREEN_ACCESS: flag(!conversation.room && conversation.screenAccessMissing === true),
+    MADANI_COMPUTER_SELECTION: flag(!conversation.room && bot.computer !== "off" && !conversation.teamComputer),
+    MADANI_SCREEN_ACCESS: flag(!conversation.room && conversation.screenAccessMissing === true),
   };
 }
 

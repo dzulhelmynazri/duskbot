@@ -399,7 +399,7 @@ describe("what the person does in the panel", () => {
 });
 
 describe("a published page's Open", () => {
-  const PAGE = "https://abcdefghijklmnopqrstuvwxyz.page.dusk.bot/";
+  const PAGE = "https://abcdefghijklmnopqrstuvwxyz.page.madani.bot/";
   const show = (page: { url: string; nonce: number }) => act(async () => root.render(createElement(LiveBrowser, { bot, page })));
 
   it("opens the page in a new tab, once, taking the browser first, so the bot's own tab stays as it was", async () => {

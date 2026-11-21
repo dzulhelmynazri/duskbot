@@ -22,7 +22,7 @@ function harness({ taken = false, ...options } = {}) {
     return proc;
   };
   const child = createDevServerChild({
-    fork, entry: "/repo/server/dev-server.ts", env: { DUSK_PORT: "8871" }, port: 8871,
+    fork, entry: "/repo/server/dev-server.ts", env: { MADANI_PORT: "8871" }, port: 8871,
     grant: (proc, isCurrent) => grant.attach(proc, isCurrent), taken: async () => taken, restartDelayMs: 1, ...options,
   });
   return { child, forked, grant };
@@ -30,8 +30,8 @@ function harness({ taken = false, ...options } = {}) {
 const tick = () => new Promise((resolve) => setTimeout(resolve, 5));
 
 test("only in a source checkout that asked for it", () => {
-  assert.equal(devOwnServerWanted({ DUSK_DEV_OWN_SERVER: "1" }, false), true);
-  assert.equal(devOwnServerWanted({ DUSK_DEV_OWN_SERVER: "1" }, true), false);
+  assert.equal(devOwnServerWanted({ MADANI_DEV_OWN_SERVER: "1" }, false), true);
+  assert.equal(devOwnServerWanted({ MADANI_DEV_OWN_SERVER: "1" }, true), false);
   assert.equal(devOwnServerWanted({}, false), false);
 });
 

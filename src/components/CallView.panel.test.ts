@@ -35,7 +35,7 @@ let host: HTMLDivElement;
 
 beforeEach(() => {
   setCallMode("turns");
-  window.duskDesktop = { speechStart: vi.fn(), speechStop: vi.fn(async () => {}) } as unknown as NonNullable<Window["duskDesktop"]>;
+  window.madaniDesktop = { speechStart: vi.fn(), speechStop: vi.fn(async () => {}) } as unknown as NonNullable<Window["madaniDesktop"]>;
   host = document.createElement("div");
   document.body.append(host);
   root = createRoot(host);
@@ -45,7 +45,7 @@ afterEach(() => {
   host.remove();
   endCall();
   track.mockReset();
-  delete window.duskDesktop;
+  delete window.madaniDesktop;
 });
 
 const panelButton = () => host.querySelector<HTMLButtonElement>('[data-call-button="panel"]')!;

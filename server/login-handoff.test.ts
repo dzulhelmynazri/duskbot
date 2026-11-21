@@ -16,7 +16,7 @@ const dirs: string[] = [];
 afterEach(() => { for (const dir of dirs.splice(0)) rmSync(dir, { recursive: true, force: true }); });
 
 function setup(onePasswordProblem?: () => string | undefined) {
-  const dir = mkdtempSync(join(tmpdir(), "dusk-login-handoff-"));
+  const dir = mkdtempSync(join(tmpdir(), "madani-login-handoff-"));
   dirs.push(dir);
   const store = new LoginStore({ dataDir: dir });
   const posted: LoginHandoffResult[] = [];
@@ -77,7 +77,7 @@ describe("the private login handoff to the desktop's main process", () => {
       { type: LOGIN_HANDOFF_REQUEST, requestId: "request-0007" },
     ]) expect(ask(malformed)).toBe(true);
     expect(posted).toEqual([]);
-    for (const other of [null, "text", [], { type: "duskbot:phone-secret-save-result" }, { type: LOGIN_HANDOFF_RESULT, requestId: "request-0008" }]) expect(ask(other)).toBe(false);
+    for (const other of [null, "text", [], { type: "madanibot:phone-secret-save-result" }, { type: LOGIN_HANDOFF_RESULT, requestId: "request-0008" }]) expect(ask(other)).toBe(false);
   });
 });
 

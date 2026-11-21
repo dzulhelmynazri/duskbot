@@ -6,7 +6,7 @@ import { oneHomeCloud } from "./one-home-main.mjs";
 
 const MINUTE = 60_000, HOUR = 60 * MINUTE;
 
-const CLOUD = "https://dusk-t-1.fly.dev";
+const CLOUD = "https://madani-t-1.fly.dev";
 const reply = (status, body = {}) => ({ ok: status < 400, status, body });
 
 /**
@@ -213,13 +213,13 @@ test("a check's log line names the rooms and conversations it found missing by i
 
 test("a check that still finds things missing after three passes says so at once, naming what did not go and why", async () => {
   const w = world({ checks: [false, false, false] });
-  w.failed = [{ key: "skill:b1:tidy", kind: "skill", label: "tidy", error: "dusk bot on this computer did not answer. Try again in a moment." },
+  w.failed = [{ key: "skill:b1:tidy", kind: "skill", label: "tidy", error: "madani bot on this computer did not answer. Try again in a moment." },
     { key: "app-event:e1", kind: "app-event", label: "Reply to email", error: "This app automation stays on the computer it came from.", final: true }];
   await w.home.kick();
   assert.equal(w.journal.failure.code, "incomplete");
   assert.ok(w.now() - w.journal.failingSince < FAILING_LINE_MS, "not a day later");
   assert.deepEqual(w.home.view(), { phase: "copy", failing: { error: INCOMPLETE, items: [
-    { label: "tidy", error: "dusk bot on this computer did not answer. Try again in a moment." },
+    { label: "tidy", error: "madani bot on this computer did not answer. Try again in a moment." },
     { label: "Reply to email", error: "This app automation stays on the computer it came from." }] } });
 });
 
@@ -522,7 +522,7 @@ test("one home reads the Admin's word: a ready Cloud the account may move to, an
   assert.equal(oneHomeCloud(state({ status: "stopped" })).ended, false, "stopped alone is not ended");
   assert.equal(oneHomeCloud(state({ status: "ready", origin: CLOUD }, { trial: { state: "active" } })).paid, false);
   assert.equal(oneHomeCloud({ ...state({ status: "ready", origin: CLOUD, moves: true }), status: "unavailable" }).ready, false);
-  const team = [{ id: "team-acme", name: "Acme", role: "owner", machine: { status: "ready", origin: "https://dusk-t-2.fly.dev", moves: true } }];
+  const team = [{ id: "team-acme", name: "Acme", role: "owner", machine: { status: "ready", origin: "https://madani-t-2.fly.dev", moves: true } }];
   assert.deepEqual(oneHomeCloud(state(undefined, { entitlement: { plan: "pro", tier: "team", status: "active" }, teams: team })),
     { origin: null, account: "acct-1", machine: null, ready: false, moves: false, ended: false, paid: false, verified: true }, "a Team plan has no My Cloud: nothing moves, and nothing here counts as paid for");
 });

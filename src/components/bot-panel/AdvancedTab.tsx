@@ -67,6 +67,6 @@ function PhonePage({ page, bot, derived, onClose }: { page: SheetPage; bot: Bot;
       </div>
       <PanelModal page={page} bot={bot} derived={derived} onClose={onClose} />
     </div>,
-    document.querySelector(".dusk-mobile") ?? document.body,
+    document.querySelector(".madani-mobile") ?? document.body,
   );
 }

@@ -33,17 +33,17 @@
     & [data-sidebar] { transition-duration: var(--dm-sidebar-ms); transition-timing-function: var(--dm-sidebar-ease); }
     & [data-panel-slot] { transition-duration: var(--dm-panel-ms); transition-timing-function: var(--dm-panel-ease); }
 
-    & .dusk-press {
+    & .madani-press {
       transition-duration: 120ms, 120ms, 120ms, 120ms, 120ms, var(--dm-press-up-ms);
       transition-timing-function: ease, ease, ease, ease, ease, var(--dm-press-up-ease);
     }
-    & .dusk-press:is(:enabled, a):active {
+    & .madani-press:is(:enabled, a):active {
       scale: var(--dm-press-scale);
       transition-duration: 120ms, 120ms, 120ms, 120ms, 120ms, var(--dm-press-down-ms);
-      transition-timing-function: ease, ease, ease, ease, ease, var(--dusk-ease-out);
+      transition-timing-function: ease, ease, ease, ease, ease, var(--madani-ease-out);
     }
-    & .dusk-press-soft { transition-duration: 140ms, 140ms, 140ms, var(--dm-press-up-ms); transition-timing-function: ease, ease, ease, var(--dm-press-up-ease); }
-    & .dusk-press-soft:enabled:active { scale: var(--dm-press-soft); transition-duration: 140ms, 140ms, 140ms, var(--dm-press-down-ms); }
+    & .madani-press-soft { transition-duration: 140ms, 140ms, 140ms, var(--dm-press-up-ms); transition-timing-function: ease, ease, ease, var(--dm-press-up-ease); }
+    & .madani-press-soft:enabled:active { scale: var(--dm-press-soft); transition-duration: 140ms, 140ms, 140ms, var(--dm-press-down-ms); }
   }
 
   :root[data-desktop-motion-palette]:not([data-reduced-motion="true"]) {

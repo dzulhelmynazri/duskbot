@@ -6,16 +6,16 @@ import type { TurnProgressActivity } from "./turn-progress.ts";
 /** UNNotificationCategory identifiers the app registers at launch. */
 export const PHONE_CATEGORY = {
   /** Approve and Deny, both behind Face ID. */
-  approval: "dusk.approval",
+  approval: "madani.approval",
   /** Answer: opens the question. */
-  question: "dusk.question",
+  question: "madani.question",
   /** Reply, a text field. */
-  message: "dusk.message",
+  message: "madani.message",
 } as const;
 export type PhoneCategory = (typeof PHONE_CATEGORY)[keyof typeof PHONE_CATEGORY];
 
 /** UNNotificationAction identifiers; the Live Activity's buttons use the same ones. */
-export const PHONE_ACTION = { approve: "dusk.approve", deny: "dusk.deny", reply: "dusk.reply", answer: "dusk.answer" } as const;
+export const PHONE_ACTION = { approve: "madani.approve", deny: "madani.deny", reply: "madani.reply", answer: "madani.answer" } as const;
 export type PhoneActionId = (typeof PHONE_ACTION)[keyof typeof PHONE_ACTION];
 
 const REPLY_KINDS: ReadonlySet<string> = new Set(["done", "mention", "brief", "wait", "delegation-settled"]);
@@ -30,7 +30,7 @@ export function pushCategory(push: { kind: string; requestId?: string; groupId?:
 }
 
 /** ActivityKit's attributes-type: the Swift struct's name. */
-export const TURN_ACTIVITY_TYPE = "DuskTurnAttributes";
+export const TURN_ACTIVITY_TYPE = "MadaniTurnAttributes";
 /** How long a finished activity stays on the lock screen. */
 export const TURN_ACTIVITY_DISMISS_S = 20;
 
@@ -42,7 +42,7 @@ export interface TurnActivityAttributes {
   groupId?: string;
   /** a MausColor name; the widget holds the palette */
   color: string;
-  /** one of DUSK_BODY_IDS; the widget holds each body's still frame */
+  /** one of MADANI_BODY_IDS; the widget holds each body's still frame */
   body: string;
 }
 
@@ -118,7 +118,7 @@ export function replyFirstLine(text: string): string {
 
 /** HKDF salt and info of the done line's seal: X25519 between a one-time key and the activity key, then AES-256-GCM.
  * The sealed value is base64url of ephemeral public key (32) | iv (12) | ciphertext | tag (16). */
-export const TURN_LINE_SEAL = { salt: "dusk-turn-line-v1", info: "seal" } as const;
+export const TURN_LINE_SEAL = { salt: "madani-turn-line-v1", info: "seal" } as const;
 
 /** PUT /api/mobile/activity: this phone's Live Activity for a thread. */
 export interface TurnActivityRegistration {

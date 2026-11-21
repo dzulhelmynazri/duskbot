@@ -16,7 +16,7 @@ export const LAUNCH_LABEL = "since nov 18, 7:56 pm ist";
 export const SUBSCRIBER_FILTERS = ["trial", "cancelling", "paid", "payment_problem", "cancelled", "all"] as const;
 export type SubscriberFilter = (typeof SUBSCRIBER_FILTERS)[number];
 export type SubscriberBucket = Exclude<SubscriberFilter, "all">;
-export type Place = "this computer" | "own server" | "dusk cloud";
+export type Place = "this computer" | "own server" | "madani cloud";
 
 /** a short name for a person that says nothing about who they are; the same account always gets the same one */
 export const handleOf = (accountId: string) => `p-${createHash("sha256").update(accountId).digest("hex").slice(0, 6)}`;
@@ -139,13 +139,13 @@ export function subscriberRows(input: SubscribersInput): SubscriberRow[] {
   for (const ws of input.workspaces) {
     const id = ws.ownerAccountId;
     if (!id || !subs.has(id)) continue;
-    places(id).add(cloudWorkspaces.has(ws.id) ? "dusk cloud" : ws.kind === "vps" ? "own server" : "this computer");
+    places(id).add(cloudWorkspaces.has(ws.id) ? "madani cloud" : ws.kind === "vps" ? "own server" : "this computer");
     appsOf.set(id, (appsOf.get(id) ?? 0) + (ws.report?.apps?.services.filter(service => service.connected).length ?? 0));
   }
   const clouds = new Map<string, SubscriberRow["cloud"]>();
   for (const cloud of input.clouds) {
     if (cloud.status === "destroyed" || !subs.has(cloud.accountId)) continue;
-    places(cloud.accountId).add("dusk cloud");
+    places(cloud.accountId).add("madani cloud");
     const state = CLOUD_STATE[cloud.status] ?? null;
     if (state === "running" || !clouds.get(cloud.accountId)) clouds.set(cloud.accountId, state);
   }

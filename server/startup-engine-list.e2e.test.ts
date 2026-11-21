@@ -2,7 +2,7 @@ import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { expect, it } from "vitest";
 
-import { runControlDusk } from "../scripts/control-dusk.ts";
+import { runControlMadani } from "../scripts/control-madani.ts";
 import { launchRestartableServer } from "./testing/restartable-server.ts";
 import { openSse, type SseRecorder } from "./testing/sse.ts";
 
@@ -15,7 +15,7 @@ it("serves the engine list while new engines are probing, publishes progress and
     expect(response.ok).toBe(true);
     return response.json();
   };
-  const control = (...args: string[]) => runControlDusk([...args, "--url", url]) as Promise<any>;
+  const control = (...args: string[]) => runControlMadani([...args, "--url", url]) as Promise<any>;
   try {
     const bot = (await api("/api/bots")).bots[0];
     await fixture.stop();

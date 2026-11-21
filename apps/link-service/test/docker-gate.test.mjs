@@ -23,7 +23,7 @@ function desktop(mode = "strict", edit = () => {}) {
   const strict = mode === "strict";
   const body = {
     Hostname: "bot", Domainname: "", User: "", AttachStdin: false, AttachStdout: false, AttachStderr: false, Tty: false,
-    OpenStdin: false, StdinOnce: false, Env: [`DUSK_MODE=${mode}`, "VNC_PW=x"], Cmd: null, Image: IMAGE, Volumes: {}, WorkingDir: "",
+    OpenStdin: false, StdinOnce: false, Env: [`MADANI_MODE=${mode}`, "VNC_PW=x"], Cmd: null, Image: IMAGE, Volumes: {}, WorkingDir: "",
     Entrypoint: null, Labels: { [DOCKER_NAMES.label("container")]: NAME, [DOCKER_NAMES.label("vps")]: "1" },
     HostConfig: {
       Binds: null, ContainerIDFile: "", LogConfig: { Type: "", Config: {} }, NetworkMode: DOCKER_NAMES.desktopNetwork, PortBindings: {},
@@ -486,7 +486,7 @@ async function fakeDocker(path) {
     socket.on("error", () => {});
   });
   const route = (method, target) => {
-    if (target === "/v1.56/images/ghcr.io/duskbotai/dusk-desktop:v6/json") return null;
+    if (target === "/v1.56/images/ghcr.io/madanibotai/madani-desktop:v6/json") return null;
     if (target === "/info") return respond(200, { Runtimes: { runc: {} } });
     if (target === "/_ping" || target === "/v1.47/_ping") return `HTTP/1.1 200 OK\r\nApi-Version: 1.47\r\nContent-Type: text/plain\r\nContent-Length: 2\r\n\r\n${method === "HEAD" ? "" : "OK"}`;
     if (target === "/v1.47/version") return VERSION_CHUNKED;
@@ -572,7 +572,7 @@ describe("docker gate over unix sockets", () => {
 
   it("answers 502 instead of a bare EOF when docker drops the connection, and says so in its log", async () => {
     const http = await client(join(dir, "gate.sock"));
-    http.send("GET /v1.56/images/ghcr.io/duskbotai/dusk-desktop:v6/json HTTP/1.1\r\nHost: api.moby.localhost\r\n\r\n");
+    http.send("GET /v1.56/images/ghcr.io/madanibotai/madani-desktop:v6/json HTTP/1.1\r\nHost: api.moby.localhost\r\n\r\n");
     const answer = await http.response();
     expect(answer.status).toBe(502);
     expect(JSON.parse(answer.body).message).toBe("docker gate: docker closed the connection before answering; try again");

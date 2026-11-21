@@ -63,7 +63,7 @@ describe("phone origin validation", () => {
     "https://[::ffff:0.0.0.0]", "https://user:password@maus.example", "https://maus.example/pair",
     "https://maus.example/?token=secret", "https://maus.example/#code=ABCD-EFGH-JKLM",
     "https://maus.example/?", "https://maus.example/#", "https://maus.\nexample",
-    "https://maus.example\\private", "duskbot://pair?token=secret",
+    "https://maus.example\\private", "madanibot://pair?token=secret",
   ])("rejects a local, credential-bearing or non-origin input: %s", (input) => {
     expect(normalizePhoneOrigin(input)).toBeNull();
   });
@@ -76,7 +76,7 @@ describe("optional phone setup", () => {
     const result = await runPhoneSetup(options, ui.io, deps);
     expect(result).toEqual({ options });
     expect(result.options).toBe(options);
-    expect(ui.io.choose).toHaveBeenCalledWith("Use dusk bot on your phone?", expect.any(Array), 0);
+    expect(ui.io.choose).toHaveBeenCalledWith("Use madani bot on your phone?", expect.any(Array), 0);
     expect(deps.accountReady).not.toHaveBeenCalled();
     expect(deps.login).not.toHaveBeenCalled();
     ui.consumed();
@@ -113,7 +113,7 @@ describe("optional phone setup", () => {
     const ui = prompts({ choices: [2, 0], confirms: [true] });
     expect((await runPhoneSetup(options, ui.io, deps)).phone).toBe("android");
     expect(deps.login).not.toHaveBeenCalled();
-    expect(ui.lines.join("\n")).toContain("saved dusk bot account");
+    expect(ui.lines.join("\n")).toContain("saved madani bot account");
     ui.consumed();
   });
 
@@ -238,7 +238,7 @@ describe("phone pairing instructions", () => {
 
   it("sends an Android phone to the app first, and still offers the browser", () => {
     const text = phonePairingInstructions("android", { origin: "https://maus.example", ready: true }).join("\n");
-    expect(text).toContain("open the dusk bot app and scan the QR with its pairing scanner");
+    expect(text).toContain("open the madani bot app and scan the QR with its pairing scanner");
     expect(text).toContain("Camera will not open it in a browser");
     expect(text).toContain("https://maus.example/pair");
     expect(text).not.toContain("not the Android native pairing scanner");

@@ -83,7 +83,7 @@ export function createCloudSignedRoutes(deps: {
     res.setHeader("cache-control", "no-store");
     const source = requestSource(req);
     const header = (name: string) => { const value = req.headers[name]; return typeof value === "string" ? value : undefined; };
-    const signed = { timestamp: header("x-dusk-cloud-timestamp"), nonce: header("x-dusk-cloud-nonce"), signature: header("x-dusk-cloud-signature") };
+    const signed = { timestamp: header("x-madani-cloud-timestamp"), nonce: header("x-madani-cloud-nonce"), signature: header("x-madani-cloud-signature") };
     if (power && path === CLOUD_POWER_PATH) {
       if (method !== "GET") { json(res, 405, { error: "method_not_allowed" }); return true; }
       const verdict = powerReads.verify({ ...signed, method, target: `${path}${url.search}`, body: "" });

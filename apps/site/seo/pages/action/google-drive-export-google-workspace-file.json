@@ -11,11 +11,11 @@
     "claude export google slides pdf",
     "ai convert google workspace file"
   ],
-  "answer": "**take a copy without sharing the live original.** a bot can export google docs, sheets, slides and other supported workspace files into a format you choose. give it the file link and say 'pdf' or 'word'. google caps exported content at 10 mb. dusk requires read and write access for this export.",
+  "answer": "**take a copy without sharing the live original.** a bot can export google docs, sheets, slides and other supported workspace files into a format you choose. give it the file link and say 'pdf' or 'word'. google caps exported content at 10 mb. madani requires read and write access for this export.",
   "updated": "2026-11-12",
   "review": {
     "status": "approved",
-    "by": "lead agent, after two independent reviewer passes, against dusk bot docs and the composio catalog",
+    "by": "lead agent, after two independent reviewer passes, against madani bot docs and the composio catalog",
     "at": "2026-11-12"
   },
   "tags": [
@@ -70,7 +70,7 @@
   "faq": [
     {
       "q": "why does it need write access just to make a copy?",
-      "a": "**dusk treats export as a change.** read only cannot call it. allow this exact action rather than unrelated drive edits."
+      "a": "**madani treats export as a change.** read only cannot call it. allow this exact action rather than unrelated drive edits."
     },
     {
       "q": "does exporting give someone access to the original?",
@@ -79,15 +79,15 @@
   ],
   "sources": [
     {
-      "label": "dusk bot docs: files and apps",
+      "label": "madani bot docs: files and apps",
       "url": "/docs/files-and-apps"
     },
     {
-      "label": "dusk bot docs: routines",
+      "label": "madani bot docs: routines",
       "url": "/docs/routines"
     },
     {
-      "label": "dusk bot docs: a bot's computer",
+      "label": "madani bot docs: a bot's computer",
       "url": "/docs/computer"
     }
   ],

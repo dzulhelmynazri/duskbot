@@ -23,22 +23,22 @@ beforeEach(() => {
 afterEach(() => { vi.unstubAllGlobals(); });
 const render = () => renderToStaticMarkup(createElement(SettingsModal));
 
-describe("Settings → Usage & Billing → dusk cloud on a server open in the app's window", () => {
+describe("Settings → Usage & Billing → madani cloud on a server open in the app's window", () => {
   const reachable = 'data-settings-block="cloudAccount"';
-  it("is not offered on a server that is not a dusk bot Cloud home", () => {
-    vi.stubGlobal("window", { duskDesktop: { cloudPlan: plan } });
+  it("is not offered on a server that is not a madani bot Cloud home", () => {
+    vi.stubGlobal("window", { madaniDesktop: { cloudPlan: plan } });
     const html = render();
     expect(html).not.toContain("CLOUD_PLAN_MARKER"); expect(html).not.toContain(reachable);
   });
   it("shows the plan, read only, on the person's own Cloud", () => {
-    vi.stubGlobal("window", { duskDesktop: { cloudPlan: plan } });
+    vi.stubGlobal("window", { madaniDesktop: { cloudPlan: plan } });
     fixture.config = { cloudHome: true };
     const html = render();
     expect(html).toContain("CLOUD_PLAN_MARKER home"); expect(html).toContain(reachable);
     expect(html).toMatch(/data-settings-page="usage" aria-current="page"/);
   });
   it("is the full account section in the app on this computer, the plan row above it carrying the offer", () => {
-    vi.stubGlobal("window", { duskDesktop: { cloudAccount: {}, cloudPlan: plan } });
+    vi.stubGlobal("window", { madaniDesktop: { cloudAccount: {}, cloudPlan: plan } });
     const html = render();
     expect(html).toContain("CLOUD_PLAN_MARKER");
     expect(html).not.toContain("CLOUD_PLAN_MARKER home");

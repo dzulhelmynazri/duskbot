@@ -15,7 +15,7 @@ vi.mock("react", async original => ({ ...await original<typeof import("react")>(
 }));
 vi.mock("@/state/store", () => ({ useStore: () => ({ state: f.state, dispatch: f.dispatch }), api: vi.fn() }));
 vi.mock("@/lib/analytics", () => ({ track: vi.fn() }));
-vi.mock("./mascot-view", () => ({ DuskMark: () => null }));
+vi.mock("./mascot-view", () => ({ MadaniMark: () => null }));
 vi.mock("./ProIntroduction", () => ({ useCloudPlan: () => ({ view: { kind: "signed-out" }, account: null }) }));
 vi.mock("./onboarding/WelcomeGate", () => ({ localDesktopPage: () => true }));
 vi.mock("./vps-link/parts", () => ({ deviceWord: () => "Mac" }));
@@ -39,7 +39,7 @@ beforeEach(() => {
   vi.clearAllMocks(); setLocale("en"); storage = new Map(); f.dispatch = vi.fn(); today();
   vi.stubGlobal("localStorage", { getItem: (key: string) => storage.get(key) ?? null, setItem: (key: string, value: string) => storage.set(key, value) });
   vi.stubGlobal("sessionStorage", { getItem: () => null, setItem: () => {} });
-  vi.stubGlobal("window", { duskDesktop: {} });
+  vi.stubGlobal("window", { madaniDesktop: {} });
   f.state = { hydrated: true, bots: bots(1), groups: [], routines: [], config: { onboarding: { ...EMPTY_ONBOARDING, completedAt: "2026-09-01", version: 1, hintsSeen: [] } } };
   vi.mocked(api).mockImplementation(async (_path, init) => {
     f.state.config.onboarding.hintsSeen = JSON.parse(String((init as RequestInit).body)).onboarding.hintsSeen;
@@ -47,11 +47,11 @@ beforeEach(() => {
   });
 });
 
-describe("the dusk cloud offer in the sidebar's spot", () => {
-  it("is the website sidebar's card: dusk cloud keeps your bots working, and Keep them working, with no nap in it", async () => {
+describe("the madani cloud offer in the sidebar's spot", () => {
+  it("is the website sidebar's card: madani cloud keeps your bots working, and Keep them working, with no nap in it", async () => {
     const html = await launch();
     expect(html).toContain('data-spot-card=""');
-    expect(html).toContain("dusk cloud keeps your bots working, even when your Mac is off.");
+    expect(html).toContain("madani cloud keeps your bots working, even when your Mac is off.");
     expect(html).toContain(">Keep them working<");
     expect(html).not.toMatch(/\bnap/i);
     expect(track).toHaveBeenCalledWith("upsell_shown", { source: "app_sidebar" });
@@ -62,7 +62,7 @@ describe("the dusk cloud offer in the sidebar's spot", () => {
     const html = await launch();
     expect(html).toContain('data-spot-cta="cloud-invested"');
     expect(html).toContain("good crew of bots");
-    expect(html).toContain("dusk cloud keeps them working, even when your Mac is off.");
+    expect(html).toContain("madani cloud keeps them working, even when your Mac is off.");
     expect(track).toHaveBeenCalledWith("upsell_shown", { source: "app_invested" });
     expect(track).not.toHaveBeenCalledWith("upsell_shown", { source: "app_sidebar" });
     expect(f.state.config.onboarding.hintsSeen).toContain("cloud-invested-v1");
@@ -78,7 +78,7 @@ describe("the dusk cloud offer in the sidebar's spot", () => {
     expect(await launch()).toContain("routines are doing real work");
   });
 
-  it("Get dusk cloud opens Add a Cloud as app_invested, and that showing is over", async () => {
+  it("Get madani cloud opens Add a Cloud as app_invested, and that showing is over", async () => {
     f.state.bots = bots(3);
     await launch();
     f.index = 0; f.ref = 0;
@@ -102,7 +102,7 @@ describe("the dusk cloud offer in the sidebar's spot", () => {
     buttons.find(button => button.props["aria-label"] === "Hide").props.onClick();
     expect(track).toHaveBeenCalledWith("upsell_dismiss", { source: "app_sidebar", ms: expect.any(Number) });
     expect(await settle()).toBe("");
-    expect(storage.has("dusk-cloud-sidebar-card-until")).toBe(false);
+    expect(storage.has("madani-cloud-sidebar-card-until")).toBe(false);
   });
 
   it("twice a day at most while the app is in use, never again within three hours", async () => {
@@ -122,13 +122,13 @@ describe("the dusk cloud offer in the sidebar's spot", () => {
     vi.unstubAllGlobals();
     vi.stubGlobal("localStorage", { getItem: (key: string) => storage.get(key) ?? null, setItem: (key: string, value: string) => storage.set(key, value) });
     vi.stubGlobal("sessionStorage", { getItem: () => null, setItem: () => {} });
-    vi.stubGlobal("window", { duskDesktop: {} });
+    vi.stubGlobal("window", { madaniDesktop: {} });
     f.state.bots = [{ tasks: [] }];
     expect(await launch(), "first run").toBe("");
     expect(track).not.toHaveBeenCalledWith("upsell_shown", expect.anything());
   });
 
-  it("steps aside when the corner dusk cloud card has this launch, so only one cloud offer is on screen", async () => {
+  it("steps aside when the corner madani cloud card has this launch, so only one cloud offer is on screen", async () => {
     vi.stubGlobal("sessionStorage", { getItem: () => "cloud-trial-intro-v1", setItem: () => {} });
     expect(await launch()).toBe("");
     expect(track).not.toHaveBeenCalledWith("upsell_shown", expect.anything());

@@ -18,7 +18,7 @@ export function MacLocalControl() {
     setPending(true);
     setError(null);
     try {
-      await window.duskDesktop?.localControl?.retry();
+      await window.madaniDesktop?.localControl?.retry();
     } catch (reason) {
       setError(friendlyError(reason));
     } finally {
@@ -30,8 +30,8 @@ export function MacLocalControl() {
     setError(null);
     setAwaitingGrant(true);
     try {
-      await window.duskDesktop?.permOpenSettings?.("accessibility");
-      await window.duskDesktop?.permOpenSettings?.("screen");
+      await window.madaniDesktop?.permOpenSettings?.("accessibility");
+      await window.madaniDesktop?.permOpenSettings?.("screen");
     } catch (reason) {
       setAwaitingGrant(false);
       setError(friendlyError(reason));

@@ -1,10 +1,10 @@
-# dusk bot account dashboard
+# madani bot account dashboard
 
-One hosted web app for everyone's dusk bot workspaces. A person signs in with their dusk bot account and sees
+One hosted web app for everyone's madani bot workspaces. A person signs in with their madani bot account and sees
 each of their workspaces (their Mac, each VPS) side by side: bots, usage, the machine and its bot computers, devices.
 
 ```
- workspace (a dusk bot server)            dashboard service (apps/dashboard/server)          browser (apps/dashboard/src)
+ workspace (a madani bot server)            dashboard service (apps/dashboard/server)          browser (apps/dashboard/src)
  ---------------------------------            ------------------------------------          -----------------------
  POST /api/dashboard/link  (app menu)  ---->  POST /v1/enroll {ed25519 public key}
    opens the claim link in the browser        <---- {workspaceId, claimUrl}
@@ -22,11 +22,11 @@ each of their workspaces (their Mac, each VPS) side by side: bots, usage, the ma
   states only: machine stats, bot names, colours and models, computer states, device names, daily usage totals. Never
   messages, prompts, files or secrets.
 - **Transport.** Plain HTTPS from the workspace to the service, so it does not depend on any relay. A relay can name
-  its dashboard at `/.well-known/duskbot/dashboard` (`DUSK_LINK_DASHBOARD_URL` on the link service); a workspace
-  uses, in order, the URL it is given, `DUSK_DASHBOARD_URL`, its relay's discovery answer, then `DEFAULT_DASHBOARD_URL`.
+  its dashboard at `/.well-known/madanibot/dashboard` (`MADANI_LINK_DASHBOARD_URL` on the link service); a workspace
+  uses, in order, the URL it is given, `MADANI_DASHBOARD_URL`, its relay's discovery answer, then `DEFAULT_DASHBOARD_URL`.
 - **Accounts.** The service owns email-code sign-in, accounts and browser/app sessions (`shared/account-api.ts`).
   Accounts and token hashes live in `auth.json`; codes and one-time grants stay in memory. Browser mutations echo
-  the `dusk_csrf` cookie in `x-dusk-csrf`. Apps use the existing Admin contract v1 bearer routes. Social providers are
+  the `madani_csrf` cookie in `x-madani-csrf`. Apps use the existing Admin contract v1 bearer routes. Social providers are
   unavailable for now, with coming-soon buttons only in development.
   - *Web handoff* (the app opening the plans page already signed in): `POST /v1/app/web-handoff` with the app's bearer
     and `{ next: "plans", plan?: "plus"|"pro", source? }` answers `{ v: 1, url, expiresAt }`, where `url` is
@@ -53,7 +53,7 @@ each of their workspaces (their Mac, each VPS) side by side: bots, usage, the ma
 ## Slack while a cloud desktop sleeps
 
 Opt-in per desktop ("Wake for Slack" on its Cloud desktop page) and off unless the service runs with
-`DUSK_SLACK_EDGE=1` (which then needs `DUSK_CLOUD_SEAL_KEY` outside loopback development). It is the one exception to
+`MADANI_SLACK_EDGE=1` (which then needs `MADANI_CLOUD_SEAL_KEY` outside loopback development). It is the one exception to
 "Slack traffic stays between the harness and Slack": a bot's Socket Mode connection needs its app-level token, so a
 desktop that wants to answer while asleep lends that token to this service.
 
@@ -61,7 +61,7 @@ desktop that wants to answer while asleep lends that token to this service.
  cloud desktop (repo server/slack/handover.ts)     this service (server/slack-edge)                Slack
  every 60 s and at boot: signed POST /v1/slack-edge/sync
    {x25519 public key, bots: id + token hash, acks}  ---->  remembers the key, asks for changed tokens
- POST /v1/slack-edge/tokens {xapp tokens}  -------------->  seals them at rest (DUSK_CLOUD_SEAL_KEY)
+ POST /v1/slack-edge/tokens {xapp tokens}  -------------->  seals them at rest (MADANI_CLOUD_SEAL_KEY)
                                                           desktop stopped or asleep: opens Socket Mode  <---->  events
                                                           acks each event at once, seals it to the desktop's key,
                                                           DM or mention: wakes the desktop (again each minute)
@@ -90,13 +90,13 @@ more were measured; the plan cards print a wake time only from it.
 
 ## Admin panel and product analytics
 
-`/admin` (`https://dusk.bot/admin`, staging `https://preview.dusk.bot/admin`; only `DUSK_ADMIN_EMAILS` sessions get the page or its chunks) is the owner's panel: overview (signups, active accounts,
+`/admin` (`https://madani.bot/admin`, staging `https://preview.madani.bot/admin`; only `MADANI_ADMIN_EMAILS` sessions get the page or its chunks) is the owner's panel: overview (signups, active accounts,
 waitlist, the funnel site to signup to onboarding to cloud to paid to app paired to first bot reply, clouds by state),
 users (search, plan, clouds, devices, timeline), clouds (pause, resume, delete with a typed confirmation), waitlist
-(dusk.waitlist, CSV export, Brevo list check), events, health and the audit log. Keys: `g` then o, u, c, w, e, h or a;
+(madani.waitlist, CSV export, Brevo list check), events, health and the audit log. Keys: `g` then o, u, c, w, e, h or a;
 `/` searches; `?` lists them.
 
-- **Who gets in.** `DUSK_ADMIN_EMAILS` (comma-separated account emails). Every `/v1/admin/*` route checks the web
+- **Who gets in.** `MADANI_ADMIN_EMAILS` (comma-separated account emails). Every `/v1/admin/*` route checks the web
   session (401), the email (403) and, on changes, the CSRF header. Cloud actions, CSV exports and every opened user
   record go to `admin_audit`.
 - **Events** (`server/analytics`): the service records sign-ups, sign-ins, app pairing, a daily app heartbeat (the
@@ -123,23 +123,23 @@ users (search, plan, clouds, devices, timeline), clouds (pause, resume, delete w
   forwards them as `app_action` events with the install id (`electron/experience-relay.mjs`); a cloud's ride its usage
   report. `GET /v1/admin/experience?from&to` counts them per day as bad, confusing and done with the top reasons, and
   derives abandoned first runs; `GET /v1/admin/experience/timeline?who=` is one install's last 30 days (audited).
-- **Site and app analytics.** `tracker/dusk.js` (about 3 KB gzip, no dependencies, ideas from Minilytics, MIT) is copied to the
+- **Site and app analytics.** `tracker/madani.js` (about 3 KB gzip, no dependencies, ideas from Minilytics, MIT) is copied to the
   site as `/a.js` by the site's `build-pages.mjs`. It sends page views, goals (`cta_click`, `download_click`, `waitlist_join`,
-  `outbound`, any `data-dusk-goal`), and each page view's end (scroll depth, visible time) to `POST /v1/t` as text/plain
-  beacons; `?dusk_ignore=1` once turns it off in a browser, and an admin's own visits are never recorded. An open page pings
+  `outbound`, any `data-madani-goal`), and each page view's end (scroll depth, visible time) to `POST /v1/t` as text/plain
+  beacons; `?madani_ignore=1` once turns it off in a browser, and an admin's own visits are never recorded. An open page pings
   `/v1/t` every minute while visible; pings and the admin's own beacons only mark the visitor as here in memory (`analytics/presence.ts`),
   which the live counts add to the last five minutes of events. The first page
   view of each page load goes as a `fetch` instead, and `/v1/t` answers `{"persist": true|false}`: the tracker writes
-  `dusk_vid` and `dusk_sid` only after `true`. The answer is `false` when Cloudflare (trusted only as the proxy's peer) puts
+  `madani_vid` and `madani_sid` only after `true`. The answer is `false` when Cloudflare (trusted only as the proxy's peer) puts
   the visitor in the EU, EEA, UK or Switzerland (`COOKIELESS_COUNTRIES` in `analytics/context.ts`) or cannot place them;
   there the service ignores the browser's ids and uses a daily visitor hash (HMAC of address and user agent under a salt
   that lives in memory and changes every day) and its own 30-minute visits, so attribution is per visit. A request that
   did not come through Cloudflare keeps cookies. Origins other than
-  the service's own and its `www.` twin must be in `DUSK_TRACK_ORIGINS`. The apps send screens, features, message counts, reply times,
+  the service's own and its `www.` twin must be in `MADANI_TRACK_ORIGINS`. The apps send screens, features, message counts, reply times,
   error and pairing codes to `POST /v1/app/events` (`src/lib/product-analytics.ts`), anonymous by install id until the
   app signs in. The desktop app's own page hands its batches to Electron main over the preload bridge (`productEvents`);
   main (`electron/product-events.mjs`) drops anything outside its event and prop allowlist, adds the account token when
-  signed in, and posts to the account client's origin (`cloudTarget()`, so `DUSK_CLOUD_ORIGIN` builds use their own),
+  signed in, and posts to the account client's origin (`cloudTarget()`, so `MADANI_CLOUD_ORIGIN` builds use their own),
   retrying with backoff and holding at most 500 events offline. Channels and named sources (AI assistants apart from search) come from `analytics/sources.ts` (ported from
   Minilytics). Everything else is computed from the event log per read (`analytics/web.ts`): visits, KPIs against the
   previous period, ranked cards with the signups each row became, the funnel with drop-off and median times, journeys,
@@ -150,31 +150,31 @@ users (search, plan, clouds, devices, timeline), clouds (pause, resume, delete w
 
 ```sh
 pnpm build:dashboard            # the page, into apps/dashboard/dist
-pnpm dashboard:service          # DUSK_DASHBOARD_PORT, _HOST, _DATA, _PUBLIC_URL, _STATIC
+pnpm dashboard:service          # MADANI_DASHBOARD_PORT, _HOST, _DATA, _PUBLIC_URL, _STATIC
 ```
 
-Production mail uses `DUSK_MAIL_PROVIDER=brevo`, `DUSK_BREVO_API_KEY` and `DUSK_MAIL_FROM` (or `resend` with `DUSK_RESEND_API_KEY`). Loopback HTTP or
-`DUSK_DASHBOARD_DEV=1` enables development console mail. Set `DUSK_AUTH_SIGNUP_OPEN=0` to close signups and
-`DUSK_TRUST_PROXY=1` only behind a trusted proxy. `DUSK_OPS_TOKEN` (32 characters or more) turns on the operator's checkout funnel:
+Production mail uses `MADANI_MAIL_PROVIDER=brevo`, `MADANI_BREVO_API_KEY` and `MADANI_MAIL_FROM` (or `resend` with `MADANI_RESEND_API_KEY`). Loopback HTTP or
+`MADANI_DASHBOARD_DEV=1` enables development console mail. Set `MADANI_AUTH_SIGNUP_OPEN=0` to close signups and
+`MADANI_TRUST_PROXY=1` only behind a trusted proxy. `MADANI_OPS_TOKEN` (32 characters or more) turns on the operator's checkout funnel:
 `GET /v1/billing/ops/funnel?days=30` with `Authorization: Bearer <token>` counts checkouts started, paid and still active
-by where they started (`CHECKOUT_SOURCES` in `shared/billing-api.ts`); without the token the route does not exist. `DUSK_AUTH_SECRET` must be at least 32 characters if supplied;
+by where they started (`CHECKOUT_SOURCES` in `shared/billing-api.ts`); without the token the route does not exist. `MADANI_AUTH_SECRET` must be at least 32 characters if supplied;
 otherwise the service creates a private `auth-secret` file beside its data.
 
 Local work on the page: `pnpm dashboard:fixture` starts the service on `127.0.0.1:7480` with a temporary data folder,
 a memory mailer, a signed-in session and a demo workspace (made-up numbers, fixture only). Sign-in codes print in
 its terminal. Then `pnpm dev:dashboard` serves the page on `127.0.0.1:5288` with `/v1` proxied to it
-(`DUSK_DASHBOARD_SERVICE` to point elsewhere).
+(`MADANI_DASHBOARD_SERVICE` to point elsewhere).
 
 The page keeps its own English strings: it is a separate web app outside `src/` and its locales. They are lowercase and
-plain, like dusk.bot.
+plain, like madani.bot.
 
 ### The site and the app point at each other
 
 The page links back to the marketing site (the logo and "back to" on sign-in and onboarding, terms, privacy, every
-download button). `DUSK_SITE_URL` at build sets where that is; it defaults to `https://dusk.bot`:
+download button). `MADANI_SITE_URL` at build sets where that is; it defaults to `https://madani.bot`:
 
 ```sh
-DUSK_SITE_URL=https://dusk-preview.example pnpm build:dashboard
+MADANI_SITE_URL=https://madani-preview.example pnpm build:dashboard
 ```
 
 The site links in with these addresses (`src/lib/site.ts` reads them):
@@ -191,11 +191,11 @@ opens. Onboarding keeps its step in the address (`?step=name|plan|app`; the olde
 
 ### Sign-in providers
 
-Google uses `DUSK_AUTH_GOOGLE_CLIENT_ID` and `DUSK_AUTH_GOOGLE_CLIENT_SECRET`. Apple uses `DUSK_AUTH_APPLE_CLIENT_ID` (Services ID), `DUSK_AUTH_APPLE_TEAM_ID`, `DUSK_AUTH_APPLE_KEY_ID`, and the .p8 key in `DUSK_AUTH_APPLE_PRIVATE_KEY` (PEM, literal `\n` accepted) or `DUSK_AUTH_APPLE_PRIVATE_KEY_FILE`. Register `<public url>/v1/auth/oauth/google/callback` and `<public url>/v1/auth/oauth/apple/callback` (Apple's Return URL). Partial provider configuration fails startup; endpoint overrides are available only through code options for isolated fixtures. The dashboard fixture runs local fake Google and Apple providers without external accounts.
+Google uses `MADANI_AUTH_GOOGLE_CLIENT_ID` and `MADANI_AUTH_GOOGLE_CLIENT_SECRET`. Apple uses `MADANI_AUTH_APPLE_CLIENT_ID` (Services ID), `MADANI_AUTH_APPLE_TEAM_ID`, `MADANI_AUTH_APPLE_KEY_ID`, and the .p8 key in `MADANI_AUTH_APPLE_PRIVATE_KEY` (PEM, literal `\n` accepted) or `MADANI_AUTH_APPLE_PRIVATE_KEY_FILE`. Register `<public url>/v1/auth/oauth/google/callback` and `<public url>/v1/auth/oauth/apple/callback` (Apple's Return URL). Partial provider configuration fails startup; endpoint overrides are available only through code options for isolated fixtures. The dashboard fixture runs local fake Google and Apple providers without external accounts.
 
 ## Look
 
-The dashboard wears dusk.bot's identity: a white page, soft wash cards with big radii, flat pill buttons, one ink, and
+The dashboard wears madani.bot's identity: a white page, soft wash cards with big radii, flat pill buttons, one ink, and
 the site's pixel posters (`src/art`, exported from the site's raw art the way its `art-src/final/prep.py` does). Light is
 the default theme; dark stays in Account, Appearance. Icons are Gravity UI (src/icons).
 
@@ -212,9 +212,9 @@ about a pixel larger, because General Sans runs small.
 
 ## Bots
 
-Bots are drawn with the dusk bot engine in `src/mascot` (a copy of the site's `mascot-src/engine`; `ui/Mascot.tsx` wraps
+Bots are drawn with the madani bot engine in `src/mascot` (a copy of the site's `mascot-src/engine`; `ui/Mascot.tsx` wraps
 it). A bot's saved colour and body are kept as they are and mapped when drawn: `bodyOf` in `ui/Mascot.tsx` turns every
-body id a bot may have been saved with into the nearest of the ten dusk bodies, and an unset body draws as the squircle.
+body id a bot may have been saved with into the nearest of the ten madani bodies, and an unset body draws as the squircle.
 
 What a bot is doing decides its mood (`data/mood.ts`, tested):
 

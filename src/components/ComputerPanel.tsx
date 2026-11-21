@@ -367,7 +367,7 @@ export function ComputerPanel({
 
   useEffect(() => {
     let alive = true;
-    const dv = window.duskDesktop?.desktopViewer;
+    const dv = window.madaniDesktop?.desktopViewer;
     if (dv?.currentState) {
       void dv
         .currentState()
@@ -766,12 +766,12 @@ export function ComputerPanel({
   // 15+), so repeated empty frames mean denied.
   const [localMisses, setLocalMisses] = useState(0);
   useEffect(() => {
-    if (panelView !== "computer" || phase !== "local" || !computerStatusCurrent || !window.duskDesktop || isLinux || !pageVisible || localStreaming) return;
+    if (panelView !== "computer" || phase !== "local" || !computerStatusCurrent || !window.madaniDesktop || isLinux || !pageVisible || localStreaming) return;
     let alive = true;
     setLocalMisses(0);
     const shoot = async () => {
       try {
-        const url = await window.duskDesktop!.screenFrame();
+        const url = await window.madaniDesktop!.screenFrame();
         if (alive && url) setLocalFrame(url);
         else if (alive) setLocalMisses((n) => n + 1);
       } catch {
@@ -1023,7 +1023,7 @@ export function ComputerPanel({
   };
 
   const openVmSettings = () => {
-    window.sessionStorage.setItem("duskbot.settings.section", "computer");
+    window.sessionStorage.setItem("madanibot.settings.section", "computer");
     dispatch({ type: "toggleAppSettings", open: true });
   };
 
@@ -1300,7 +1300,7 @@ export function ComputerPanel({
           >
             {!busy && placeActionButton(nextStep, fullscreenActionCls)}
             {phase === "local" && !isLinux && localMisses >= 3 && (
-              <button type="button" onClick={() => window.duskDesktop?.permOpenSettings?.("screen")} className={fullscreenActionCls}>{t("computer.openSettings")}</button>
+              <button type="button" onClick={() => window.madaniDesktop?.permOpenSettings?.("screen")} className={fullscreenActionCls}>{t("computer.openSettings")}</button>
             )}
           </ComputerFullscreenNote>
         )}
@@ -1470,7 +1470,7 @@ export function ComputerPanel({
               {bot.computer === "cloud" && phase === "error" && placeActionButton(cloudView)}
               {phase === "local" && !isLinux && localMisses >= 3 && (
                 <button
-                  onClick={() => window.duskDesktop?.permOpenSettings?.("screen")}
+                  onClick={() => window.madaniDesktop?.permOpenSettings?.("screen")}
                   className="mt-1 rounded-lg bg-control px-3 py-1.5 text-[12px] text-ink hover:bg-raised-hover"
                 >
                   {t("computer.openSettings")}

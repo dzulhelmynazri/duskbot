@@ -12,7 +12,7 @@ export {
 
 /** the panel's small row pill: 28px, an ink/6 wash, a hairline inset, ink/10 on hover */
 export const buttonCls =
-  "dusk-press inline-flex h-7 shrink-0 cursor-pointer items-center justify-center gap-1 whitespace-nowrap rounded-full bg-ink/6 px-2.5 text-[13px] leading-[18px] text-ink shadow-[inset_0_0_0_0.5px_color-mix(in_srgb,var(--color-ink)_6%,transparent)] enabled:hover:bg-ink/10 focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-focus disabled:cursor-not-allowed disabled:opacity-50";
+  "madani-press inline-flex h-7 shrink-0 cursor-pointer items-center justify-center gap-1 whitespace-nowrap rounded-full bg-ink/6 px-2.5 text-[13px] leading-[18px] text-ink shadow-[inset_0_0_0_0.5px_color-mix(in_srgb,var(--color-ink)_6%,transparent)] enabled:hover:bg-ink/10 focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-focus disabled:cursor-not-allowed disabled:opacity-50";
 /** a field with no fill and one quiet hairline that stays put on hover and focus */
 export const fieldCls =
   "h-7 min-w-0 flex-1 rounded-lg border-[0.5px] border-ink/12 bg-transparent px-2 text-[13px] leading-[18px] text-ink outline-none placeholder:text-ink/40 disabled:opacity-50";

@@ -3,7 +3,7 @@
 import { readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { pathToFileURL } from "node:url";
-import { launchVerificationServer, runControlDusk } from "./control-dusk.ts";
+import { launchVerificationServer, runControlMadani } from "./control-madani.ts";
 import { fixtureApi, mountPreview, parkUntilSignal, type MountedPreview } from "./testing/preview-fixture.ts";
 
 const fixture = await launchVerificationServer();
@@ -24,15 +24,15 @@ try {
   };
   writeFileSync(configPath, JSON.stringify(config, null, 2), { mode: 0o600 });
   await api("PUT", "/api/config", { defaultModelSelection: { instanceId: "codex", model: "gpt-fake-default" } });
-  const created = await runControlDusk(["new-bot", "--name", "Codex Helper Fixture", "--url", fixture.info.url]) as { bot: { id: string } };
-  await runControlDusk(["set-model", "--bot", created.bot.id, "--instance", "codex", "--model", "gpt-fake-default", "--url", fixture.info.url]);
+  const created = await runControlMadani(["new-bot", "--name", "Codex Helper Fixture", "--url", fixture.info.url]) as { bot: { id: string } };
+  await runControlMadani(["set-model", "--bot", created.bot.id, "--instance", "codex", "--model", "gpt-fake-default", "--url", fixture.info.url]);
   ui = await mountPreview(fixture, {
     entry: "/scripts/testing/threads-preview.tsx", route: "/__codex-helpers.html", title: "Codex helper isolation — offline fixture",
     extraRoutes: [{ path: "/favicon.ico", handler: (_req, res) => { res.writeHead(204); res.end(); } }],
   });
   const info = { ...fixture.info, launcherPid: process.pid, previewUrl: ui.previewUrl };
   console.log(JSON.stringify(info));
-  if (process.env.DUSK_HELPER_EVIDENCE) writeFileSync(process.env.DUSK_HELPER_EVIDENCE, JSON.stringify(info, null, 2));
+  if (process.env.MADANI_HELPER_EVIDENCE) writeFileSync(process.env.MADANI_HELPER_EVIDENCE, JSON.stringify(info, null, 2));
   await parkUntilSignal();
 } finally {
   await ui?.close();

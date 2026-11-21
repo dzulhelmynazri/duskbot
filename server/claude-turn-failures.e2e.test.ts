@@ -6,7 +6,7 @@ import { join } from "node:path";
 import { createInterface } from "node:readline";
 import { pathToFileURL } from "node:url";
 import { expect, it } from "vitest";
-import { launchVerificationServer, runControlDusk } from "../scripts/control-dusk.ts";
+import { launchVerificationServer, runControlMadani } from "../scripts/control-madani.ts";
 import { rebuiltSessionNotice } from "./resume-recovery.ts";
 
 /** Pesto's account, as the CLI's rate_limit_event reported it on Oct 9. */
@@ -32,7 +32,7 @@ async function launch() {
     expect(response.ok, `${method} ${path} ${response.status}: ${JSON.stringify(value)}`).toBe(true);
     return value;
   };
-  const control = (args: string[]) => runControlDusk([...args, "--url", url]) as Promise<any>;
+  const control = (args: string[]) => runControlMadani([...args, "--url", url]) as Promise<any>;
   const messages = async (threadId: string) => (await api("GET", `/api/threads/${threadId}/messages?limit=100`)).messages as any[];
   const modes = join(dataDir, "fake-modes.json");
   writeFileSync(modes, "{}");
@@ -43,8 +43,8 @@ async function launch() {
     'import { join } from "node:path";',
     'const at = process.argv.indexOf("--mcp-config");',
     'const agents = at < 0 ? {} : JSON.parse(readFileSync(process.argv[at + 1], "utf8")).mcpServers?.agents?.env ?? {};',
-    'const thread = agents.DUSK_THREAD_ID ?? "probe";',
-    'const bot = agents.DUSK_BOT_ID ?? "probe";',
+    'const thread = agents.MADANI_THREAD_ID ?? "probe";',
+    'const bot = agents.MADANI_BOT_ID ?? "probe";',
     `const modes = JSON.parse(readFileSync(${JSON.stringify(modes)}, "utf8"));`,
     "const plan = modes[`${thread}:${bot}`] ?? modes[thread] ?? modes[bot] ?? {};",
     'process.env.FAKE_CLAUDE_MODE = plan.mode ?? "happy";',

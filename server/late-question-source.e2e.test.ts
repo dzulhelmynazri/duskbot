@@ -2,7 +2,7 @@ import { randomUUID } from "node:crypto";
 import { readFileSync } from "node:fs";
 import { connect, type Socket } from "node:net";
 import { expect, it } from "vitest";
-import { launchVerificationServer, runControlDusk } from "../scripts/control-dusk.ts";
+import { launchVerificationServer, runControlMadani } from "../scripts/control-madani.ts";
 
 it("does not retarget a deleted room asker's late answer to the current speaker", async () => {
   const fixture = await launchVerificationServer({ ...process.env, FAKE_CLAUDE_MODE: "hang" });
@@ -14,7 +14,7 @@ it("does not retarget a deleted room asker's late answer to the current speaker"
     });
     return { status: response.status, body: await response.json() };
   };
-  const cli = (...args: string[]) => runControlDusk(args, { env: { DUSK_URL: fixture.info.url } }) as Promise<any>;
+  const cli = (...args: string[]) => runControlMadani(args, { env: { MADANI_URL: fixture.info.url } }) as Promise<any>;
   let socket: Socket | undefined;
   console.log(`late-question source fixture: ${fixture.info.logPath}`);
   try {
@@ -33,11 +33,11 @@ it("does not retarget a deleted room asker's late answer to the current speaker"
     })).status).toBe(202);
     await expect.poll(speaker, { timeout: 15_000 }).toBe(original.id);
     await expect.poll(() => {
-      try { return JSON.parse(readFileSync(fixture.fixtureDumpPath, "utf8")).mcpConfig?.mcpServers?.dusk?.args[1]; }
+      try { return JSON.parse(readFileSync(fixture.fixtureDumpPath, "utf8")).mcpConfig?.mcpServers?.madani?.args[1]; }
       catch { return undefined; }
     }, { timeout: 5_000 }).toEqual(expect.any(String));
     const dump = JSON.parse(readFileSync(fixture.fixtureDumpPath, "utf8"));
-    socket = connect(dump.mcpConfig.mcpServers.dusk.args[1]);
+    socket = connect(dump.mcpConfig.mcpServers.madani.args[1]);
     socket.on("error", () => {});
     await new Promise<void>((resolve, reject) => {
       socket!.once("connect", resolve);

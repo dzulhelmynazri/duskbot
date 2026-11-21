@@ -35,7 +35,7 @@ trust_level = "trusted"
 
 describe("codexConfigMcpServerNames", () => {
   it("reads config.toml from CODEX_HOME, falling back to ~/.codex, and tolerates a missing file", () => {
-    const home = mkdtempSync(join(tmpdir(), "dusk-codex-names-"));
+    const home = mkdtempSync(join(tmpdir(), "madani-codex-names-"));
     dirs.push(home);
     mkdirSync(join(home, ".codex"));
     writeFileSync(join(home, ".codex", "config.toml"), '[mcp_servers.home_one]\nurl = "https://a.test"\n');
@@ -51,14 +51,14 @@ describe("codexConfigMcpServerNames", () => {
 describe("mountedMcpServerName", () => {
   it("keeps a free name and moves a taken one aside deterministically", () => {
     expect(mountedMcpServerName("notes", new Set())).toBe("notes");
-    expect(mountedMcpServerName("fibery", new Set(["fibery"]))).toBe("fibery_duskbot");
-    expect(mountedMcpServerName("fibery", new Set(["fibery", "fibery_duskbot"]))).toBe("fibery_duskbot2");
+    expect(mountedMcpServerName("fibery", new Set(["fibery"]))).toBe("fibery_madanibot");
+    expect(mountedMcpServerName("fibery", new Set(["fibery", "fibery_madanibot"]))).toBe("fibery_madanibot2");
   });
 });
 
 describe("codexConfigRunsServer", () => {
   const configFor = (toml: string) => {
-    const home = mkdtempSync(join(tmpdir(), "dusk-codex-runs-"));
+    const home = mkdtempSync(join(tmpdir(), "madani-codex-runs-"));
     dirs.push(home);
     writeFileSync(join(home, "config.toml"), toml);
     return codexConfigMcp({ CODEX_HOME: home });

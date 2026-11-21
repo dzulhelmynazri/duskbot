@@ -8,15 +8,15 @@ import { promisify } from "node:util";
 import { closeFixtureBrowser, connectMcp, driver, eventually, httpFixture, sleep, socket } from "./testing/bot-desktop-fixture.mjs";
 
 const run = promisify(execFile);
-const image = process.env.DUSK_VERIFY_DESKTOP_IMAGE;
-assert.ok(image, "set DUSK_VERIFY_DESKTOP_IMAGE to an immutable fixture image");
+const image = process.env.MADANI_VERIFY_DESKTOP_IMAGE;
+assert.ok(image, "set MADANI_VERIFY_DESKTOP_IMAGE to an immutable fixture image");
 const counts = (process.argv.find(arg => arg.startsWith("--counts="))?.split("=")[1] || "1,4").split(",").map(Number);
 assert.ok(counts.every(count => Number.isInteger(count) && count > 0 && count <= 20));
 const idleMs = Number(process.argv.find(arg => arg.startsWith("--idle-ms="))?.split("=")[1] || 10_000);
 assert.ok(idleMs >= 1000 && idleMs <= 30_000);
 const browserLimit = Number(process.argv.find(arg => arg.startsWith("--browser-limit="))?.split("=")[1] || 4);
 assert.ok(Number.isInteger(browserLimit) && browserLimit >= 1 && browserLimit <= 20);
-const evidence = await mkdtemp("/tmp/dusk-screen-bench-");
+const evidence = await mkdtemp("/tmp/madani-screen-bench-");
 const root = fileURLToPath(new URL("..", import.meta.url));
 const guestSources = [];
 if (process.argv.includes("--guest-source")) {
@@ -29,7 +29,7 @@ if (process.argv.includes("--guest-source")) {
     guestSources.push({ source, path, destination: `/usr/local/bin/${name}` });
   }
 }
-process.env.DUSK_DATA_DIR = join(evidence, "server-data");
+process.env.MADANI_DATA_DIR = join(evidence, "server-data");
 const { independentScreenTarget } = await import("../server/shared-desktop-screens.ts");
 const { boxChromeRelay, boxChromeExecArgs } = await import("../server/vps-local.ts");
 const imageId = (await run("docker", ["image", "inspect", image, "--format", "{{.Id}}"])).stdout.trim();
@@ -85,16 +85,16 @@ async function benchmark(count) {
   let container;
   let volume;
   try {
-    volume = `dusk-screen-bench-home-${process.pid}-${count}`;
-    await run("docker", ["volume", "create", "--label", "bot.dusk.verification=screen-benchmark", volume]);
+    volume = `madani-screen-bench-home-${process.pid}-${count}`;
+    await run("docker", ["volume", "create", "--label", "bot.madani.verification=screen-benchmark", volume]);
     result.volume = volume;
     const boot = performance.now();
-    container = (await run("docker", ["run", "--rm", "-d", "--name", `dusk-screen-bench-${process.pid}-${count}`, "--label", "bot.dusk.verification=screen-benchmark",
+    container = (await run("docker", ["run", "--rm", "-d", "--name", `madani-screen-bench-${process.pid}-${count}`, "--label", "bot.madani.verification=screen-benchmark",
       "--network", "none", "--user", "1000:1000", "--cap-drop", "ALL", "--security-opt", "no-new-privileges", "--read-only",
       "--memory", "4g", "--memory-swap", "4g", "--cpus", "2", "--pids-limit", "4096", "--shm-size", "512m",
       "--mount", `type=volume,source=${volume},target=/home/cua`, "--tmpfs", "/tmp:rw,nosuid,nodev,size=512m",
       ...guestSources.flatMap(source => ["--mount", `type=bind,source=${source.path},target=${source.destination},readonly`]),
-      "--tmpfs", "/run:rw,nosuid,nodev,size=64m,uid=1000,gid=1000,mode=0755", "-e", "DUSK_START_URL=about:blank",
+      "--tmpfs", "/run:rw,nosuid,nodev,size=64m,uid=1000,gid=1000,mode=0755", "-e", "MADANI_START_URL=about:blank",
       "--entrypoint", "/usr/local/bin/omb-session", imageId], { timeout: 15_000 })).stdout.trim();
     result.container = container;
     const exec = (args, timeout = 20_000) => run("docker", ["exec", "-u", "1000:1000", container, ...args], { timeout, maxBuffer: 16 * 1024 * 1024 });
@@ -195,7 +195,7 @@ async function benchmark(count) {
       const appForm = async (target, recheck = false) => {
         const canonical = independentScreenTarget(target.botId, target.display, target.generation);
         const home = join(evidence, `home-${count}-${target.display}`);
-        const binary = process.env.DUSK_AGENT_BROWSER_PATH || join(root, ".dusk-scratch/verify-tools/tools/agent-browser/0.37.0/agent-browser");
+        const binary = process.env.MADANI_AGENT_BROWSER_PATH || join(root, ".madani-scratch/verify-tools/tools/agent-browser/0.37.0/agent-browser");
         const relay = await boxChromeRelay(() => spawn("docker", boxChromeExecArgs(container, canonical), { stdio: ["pipe", "pipe", "ignore"] }));
         const transport = await connectMcp(container, canonical.socket);
         const started = performance.now();
@@ -204,7 +204,7 @@ async function benchmark(count) {
           const tag = `${recheck ? "restore" : "bench"}-${count}-${target.display}`;
           const flow = { botId: target.botId, display: target.display, tag, cookieExpected: `screen-${target.display}`, sharedText: "Shared benchmark file", ...(recheck ? { skipForm: true } : { inputText: `App${target.display}`, cookieSet: `screen-${target.display}`, leaveForm: true }) };
           const output = await run(process.execPath, ["--experimental-strip-types", join(root, "scripts/testing/bot-desktop-app-browser.mjs"), relay.url, evidence, JSON.stringify(tools.map(tool => tool.name)), JSON.stringify(flow)], {
-            timeout: 90_000, maxBuffer: 4 * 1024 * 1024, cwd: root, env: { PATH: process.env.PATH, HOME: home, USERPROFILE: home, DUSK_DATA_DIR: join(home, "data"), DUSK_AGENT_BROWSER_PATH: binary },
+            timeout: 90_000, maxBuffer: 4 * 1024 * 1024, cwd: root, env: { PATH: process.env.PATH, HOME: home, USERPROFILE: home, MADANI_DATA_DIR: join(home, "data"), MADANI_AGENT_BROWSER_PATH: binary },
           }).catch(async error => { await writeFile(join(evidence, `${tag}.log`), (error.stdout || "") + (error.stderr || "")); throw error; });
           await writeFile(join(evidence, `${tag}.log`), output.stdout + output.stderr);
           return { display: target.display, elapsedMs: Math.round(performance.now() - started), app: JSON.parse(await readFile(join(evidence, `app-browser-${tag}.json`), "utf8")) };

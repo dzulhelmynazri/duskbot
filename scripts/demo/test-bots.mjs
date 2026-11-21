@@ -1,4 +1,4 @@
-// `pnpm test-bots`: adds the invented test bots (scripts/demo/content.mjs) to a running dusk bot, by default the
+// `pnpm test-bots`: adds the invented test bots (scripts/demo/content.mjs) to a running madani bot, by default the
 // one on this computer at 127.0.0.1:8799, through its HTTP API only. Run it again and it skips what is already there.
 // `pnpm test-bots --remove` deletes only what it created, by the ids in its manifest, never anything else.
 //
@@ -12,11 +12,11 @@ import { call, readOwnerToken, seedBots, useOwnerToken } from "./seed-live.mjs";
 
 const args = process.argv.slice(2);
 const flag = (name) => { const i = args.indexOf(name); return i >= 0 ? args[i + 1] : undefined; };
-const base = (flag("--url") || process.env.DUSK_TEST_BOTS_URL || "http://127.0.0.1:8799").replace(/\/$/, "");
+const base = (flag("--url") || process.env.MADANI_TEST_BOTS_URL || "http://127.0.0.1:8799").replace(/\/$/, "");
 const remove = args.includes("--remove");
 // --first-run: what `pnpm dev:server` runs on start; seeds a brand-new workspace once, and never again after
 const firstRun = args.includes("--first-run");
-const MANIFESTS = join(homedir(), ".duskbot-test-bots");
+const MANIFESTS = join(homedir(), ".madanibot-test-bots");
 // --owner-stdin: the dev app's server child writes the desktop owner capability on stdin, which its API asks for
 const ownerOnStdin = args.includes("--owner-stdin");
 
@@ -30,8 +30,8 @@ const empty = () => ({ bots: [], rooms: [], routines: [], webhooks: [], sections
 
 async function target() {
   const health = await call(base, "GET", "/api/health").catch(() => null);
-  if (health?.app !== "duskbot") throw new Error(`no dusk bot server answers at ${base}`);
-  const environment = await call(base, "GET", "/.well-known/duskbot/environment");
+  if (health?.app !== "madanibot") throw new Error(`no madani bot server answers at ${base}`);
+  const environment = await call(base, "GET", "/.well-known/madanibot/environment");
   if (!environment?.environmentId) throw new Error("the server did not say which workspace it is");
   return join(MANIFESTS, `manifest-${environment.environmentId}.json`);
 }

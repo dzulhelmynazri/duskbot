@@ -1,7 +1,7 @@
 // Builds the app package a managed My Cloud home installs (apps/cloud-service/src/home.ts, `omb-home install`): the
 // bundled server with its launcher, the built UI, skills, the home's edge config, the docker gate and the bot computer
-// kit, and the data tools' native modules for the linux-x64 machines. Private like the VPS package: serve it only to the account service (DUSK_MANAGED_HOME_PACKAGE_FILE, or an https URL
-// the operator controls as DUSK_MANAGED_HOME_PACKAGE_URL) with its sha256 as DUSK_MANAGED_HOME_PACKAGE_SHA256.
+// kit, and the data tools' native modules for the linux-x64 machines. Private like the VPS package: serve it only to the account service (MADANI_MANAGED_HOME_PACKAGE_FILE, or an https URL
+// the operator controls as MADANI_MANAGED_HOME_PACKAGE_URL) with its sha256 as MADANI_MANAGED_HOME_PACKAGE_SHA256.
 //
 //   node apps/cloud-service/scripts/build-home-package.mjs                # build, pack into release/home/omb-home.tgz
 //   node apps/cloud-service/scripts/build-home-package.mjs --skip-build   # pack what dist-server/ and dist/ already hold
@@ -34,7 +34,7 @@ cpSync(join(root, "shared", "bot-desktop.ts"), join(stage, "shared", "bot-deskto
 cpSync(join(root, "apps", "cloud-service", "deploy", "Caddyfile"), join(stage, "cloud", "Caddyfile"));
 cpSync(join(root, "apps", "link-service", "docker-gate.mjs"), join(stage, "link", "docker-gate.mjs"));
 // the data tools' native modules: the bundled server resolves them from <app>/node_modules
-const natives = mkdtempSync(join(tmpdir(), "dusk-home-native-"));
+const natives = mkdtempSync(join(tmpdir(), "madani-home-native-"));
 try {
   const [tree] = await stageDuckdb({ root, stage: natives, targets: [{ platform: "linux", arch: "x64" }] });
   cpSync(join(tree, "node_modules"), join(stage, "node_modules"), { recursive: true });
@@ -46,4 +46,4 @@ execFileSync("tar", [...(gnu ? ["--owner=0", "--group=0", "--numeric-owner"] : [
   { cwd: root, stdio: "inherit", env: { ...process.env, COPYFILE_DISABLE: "1" } });
 rmSync(stage, { recursive: true, force: true });
 const sha256 = createHash("sha256").update(readFileSync(file)).digest("hex");
-console.log(`${file}\nDUSK_MANAGED_HOME_PACKAGE_SHA256=${sha256}`);
+console.log(`${file}\nMADANI_MANAGED_HOME_PACKAGE_SHA256=${sha256}`);

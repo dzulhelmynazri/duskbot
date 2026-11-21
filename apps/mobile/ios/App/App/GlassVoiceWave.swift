@@ -22,7 +22,7 @@ final class GlassVoiceWave: UIView {
         super.init(frame: frame)
         isUserInteractionEnabled = false
         layer.addSublayer(shape)
-        NotificationCenter.default.addObserver(self, selector: #selector(levelArrived(_:)), name: .duskSpeechLevel, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(levelArrived(_:)), name: .madaniSpeechLevel, object: nil)
     }
 
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }

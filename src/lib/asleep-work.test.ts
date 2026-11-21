@@ -6,8 +6,8 @@ const bot = (id: string, busy: boolean, hidden = false) => ({ id, name: id, hidd
 describe("a bot working when this computer slept", () => {
   it("names the bot mid-task, a visible one first", () => {
     expect(workingBot([bot("a", false)])).toBeNull();
-    expect(workingBot([bot("dusk", true, true), bot("quill", true)])).toEqual({ botId: "quill", name: "quill" });
-    expect(workingBot([bot("dusk", true, true)])).toEqual({ botId: "dusk", name: "dusk" });
+    expect(workingBot([bot("madani", true, true), bot("quill", true)])).toEqual({ botId: "quill", name: "quill" });
+    expect(workingBot([bot("madani", true, true)])).toEqual({ botId: "madani", name: "madani" });
   });
 
   it("is a long gap in the app's clock with a bot working before it", () => {

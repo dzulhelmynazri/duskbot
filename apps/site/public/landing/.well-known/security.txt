@@ -1,5 +1,5 @@
-Contact: mailto:security@dusk.bot
+Contact: mailto:security@madani.bot
 Expires: 2027-11-10T00:00:00.000Z
 Preferred-Languages: en
-Canonical: https://dusk.bot/.well-known/security.txt
-Policy: https://dusk.bot/security
+Canonical: https://madani.bot/.well-known/security.txt
+Policy: https://madani.bot/security

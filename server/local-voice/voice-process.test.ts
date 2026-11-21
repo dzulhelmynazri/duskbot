@@ -6,7 +6,7 @@ import { createVoiceProcess, type VoiceProcess } from "./voice-process.ts";
 
 let dir: string;
 const started: VoiceProcess[] = [];
-beforeEach(() => { dir = mkdtempSync(path.join(tmpdir(), "dusk-voice-process-")); });
+beforeEach(() => { dir = mkdtempSync(path.join(tmpdir(), "madani-voice-process-")); });
 afterEach(() => {
   for (const voice of started.splice(0)) voice.stop();
   rmSync(dir, { recursive: true, force: true });

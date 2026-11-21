@@ -5,14 +5,14 @@ import type { MobileConnectionRecord } from "../../../shared/mobile-link";
 export const STUCK_AFTER_MS = 15_000;
 /** a live stream that opens, or comes back, within this says nothing at all */
 export const RECONNECTING_AFTER_MS = 2_500;
-/** a dusk cloud usually wakes within a minute; after this the phone says it is taking a while */
+/** a madani cloud usually wakes within a minute; after this the phone says it is taking a while */
 export const WAKE_SLOW_AFTER_MS = 90_000;
 
 export type ConnectionNotice = "offline" | "reconnecting" | "waking" | "stuck" | "wake-slow" | null;
 
 export type NoticeInput = {
   hydrated: boolean; connected: boolean; offline: boolean; waking: boolean; resuming: boolean;
-  /** a dusk cloud that agreed to sleep: the person's next action wakes it, so it is never a problem */
+  /** a madani cloud that agreed to sleep: the person's next action wakes it, so it is never a problem */
   asleep?: boolean;
   /** when the place last answered a request (src/mobile/connection/reachability.ts), null if it has not */
   answeredAt?: number | null;
@@ -33,10 +33,10 @@ export function connectionNotice(input: NoticeInput): ConnectionNotice {
 
 const answeredRecently = (input: Pick<NoticeInput, "answeredAt" | "now">) => input.answeredAt != null && input.now - input.answeredAt < STUCK_AFTER_MS;
 
-/** a managed dusk cloud lives at d<20 hex>.dusk.bot (or a preview of one); anything else is a computer */
+/** a managed madani cloud lives at d<20 hex>.madani.bot (or a preview of one); anything else is a computer */
 export function isCloudOrigin(origin: string | undefined): boolean {
   if (!origin) return false;
-  try { return /^d[0-9a-f]{20}\.dusk\.bot$/.test(new URL(origin).hostname); } catch { return false; }
+  try { return /^d[0-9a-f]{20}\.madani\.bot$/.test(new URL(origin).hostname); } catch { return false; }
 }
 
 export type PlaceKind = "cloud" | "computer";

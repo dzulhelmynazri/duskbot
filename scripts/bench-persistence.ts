@@ -6,9 +6,9 @@ import { join } from "node:path";
 import { monitorEventLoopDelay, performance } from "node:perf_hooks";
 import { setImmediate as yieldLoop, setTimeout as delay } from "node:timers/promises";
 
-const directory = mkdtempSync(join(tmpdir(), "dusk-persistence-bench-"));
-const previousDataDir = process.env.DUSK_DATA_DIR;
-process.env.DUSK_DATA_DIR = directory;
+const directory = mkdtempSync(join(tmpdir(), "madani-persistence-bench-"));
+const previousDataDir = process.env.MADANI_DATA_DIR;
+process.env.MADANI_DATA_DIR = directory;
 mkdirSync(join(directory, "events"));
 const db = await import("../server/message-db.ts");
 const { EventBus } = await import("../server/harness/bus.ts");
@@ -88,7 +88,7 @@ try {
   await bus.flush();
   await db.closeMessageSearch();
   db.closeMessageDb();
-  if (previousDataDir === undefined) delete process.env.DUSK_DATA_DIR;
-  else process.env.DUSK_DATA_DIR = previousDataDir;
+  if (previousDataDir === undefined) delete process.env.MADANI_DATA_DIR;
+  else process.env.MADANI_DATA_DIR = previousDataDir;
   rmSync(directory, { recursive: true, force: true });
 }

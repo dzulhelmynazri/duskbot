@@ -55,7 +55,7 @@ export function Art({ name, size = "md", className }: { name: ArtName; size?: ke
       aria-hidden="true"
       draggable={false}
       data-art={name}
-      className={cn("dusk-art pointer-events-none w-auto shrink-0 select-none object-contain", SIZES[size], className)}
+      className={cn("madani-art pointer-events-none w-auto shrink-0 select-none object-contain", SIZES[size], className)}
     />
   );
 }

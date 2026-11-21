@@ -8,13 +8,13 @@ import { classifyContinuable, writeTurnHandoff } from "./turn-continuation.ts";
 let temp: string | undefined;
 afterEach(() => {
   if (temp) { rmSync(temp, { recursive: true, force: true }); temp = undefined; }
-  delete process.env.DUSK_DATA_DIR;
+  delete process.env.MADANI_DATA_DIR;
   vi.restoreAllMocks();
 });
 
 function withTempDataDir(): string {
-  temp = mkdtempSync(join(tmpdir(), "dusk-handoff-"));
-  process.env.DUSK_DATA_DIR = temp;
+  temp = mkdtempSync(join(tmpdir(), "madani-handoff-"));
+  process.env.MADANI_DATA_DIR = temp;
   return temp;
 }
 
@@ -82,9 +82,9 @@ describe("writeTurnHandoff", () => {
   });
 
   it("returns null when the handoff cannot be written", () => {
-    process.env.DUSK_DATA_DIR = join(tmpdir(), "dusk-handoff-", "does-not-exist", "nested");
+    process.env.MADANI_DATA_DIR = join(tmpdir(), "madani-handoff-", "does-not-exist", "nested");
     expect(writeTurnHandoff({ threadId: "t", turnId: "u", toolCalls: 0, messages: [] })).not.toBeNull();
-    rmSync(join(tmpdir(), "dusk-handoff-"), { recursive: true, force: true });
+    rmSync(join(tmpdir(), "madani-handoff-"), { recursive: true, force: true });
   });
 });
 

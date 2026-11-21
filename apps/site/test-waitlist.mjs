@@ -21,7 +21,7 @@ async function check(name, fn) {
 async function startServer(env) {
   const port = await freePort();
   const server = spawn(process.execPath, ['server.js', 'landing'], {
-    cwd: here, env: { ...process.env, MONGODB_URI: '', DUSK_WAITLIST_FILE: '', DUSK_UNSUBSCRIBE_SECRET: SECRET, ...env, PORT: String(port), BREVO_API_KEY: '' }, stdio: ['ignore', 'pipe', 'inherit'],
+    cwd: here, env: { ...process.env, MONGODB_URI: '', MADANI_WAITLIST_FILE: '', MADANI_UNSUBSCRIBE_SECRET: SECRET, ...env, PORT: String(port), BREVO_API_KEY: '' }, stdio: ['ignore', 'pipe', 'inherit'],
   });
   const s = { server, port, logs: '' };
   server.stdout.on('data', (c) => { s.logs += c; });
@@ -86,7 +86,7 @@ async function suite(label, { port, logs }, saved, unsubscribedAt) {
     const link = `http://127.0.0.1:${port}/unsubscribe?t=${unsubscribeToken(SECRET, 'grace@hopper.dev')}`;
     const r = await fetch(link);
     assert.equal(r.status, 200);
-    assert.match(await r.text(), /You&#39;re unsubscribed from dusk bot news\./);
+    assert.match(await r.text(), /You&#39;re unsubscribed from madani bot news\./);
     const first = await unsubscribedAt('grace@hopper.dev');
     assert.ok(first, 'marked');
     assert.equal((await fetch(link)).status, 200, 'a second click is fine');
@@ -114,9 +114,9 @@ async function suite(label, { port, logs }, saved, unsubscribedAt) {
 }
 
 async function fileRun() {
-  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'dusk-waitlist-'));
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'madani-waitlist-'));
   const file = path.join(dir, 'waitlist.jsonl');
-  const s = await startServer({ DUSK_WAITLIST_FILE: file });
+  const s = await startServer({ MADANI_WAITLIST_FILE: file });
   try {
     await suite('file', { port: s.port, logs: () => s.logs }, async () => (fs.existsSync(file) ? fs.readFileSync(file, 'utf8').trim().split('\n').filter(Boolean) : [])
       .map((l) => JSON.parse(l)).filter((x) => !x.unsubscribedAt).map((x) => ({ email: x.email, source: x.source, at: x.ts })),
@@ -126,8 +126,8 @@ async function fileRun() {
 
 // the day's cap per network, on a server of its own with a small cap
 async function capRun() {
-  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'dusk-waitlist-cap-'));
-  const s = await startServer({ DUSK_WAITLIST_FILE: path.join(dir, 'waitlist.jsonl'), DUSK_WAITLIST_PER_IP_DAY: '3' });
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'madani-waitlist-cap-'));
+  const s = await startServer({ MADANI_WAITLIST_FILE: path.join(dir, 'waitlist.jsonl'), MADANI_WAITLIST_PER_IP_DAY: '3' });
   const post = (email, ip) => fetch(`http://127.0.0.1:${s.port}/api/waitlist`, { method: 'POST', headers: { 'content-type': 'application/json', 'x-real-ip': ip }, body: JSON.stringify({ email }) })
     .then(async (r) => ({ status: r.status, data: await r.json() }));
   try {
@@ -156,7 +156,7 @@ function findMongod() {
 async function mongoRun(bin) {
   let MongoClient;
   try { ({ MongoClient } = await import('mongodb')); } catch { results.push('skip [mongo] the mongodb driver is not installed (npm install)'); return; }
-  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'dusk-waitlist-mongod-'));
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'madani-waitlist-mongod-'));
   const mport = await freePort();
   const mongod = spawn(bin, ['--dbpath', dir, '--port', String(mport), '--bind_ip', '127.0.0.1', '--quiet', '--logpath', path.join(dir, 'log')], { stdio: 'ignore' });
   const uri = `mongodb://127.0.0.1:${mport}`;
@@ -164,8 +164,8 @@ async function mongoRun(bin) {
   let s;
   try {
     await client.connect();
-    const db = client.db('dusk_test');
-    s = await startServer({ MONGODB_URI: uri, MONGODB_DB: 'dusk_test' });
+    const db = client.db('madani_test');
+    s = await startServer({ MONGODB_URI: uri, MONGODB_DB: 'madani_test' });
     await suite('mongo', { port: s.port, logs: () => s.logs }, async () => (await db.collection('waitlist').find().sort({ position: 1 }).toArray())
       .map((x) => ({ email: x.email, source: x.source, at: x.createdAt })),
     async (email) => (await db.collection('waitlist').findOne({ email }))?.unsubscribedAt ?? null);
@@ -175,7 +175,7 @@ async function mongoRun(bin) {
     });
     await check('[mongo] database down: the site still serves, the waitlist answers 500', async () => {
       s.server.kill();
-      const down = await startServer({ MONGODB_URI: `mongodb://127.0.0.1:${await freePort()}/?serverSelectionTimeoutMS=500`, MONGODB_DB: 'dusk_test' });
+      const down = await startServer({ MONGODB_URI: `mongodb://127.0.0.1:${await freePort()}/?serverSelectionTimeoutMS=500`, MONGODB_DB: 'madani_test' });
       try {
         const home = await fetch(`http://127.0.0.1:${down.port}/`);
         assert.equal(home.status, 200);

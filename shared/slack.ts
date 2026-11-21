@@ -1,7 +1,7 @@
 export const SLACK_WIRE_VERSION = 1;
 export const SLACK_APPS_URL = "https://api.slack.com/apps";
-export const SLACK_DEFAULT_REDIRECT_URL = "https://link.dusk.bot/slack/callback";
-export const SLACK_OAUTH_DEEP_LINK = "duskbot://slack/oauth";
+export const SLACK_DEFAULT_REDIRECT_URL = "https://link.madani.bot/slack/callback";
+export const SLACK_OAUTH_DEEP_LINK = "madanibot://slack/oauth";
 /** Connection state of the workspace configuration token. */
 export type SlackWorkspaceState = "not_connected" | "connected" | "needs_reconnect";
 /** Public workspace connection status, without credentials. */
@@ -35,7 +35,7 @@ export function parseSlackOAuthLink(value: unknown): { code: string; state: stri
   if (typeof value !== "string" || value.length > 2048 || unprintable(value) || !value.startsWith(`${SLACK_OAUTH_DEEP_LINK}?`)) return null;
   try {
     const url = new URL(value);
-    if (url.protocol !== "duskbot:" || url.host !== "slack" || url.pathname !== "/oauth" || url.username || url.password || url.hash || value.includes("#")) return null;
+    if (url.protocol !== "madanibot:" || url.host !== "slack" || url.pathname !== "/oauth" || url.username || url.password || url.hash || value.includes("#")) return null;
     if ([...url.searchParams.values()].some((value) => unprintable(value))) return null;
     const keys = [...url.searchParams.keys()];
     if (keys.length !== 2 || new Set(keys).size !== 2 || keys.some((key) => !["code", "error", "state"].includes(key))) return null;

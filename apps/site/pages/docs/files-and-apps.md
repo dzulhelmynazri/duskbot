@@ -14,7 +14,7 @@ drop a file onto the chat, or use **Attach files**. documents, spreadsheets, pic
 
 ## what it makes
 
-reports, spreadsheets and code show up in the chat, and you open them from there. on your computer they live in the bot's own folder (you can also give it a project folder). on [dusk cloud](/docs/dusk-cloud#files) a copy comes down to `Documents/Dusk Bot`.
+reports, spreadsheets and code show up in the chat, and you open them from there. on your computer they live in the bot's own folder (you can also give it a project folder). on [madani cloud](/docs/madani-cloud#files) a copy comes down to `Documents/Madani Bot`.
 
 ## connected apps
 

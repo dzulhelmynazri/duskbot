@@ -9,7 +9,7 @@ import { useMacControl } from "./MacControlRow";
 const MODE_LABEL: Record<CloudMacMode, LocaleKey> = { auto: "cloudMac.mode.auto", ask: "cloudMac.mode.ask", never: "cloudMac.mode.never" };
 const MODE_HINT: Record<CloudMacMode, LocaleKey> = { auto: "cloudMac.mode.autoHint", ask: "cloudMac.mode.askHint", never: "cloudMac.mode.neverHint" };
 
-export const cloudMacBridge = () => (typeof window === "undefined" ? undefined : window.duskDesktop?.cloudMac);
+export const cloudMacBridge = () => (typeof window === "undefined" ? undefined : window.madaniDesktop?.cloudMac);
 
 /** The bridge's live state; null until it answers or where there is no bridge. */
 export function useCloudMacState(bridge: CloudMacBridge | undefined): [CloudMacState | null, (next: CloudMacState) => void] {
@@ -24,7 +24,7 @@ export function useCloudMacState(bridge: CloudMacBridge | undefined): [CloudMacS
   return [state, setState];
 }
 
-/** Settings > Your computer on the person's dusk cloud: whether its bots may use this Mac, or where to turn that on. */
+/** Settings > Your computer on the person's madani cloud: whether its bots may use this Mac, or where to turn that on. */
 export function CloudMacCard() {
   const bridge = cloudMacBridge();
   return bridge ? <CloudMacControls bridge={bridge} /> : <CloudMacElsewhere />;

@@ -47,7 +47,7 @@ linuxBox("the Node bridge", () => {
   afterEach(() => { for (const dir of dirs.splice(0)) rmSync(dir, { recursive: true, force: true }); });
 
   it("pipes a loopback connection to the unix socket and back", async () => {
-    const dir = mkdtempSync(join(tmpdir(), "dusk-bridge-"));
+    const dir = mkdtempSync(join(tmpdir(), "madani-bridge-"));
     dirs.push(dir);
     const socketPath = join(dir, "u.sock");
     const echo = createServer((socket) => socket.on("data", (data) => socket.write(`echo:${data}`)));

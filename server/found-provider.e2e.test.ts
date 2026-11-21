@@ -22,7 +22,7 @@ afterEach(async () => {
 
 /** `claude` on the PATH, as a person's own install would be: no CLI path in config. */
 function claudeOnPath(): string {
-  shims = mkdtempSync(join(tmpdir(), "dusk-found-cli-"));
+  shims = mkdtempSync(join(tmpdir(), "madani-found-cli-"));
   const shim = join(shims, "claude");
   writeFileSync(shim, `#!/bin/sh\nexec "${process.execPath}" --experimental-strip-types "${FAKE_CLI}" "$@"\n`);
   chmodSync(shim, 0o755);

@@ -89,7 +89,7 @@ it("a server that connected before offers no remove on its wait", async () => {
   expect(host.textContent).toContain("Nothing is lost");
 });
 
-it("a dusk cloud that was deleted says so once: no countdown, no Try now, only Remove and the other places", async () => {
+it("a madani cloud that was deleted says so once: no countdown, no Try now, only Remove and the other places", async () => {
   const { bridge } = bridgeOf({ ...VIEW, gone: true, nextAt: null, checking: false });
   expect(reconnectText({ ...VIEW, gone: true }, NOW)).toEqual({ title: "Garage server was deleted", next: null });
   root = createRoot(host);

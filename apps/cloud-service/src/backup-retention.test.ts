@@ -71,7 +71,7 @@ describe("what a backup leaves out", () => {
       for (const e of BACKUP_CACHES) expect(script).toContain(`--exclude='data/${e}'`);
       return;
     }
-    const root = mkdtempSync(join(tmpdir(), "dusk-snap-"));
+    const root = mkdtempSync(join(tmpdir(), "madani-snap-"));
     try {
       const p = `data/${CLOUD_HOME.dataName}/agent-browser-profiles/abc`;
       const files = ["data/.npm/_cacache/a", "data/.cache/pip/a", `${p}/Default/Cache/Cache_Data/a`, `${p}/Default/Code Cache/js/a`, `${p}/GrShaderCache/a`,

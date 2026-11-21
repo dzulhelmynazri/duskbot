@@ -1,6 +1,6 @@
 # The demo workspace
 
-`pnpm demo` starts a second, fully separate dusk bot filled with the test bots below, so you can click through every screen
+`pnpm demo` starts a second, fully separate madani bot filled with the test bots below, so you can click through every screen
 and talk to bots that reply for real, without touching your own workspace.
 
 ```sh
@@ -18,13 +18,13 @@ again while the demo is up just opens the page.
 
 | | Your app | The demo |
 | --- | --- | --- |
-| Data folder | `~/.duskbot` | `~/.duskbot-demo` |
+| Data folder | `~/.madanibot` | `~/.madanibot-demo` |
 | Harness | `127.0.0.1:8799` | `127.0.0.1:8899` (webhooks on `8900`) |
 | UI | `127.0.0.1:5199` | `127.0.0.1:5299` (its own Vite, its own `node_modules/.vite-demo` cache) |
 
-The launcher strips every `DUSK_*` variable from your shell before starting the demo, so nothing can point it back at your
+The launcher strips every `MADANI_*` variable from your shell before starting the demo, so nothing can point it back at your
 workspace. It keeps `HOME` and `PATH`, so the demo's bots use the engine CLIs you already signed in to (Claude Code by
-default) the same way your own app does. Nothing is copied out of `~/.duskbot`.
+default) the same way your own app does. Nothing is copied out of `~/.madanibot`.
 
 The demo opens in your browser, not in a second Electron window: the development Electron build always talks to the
 harness on 8799 (saving a key in its Settings would write to your real workspace), so a browser tab is the isolated
@@ -57,7 +57,7 @@ pnpm test-bots --url http://127.0.0.1:PORT   # another server on this computer
 
 It uses only the server's HTTP API while it runs (a team backup import, then section, approval level, skills,
 routines, webhooks, reactions and unread marks) and never changes, renames or deletes anything it did not create. It
-records what it created, by id, in `~/.duskbot-test-bots/manifest-<workspace id>.json`; `--remove` deletes exactly
+records what it created, by id, in `~/.madanibot-test-bots/manifest-<workspace id>.json`; `--remove` deletes exactly
 those, keeps a test bot you moved out of **Test bots**, and deletes the section only when nothing else is in it.
 
 Its chats are plainer than the demo's: the HTTP import carries conversation text only, so there are no tool-call
@@ -74,12 +74,12 @@ on it like a normal chat. Every routine starts off, so nothing runs on a timer u
 
 | Variable | Default | |
 | --- | --- | --- |
-| `DUSK_DEMO_DIR` | `~/.duskbot-demo` | The folder's name must contain `demo`; `--reset` only deletes a folder `pnpm demo` made. |
-| `DUSK_DEMO_PORT` | `8899` | Harness; webhooks use the next port. |
-| `DUSK_DEMO_UI_PORT` | `5299` | The UI. |
-| `DUSK_DEMO_MODEL` | `claude/claude-sonnet-5` | `INSTANCE/MODEL` every demo bot starts on. Applies at the next `--reset`. |
+| `MADANI_DEMO_DIR` | `~/.madanibot-demo` | The folder's name must contain `demo`; `--reset` only deletes a folder `pnpm demo` made. |
+| `MADANI_DEMO_PORT` | `8899` | Harness; webhooks use the next port. |
+| `MADANI_DEMO_UI_PORT` | `5299` | The UI. |
+| `MADANI_DEMO_MODEL` | `claude/claude-sonnet-5` | `INSTANCE/MODEL` every demo bot starts on. Applies at the next `--reset`. |
 
-Logs are in `~/.duskbot-demo/.demo/logs` (`harness.log`, `vite.log`). Content lives in `scripts/demo/content.mjs`;
+Logs are in `~/.madanibot-demo/.demo/logs` (`harness.log`, `vite.log`). Content lives in `scripts/demo/content.mjs`;
 edit it and run `pnpm demo --reset`.
 
 ## How the seed works
@@ -89,4 +89,4 @@ edit it and run `pnpm demo --reset`.
    text), then skills, routines and webhooks through their own routes.
 2. With the harness stopped, `scripts/demo/seed-offline.ts` swaps each imported conversation for its full version
    (tool calls, cards, files, reactions) through `server/message-db.ts`, marks the unread chats and adds past routine
-   runs. It refuses to run unless `DUSK_DATA_DIR` is the demo folder.
+   runs. It refuses to run unless `MADANI_DATA_DIR` is the demo folder.

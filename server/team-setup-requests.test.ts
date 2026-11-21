@@ -185,7 +185,7 @@ describe("reviewed Chief team setup", () => {
   it("accepts a working folder on create only, with the profile path's exact validation copy", () => {
     const h = harness();
     const mira = specialist("Mira", "Work");
-    const folder = mkdtempSync(join(tmpdir(), "dusk-team-cwd-"));
+    const folder = mkdtempSync(join(tmpdir(), "madani-team-cwd-"));
     const withFolder = h.propose([{ ...mira, fields: { ...mira.fields, cwd: folder } }]);
     expect(withFolder.detail).toContain(`Working folder: "${folder}"`);
     expect(() => h.propose([{ ...mira, fields: { ...mira.fields, cwd: "relative/path" } }]))
@@ -613,10 +613,10 @@ describe("team setup below Full access", () => {
   });
 });
 
-describe("Dusk's Chief-level team setup", () => {
+describe("Madani's Chief-level team setup", () => {
   const plan = (operations: unknown[]) => ({ reason: "Requested specialist setup", operations, newTeams: [] });
 
-  it("lets the person's Dusk add a specialist like a Chief, without making it the Chief", () => {
+  it("lets the person's Madani add a specialist like a Chief, without making it the Chief", () => {
     const h = harness();
     const maus = h.bot("Maus", { defaultBot: {} });
     const request = h.service.propose({ botId: maus.id, threadId: maus.threadId, plan: plan([specialist("Scout", "Work")]) });
@@ -625,7 +625,7 @@ describe("Dusk's Chief-level team setup", () => {
     expect(h.chief.chiefOfStaff).toBe(true);
   });
 
-  it("never lets Dusk change who the Chief is", () => {
+  it("never lets Madani change who the Chief is", () => {
     const h = harness();
     const maus = h.bot("Maus", { defaultBot: {} });
     for (const target of [maus.id, h.peer.id, h.chief.id]) {
@@ -634,14 +634,14 @@ describe("Dusk's Chief-level team setup", () => {
     }
   });
 
-  it("refuses a Team Cloud User's Dusk, which holds no more than its member", () => {
+  it("refuses a Team Cloud User's Madani, which holds no more than its member", () => {
     const h = harness();
     const maus = h.bot("Maus", { defaultBot: { person: "user@example.com" } });
     expect(() => h.service.propose({ botId: maus.id, threadId: maus.threadId, plan: plan([specialist("Scout", "Work")]) }))
       .toThrow(/Only an active Chief of Staff can propose team setup/);
   });
 
-  it("never lets a Chief delete Dusk", () => {
+  it("never lets a Chief delete Madani", () => {
     const h = harness();
     const maus = h.bot("Maus", { defaultBot: {} });
     expect(() => h.service.proposeDeletion({ botId: h.chief.id, threadId: h.chief.threadId, targetBotId: maus.id, reason: "remove" }))

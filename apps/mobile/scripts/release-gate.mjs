@@ -118,7 +118,7 @@ export function inspect(dir, flagged = flaggedHashes()) {
   // capacitor writes this beside the bundle; a live-reload address in it would ship an app that loads a developer's machine
   for (const config of [join(dir, "capacitor.config.json"), join(dir, "..", "capacitor.config.json")]) {
     if (!existsSync(config)) continue;
-    try { if (JSON.parse(readFileSync(config, "utf8")).server?.url) says(config, "points the app at a live-reload server (DUSK_MOBILE_DEV_URL was set for cap sync)"); } catch { says(config, "is not readable JSON"); }
+    try { if (JSON.parse(readFileSync(config, "utf8")).server?.url) says(config, "points the app at a live-reload server (MADANI_MOBILE_DEV_URL was set for cap sync)"); } catch { says(config, "is not readable JSON"); }
   }
   return [...new Set(problems)];
 }

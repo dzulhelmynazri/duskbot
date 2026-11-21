@@ -4,7 +4,7 @@ export interface DesktopNoticesState {
   /** Notices this desktop has shown and someone closed, on whichever page of its window; This computer's own workspace
    * record counts too (an earlier close of the What's new popup). */
   seen: string[];
-  /** This desktop sells dusk cloud: the installed app, not a branded build, not connected to another computer. */
+  /** This desktop sells madani cloud: the installed app, not a branded build, not connected to another computer. */
   cloud: boolean;
 }
 /** On every page this desktop's window shows: this computer's, My Cloud's or another saved server's. */

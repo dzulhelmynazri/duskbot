@@ -69,7 +69,7 @@ export const pairingText = (grant: CloudPairGrant) => `${grant.origin} ${grant.c
 
 const seen = new Map<string, AccountPlaces>();
 const OTHERS_KEY = "others:";
-const COUNT_KEY = "dusk.mobile.places.count";
+const COUNT_KEY = "madani.mobile.places.count";
 
 /** The places list for Settings: null until both the saved links and the account's answer are in, so the rows draw once
  * at their final size. The last answer per account is kept for the session, so reopening Settings draws at once, and the
@@ -125,12 +125,12 @@ export function usePlaces(connected: boolean): { places: Place[] | null; expecte
     if (target.accountId && !(await client.switchAccount(target.accountId))) return "signed-out";
     if (target.kind === "computer") {
       const result = await client.pairComputer(target.computer, target.accountId);
-      if (result.outcome === "paired") window.dispatchEvent(new CustomEvent("dusk:pair-link", { detail: result.link }));
+      if (result.outcome === "paired") window.dispatchEvent(new CustomEvent("madani:pair-link", { detail: result.link }));
       return result.outcome;
     }
     const pairing = { pairCloud: (cloud: MobileCloud) => client.pairCloud(cloud, target.accountId), wakeCloud: () => client.wakeCloud(target.accountId) };
     const result = target.kind === "cloud" ? await cloudPairing(pairing, target.cloud) : await client.pairTeamCloud(target.cloud, target.accountId);
-    if (result.outcome === "paired") window.dispatchEvent(new CustomEvent("dusk:pair-link", { detail: pairingText(result.grant) }));
+    if (result.outcome === "paired") window.dispatchEvent(new CustomEvent("madani:pair-link", { detail: pairingText(result.grant) }));
     return result.outcome;
   }, [switchTo]);
   return { places, expected: remembered || connections.length, open };

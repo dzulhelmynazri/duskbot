@@ -1,5 +1,5 @@
 // Named accounts reuse provider instances. Claude owns login and credentials;
-// removing a dusk bot entry never removes its directory or signs it out.
+// removing a madani bot entry never removes its directory or signs it out.
 import { randomUUID } from "node:crypto";
 import { realpathSync } from "node:fs";
 import { join } from "node:path";
@@ -88,7 +88,7 @@ export function claudeSignInCommand(cli: string, directory: string, platform: No
   if (platform === "win32") {
     const quote = (value: string) => `'${value.replaceAll("'", "''")}'`;
     const keys = [...CLAUDE_ACCOUNT_ENV_KEYS, "CLAUDE_CONFIG_DIR"];
-    return `& { $duskKeys = ${keys.map(quote).join(",")}; $duskSaved = @{}; foreach ($k in $duskKeys) { $duskSaved[$k] = [Environment]::GetEnvironmentVariable($k, 'Process'); [Environment]::SetEnvironmentVariable($k, $null, 'Process') }; try { ${directory ? `$env:CLAUDE_CONFIG_DIR = ${quote(directory)}; ` : ""}& ${[resolved.command, ...resolved.args].map(quote).join(" ")} } finally { foreach ($k in $duskKeys) { [Environment]::SetEnvironmentVariable($k, $duskSaved[$k], 'Process') } } }`;
+    return `& { $madaniKeys = ${keys.map(quote).join(",")}; $madaniSaved = @{}; foreach ($k in $madaniKeys) { $madaniSaved[$k] = [Environment]::GetEnvironmentVariable($k, 'Process'); [Environment]::SetEnvironmentVariable($k, $null, 'Process') }; try { ${directory ? `$env:CLAUDE_CONFIG_DIR = ${quote(directory)}; ` : ""}& ${[resolved.command, ...resolved.args].map(quote).join(" ")} } finally { foreach ($k in $madaniKeys) { [Environment]::SetEnvironmentVariable($k, $madaniSaved[$k], 'Process') } } }`;
   }
   const quote = (value: string) => `'${value.replaceAll("'", "'\"'\"'")}'`;
   return `(unset ${[...CLAUDE_ACCOUNT_ENV_KEYS, "CLAUDE_CONFIG_DIR"].join(" ")}; ${directory ? `export CLAUDE_CONFIG_DIR=${quote(directory)}; ` : ""}${[resolved.command, ...resolved.args].map(quote).join(" ")})`;

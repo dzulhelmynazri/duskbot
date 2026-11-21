@@ -1,4 +1,4 @@
-// one-time brevo setup for the waitlist, safe to rerun: folder "dusk", list "dusk waitlist", and the contact
+// one-time brevo setup for the waitlist, safe to rerun: folder "madani", list "madani waitlist", and the contact
 // attributes server.js sends (SOURCE text, POSITION number, SIGNED_UP_AT date). sends no email.
 //   BREVO_API_KEY=... node brevo-setup.mjs [env-file]
 // with an env file, BREVO_WAITLIST_LIST_ID is written (or replaced) in it. the key needs the "contacts" permission.
@@ -18,15 +18,15 @@ const api = async (method, p, body) => {
 };
 
 const folders = (await api('GET', '/contacts/folders?limit=50')).folders || [];
-const folder = folders.find((f) => f.name === 'dusk') || await api('POST', '/contacts/folders', { name: 'dusk' });
+const folder = folders.find((f) => f.name === 'madani') || await api('POST', '/contacts/folders', { name: 'madani' });
 const lists = (await api('GET', '/contacts/lists?limit=50')).lists || [];
-const list = lists.find((l) => l.name === 'dusk waitlist') || await api('POST', '/contacts/lists', { name: 'dusk waitlist', folderId: folder.id });
+const list = lists.find((l) => l.name === 'madani waitlist') || await api('POST', '/contacts/lists', { name: 'madani waitlist', folderId: folder.id });
 
 const have = new Set(((await api('GET', '/contacts/attributes')).attributes || []).filter((a) => a.category === 'normal').map((a) => a.name));
 for (const [name, type] of [['SOURCE', 'text'], ['POSITION', 'float'], ['SIGNED_UP_AT', 'date']]) {
   if (!have.has(name)) await api('POST', `/contacts/attributes/normal/${name}`, { type });
 }
-console.log(`brevo: folder ${folder.id}, list "dusk waitlist" id ${list.id}, attributes SOURCE POSITION SIGNED_UP_AT ready`);
+console.log(`brevo: folder ${folder.id}, list "madani waitlist" id ${list.id}, attributes SOURCE POSITION SIGNED_UP_AT ready`);
 
 const envFile = process.argv[2];
 if (envFile) {

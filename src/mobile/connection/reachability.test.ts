@@ -7,8 +7,8 @@ const answer = (status: number, headers: Record<string, string> = {}) => ({ stat
 it("counts the place's own answers, never the edge's sleeping, waking or down ones", () => {
   expect(placeAnswered(answer(200))).toBe(true);
   expect(placeAnswered(answer(404))).toBe(true);
-  expect(placeAnswered(answer(503, { "x-dusk-cloud-power": "asleep" }))).toBe(false);
-  expect(placeAnswered(answer(503, { "x-dusk-cloud-power": "waking", "retry-after": "5" }))).toBe(false);
+  expect(placeAnswered(answer(503, { "x-madani-cloud-power": "asleep" }))).toBe(false);
+  expect(placeAnswered(answer(503, { "x-madani-cloud-power": "waking", "retry-after": "5" }))).toBe(false);
   expect(placeAnswered(answer(502))).toBe(false);
 });
 

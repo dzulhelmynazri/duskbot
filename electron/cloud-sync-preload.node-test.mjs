@@ -9,8 +9,8 @@ function load({ remote, active = true }) {
   const invoked = [];
   let bridge;
   const context = vm.createContext({
-    process: { platform: "fixture", argv: [`--dusk-local-origin=${origin}`, "--dusk-company-desktop=1"] },
-    location: { origin: remote ? "https://dusk-u-aaaaaaaaaaaa.fly.dev" : origin }, TextEncoder,
+    process: { platform: "fixture", argv: [`--madani-local-origin=${origin}`, "--madani-company-desktop=1"] },
+    location: { origin: remote ? "https://madani-u-aaaaaaaaaaaa.fly.dev" : origin }, TextEncoder,
     navigator: { userActivation: { isActive: active } },
     localStorage: { getItem: () => null },
     require: () => ({ webUtils: {}, contextBridge: { exposeInMainWorld: (_key, value) => { bridge = value; } }, ipcRenderer: {

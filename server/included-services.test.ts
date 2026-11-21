@@ -7,26 +7,26 @@ const RELAY_VOICE = "https://cloud.example.test/api/cloud/services/voice/v1";
 // A Jev base URL: the relay's one route is <this>/v1/systemone.
 const RELAY_DECIDER = "https://cloud.example.test/api/cloud/services/decider";
 const cloud = {
-  DUSK_CLOUD_VOICE_URL: RELAY_VOICE,
-  DUSK_CLOUD_VOICE_TOKEN: "dusk_voice_included",
-  DUSK_CLOUD_DECIDER_URL: RELAY_DECIDER,
-  DUSK_CLOUD_DECIDER_TOKEN: "dusk_decide_included",
+  MADANI_CLOUD_VOICE_URL: RELAY_VOICE,
+  MADANI_CLOUD_VOICE_TOKEN: "madani_voice_included",
+  MADANI_CLOUD_DECIDER_URL: RELAY_DECIDER,
+  MADANI_CLOUD_DECIDER_TOKEN: "madani_decide_included",
 };
 
 describe("ElevenLabs credential", () => {
   it("falls back to the included token, sent only to the relay, when there is no own key", () => {
-    expect(voiceCredential(undefined, cloud)).toEqual({ token: "dusk_voice_included", api: RELAY_VOICE, included: true });
-    expect(voiceCredential(undefined, { DUSK_CLOUD_VOICE_TOKEN: "dusk_voice_included" })).toBeNull();
+    expect(voiceCredential(undefined, cloud)).toEqual({ token: "madani_voice_included", api: RELAY_VOICE, included: true });
+    expect(voiceCredential(undefined, { MADANI_CLOUD_VOICE_TOKEN: "madani_voice_included" })).toBeNull();
   });
 
   it("uses the person's own key, sent only to ElevenLabs", () => {
     expect(voiceCredential("sk-own", cloud)).toEqual({ token: "sk-own", api: "https://api.elevenlabs.io/v1", included: false });
-    expect(voiceCredential("sk-own", { ...cloud, DUSK_ELEVENLABS_API: "http://127.0.0.1:9/v1" }))
+    expect(voiceCredential("sk-own", { ...cloud, MADANI_ELEVENLABS_API: "http://127.0.0.1:9/v1" }))
       .toEqual({ token: "sk-own", api: "http://127.0.0.1:9/v1", included: false });
   });
 
   it("never mixes the two services' tokens", () => {
-    expect(voiceCredential("box_dusk_included", cloud)).toMatchObject({ api: "https://api.elevenlabs.io/v1", included: false });
+    expect(voiceCredential("box_madani_included", cloud)).toMatchObject({ api: "https://api.elevenlabs.io/v1", included: false });
   });
 });
 
@@ -37,7 +37,7 @@ describe("Jev credential", () => {
   it("falls back to the included token, sent only to the relay's one route, when there is no own key", () => {
     for (const own of [undefined, "", "   "]) {
       const credential = deciderCredential(own, undefined, cloud);
-      expect(credential).toEqual({ token: "dusk_decide_included", api: RELAY_DECIDER, included: true });
+      expect(credential).toEqual({ token: "madani_decide_included", api: RELAY_DECIDER, included: true });
       expect(endpoint(credential)).toBe(`${RELAY_DECIDER}/v1/systemone`);
     }
   });
@@ -52,30 +52,30 @@ describe("Jev credential", () => {
   });
 
   it("sends the included token only to the relay, whatever base URL is set for own keys", () => {
-    expect(deciderCredential(undefined, "http://127.0.0.1:9", cloud)).toMatchObject({ token: "dusk_decide_included", included: true });
+    expect(deciderCredential(undefined, "http://127.0.0.1:9", cloud)).toMatchObject({ token: "madani_decide_included", included: true });
     expect(endpoint(deciderCredential(undefined, "http://127.0.0.1:9", cloud))).toBe(`${RELAY_DECIDER}/v1/systemone`);
-    expect(endpoint(deciderCredential("dusk_decide_included", undefined, cloud))).toBe(`${RELAY_DECIDER}/v1/systemone`);
+    expect(endpoint(deciderCredential("madani_decide_included", undefined, cloud))).toBe(`${RELAY_DECIDER}/v1/systemone`);
   });
 
   it("is included only when both the relay URL and the token are set", () => {
     expect(deciderCredential(undefined, undefined, {})).toBeNull();
-    expect(deciderCredential(undefined, undefined, { DUSK_CLOUD_DECIDER_TOKEN: "dusk_decide_included" })).toBeNull();
-    expect(deciderCredential(undefined, undefined, { DUSK_CLOUD_DECIDER_URL: RELAY_DECIDER })).toBeNull();
-    expect(deciderCredential(undefined, undefined, { DUSK_CLOUD_DECIDER_URL: RELAY_DECIDER, DUSK_CLOUD_DECIDER_TOKEN: "  " })).toBeNull();
-    const slashed = deciderCredential(undefined, undefined, { DUSK_CLOUD_DECIDER_URL: `${RELAY_DECIDER}/`, DUSK_CLOUD_DECIDER_TOKEN: " dusk_decide_included " });
-    expect(slashed).toEqual({ token: "dusk_decide_included", api: RELAY_DECIDER, included: true });
+    expect(deciderCredential(undefined, undefined, { MADANI_CLOUD_DECIDER_TOKEN: "madani_decide_included" })).toBeNull();
+    expect(deciderCredential(undefined, undefined, { MADANI_CLOUD_DECIDER_URL: RELAY_DECIDER })).toBeNull();
+    expect(deciderCredential(undefined, undefined, { MADANI_CLOUD_DECIDER_URL: RELAY_DECIDER, MADANI_CLOUD_DECIDER_TOKEN: "  " })).toBeNull();
+    const slashed = deciderCredential(undefined, undefined, { MADANI_CLOUD_DECIDER_URL: `${RELAY_DECIDER}/`, MADANI_CLOUD_DECIDER_TOKEN: " madani_decide_included " });
+    expect(slashed).toEqual({ token: "madani_decide_included", api: RELAY_DECIDER, included: true });
   });
 
-  it("uses the relay URL as it is: the final URL is exactly <DUSK_CLOUD_DECIDER_URL>/v1/systemone", () => {
+  it("uses the relay URL as it is: the final URL is exactly <MADANI_CLOUD_DECIDER_URL>/v1/systemone", () => {
     for (const url of [RELAY_DECIDER, "https://relay.example.test/v1", "https://relay.example.test/a/v1/b"]) {
-      const credential = deciderCredential(undefined, undefined, { DUSK_CLOUD_DECIDER_URL: url, DUSK_CLOUD_DECIDER_TOKEN: "dusk_decide_included" });
+      const credential = deciderCredential(undefined, undefined, { MADANI_CLOUD_DECIDER_URL: url, MADANI_CLOUD_DECIDER_TOKEN: "madani_decide_included" });
       expect(credential?.api).toBe(url);
       expect(endpoint(credential)).toBe(`${url}/v1/systemone`);
     }
   });
 
   it("never takes another service's relay token", () => {
-    const { DUSK_CLOUD_DECIDER_URL: _url, DUSK_CLOUD_DECIDER_TOKEN: _token, ...others } = cloud;
+    const { MADANI_CLOUD_DECIDER_URL: _url, MADANI_CLOUD_DECIDER_TOKEN: _token, ...others } = cloud;
     expect(deciderCredential(undefined, undefined, others)).toBeNull();
   });
 });
@@ -92,11 +92,11 @@ describe("holdIncludedServices", () => {
     vi.resetModules();
     const services = await import("./included-services.ts");
     services.holdIncludedServices();
-    expect(process.env.DUSK_CLOUD_VOICE_TOKEN).toBeUndefined();
-    expect(process.env.DUSK_CLOUD_DECIDER_TOKEN).toBeUndefined();
-    expect(process.env.DUSK_CLOUD_DECIDER_URL).toBe(RELAY_DECIDER);
-    expect(services.voiceCredential(undefined)).toEqual({ token: "dusk_voice_included", api: RELAY_VOICE, included: true });
-    expect(services.deciderCredential(undefined, undefined)).toEqual({ token: "dusk_decide_included", api: RELAY_DECIDER, included: true });
+    expect(process.env.MADANI_CLOUD_VOICE_TOKEN).toBeUndefined();
+    expect(process.env.MADANI_CLOUD_DECIDER_TOKEN).toBeUndefined();
+    expect(process.env.MADANI_CLOUD_DECIDER_URL).toBe(RELAY_DECIDER);
+    expect(services.voiceCredential(undefined)).toEqual({ token: "madani_voice_included", api: RELAY_VOICE, included: true });
+    expect(services.deciderCredential(undefined, undefined)).toEqual({ token: "madani_decide_included", api: RELAY_DECIDER, included: true });
     expect(services.voiceCredential("sk-own")).toMatchObject({ token: "sk-own", included: false });
     expect(services.deciderCredential("tsk_own", undefined)).toEqual({ token: "tsk_own", api: "https://api.typesafe.ai", included: false });
   });
@@ -104,57 +104,57 @@ describe("holdIncludedServices", () => {
 
 describe("X research credential", () => {
   const RELAY_X = "https://cloud.example.test/api/cloud/services/x";
-  const desktopToken = `dusk_xd_${"a".repeat(43)}`;
-  afterEach(() => { applyIncludedXMessage({ type: "duskbot:included-x", access: null }); });
+  const desktopToken = `madani_xd_${"a".repeat(43)}`;
+  afterEach(() => { applyIncludedXMessage({ type: "madanibot:included-x", access: null }); });
 
   it("is a Cloud home's included token, sent only to the relay, and there is no own-key path", () => {
-    expect(xCredential({ DUSK_CLOUD_X_URL: `${RELAY_X}/`, DUSK_CLOUD_X_TOKEN: "dusk_x_included" })).toEqual({ token: "dusk_x_included", api: RELAY_X, included: true });
+    expect(xCredential({ MADANI_CLOUD_X_URL: `${RELAY_X}/`, MADANI_CLOUD_X_TOKEN: "madani_x_included" })).toEqual({ token: "madani_x_included", api: RELAY_X, included: true });
     expect(xCredential({})).toBeNull();
-    expect(xCredential({ DUSK_CLOUD_X_URL: RELAY_X })).toBeNull();
+    expect(xCredential({ MADANI_CLOUD_X_URL: RELAY_X })).toBeNull();
   });
 
   it("takes a signed-in desktop's token from its main process, and drops it when told", () => {
-    expect(applyIncludedXMessage({ type: "duskbot:included-x", access: { url: RELAY_X, token: desktopToken } })).toBe(true);
+    expect(applyIncludedXMessage({ type: "madanibot:included-x", access: { url: RELAY_X, token: desktopToken } })).toBe(true);
     expect(xCredential({})).toEqual({ token: desktopToken, api: RELAY_X, included: true });
-    expect(applyIncludedXMessage({ type: "duskbot:included-x", access: null })).toBe(true);
+    expect(applyIncludedXMessage({ type: "madanibot:included-x", access: null })).toBe(true);
     expect(xCredential({})).toBeNull();
   });
 
   it("ignores other messages and refuses a malformed one without changing what it holds", () => {
-    applyIncludedXMessage({ type: "duskbot:included-x", access: { url: RELAY_X, token: desktopToken } });
-    expect(applyIncludedXMessage({ type: "duskbot:managed-composio", access: null })).toBe(false);
+    applyIncludedXMessage({ type: "madanibot:included-x", access: { url: RELAY_X, token: desktopToken } });
+    expect(applyIncludedXMessage({ type: "madanibot:managed-composio", access: null })).toBe(false);
     for (const access of [{ url: "http://cloud.example.test/api/cloud/services/x", token: desktopToken }, { url: RELAY_X, token: "" }, { url: "not a url", token: desktopToken },
       { url: RELAY_X, token: "x".repeat(300) }, "nope"]) {
-      expect(() => applyIncludedXMessage({ type: "duskbot:included-x", access }), JSON.stringify(access)).toThrow();
+      expect(() => applyIncludedXMessage({ type: "madanibot:included-x", access }), JSON.stringify(access)).toThrow();
     }
     expect(xCredential({})?.token).toBe(desktopToken);
   });
 
   it("lets a loopback relay through for development and tests only over http", () => {
-    applyIncludedXMessage({ type: "duskbot:included-x", access: { url: "http://127.0.0.1:4300/api/cloud/services/x", token: desktopToken } });
+    applyIncludedXMessage({ type: "madanibot:included-x", access: { url: "http://127.0.0.1:4300/api/cloud/services/x", token: desktopToken } });
     expect(xCredential({})?.api).toBe("http://127.0.0.1:4300/api/cloud/services/x");
   });
 });
 
 describe("X research status for the app's Settings", () => {
   const RELAY_X = "https://cloud.example.test/api/cloud/services/x";
-  afterEach(() => { applyIncludedXMessage({ type: "duskbot:included-x", access: null }); });
+  afterEach(() => { applyIncludedXMessage({ type: "madanibot:included-x", access: null }); });
 
   it("is included with a credential, not offered once the Admin said no, and plain not-included otherwise", () => {
     expect(xResearchStatus({})).toEqual({ included: false });
-    applyIncludedXMessage({ type: "duskbot:included-x", access: null, offered: false });
+    applyIncludedXMessage({ type: "madanibot:included-x", access: null, offered: false });
     expect(xResearchStatus({})).toEqual({ included: false, unavailable: true });
-    applyIncludedXMessage({ type: "duskbot:included-x", access: { url: RELAY_X, token: `dusk_xd_${"b".repeat(43)}` } });
+    applyIncludedXMessage({ type: "madanibot:included-x", access: { url: RELAY_X, token: `madani_xd_${"b".repeat(43)}` } });
     expect(xResearchStatus({})).toEqual({ included: true });
-    applyIncludedXMessage({ type: "duskbot:included-x", access: null });
+    applyIncludedXMessage({ type: "madanibot:included-x", access: null });
     expect(xResearchStatus({})).toEqual({ included: false });
-    expect(xResearchStatus({ DUSK_CLOUD_X_URL: RELAY_X, DUSK_CLOUD_X_TOKEN: "dusk_x_home" })).toEqual({ included: true });
+    expect(xResearchStatus({ MADANI_CLOUD_X_URL: RELAY_X, MADANI_CLOUD_X_TOKEN: "madani_x_home" })).toEqual({ included: true });
   });
 });
 
 describe("research credential", () => {
   const RELAY_X = "https://cloud.example.test/api/cloud/services/x";
-  const plan = { DUSK_CLOUD_X_URL: RELAY_X, DUSK_CLOUD_X_TOKEN: "dusk_x_home" };
+  const plan = { MADANI_CLOUD_X_URL: RELAY_X, MADANI_CLOUD_X_TOKEN: "madani_x_home" };
 
   it("is the person's own treg key, sent straight to treg, and it wins over the plan's relay credential", () => {
     expect(researchCredential(" treg_own ", {})).toEqual({ token: "treg_own", api: "https://treg.to", included: false });
@@ -162,14 +162,14 @@ describe("research credential", () => {
   });
 
   it("is the plan's relay credential without an own key, and nothing with neither", () => {
-    expect(researchCredential(undefined, plan)).toEqual({ token: "dusk_x_home", api: RELAY_X, included: true });
-    expect(researchCredential("  ", plan)).toEqual({ token: "dusk_x_home", api: RELAY_X, included: true });
+    expect(researchCredential(undefined, plan)).toEqual({ token: "madani_x_home", api: RELAY_X, included: true });
+    expect(researchCredential("  ", plan)).toEqual({ token: "madani_x_home", api: RELAY_X, included: true });
     expect(researchCredential(undefined, {})).toBeNull();
   });
 
   it("sends an own key only to treg over https, or to a loopback stand-in", () => {
-    expect(researchCredential("k", { DUSK_TREG_URL: "http://127.0.0.1:4300/" })?.api).toBe("http://127.0.0.1:4300");
-    for (const url of ["http://evil.example.test", "ftp://treg.to", "not a url"]) expect(researchCredential("k", { DUSK_TREG_URL: url })?.api, url).toBe("https://treg.to");
+    expect(researchCredential("k", { MADANI_TREG_URL: "http://127.0.0.1:4300/" })?.api).toBe("http://127.0.0.1:4300");
+    for (const url of ["http://evil.example.test", "ftp://treg.to", "not a url"]) expect(researchCredential("k", { MADANI_TREG_URL: url })?.api, url).toBe("https://treg.to");
   });
 });
 

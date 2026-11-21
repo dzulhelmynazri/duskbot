@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Cloud, Users, X } from "../icons";
 
-const LINE_CLOSED = "dusk.homeLineClosed";
+const LINE_CLOSED = "madani.homeLineClosed";
 import { freeFallback } from "../../shared/ai-ranking";
 import { engineReady } from "@/components/EngineLibrary";
 import { ConnectAiDialog } from "@/components/onboarding/ConnectAi";
@@ -35,7 +35,7 @@ function ConnectAiLink() {
  * see a team's private chats is said in the chat itself, by the team's own page.) Or, for as long as the clean workspace
  * runs (clean-workspace.mjs), that the person's bots are safe in their Cloud; Sign in stays in the You menu. */
 export function HomeLine() {
-  const bridge = !window.duskDesktop?.remoteClient?.active ? window.duskDesktop?.workspaces : undefined;
+  const bridge = !window.madaniDesktop?.remoteClient?.active ? window.madaniDesktop?.workspaces : undefined;
   const [line, setLine] = useState<Line | null>(null);
   // the clean workspace's line can be closed for good on this computer
   const [closed, setClosed] = useState(() => typeof localStorage !== "undefined" && localStorage.getItem(LINE_CLOSED) === "1");

@@ -12,7 +12,7 @@ http on loopback: the TLS front (nginx on Contabo, Caddy on Oracle) is extra and
 | Own server, desktop closed | 2 streamed reads (tunnel, phone hub) | a server (`maxServers`) |
 | Own server, desktop open (any screen) | 3 streamed reads and a hello every 15 s | also in use (`maxConnected`) |
 | Someone watching a screen or downloading over the relay | posts at the stream's rate | also busy (`maxTunnels`) |
-| Mac only, dusk cloud | nothing (phones reach a Mac by Cloudflare tunnel, LAN or tailnet; clouds by the edge) | - |
+| Mac only, madani cloud | nothing (phones reach a Mac by Cloudflare tunnel, LAN or tailnet; clouds by the edge) | - |
 
 Direct paths (ssh, 443, WebRTC) take the bytes off the relay, not the reads or the hello.
 
@@ -40,7 +40,7 @@ sockets; memory and file handles are never the limit (3000 servers: 350 MB, 6000
 
 ## 2000 heavy users
 
-Assumed: half have their own server (1000), a quarter dusk cloud, a quarter only a Mac; at peak half the server
+Assumed: half have their own server (1000), a quarter madani cloud, a quarter only a Mac; at peak half the server
 owners have the desktop open and a tenth watch a screen; the direct path works for 80%; screens at 0.6 Mbit/s
 (H.264 browsing). Worst case: all 2000 on own servers, every desktop open, 30% watching at 1.5 Mbit/s, direct
 working for only 70%.
@@ -64,22 +64,22 @@ Add a third node when, for a week, any of these holds at the daily peak (the adm
 A Hetzner CX22 (2 vCPU, 4 GB, 20 TB a month in the EU, about 5 euro) carries about what Oracle does:
 
 ```
-NODE_ID=hetzner-de DOMAIN=link-de.dusk.bot REGION=eu ALLOWANCE_TB=20 \
-LINK_NODES="contabo=https://link.dusk.bot@eu,oracle-in=https://link-in.dusk.bot@asia,hetzner-de=https://link-de.dusk.bot@eu" \
+NODE_ID=hetzner-de DOMAIN=link-de.madani.bot REGION=eu ALLOWANCE_TB=20 \
+LINK_NODES="contabo=https://link.madani.bot@eu,oracle-in=https://link-in.madani.bot@asia,hetzner-de=https://link-de.madani.bot@eu" \
 LINK_PEER_TOKEN=... LINK_STATS_TOKEN=... LINK_TURN_SECRET=... apps/link-service/deploy/add-node.sh root@<box>
 ```
 
-Then put the same `LINK_NODES` on Contabo (omb-link's env) and Oracle (`/etc/dusk-link-node.env`) and in the
-account service's `DUSK_LINK_NODES`, restart them, and set the new node's caps in admin ops (Oracle's values are a
+Then put the same `LINK_NODES` on Contabo (omb-link's env) and Oracle (`/etc/madani-link-node.env`) and in the
+account service's `MADANI_LINK_NODES`, restart them, and set the new node's caps in admin ops (Oracle's values are a
 good start). New servers start landing there at once; existing ones move when their node passes its caps.
 
 ## Not the relay
 
 - **Sign-in email.** Brevo's free 300 a day (we stop at 250, 200 for new addresses). 2000 people signing up in one
   week means about 300 new addresses a day: past it they wait until tomorrow. Before a launch push, move Brevo to a
-  paid plan and raise `DUSK_BREVO_DAILY_LIMIT` and `DUSK_AUTH_MAIL_PER_DAY`, or lean on Google and Apple sign-in.
+  paid plan and raise `MADANI_BREVO_DAILY_LIMIT` and `MADANI_AUTH_MAIL_PER_DAY`, or lean on Google and Apple sign-in.
 - **One box.** The account service, MongoDB, the preview and the Contabo relay node share the Contabo box. If it
   goes down, servers move to Oracle by themselves, but sign-in, the dashboard, billing and cloud upkeep stop. Mongo
   backups go to Oracle and R2 daily, so data survives; the service does not run anywhere else.
-- **dusk cloud.** 500 clouds is InstaBox's capacity question, not ours: check our workspace's machine quota and
+- **madani cloud.** 500 clouds is InstaBox's capacity question, not ours: check our workspace's machine quota and
   the 30 starts a minute before a launch.

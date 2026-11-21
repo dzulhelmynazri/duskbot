@@ -1,8 +1,8 @@
 // The whole first run as the person sees it, for proving it asks for an AI once: the real WelcomeFlow with a fake
 // desktop bridge, signed in, ChatGPT, Claude and Grok connected on this computer (Claude's sign-in stays here).
-// ?side=desktop|cloud: this computer's window, or the new cloud's own page; chat: the new cloud's first chat with Dusk
+// ?side=desktop|cloud: this computer's window, or the new cloud's own page; chat: the new cloud's first chat with Madani
 // when nothing came along. ?beat=: the screen to open (a resumed run).
-// ?cloud=1: the run picked dusk cloud. Served by scripts/verify-ai-once.ts.
+// ?cloud=1: the run picked madani cloud. Served by scripts/verify-ai-once.ts.
 import { createRoot } from "react-dom/client";
 import { WelcomeFlow } from "../../src/components/onboarding/WelcomeFlow";
 import { SimpleHelperIntro } from "../../src/components/SimpleHelperIntro";
@@ -29,7 +29,7 @@ const account = { status: "connected", account: { id: "a", email: "sam@example.t
   entitlement: { plan: params.get("cloud") === "1" ? "pro" : "free", status: params.get("cloud") === "1" ? "active" : "inactive", expiresAt: null, version: 1 },
   clouds: params.get("cloud") === "1" ? [{ id: "c1", primary: true, runsOn: "cloud", status: "setting_up", origin: null }] : [] };
 if (side === "desktop") {
-  window.duskDesktop = {
+  window.madaniDesktop = {
     platform: "darwin",
     remoteClient: { active: false },
     getCapabilities: async () => ({ ...initialDesktopCapabilities(), windowChrome: "mac-inset" }),
@@ -37,15 +37,15 @@ if (side === "desktop") {
     macPermissions: { status: async () => ({ accessibility: "denied", screen: "denied" }), request: async () => ({ accessibility: "denied", screen: "denied" }) },
     cloudAccount: { state: async () => account, onState: () => () => {}, refresh: async () => account, holdSignIns: async () => ({ outcome: "held" }),
       carriedAis: async () => ({ instanceIds: ["codex", "grok"] }), offer: async () => null, openDashboard: async () => {} },
-  } as unknown as typeof window.duskDesktop;
+  } as unknown as typeof window.madaniDesktop;
 }
 
 function FirstChat() {
   const { state } = useStore();
-  const dusk = state.bots.find((bot) => bot.defaultBot) ?? state.bots[0];
-  if (!dusk || !state.config) return null;
+  const madani = state.bots.find((bot) => bot.defaultBot) ?? state.bots[0];
+  if (!madani || !state.config) return null;
   return <div className="mx-auto flex min-h-[100dvh] max-w-[720px] flex-col justify-end px-6 py-10">
-    <SimpleHelperIntro botId={dusk.id} threadId="preview" message={{ id: "intro", role: "bot", kind: "text", text: "" } as never} answered={false} />
+    <SimpleHelperIntro botId={madani.id} threadId="preview" message={{ id: "intro", role: "bot", kind: "text", text: "" } as never} answered={false} />
   </div>;
 }
 

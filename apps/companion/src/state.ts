@@ -1,4 +1,4 @@
-// The sidecar's own state directory, never the harness's ~/.duskbot.
+// The sidecar's own state directory, never the harness's ~/.madanibot.
 import { defaultCompanionDir } from "../../../electron/legacy-names.mjs";
 import { randomUUID } from "node:crypto";
 import {
@@ -13,8 +13,8 @@ import {
 } from "node:fs";
 import { homedir } from "node:os";
 
-/** DUSK_COMPANION_DIR isolates a test rig from a real paired fleet. */
-export const DATA_DIR = process.env.DUSK_COMPANION_DIR ?? defaultCompanionDir(homedir());
+/** MADANI_COMPANION_DIR isolates a test rig from a real paired fleet. */
+export const DATA_DIR = process.env.MADANI_COMPANION_DIR ?? defaultCompanionDir(homedir());
 
 /** The paired fleet's hashes are an offline target, and the 0755/0644 defaults
  * would publish which phones someone owns to every account on the machine. */

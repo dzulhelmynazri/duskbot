@@ -17,7 +17,7 @@ import server from "@/assets/pixel-art/server.webp";
 import map from "@/assets/pixel-art/map.webp";
 import { spring } from "./motion";
 
-/** the dusk.bot site's small pixel objects, the same set its docs explain things with */
+/** the madani.bot site's small pixel objects, the same set its docs explain things with */
 export const PIXEL_ART = { key, clock, plug, mailbox, phone, computer, signpost, cloud, books, parcel, server, map } as const;
 export type PixelArtName = keyof typeof PIXEL_ART;
 

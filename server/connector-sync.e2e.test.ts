@@ -76,7 +76,7 @@ beforeAll(async () => {
   service = connectorService();
   await new Promise<void>((resolve) => service.server.listen(0, "127.0.0.1", resolve));
   host = `127.0.0.1:${(service.server.address() as { port: number }).port}`;
-  fx = await launchCloudSendFixture({ onePasswordToken: `ops_fake-sync-${hex(8)}`, env: { DUSK_TEST_CONNECTOR_HOSTS: host } });
+  fx = await launchCloudSendFixture({ onePasswordToken: `ops_fake-sync-${hex(8)}`, env: { MADANI_TEST_CONNECTOR_HOSTS: host } });
 }, hostTimeout(90_000));
 afterAll(async () => {
   await fx?.close();
@@ -106,7 +106,7 @@ const tools = async (side: CloudSendFixture["local"], name = "notes") => {
   return probe.body?.ok ? (probe.body.tools ?? []).map((tool: { name: string }) => tool.name).sort() : `not usable: ${probe.status} ${probe.body?.auth ?? probe.body?.error ?? ""}`;
 };
 const seedSignIn = (pair: { access_token: string; refresh_token: string }) => {
-  const file = join(fx.root, "desktop", ".duskbot", "mcp-oauth.json");
+  const file = join(fx.root, "desktop", ".madanibot", "mcp-oauth.json");
   writeFileSync(file, JSON.stringify({ servers: { notes: { url: `http://${host}/mcp`, state: "signed-in", clientId: "fake-public-client",
     tokenEndpoint: `http://${host}/token`, tokens: { access: pair.access_token, refresh: pair.refresh_token, expiresAt: Date.now() + 9 * 60_000 } } } }));
 };
@@ -127,7 +127,7 @@ it("a connector connected on this computer is connected and usable on My Cloud, 
   expect(first.moved).toEqual([{ name: "notes", from: "This computer", to: "My Cloud" }]);
   expect((await signIn(fx.onCloud)).role).toBe("holder");
   expect((await signIn(fx.local)).role).toBe("lent");
-  expect(openMcpOAuthFile(join(fx.root, "desktop", ".duskbot", "mcp-oauth.json")).servers.notes.tokens.refresh, "this computer no longer has the refresh token").toBeUndefined();
+  expect(openMcpOAuthFile(join(fx.root, "desktop", ".madanibot", "mcp-oauth.json")).servers.notes.tokens.refresh, "this computer no longer has the refresh token").toBeUndefined();
   expect(await tools(fx.onCloud)).toEqual(["gmail_send"]);
   expect(await tools(fx.local)).toEqual(["gmail_send"]);
 

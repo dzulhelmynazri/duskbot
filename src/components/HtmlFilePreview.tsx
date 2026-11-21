@@ -39,8 +39,8 @@ export function htmlPreviewDocument(source: string): string {
 /** The desktop app opens a copy of the page in this computer's default browser. Security: never on the web or in the
  * Cloud app, where a page would have to run on the app's own origin, nor while the window shows another computer. */
 export function htmlBrowserBridge(): ((source: string, name: string) => Promise<unknown>) | undefined {
-  const duskDesktop = typeof window === "undefined" ? undefined : window.duskDesktop;
-  return duskDesktop?.remoteClient?.active ? undefined : duskDesktop?.openHtmlInBrowser;
+  const madaniDesktop = typeof window === "undefined" ? undefined : window.madaniDesktop;
+  return madaniDesktop?.remoteClient?.active ? undefined : madaniDesktop?.openHtmlInBrowser;
 }
 
 /** The preview dialog for a page, Markdown or plain text file in a message, opened by the eye button or by the file's name. */

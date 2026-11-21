@@ -3,7 +3,7 @@ import { api } from "../lib/api";
 import { appPath, withBase } from "../lib/router";
 
 export const TEAM_JOIN_PATH = "/team/join";
-const INVITE_KEY = "dusk-team-invite";
+const INVITE_KEY = "madani-team-invite";
 
 const call = async <T>(path: string, method = "GET", body?: unknown): Promise<T> => api.raw<T>(path, method, body);
 

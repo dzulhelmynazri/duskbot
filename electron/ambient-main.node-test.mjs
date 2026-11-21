@@ -48,7 +48,7 @@ function fakes({ prefs = { island: true, dock: true }, activity = null, platform
   return { windows, handlers, listeners, appPage, screen, ambient, opened, revealed, publish, saved: () => saved };
 }
 
-const surface = (windows, name) => windows.find((win) => !win.destroyed && win.options.webPreferences.additionalArguments.includes(`--dusk-ambient=${name}`));
+const surface = (windows, name) => windows.find((win) => !win.destroyed && win.options.webPreferences.additionalArguments.includes(`--madani-ambient=${name}`));
 const tick = () => new Promise((resolve) => setImmediate(resolve));
 
 test("the island and the dock open as click-through panels on the display, hidden over full-screen apps", async () => {
@@ -306,10 +306,10 @@ test("the first run and the places hub keep both surfaces closed, even with bots
   await tick();
   assert.ok(surface(windows, "island") && surface(windows, "dock"));
   const send = (raw) => listeners.get("ambient:publish")({ sender: appPage }, raw);
-  send({ bots: [{ id: "dusk", threadId: "t1", name: "Dusk" }], labels: {}, lang: "en", away: true });
+  send({ bots: [{ id: "madani", threadId: "t1", name: "Madani" }], labels: {}, lang: "en", away: true });
   await tick();
   assert.deepEqual([surface(windows, "island"), surface(windows, "dock")], [undefined, undefined]);
-  send({ bots: [{ id: "dusk", threadId: "t1", name: "Dusk" }], labels: {}, lang: "en" });
+  send({ bots: [{ id: "madani", threadId: "t1", name: "Madani" }], labels: {}, lang: "en" });
   await tick();
   assert.ok(surface(windows, "island") && surface(windows, "dock"));
   ambient.close();

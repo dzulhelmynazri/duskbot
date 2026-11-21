@@ -132,7 +132,7 @@ const BY_TOOL: Array<[RegExp, PoolName]> = [
 const CODE_FILE = /\.(?:[cm]?[jt]sx?|py|rb|go|rs|java|kt|swift|c|cc|cpp|h|hpp|cs|php|sh|sql|vue|svelte|css|scss|html?)$/i;
 
 /** Servers of the app's own tools: their work reads as what it does, never as "Working in …". */
-const OWN_SERVERS = new Set(["dusk", "agents", "ogb", "omb", "duskbot", "computer", "browser", "harness"]);
+const OWN_SERVERS = new Set(["madani", "agents", "ogb", "omb", "madanibot", "computer", "browser", "harness"]);
 
 /** The outside service a tool call works in, by its MCP server or a connected-app tool's name, as a person names it. */
 export function toolService(name: string | undefined): string | null {

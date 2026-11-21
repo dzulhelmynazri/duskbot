@@ -25,7 +25,7 @@ export function announceArchiveNotice(notice: ArchiveNotice | null): boolean {
   return listeners.size > 0;
 }
 
-/** A Chief of Staff its delete dialog offers to archive instead, keeping its chats: never the place's own Dusk, and
+/** A Chief of Staff its delete dialog offers to archive instead, keeping its chats: never the place's own Madani, and
  * never the last active bot. */
 export function archivableChief(bots: readonly Bot[], id: string): Bot | undefined {
   const active = bots.filter((candidate) => !candidate.hidden);

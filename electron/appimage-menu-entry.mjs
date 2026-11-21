@@ -1,19 +1,19 @@
 // an AppImage is one file with no installer, so nothing puts it in the app menu: on its launches the app keeps a
 // per-user desktop entry and icon in step with where the AppImage is now (freedesktop Desktop Entry Specification 1.5,
-// XDG_DATA_HOME). a .deb install already has /usr/share/applications/bot.dusk.app.desktop, which a per-user file of
+// XDG_DATA_HOME). a .deb install already has /usr/share/applications/bot.madani.app.desktop, which a per-user file of
 // the same name would hide, so none is written then. Settings can take it out, and a removed entry stays removed.
 import fs from "node:fs";
 import path from "node:path";
 
-export const ENTRY_NAME = "bot.dusk.app.desktop";
-export const DEB_ENTRY = "/usr/share/applications/bot.dusk.app.desktop";
-const MARK = "X-Dusk-AppImage=true";
+export const ENTRY_NAME = "bot.madani.app.desktop";
+export const DEB_ENTRY = "/usr/share/applications/bot.madani.app.desktop";
+const MARK = "X-Madani-AppImage=true";
 // oxlint-disable-next-line no-control-regex
 const CONTROL = /[\u0000-\u001f\u007f]/;
 
 export function menuEntryPaths({ home, env = {} }) {
   const data = env.XDG_DATA_HOME && path.isAbsolute(env.XDG_DATA_HOME) ? env.XDG_DATA_HOME : path.join(home, ".local", "share");
-  return { entry: path.join(data, "applications", ENTRY_NAME), icon: path.join(data, "icons", "hicolor", "scalable", "apps", "bot.dusk.app.svg") };
+  return { entry: path.join(data, "applications", ENTRY_NAME), icon: path.join(data, "icons", "hicolor", "scalable", "apps", "bot.madani.app.svg") };
 }
 
 /**
@@ -29,9 +29,9 @@ export function execArg(value) {
 export function menuEntryText({ appImage, icon }) {
   const exec = execArg(appImage);
   if (!exec || CONTROL.test(icon)) return null;
-  return ["[Desktop Entry]", "Type=Application", "Name=dusk bot", "Comment=Your own team of AI bots, in a chat app", `Exec=${exec} %U`,
-    `Icon=${icon}`, "Terminal=false", "Categories=Utility;", "Keywords=AI;Agents;Chat;Productivity;", "StartupWMClass=bot.dusk.app",
-    "MimeType=x-scheme-handler/duskbot;x-scheme-handler/openmausbot;", MARK, ""].join("\n");
+  return ["[Desktop Entry]", "Type=Application", "Name=madani bot", "Comment=Your own team of AI bots, in a chat app", `Exec=${exec} %U`,
+    `Icon=${icon}`, "Terminal=false", "Categories=Utility;", "Keywords=AI;Agents;Chat;Productivity;", "StartupWMClass=bot.madani.app",
+    "MimeType=x-scheme-handler/madanibot;x-scheme-handler/openmausbot;", MARK, ""].join("\n");
 }
 
 const readOr = (file, fallback = null) => { try { return fs.readFileSync(file, "utf8"); } catch { return fallback; } };
@@ -65,7 +65,7 @@ export function createAppImageMenuEntry({ platform = process.platform, env = pro
   function write() {
     const icon = readOr(iconSource);
     if (icon !== null && readOr(where.icon) !== icon) writeAtomic(where.icon, icon, 0o644);
-    const text = menuEntryText({ appImage, icon: icon !== null ? where.icon : "duskbot" });
+    const text = menuEntryText({ appImage, icon: icon !== null ? where.icon : "madanibot" });
     if (!text) return "unwritable";
     const before = readOr(where.entry);
     if (before === text) return "current";

@@ -227,7 +227,7 @@ describe("token apps service", () => {
     expect(apps.scrub("leak github_pat_secret")).toBe("leak [hidden]");
   });
 
-  it("connects an api app behind dusk bot's own endpoint, and a second account under its own name", async () => {
+  it("connects an api app behind madani bot's own endpoint, and a second account under its own name", async () => {
     const { apps, servers } = setup({ "https://api.notion.com/": () => ({ body: { bot: { workspace_name: "Acme" } } }) });
     await route(apps, "POST", "/api/app-tokens/notion", { fields: { token: "ntn_one" } });
     await route(apps, "POST", "/api/app-tokens/notion", { fields: { token: "ntn_two" } });
@@ -316,24 +316,24 @@ describe("device clients", () => {
   it("reads the environment first, then what the release was built with, and needs Google's secret", async () => {
     const { deviceClients } = await import("./device.ts");
     expect(Object.values(deviceClients({}, {})).every((client) => client === null)).toBe(true);
-    expect(deviceClients({ DUSK_GITHUB_APP_CLIENT_ID: "Iv1.env" }, { DUSK_GITHUB_APP_CLIENT_ID: "Iv1.built" }).github).toEqual({ clientId: "Iv1.env" });
-    expect(deviceClients({}, { DUSK_GITHUB_APP_CLIENT_ID: "Iv1.built" }).github).toEqual({ clientId: "Iv1.built" });
-    expect(deviceClients({}, { DUSK_GOOGLE_DRIVE_CLIENT_ID: "g" }).googledrive).toBeNull();
-    expect(deviceClients({}, { DUSK_GOOGLE_DRIVE_CLIENT_ID: "g", DUSK_GOOGLE_DRIVE_CLIENT_SECRET: "s" }).googledrive).toEqual({ clientId: "g", clientSecret: "s" });
+    expect(deviceClients({ MADANI_GITHUB_APP_CLIENT_ID: "Iv1.env" }, { MADANI_GITHUB_APP_CLIENT_ID: "Iv1.built" }).github).toEqual({ clientId: "Iv1.env" });
+    expect(deviceClients({}, { MADANI_GITHUB_APP_CLIENT_ID: "Iv1.built" }).github).toEqual({ clientId: "Iv1.built" });
+    expect(deviceClients({}, { MADANI_GOOGLE_DRIVE_CLIENT_ID: "g" }).googledrive).toBeNull();
+    expect(deviceClients({}, { MADANI_GOOGLE_DRIVE_CLIENT_ID: "g", MADANI_GOOGLE_DRIVE_CLIENT_SECRET: "s" }).googledrive).toEqual({ clientId: "g", clientSecret: "s" });
   });
 });
 
 describe("a native connector added as a row", () => {
   const row: NativeConnector = {
-    id: "acme", label: "Acme", domain: "acme.test", flow: "code", clientIdEnv: "DUSK_ACME_CLIENT_ID", clientSecretEnv: "DUSK_ACME_CLIENT_SECRET",
+    id: "acme", label: "Acme", domain: "acme.test", flow: "code", clientIdEnv: "MADANI_ACME_CLIENT_ID", clientSecretEnv: "MADANI_ACME_CLIENT_SECRET",
     authorizeUrl: "https://acme.test/oauth/authorize", tokenUrl: "https://acme.test/oauth/token", scopes: ["read", "write"], authorizeParams: { access_type: "offline" },
     check: { url: "https://api.acme.test/me", label: "profile.name" }, use: { api: "https://api.acme.test", docs: "https://acme.test/docs" },
   };
 
   it("reads its client from the env names it lists, needing the secret it names", async () => {
     const { deviceClients } = await import("./device.ts");
-    expect(deviceClients({ DUSK_ACME_CLIENT_ID: "id" }, {}, [row]).acme).toBeNull();
-    expect(deviceClients({ DUSK_ACME_CLIENT_ID: "id", DUSK_ACME_CLIENT_SECRET: "s" }, {}, [row]).acme).toEqual({ clientId: "id", clientSecret: "s" });
+    expect(deviceClients({ MADANI_ACME_CLIENT_ID: "id" }, {}, [row]).acme).toBeNull();
+    expect(deviceClients({ MADANI_ACME_CLIENT_ID: "id", MADANI_ACME_CLIENT_SECRET: "s" }, {}, [row]).acme).toEqual({ clientId: "id", clientSecret: "s" });
   });
 
   it("checks and serves the token from the row alone", async () => {
@@ -359,14 +359,14 @@ describe("a native connector added as a row", () => {
 
 describe("the GitHub and Google Drive rows", () => {
   it("ask for no review: GitHub without scopes, Drive for drive.file only", () => {
-    expect(GITHUB).toMatchObject({ flow: "device", clientIdEnv: "DUSK_GITHUB_APP_CLIENT_ID", scopes: [] });
+    expect(GITHUB).toMatchObject({ flow: "device", clientIdEnv: "MADANI_GITHUB_APP_CLIENT_ID", scopes: [] });
     expect(DRIVE.scopes).toEqual(["https://www.googleapis.com/auth/drive.file"]);
     expect(TOKEN_APPS.find((app) => app.id === "github")).toMatchObject({ native: true });
     expect(TOKEN_APPS.find((app) => app.id === "googledrive")).toMatchObject({ native: true, fields: [] });
   });
 });
 
-describe("native sign-ins to dusk bot's own OAuth apps", () => {
+describe("native sign-ins to madani bot's own OAuth apps", () => {
   const dirs: string[] = [];
   afterEach(() => { for (const dir of dirs.splice(0)) rmSync(dir, { recursive: true, force: true }); });
   function setup(routes: Parameters<typeof fakeFetch>[0], clients: Record<string, { clientId: string; clientSecret?: string } | null>) {
@@ -402,14 +402,14 @@ describe("native sign-ins to dusk bot's own OAuth apps", () => {
     }, { notion: { clientId: "nid", clientSecret: "nsecret" } });
     const { start, page } = await signIn(apps, "notion");
     const url = new URL(start.verificationUrl);
-    expect(url.searchParams.get("redirect_uri")).toBe("https://link.dusk.bot/oauth/app-tokens");
+    expect(url.searchParams.get("redirect_uri")).toBe("https://link.madani.bot/oauth/app-tokens");
     expect(url.searchParams.get("state")).toMatch(/^8799\.[0-9a-f]{32}$/u);
     expect(url.searchParams.get("owner")).toBe("user");
     expect(page.ok).toBe(true);
     const trade = fake.calls.find((call) => call.url === "https://api.notion.com/v1/oauth/token")!;
     expect(header(trade, "authorization")).toBe(`Basic ${Buffer.from("nid:nsecret").toString("base64")}`);
     expect(header(trade, "content-type")).toBe("application/json");
-    expect(JSON.parse(String(trade.init.body))).toMatchObject({ grant_type: "authorization_code", code: "c0de", redirect_uri: "https://link.dusk.bot/oauth/app-tokens", client_id: "nid" });
+    expect(JSON.parse(String(trade.init.body))).toMatchObject({ grant_type: "authorization_code", code: "c0de", redirect_uri: "https://link.madani.bot/oauth/app-tokens", client_id: "nid" });
     expect(String(trade.init.body)).not.toContain("nsecret");
     expect(apps.status().accounts).toMatchObject([{ app: "notion", label: "Acme", via: "device" }]);
   });
@@ -444,7 +444,7 @@ describe("native sign-ins to dusk bot's own OAuth apps", () => {
     const url = new URL(start.verificationUrl);
     expect(Object.fromEntries(url.searchParams)).toMatchObject({ key: "trellokey", callback_method: "fragment", response_type: "token", scope: "read,write", expiration: "never" });
     const back = new URL(url.searchParams.get("return_url")!);
-    expect(back.origin + back.pathname).toBe("https://link.dusk.bot/oauth/app-tokens");
+    expect(back.origin + back.pathname).toBe("https://link.madani.bot/oauth/app-tokens");
     const page = await apps.callback(back.searchParams);
     expect(page.page).toBe(true);
     const done = await apps.callback(back.searchParams, { token: "ATTA0123456789abcdef0123" });

@@ -8,8 +8,8 @@ export const DELETE_WINDOW_DAYS = 7;
 const HOUR = 3_600_000;
 const TOKEN = /^[A-Za-z0-9_-]{43}$/;
 const PAGE = /^\/clouds\/([^/]+)\/delete\/?$/;
-const RETRY = "dusk-dash-delete-retry";
-const tokenKey = (id: string) => `dusk-dash-delete-token:${id}`;
+const RETRY = "madani-dash-delete-retry";
+const tokenKey = (id: string) => `madani-dash-delete-token:${id}`;
 
 export type DeleteStep = "ask" | "confirm";
 
@@ -85,7 +85,7 @@ export function deletion(cloud: CloudDesktop, now = Date.now()): "scheduled" | "
 
 const MESSAGES: Record<string, string> = {
   billing_active: "its plan is still active. cancel it in plans and billing first; you can delete the data once the plan has ended.",
-  confirmation_required: "this link has expired or was already used. ask for a new one from your dusk cloud page.",
+  confirmation_required: "this link has expired or was already used. ask for a new one from your madani cloud page.",
   rate_limited: "too many tries. wait a while, then try again.",
   unavailable: "deleting has already started, so it can no longer be cancelled.",
   not_found: "this cloud is not on your account.",

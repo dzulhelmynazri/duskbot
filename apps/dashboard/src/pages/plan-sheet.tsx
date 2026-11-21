@@ -26,9 +26,9 @@ export const priceText = (monthly: number, interval: BillingInterval, c: Pick<Pl
 /** what a cart charges per period, as one line */
 export const cartText = (cart: { perMonth: number; dueNow: number }, interval: BillingInterval) => (interval === "year" ? `${money(cart.dueNow)}/yr` : `${money(cart.perMonth)}/mo`);
 
-const INTERVAL_KEY = "dusk-dash-interval";
+const INTERVAL_KEY = "madani-dash-interval";
 /** the plan someone left for the payment page with, so coming back unpaid can offer it again */
-export const CHECKOUT_PLAN_KEY = "dusk-dash-checkout-plan";
+export const CHECKOUT_PLAN_KEY = "madani-dash-checkout-plan";
 /** Plus and Pro are shared desktops: only the pool regions can take them. */
 export function sharedRegions(catalog: PlanCatalog) {
   return catalog.poolRegions ? catalog.regions.filter((r) => catalog.poolRegions!.includes(r.id)) : catalog.regions;
@@ -98,7 +98,7 @@ export const planName = (catalog: PlanCatalog, bundle: BundleId | null | undefin
 export function switchedToast(offer: ChangeOffer | null, to: string): string {
   if (offer?.timing === "scheduled") return `you switch to ${to} on ${shortDate(offer.effectiveAt)}`;
   if (offer?.timing === "undo") return "your plan stays as it is";
-  return `you are on ${to}. your dusk cloud restarts once into the new size.`;
+  return `you are on ${to}. your madani cloud restarts once into the new size.`;
 }
 
 /** the paid plans a sheet can sell: plus is the starter bundle */
@@ -127,7 +127,7 @@ export function PlanSheet({ start, source, work = false, onClose }: { source: Ch
   const sel = catalog ? planSelection(catalog, plan, { interval, region, work: withLicense, keep: owned }) : null;
   const { cart, error: quoteError } = useCart(sel, catalog);
   const { offer, apply } = useChangeCharge(sel);
-  if (!catalog || !sel) return <Sheet open onClose={onClose} title="get dusk cloud"><Skeleton className="mt-4 h-40" /></Sheet>;
+  if (!catalog || !sel) return <Sheet open onClose={onClose} title="get madani cloud"><Skeleton className="mt-4 h-40" /></Sheet>;
   const b = bundleOf(catalog, plan);
   const ownsLicense = Boolean(owned && owned.license !== "personal");
   const work1 = licenseOf(catalog, "starter");
@@ -243,7 +243,7 @@ export function TeamSheet({ onClose }: { onClose(): void }) {
         </div>
       }
     >
-      <p className="text-14 leading-[1.55] text-ink-3">your dusk cloud grows into the team size with its files and bots. it restarts once, for about a minute.</p>
+      <p className="text-14 leading-[1.55] text-ink-3">your madani cloud grows into the team size with its files and bots. it restarts once, for about a minute.</p>
       <ul className="mt-5 flex flex-col gap-2 text-14 text-ink-2">
         {desk && <li>{planSpecLine(desk)}, dedicated</li>}
         <li>team license, {sel.members} members</li>
@@ -284,7 +284,7 @@ export function LicenseSheet({ start, source, onClose, onNothingLeft }: { source
     setBusy(true); setError(null);
     try {
       if (owned) { if (await apply(sel)) { toast(offer?.timing === "scheduled" ? `changes on ${shortDate(offer.effectiveAt)}` : sel.license === "personal" ? "license removed" : "license updated"); onClose(); } }
-      else if (await checkout({ source, kind: "plan", selection: sel, bundle: null })) { toast("license active. thanks for backing dusk bot."); onClose(); }
+      else if (await checkout({ source, kind: "plan", selection: sel, bundle: null })) { toast("license active. thanks for backing madani bot."); onClose(); }
       else setError("checkout didn't open. try again.");
     } catch (e) { setError((e as Error).message); } finally { setBusy(false); }
   };

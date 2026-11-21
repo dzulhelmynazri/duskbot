@@ -198,10 +198,10 @@ operator's alerts as the rolling day passes 70%, 100%, 150%, 200% and 500% of th
 
 ## Configuration
 
-- `DUSK_MANAGED_PROVIDER_PLAN` (`pro`, `builder`, `team`; default `pro`): the starts a minute the policy plans for
+- `MADANI_MANAGED_PROVIDER_PLAN` (`pro`, `builder`, `team`; default `pro`): the starts a minute the policy plans for
   (30, 50, 100).
-- `DUSK_MANAGED_IDLE_MINUTES` (default 15): the rails' minimum idle.
-- `DUSK_MANAGED_WAKE_LEAD_MINUTES` (default 2): how long before a run its home wakes.
+- `MADANI_MANAGED_IDLE_MINUTES` (default 15): the rails' minimum idle.
+- `MADANI_MANAGED_WAKE_LEAD_MINUTES` (default 2): how long before a run its home wakes.
 
 ## The cost study
 

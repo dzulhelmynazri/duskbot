@@ -12,7 +12,7 @@ let started = false;
 const listeners = new Set<(state: RailState) => void>();
 
 function bridge() {
-  const workspaces = typeof window === "undefined" || window.duskDesktop?.remoteClient?.active ? undefined : window.duskDesktop?.workspaces;
+  const workspaces = typeof window === "undefined" || window.madaniDesktop?.remoteClient?.active ? undefined : window.madaniDesktop?.workspaces;
   return workspaces?.places ? workspaces : undefined;
 }
 
@@ -82,7 +82,7 @@ export async function makeHome(id: string): Promise<true | string> {
   }
 }
 
-/** Move to dusk cloud, from a server's menu: main opens that server with its move sheet. True once it did, else main's
+/** Move to madani cloud, from a server's menu: main opens that server with its move sheet. True once it did, else main's
  * own words for why not. */
 export async function cloudMove(id: string): Promise<true | string> {
   const open = bridge()?.cloudMove;

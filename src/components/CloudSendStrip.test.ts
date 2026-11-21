@@ -18,7 +18,7 @@ const notice: CloudSendNotice = { ready: true, bots: ["Ember"], updatedBots: [],
 const strip = (cloudHome: boolean) => () => CloudSendStrip({ cloudHome });
 async function shown(value: CloudSendNotice, cloudHome: boolean) {
   const page: CloudSendPageBridge = { notice: vi.fn().mockResolvedValue(value), dismiss: vi.fn().mockResolvedValue({ ...value, move: undefined }), onNotice: vi.fn(() => () => {}) };
-  vi.stubGlobal("window", { duskDesktop: { cloudSendPage: page } });
+  vi.stubGlobal("window", { madaniDesktop: { cloudSendPage: page } });
   html(strip(cloudHome)); for (const effect of f.effects) effect(); await flush();
 }
 
@@ -58,7 +58,7 @@ it("never draws the one-time move over the page, on either page, in any state", 
 
 it("says nothing without a move, whatever an older desktop's send did, nor in a browser", async () => {
   await shown({ ...notice, running: true, runningReason: "first", last: { at: 3, reason: "first", failed: 2, seen: false, sent: { bots: 2, updatedBots: 0, skills: 0, logins: 0, onePassword: false, settings: 0, chats: null },
-    reasons: [{ what: { bots: [], skills: 0, logins: 2, onePassword: false, settings: 0, chats: false }, error: "dusk bot on this computer did not answer." }] } }, true);
+    reasons: [{ what: { bots: [], skills: 0, logins: 2, onePassword: false, settings: 0, chats: false }, error: "madani bot on this computer did not answer." }] } }, true);
   expect(html(strip(true))).toBe("");
   f.values = [];
   vi.stubGlobal("window", {});

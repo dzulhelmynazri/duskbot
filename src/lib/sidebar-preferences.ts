@@ -4,15 +4,15 @@ import { z } from "zod";
 /** The sidebar as it is, or "icons": the column of avatars the person dragged its edge down to. */
 export type SidebarDensity = "comfortable" | "icons";
 
-export const SIDEBAR_DENSITY_KEY = "duskbot.sidebarDensity";
-export const SIDEBAR_WIDTH_KEY = "duskbot.sidebarWidth";
-export const SIMPLE_SIDEBAR_WIDTH_KEY = "duskbot.sidebarWidth.simple";
-export const SIDEBAR_COLLAPSED_SECTIONS_KEY = "duskbot.sidebarCollapsedSections.v1";
-export const SIDEBAR_SECTION_ORDER_KEY = "duskbot.sidebarSectionOrder.v1";
-export const SIMPLE_SIDEBAR_SECTION_ORDER_KEY = "duskbot.sidebarSectionOrder.simple.v1";
-export const PINNED_CIRCLES_KEY = "duskbot.pinnedCircles";
-export const UNIVERSAL_PINS_KEY = "duskbot.universalPins";
-export const PINNED_CIRCLE_ORDER_KEY = "duskbot.pinnedCircleOrder.v1";
+export const SIDEBAR_DENSITY_KEY = "madanibot.sidebarDensity";
+export const SIDEBAR_WIDTH_KEY = "madanibot.sidebarWidth";
+export const SIMPLE_SIDEBAR_WIDTH_KEY = "madanibot.sidebarWidth.simple";
+export const SIDEBAR_COLLAPSED_SECTIONS_KEY = "madanibot.sidebarCollapsedSections.v1";
+export const SIDEBAR_SECTION_ORDER_KEY = "madanibot.sidebarSectionOrder.v1";
+export const SIMPLE_SIDEBAR_SECTION_ORDER_KEY = "madanibot.sidebarSectionOrder.simple.v1";
+export const PINNED_CIRCLES_KEY = "madanibot.pinnedCircles";
+export const UNIVERSAL_PINS_KEY = "madanibot.universalPins";
+export const PINNED_CIRCLE_ORDER_KEY = "madanibot.pinnedCircleOrder.v1";
 
 /** What the sidebar's key keeps for the column of avatars. The values an older app kept there ("compact", "icons") open
  * the sidebar as it is. */
@@ -345,8 +345,8 @@ export function saveSimpleSectionOrder(
 
 /** How the sidebar lists bots: newest activity first, or the order the person dragged them into. */
 export type SidebarBotOrder = "recent" | "custom";
-export const SIDEBAR_BOT_ORDER_KEY = "duskbot.sidebarBotOrder";
-const BOT_ORDER_CHANGED = "dusk-sidebar-bot-order";
+export const SIDEBAR_BOT_ORDER_KEY = "madanibot.sidebarBotOrder";
+const BOT_ORDER_CHANGED = "madani-sidebar-bot-order";
 
 export function parseSidebarBotOrder(value: string | null): SidebarBotOrder {
   return value === "custom" ? "custom" : "recent";

@@ -1,6 +1,6 @@
 // Connecting a model provider on the machine the bots run on: the catalog groups the picker searches, a live model list
 // from the provider once a key is given, the local servers this machine runs, and the instance a connection becomes.
-// Security: a key is used only for the provider's own address, is never logged or echoed, and dusk cloud never calls an
+// Security: a key is used only for the provider's own address, is never logged or echoed, and madani cloud never calls an
 // address on its own network (a custom endpoint there could otherwise reach the cloud's internals).
 import { randomUUID } from "node:crypto";
 
@@ -132,7 +132,7 @@ export async function listProviderModels(input: ListInput): Promise<ListResult> 
 }
 
 /** Why an address can't be used where the bots run, or null. https anywhere; http only on this machine or its network;
- * never a link-local address (cloud metadata services live there), and on dusk cloud nothing on its own network. */
+ * never a link-local address (cloud metadata services live there), and on madani cloud nothing on its own network. */
 export function addressProblem(raw: string, place: Place): string | null {
   let url: URL;
   try { url = new URL(raw); } catch { return "Enter a full address that starts with https:// or http://."; }
@@ -180,7 +180,7 @@ export function buildConnection(def: ModelProviderDef, input: ConnectInput, plac
   if (!baseUrl) return { error: "Check the details: they can hold only letters, digits, dots and dashes." };
   const problem = addressProblem(baseUrl, place);
   if (problem) return { error: problem };
-  if (def.local && place === "cloud") return { error: `${def.label} runs on your own computer, which dusk cloud can't reach.` };
+  if (def.local && place === "cloud") return { error: `${def.label} runs on your own computer, which madani cloud can't reach.` };
   const key = input.key?.trim() ?? "";
   // eslint-disable-next-line no-control-regex
   if (/[\u0000- \u007f]/u.test(key)) return { error: "Paste the key without spaces or line breaks." };

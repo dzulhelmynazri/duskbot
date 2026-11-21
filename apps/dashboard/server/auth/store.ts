@@ -12,7 +12,7 @@ export interface Account { id: string; email: string; name: string | null; avata
   onboardedHome?: WebsiteHome;
   /** the app install whose sign-in made this account (its hand-back: the desktop sign-in code it opened the website with) */
   signedUpFrom?: { name: string; platform: string; appVersion: string | null; at: number };
-  /** a limited admin role the owner grants from the panel; full admins come only from DUSK_ADMIN_EMAILS. never set by the account itself */
+  /** a limited admin role the owner grants from the panel; full admins come only from MADANI_ADMIN_EMAILS. never set by the account itself */
   adminRole?: AdminRole }
 export const ADMIN_ROLES = ["growth"] as const;
 export type AdminRole = typeof ADMIN_ROLES[number];
@@ -36,8 +36,8 @@ export function createAuthStore(dataDir: string) {
   const store = createJsonStore<AuthState>(join(dataDir, "auth.json"), () => ({ accounts: [], identities: [], sessions: [] }),
     (value): value is AuthState => !!value && typeof value === "object" && Array.isArray((value as AuthState).accounts)
       && Array.isArray((value as AuthState).identities) && Array.isArray((value as AuthState).sessions));
-  let secret = process.env.DUSK_AUTH_SECRET;
-  if (secret !== undefined && secret.length < 32) throw new Error("DUSK_AUTH_SECRET must contain at least 32 characters.");
+  let secret = process.env.MADANI_AUTH_SECRET;
+  if (secret !== undefined && secret.length < 32) throw new Error("MADANI_AUTH_SECRET must contain at least 32 characters.");
   if (secret === undefined) {
     const secretPath = `${dataDir}/auth-secret`;
     try { secret = readFileSync(secretPath, "utf8"); } catch (error) {

@@ -12,7 +12,7 @@ import { savedVpsStartupTarget, startPackagedAlongsideVps } from "../electron/sa
 
 const flag = "--saved-vps-startup-fixture";
 if (!process.versions.electron) {
-  const output = mkdtempSync(join(tmpdir(), "dusk-saved-vps-startup-"));
+  const output = mkdtempSync(join(tmpdir(), "madani-saved-vps-startup-"));
   const env = { ...process.env, HOME: output, USERPROFILE: output, APPDATA: join(output, "roaming"), LOCALAPPDATA: join(output, "local") };
   delete env.ELECTRON_RUN_AS_NODE;
   const child = spawn(createRequire(import.meta.url)("electron"), [fileURLToPath(import.meta.url), flag, output], { env, stdio: "inherit" });
@@ -76,7 +76,7 @@ if (!process.versions.electron) {
       ready: async id => ({ id, origin }), open: async () => {
         window = new BrowserWindow({ show: false, webPreferences: { sandbox: true, contextIsolation: true, nodeIntegration: false,
           preload: fileURLToPath(new URL("../electron/preload.cjs", import.meta.url)), additionalArguments: [
-            `--dusk-local-origin=${oldOrigin}`, "--dusk-current-local-origin=1", "--dusk-company-desktop=1",
+            `--madani-local-origin=${oldOrigin}`, "--madani-current-local-origin=1", "--madani-company-desktop=1",
           ] } });
         await window.loadURL(origin);
         return true;
@@ -85,16 +85,16 @@ if (!process.versions.electron) {
     assert.equal(localReady, false);
     assert.equal(await window.webContents.executeJavaScript('document.getElementById("root").textContent'), "Saved VPS ready");
     assert.equal(await window.webContents.executeJavaScript("typeof process"), "undefined");
-    assert.equal(await window.webContents.executeJavaScript("window.duskDesktop.app.ownPage"), false);
+    assert.equal(await window.webContents.executeJavaScript("window.madaniDesktop.app.ownPage"), false);
     await window.loadURL(oldOrigin);
-    assert.equal(await window.webContents.executeJavaScript("window.duskDesktop.app.ownPage"), false);
-    assert.equal(await window.webContents.executeJavaScript("typeof window.duskDesktop.cloudAccount"), "undefined");
+    assert.equal(await window.webContents.executeJavaScript("window.madaniDesktop.app.ownPage"), false);
+    assert.equal(await window.webContents.executeJavaScript("typeof window.madaniDesktop.cloudAccount"), "undefined");
     finishLocal(); await startup.local; await observed;
     await window.loadURL(actualOrigin);
-    assert.equal(await window.webContents.executeJavaScript("window.duskDesktop.app.ownPage"), true);
-    assert.deepEqual(await window.webContents.executeJavaScript("window.duskDesktop.cloudAccount.state()"), { fixture: true });
+    assert.equal(await window.webContents.executeJavaScript("window.madaniDesktop.app.ownPage"), true);
+    assert.deepEqual(await window.webContents.executeJavaScript("window.madaniDesktop.cloudAccount.state()"), { fixture: true });
     await window.loadURL(oldOrigin);
-    assert.equal(await window.webContents.executeJavaScript("window.duskDesktop.app.ownPage"), false);
+    assert.equal(await window.webContents.executeJavaScript("window.madaniDesktop.app.ownPage"), false);
     context.serverReady = false; localOrigin.setLocalOrigin(null);
     let failLocal;
     const failing = new Promise((_resolve, reject) => { failLocal = reject; });

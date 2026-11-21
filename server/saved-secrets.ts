@@ -16,7 +16,7 @@ import { writeFileAtomic } from "./atomic.ts";
 import { decryptBrowserState, encryptBrowserState } from "./browser-sites.ts";
 
 export const SAVED_SECRETS_FILE = "saved-secrets.json.enc";
-export const SAVED_SECRETS_KEY_MESSAGE = "duskbot:saved-secrets-key";
+export const SAVED_SECRETS_KEY_MESSAGE = "madanibot:saved-secrets-key";
 const HEX_KEY = /^[0-9a-f]{64}$/u;
 const SAVED_LIMIT = 200;
 
@@ -48,15 +48,15 @@ export interface SavedSecretsKey {
   peek(): string | null;
 }
 
-/** A headless server's key: `<config>/duskbot/saved-secrets-<data folder hash>.key`, outside the data folder,
+/** A headless server's key: `<config>/madanibot/saved-secrets-<data folder hash>.key`, outside the data folder,
  * 0600 in a 0700 folder, owned by this user. A link, a foreign owner or a loose mode is refused or tightened. */
 export function fileSavedSecretsKey(dataDir: string, file = defaultKeyFile(dataDir)): SavedSecretsKey & { file: string } {
   const legacy = file === defaultKeyFile(dataDir) ? legacyKeyFiles(dataDir) : [];
   const inside = relative(resolve(dataDir), resolve(file));
   // A data folder that holds the config folder (a home used as the data folder) gets no key: saving to the Vault is
-  // refused, and Use once still works. Set DUSK_SAVED_SECRETS_KEY_FILE to a path outside it.
+  // refused, and Use once still works. Set MADANI_SAVED_SECRETS_KEY_FILE to a path outside it.
   const misplaced = !inside || (!inside.startsWith("..") && !isAbsolute(inside));
-  const outside = () => { if (misplaced) throw new Error("the saved secrets key must live outside the data folder; set DUSK_SAVED_SECRETS_KEY_FILE"); };
+  const outside = () => { if (misplaced) throw new Error("the saved secrets key must live outside the data folder; set MADANI_SAVED_SECRETS_KEY_FILE"); };
   let cached: string | null = null;
   return {
     file,
@@ -79,15 +79,15 @@ const keyBase = () => process.env.XDG_CONFIG_HOME?.trim() || join(homedir(), ".c
 const keyTag = (dataDir: string) => createHash("sha256").update(resolve(dataDir)).digest("hex").slice(0, 16);
 
 function defaultKeyFile(dataDir: string): string {
-  const configured = process.env.DUSK_SAVED_SECRETS_KEY_FILE?.trim();
+  const configured = process.env.MADANI_SAVED_SECRETS_KEY_FILE?.trim();
   if (configured) return configured;
-  return join(keyBase(), "duskbot", `saved-secrets-${keyTag(dataDir)}.key`);
+  return join(keyBase(), "madanibot", `saved-secrets-${keyTag(dataDir)}.key`);
 }
 
 /** where a build from before the rename kept this data folder's key: its own config folder, named for the data folder
  * by its path then (the old folder name when the data folder has since moved to the new one) */
 function legacyKeyFiles(dataDir: string): string[] {
-  const dirs = [dataDir, ...(basename(resolve(dataDir)) === ".duskbot" ? [join(dirname(resolve(dataDir)), LEGACY.dataDirName)] : [])];
+  const dirs = [dataDir, ...(basename(resolve(dataDir)) === ".madanibot" ? [join(dirname(resolve(dataDir)), LEGACY.dataDirName)] : [])];
   return dirs.map((dir) => join(keyBase(), LEGACY.devName, `saved-secrets-${keyTag(dir)}.key`));
 }
 

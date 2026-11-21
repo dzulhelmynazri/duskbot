@@ -19,7 +19,7 @@ const CODE_LENGTH = 8;
 
 const digits = (value: string) => value.replace(/\D/g, "").slice(0, CODE_LENGTH);
 
-/** The phone's own dusk account sign-in, in the app's look: the providers the service has on, then an emailed code in one
+/** The phone's own madani account sign-in, in the app's look: the providers the service has on, then an emailed code in one
  * field (the system offers it from Messages or Mail), with every problem said next to the field it is about. */
 export function MobileSignIn({ onSignedIn, initialEmail = "" }: { onSignedIn: () => void; initialEmail?: string }) {
   const account = useMobileAccount();

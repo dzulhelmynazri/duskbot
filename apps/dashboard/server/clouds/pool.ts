@@ -52,7 +52,7 @@ export function createPoolProvider(options: { driver: PoolHostDriver; cpuOvercom
         if (!hosts.length) throw new PoolFullError();
         const host = hosts[0].host;
         const bootstrap = JSON.parse(input.userData) as { env: Record<string, string> };
-        bootstrap.env.DUSK_PUBLIC_URL = `https://${input.cloudId}.${host.domain}`;
+        bootstrap.env.MADANI_PUBLIC_URL = `https://${input.cloudId}.${host.domain}`;
         const slot = await driver.createSlot(host.id, { cloudId: input.cloudId, quota, bootstrap: JSON.stringify(bootstrap) });
         cloudIds.set(encode(slot), input.cloudId); return server(slot, input.cloudId);
       });

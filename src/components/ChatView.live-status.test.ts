@@ -92,7 +92,7 @@ describe("the working line", () => {
     expect(line()).not.toBeNull();
     expect(statusLine()).toBe("Thinking");
     expect(line()!.querySelector(".turn-status-mark [data-working-mascot]"), "the mascot before the word").not.toBeNull();
-    expect(line()!.querySelector("[data-dusk-mark]"), "no engine-drawn mark, so no dots").toBeNull();
+    expect(line()!.querySelector("[data-madani-mark]"), "no engine-drawn mark, so no dots").toBeNull();
     const row = line()!.firstElementChild as HTMLElement;
     expect([...row.classList]).toEqual(expect.arrayContaining(["h-9", "ps-2"]));
     expect(row.title).toMatch(/^Working · /);
@@ -137,7 +137,7 @@ describe("the working line", () => {
     expect(line()!.querySelector("[data-working-mascot]")).not.toBeNull();
     expect(statusLine()).toBe("Thinking");
     act(() => void vi.advanceTimersByTime(STATUS_QUIET_MS.max + 1_500));
-    expect(line()!.querySelector("[data-dusk-mark]"), "never the dots").toBeNull();
+    expect(line()!.querySelector("[data-madani-mark]"), "never the dots").toBeNull();
     expect(statusLine(), "words all along").not.toBe("");
   });
 

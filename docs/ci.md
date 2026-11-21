@@ -49,9 +49,9 @@ areas run the union of their jobs. Why the mapping is what it is:
 
 While GitHub Actions is off, `pnpm test:main` (scripts/test-main.mjs) is how an agent or the coordinator checks main's
 health: the locale check, lint, `pnpm typecheck`, `check:electron`, the dashboard's and phone app's typechecks and page
-tests, the whole root vitest suite (`DUSK_VITEST_WORKERS`, default half the cores up to 6), the broker's workerd tests
+tests, the whole root vitest suite (`MADANI_VITEST_WORKERS`, default half the cores up to 6), the broker's workerd tests
 and the node --test suites (electron and deploy). Every step runs even after one fails; logs go to
-`.dusk-scratch/test-main/<step>.log` and the end lists each step and the failing test names. `--only=lint,vitest`,
+`.madani-scratch/test-main/<step>.log` and the end lists each step and the failing test names. `--only=lint,vitest`,
 `--skip=vitest` and `--list` pick steps. It leaves out the production builds, packaging and the e2e smokes. Run it in a
 worktree with its own `pnpm install`, never one that links the owner's node_modules (the suite's Vite servers keep their
 own caches, but vitest's cache still lives there).
@@ -105,7 +105,7 @@ eight shards each, macOS four (the full lane only); `scripts/ci-scope.mjs`
 builds the matrix.
 
 **Files at once.** A Linux shard runs four files at a time (`VITEST_WORKERS`,
-`DUSK_VITEST_WORKERS` in `vite.config.ts`), one for each of the runner's vCPUs.
+`MADANI_VITEST_WORKERS` in `vite.config.ts`), one for each of the runner's vCPUs.
 Most of a shard's time is waiting on real servers and fake engines: one file at
 a time it took 16 minutes with the machine 70% idle, and four at a time 5.
 Windows and macOS shards, and every local run, still run one file at a time. So
@@ -115,9 +115,9 @@ meet another file's. Four files share the runner's CPU, so test and hook
 timeouts double there, as on Windows (`server/testing/host-timeout.ts`).
 
 **Which files run where.** Linux runs every file. Most e2e files drive
-dusk bot's own logic through a real server and fake engines, which is the same on
+madani bot's own logic through a real server and fake engines, which is the same on
 every OS, and they were 70% of a Windows shard's time, so only Linux runs
-them: the Windows and macOS shards set `DUSK_VITEST_E2E=host`, and
+them: the Windows and macOS shards set `MADANI_VITEST_E2E=host`, and
 `vite.config.ts` then leaves out every e2e file not listed in
 `scripts/testing/host-e2e.ts`. The list keeps an e2e file on every host when
 it has a test that never runs on Linux (Auto on the person's own desktop, the
@@ -154,28 +154,28 @@ To reproduce a failing Vitest job locally:
 2. Use the same OS. Shard weights are platform-specific, so Windows shard 3
    and Linux shard 3 do not contain the same files.
 3. Copy the expanded command from **Run tests**, including any file filters
-   and the complete `--shard=n/count` fraction. Copy its `DUSK_VITEST_E2E`,
-   `DUSK_VITEST_SUBSET` and `DUSK_VITEST_WORKERS` environment values too. On a CI VM, the static job
+   and the complete `--shard=n/count` fraction. Copy its `MADANI_VITEST_E2E`,
+   `MADANI_VITEST_SUBSET` and `MADANI_VITEST_WORKERS` environment values too. On a CI VM, the static job
    contains each shard's output in a `vitest (ubuntu-latest, ...)` lane's
    log group; the lane uses the same matrix values.
 
 For example, a full Windows shard 3/8 uses PowerShell syntax:
 
 ```powershell
-$env:DUSK_VITEST_E2E = "host"
-$env:DUSK_VITEST_SUBSET = ""
+$env:MADANI_VITEST_E2E = "host"
+$env:MADANI_VITEST_SUBSET = ""
 pnpm exec vitest run --shard=3/8
 ```
 
 The full Linux shard 3/8 uses a POSIX shell:
 
 ```sh
-DUSK_VITEST_E2E=all DUSK_VITEST_SUBSET= DUSK_VITEST_WORKERS=4 pnpm exec vitest run --shard=3/8
+MADANI_VITEST_E2E=all MADANI_VITEST_SUBSET= MADANI_VITEST_WORKERS=4 pnpm exec vitest run --shard=3/8
 ```
 
 Docs and locale jobs select smaller file lists and have their own shard
 counts. Keep their file filters: removing them changes the set the sequencer
-divides, even with the same `--shard`. `DUSK_VITEST_SUBSET` suppresses the CI
+divides, even with the same `--shard`. `MADANI_VITEST_SUBSET` suppresses the CI
 warning about missing weighted files; the command's file filters select the
 tests. Copy the current job's list rather than assuming it is the full suite.
 
@@ -236,7 +236,7 @@ PR's running checks.
 
 ## Browser driver (S4)
 
-`browser driver S4 (<os>)` runs the dusk-cdp conformance suites
+`browser driver S4 (<os>)` runs the madani-cdp conformance suites
 (`server/browser/cdp/s4-*.e2e.test.ts`) against real Chrome: snapshots across
 out-of-process frames and closed shadow roots, every action, dialogs,
 downloads, popups and tabs, both evaluation worlds, waiting, the calibrated
@@ -267,14 +267,14 @@ options and a code, and no passkey registered) and
 answered by an upload, a dropdown list drawn by the viewer, a download served
 to it, the page's cursor and copied text).
 
-- The job uses the runner's installed Google Chrome (`DUSK_CDP_E2E=1`) on the
+- The job uses the runner's installed Google Chrome (`MADANI_CDP_E2E=1`) on the
   same platforms as the vitest shards: Linux, and Windows where a PR runs it,
   on PRs, all three in the full lane. Pushes to main and merge groups leave it
   out. Linux runs
   under Xvfb so the headed-identity case has a display.
 - On Linux it then builds the server image's `runtime` stage and runs the
   suites inside it as a non-root user against the image's Chrome for
-  Testing, with `DUSK_BROWSER_SANDBOX=0` because the image has no setuid
+  Testing, with `MADANI_BROWSER_SANDBOX=0` because the image has no setuid
   sandbox helper yet.
 - It is advisory, outside the `CI` gate, until it has run green for a while.
 - The latency targets hold wherever Chrome itself can meet them. The suite
@@ -288,11 +288,11 @@ to it, the page's cursor and copied text).
   release, and the GoogleUpdater it starts swaps the new version into the app
   about a minute and a half after Chrome first runs, in the middle of the
   suites.
-- Locally: `DUSK_CDP_CHROME=<chrome executable> pnpm exec vitest run
+- Locally: `MADANI_CDP_CHROME=<chrome executable> pnpm exec vitest run
   server/browser/cdp/s4- server/browser/checklist.e2e server/browser/passkey-wall.e2e
   server/browser/viewers/viewers.e2e server/browser/viewers/stream-v2.e2e` (or
-  `DUSK_CDP_E2E=1` for the installed Google Chrome). Without either the suites
-  skip. `DUSK_CDP_TEST_TMP` moves the throwaway profiles.
+  `MADANI_CDP_E2E=1` for the installed Google Chrome). Without either the suites
+  skip. `MADANI_CDP_TEST_TMP` moves the throwaway profiles.
 - `pnpm bench:browser-stream` measures the panel's stream on the installed
   Google Chrome with this computer's display: frame and page sizes, input to
   photon, frame rate, bytes and CPU. It is not part of CI.
@@ -386,7 +386,7 @@ per merge group, the main lane, and the same `CI` check name.
 
 GitHub offers the queue only to repositories an organization owns ("Pull
 request merge queues are available in any public repository owned by an
-organization", GitHub's docs, October 2026). `DuskBotAI/duskbot` is
+organization", GitHub's docs, October 2026). `dzulhelmynazri/madani-bot` is
 owned by a user account, so the rule below appears only after the repository
 moves to an organization (such as `SupaMaus`). Then:
 
@@ -416,7 +416,7 @@ default branch):
 The same rule through the API, keeping the ruleset's existing check:
 
 ```sh
-gh api -X PUT repos/<org>/dusk bot/rulesets/<main-ci-gate id> --input - <<'JSON'
+gh api -X PUT repos/<org>/madani bot/rulesets/<main-ci-gate id> --input - <<'JSON'
 {"rules": [
   {"type": "required_status_checks", "parameters": {"required_status_checks": [{"context": "CI", "integration_id": 15368}],
     "strict_required_status_checks_policy": false, "do_not_enforce_on_create": false}},

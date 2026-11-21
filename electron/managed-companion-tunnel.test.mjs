@@ -17,7 +17,7 @@ import {
 } from "./managed-companion-tunnel.mjs";
 
 const TOKEN = `eyJ${"a".repeat(120)}=`;
-const ENDPOINT = "https://c-installation.cloud.dusk.bot";
+const ENDPOINT = "https://c-installation.cloud.madani.bot";
 const BINARY = "/trusted/cloudflared";
 const GUARDIAN = "/trusted/managed-companion-guardian.mjs";
 const RUNTIME = "/trusted/electron";
@@ -26,13 +26,13 @@ const ORIGIN_TARGET =
     ? {
         pid: 31337,
         socketPath:
-          "\\\\.\\pipe\\duskbot-companion-origin-31337-12345678-1234-1234-1234-123456789abc",
+          "\\\\.\\pipe\\madanibot-companion-origin-31337-12345678-1234-1234-1234-123456789abc",
       }
-    : { pid: 31337, socketPath: "/tmp/dusk-companion-origin-test/origin.sock" };
+    : { pid: 31337, socketPath: "/tmp/madani-companion-origin-test/origin.sock" };
 const temporaryDirectories = [];
 
 function temporaryDirectory() {
-  const directory = fs.mkdtempSync(path.join(os.tmpdir(), "dusk-managed-tunnel-"));
+  const directory = fs.mkdtempSync(path.join(os.tmpdir(), "madani-managed-tunnel-"));
   temporaryDirectories.push(directory);
   return directory;
 }
@@ -68,7 +68,7 @@ function fakeChild(pid = 4242) {
 function healthyResponse() {
   return {
     ok: true,
-    text: async () => JSON.stringify({ app: "duskbot" }),
+    text: async () => JSON.stringify({ app: "madanibot" }),
   };
 }
 
@@ -168,7 +168,7 @@ describe("cloudflared binary resolution", () => {
     const resourcesPath = path.join(
       path.parse(process.cwd()).root,
       "Applications",
-      "dusk bot",
+      "madani bot",
       "Contents",
       "Resources",
     );
@@ -199,7 +199,7 @@ describe("cloudflared binary resolution", () => {
         appPath: "/checkout",
         platform: "linux",
         arch: "x64",
-        environment: { DUSK_CLOUDFLARED_PATH: "./untrusted-cloudflared" },
+        environment: { MADANI_CLOUDFLARED_PATH: "./untrusted-cloudflared" },
         exists: () => true,
       }),
     ).toBeNull();

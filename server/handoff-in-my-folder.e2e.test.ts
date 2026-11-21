@@ -3,12 +3,12 @@ import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { expect, it } from "vitest";
-import { launchVerificationServer, runControlDusk } from "../scripts/control-dusk.ts";
+import { launchVerificationServer, runControlMadani } from "../scripts/control-madani.ts";
 
 it("starts a teammate's thread in the delegating bot's project folder by default, and refuses an explicit in_my_folder when there is none", async () => {
   const session = await launchVerificationServer(process.env, undefined, undefined, undefined, { scripted: true });
   const { url, dataDir } = session.info;
-  const cli = (...args: string[]) => runControlDusk([...args, "--url", url]) as Promise<any>;
+  const cli = (...args: string[]) => runControlMadani([...args, "--url", url]) as Promise<any>;
   const api = async (method: string, path: string, body?: unknown) => {
     const response = await fetch(url + path, {
       method,
@@ -19,8 +19,8 @@ it("starts a teammate's thread in the delegating bot's project folder by default
     expect(response.ok, `${method} ${path} ${response.status}: ${JSON.stringify(value)}`).toBe(true);
     return value;
   };
-  // A project lives outside dusk bot's data; folders inside it are bots' private workspaces.
-  const site = mkdtempSync(join(tmpdir(), "dusk-site-"));
+  // A project lives outside madani bot's data; folders inside it are bots' private workspaces.
+  const site = mkdtempSync(join(tmpdir(), "madani-site-"));
   const evidence = () => {
     try { return readFileSync(join(dataDir, "room-plan.json.evidence.jsonl"), "utf8").trim().split("\n").filter(Boolean).map((line) => JSON.parse(line)); } catch { return []; }
   };

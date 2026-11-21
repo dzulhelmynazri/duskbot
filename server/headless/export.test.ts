@@ -1,4 +1,4 @@
-import "../testing/scrub-ambient-dusk-env.ts";
+import "../testing/scrub-ambient-madani-env.ts";
 
 import { existsSync, mkdtempSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { createServer, type IncomingMessage, type Server, type ServerResponse } from "node:http";
@@ -12,7 +12,7 @@ import type { HeadlessIo } from "./output.ts";
 import { safeName } from "./export.ts";
 import { runHeadless } from "./main.ts";
 
-const dir = mkdtempSync(join(tmpdir(), "dusk-export-"));
+const dir = mkdtempSync(join(tmpdir(), "madani-export-"));
 let server: Server;
 let origin: string;
 
@@ -79,7 +79,7 @@ function answer(req: IncomingMessage, res: ServerResponse, raw: string) {
       return res.end(body.entry);
     }
     if (body.path === "shots/" && body.listFolder) {
-      return send(200, { name: "shots", entries: [{ name: "a.png", bytes: 5 }, { name: "b.png", bytes: 5 }], truncated: false }, { "x-dusk-folder": "1" });
+      return send(200, { name: "shots", entries: [{ name: "a.png", bytes: 5 }, { name: "b.png", bytes: 5 }], truncated: false }, { "x-madani-folder": "1" });
     }
     return send(403, { error: "that bot message does not link to this file" });
   }
@@ -104,7 +104,7 @@ const run = async (argv: string[]) => {
   const out: string[] = [];
   const err: string[] = [];
   const io: HeadlessIo = { out: (text) => out.push(text), err: (text) => err.push(text), readStdin: async () => "" };
-  const code = await runHeadless(argv, { io, env: { DUSK_URL: origin } });
+  const code = await runHeadless(argv, { io, env: { MADANI_URL: origin } });
   return { code, result: out.length ? JSON.parse(out.join("\n")) : undefined, err };
 };
 

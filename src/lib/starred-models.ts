@@ -2,8 +2,8 @@ import { useSyncExternalStore } from "react";
 
 // A person's starred models, in the order they were starred. They follow the person (shared/synced-prefs.ts), so the
 // value is kept as one text preference: a JSON list of model keys.
-export const STARRED_MODELS_KEY = "duskbot.starredModels.v1";
-const CHANGED = "dusk-starred-models";
+export const STARRED_MODELS_KEY = "madanibot.starredModels.v1";
+const CHANGED = "madani-starred-models";
 const NONE: readonly string[] = Object.freeze([]);
 
 export function starKey(instanceId: string, model: string, variant?: string): string {

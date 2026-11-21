@@ -62,8 +62,8 @@ posixOnly("work digest e2e (every fake engine)", () => {
 
   beforeAll(async () => {
     for (const e of ENGINES) chmodSync(fake(e.cli), 0o755);
-    home = mkdtempSync(join(tmpdir(), "dusk-digest-e2e-"));
-    mkdirSync(join(home, ".duskbot"), { recursive: true });
+    home = mkdtempSync(join(tmpdir(), "madani-digest-e2e-"));
+    mkdirSync(join(home, ".madanibot"), { recursive: true });
     const instances: Record<string, unknown> = {};
     for (const e of ENGINES) {
       instances[e.id] = { driver: e.driver, environment: e.env, config: { cli: fake(e.cli), fullAuto: true } };
@@ -82,9 +82,9 @@ posixOnly("work digest e2e (every fake engine)", () => {
     };
     // the echo fakes repeat the whole prompt, and warm's "You're right" example would read as an
     // agreed correction and start a carry-on turn; casual has no such line
-    writeFileSync(join(home, ".duskbot", "config.json"), JSON.stringify({ instances, talkingStyle: "casual" }));
+    writeFileSync(join(home, ".madanibot", "config.json"), JSON.stringify({ instances, talkingStyle: "casual" }));
 
-    const env: NodeJS.ProcessEnv = { HOME: home, USERPROFILE: home, DUSK_PORT: String(PORT) };
+    const env: NodeJS.ProcessEnv = { HOME: home, USERPROFILE: home, MADANI_PORT: String(PORT) };
     if (process.env.PATH) env.PATH = process.env.PATH;
     child = spawn(process.execPath, [join(SERVER_DIR, "index.ts")], {
       cwd: join(SERVER_DIR, ".."),
@@ -133,7 +133,7 @@ posixOnly("work digest e2e (every fake engine)", () => {
   }, 45_000);
 
   it("names the project files a turn changed, and a different engine taking over sees that in its replay", async () => {
-    const project = mkdtempSync(join(tmpdir(), "dusk-digest-project-"));
+    const project = mkdtempSync(join(tmpdir(), "madani-digest-project-"));
     writeFileSync(join(project, "README.md"), "hello");
     const created = (await api("POST", "/api/bots")).body.bot;
     expect((await api("PATCH", `/api/bots/${created.id}`, { cwd: project })).status).toBe(200);

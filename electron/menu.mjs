@@ -25,11 +25,11 @@ const whereItLives = (environment) => (environment.kind === "local" ? environmen
 /** What the native About panel shows beside the app icon (Electron app.setAboutPanelOptions). */
 export function aboutPanelOptions(version) {
   return {
-    applicationName: "dusk bot",
+    applicationName: "madani bot",
     applicationVersion: version,
     credits: "Your own team of AI bots, in a chat app",
-    copyright: `© ${new Date().getFullYear()} dusk bot`,
-    website: "https://dusk.bot",
+    copyright: `© ${new Date().getFullYear()} madani bot`,
+    website: "https://madani.bot",
   };
 }
 
@@ -89,10 +89,10 @@ export function buildApplicationMenu({ environments, activeId, onSwitch, onAddFr
     { role: "viewMenu" },
     { role: "windowMenu" },
     { role: "help", submenu: [
-      { label: "dusk bot help", click: () => void shell.openExternal("https://dusk.bot/docs") },
-      { label: "What's new", click: () => void shell.openExternal("https://dusk.bot/changelog") },
+      { label: "madani bot help", click: () => void shell.openExternal("https://madani.bot/docs") },
+      { label: "What's new", click: () => void shell.openExternal("https://madani.bot/changelog") },
       { type: "separator" },
-      { label: "Contact support", click: () => void shell.openExternal("mailto:hello@dusk.bot") },
+      { label: "Contact support", click: () => void shell.openExternal("mailto:hello@madani.bot") },
       ...(onExportUsageLog ? [{ label: "Export usage log…", click: () => onExportUsageLog() }] : []),
     ] },
   ];

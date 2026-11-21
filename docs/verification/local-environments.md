@@ -23,7 +23,7 @@ They do not prove the user workflow — the recipe does.
 - A packaged desktop installation of this branch, signed in on This
   computer with at least one bot so the bot list is visibly non-empty.
 - The registry lives in the app's user-data folder: on macOS
-  `~/Library/Application Support/Dusk Bot/environments.json`.
+  `~/Library/Application Support/Madani Bot/environments.json`.
 - The app log (`server.log` in the app's logs directory) records every
   switch decision; keep it open.
 
@@ -32,7 +32,7 @@ They do not prove the user workflow — the recipe does.
 1. Open **Settings → Servers**. Under "Environments on this computer",
    enter the name `APRS Chat`, leave the data folder empty, choose
    **Create**.
-2. Expect: a row `APRS Chat` with path `~/.duskbot-aprs-chat`, a
+2. Expect: a row `APRS Chat` with path `~/.madanibot-aprs-chat`, a
    **Switch** button and a Forget (trash) affordance. No restart happens,
    and "This computer" still shows **Current**. Nothing is written to the
    new directory yet — creating registers the entry; the directory is
@@ -52,12 +52,12 @@ They do not prove the user workflow — the recipe does.
 3. Expect on arrival: an **empty bot list** (fresh environment), the sidebar
    pill reading `APRS Chat`, and "APRS Chat" marked Current in
    Settings → Servers.
-4. Expect from a terminal: `~/.duskbot-aprs-chat/environment-id` exists
-   and is a UUID **different** from `~/.duskbot/environment-id` — the
+4. Expect from a terminal: `~/.madanibot-aprs-chat/environment-id` exists
+   and is a UUID **different** from `~/.madanibot/environment-id` — the
    two environments are distinct servers, and every state file lives under
    its own directory. `environments.json` now has `activeId` set to the
    entry's id.
-5. Create a throwaway bot here, then confirm `~/.duskbot/` gained no
+5. Create a throwaway bot here, then confirm `~/.madanibot/` gained no
    trace of it.
 
 ## 3. Switch back
@@ -72,7 +72,7 @@ Simulate an environment on a drive that is gone, without a real drive:
 
 1. Quit the app completely.
 2. Edit `environments.json`: point an **inactive** entry's `dataDir` at a
-   path whose parent does not exist, e.g. `/Volumes/NO-VOLUME/duskbot-env`.
+   path whose parent does not exist, e.g. `/Volumes/NO-VOLUME/madanibot-env`.
 3. Launch the app on This computer. Expect: the row shows a **missing**
    badge (the flag is stamped at read time, so it clears when the path
    reappears).
@@ -81,7 +81,7 @@ Simulate an environment on a drive that is gone, without a real drive:
    log has the details."), and the installation left exactly where it was —
    This computer running, `activeId` unchanged, old server restarted by the
    rollback. The log shows
-   `switch to /Volumes/NO-VOLUME/duskbot-env aborted: target unavailable`
+   `switch to /Volumes/NO-VOLUME/madanibot-env aborted: target unavailable`
    followed by `environment switch to … failed (unavailable)` — the probe
    refused to create a directory through the missing parent, and the entry
    keeps its **missing** badge.
@@ -91,14 +91,14 @@ Simulate an environment on a drive that is gone, without a real drive:
 Make the **active** environment unbootable:
 
 1. Quit the app. Create an unwritable parent, e.g.
-   `sudo mkdir /opt/dusk-locked && sudo chmod 500 /opt/dusk-locked`, set the
-   active entry's `dataDir` to `/opt/dusk-locked/env` and `activeId` to that
+   `sudo mkdir /opt/madani-locked && sudo chmod 500 /opt/madani-locked`, set the
+   active entry's `dataDir` to `/opt/madani-locked/env` and `activeId` to that
    entry's id.
 2. Launch. Expect the boot to fail across the port schedule (a child that
    cannot create its data dir exits quickly; a hung child burns the full
    probe timeout per attempt), then:
    - the installation comes up on This computer with normal data,
-   - a dialog titled **"The environment was unhealthy"** says dusk bot
+   - a dialog titled **"The environment was unhealthy"** says madani bot
      "came up on this computer's default data folder instead" and to choose
      the environment again once it is available,
    - `environments.json` shows `activeId` reset to `"local"`, and the entry

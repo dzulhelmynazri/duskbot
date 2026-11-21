@@ -118,7 +118,7 @@ export function Scanner({ platform, busy, onCode, onClose, onEnterCode, onPaste 
         ))}
         {!busy && !unavailable && (
           <div aria-hidden className="absolute inset-x-6 top-6 overflow-hidden" style={{ height: frame - 48 }}>
-            <span className="dusk-scanline absolute inset-x-0 top-0 block h-16" style={{ ["--scan-travel" as string]: `${frame - 48 - 64}px`, background: "linear-gradient(180deg, transparent, rgb(255 255 255 / 0.14) 70%, rgb(255 255 255 / 0.55) 100%)", borderRadius: 2 }} />
+            <span className="madani-scanline absolute inset-x-0 top-0 block h-16" style={{ ["--scan-travel" as string]: `${frame - 48 - 64}px`, background: "linear-gradient(180deg, transparent, rgb(255 255 255 / 0.14) 70%, rgb(255 255 255 / 0.55) 100%)", borderRadius: 2 }} />
           </div>
         )}
         <div aria-hidden className="absolute left-1/2 top-0 -translate-x-1/2 -translate-y-[62%]">

@@ -5,7 +5,7 @@
 //   node seo/jobs/release.mjs --apply              also write seo/release.json when the gate is green
 //   node seo/jobs/release.mjs --snapshot=f.json    use a saved search console snapshot instead of asking google
 //   node seo/jobs/release.mjs --today=2026-12-20   pretend it is another day (for trying the gate)
-// with no search console connected (DUSK_GSC_CREDENTIALS, DUSK_GSC_SITE) and no snapshot, the gate holds: nothing after
+// with no search console connected (MADANI_GSC_CREDENTIALS, MADANI_GSC_SITE) and no snapshot, the gate holds: nothing after
 // the seed cohort goes out until there is real indexing data. seo/jobs/daily.sh runs this, then the build, then indexnow.
 import fs from 'node:fs';
 import path from 'node:path';
@@ -57,7 +57,7 @@ async function takeSnapshot(urls, today) {
   return snap;
 }
 
-export async function run({ apply = false, today = localDay(), snapshotFile, siteUrl = (process.env.SITE_URL || 'https://dusk.bot').replace(/\/+$/, ''), log = console.log } = {}) {
+export async function run({ apply = false, today = localDay(), snapshotFile, siteUrl = (process.env.SITE_URL || 'https://madani.bot').replace(/\/+$/, ''), log = console.log } = {}) {
   const growth = JSON.parse(fs.readFileSync(path.join(seoDir, 'growth.json'), 'utf8'));
   const { release, records } = plan({ preview: false });
   const inCohort = (id, status) => records.filter((r) => r.state.cohort === id && (!status || r.state.status === status));

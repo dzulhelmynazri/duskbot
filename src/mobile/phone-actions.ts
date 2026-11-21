@@ -7,7 +7,7 @@ export type PhoneAction =
   | { kind: "reply"; target: MobileOpenTarget; text: string }
   | { kind: "open"; target: MobileOpenTarget };
 
-/** A button press as the native layer reports it: the notification's own data (the bot host's `dusk` block, the
+/** A button press as the native layer reports it: the notification's own data (the bot host's `madani` block, the
  * relay's `omb` block, or a Live Activity's ids at the top level). */
 export interface NativeAction {
   actionId: string;
@@ -19,7 +19,7 @@ const ID = /^[\w:.-]{1,128}$/;
 const id = (value: unknown) => (typeof value === "string" && ID.test(value) ? value : undefined);
 
 function idsOf(data: Record<string, unknown>): Record<string, unknown> {
-  for (const key of ["dusk", "omb"]) {
+  for (const key of ["madani", "omb"]) {
     const block = data[key];
     if (block && typeof block === "object") return block as Record<string, unknown>;
   }

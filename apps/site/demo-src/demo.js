@@ -14,7 +14,7 @@ function start() {
   host.dataset.live = '1';
   const $ = (s, el = root) => el.querySelector(s);
   const $$ = (s, el = root) => [...el.querySelectorAll(s)];
-  // pieces kept as edits to dusk bot's (build.mjs diff): rebuilt once, on first use
+  // pieces kept as edits to madani bot's (build.mjs diff): rebuilt once, on first use
   const first = data.bots[BOTS[0].key];
   const patch = (base, ops) => {
     const a = base.match(/<[^>]+>|[^<]+/g) ?? [];
@@ -42,7 +42,7 @@ function start() {
   // ---------- the bots' mascots: the app's pixel engine ----------
   const live = new Map();
   function wake(scope) {
-    for (const mark of $$('[data-dusk-mark]', scope)) {
+    for (const mark of $$('[data-madani-mark]', scope)) {
       if (live.has(mark)) continue;
       const box = mark.firstElementChild;
       if (!box) continue;
@@ -137,7 +137,7 @@ function start() {
       $$('.sr-only', row).forEach((n) => n.remove());
       row.setAttribute('aria-label', ids[key].name);
     }
-    const mark = $('[data-dusk-mark]', row);
+    const mark = $('[data-madani-mark]', row);
     if (c.busy) setMarkAttr(mark, 'working');
     else if (!c.waiting) setMarkAttr(mark, key === S.bot ? 'idle' : 'idle');
     if (old) old.replaceWith(wrap); else rowsBox().append(wrap);
@@ -239,11 +239,11 @@ function start() {
   const label = (text) => `<span class="turn-label-in flex min-w-0 items-center [grid-area:1/1]" data-turn-now=""><span class="status-shimmer">${text.replace(/&/g, '&amp;').replace(/</g, '&lt;')}</span></span>`;
   function workingLine(key) {
     const b = ids[key];
-    const mark = $('[data-chathead-identity] [data-dusk-mark]') ;
+    const mark = $('[data-chathead-identity] [data-madani-mark]') ;
     const colour = data.bots[key].head && /data-colour="([^"]+)"/.exec(unpack(data.bots[key].head))[1];
-    const node = el(`<div class="turn-presence flex min-w-0 max-w-full flex-col items-start"><div class="flex h-9 min-w-0 max-w-full items-center gap-[8.5px] ps-2 turn-status-in"><span class="turn-status-mark relative top-px inline-flex shrink-0"><span class="inline-flex shrink-0"><span data-dusk-mark="" data-body="${/data-body="([^"]+)"/.exec(unpack(data.bots[key].head))[1]}" data-pixel-state="thinking" data-colour="${colour}" data-eyes="var(--color-app)" role="img" aria-label="${b.name}"><span></span></span></span></span><span class="turn-label-slot flex h-[22px] min-w-0 items-center gap-x-1.5 text-[14px] leading-[22px]" data-turn-status="true"><span class="grid min-w-0"></span></span></div></div>`);
+    const node = el(`<div class="turn-presence flex min-w-0 max-w-full flex-col items-start"><div class="flex h-9 min-w-0 max-w-full items-center gap-[8.5px] ps-2 turn-status-in"><span class="turn-status-mark relative top-px inline-flex shrink-0"><span class="inline-flex shrink-0"><span data-madani-mark="" data-body="${/data-body="([^"]+)"/.exec(unpack(data.bots[key].head))[1]}" data-pixel-state="thinking" data-colour="${colour}" data-eyes="var(--color-app)" role="img" aria-label="${b.name}"><span></span></span></span></span><span class="turn-label-slot flex h-[22px] min-w-0 items-center gap-x-1.5 text-[14px] leading-[22px]" data-turn-status="true"><span class="grid min-w-0"></span></span></div></div>`);
     void mark;
-    const m = $('[data-dusk-mark]', node);
+    const m = $('[data-madani-mark]', node);
     markBox(m, m.dataset.body, 28);
     return node;
   }
@@ -275,21 +275,21 @@ function start() {
     addRows(key, [userRow]);
     if (key === S.bot) paintComposer();
     sidebarPhrase(key, 'Thinking');
-    const rowMark = () => $('[data-dusk-mark]', rowOf(key));
+    const rowMark = () => $('[data-madani-mark]', rowOf(key));
     setMark(rowMark(), 'working');
     const seq = [];
     let t = between(550, 1000);
     seq.push([t, () => {
       c.line = workingLine(key);
       if (key === S.bot) { statusSlot().append(c.line); wake(c.line); }
-      setMark($('[data-dusk-mark]', c.line), 'thinking');
+      setMark($('[data-madani-mark]', c.line), 'thinking');
     }]);
     t = between(1900, 2500);
     steps.forEach((step, i) => {
-      seq.push([t, () => { say(key, step); setMark($('[data-dusk-mark]', c.line), i === 0 ? 'listening' : 'working'); sidebarPhrase(key, step); }]);
+      seq.push([t, () => { say(key, step); setMark($('[data-madani-mark]', c.line), i === 0 ? 'listening' : 'working'); sidebarPhrase(key, step); }]);
       t += between(1700, 2300);
     });
-    seq.push([t, () => { say(key, 'Typing…'); setMark($('[data-dusk-mark]', c.line), 'working'); }]);
+    seq.push([t, () => { say(key, 'Typing…'); setMark($('[data-madani-mark]', c.line), 'working'); }]);
     t += between(900, 1300);
     seq.push([t, () => {
       const line = c.line;
@@ -576,7 +576,7 @@ function start() {
 
   // ---------- a bot's screen ----------
   const SCREENS = {
-    dusk: { url: 'calendar.google.com', title: 'Thursday, Nov 13', rows: [['9:00', 'Inbox replies'], ['9:30', 'Pitch deck, focus time'], ['12:00', 'Lunch'], ['2:00', 'Megan, moved from 11:30', 1], ['4:00', 'Review checkout fix']] },
+    madani: { url: 'calendar.google.com', title: 'Thursday, Nov 13', rows: [['9:00', 'Inbox replies'], ['9:30', 'Pitch deck, focus time'], ['12:00', 'Lunch'], ['2:00', 'Megan, moved from 11:30', 1], ['4:00', 'Review checkout fix']] },
     researcher: { url: 'hatch.app/pricing', title: 'Pricing', rows: [['Starter', '$12 / seat'], ['Team', '$20 / seat', 1], ['Business', '$34 / seat'], ['Gmail plugin', 'All plans'], ['Free trial', '14 days']] },
     writer: { url: 'docs.google.com', title: 'Thursday newsletter', rows: [['Same-day delivery is live.', ''], ['Order by 2 PM, it arrives tonight.', '', 1], ['Free over $40.', ''], ['Also new: gift wrap.', '']] },
     inbox: { url: 'mail.google.com', title: 'Inbox', rows: [['Megan S.', 'Can we move to 2?'], ['Daniel (landlord)', 'Lease renewal', 1], ['Sam', 'Final logo files'], ['Bank', 'Your new card shipped'], ['Weekly digest', '12 new posts']] },

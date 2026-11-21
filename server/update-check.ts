@@ -2,7 +2,7 @@ import { createPublicKey, verify } from "node:crypto";
 import { existsSync } from "node:fs";
 import { join, sep } from "node:path";
 
-export const LATEST_RELEASE_URL = "https://api.github.com/repos/DuskBotAI/duskbot/releases/latest";
+export const LATEST_RELEASE_URL = "https://api.github.com/repos/dzulhelmynazri/madani-bot/releases/latest";
 
 /** "managed" is a hosted or Cloud server that is updated for its owner. */
 export type InstallKind = "desktop" | "managed" | "docker" | "podman" | "npm" | "git" | "unknown";
@@ -34,8 +34,8 @@ export interface UpdateCheck {
 }
 
 /** the signed desktop release manifest: `{ v: 1, signature: "r1.<kid>.<manifest>.<sig>" }`, written by scripts/release-manifest.ts */
-export const DESKTOP_MANIFEST_URL = "https://dusk.bot/releases/latest.json";
-export const DESKTOP_DOWNLOAD_URL = "https://dusk.bot/download";
+export const DESKTOP_MANIFEST_URL = "https://madani.bot/releases/latest.json";
+export const DESKTOP_DOWNLOAD_URL = "https://madani.bot/download";
 
 /** CI's release keys (apps/cloud-service/src/release-signing.ts pins the same ones; a test keeps them equal) */
 export const DESKTOP_RELEASE_KEYS: readonly { kid: string; x: string }[] = [
@@ -73,7 +73,7 @@ const DESKTOP_CHECK_TTL_MS = 60 * 60_000;
 let desktopCache: { at: number; latest: string | null } | null = null;
 
 /**
- * The desktop app asks dusk.bot's signed manifest whether a newer release exists and only ever points at the download
+ * The desktop app asks madani.bot's signed manifest whether a newer release exists and only ever points at the download
  * page: nothing is downloaded or installed for the person. Other installs are updated by whoever runs them.
  */
 export function createUpdateChecker(options: {

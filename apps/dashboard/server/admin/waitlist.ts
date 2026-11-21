@@ -1,7 +1,7 @@
 import type { Db } from "mongodb";
 
 export interface WaitlistEntry { email: string; position: number; createdAt: number; source: string | null; ref: string | null }
-/** dusk.waitlist, written by the dusk.bot site; this service only reads it */
+/** madani.waitlist, written by the madani.bot site; this service only reads it */
 export interface WaitlistSource {
   count(): Promise<number>;
   list(query: { search?: string; limit: number; offset: number }): Promise<{ total: number; entries: WaitlistEntry[] }>;

@@ -1,7 +1,7 @@
 import { useSyncExternalStore } from "react";
 
-export const NOTIFICATION_SOUNDS_KEY = "dusk-notification-sounds";
-export const FINISHED_NOTIFICATIONS_KEY = "dusk-finished-notifications";
+export const NOTIFICATION_SOUNDS_KEY = "madani-notification-sounds";
+export const FINISHED_NOTIFICATIONS_KEY = "madani-finished-notifications";
 
 let sessionChoice: boolean | undefined;
 let finishedSessionChoice: boolean | undefined;

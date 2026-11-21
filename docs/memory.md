@@ -2,7 +2,7 @@
 
 ## How it works, in plain words
 
-dusk bot remembers things in two places.
+madani bot remembers things in two places.
 
 **General memory** is what every one of your bots knows about you: your name,
 where you live, your work, how you like answers, your diet and health needs,
@@ -125,7 +125,7 @@ The rest of this page is the detailed reference.
 ## Reference
 
 By default, bots keep notes between tasks. The notes are plain markdown files in a
-folder on the computer running dusk bot — nothing is stored anywhere else,
+folder on the computer running madani bot — nothing is stored anywhere else,
 and you can open, edit, or delete any of it in any editor. **Bot Settings →
 Memory** shows the same files with a gauge of how much of them actually loads,
 an editor that never overwrites something the bot wrote while you were typing,
@@ -141,7 +141,7 @@ instructions to forbid that when memory must stay in another source of truth.
 ## Where it lives
 
 ```
-~/.duskbot/workspaces/<botId>/
+~/.madanibot/workspaces/<botId>/
 ├── MEMORY.md            core notes; the newest ~5,000 characters load each conversation
 └── memory/
     ├── <topic>.md       notes about one subject, recalled when a message needs them
@@ -157,7 +157,7 @@ The folder is the bot's private workspace: the directory its file tools work in
 when it has no project folder set. It is created the first time the bot runs a
 turn. **Open in Obsidian** and **Show in Finder** (Explorer, or your file
 manager) in the Memory panel open this folder; because it is on the server's
-disk, those buttons only work from the computer running dusk bot — a
+disk, those buttons only work from the computer running madani bot — a
 paired phone or a remote browser is shown the path instead.
 
 Files are written with owner-only permissions (`0600`), atomically (a crash
@@ -257,11 +257,11 @@ Recall by meaning uses BAAI's `bge-small-en-v1.5` (int8 ONNX, about 34 MB) run
 by onnxruntime's WebAssembly build, in the server process
 (`server/memory-embed.ts`). The model and runtime (about 50 MB in all) are
 downloaded once, in the background, into `models/` in the data folder (or
-`DUSK_MODEL_DIR`), each file checked against a pinned SHA-256 digest; the
+`MADANI_MODEL_DIR`), each file checked against a pinned SHA-256 digest; the
 download is skipped with less than 1 GB of disk free. Until they are there,
 or if anything fails, recall works from words alone and the log says why once
 (retried after six hours). Memory text is never sent to an embedding
-service. `DUSK_MEMORY_EMBED=0` switches embeddings off. The model is English;
+service. `MADANI_MEMORY_EMBED=0` switches embeddings off. The model is English;
 other languages are matched by words, names and time.
 
 ## Recall before each turn
@@ -482,9 +482,9 @@ file, so adding the helper or taking it out again applies without a restart:
 { "helper": { "instanceId": "claude", "model": "claude-haiku-4-5" } }
 ```
 
-or set `DUSK_HELPER_INSTANCE` (and, if you want, `DUSK_HELPER_MODEL`) in the
+or set `MADANI_HELPER_INSTANCE` (and, if you want, `MADANI_HELPER_MODEL`) in the
 server's environment before it starts. The environment wins over the file,
-and an empty `DUSK_HELPER_INSTANCE` switches a saved helper off. `instanceId` is the id of
+and an empty `MADANI_HELPER_INSTANCE` switches a saved helper off. `instanceId` is the id of
 a connected instance as `config.json` and `GET /api/instances` name it, such
 as `claude`, `claudeApi`, `openai` or `openrouter`; it has to be Claude or an
 API model, the engines with a quick text call of their own. `model` is
@@ -633,7 +633,7 @@ agreed shows up in each member's next 1:1 brief.
 
 Every change to a memory file that the app can see is recorded — yours from
 the panel, the bot's during a task, an import, an undo — in
-`~/.duskbot/memory-journal/<botId>.ndjson`. It lives *outside* the
+`~/.madanibot/memory-journal/<botId>.ndjson`. It lives *outside* the
 workspace on purpose: the bot's file tools point at the workspace, and a
 record the bot could edit would not be a record.
 

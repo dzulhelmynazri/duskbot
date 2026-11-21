@@ -152,8 +152,8 @@ const DEV_URL = process.env.ELECTRON_START_URL ?? "http://127.0.0.1:5199";
 let SERVER_PORT = 8799;
 /** Origins the window was sent to besides the saved places (a team's Cloud, a Cloud being connected). */
 const visitedPlaces = new Set();
-// DUSK_REMOTE_UI=server: every place shows its server's own page again
-const localUi = process.env.DUSK_REMOTE_UI === "server" ? null : createLocalUi({
+// MADANI_REMOTE_UI=server: every place shows its server's own page again
+const localUi = process.env.MADANI_REMOTE_UI === "server" ? null : createLocalUi({
   source: app.isPackaged ? bundleSource(path.join(process.resourcesPath, "ui")) : devSource(DEV_URL),
   origins: () => {
     let place = [], saved = [];
@@ -216,13 +216,13 @@ function applyUnreadBadge(win = mainWindow) {
 // GNOME groups the window with its desktop entry only when both identities match; set before ready.
 if (process.platform === "linux") {
   if (linuxDisablesGpu()) app.disableHardwareAcceleration();
-  app.setDesktopName("bot.dusk.app.desktop");
+  app.setDesktopName("bot.madani.app.desktop");
 }
 
 unlimitTunnelConnections(app);
 
 // macOS dev app: its own keychain key. electron names the key "<app.name> Safe Storage" once this file has run
-// (electron_browser_main_parts.cc PostCreateMainMessageLoop), and the packaged app is "duskbot" too, so a key the dev
+// (electron_browser_main_parts.cc PostCreateMainMessageLoop), and the packaged app is "madanibot" too, so a key the dev
 // build made had the packaged app ask for the login password. its folders stay where they are; on the first run the
 // key it used so far is copied (macOS may ask once to let `security` read it), so what it sealed still opens
 if (!app.isPackaged && process.platform === "darwin") {
@@ -240,13 +240,13 @@ if (!app.isPackaged && process.platform === "darwin") {
 
 
 if (!app.requestSingleInstanceLock()) {
-  console.log("[desktop] dusk bot is already running: focusing that window");
+  console.log("[desktop] madani bot is already running: focusing that window");
   process.exit(0);
 }
 
 // Start fresh (the bot panel's reset): before anything reads this computer's data or the app's own files, they go, and the
 // window's storage is cleared once electron is ready (startedFresh), so the app opens as a brand-new install
-const startedFresh = applyPendingDesktopStartFresh({ userData: app.getPath("userData"), dataDir: dataDirFor(process.env.DUSK_DATA_DIR, app.getPath("home")), log: line => console.log(`[desktop] ${line}`) });
+const startedFresh = applyPendingDesktopStartFresh({ userData: app.getPath("userData"), dataDir: dataDirFor(process.env.MADANI_DATA_DIR, app.getPath("home")), log: line => console.log(`[desktop] ${line}`) });
 
 /** To this computer's page, or to My Cloud's once it is home. While the window shows another place, the person is
  * asked first and the window moves only on their yes; Not now drops what was waiting (`drop`). */
@@ -311,7 +311,7 @@ function queuePackageInstall(rawLink) {
   return true;
 }
 
-/** duskbot://auth: the browser back from a Google or Apple sign-in this app started; the client ignores any other. */
+/** madanibot://auth: the browser back from a Google or Apple sign-in this app started; the client ignores any other. */
 function takeSignInLink(rawLink) {
   if (!isAppLink(rawLink)) return false;
   revealForLink();
@@ -328,16 +328,16 @@ function queueChatLink(rawLink) {
   return true;
 }
 
-/** A server's move to dusk cloud, asked for on its rail menu or the dashboard: its page opens with the move sheet. */
+/** A server's move to madani cloud, asked for on its rail menu or the dashboard: its page opens with the move sheet. */
 async function askServerCloudMove(id) {
-  if (!vpsCloudMove) throw new Error("Moving a server to dusk cloud isn't available here.");
+  if (!vpsCloudMove) throw new Error("Moving a server to madani cloud isn't available here.");
   vpsCloudMove.ask(id);
   if (environmentsState.activeId === id && mainWindow && !mainWindow.isDestroyed() && !mainWindow.webContents.isLoadingMainFrame()) { mainWindow.webContents.send("vps-cloud-move:show"); return true; }
   await workspaceMenuAction(() => switchEnvironment(id));
   return true;
 }
 
-/** duskbot://cloud-move/<workspace>: the dashboard's move for a server this app linked there; any other only brings the app forward. */
+/** madanibot://cloud-move/<workspace>: the dashboard's move for a server this app linked there; any other only brings the app forward. */
 function takeCloudMoveLink(rawLink) {
   const workspace = cloudMoveLinkWorkspace(rawLink);
   if (!workspace) return false;
@@ -355,9 +355,9 @@ function cameBack(link) {
   return true;
 }
 
-/** duskbot://open (the website after the person approved this app, or signed in): only the app in front, where it was */
+/** madanibot://open (the website after the person approved this app, or signed in): only the app in front, where it was */
 function takeOpenLink(rawLink) {
-  if (typeof rawLink !== "string" || !/^duskbot:\/\/open\/?$/i.test(rawLink)) return false;
+  if (typeof rawLink !== "string" || !/^madanibot:\/\/open\/?$/i.test(rawLink)) return false;
   revealForLink();
   return cameBack("open");
 }
@@ -371,10 +371,10 @@ app.on("open-url", (event, rawUrl) => {
 app.on("second-instance", (_event, rawCommandLine) => {
   const commandLine = rawCommandLine.map(fromLegacyLink);
   if (takeSignInLink(commandLine.find(isAppLink))) return;
-  if (takeOpenLink(commandLine.find(arg => /^duskbot:\/\/open\/?$/i.test(arg)))) return;
+  if (takeOpenLink(commandLine.find(arg => /^madanibot:\/\/open\/?$/i.test(arg)))) return;
   if (takeCloudMoveLink(commandLine.find(arg => cloudMoveLinkWorkspace(arg)))) return;
   if (takeOrganizationDeepLink(commandLine)) {
-    queueOrganizationEntry("duskbot://organization");
+    queueOrganizationEntry("madanibot://organization");
     return;
   }
   if (cloudEntry.fromArgs(commandLine)) { cameBack("cloud"); return; }
@@ -469,8 +469,8 @@ const serverSupervisor = createServerSupervisor({
 });
 
 function desktopDataDir() {
-  // An empty DUSK_DATA_DIR falls back here too; server/config.ts would not, so the child gets this path.
-  return dataDirFor(process.env.DUSK_DATA_DIR, app.getPath("home"), { log: line => slog(line) });
+  // An empty MADANI_DATA_DIR falls back here too; server/config.ts would not, so the child gets this path.
+  return dataDirFor(process.env.MADANI_DATA_DIR, app.getPath("home"), { log: line => slog(line) });
 }
 
 async function stopUtilityServer(proc, timeoutMs = UTILITY_SERVER_STOP_TIMEOUT_MS) {
@@ -501,15 +501,15 @@ const credentialFile = createCredentialFile({ file: CREDENTIALS_FILE, safeStorag
 const saveSecureCredentials = (credentials) => credentialFile.save(credentials);
 
 function composioBrokerUrl() {
-  return managedComposioBrokerUrl(process.env.DUSK_COMPOSIO_BROKER_URL, devDesktopUsesManagedApps());
+  return managedComposioBrokerUrl(process.env.MADANI_COMPOSIO_BROKER_URL, devDesktopUsesManagedApps());
 }
 
 // Finder/Explorer launches have no usable stdio, so the server child's output goes to server.log here.
-const LOG_DIR = !app.isPackaged && process.env.DUSK_LOG_DIR ? process.env.DUSK_LOG_DIR : app.getPath("logs");
+const LOG_DIR = !app.isPackaged && process.env.MADANI_LOG_DIR ? process.env.MADANI_LOG_DIR : app.getPath("logs");
 // the debug trail (trail.mjs): main and the renderer write trail.jsonl, the server child its own file beside it
 const TRAIL_CAP = app.isPackaged ? TRAIL_CAP_BYTES.packaged : TRAIL_CAP_BYTES.dev;
-process.env.DUSK_TRAIL_DIR = LOG_DIR;
-process.env.DUSK_TRAIL_CAP = String(Math.floor(TRAIL_CAP / 2));
+process.env.MADANI_TRAIL_DIR = LOG_DIR;
+process.env.MADANI_TRAIL_CAP = String(Math.floor(TRAIL_CAP / 2));
 const trailWriter = configureTrail({ src: "main", writer: createTrailWriter({ dir: LOG_DIR, prefix: "trail", capBytes: Math.floor(TRAIL_CAP / 2) }) });
 trail("app.start", { version: app.getVersion(), packaged: app.isPackaged, platform: process.platform });
 const DESKTOP_CRASH_LOG = path.join(LOG_DIR, "desktop-crashes.log");
@@ -549,7 +549,7 @@ import { createLoopbackRelay } from "./auth-loopback-relay.mjs";
 const { isLocalSender: senderIsLocal, localOnly, localOnlySync, setLocalOrigin } = localOriginModule;
 /** This computer's page, or My Cloud's own page once it is home (home-window.mjs). */
 const localOrHome = (channel, handler) => (event, ...args) => (homeWindow.homePage(event) ? handler : localOnly(channel, handler))(event, ...args);
-// only the installed app reports usage; dev, worktree, CI and smoke runs (DUSK_ANALYTICS=0) send nothing
+// only the installed app reports usage; dev, worktree, CI and smoke runs (MADANI_ANALYTICS=0) send nothing
 // an unpackaged run that opted in (the dev app against preview) says so in its version, so the admin can tell it apart
 const productEvents = createProductEvents({ origin: cloudTarget(process.env).origin, token: () => cloudAccount?.eventToken?.() ?? null, platform: process.platform, version: app.isPackaged ? app.getVersion() : `${app.getVersion()}+dev`,
   enabled: analyticsAllowed({ packaged: app.isPackaged, env: process.env, custom: cloudTarget(process.env).custom }) });
@@ -560,7 +560,7 @@ ipcMain.handle("product-events:send", localOrHome("product-events:send", (_event
 ipcMain.handle("product-events:clear", localOrHome("product-events:clear", () => productEvents.clear()));
 ipcMain.handle("product-events:last", localOrHome("product-events:last", (_event, batch) => productEvents.last(batch)));
 const accountErrors = createAccountErrors({ origin: cloudTarget(process.env).origin, platform: process.platform, release: process.getSystemVersion?.(), version: app.getVersion(),
-  enabled: () => app.isPackaged && process.env.DUSK_ERROR_REPORTS !== "0" && (desktopPrefs?.errorReports() ?? false) });
+  enabled: () => app.isPackaged && process.env.MADANI_ERROR_REPORTS !== "0" && (desktopPrefs?.errorReports() ?? false) });
 accountErrors.watch(app, process, { ending: () => appEnding() });
 ipcMain.handle("error-reports:send", localOrHome("error-reports:send", (_event, report) => accountErrors.send(report)));
 
@@ -949,7 +949,7 @@ const accountGateNeeded = () => accountGateRequired({ env: process.env, packaged
 const signInEncryption = { ...cloudEncryption, available: () => safeStorage.isAsyncEncryptionAvailable() }; let activeSignIn = null; const cloudAccountStore = () => (activeSignIn ??= createCloudAccountStore({ file: path.join(app.getPath("userData"), cloudTarget(process.env).file), encryption: signInEncryption }));
 function ensureCloudAccount() {
   if (cloudAccount) return cloudAccount;
-  if ((!app.isPackaged && !cloudTarget(process.env).custom) || desktopRemoteAccess) throw new Error("dusk cloud sign-in requires the local desktop app.");
+  if ((!app.isPackaged && !cloudTarget(process.env).custom) || desktopRemoteAccess) throw new Error("madani cloud sign-in requires the local desktop app.");
   cloudAccount = createCloudAccountClient({
     store: cloudAccountStore(),
     platform: process.platform, deviceName: os.hostname().slice(0, 100) || "my computer", appVersion: app.getVersion(), origin: cloudTarget(process.env).origin, custom: cloudTarget(process.env).custom,
@@ -1188,11 +1188,11 @@ async function runCompanyBackup(kind, input, scheduled = null) {
     const status = await localBackupStatus(proc);
     if (status.pendingRestore) {
       publishCompanyBackupState({ busy: false, pendingRestore: true });
-      throw new Error("Restart dusk bot to finish the pending restore before starting another backup operation.");
+      throw new Error("Restart madani bot to finish the pending restore before starting another backup operation.");
     }
     if (status.busy) throw companyBackupDeferred();
     const transfers = createCompanyBackups({
-      tempRoot: path.join(app.getPath("temp"), "dusk-company-backups"),
+      tempRoot: path.join(app.getPath("temp"), "madani-company-backups"),
       localRequest: (route, init) => localBackupRequest(proc, route, init),
       portalRequest: (route, options) => client.requestBackup(route, { ...options, generation }),
       availableBytes: async temporary => {
@@ -1222,7 +1222,7 @@ async function runCompanyBackup(kind, input, scheduled = null) {
 function syncDesktopMutationToken(proc) {
   try {
     proc.postMessage({
-      type: "duskbot:desktop-mutation-token",
+      type: "madanibot:desktop-mutation-token",
       token: desktopMutationToken,
       companionToken: companionMutationToken,
     });
@@ -1238,7 +1238,7 @@ const savePhoneSecretOnce = createPhoneSecretSaveCoordinator((target, value) =>
 /** The harness asks for the Mac companion's addresses when a phone signed in to this account links: only while the
  * companion already runs and policy allows remote access. Security: a remote request never starts it. */
 function receiveCompanionEndpoints(proc, rawMessage) {
-  if (!rawMessage || typeof rawMessage !== "object" || rawMessage.type !== "duskbot:companion-endpoints") return false;
+  if (!rawMessage || typeof rawMessage !== "object" || rawMessage.type !== "madanibot:companion-endpoints") return false;
   const requestId = typeof rawMessage.requestId === "string" ? rawMessage.requestId.slice(0, 64) : null;
   if (!requestId) return true;
   const answer = async () => {
@@ -1247,7 +1247,7 @@ function receiveCompanionEndpoints(proc, rawMessage) {
     return state.enabled && !state.error && Array.isArray(state.endpoints) && state.endpoints.length ? state.endpoints : null;
   };
   void answer().catch(() => null).then((endpoints) => {
-    try { proc.postMessage({ type: "duskbot:companion-endpoints-result", requestId, endpoints }); } catch {}
+    try { proc.postMessage({ type: "madanibot:companion-endpoints-result", requestId, endpoints }); } catch {}
   });
   return true;
 }
@@ -1275,26 +1275,26 @@ async function startServerOn(port, dataDir = runningDataDir ?? startupEnvironmen
     ...process.env,
     // The parent owns the data-dir lease; a child only validates it, so fallback-port children never replace it.
     ...desktopDataDirLease.utilityServerLeaseEnvironment(),
-    DUSK_DATA_DIR: dataDir,
+    MADANI_DATA_DIR: dataDir,
     // Fail-closed until this process sends the private connection; never a descriptor inherited from the shell.
-    DUSK_DESKTOP_PARENT: "1",
-    DUSK_DESKTOP_LAUNCH_ID: desktopLaunchId,
-    DUSK_STATIC_DIR: path.join(process.resourcesPath, "ui"),
-    DUSK_RESOURCES_PATH: process.resourcesPath,
-    DUSK_SKILLS_DIR: path.join(process.resourcesPath, "skills"),
-    DUSK_PORT: String(port),
-    DUSK_APP_VERSION: app.getVersion(),
-    DUSK_USER_DATA: app.getPath("userData"),
-    DUSK_PREINSTALL_FREE_BACKUP: "1",
+    MADANI_DESKTOP_PARENT: "1",
+    MADANI_DESKTOP_LAUNCH_ID: desktopLaunchId,
+    MADANI_STATIC_DIR: path.join(process.resourcesPath, "ui"),
+    MADANI_RESOURCES_PATH: process.resourcesPath,
+    MADANI_SKILLS_DIR: path.join(process.resourcesPath, "skills"),
+    MADANI_PORT: String(port),
+    MADANI_APP_VERSION: app.getVersion(),
+    MADANI_USER_DATA: app.getPath("userData"),
+    MADANI_PREINSTALL_FREE_BACKUP: "1",
     ...(secureCredentials.composioApiKey
       ? { COMPOSIO_API_KEY: secureCredentials.composioApiKey }
       : {}),
-    DUSK_CREDENTIAL_STORE: credentialFile.unavailable() ? "unavailable" : "ok",
+    MADANI_CREDENTIAL_STORE: credentialFile.unavailable() ? "unavailable" : "ok",
     ...workspaceCredentialEnv(secureCredentials),
   });
-  delete childEnv.DUSK_BROWSER_CONNECTION;
-  delete childEnv.DUSK_SERVER_COMPILE_CACHE;
-  if (compileCacheDir) childEnv.DUSK_SERVER_COMPILE_CACHE = compileCacheDir;
+  delete childEnv.MADANI_BROWSER_CONNECTION;
+  delete childEnv.MADANI_SERVER_COMPILE_CACHE;
+  if (compileCacheDir) childEnv.MADANI_SERVER_COMPILE_CACHE = compileCacheDir;
   slog(`fork ${entry} port=${port}`);
   const proc = utilityProcess.fork(entry, [], {
     env: childEnv,
@@ -1372,7 +1372,7 @@ async function startServerPackaged() {
       stranded: (candidate) => strandedServerOn(candidate, { execPath: process.execPath }),
       log: slog,
     });
-    if (busy.length && !told) { told = true; startupScreen?.status("Another app is using dusk bot's port, so it's opening on a free one"); }
+    if (busy.length && !told) { told = true; startupScreen?.status("Another app is using madani bot's port, so it's opening on a free one"); }
     for (const taken of busy) skipped.add(taken);
     const started = await startServerOn(port);
     if (started.proc) {
@@ -1388,15 +1388,15 @@ async function startServerPackaged() {
 }
 
 async function startDevServer() {
-  SERVER_PORT = Number(process.env.DUSK_PORT || 8799);
+  SERVER_PORT = Number(process.env.MADANI_PORT || 8799);
   const root = app.getAppPath();
   devDataDir = startFolder();
   devServer = createDevServerChild({
     fork: (entry, args, options) => utilityProcess.fork(entry, args, options),
     entry: path.join(root, "server", "dev-server.ts"),
-    env: { ...process.env, DUSK_PORT: String(SERVER_PORT), DUSK_DATA_DIR: devDataDir, ...(devDataDir === desktopDataDir() ? {} : { DUSK_NO_TEST_BOTS: "1" }) },
+    env: { ...process.env, MADANI_PORT: String(SERVER_PORT), MADANI_DATA_DIR: devDataDir, ...(devDataDir === desktopDataDir() ? {} : { MADANI_NO_TEST_BOTS: "1" }) },
     port: SERVER_PORT,
-    grant: (proc, isCurrent) => { serverProc = proc; if (!proc.__duskDevWired) { proc.__duskDevWired = true; proc.on("message", (message) => { if (serverProc !== proc) return; try { if (trustedApprovalMode.receive(proc, message) || managedDesktopRelay.receive(proc, message) || orgLibrary?.receive(message) || settingsSyncMain?.receive(message) || receivePhoneSecretSave(proc, message) || receiveCompanionEndpoints(proc, message)) return; oneHome.receive(proc, message); } catch (error) { slog(`desktop private sync rejected: ${error?.message ?? error}`); } }); } syncDesktopMutationToken(proc); grantLocalComputer(proc, isCurrent); }, // the dev child is this app's own server too: same private channel for moves, logins and approvals
+    grant: (proc, isCurrent) => { serverProc = proc; if (!proc.__madaniDevWired) { proc.__madaniDevWired = true; proc.on("message", (message) => { if (serverProc !== proc) return; try { if (trustedApprovalMode.receive(proc, message) || managedDesktopRelay.receive(proc, message) || orgLibrary?.receive(message) || settingsSyncMain?.receive(message) || receivePhoneSecretSave(proc, message) || receiveCompanionEndpoints(proc, message)) return; oneHome.receive(proc, message); } catch (error) { slog(`desktop private sync rejected: ${error?.message ?? error}`); } }); } syncDesktopMutationToken(proc); grantLocalComputer(proc, isCurrent); }, // the dev child is this app's own server too: same private channel for moves, logins and approvals
     conflict: (port) => {
       const message = devServerConflictMessage(port);
       console.error(`[dev-server] ${message}`);
@@ -1409,7 +1409,7 @@ async function startDevServer() {
     log: (line) => console.log(`[dev-server] ${line}`),
   });
   if (!(await devServer.start())) return false;
-  if (process.env.DUSK_DEV_SERVER_WATCH !== "0") {
+  if (process.env.MADANI_DEV_SERVER_WATCH !== "0") {
     const unwatch = watchServerSource({ watch: fs.watch, dirs: [path.join(root, "server"), path.join(root, "shared")], restart: () => {
       console.log("[dev-server] source changed, restarting");
       devServer.restart();
@@ -1423,7 +1423,7 @@ function syncManagedComposioCredentials() {
   if (!serverProc) return;
   try {
     serverProc.postMessage({
-      type: "duskbot:managed-composio",
+      type: "madanibot:managed-composio",
       access: managedComposioAccess(composioBrokerUrl(), secureCredentials),
     });
   } catch (error) {
@@ -1462,7 +1462,7 @@ function notifyDesktopViewer(open) {
 }
 
 function openDesktopViewer(owner, rawUrl, rawTitle, contextId) {
-  if (!owner || owner.isDestroyed()) throw new Error("The dusk bot window is unavailable");
+  if (!owner || owner.isDestroyed()) throw new Error("The madani bot window is unavailable");
   const url = desktopViewerUrl(rawUrl);
   const titleCandidate = Object.prototype.toString.call(rawTitle) === "[object String]" ? rawTitle.trim() : "";
   const title = titleCandidate ? titleCandidate.slice(0, 80) : "Live desktop";
@@ -1501,7 +1501,7 @@ function openDesktopViewer(owner, rawUrl, rawTitle, contextId) {
       contextIsolation: true,
       sandbox: true,
       // Non-persistent partition: provider cookies stay out of the app renderer and die on exit.
-      partition: "duskbot-desktop-viewer",
+      partition: "madanibot-desktop-viewer",
     },
   });
   desktopViewerWindow = viewer;
@@ -1554,7 +1554,7 @@ function openDesktopViewer(owner, rawUrl, rawTitle, contextId) {
 }
 
 function ensureDesktopWorkspace(owner) {
-  if (!owner || owner.isDestroyed()) throw new Error("The dusk bot window is unavailable");
+  if (!owner || owner.isDestroyed()) throw new Error("The madani bot window is unavailable");
   if (desktopWorkspaceManager) {
     if (desktopWorkspaceOwner !== owner) {
       throw new Error("The two-desktop view belongs to another app window");
@@ -1566,7 +1566,7 @@ function ensureDesktopWorkspace(owner) {
   const manager = createDesktopWorkspaceManager({
     owner,
     createView: (options) => new WebContentsView(options),
-    partitionPrefix: `duskbot-desktop-workspace-${randomUUID()}`,
+    partitionPrefix: `madanibot-desktop-workspace-${randomUUID()}`,
     notify: (state) => {
       if (!owner.isDestroyed() && !owner.webContents.isDestroyed()) {
         owner.webContents.send("desktop-workspace:state", state);
@@ -1632,9 +1632,9 @@ function swapLocalData(dir) {
 /** `pnpm dev:app`'s harness on another folder: the same child restarted there. A clean workspace gets no test bots. */
 async function switchDevDataDir(dir, stay) {
   if (!devServer) return { ok: false, error: "dev" };
-  const { DUSK_NO_TEST_BOTS: _seeded, ...env } = devServer.env();
-  const seeding = dir === desktopDataDir() ? (process.env.DUSK_NO_TEST_BOTS ? { DUSK_NO_TEST_BOTS: process.env.DUSK_NO_TEST_BOTS } : {}) : { DUSK_NO_TEST_BOTS: "1" };
-  const spawned = await Promise.race([devServer.retarget({ ...env, ...seeding, DUSK_DATA_DIR: dir }), new Promise(done => setTimeout(() => done(false), 30_000))]);
+  const { MADANI_NO_TEST_BOTS: _seeded, ...env } = devServer.env();
+  const seeding = dir === desktopDataDir() ? (process.env.MADANI_NO_TEST_BOTS ? { MADANI_NO_TEST_BOTS: process.env.MADANI_NO_TEST_BOTS } : {}) : { MADANI_NO_TEST_BOTS: "1" };
+  const spawned = await Promise.race([devServer.retarget({ ...env, ...seeding, MADANI_DATA_DIR: dir }), new Promise(done => setTimeout(() => done(false), 30_000))]);
   devDataDir = dir;
   if (!spawned || !(await devServerAnswers(60_000))) { slog(`dev server: could not start on ${dir}`); return { ok: false, error: "switch-failed" }; }
   if (!stay) navigateMainWindow(rendererOrigin());
@@ -1690,7 +1690,7 @@ function refreshApplicationMenu() {
       onSwitch: (id) => void workspaceMenuAction(() => switchEnvironment(id)),
       onAddFromClipboard: () => void addServerFromClipboard(),
       onConnect: () => void workspaceMenuAction(openWorkspaceSettings),
-      onOrganizationSignIn: () => queueOrganizationEntry("duskbot://organization"),
+      onOrganizationSignIn: () => queueOrganizationEntry("madanibot://organization"),
       onForget: (id) => void workspaceMenuAction(() => forgetEnvironment(id)),
       onOpenSettings: () => { if (mainWindow && !mainWindow.isDestroyed()) mainWindow.webContents.send("app:open-settings"); },
       openAtLogin: loginItem.available() ? { checked: loginItem.chosen(), onToggle: on => { loginItem.choose(on); refreshApplicationMenu(); } } : null,
@@ -1787,7 +1787,7 @@ async function switchLocalEnvironmentTo(targetDir, targetId, quiet = false, { st
   const failedSwitch = () => {
     if (!quiet) dialog.showErrorBox(
       "Could not switch environments",
-      "dusk bot could not switch to that environment. The app log has the details.",
+      "madani bot could not switch to that environment. The app log has the details.",
     );
     return { ok: false, error: "switch-failed" };
   };
@@ -1909,7 +1909,7 @@ function createLocalEnvironment(name, dataDir) {
       ? name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "")
       : "";
     if (typeof name !== "string" || !name.trim()) return { ok: false, error: "name", state };
-    candidateDir = path.join(os.homedir(), `.duskbot-${slug && slug !== "clean" ? slug : randomUUID().slice(0, 8)}`);
+    candidateDir = path.join(os.homedir(), `.madanibot-${slug && slug !== "clean" ? slug : randomUUID().slice(0, 8)}`);
   } else {
     candidateDir = typeof dataDir === "string" ? dataDir.trim() : "";
     if (
@@ -1984,8 +1984,8 @@ async function deliverOrganizationEntry() {
 }
 
 async function openCloudEntry() {
-  if (!app.isPackaged && !cloudTarget(process.env).custom) throw new Error("dusk cloud requires the installed desktop app.");
-  if (desktopRemoteAccess) throw new Error("This app is connected to another computer. Disconnect it to use dusk cloud on this computer.");
+  if (!app.isPackaged && !cloudTarget(process.env).custom) throw new Error("madani cloud requires the installed desktop app.");
+  if (desktopRemoteAccess) throw new Error("This app is connected to another computer. Disconnect it to use madani cloud on this computer.");
   if (!serverReady) throw new Error("This installation is unavailable. Restart the app and open My Cloud again.");
   await cloudAccountRestored();
   if ((await homeWindow.refresh()).kind !== "computer") { await showHome({ place: "cloud" }); void welcomedOnCloud(); return true; }
@@ -2032,7 +2032,7 @@ async function connectHostedWorkspace(input, name) {
     throw new Error("Enter an HTTPS server address or a full pairing link. Keep the pairing code after #, not in the URL query.");
   }
   if (isThisAppsServer(link.origin, SERVER_PORT)) {
-    throw new Error("That link is this computer's own dusk bot; on your computer run ssh -N -L 8790:127.0.0.1:8799 you@your-server, then paste http://127.0.0.1:8790 with the code.");
+    throw new Error("That link is this computer's own madani bot; on your computer run ssh -N -L 8790:127.0.0.1:8799 you@your-server, then paste http://127.0.0.1:8790 with the code.");
   }
   const host = new URL(link.origin).host;
   const { response } = await dialog.showMessageBox({
@@ -2300,8 +2300,8 @@ function createWindow({ deferNavigation = false } = {}) {
       webviewTag: false,
       preload: path.join(__dirname, "preload.cjs"),
       additionalArguments: [...desktopCompanionRendererArguments(rendererOrigin(), desktopRemoteAccess),
-        "--dusk-current-local-origin=1",
-        ...(accountApp() ? ["--dusk-company-desktop=1"] : []), ...(accountApp() || accountGateNeeded() ? ["--dusk-account-gate=1"] : []), `--dusk-app-version=${app.getVersion()}`],
+        "--madani-current-local-origin=1",
+        ...(accountApp() ? ["--madani-company-desktop=1"] : []), ...(accountApp() || accountGateNeeded() ? ["--madani-account-gate=1"] : []), `--madani-app-version=${app.getVersion()}`],
     },
   });
   mainWindow = win; hiddenStart = false; chromeRail.attach(win);
@@ -2406,7 +2406,7 @@ function createWindow({ deferNavigation = false } = {}) {
     workspaceReconnect.lost(remote);
   });
   win.webContents.on("did-navigate", (_event, url, code) => {
-    // 410: the edge's answer for a deleted dusk cloud: its own screen says so instead of a bare error page
+    // 410: the edge's answer for a deleted madani cloud: its own screen says so instead of a bare error page
     if (code === 410 && homeWindow.failed(url)) return;
     homeWindow.navigated(url);
     const remote = activeRemote(environmentsState);
@@ -2427,20 +2427,20 @@ function createWindow({ deferNavigation = false } = {}) {
     showContextMenu(win, params);
   });
 
-  if (process.env.DUSK_SMOKE_TEST === "1") {
+  if (process.env.MADANI_SMOKE_TEST === "1") {
     win.webContents.once("did-finish-load", async () => {
       try {
         const result = await win.webContents.executeJavaScript(`
           (async () => {
-            if (!window.duskDesktop?.getCapabilities) throw new Error("desktop preload bridge is unavailable");
+            if (!window.madaniDesktop?.getCapabilities) throw new Error("desktop preload bridge is unavailable");
             let crashPromise = null;
-            if (${JSON.stringify(process.env.DUSK_SMOKE_CUA === "1")}) {
+            if (${JSON.stringify(process.env.MADANI_SMOKE_CUA === "1")}) {
               crashPromise = new Promise((resolve, reject) => {
                 const timeout = setTimeout(() => {
                   unsubscribe?.();
                   reject(new Error("timed out waiting for CUA crash invalidation"));
                 }, 10000);
-                const unsubscribe = window.duskDesktop.onCapabilitiesChanged((next) => {
+                const unsubscribe = window.madaniDesktop.onCapabilitiesChanged((next) => {
                   if (next.localComputer.reasonCode !== "daemon-exited") return;
                   clearTimeout(timeout);
                   unsubscribe();
@@ -2449,7 +2449,7 @@ function createWindow({ deferNavigation = false } = {}) {
               });
             }
             const [initialCapabilities, healthResponse, ownerMutationResponse] = await Promise.all([
-              window.duskDesktop.getCapabilities(),
+              window.madaniDesktop.getCapabilities(),
               fetch("/api/health"),
               fetch("/api/auth/stream-ticket", { method: "POST" }),
             ]);
@@ -2470,8 +2470,8 @@ function createWindow({ deferNavigation = false } = {}) {
                 throw new Error("CUA was not ready before the simulated crash");
               }
               cuaCrashReason = await crashPromise;
-              cuaRetryStatus = await window.duskDesktop.localControl.retry();
-              capabilities = await window.duskDesktop.getCapabilities();
+              cuaRetryStatus = await window.madaniDesktop.localControl.retry();
+              capabilities = await window.madaniDesktop.getCapabilities();
             }
             return {
               initialCapabilities,
@@ -2490,7 +2490,7 @@ function createWindow({ deferNavigation = false } = {}) {
             `unexpected packaged renderer URL: ${result.location} (expected ${expectedLocation})`,
           );
         }
-        if (process.env.DUSK_SMOKE_BUNDLED_CUA === "1") {
+        if (process.env.MADANI_SMOKE_BUNDLED_CUA === "1") {
           const connection = await cuaReady;
           const expectedDriver = path.join(
             process.resourcesPath,
@@ -2528,7 +2528,7 @@ function createWindow({ deferNavigation = false } = {}) {
       } catch (error) {
         console.error(`[smoke] renderer-failed ${error?.stack ?? error}`);
       } finally {
-        if (process.env.DUSK_SMOKE_KEEP_OPEN !== "1") win.close();
+        if (process.env.MADANI_SMOKE_KEEP_OPEN !== "1") win.close();
       }
     });
   }
@@ -2602,7 +2602,7 @@ ipcMain.handle("desktop:export-diagnostics", localOrHome("desktop:export-diagnos
   return result.filePath;
 }));
 
-// The path is renderer-controlled: it must resolve inside ~/.duskbot to a regular file, never a symlink escape.
+// The path is renderer-controlled: it must resolve inside ~/.madanibot to a regular file, never a symlink escape.
 ipcMain.handle("desktop:save-file", localOnly("desktop:save-file", async (event, rawPath) => {
   return withSavableFile(rawPath, { home: os.homedir() }, async ({ defaultName, copyTo }) => {
     const parent = BrowserWindow.fromWebContents(event.sender);
@@ -2843,7 +2843,7 @@ function relaunchAfterDesktopRemoteChange() {
     // Electron's default relaunch reuses the native argv, which still holds the consumed one-shot action.
     const args = process.argv.slice(1);
     // pnpm dev:app owns Vite and this process; app.relaunch would orphan the new window, so ask the runner to restart it
-    const devRunnerFile = app.isPackaged ? "" : process.env.DUSK_DEV_RELAUNCH_FILE;
+    const devRunnerFile = app.isPackaged ? "" : process.env.MADANI_DEV_RELAUNCH_FILE;
     if (devRunnerFile) fs.writeFileSync(devRunnerFile, JSON.stringify(args));
     else app.relaunch({ args });
     app.quit();
@@ -2906,7 +2906,7 @@ ipcMain.handle("cloud-account:openPage", localWorkspaceOnly("cloud-account:openP
   return ensureCloudAccount().webHandoff({ page, ...(page === "workspace" ? { workspaceId: String(workspaceId) } : {}) });
 }));
 ipcMain.handle("cloud-account:checkout", localWorkspaceOnly("cloud-account:checkout", async (_event, plan, source) => {
-  if (!(await cloudOffersReady())) throw new Error("dusk cloud isn't offered in this app.");
+  if (!(await cloudOffersReady())) throw new Error("madani cloud isn't offered in this app.");
   const client = ensureCloudAccount();
   if (typeof plan !== "string" || !CHECKOUT_SOURCES.includes(source)) throw new Error("Choose a plan to continue.");
   const offer = await client.offer();
@@ -3030,7 +3030,7 @@ const localServerRequest = async (route, init = {}) => {
 const usageNotes = createUsageNotes({ origin: cloudTarget(process.env).origin, install: () => productEvents.install(), token: () => cloudAccount?.eventToken?.() ?? null, localRequest: localServerRequest, platform: process.platform, version: app.getVersion() }); usageNotes.start(); const experienceRelay = createExperienceRelay({ localRequest: localServerRequest, events: productEvents }); experienceRelay.start(); const teamProfileSeeds = createTeamProfileSeeds({ teamFetch: cloudFetch, localRequest: localServerRequest, log: slog });
 const enrollMemory = jsonFile(path.join(app.getPath("userData"), "account-enroll.json")); const accountEnroll = createAccountEnroll({ client: ensureCloudAccount, localRequest: localServerRequest, readMemory: () => { try { return enrollMemory.read(); } catch { return null; } }, writeMemory: enrollMemory.write, log: slog }); const accountGate = installAccountGate({ ipcMain, guard: localWorkspaceOnly, client: ensureCloudAccount, required: accountGateNeeded, window: () => mainWindow, plainStorage: plainSignInStorage, restored: cloudAccountRestored });
 let settingsSyncMain = null;
-const oneHome = installOneHome({ ipcMain, settingsHome: (call) => settingsSyncMain?.bringHome(call), clean: cleanWorkspace, cloudPage: cloudPageAsking, pageOrigin: activePageOrigin, confirmMove: confirmTeamMove, server: () => serverProc, cookieFetch: cloudFetch, home: () => (myCloud() && cloudAccount ? { origin: myCloud(), grant: () => cloudAccount.pairHome() } : null), power: cloudPower, file: () => path.join(app.getPath("userData"), "cloud-send.json"), localRequest: localServerRequest, space: { disk: () => cloudPlanDisk(ensureCloudAccount().state()), grow: sizeGb => ensureCloudAccount().growDisk(sizeGb) }, reconnect: origin => signInCloudSession({ origin, mine: myCloud(), pair: () => ensureCloudAccount().pairHome(), fetch: cloudFetch }), window: () => (desktopRemoteAccess ? null : mainWindow), localOrigin: rendererOrigin, account: () => cloudAccount, journalFile: () => path.join(app.getPath("userData"), "one-home.json"), tempRoot: () => path.join(app.getPath("temp"), "dusk-one-home"), phone: { paired: () => companionEnabledAtRest(), stop: () => stopDesktopCompanion({ remember: false }).then(() => {}), start: () => startDesktopCompanion({ waitForHosted: false, remember: false }).then(() => {}) }, openHome: () => void showHome({ place: "cloud" }), openTeam: team => void showHome({ place: { team: team.id, name: team.name } }), openLocal: () => void showHome(), restart: () => relaunchAfterDesktopRemoteChange(), version: app.getVersion(), log: slog, other: () => ownHome, accountsHere: () => accountRing()?.count() ?? 1, offer: { store: jsonFile(path.join(app.getPath("userData"), "cloud-move-offer.json")), track: (name, props) => productEvents.action(name, props) } }); ownHome = installOwnHome({ localRequest: localServerRequest, clean: cleanWorkspace, fetch: cloudFetch, environments: () => environmentsState.environments, handoff: what => oneHome.handoff(what), cloudJournal: () => oneHome.journal(), journal: jsonFile(path.join(app.getPath("userData"), "own-home.json")), choice: jsonFile(path.join(app.getPath("userData"), "own-home-choice.json")), sendState: jsonFile(path.join(app.getPath("userData"), "own-home-send.json")), phone: { paired: () => companionEnabledAtRest(), stop: () => stopDesktopCompanion({ remember: false }).then(() => {}), start: () => startDesktopCompanion({ waitForHosted: false, remember: false }).then(() => {}) }, openHome: place => void workspaceMenuAction(() => switchEnvironment(place.id)), lastInput: oneHome.lastInput, version: app.getVersion(), log: slog, onChange: () => { oneHome.publish(); railChanged(); ownMoveSettled(); } }); twoPlaces = installTwoPlacesMain({ ipcMain, guard: localWorkspaceOnly, localRequest: localServerRequest, fetch: cloudFetch, environments: () => environmentsState.environments, cloud: () => ({ origin: myCloud(), asleep: cloudPower.asleep() }), oneHome, ownHome, dismissed: jsonFile(path.join(app.getPath("userData"), "two-places.json")), account: () => cloudAccount, teamsRemembered: jsonFile(path.join(app.getPath("userData"), "team-places.json")), log: slog, tell: () => { if (mainWindow && !mainWindow.isDestroyed() && senderIsLocal({ sender: mainWindow.webContents })) mainWindow.webContents.send("two-places:changed"); } }); installConnectorSyncMain({ localRequest: localServerRequest, handoff: what => oneHome.handoff(what), fetch: cloudFetch, environments: () => cloudGone.keep(environmentsState.environments), cloud: () => ({ origin: desktopRemoteAccess ? null : cloudGone.live(myCloud()), asleep: cloudPower.asleep(), sleeps: cloudAccount?.power()?.sleeps === true }), ownHome, log: slog }); settingsSyncMain = installSettingsSyncMain({ localRequest: localServerRequest, handoff: what => oneHome.handoff(what), fetch: cloudFetch, environments: () => cloudGone.keep(environmentsState.environments), cloud: () => ({ origin: desktopRemoteAccess ? null : cloudGone.live(myCloud()), asleep: cloudPower.asleep(), sleeps: cloudAccount?.power()?.sleeps === true }), ownHome, saveSecret: saveSyncedSecret, log: slog }); const vpsLink = installVpsLink({ ipcMain, clean: cleanWorkspace, powerMonitor, powerSaveBlocker, appVersion: app.getVersion(), myCloud: () => (desktopRemoteAccess ? null : cloudGone.live(myCloud())), cloudAwake: () => !cloudPower.asleep(), linkGrant: async () => { try { return await ensureCloudAccount().linkGrant(); } catch { return null; } }, ...(accountApp() ? { signIn: () => ensureCloudAccount().continueInBrowser({ kind: "signin", source: "server_link" }) } : {}), screenIce: async () => { try { return await ensureCloudAccount().screenIce(); } catch { return null; } }, pageOrigin: activePageOrigin, whenReady: () => app.whenReady(), guard: localWorkspaceOnly, userData: app.getPath("userData"), session, shell, encryption: cloudEncryption, jsonFile, environments: () => environmentsState, persist: persistEnvironments, withEnvironment, makeId: randomUUID, forgetEnvironment: (id, how) => forgetEnvironment(id, false, true, { ...(how?.replaced ? { unlink: false } : {}), ...(how?.quiet ? { quiet: true } : {}) }), ownHome, localRequest: localServerRequest, switchTo: id => workspaceMenuAction(() => switchEnvironment(id)), relaunch: () => relaunchAfterDesktopRemoteChange(), dataDir: () => runningDataDir, label: () => os.hostname().replace(/\.local$/, "").slice(0, 60) || "my computer", log: slog, tell: view => { if (mainWindow && !mainWindow.isDestroyed() && senderIsLocal({ sender: mainWindow.webContents })) mainWindow.webContents.send("vps-link:changed", view); void serverEnroll?.kick(); } }); void import("./phone-relay.mjs").then(({ installPhoneRelay }) => installPhoneRelay({ ipcMain, powerMonitor, session, fetch: cloudFetch, guard: localWorkspaceOnly, jsonFile, userData: app.getPath("userData"), dataDir: () => runningDataDir, encryption: cloudEncryption, wanted: () => !desktopRemoteAccess && serverReady && companionEnabledAtRest() && !oneHome.away() && !ownHome?.away(), signedIn: () => cloudAccount?.state().status === "connected", linkGrant: async () => { try { return await ensureCloudAccount().linkGrant(); } catch { return null; } }, label: () => `${os.hostname().replace(/\.local$/, "").slice(0, 50) || "computer"} phones`, port: () => SERVER_PORT, ownerToken: () => desktopMutationToken, log: slog })).catch(error => slog(`phone relay did not start: ${error?.message ?? error}`));
+const oneHome = installOneHome({ ipcMain, settingsHome: (call) => settingsSyncMain?.bringHome(call), clean: cleanWorkspace, cloudPage: cloudPageAsking, pageOrigin: activePageOrigin, confirmMove: confirmTeamMove, server: () => serverProc, cookieFetch: cloudFetch, home: () => (myCloud() && cloudAccount ? { origin: myCloud(), grant: () => cloudAccount.pairHome() } : null), power: cloudPower, file: () => path.join(app.getPath("userData"), "cloud-send.json"), localRequest: localServerRequest, space: { disk: () => cloudPlanDisk(ensureCloudAccount().state()), grow: sizeGb => ensureCloudAccount().growDisk(sizeGb) }, reconnect: origin => signInCloudSession({ origin, mine: myCloud(), pair: () => ensureCloudAccount().pairHome(), fetch: cloudFetch }), window: () => (desktopRemoteAccess ? null : mainWindow), localOrigin: rendererOrigin, account: () => cloudAccount, journalFile: () => path.join(app.getPath("userData"), "one-home.json"), tempRoot: () => path.join(app.getPath("temp"), "madani-one-home"), phone: { paired: () => companionEnabledAtRest(), stop: () => stopDesktopCompanion({ remember: false }).then(() => {}), start: () => startDesktopCompanion({ waitForHosted: false, remember: false }).then(() => {}) }, openHome: () => void showHome({ place: "cloud" }), openTeam: team => void showHome({ place: { team: team.id, name: team.name } }), openLocal: () => void showHome(), restart: () => relaunchAfterDesktopRemoteChange(), version: app.getVersion(), log: slog, other: () => ownHome, accountsHere: () => accountRing()?.count() ?? 1, offer: { store: jsonFile(path.join(app.getPath("userData"), "cloud-move-offer.json")), track: (name, props) => productEvents.action(name, props) } }); ownHome = installOwnHome({ localRequest: localServerRequest, clean: cleanWorkspace, fetch: cloudFetch, environments: () => environmentsState.environments, handoff: what => oneHome.handoff(what), cloudJournal: () => oneHome.journal(), journal: jsonFile(path.join(app.getPath("userData"), "own-home.json")), choice: jsonFile(path.join(app.getPath("userData"), "own-home-choice.json")), sendState: jsonFile(path.join(app.getPath("userData"), "own-home-send.json")), phone: { paired: () => companionEnabledAtRest(), stop: () => stopDesktopCompanion({ remember: false }).then(() => {}), start: () => startDesktopCompanion({ waitForHosted: false, remember: false }).then(() => {}) }, openHome: place => void workspaceMenuAction(() => switchEnvironment(place.id)), lastInput: oneHome.lastInput, version: app.getVersion(), log: slog, onChange: () => { oneHome.publish(); railChanged(); ownMoveSettled(); } }); twoPlaces = installTwoPlacesMain({ ipcMain, guard: localWorkspaceOnly, localRequest: localServerRequest, fetch: cloudFetch, environments: () => environmentsState.environments, cloud: () => ({ origin: myCloud(), asleep: cloudPower.asleep() }), oneHome, ownHome, dismissed: jsonFile(path.join(app.getPath("userData"), "two-places.json")), account: () => cloudAccount, teamsRemembered: jsonFile(path.join(app.getPath("userData"), "team-places.json")), log: slog, tell: () => { if (mainWindow && !mainWindow.isDestroyed() && senderIsLocal({ sender: mainWindow.webContents })) mainWindow.webContents.send("two-places:changed"); } }); installConnectorSyncMain({ localRequest: localServerRequest, handoff: what => oneHome.handoff(what), fetch: cloudFetch, environments: () => cloudGone.keep(environmentsState.environments), cloud: () => ({ origin: desktopRemoteAccess ? null : cloudGone.live(myCloud()), asleep: cloudPower.asleep(), sleeps: cloudAccount?.power()?.sleeps === true }), ownHome, log: slog }); settingsSyncMain = installSettingsSyncMain({ localRequest: localServerRequest, handoff: what => oneHome.handoff(what), fetch: cloudFetch, environments: () => cloudGone.keep(environmentsState.environments), cloud: () => ({ origin: desktopRemoteAccess ? null : cloudGone.live(myCloud()), asleep: cloudPower.asleep(), sleeps: cloudAccount?.power()?.sleeps === true }), ownHome, saveSecret: saveSyncedSecret, log: slog }); const vpsLink = installVpsLink({ ipcMain, clean: cleanWorkspace, powerMonitor, powerSaveBlocker, appVersion: app.getVersion(), myCloud: () => (desktopRemoteAccess ? null : cloudGone.live(myCloud())), cloudAwake: () => !cloudPower.asleep(), linkGrant: async () => { try { return await ensureCloudAccount().linkGrant(); } catch { return null; } }, ...(accountApp() ? { signIn: () => ensureCloudAccount().continueInBrowser({ kind: "signin", source: "server_link" }) } : {}), screenIce: async () => { try { return await ensureCloudAccount().screenIce(); } catch { return null; } }, pageOrigin: activePageOrigin, whenReady: () => app.whenReady(), guard: localWorkspaceOnly, userData: app.getPath("userData"), session, shell, encryption: cloudEncryption, jsonFile, environments: () => environmentsState, persist: persistEnvironments, withEnvironment, makeId: randomUUID, forgetEnvironment: (id, how) => forgetEnvironment(id, false, true, { ...(how?.replaced ? { unlink: false } : {}), ...(how?.quiet ? { quiet: true } : {}) }), ownHome, localRequest: localServerRequest, switchTo: id => workspaceMenuAction(() => switchEnvironment(id)), relaunch: () => relaunchAfterDesktopRemoteChange(), dataDir: () => runningDataDir, label: () => os.hostname().replace(/\.local$/, "").slice(0, 60) || "my computer", log: slog, tell: view => { if (mainWindow && !mainWindow.isDestroyed() && senderIsLocal({ sender: mainWindow.webContents })) mainWindow.webContents.send("vps-link:changed", view); void serverEnroll?.kick(); } }); void import("./phone-relay.mjs").then(({ installPhoneRelay }) => installPhoneRelay({ ipcMain, powerMonitor, session, fetch: cloudFetch, guard: localWorkspaceOnly, jsonFile, userData: app.getPath("userData"), dataDir: () => runningDataDir, encryption: cloudEncryption, wanted: () => !desktopRemoteAccess && serverReady && companionEnabledAtRest() && !oneHome.away() && !ownHome?.away(), signedIn: () => cloudAccount?.state().status === "connected", linkGrant: async () => { try { return await ensureCloudAccount().linkGrant(); } catch { return null; } }, label: () => `${os.hostname().replace(/\.local$/, "").slice(0, 50) || "computer"} phones`, port: () => SERVER_PORT, ownerToken: () => desktopMutationToken, log: slog })).catch(error => slog(`phone relay did not start: ${error?.message ?? error}`));
 if (!desktopRemoteAccess) serverEnroll = createServerEnroll({ client: ensureCloudAccount, servers: () => vpsLink.servers().filter(server => environmentsState.environments.some(entry => entry.id === server.id)),
   call: (id, method, route, body) => vpsLink.ownerCall(id, method, route, body), store: jsonFile(path.join(app.getPath("userData"), "server-enroll.json")), log: slog });
 // A VPS's bots straight to My Cloud (vps-cloud-move-main.mjs); via this computer when the VPS can't do it itself.
@@ -3090,12 +3090,12 @@ function showHome(options) {
 }
 const openOwnCloud = id => showHome({ place: { cloud: id, name: environmentsState.environments.find(entry => entry.cloud?.id === id)?.name } });
 const placeInbox = createPlaceInboxWatch({ places: () => [{ id: LOCAL_ID, local: true }, ...cloudGone.keep(environmentsState.environments.filter(entry => entry.kind !== "local" && entry.origin))], activeId: () => environmentsState.activeId, local: localServerRequest, cloudFetch: cloudFetch, asleep: origin => homeWindow.asleepAt(origin), shown: () => !desktopRemoteAccess && serverReady && Boolean(mainWindow && !mainWindow.isDestroyed() && mainWindow.isVisible()), changed: () => railChanged() });
-/** A server of the person's own this app linked, which can move to dusk cloud from here now. */
+/** A server of the person's own this app linked, which can move to madani cloud from here now. */
 const serverCanMove = id => Boolean(!desktopRemoteAccess && vpsCloudMove && !vpsCloudMove.away() && vpsLink.servers().some(server => server.id === id));
 const railList = () => { ownHome?.refresh(); return railPlaces({ saved: environmentsState, waiting: placeInbox.waiting, home: homeWindow.cloudOrigin() ?? ownHome?.origin() ?? null, mine: myCloud(), state: desktopRemoteAccess ? null : cloudAccount?.state(), offers: entry => !desktopRemoteAccess && ownHome?.offers(entry) === true, cloudMoves: entry => serverCanMove(entry.id), accounts: accountRing.waiting() }); };
 // The rail as the window's own chrome (chrome-rail.mjs): this app's page beside every place's page, the one that lists.
 const chromeRail = createChromeRail({ createView: options => new WebContentsView(options), preload: path.join(__dirname, "preload.cjs"), log: slog, prefs: () => desktopPrefs, changed: () => rail.changed(),
-  args: () => [...desktopCompanionRendererArguments(rendererOrigin(), desktopRemoteAccess), "--dusk-current-local-origin=1", ...(accountApp() ? ["--dusk-company-desktop=1"] : []), ...(accountApp() || accountGateNeeded() ? ["--dusk-account-gate=1"] : []), `--dusk-app-version=${app.getVersion()}`],
+  args: () => [...desktopCompanionRendererArguments(rendererOrigin(), desktopRemoteAccess), "--madani-current-local-origin=1", ...(accountApp() ? ["--madani-company-desktop=1"] : []), ...(accountApp() || accountGateNeeded() ? ["--madani-account-gate=1"] : []), `--madani-app-version=${app.getVersion()}`],
   url: () => `${rendererOrigin()}${CHROME_RAIL_PATH}`, wanted: () => false });
 chromeRail.install(ipcMain);
 function railChanged() { chromeRail.refresh(); rail.changed(); void localUi?.refresh(); }
@@ -3225,7 +3225,7 @@ ipcMain.handle("workspaces:menu", workspaceOnly(async (_event, from) => {
     });
     if (!template.length) return;
     // dev runs only (the smoke walkthrough): a native popup can't be clicked headless, so the named row is chosen instead
-    const pick = !app.isPackaged ? process.env.DUSK_SMOKE_MENU_PICK : "";
+    const pick = !app.isPackaged ? process.env.MADANI_SMOKE_MENU_PICK : "";
     if (pick) { const row = template.find((item) => item.id === pick); if (row?.click) { row.click(); return; } }
     const menu = Menu.buildFromTemplate(template);
     await new Promise((resolve) => menu.popup({ window: mainWindow, callback: resolve }));
@@ -3338,7 +3338,7 @@ setCuaStateListener((connection) => {
 
 app.whenReady().then(async () => {
   if (await offerMoveToApplications({ app, ask: options => dialog.showMessageBox(options), memory: jsonFile(path.join(app.getPath("userData"), "move-to-applications.json")), home: os.homedir(), execPath: process.execPath,
-    automated: process.env.DUSK_SMOKE_TEST === "1" || app.commandLine.hasSwitch("remote-debugging-port"), atLogin: loginItem.startedHidden(), log: slog })) return;
+    automated: process.env.MADANI_SMOKE_TEST === "1" || app.commandLine.hasSwitch("remote-debugging-port"), atLogin: loginItem.startedHidden(), log: slog })) return;
   if (startedFresh) await session.defaultSession.clearStorageData().catch(error => slog(`start fresh: window storage not cleared (${error?.message ?? error})`));
   app.setAboutPanelOptions(aboutPanelOptions(app.getVersion()));
   startupTrace.mark("ready");
@@ -3382,7 +3382,7 @@ app.whenReady().then(async () => {
     item.setSavePath(collisionFreeDownloadPath(app.getPath("downloads"), item.getFilename()));
     revealDownloadWhenDone(item, (filePath) => shell.showItemInFolder(filePath));
   });
-  // Registry before lease: the lease and the child's DUSK_DATA_DIR both follow a named environment.
+  // Registry before lease: the lease and the child's MADANI_DATA_DIR both follow a named environment.
   environmentsState = environmentsStore.read();
   let bootDataDir = desktopDataDir();
   if (app.isPackaged) {
@@ -3392,7 +3392,7 @@ app.whenReady().then(async () => {
       persistEnvironments({ ...environmentsState, activeId: LOCAL_ID }, "unusable");
       dialog.showErrorBox(
         "The environment's folder is missing",
-        `${boot.missingDir} is not there anymore, so dusk bot came up on this computer's default data folder instead. Restore or remount that folder, then choose the environment again from the Server menu.`,
+        `${boot.missingDir} is not there anymore, so madani bot came up on this computer's default data folder instead. Restore or remount that folder, then choose the environment again from the Server menu.`,
       );
     }
     bootDataDir = boot.dataDir === desktopDataDir() ? startFolder() : boot.dataDir;
@@ -3406,8 +3406,8 @@ app.whenReady().then(async () => {
       runningDataDir = bootDataDir;
     } catch (error) {
       dialog.showErrorBox(
-        "dusk bot could not start safely",
-        error?.message ?? "Another process is using this dusk bot data folder.",
+        "madani bot could not start safely",
+        error?.message ?? "Another process is using this madani bot data folder.",
       );
       app.quit();
       return;
@@ -3417,7 +3417,7 @@ app.whenReady().then(async () => {
     ownerToken: () => (!app.isPackaged || serverReady ? desktopMutationToken : null),
     // in development the page is Vite's, which proxies /api to the server child that holds this same token
     uiPort: () => (app.isPackaged || desktopRemoteAccess ? null : Number(new URL(DEV_URL).port) || null) });
-  if (app.isPackaged) for (const scheme of ["duskbot", LEGACY.protocol]) app.setAsDefaultProtocolClient(scheme);
+  if (app.isPackaged) for (const scheme of ["madanibot", LEGACY.protocol]) app.setAsDefaultProtocolClient(scheme);
   if (process.platform === "darwin") app.dock.setIcon(APP_ICON);
   // An orphaned third-party key with no clear handler left: drop it rather than keep it at rest.
   if (secureCredentials && Object.hasOwn(secureCredentials, "assemblyAiApiKey") && !credentialFile.unavailable()) {
@@ -3575,8 +3575,8 @@ app.whenReady().then(async () => {
             runningDataDir = desktopDataDir();
           } catch (error) {
             dialog.showErrorBox(
-              "dusk bot could not start safely",
-              error?.message ?? "Another process is using this dusk bot data folder.",
+              "madani bot could not start safely",
+              error?.message ?? "Another process is using this madani bot data folder.",
             );
             app.quit();
             return;
@@ -3585,12 +3585,12 @@ app.whenReady().then(async () => {
           if (retried) {
             dialog.showErrorBox(
               "The environment was unhealthy",
-              `dusk bot could not start on ${bootDataDir} and came up on this computer's default data folder instead. Choose that environment again from the Server menu once it is available.`,
+              `madani bot could not start on ${bootDataDir} and came up on this computer's default data folder instead. Choose that environment again from the Server menu once it is available.`,
             );
           } else {
             dialog.showErrorBox(
-              "dusk bot could not start",
-              `dusk bot could not start on ${bootDataDir} or on this computer's default data folder. Check that both folders are readable, then start the app again.`,
+              "madani bot could not start",
+              `madani bot could not start on ${bootDataDir} or on this computer's default data folder. Check that both folders are readable, then start the app again.`,
             );
             app.quit();
           }
@@ -3700,7 +3700,7 @@ function startDemoUpdates() {
 }
 function startAppUpdates(notice) {
   const updateDir = path.join(app.getPath("userData"), "app-update");
-  const installedHere = () => (process.env.APPIMAGE ? swappedVersion(updateDir) === app.getVersion() : fs.existsSync(path.join(updateDir, process.platform === "win32" ? `DuskBot-${app.getVersion()}-setup.exe` : `DuskBot-${app.getVersion()}-${process.arch}.zip`)));
+  const installedHere = () => (process.env.APPIMAGE ? swappedVersion(updateDir) === app.getVersion() : fs.existsSync(path.join(updateDir, process.platform === "win32" ? `MadaniBot-${app.getVersion()}-setup.exe` : `MadaniBot-${app.getVersion()}-${process.arch}.zip`)));
   if (justUpdated(jsonFile(path.join(app.getPath("userData"), "app-version.json")), app.getVersion(), installedHere)) {
     appUpdatedTo = app.getVersion();
     try { productEvents.action("app_updated", { how: installedHere() ? "self" : "manual" }); } catch {}
@@ -3733,8 +3733,8 @@ function startAppUpdates(notice) {
 ipcMain.handle("app-update:state", localOrHome("app-update:state", appUpdateState));
 ipcMain.handle("app-update:restart", localOrHome("app-update:restart", () => appUpdater?.restart() ?? false));
 ipcMain.handle("app-update:download", localOrHome("app-update:download", () => appUpdater?.check({ again: true }) ?? null));
-// only the link main found for this release (an installer on dusk.bot or the downloads repo), or the download page
-ipcMain.handle("app-update:open", localOrHome("app-update:open", () => { const url = appUpdater?.state().manual?.url; void shell.openExternal(typeof url === "string" && /^https:\/\/(dusk\.bot|github\.com)\//.test(url) ? url : DOWNLOAD_PAGE); return true; }));
+// only the link main found for this release (an installer on madani.bot or the downloads repo), or the download page
+ipcMain.handle("app-update:open", localOrHome("app-update:open", () => { const url = appUpdater?.state().manual?.url; void shell.openExternal(typeof url === "string" && /^https:\/\/(madani\.bot|github\.com)\//.test(url) ? url : DOWNLOAD_PAGE); return true; }));
 ipcMain.handle("app-update:move", localOrHome("app-update:move", () => { try { return app.moveToApplicationsFolder(); } catch (error) { slog(`app update: could not move to Applications (${error instanceof Error ? error.message : String(error)})`); void shell.openExternal(DOWNLOAD_PAGE); return false; } }));
 ipcMain.handle("app-update:seen", localOrHome("app-update:seen", () => { if (appUpdatedTo) { appUpdatedTo = null; tellAppUpdate(); } }));
 

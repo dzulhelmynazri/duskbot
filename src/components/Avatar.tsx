@@ -10,7 +10,7 @@ import {
 } from "react";
 import { cn } from "@/lib/cn";
 import { MASCOT_INK, type MausColor, type MausMotion, type MausState } from "@/lib/mascot";
-import { DuskMark, type DuskMarkHandle } from "./mascot-view";
+import { MadaniMark, type MadaniMarkHandle } from "./mascot-view";
 import { hoverGaze, type MarkReaction } from "./mascot-engine";
 import { avatarCropRadius, botAvatarProfile, clampAvatarFocus, clampAvatarZoom, mascotFaceInk, type BotAvatarCrop, type MascotFaceColor } from "../../shared/bot-avatar";
 import { bodyShapeFor, type StoredBodyId } from "../../shared/bot-body";
@@ -53,7 +53,7 @@ export function roomAvatarGradient(color: MausColor): [string, string, string] {
   ];
 }
 
-export type MausAvatarHandle = Pick<DuskMarkHandle, "blink" | "spin" | "setExpression"> & Partial<Pick<DuskMarkHandle, "poke" | "react">>;
+export type MausAvatarHandle = Pick<MadaniMarkHandle, "blink" | "spin" | "setExpression"> & Partial<Pick<MadaniMarkHandle, "poke" | "react">>;
 
 export type MausAvatarProps = {
   color: MausColor;
@@ -110,7 +110,7 @@ function MausAvatarComponent(
   ref: React.Ref<MausAvatarHandle>,
 ) {
   const faceInk = mascotFaceInk(faceColor);
-  const inner = useRef<DuskMarkHandle>(null);
+  const inner = useRef<MadaniMarkHandle>(null);
   useImperativeHandle(ref, () => ({
     blink: () => inner.current?.blink(),
     spin: (durationMs?: number) => inner.current?.spin(durationMs),
@@ -149,7 +149,7 @@ function MausAvatarComponent(
       onPointerMove={tracking ? onPointerMove : undefined}
       onPointerLeave={tracking ? onPointerLeave : undefined}
     >
-      <DuskMark
+      <MadaniMark
         ref={inner}
         body={bodyShapeFor(bodyId)}
         colour={inkFor(color, gradient)}

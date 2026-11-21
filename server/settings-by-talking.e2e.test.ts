@@ -7,7 +7,7 @@ import { createInterface } from "node:readline";
 import { expect, it } from "vitest";
 import { z } from "zod";
 
-import { launchVerificationServer, runControlDusk } from "../scripts/control-dusk.ts";
+import { launchVerificationServer, runControlMadani } from "../scripts/control-madani.ts";
 import { waitForExit } from "./testing/cleanup.ts";
 
 type Reply = { isError?: boolean; content: Array<{ text: string }> };
@@ -23,7 +23,7 @@ it("a bot changes its own settings, the person's theme and a routine from inside
     expect(response.ok, `${method} ${path}`).toBe(true);
     return await response.json() as T;
   };
-  const control = (args: string[]) => runControlDusk([...args, "--url", fixture.info.url]);
+  const control = (args: string[]) => runControlMadani([...args, "--url", fixture.info.url]);
   try {
     const { bot } = await control(["new-bot", "--name", "Scout"]) as { bot: { id: string; threadId: string } };
     await control(["send", "--bot", bot.id, "--text", "Call yourself Scout Prime, go teal, keep replies short, and use a different model."]);
@@ -64,7 +64,7 @@ it("a bot changes its own settings, the person's theme and a routine from inside
 
     expect(await tool("app_settings", { action: "set", setting: "theme", value: "midnight" })).toContain("Set theme to midnight");
     const { prefs } = await api<{ prefs: Record<string, { value: string | null }> }>("GET", "/api/settings-sync/ui");
-    expect(prefs["dusk-skin"]?.value).toBe("midnight");
+    expect(prefs["madani-skin"]?.value).toBe("midnight");
 
     await tool("trigger", { action: "create", when: "schedule", name: "Morning brief", instructions: "Send me the day's plan.", schedule: { type: "daily", time: "08:00" } });
     const routine = async () => (await api<{ routines: Array<{ id: string; name: string; botId: string }> }>("GET", "/api/routines")).routines.find((one) => one.botId === bot.id);

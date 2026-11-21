@@ -11,7 +11,7 @@ import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { EmailError, openGuard, readsAsHeaders, safeAttachmentName, saveAttachment, testMailbox, testSending } from "./client.ts";
 
 const PASSWORD = "fake-password-never-to-be-sent";
-const root = mkdtempSync(join(tmpdir(), "dusk-mail-client-"));
+const root = mkdtempSync(join(tmpdir(), "madani-mail-client-"));
 afterAll(() => rmSync(root, { recursive: true, force: true }));
 
 function listen(server: Server): Promise<number> {

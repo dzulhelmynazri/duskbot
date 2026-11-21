@@ -1,6 +1,6 @@
-You are doing a second, sharper voice pass on SEO page records for dusk.bot. Two independent reviewers read a sample of the first rewrite and said: the facts hold, but it reads like a cautious manual, not a sharp friend. Fix that across your files.
+You are doing a second, sharper voice pass on SEO page records for madani.bot. Two independent reviewers read a sample of the first rewrite and said: the facts hold, but it reads like a cautious manual, not a sharp friend. Fix that across your files.
 
-READ FIRST: seo/WRITING.md (voice section, updated), the exemplars seo/pages/tool/always-on-cost.json, seo/pages/integration/gmail.json and seo/pages/action/gmail-create-email-draft.json (the bar), and seo/facts/dusk.md. Then /tmp/review-voice-a.md and /tmp/review-voice-b.md: if one of your files is named there, apply those exact fixes first.
+READ FIRST: seo/WRITING.md (voice section, updated), the exemplars seo/pages/tool/always-on-cost.json, seo/pages/integration/gmail.json and seo/pages/action/gmail-create-email-draft.json (the bar), and seo/facts/madani.md. Then /tmp/review-voice-a.md and /tmp/review-voice-b.md: if one of your files is named there, apply those exact fixes first.
 
 FOR EVERY FILE IN YOUR LIST:
 1. Lead with stakes or payoff, not warnings. Rewrite bold leads that are caveats ("x is not proof of y", "x does not establish y") into what the reader gets or the moment it hurts. Keep one clear safety point per page; cut repeated caveats.

@@ -1,5 +1,5 @@
 // Many bots at once against a fake-engine fixture: N bots each run T streamed turns concurrently while the server's
-// responsiveness, memory, CPU and database growth are sampled. Nothing real is touched (control-dusk's fixture).
+// responsiveness, memory, CPU and database growth are sampled. Nothing real is touched (control-madani's fixture).
 //   node --experimental-strip-types scripts/stress/many-bots.ts [--bots 12] [--turns 5] [--cadence 24:20]
 import { execFileSync } from "node:child_process";
 import { get } from "node:http";
@@ -7,7 +7,7 @@ import { mkdtempSync, readFileSync, readdirSync, rmSync, statSync, writeFileSync
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { parseArgs } from "node:util";
-import { launchVerificationServer } from "../control-dusk.ts";
+import { launchVerificationServer } from "../control-madani.ts";
 import { fixtureApi } from "../testing/preview-fixture.ts";
 import { waitForJob } from "../mcp-server.ts";
 
@@ -17,7 +17,7 @@ const { values } = parseArgs({ options: {
 const botCount = Number(values.bots);
 const turns = Number(values.turns);
 const reply = "word ".repeat(400).trim();
-const replyDir = mkdtempSync(join(tmpdir(), "dusk-stress-"));
+const replyDir = mkdtempSync(join(tmpdir(), "madani-stress-"));
 writeFileSync(join(replyDir, "reply.txt"), reply);
 const fixture = await launchVerificationServer({
   ...process.env, FAKE_CLAUDE_STREAM_CADENCE: values.cadence, FAKE_CLAUDE_REPLY_FILE: join(replyDir, "reply.txt"), FAKE_CLAUDE_TOOL_CALLS: "[]",

@@ -3,10 +3,10 @@ import UIKit
 
 /// The phone's haptics with one generator per kind, made once and kept prepared, so a tap's feedback lands with the
 /// touch instead of a bridge round trip later. One call per haptic.
-@objc(DuskHapticsPlugin)
-public class DuskHapticsPlugin: CAPPlugin, CAPBridgedPlugin {
-    public let identifier = "DuskHapticsPlugin"
-    public let jsName = "DuskHaptics"
+@objc(MadaniHapticsPlugin)
+public class MadaniHapticsPlugin: CAPPlugin, CAPBridgedPlugin {
+    public let identifier = "MadaniHapticsPlugin"
+    public let jsName = "MadaniHaptics"
     public let pluginMethods: [CAPPluginMethod] = [
         CAPPluginMethod(name: "play", returnType: CAPPluginReturnNone),
         CAPPluginMethod(name: "prepare", returnType: CAPPluginReturnNone),

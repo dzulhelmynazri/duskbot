@@ -17,7 +17,7 @@ const keystore = SecureStorage as unknown as {
   internalSetItem(options: { prefixedKey: string; data: string; sync: boolean }): Promise<void>;
   internalRemoveItem(options: { prefixedKey: string; sync: boolean }): Promise<{ success: boolean }>;
 };
-const SECRET_PREFIX = "dusk.";
+const SECRET_PREFIX = "madani.";
 import { BarcodeScanner, BarcodeFormat, GoogleBarcodeScannerModuleInstallState } from "@capacitor-mlkit/barcode-scanning";
 import { handleBack, type AppleCredential, type BackGestureEvent, type CameraPermission, type CameraScanner, type DeliveredNotification, type MobilePlatform, type OrientationBridge, type ScanOverlay, type TurnActivityBridge } from "@/mobile/platform";
 import type { NativeAction } from "@/mobile/phone-actions";
@@ -88,7 +88,7 @@ export interface SpeechPlugin {
   addListener(event: "level", listener: (event: { level?: number; session?: number }) => void): Promise<PluginListenerHandle>;
   addListener(event: "end", listener: (event: { code?: number; reason?: string; session?: number }) => void): Promise<PluginListenerHandle>;
 }
-const DuskSpeech = registerPlugin<SpeechPlugin>("DuskSpeech");
+const MadaniSpeech = registerPlugin<SpeechPlugin>("MadaniSpeech");
 
 /** The app's own Liquid Glass chat chrome (ios/App/App/GlassChromePlugin.swift), iOS 26 and later. */
 interface GlassPlugin {
@@ -105,15 +105,15 @@ interface GlassPlugin {
   home(options: { state: HomeGlassState | null }): Promise<void>;
   addListener(event: "glass", listener: (event: GlassEvent | { type: "paste"; files: NativeFile[] }) => void): Promise<PluginListenerHandle>;
 }
-const DuskGlass = registerPlugin<GlassPlugin>("DuskGlass");
+const MadaniGlass = registerPlugin<GlassPlugin>("MadaniGlass");
 
 /** A file the app wrote to its tmp folder for the page (ios/App/App/PickerPlugin.swift). */
 interface NativeFile { path: string; name: string; type: string }
 /** The composer's photo library and Files pickers, each opened straight (ios/App/App/PickerPlugin.swift). */
-const DuskPicker = registerPlugin<{
+const MadaniPicker = registerPlugin<{
   photos(options: { multiple: boolean }): Promise<{ files: NativeFile[] }>;
   files(options: { multiple: boolean }): Promise<{ files: NativeFile[] }>;
-}>("DuskPicker");
+}>("MadaniPicker");
 
 export async function nativeFiles(list: readonly NativeFile[], read: typeof fetch = fetch): Promise<File[]> {
   const files = await Promise.all(list.map(async (one) => {
@@ -156,7 +156,7 @@ interface MenuPlugin {
   resolve(options: { id: string; content: NativeMenuContent }): Promise<void>;
   addListener(event: "menu", listener: (event: NativeMenuEvent) => void): Promise<PluginListenerHandle>;
 }
-const DuskMenu = registerPlugin<MenuPlugin>("DuskMenu");
+const MadaniMenu = registerPlugin<MenuPlugin>("MadaniMenu");
 
 export function menuBridge(plugin: MenuPlugin): MenuBridge {
   const quiet = (work: Promise<unknown>) => { void work.catch(() => {}); };
@@ -173,7 +173,7 @@ interface OrientationPlugin {
   allowLandscape(options: { on: boolean }): Promise<void>;
   rotate(options: { to: "portrait" | "landscape" }): Promise<void>;
 }
-const DuskOrientation = registerPlugin<OrientationPlugin>("DuskOrientation");
+const MadaniOrientation = registerPlugin<OrientationPlugin>("MadaniOrientation");
 
 /** ActivityKit and the Live Activity's buttons (ios/App/App/TurnActivityPlugin.swift). */
 interface TurnActivityPlugin {
@@ -186,18 +186,18 @@ interface TurnActivityPlugin {
   addListener(event: "startToken", listener: (event: { token: string }) => void): Promise<PluginListenerHandle>;
   addListener(event: "action", listener: (event: NativeAction) => void): Promise<PluginListenerHandle>;
 }
-const DuskTurnActivity = registerPlugin<TurnActivityPlugin>("DuskTurnActivity");
+const MadaniTurnActivity = registerPlugin<TurnActivityPlugin>("MadaniTurnActivity");
 
 interface NotificationsPlugin {
   setViewing(options: { threadId: string | null }): Promise<void>;
   delivered(): Promise<{ notifications: DeliveredNotification[] }>;
   remove(options: { ids: string[] }): Promise<void>;
 }
-const DuskNotifications = registerPlugin<NotificationsPlugin>("DuskNotifications");
+const MadaniNotifications = registerPlugin<NotificationsPlugin>("MadaniNotifications");
 /** android only (android/.../PushSetupPlugin.java): whether the build carries a Firebase config, without which push
  * registration crashes the app */
-const DuskPushSetup = registerPlugin<{ configured(): Promise<{ configured: boolean }> }>("DuskPushSetup");
-const DuskHaptics = registerPlugin<{ play(options: { kind: string }): Promise<void> }>("DuskHaptics");
+const MadaniPushSetup = registerPlugin<{ configured(): Promise<{ configured: boolean }> }>("MadaniPushSetup");
+const MadaniHaptics = registerPlugin<{ play(options: { kind: string }): Promise<void> }>("MadaniHaptics");
 /** android only (android/.../InsetsPlugin.java): the window's insets edge to edge, and the keyboard's for the page */
 interface InsetsPlugin {
   setMode(options: { ride: boolean }): Promise<void>;
@@ -206,11 +206,11 @@ interface InsetsPlugin {
   addListener(event: "keyboard", listener: (event: { height: number; settled: boolean; duration?: number; at?: number }) => void): Promise<PluginListenerHandle>;
   addListener(event: "back", listener: (event: { phase: "start" | "progress" | "cancel" | "commit"; progress?: number }) => void): Promise<PluginListenerHandle>;
 }
-const DuskInsets = registerPlugin<InsetsPlugin>("DuskInsets");
+const MadaniInsets = registerPlugin<InsetsPlugin>("MadaniInsets");
 
 async function groundHex(): Promise<string> {
   const { cssHex } = await import("@/mobile/native-glass");
-  const root = document.querySelector(".dusk-mobile") ?? document.documentElement;
+  const root = document.querySelector(".madani-mobile") ?? document.documentElement;
   return cssHex(getComputedStyle(root).getPropertyValue("--color-app")) ?? "";
 }
 
@@ -229,18 +229,18 @@ async function androidDelivered(): Promise<DeliveredNotification[]> {
 
 function turnActivityBridge(): TurnActivityBridge {
   return {
-    async start(attributes, state) { return (await DuskTurnActivity.start({ attributes, state })).id ?? null; },
-    update: (id, state) => DuskTurnActivity.update({ id, state }),
-    end: (id, state, now) => DuskTurnActivity.end({ id, state, ...(now ? { now } : {}) }),
-    list: async () => (await DuskTurnActivity.list()).activities,
-    onToken: (listener) => unsubscribe([DuskTurnActivity.addListener("token", listener)]),
-    onStartToken: (listener) => unsubscribe([DuskTurnActivity.addListener("startToken", ({ token }) => listener(token))]),
-    lineKey: async () => (await DuskTurnActivity.lineKey()).key ?? null,
+    async start(attributes, state) { return (await MadaniTurnActivity.start({ attributes, state })).id ?? null; },
+    update: (id, state) => MadaniTurnActivity.update({ id, state }),
+    end: (id, state, now) => MadaniTurnActivity.end({ id, state, ...(now ? { now } : {}) }),
+    list: async () => (await MadaniTurnActivity.list()).activities,
+    onToken: (listener) => unsubscribe([MadaniTurnActivity.addListener("token", listener)]),
+    onStartToken: (listener) => unsubscribe([MadaniTurnActivity.addListener("startToken", ({ token }) => listener(token))]),
+    lineKey: async () => (await MadaniTurnActivity.lineKey()).key ?? null,
   };
 }
 
 /** a push the bot host sent, as opposed to one from an older link that put its ids at the top level */
-const fromBotHost = (data: Record<string, unknown>) => ["dusk", "omb"].some((key) => data[key] && typeof data[key] === "object");
+const fromBotHost = (data: Record<string, unknown>) => ["madani", "omb"].some((key) => data[key] && typeof data[key] === "object");
 
 export function orientationBridge(plugin: OrientationPlugin): OrientationBridge {
   return {
@@ -518,9 +518,9 @@ export async function nativePlatform(): Promise<MobilePlatform> {
     bounded(App.getInfo(), "app info"),
     bounded(App.getLaunchUrl(), "launch url"),
     bounded(overlayReady ?? Promise.resolve(), "status bar"),
-    kind === "ios" && Capacitor.isPluginAvailable("DuskGlass") ? bounded(DuskGlass.supported(), "glass") : undefined,
-    kind === "ios" && Capacitor.isPluginAvailable("DuskMenu") ? bounded(DuskMenu.supported(), "menu") : undefined,
-    kind === "android" && Capacitor.isPluginAvailable("DuskPushSetup") ? bounded(DuskPushSetup.configured(), "push setup") : undefined,
+    kind === "ios" && Capacitor.isPluginAvailable("MadaniGlass") ? bounded(MadaniGlass.supported(), "glass") : undefined,
+    kind === "ios" && Capacitor.isPluginAvailable("MadaniMenu") ? bounded(MadaniMenu.supported(), "menu") : undefined,
+    kind === "android" && Capacitor.isPluginAvailable("MadaniPushSetup") ? bounded(MadaniPushSetup.configured(), "push setup") : undefined,
   ]);
   const pushOn = kind === "ios" || Boolean(pushSetup?.configured);
   let pendingLaunchUrl = launch?.url;
@@ -532,10 +532,10 @@ export async function nativePlatform(): Promise<MobilePlatform> {
     set: (key, value) => keystore.internalSetItem({ prefixedKey: SECRET_PREFIX + key, data: value, sync: false }),
     remove: async (key) => { await keystore.internalRemoveItem({ prefixedKey: SECRET_PREFIX + key, sync: false }); },
   };
-  const speech = Capacitor.isPluginAvailable("DuskSpeech");
-  const turnActivityOn = kind === "ios" && Capacitor.isPluginAvailable("DuskTurnActivity");
-  const notificationsOn = kind === "ios" && Capacitor.isPluginAvailable("DuskNotifications");
-  const insetsOn = kind === "android" && Capacitor.isPluginAvailable("DuskInsets");
+  const speech = Capacitor.isPluginAvailable("MadaniSpeech");
+  const turnActivityOn = kind === "ios" && Capacitor.isPluginAvailable("MadaniTurnActivity");
+  const notificationsOn = kind === "ios" && Capacitor.isPluginAvailable("MadaniNotifications");
+  const insetsOn = kind === "android" && Capacitor.isPluginAvailable("MadaniInsets");
   const backs: Array<() => boolean> = [];
   let backButton: Promise<PluginListenerHandle> | undefined;
   const atRoot = new WeakSet<() => boolean>();
@@ -547,7 +547,7 @@ export async function nativePlatform(): Promise<MobilePlatform> {
     const gesture = insetsOn && Boolean(gestureOwner) && backs.at(-1) === gestureOwner;
     if (gesture !== gestureOn) {
       gestureOn = gesture;
-      void DuskInsets.setBackGesture({ on: gesture }).catch(() => {});
+      void MadaniInsets.setBackGesture({ on: gesture }).catch(() => {});
     }
     const on = backs.some((one) => !atRoot.has(one));
     if (kind !== "android" || on === backOn) return;
@@ -555,23 +555,23 @@ export async function nativePlatform(): Promise<MobilePlatform> {
     void App.toggleBackButtonHandler({ enabled: on }).catch(() => {});
   };
   if (insetsOn) {
-    void DuskInsets.addListener("back", ({ phase, progress }) => {
+    void MadaniInsets.addListener("back", ({ phase, progress }) => {
       const event: BackGestureEvent = phase === "start" || phase === "progress" ? { phase, progress: progress ?? 0 } : { phase };
       const taken = gestures.reduce((any, listener) => listener(event) || any, false);
       if (phase === "commit" && !taken && !handleBack(backs)) void App.minimizeApp().catch(() => {});
     }).catch(() => {});
   }
-  if (kind === "ios" && Capacitor.isPluginAvailable("DuskPicker")) {
+  if (kind === "ios" && Capacitor.isPluginAvailable("MadaniPicker")) {
     setNativeAttach({
-      photos: async () => nativeFiles((await DuskPicker.photos({ multiple: true })).files),
-      files: async () => nativeFiles((await DuskPicker.files({ multiple: true })).files),
+      photos: async () => nativeFiles((await MadaniPicker.photos({ multiple: true })).files),
+      files: async () => nativeFiles((await MadaniPicker.files({ multiple: true })).files),
     });
   }
   registerPhoneVoice({
     os: kind,
-    speech: speech ? phoneSpeech(DuskSpeech) : undefined,
+    speech: speech ? phoneSpeech(MadaniSpeech) : undefined,
     secrets,
-    openSettings: speech ? () => DuskSpeech.openSettings() : undefined,
+    openSettings: speech ? () => MadaniSpeech.openSettings() : undefined,
   });
 
   return {
@@ -579,11 +579,11 @@ export async function nativePlatform(): Promise<MobilePlatform> {
     native: true,
     appVersion: info?.version || __APP_VERSION__,
     deviceName: () => kind === "ios" ? "iPhone" : "Android phone",
-    glass: glass?.supported ? glassBridge(DuskGlass, glass.acks === true) : undefined,
-    menu: menu?.supported ? menuBridge(DuskMenu) : undefined,
-    orientation: Capacitor.isPluginAvailable("DuskOrientation") ? orientationBridge(DuskOrientation) : undefined,
+    glass: glass?.supported ? glassBridge(MadaniGlass, glass.acks === true) : undefined,
+    menu: menu?.supported ? menuBridge(MadaniMenu) : undefined,
+    orientation: Capacitor.isPluginAvailable("MadaniOrientation") ? orientationBridge(MadaniOrientation) : undefined,
     haptic(type) {
-      if (Capacitor.isPluginAvailable("DuskHaptics")) { void DuskHaptics.play({ kind: type }).catch(() => {}); return; }
+      if (Capacitor.isPluginAvailable("MadaniHaptics")) { void MadaniHaptics.play({ kind: type }).catch(() => {}); return; }
       void (async () => {
         switch (type) {
           case "light": case "soft":
@@ -607,7 +607,7 @@ export async function nativePlatform(): Promise<MobilePlatform> {
     },
     onKeyboard(listener) {
       if (insetsOn) {
-        return unsubscribe([DuskInsets.addListener("keyboard", ({ height, settled, duration, at }) => listener({ height, phase: settled ? "did" : "will", duration, at }))]);
+        return unsubscribe([MadaniInsets.addListener("keyboard", ({ height, settled, duration, at }) => listener({ height, phase: settled ? "did" : "will", duration, at }))]);
       }
       const settled = [
         Keyboard.addListener("keyboardDidShow", ({ keyboardHeight }) => listener({ height: keyboardHeight, phase: "did" })),
@@ -615,7 +615,7 @@ export async function nativePlatform(): Promise<MobilePlatform> {
       ];
       // with the glass chrome a move comes from the notification the native composer rides, with its timing
       if (glass?.supported) {
-        return unsubscribe([...settled, DuskGlass.addListener("glass", (event) => {
+        return unsubscribe([...settled, MadaniGlass.addListener("glass", (event) => {
           if (event.type === "keyboard") listener({ height: event.height, phase: event.settled ? "did" : "will", duration: event.duration, at: event.at, lift: event.lift });
         })]);
       }
@@ -628,12 +628,12 @@ export async function nativePlatform(): Promise<MobilePlatform> {
     hideKeyboard() {
       void Keyboard.hide().catch(() => {});
     },
-    keyboardMode: insetsOn ? (ride) => { void DuskInsets.setMode({ ride }).catch(() => {}); } : undefined,
+    keyboardMode: insetsOn ? (ride) => { void MadaniInsets.setMode({ ride }).catch(() => {}); } : undefined,
     setStatusBar(style) {
       if (insetsOn) {
         paintBars = () => {
           const camera = document.documentElement.classList.contains("mobile-scanning");
-          void groundHex().then((ground) => DuskInsets.setBars({ status: style, ground, camera })).catch(() => {});
+          void groundHex().then((ground) => MadaniInsets.setBars({ status: style, ground, camera })).catch(() => {});
         };
         paintBars();
         return;
@@ -662,7 +662,7 @@ export async function nativePlatform(): Promise<MobilePlatform> {
       backRoute();
     },
     onAppUrl(listener) {
-      // a universal link (https://dusk.bot/m/...) arrives as the app link it stands for
+      // a universal link (https://madani.bot/m/...) arrives as the app link it stands for
       const stop = unsubscribe([App.addListener("appUrlOpen", ({ url }) => listener(appLinkFromUniversal(url) ?? url))]);
       if (pendingLaunchUrl && listener(appLinkFromUniversal(pendingLaunchUrl) ?? pendingLaunchUrl)) pendingLaunchUrl = undefined;
       return stop;
@@ -751,10 +751,10 @@ export async function nativePlatform(): Promise<MobilePlatform> {
         return "prompt";
       }
     } : undefined,
-    setViewingThread: notificationsOn ? (threadId) => { void DuskNotifications.setViewing({ threadId }).catch(() => {}); } : undefined,
+    setViewingThread: notificationsOn ? (threadId) => { void MadaniNotifications.setViewing({ threadId }).catch(() => {}); } : undefined,
     async deliveredNotifications() {
       try {
-        return notificationsOn ? (await DuskNotifications.delivered()).notifications : kind === "android" ? await androidDelivered() : [];
+        return notificationsOn ? (await MadaniNotifications.delivered()).notifications : kind === "android" ? await androidDelivered() : [];
       } catch {
         return [];
       }
@@ -762,7 +762,7 @@ export async function nativePlatform(): Promise<MobilePlatform> {
     async removeDeliveredNotifications(ids) {
       if (!ids.length) return;
       try {
-        if (notificationsOn) return await DuskNotifications.remove({ ids: [...ids] });
+        if (notificationsOn) return await MadaniNotifications.remove({ ids: [...ids] });
         if (kind !== "android") return;
         // Android cancels by id and tag, so the delivered entries go back whole
         const { notifications } = await PushNotifications.getDeliveredNotifications();
@@ -781,7 +781,7 @@ export async function nativePlatform(): Promise<MobilePlatform> {
         const data = notification.data ?? {};
         if (actionId !== "tap" || fromBotHost(data)) listener({ actionId, ...(inputValue ? { inputValue } : {}), data });
       })];
-      if (kind === "ios" && Capacitor.isPluginAvailable("DuskTurnActivity")) handles.push(DuskTurnActivity.addListener("action", listener));
+      if (kind === "ios" && Capacitor.isPluginAvailable("MadaniTurnActivity")) handles.push(MadaniTurnActivity.addListener("action", listener));
       return unsubscribe(handles);
     },
     turnActivity: turnActivityOn ? turnActivityBridge() : undefined,

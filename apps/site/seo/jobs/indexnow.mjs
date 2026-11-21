@@ -32,7 +32,7 @@ export function changes(now, sent, gone) {
   return { urls: [...urls, ...removed], next: { ...sent, ...now, ...Object.fromEntries(removed.map((u) => [u, 'gone'])) } };
 }
 
-export async function run({ send = false, siteUrl = (process.env.SITE_URL || 'https://dusk.bot').replace(/\/+$/, ''), log = console.log, fetchImpl = fetch } = {}) {
+export async function run({ send = false, siteUrl = (process.env.SITE_URL || 'https://madani.bot').replace(/\/+$/, ''), log = console.log, fetchImpl = fetch } = {}) {
   const key = fs.readFileSync(path.join(seoDir, 'indexnow-key.txt'), 'utf8').trim();
   const sent = fs.existsSync(sentFile) ? JSON.parse(fs.readFileSync(sentFile, 'utf8')) : {};
   const goneList = [...JSON.parse(fs.readFileSync(path.join(site, '_gone.json'), 'utf8')), ...Object.keys(JSON.parse(fs.readFileSync(path.join(site, '_redirects.json'), 'utf8')))]

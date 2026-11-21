@@ -6,7 +6,7 @@ import { mkdirSync, readFileSync, readdirSync, rmSync, statSync, writeFileSync }
 import { join } from "node:path";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
-import { runControlDusk } from "../scripts/control-dusk.ts";
+import { runControlMadani } from "../scripts/control-madani.ts";
 import { startFakeSlack, type FakeSlack } from "./testing/fake-slack.ts";
 import { launchRestartableServer, type RestartableServer } from "./testing/restartable-server.ts";
 
@@ -42,10 +42,10 @@ describe("Slack bots on a fixture server", () => {
 
   beforeAll(async () => {
     fake = await startFakeSlack();
-    scratch = join(process.env.TMPDIR ?? "/tmp", `dusk-slack-e2e-${process.pid}-${Date.now()}`);
+    scratch = join(process.env.TMPDIR ?? "/tmp", `madani-slack-e2e-${process.pid}-${Date.now()}`);
     mkdirSync(scratch, { recursive: true });
-    env("DUSK_SLACK_API_URL", fake.url);
-    env("DUSK_SAVED_SECRETS_KEY_FILE", join(scratch, "keys", "saved-secrets.key"));
+    env("MADANI_SLACK_API_URL", fake.url);
+    env("MADANI_SAVED_SECRETS_KEY_FILE", join(scratch, "keys", "saved-secrets.key"));
     env("FAKE_CLAUDE_REPLIES", JSON.stringify(Array.from({ length: 40 }, () => REPLY)));
     env("FAKE_CLAUDE_REPLY_STATE", join(scratch, "reply-state"));
     env("FAKE_CLAUDE_TOOL_CALLS_FILE", callsFile());
@@ -71,7 +71,7 @@ describe("Slack bots on a fixture server", () => {
   });
 
   it("provisions an app from the bot, installs it through OAuth and brings it online with the app-level token", async () => {
-    botId = ((await runControlDusk(["new-bot", "--name", "Nova", "--url", server.url])) as { bot: { id: string } }).bot.id;
+    botId = ((await runControlMadani(["new-bot", "--name", "Nova", "--url", server.url])) as { bot: { id: string } }).bot.id;
     expect(await api("GET", `/api/slack/bots/${botId}`)).toMatchObject({ state: "not_linked" });
     const provisioned = await api("POST", `/api/slack/bots/${botId}/provision`);
     expect(provisioned.status.state).toBe("provisioned");
@@ -149,7 +149,7 @@ describe("Slack bots on a fixture server", () => {
   it("uses its slack_* tools in a turn and sends a file out into the thread", async () => {
     const dump = JSON.parse(readFileSync(join(server.dataDir, "fake-claude-dump.json"), "utf8")) as { cwd: string; env: Record<string, string>; mcpConfig: any };
     const agents = dump.mcpConfig?.mcpServers?.agents;
-    expect(agents?.env?.DUSK_SLACK).toBe("1");
+    expect(agents?.env?.MADANI_SLACK).toBe("1");
     writeFileSync(join(dump.cwd, "report.txt"), "quarterly numbers");
     writeFileSync(callsFile(), JSON.stringify([
       { name: "slack_post", server: "agents", input: { channel: "#general", text: "**Morning**, team" } },

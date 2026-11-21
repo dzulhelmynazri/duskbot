@@ -2,11 +2,11 @@
 
 Effective date: 12 November 2026. Last updated: 12 November 2026.
 
-This policy sets out what you may not do with dusk bot, dusk cloud, the account dashboard, the link service and connected apps. It is part of our [terms of use](terms.md). It applies to you and to everything your bots do on your behalf: you are responsible for your bots' actions as if you had taken them yourself.
+This policy sets out what you may not do with madani bot, madani cloud, the account dashboard, the link service and connected apps. It is part of our [terms of use](terms.md). It applies to you and to everything your bots do on your behalf: you are responsible for your bots' actions as if you had taken them yourself.
 
 ## Illegal and harmful content
 
-Do not use dusk bot to create, store, send or share:
+Do not use madani bot to create, store, send or share:
 
 - sexual content involving minors, in any form;
 - content that threatens, harasses, stalks or bullies a person, or incites violence or hatred against people;
@@ -23,20 +23,20 @@ Do not use dusk bot to create, store, send or share:
 
 ## Security and access
 
-- Do not access, probe or test systems, accounts or data you are not authorised to use. Security research on dusk bot itself is welcome under our [security policy](security.md).
+- Do not access, probe or test systems, accounts or data you are not authorised to use. Security research on madani bot itself is welcome under our [security policy](security.md).
 - Do not attack, overload or disrupt any network or service, including ours.
 - Do not get around authentication, rate limits, plan limits or other safeguards, ours or anyone else's.
 - Do not use bots to collect personal data about people without a lawful basis, or to scrape services in breach of their terms.
 
 ## AI providers and connected apps
 
-- Follow the terms and usage policies of every AI provider and connected app your bots use. A dusk bot plan does not give you permission to break them.
+- Follow the terms and usage policies of every AI provider and connected app your bots use. A madani bot plan does not give you permission to break them.
 - Do not use a provider account, key or connection that is not yours, or share yours in a way its terms forbid.
-- Do not use dusk bot to get around a provider's safety measures.
+- Do not use madani bot to get around a provider's safety measures.
 
-## dusk cloud desktops
+## madani cloud desktops
 
-A dusk cloud desktop runs on our infrastructure provider's machines. On it, do not:
+A madani cloud desktop runs on our infrastructure provider's machines. On it, do not:
 
 - mine cryptocurrency, or run work that holds the processor or network at full use for long periods unrelated to your bots;
 - host public file sharing, proxies, VPNs or services for other people;
@@ -54,4 +54,4 @@ If we believe you have broken this policy, we may remove content we host, pause 
 
 ## Reporting abuse
 
-If you see dusk bot used in a way this policy forbids, email hello@dusk.bot with "abuse" in the subject and as much detail as you can safely share. Report security vulnerabilities to security@dusk.bot instead.
+If you see madani bot used in a way this policy forbids, email hello@madani.bot with "abuse" in the subject and as much detail as you can safely share. Report security vulnerabilities to security@madani.bot instead.

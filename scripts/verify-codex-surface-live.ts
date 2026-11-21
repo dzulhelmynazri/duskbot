@@ -3,16 +3,16 @@
 // sign-in is copied into the disposable home; cleanup removes that copy.
 import { chmodSync, copyFileSync, mkdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
-import { launchVerificationServer } from "./control-dusk.ts";
-import { ensureUiBrowser } from "./testing/control-dusk-ui.ts";
+import { launchVerificationServer } from "./control-madani.ts";
+import { ensureUiBrowser } from "./testing/control-madani-ui.ts";
 import { fixtureApi, mountPreview, parkUntilSignal } from "./testing/preview-fixture.ts";
 
-const cli = process.env.DUSK_VERIFY_CODEX_CLI;
-const auth = process.env.DUSK_VERIFY_CODEX_AUTH;
-const model = process.env.DUSK_VERIFY_CODEX_MODEL;
-if (!cli || !auth || !model) throw new Error("Supply DUSK_VERIFY_CODEX_CLI, DUSK_VERIFY_CODEX_AUTH and DUSK_VERIFY_CODEX_MODEL explicitly. This test uses real model quota.");
+const cli = process.env.MADANI_VERIFY_CODEX_CLI;
+const auth = process.env.MADANI_VERIFY_CODEX_AUTH;
+const model = process.env.MADANI_VERIFY_CODEX_MODEL;
+if (!cli || !auth || !model) throw new Error("Supply MADANI_VERIFY_CODEX_CLI, MADANI_VERIFY_CODEX_AUTH and MADANI_VERIFY_CODEX_MODEL explicitly. This test uses real model quota.");
 const browser = await ensureUiBrowser(process.env, console.error);
-const fixture = await launchVerificationServer({ DUSK_BROWSER_TIMING: process.env.DUSK_BROWSER_TIMING }, undefined, undefined,
+const fixture = await launchVerificationServer({ MADANI_BROWSER_TIMING: process.env.MADANI_BROWSER_TIMING }, undefined, undefined,
   { binaryPath: browser.binary, executablePath: browser.chrome ?? "" }, undefined, ["codex"]);
 let preview: Awaited<ReturnType<typeof mountPreview>> | undefined;
 try {

@@ -14,15 +14,15 @@ afterEach(() => {
   for (const path of temporary.splice(0)) rmSync(path, { recursive: true, force: true });
 });
 const scratch = () => {
-  const dir = mkdtempSync(join(tmpdir(), "dusk-vm-profiles-"));
+  const dir = mkdtempSync(join(tmpdir(), "madani-vm-profiles-"));
   temporary.push(dir);
   return dir;
 };
 
-/** The exact printf the image runs to write prepare-duskbot-workspace.sh, pointed at a scratch workspace. */
+/** The exact printf the image runs to write prepare-madanibot-workspace.sh, pointed at a scratch workspace. */
 function prepareScript(dir: string, workspace: string): string {
   const dockerfile = managedImageDockerfile();
-  const end = dockerfile.indexOf("> /usr/local/bin/prepare-duskbot-workspace.sh");
+  const end = dockerfile.indexOf("> /usr/local/bin/prepare-madanibot-workspace.sh");
   const start = dockerfile.lastIndexOf("RUN printf", end);
   expect(start).toBeGreaterThan(-1);
   const script = join(dir, "prepare.sh");
@@ -135,7 +135,7 @@ printf '%s\\n' "$*" >> '${log}'
 [ "$1" = cp ] || { echo "unexpected: $*" >&2; exit 64; }
 ${opts.fail ? `echo '${opts.fail}' >&2; exit 1` : ""}
 src="\${2#*:}"
-[ -e "${container}$src" ] || [ -L "${container}$src" ] || { echo "Error response from daemon: Could not find the file $src in container dusk" >&2; exit 1; }
+[ -e "${container}$src" ] || [ -L "${container}$src" ] || { echo "Error response from daemon: Could not find the file $src in container madani" >&2; exit 1; }
 [ -e "$3" ] && { echo "destination exists" >&2; exit 1; }
 cp -RP "${container}$src" "$3"
 `);
@@ -143,7 +143,7 @@ cp -RP "${container}$src" "$3"
   return { runtime, log };
 }
 
-const target = (workspaceDir: string): LocalVmTarget => ({ key: "bot:x", containerName: "duskbot-computer-x", workspaceDir, viewerPort: null, label: "x" });
+const target = (workspaceDir: string): LocalVmTarget => ({ key: "bot:x", containerName: "madanibot-computer-x", workspaceDir, viewerPort: null, label: "x" });
 
 describe.skipIf(process.platform === "win32")("rescueFirefoxProfile", () => {
   it("copies user-installed desktop apps into the durable area before replacement", async () => {
@@ -182,8 +182,8 @@ describe.skipIf(process.platform === "win32")("rescueFirefoxProfile", () => {
     expect(await rescueFirefoxProfile(runtime, target(workspace))).toBe("rescued");
     expect(readFileSync(join(workspace, ".browser-profiles", "mozilla", "firefox", "abc.default-esr", "cookies.sqlite"), "utf8")).toBe("signed in");
     const [copy] = readFileSync(log, "utf8").trim().split("\n");
-    expect(copy).toMatch(/^cp duskbot-computer-x:\/home\/cua\/\.mozilla \S+\/\.browser-profiles\/\.mozilla-rescue-[0-9a-f]+$/);
-    expect(copy.startsWith(`cp duskbot-computer-x:/home/cua/.mozilla ${join(workspace, ".browser-profiles")}/`)).toBe(true);
+    expect(copy).toMatch(/^cp madanibot-computer-x:\/home\/cua\/\.mozilla \S+\/\.browser-profiles\/\.mozilla-rescue-[0-9a-f]+$/);
+    expect(copy.startsWith(`cp madanibot-computer-x:/home/cua/.mozilla ${join(workspace, ".browser-profiles")}/`)).toBe(true);
     expect(readdirSync(join(workspace, ".browser-profiles"))).toEqual(["mozilla"]);
   });
 

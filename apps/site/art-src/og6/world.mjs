@@ -2,7 +2,7 @@
 // lilac line, the lime meadow rising into hills with flecks and flowers, and the pixel bots drawn by the engine in a pose.
 // cards.mjs builds each card from these
 import { createHash } from 'node:crypto';
-import DuskPixel from '../../mascot-src/pixel/engine.js';
+import MadaniPixel from '../../mascot-src/pixel/engine.js';
 import { COLOURS } from '../../mascot-src/pixel/crowd.js';
 
 export const INK = '#1b1b1f';
@@ -10,7 +10,7 @@ const PAPER = '#fdfdfd', LILAC = '#d0cefb', LIME = '#c9f63f';
 export const MOODS = {
   sky: { bands: ['#06bafd', '#3cd0fd', '#90e4fc', '#c2ecfc'] },
   teal: { bands: ['#0790b8', '#10abc9', '#69d6d6', '#c8f2b0'] },
-  dusk: { bands: ['#47308f', '#7845a6', '#d9649b', '#ffb08f'] },
+  madani: { bands: ['#47308f', '#7845a6', '#d9649b', '#ffb08f'] },
   night: { bands: ['#0d1640', '#18275f', '#283b80', '#5b54b8'], night: true },
 };
 // a pose is the eyes, a lean and a squash
@@ -33,7 +33,7 @@ export function rng(seed) {
 
 // a bot drawn by the pixel engine in a pose, as svg with its feet at the bottom edge of the body box
 export function botSvg(shape, colour, pose = 'open', { grid = 26, flip = false } = {}) {
-  const P = POSES[pose] || POSES.open, b = DuskPixel.create(null, { body: shape, size: grid });
+  const P = POSES[pose] || POSES.open, b = MadaniPixel.create(null, { body: shape, size: grid });
   const side = flip ? -1 : 1;
   b.lean.x = (P.lean || 0) * side; b.sq.x = P.sq || 0; b.gx.x = (P.gaze || 0) * side * -1; b.gy.x = 0; b.T = 0.3;
   b.draw(P.eyes, P.eyesR || P.eyes, 0, b.def.float ? -b.def.N * 0.1 : 0);

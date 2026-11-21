@@ -83,7 +83,7 @@ describe("a saved login a site refused", () => {
   const homes: string[] = [];
   afterEach(() => { for (const dir of homes.splice(0)) rmSync(dir, { recursive: true, force: true }); });
   function saved() {
-    const dataDir = mkdtempSync(join(tmpdir(), "dusk-bot-logins-"));
+    const dataDir = mkdtempSync(join(tmpdir(), "madani-bot-logins-"));
     homes.push(dataDir);
     const store = new LoginStore({ dataDir });
     const onePassword = { candidates: () => [], sitesFor: () => [], markUsed: () => {}, fresh: async () => {} } as unknown as OnePasswordLogins;

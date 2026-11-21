@@ -27,7 +27,7 @@ function fixture(): StoredEvent[] {
       let at = START + rand() * 12.4 * DAY;
       if (v % 9 === 0) at = Math.floor(at / DAY) * DAY + DAY - 4 * 60_000;
       const session = `${visitor}-s${s}`, base = { visitor, session, source, channel, country: pick(["DE", "IN", "US"]), device: pick(["desktop", "mobile"]), os: "mac", browser: "safari",
-        ...(rand() < 0.3 ? { utm: { campaign: "launch", term: "AI Bot" } } : {}), host: "dusk.bot" };
+        ...(rand() < 0.3 ? { utm: { campaign: "launch", term: "AI Bot" } } : {}), host: "madani.bot" };
       for (let p = 0; p < 1 + Math.floor(rand() * 4); p++) {
         const pv = `${session}-pv${p}`, path = pick(["/", "/pricing", "/download", "/blog/a"]);
         if (p === 0 && rand() < 0.2) add("site_leave", at - 1000, null, { path, scroll: 5, ms: 100 }, { ...base, pv });

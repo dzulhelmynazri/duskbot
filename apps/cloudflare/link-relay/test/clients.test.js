@@ -14,12 +14,12 @@ describe("the two relay clients", () => {
     expect(createHash("sha256").update(token).digest("hex")).toMatch(/^[0-9a-f]{64}$/);
   });
 
-  it("dial the same relay, which DUSK_RELAY_URL moves or turns off", () => {
+  it("dial the same relay, which MADANI_RELAY_URL moves or turns off", () => {
     for (const read of [agent.cloudRelayUrl, app.cloudRelayUrl]) {
-      expect(read({})).toBe("https://relay.dusk.bot");
-      expect(read({ DUSK_RELAY_URL: "https://relay-preview.dusk.bot/" })).toBe("https://relay-preview.dusk.bot");
-      expect(read({ DUSK_RELAY_URL: "off" })).toBeNull();
-      expect(read({ DUSK_RELAY_URL: "ftp://x" })).toBeNull();
+      expect(read({})).toBe("https://relay.madani.bot");
+      expect(read({ MADANI_RELAY_URL: "https://relay-preview.madani.bot/" })).toBe("https://relay-preview.madani.bot");
+      expect(read({ MADANI_RELAY_URL: "off" })).toBeNull();
+      expect(read({ MADANI_RELAY_URL: "ftp://x" })).toBeNull();
     }
     expect(agent.AGENT_CAPS).toContain("cloud-relay");
   });

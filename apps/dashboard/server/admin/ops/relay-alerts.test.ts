@@ -11,12 +11,12 @@ const MINUTE = 60_000, NOW = Date.UTC(2026, 10, 13, 12);
 const stats = (over: Partial<OpsRelayStats> = {}): OpsRelayStats => ({
   relay: "oracle-in", now: { tunnels: 10, accounts: 8, bytesPerSecOut: 1e6, bytesPerSecIn: 2e5, cpu: 3, rssMb: 120 }, today: { bytesOut: 1e9, bytesIn: 1e8 },
   month: { bytesOut: 50e9, bytesIn: 5e9, projectedBytesOut: 120e9, allowanceBytes: 10e12 }, limits: { globalCeilingBytesPerSec: 25e6, maxTunnels: 150, paused: false }, top: [], busy: false,
-  node: { id: "oracle-in", region: "asia", url: "https://link-in.dusk.bot", default: false, homed: 10, accepting: true, refuses: null, load: { active: 0, bandwidth: 0, budget: 0, spent: 0, box: 0 } },
-  nodes: [{ id: "contabo", url: "https://link.dusk.bot", region: "eu", self: false, up: true, lastOkAt: NOW, lastError: null, homed: 3, tunnels: 2, accepting: true }],
+  node: { id: "oracle-in", region: "asia", url: "https://link-in.madani.bot", default: false, homed: 10, accepting: true, refuses: null, load: { active: 0, bandwidth: 0, budget: 0, spent: 0, box: 0 } },
+  nodes: [{ id: "contabo", url: "https://link.madani.bot", region: "eu", self: false, up: true, lastOkAt: NOW, lastError: null, homed: 3, tunnels: 2, accepting: true }],
   box: { iface: "enp0s6", cpu: 20, mem: 40, cores: 2, bytesPerSecOut: 1.2e6, bytesPerSecIn: 3e5, monthBytesOut: 60e9, monthBytesIn: 9e9, projectedBytesOut: 150e9, countingSince: null },
   turn: { ok: true, at: NOW, rttMs: 1, downSince: null, urls: [] }, ...over,
 });
-const card = (over: Partial<OpsRelayCard> = {}): OpsRelayCard => ({ id: "oracle-in", label: "oracle in relay", url: "https://link-in.dusk.bot", at: NOW, configured: true, ok: true, error: null, stats: stats(), ...over });
+const card = (over: Partial<OpsRelayCard> = {}): OpsRelayCard => ({ id: "oracle-in", label: "oracle in relay", url: "https://link-in.madani.bot", at: NOW, configured: true, ok: true, error: null, stats: stats(), ...over });
 const breached = (cards: OpsRelayCard[]) => relayNodeReadings(cards).filter(r => r.breach).map(r => r.id.slice(RELAY_RULE_PREFIX.length));
 
 describe("relay node readings", () => {
@@ -61,12 +61,12 @@ describe("relay node alerts", () => {
     let time = NOW, up = true;
     const reports: Array<{ name: string; message: string; key: string }> = [], recoveries: string[] = [];
     const fetcher = (async (url: string) => {
-      if (String(url).startsWith("https://link-in.dusk.bot") && !up) throw new TypeError("fetch failed");
-      if (String(url).startsWith("https://relay.dusk.bot")) return new Response("{}", { status: 404 });
-      const self = String(url).startsWith("https://link.dusk.bot") ? "contabo" : "oracle-in";
-      return Response.json(stats({ relay: self, nodes: [{ id: "oracle-in", url: "https://link-in.dusk.bot", region: "asia", self: self === "oracle-in", up: true, lastOkAt: NOW, lastError: null, homed: 1, tunnels: 1, accepting: true }] }));
+      if (String(url).startsWith("https://link-in.madani.bot") && !up) throw new TypeError("fetch failed");
+      if (String(url).startsWith("https://relay.madani.bot")) return new Response("{}", { status: 404 });
+      const self = String(url).startsWith("https://link.madani.bot") ? "contabo" : "oracle-in";
+      return Response.json(stats({ relay: self, nodes: [{ id: "oracle-in", url: "https://link-in.madani.bot", region: "asia", self: self === "oracle-in", up: true, lastOkAt: NOW, lastError: null, homed: 1, tunnels: 1, accepting: true }] }));
     }) as unknown as typeof fetch;
-    const ops = createOps({ store: memoryOpsStore(), env: { DUSK_OPS_CERT_HOSTS: " ", DUSK_LINK_STATS_TOKEN: "s".repeat(30), DUSK_CF_RELAY_OPS_TOKEN: "c".repeat(30) }, now: () => time, fetch: fetcher,
+    const ops = createOps({ store: memoryOpsStore(), env: { MADANI_OPS_CERT_HOSTS: " ", MADANI_LINK_STATS_TOKEN: "s".repeat(30), MADANI_CF_RELAY_OPS_TOKEN: "c".repeat(30) }, now: () => time, fetch: fetcher,
       db: null, infra: memoryInfraStore(), clouds: () => [], egress: () => null, emails: () => new Map(), customers: () => [], ledger: () => [], invoices: () => [],
       errors: createErrorCounter(() => time), selfUrl: null, environment: "production", host: false,
       incidents: { report: input => { reports.push(input); return `inc-${reports.length}`; }, recovered: async id => { recoveries.push(id); return true; } } });
@@ -87,12 +87,12 @@ describe("relay node alerts", () => {
   });
 
   it("finds a link node it was not told about from the first node's peers", async () => {
-    const fetcher = (async (url: string) => String(url).startsWith("https://relay.dusk.bot") ? new Response("{}", { status: 404 })
+    const fetcher = (async (url: string) => String(url).startsWith("https://relay.madani.bot") ? new Response("{}", { status: 404 })
       : Response.json(stats({ relay: String(url).includes("link-in") ? "oracle-in" : "contabo" }))) as unknown as typeof fetch;
-    const relays = createRelays({ env: { DUSK_LINK_STATS_TOKEN: "s".repeat(30), DUSK_LINK_NODES: "" }, fetch: fetcher, now: () => NOW, accounts: () => [] });
-    const nodes = stats().nodes!.map(node => ({ ...node, id: "oracle-in", url: "https://link-in.dusk.bot" }));
-    const listed = await createRelays({ env: { DUSK_LINK_STATS_TOKEN: "s".repeat(30) }, now: () => NOW, accounts: () => [],
-      fetch: (async (url: string) => String(url).startsWith("https://relay.dusk.bot") ? new Response("{}", { status: 404 }) : Response.json(stats({ nodes }))) as unknown as typeof fetch }).list();
+    const relays = createRelays({ env: { MADANI_LINK_STATS_TOKEN: "s".repeat(30), MADANI_LINK_NODES: "" }, fetch: fetcher, now: () => NOW, accounts: () => [] });
+    const nodes = stats().nodes!.map(node => ({ ...node, id: "oracle-in", url: "https://link-in.madani.bot" }));
+    const listed = await createRelays({ env: { MADANI_LINK_STATS_TOKEN: "s".repeat(30) }, now: () => NOW, accounts: () => [],
+      fetch: (async (url: string) => String(url).startsWith("https://relay.madani.bot") ? new Response("{}", { status: 404 }) : Response.json(stats({ nodes }))) as unknown as typeof fetch }).list();
     expect(listed.relays.map(r => r.id)).toEqual(["contabo", "oracle-in", "cloudflare"]);
     expect(listed.relays[1]!.label).toBe("oracle in relay (asia)");
     expect((await relays.list()).relays.map(r => r.id)).toContain("contabo");

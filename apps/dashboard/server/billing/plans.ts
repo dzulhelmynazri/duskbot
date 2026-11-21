@@ -11,14 +11,14 @@ export interface BillingConfig {
   /** a managed cloud's internet upload a calendar month (UTC), in GB: the owner is alerted, then it is slowed, then paused */
   egressGb: Record<"shared_s" | "shared_m" | "dedicated", { alert: number; steps: Array<{ gb: number; mbit: number }>; pause: number }>;
   appAllowances: Record<"shared_s" | "shared_m" | "dedicated", { computerHours: number; voiceCharacters: number }>;
-  /** a free trial on a first cloud plan (DUSK_TRIAL_DAYS, 1 to 30); null sells every plan from the first day */
+  /** a free trial on a first cloud plan (MADANI_TRIAL_DAYS, 1 to 30); null sells every plan from the first day */
   trial: { days: number } | null;
   bundles: Array<Pick<BundleView, "id" | "label" | "cart" | "highlights">>;
   regions: Region[]; defaultRegion: string; poolRegions: string[]; products: Record<string, string>;
 }
 
 /**
- * DUSK_DODO_PRODUCTS is a JSON object mapping every key below to a dodo id (pricing.ts dodoCartKeys picks them per cart).
+ * MADANI_DODO_PRODUCTS is a JSON object mapping every key below to a dodo id (pricing.ts dodoCartKeys picks them per cart).
  * subscription products, the base line: plan_pro and plan_team (the whole plan at its full price, one line; extra team seats are addon_member),
  * then for carts that are not a plan: license_solo, license_team, desktop_shared_s, desktop_shared_m, desktop_dedicated.
  * add-ons: addon_member, addon_shared_s, addon_shared_m, addon_dedicated, addon_vcpu, addon_ram_gb, addon_disk_20gb.
@@ -27,12 +27,12 @@ export interface BillingConfig {
 export const DODO_PRODUCT_KEYS = ["plan_pro", "plan_team", "license_solo", "license_team", "desktop_shared_s", "desktop_shared_m", "desktop_dedicated",
   "addon_member", "addon_shared_s", "addon_shared_m", "addon_dedicated", "addon_vcpu", "addon_ram_gb", "addon_disk_20gb"]
   .flatMap(key => [`${key}:month`, `${key}:year`]);
-/** keys a cart may need that DUSK_DODO_PRODUCTS lacks: any cart needing one answers 503 unavailable */
+/** keys a cart may need that MADANI_DODO_PRODUCTS lacks: any cart needing one answers 503 unavailable */
 export function missingDodoProducts(products: Record<string, string>): string[] { return DODO_PRODUCT_KEYS.filter(key => !products[key]); }
 export function dodoProducts(env: Record<string, string | undefined>): Record<string, string> {
-  if (!env.DUSK_DODO_PRODUCTS) return {};
-  const value: unknown = JSON.parse(env.DUSK_DODO_PRODUCTS);
-  if (!value || typeof value !== "object" || Array.isArray(value) || Object.values(value).some(id => typeof id !== "string" || !id.trim())) throw new Error("Invalid DUSK_DODO_PRODUCTS.");
+  if (!env.MADANI_DODO_PRODUCTS) return {};
+  const value: unknown = JSON.parse(env.MADANI_DODO_PRODUCTS);
+  if (!value || typeof value !== "object" || Array.isArray(value) || Object.values(value).some(id => typeof id !== "string" || !id.trim())) throw new Error("Invalid MADANI_DODO_PRODUCTS.");
   return value as Record<string, string>;
 }
 
@@ -50,7 +50,7 @@ function freeWorkUntil(value: string | undefined) {
 export const BILLING_CONFIG: BillingConfig = {
   // yearly is two months free: 12 months for the price of 10
   currency: "USD", yearlyDiscountPercent: 100 / 6, graceDays: 30, maxCloudsPerAccount: 5, checkoutOpenMinutes: 30, checkoutsPerHour: 30,
-  freeWorkUntil: freeWorkUntil(process.env.DUSK_FREE_WORK_UNTIL),
+  freeWorkUntil: freeWorkUntil(process.env.MADANI_FREE_WORK_UNTIL),
   licenses: {
     solo: { kind: "solo", label: "Work license", monthlyCents: 1200, includedMembers: 1, extraMemberCents: null, maxMembers: 1, priority: false },
     team: { kind: "team", label: "Team license", monthlyCents: 3000, includedMembers: 2, extraMemberCents: 2000, maxMembers: 50, priority: false },
@@ -79,7 +79,7 @@ export const BILLING_CONFIG: BillingConfig = {
   // free $0, plus $20 (a cloud machine), pro $50 (a bigger one and a work license for one person), team $119; the starter id sells as Plus
   bundles: [
     { id: "free", label: "Free", cart: { license: { kind: "none" }, desktop: { kind: "none" } }, highlights: ["Your bots, on your computer", "Personal use", "No subscription"] },
-    { id: "starter", label: "Plus", cart: { license: { kind: "none" }, desktop: { kind: "shared_s", region: "fsn1" } }, highlights: ["Your bots work in dusk cloud", "2 vCPU, 4 GB RAM, 20 GB disk", "Always available, wakes in seconds"] },
+    { id: "starter", label: "Plus", cart: { license: { kind: "none" }, desktop: { kind: "shared_s", region: "fsn1" } }, highlights: ["Your bots work in madani cloud", "2 vCPU, 4 GB RAM, 20 GB disk", "Always available, wakes in seconds"] },
     { id: "pro", label: "Pro", cart: { license: { kind: "solo" }, desktop: { kind: "shared_m", region: "fsn1" } }, highlights: ["4 vCPU, 8 GB RAM, 60 GB disk", "Always available, priority wake", "Work license for one person"] },
     { id: "team", label: "Team", cart: { license: { kind: "team", members: 2 }, desktop: { kind: "dedicated", region: "fsn1", spec: { vcpu: 8, ramGb: 16, diskGb: 160 } } }, highlights: ["Dedicated 8 vCPU, 16 GB RAM, 160 GB disk", "Always available, priority wake", "Team license, 2 seats"] },
   ],

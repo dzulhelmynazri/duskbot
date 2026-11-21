@@ -32,8 +32,8 @@ fixture.bots = [{ id: "echo", name: "Echo", modelSelection: { instanceId: "claud
 const REASONS: Array<FailedReplyReason | undefined> = [undefined, "signed_out", "credits", "usage_limit", "rate_limit", "overloaded", "timeout",
   "model_not_found", "bad_request", "context", "provider_down", "cli_missing", "cli_exit"];
 const RAW_CAUSES = [
-  "spawn claude ENOENT: /Users/sam/.duskbot/workspaces/0f6c/chats/main does not exist",
-  "Error: boom\n    at runTurn (/Applications/Dusk Bot.app/Contents/Resources/server.js:12:4)",
+  "spawn claude ENOENT: /Users/sam/.madanibot/workspaces/0f6c/chats/main does not exist",
+  "Error: boom\n    at runTurn (/Applications/Madani Bot.app/Contents/Resources/server.js:12:4)",
   'API Error: 400 {"type":"error","error":{"message":"tools.3.custom.input_schema: bad"}}',
   "request to https://api.anthropic.com/v1/messages failed, reason: socket hang up",
   "codex exited with code 137",

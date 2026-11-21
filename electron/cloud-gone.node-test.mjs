@@ -3,9 +3,9 @@ import test from "node:test";
 
 import { createCloudGone } from "./cloud-gone.mjs";
 
-const GONE = "https://d0123456789abcdef0123.dusk.bot";
-const LIVE = "https://dfedcba9876543210fedc.dusk.bot";
-const goneAnswer = () => new Response("This dusk bot was deleted.", { status: 410, headers: { "x-dusk-cloud-power": "gone" } });
+const GONE = "https://d0123456789abcdef0123.madani.bot";
+const LIVE = "https://dfedcba9876543210fedc.madani.bot";
+const goneAnswer = () => new Response("This madani bot was deleted.", { status: 410, headers: { "x-madani-cloud-power": "gone" } });
 
 test("an origin the edge says was deleted is never called again: its fetch answers gone at once, and the syncers' lists leave it out", async () => {
   const calls = [];
@@ -19,7 +19,7 @@ test("an origin the edge says was deleted is never called again: its fetch answe
   for (const path of ["/api/settings-sync", "/api/sync/changes?cursor=1&waitMs=25000", "/api/connector-sync", "/api/inbox/count", "/api/cloud-send/x"]) {
     const answer = await fetch(new Request(`${GONE}${path}`));
     assert.equal(answer.status, 410, path);
-    assert.equal(answer.headers.get("x-dusk-cloud-power"), "gone", path);
+    assert.equal(answer.headers.get("x-madani-cloud-power"), "gone", path);
   }
   assert.equal(calls.filter((url) => url.startsWith(GONE)).length, 1, "the network was asked once");
   assert.equal((await fetch(`${LIVE}/api/settings-sync`)).status, 200, "other clouds are untouched");

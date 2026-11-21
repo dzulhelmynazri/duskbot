@@ -18,7 +18,7 @@ export function createHomeClient(options: { fetch?: typeof fetch; now?: () => nu
       if (!/^[A-Za-z0-9_-]{22,128}$/.test(nonce)) throw new Error();
       const response = await fetcher(`${origin}${target}`, {
         method, redirect: "error", signal: AbortSignal.timeout(10_000),
-        headers: withLegacyHeaders({ "content-type": "application/json", "x-dusk-cloud-timestamp": timestamp, "x-dusk-cloud-nonce": nonce, "x-dusk-cloud-signature": `v1=${signCloudRequest(secret, timestamp, nonce, method, target, body)}` }),
+        headers: withLegacyHeaders({ "content-type": "application/json", "x-madani-cloud-timestamp": timestamp, "x-madani-cloud-nonce": nonce, "x-madani-cloud-signature": `v1=${signCloudRequest(secret, timestamp, nonce, method, target, body)}` }),
         ...(method === "POST" ? { body } : {}),
       });
       if (!response.ok) { await response.body?.cancel(); throw Object.assign(new Error(), { status: response.status }); }

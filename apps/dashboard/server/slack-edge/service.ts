@@ -36,7 +36,7 @@ export interface SlackWakeView { available: boolean; enabled: boolean; state: "o
 export interface SlackEdgeOptions {
   dataDir: string;
   clouds: CloudsService;
-  /** DUSK_SLACK_EDGE=1 on the service; off means every desktop reads enabled: false and nothing is held */
+  /** MADANI_SLACK_EDGE=1 on the service; off means every desktop reads enabled: false and nothing is held */
   enabled: boolean;
   sealer: ReturnType<typeof createSealer>;
   socket: EdgeSocketFactory;

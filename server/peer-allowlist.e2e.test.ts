@@ -44,8 +44,8 @@ const fixture = (displayName: string, dump?: string) => ({
 });
 
 beforeAll(async () => {
-  home = mkdtempSync(join(tmpdir(), "dusk-peer-allowlist-"));
-  const data = join(home, ".duskbot");
+  home = mkdtempSync(join(tmpdir(), "madani-peer-allowlist-"));
+  const data = join(home, ".madanibot");
   const staticDir = join(home, "static");
   mkdirSync(data, { recursive: true });
   mkdirSync(staticDir, { recursive: true });
@@ -76,10 +76,10 @@ beforeAll(async () => {
       ...(process.env.SystemRoot ? { SystemRoot: process.env.SystemRoot } : {}),
       HOME: home,
       USERPROFILE: home,
-      DUSK_PORT: String(port),
-      DUSK_WEBHOOK_PORT: String(port + 1),
-      DUSK_STATIC_DIR: staticDir,
-      DUSK_TEST_INTERNAL_CAPABILITY_KEY: TEST_CAPABILITY_KEY,
+      MADANI_PORT: String(port),
+      MADANI_WEBHOOK_PORT: String(port + 1),
+      MADANI_STATIC_DIR: staticDir,
+      MADANI_TEST_INTERNAL_CAPABILITY_KEY: TEST_CAPABILITY_KEY,
     },
     stdio: ["ignore", "pipe", "pipe"],
   });
@@ -143,7 +143,7 @@ const mintCapability = async (botId: string, threadId: string): Promise<string> 
     "POST",
     "/api/testing/internal-capability",
     { botId, threadId, kind: "agents" },
-    { "x-dusk-test-capability": TEST_CAPABILITY_KEY },
+    { "x-madani-test-capability": TEST_CAPABILITY_KEY },
   );
   expect(minted.status).toBe(201);
   return String(minted.body.token);
@@ -151,7 +151,7 @@ const mintCapability = async (botId: string, threadId: string): Promise<string> 
 
 let seededId = "";
 const hideSeededBot = async () => {
-  // The seeded bot is the unsectioned team's Chief and the install's Dusk, which is never archived: it steps down into
+  // The seeded bot is the unsectioned team's Chief and the install's Madani, which is never archived: it steps down into
   // a department of its own, and the roster checks below leave it out, since every bot can reach it.
   const seeded = (await api("GET", "/api/bots?messages=0")).body.bots[0];
   seededId = seeded.id;
@@ -234,7 +234,7 @@ describe("peer allow-list", () => {
       expect(systemPrompt).not.toContain("propose_team_setup");
       expect(systemPrompt).toContain("[/TEAM ROSTER] If a supported API key is missing");
 
-      const providerToken = String(dump.mcpConfig?.mcpServers?.agents?.env?.DUSK_COMMS_TOKEN ?? "");
+      const providerToken = String(dump.mcpConfig?.mcpServers?.agents?.env?.MADANI_COMMS_TOKEN ?? "");
       expect(providerToken).toMatch(/^[a-f0-9]{48}$/);
       await expect.poll(() => botBusy(asker.id)).toBe(false);
       const token = await mintCapability(asker.id, asker.threadId);
@@ -327,7 +327,7 @@ describe("peer allow-list", () => {
       rmSync(askerDump, { force: true });
       await warmUp(asker.id);
       await expect.poll(() => readDump(askerDump)()?.mcpConfig, { timeout: 10_000 }).toBeTruthy();
-      const providerToken = String(readDump(askerDump)()!.mcpConfig?.mcpServers?.agents?.env?.DUSK_COMMS_TOKEN ?? "");
+      const providerToken = String(readDump(askerDump)()!.mcpConfig?.mcpServers?.agents?.env?.MADANI_COMMS_TOKEN ?? "");
       expect(providerToken).toMatch(/^[a-f0-9]{48}$/);
       const token = await mintCapability(asker.id, asker.threadId);
       expect((await api("PATCH", `/api/bots/${asker.id}`, { approvePeerComms: true, approvalMode: "ask" })).status).toBe(200);

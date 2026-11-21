@@ -9,7 +9,7 @@ import { removeTempDir, waitForExit } from "./cleanup.ts";
 type Frame = { type: string; message?: { content?: Array<{ type: string; text?: string; name?: string; input?: unknown; content?: unknown }> } };
 
 it("plays a FAKE_CLAUDE_SCRIPT turn in order: separate messages, answered calls and a pause", async () => {
-  const home = mkdtempSync(join(tmpdir(), "dusk-claude-script-"));
+  const home = mkdtempSync(join(tmpdir(), "madani-claude-script-"));
   const script = [
     { text: "On it, comparing keyboards now." },
     { tool: { name: "mcp__agents__set_status", input: { status: "comparing keyboard reviews" } } },

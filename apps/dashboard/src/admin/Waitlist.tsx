@@ -18,11 +18,11 @@ export function WaitlistPage({ tabs }: { tabs?: ReactNode }) {
   const owner = useAdminRole() === "owner";
   return (
     <>
-      <AdminHeader title="waitlist" sub="people waiting on dusk.bot" tabs={tabs}
+      <AdminHeader title="waitlist" sub="people waiting on madani.bot" tabs={tabs}
         action={owner && data?.configured ? <a href="/v1/admin/waitlist.csv" download className="press hover-btn inline-flex h-9 items-center gap-1.5 rounded-full bg-btn px-4 text-13 font-medium text-ink"><Download size={15} strokeWidth={1.75} aria-hidden /> export csv</a> : undefined} />
       {error && <Failed error={error} retry={reload} />}
       {!data && loading && <Loading />}
-      {data && !data.configured && <p className="rounded-[18px] bg-card px-4 py-6 text-center text-14 text-ink-3">the waitlist isn't connected here. it reads dusk.waitlist when the service runs with MongoDB.</p>}
+      {data && !data.configured && <p className="rounded-[18px] bg-card px-4 py-6 text-center text-14 text-ink-3">the waitlist isn't connected here. it reads madani.waitlist when the service runs with MongoDB.</p>}
       {data?.configured && (
         <>
           <div className="grid grid-cols-[repeat(3,minmax(0,1fr))_minmax(0,2fr)] gap-2.5 max-lg:grid-cols-3 max-sm:grid-cols-2">

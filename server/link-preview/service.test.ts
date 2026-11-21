@@ -16,7 +16,7 @@ afterEach(() => { for (const dir of dirs.splice(0)) rmSync(dir, { recursive: tru
 const fixture = (name: string) => readFileSync(join(import.meta.dirname, "fixtures", name));
 const PNG = encodePng(2, 1, Buffer.alloc(8, 200));
 
-function harness(answers: Record<string, Partial<Answer>>, dir = mkdtempSync(join(tmpdir(), "dusk-link-preview-"))) {
+function harness(answers: Record<string, Partial<Answer>>, dir = mkdtempSync(join(tmpdir(), "madani-link-preview-"))) {
   dirs.push(dir);
   const asked: string[] = [];
   let clock = 1_000_000;
@@ -135,7 +135,7 @@ describe("link previews", () => {
     const { previews, asked } = harness({
       [`https://cdn.syndication.twimg.com/tweet-result?id=${id}&lang=en&token=${syndicationToken(id)}`]: { type: "application/json", body: fixture("tweet.json") },
     });
-    expect(await previews.get(`https://x.com/duskbot/status/${id}`)).toMatchObject({ title: "dusk bot (@duskbot)", siteName: "X", video: true });
+    expect(await previews.get(`https://x.com/madanibot/status/${id}`)).toMatchObject({ title: "madani bot (@madanibot)", siteName: "X", video: true });
     expect(asked.some((href) => href.startsWith("https://x.com/"))).toBe(false);
   });
 });

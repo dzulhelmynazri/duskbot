@@ -10,7 +10,7 @@
     "claude linear",
     "linear ai agent"
   ],
-  "answer": "**walk into planning with the question that is holding the work up.** a dusk bot reads linear issues, comments and cycles, then brings you blockers with their evidence. give it one team and read access. it can create or update issues later if you allow it. keep priorities and edits with you until you ask for that work.",
+  "answer": "**walk into planning with the question that is holding the work up.** a madani bot reads linear issues, comments and cycles, then brings you blockers with their evidence. give it one team and read access. it can create or update issues later if you allow it. keep priorities and edits with you until you ask for that work.",
   "updated": "2026-11-12",
   "review": {
     "status": "approved",
@@ -106,7 +106,7 @@
   "cannot": [
     "**assign work or change priority under read-only access.** an issue outline here needs no tracker writes.",
     "**tell you work is finished from its state name alone.** ask for the description and comments too. leave unclear readiness for a person.",
-    "**review a cycle on a sleeping laptop.** local routines need dusk open and the machine awake. dusk cloud can run the review while you are away."
+    "**review a cycle on a sleeping laptop.** local routines need madani open and the machine awake. madani cloud can run the review while you are away."
   ],
   "sections": [
     {
@@ -121,7 +121,7 @@
   "faq": [
     {
       "q": "can i connect claude to linear without writing an mcp setup?",
-      "a": "**yes, use connected apps.** choose claude or another ai for your dusk bot and connect linear there. the composio actions need no separate server setup."
+      "a": "**yes, use connected apps.** choose claude or another ai for your madani bot and connect linear there. the composio actions need no separate server setup."
     },
     {
       "q": "can the bot just tell me what is blocked?",
@@ -134,15 +134,15 @@
   ],
   "sources": [
     {
-      "label": "dusk bot docs: apps and action permissions",
+      "label": "madani bot docs: apps and action permissions",
       "url": "/docs/files-and-apps"
     },
     {
-      "label": "dusk bot docs: scheduled work",
+      "label": "madani bot docs: scheduled work",
       "url": "/docs/routines"
     },
     {
-      "label": "dusk bot docs: approval controls",
+      "label": "madani bot docs: approval controls",
       "url": "/docs/computer"
     }
   ],

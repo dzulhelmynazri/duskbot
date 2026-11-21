@@ -84,6 +84,6 @@ export async function codexAccountEmail(
         }
       }
     });
-    send({ id: 1, method: "initialize", params: { clientInfo: { name: "duskbot", version: "1" } } });
+    send({ id: 1, method: "initialize", params: { clientInfo: { name: "madanibot", version: "1" } } });
   });
 }

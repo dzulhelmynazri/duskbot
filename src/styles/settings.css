@@ -195,7 +195,7 @@
   min-height: 0;
   background-color: inherit;
   animation-duration: 200ms;
-  animation-timing-function: var(--dusk-ease-out);
+  animation-timing-function: var(--madani-ease-out);
 }
 .settings-wipe-layer[data-wipe-out] {
   position: absolute;
@@ -203,11 +203,11 @@
   pointer-events: none;
   animation-fill-mode: forwards;
 }
-.settings-wipe-layer[data-wipe="push"]:not([data-wipe-out]) { z-index: 1; animation-name: dusk-wipe-push-in; }
-.settings-wipe-layer[data-wipe="push"][data-wipe-out] { animation-name: dusk-wipe-push-out; }
-.settings-wipe-layer[data-wipe="pop"]:not([data-wipe-out]) { animation-name: dusk-wipe-pop-in; }
-.settings-wipe-layer[data-wipe="pop"][data-wipe-out] { z-index: 1; animation-name: dusk-wipe-pop-out; }
-.settings-wipe-layer[data-wipe="fade"]:not([data-wipe-out]) { animation-name: dusk-fade-in; animation-duration: 150ms; }
+.settings-wipe-layer[data-wipe="push"]:not([data-wipe-out]) { z-index: 1; animation-name: madani-wipe-push-in; }
+.settings-wipe-layer[data-wipe="push"][data-wipe-out] { animation-name: madani-wipe-push-out; }
+.settings-wipe-layer[data-wipe="pop"]:not([data-wipe-out]) { animation-name: madani-wipe-pop-in; }
+.settings-wipe-layer[data-wipe="pop"][data-wipe-out] { z-index: 1; animation-name: madani-wipe-pop-out; }
+.settings-wipe-layer[data-wipe="fade"]:not([data-wipe-out]) { animation-name: madani-fade-in; animation-duration: 150ms; }
 .settings-wipe-layer[data-wipe="fade"][data-wipe-out] { display: none; }
 @media (prefers-reduced-motion: reduce) {
   .settings-wipe-layer:not([data-wipe="fade"]) { animation: none; }
@@ -215,9 +215,9 @@
 }
 /* another pane from the rail: the new pane fades in on a 4px rise (opacity alone with the app's reduced motion; the
    system setting stops every animation) */
-.settings-pane-swap { animation: dusk-pane-swap 180ms var(--dusk-ease-out) backwards; }
-@keyframes dusk-pane-swap { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
-:root[data-reduced-motion="true"] .settings-pane-swap { animation-name: dusk-fade-in; animation-duration: 150ms; }
+.settings-pane-swap { animation: madani-pane-swap 180ms var(--madani-ease-out) backwards; }
+@keyframes madani-pane-swap { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+:root[data-reduced-motion="true"] .settings-pane-swap { animation-name: madani-fade-in; animation-duration: 150ms; }
 
 .settings-scroll {
   position: relative;
@@ -407,7 +407,7 @@
 }
 [data-settings-look] .settings-pane dd.text-\[20px\] { font-size: 17px; line-height: 24px; font-weight: var(--font-weight-normal, 425); }
 
-/* Settings in the voice of dusk.bot's docs index: each group is a small pixel prop over a big lowercase heading, then a
+/* Settings in the voice of madani.bot's docs index: each group is a small pixel prop over a big lowercase heading, then a
    borderless list. Rows are a bold name and one plain line, the control on the right, and a soft rounded grey on hover,
    drawn at once with no transition. Controls are tonal (a filled chip or a segmented pill), never outlined. */
 :root .settings-dialog .settings-pane,
@@ -528,9 +528,9 @@
 :root .settings-dialog .settings-pane [data-settings-rows] > [data-settings-account][data-settings-account] { column-gap: 10px; min-height: 44px; padding: 6px 8px; }
 
 /* nothing in the sheet scales on hover or press: pills, selects, segmented and sliding pills, the rail and rows answer
-   with their colour alone, including the shared controls (dusk-press, Tailwind's active:scale) drawn inside it */
+   with their colour alone, including the shared controls (madani-press, Tailwind's active:scale) drawn inside it */
 .settings-nav-item, .settings-nav-item:active { transition: none; scale: none; }
-.settings-dialog :is(button, a, [role="button"], [role="combobox"], [role="radio"], [role="tab"], .dusk-press, .dusk-press-soft):is(:hover, :active) { scale: none !important; }
+.settings-dialog :is(button, a, [role="button"], [role="combobox"], [role="radio"], [role="tab"], .madani-press, .madani-press-soft):is(:hover, :active) { scale: none !important; }
 
 /* the close button: a hover disc that fades in behind the glyph, no scale */
 .settings-close::before {

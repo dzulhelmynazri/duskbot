@@ -11,8 +11,8 @@ const ops = {
   async start(link) {
     proxy = createTunnelProxy({ base: link.base, id: link.id, key: link.key, token: link.token, log, follow: true, hello: { protocol: 2, app: "chaos" }, proxy: () => through });
     const origin = await proxy.start();
-    // DUSK_CHAOS_DIRECT=rtc: the webrtc direct path on top, as the app sets it up for an agent that offers direct-rtc
-    if (process.env.DUSK_CHAOS_DIRECT === "rtc") {
+    // MADANI_CHAOS_DIRECT=rtc: the webrtc direct path on top, as the app sets it up for an agent that offers direct-rtc
+    if (process.env.MADANI_CHAOS_DIRECT === "rtc") {
       const ndc = loadDataChannel([fileURLToPath(new URL("../../..", import.meta.url))]);
       if (!ndc) throw new Error("node-datachannel is not installed here");
       proxy.useDirect({ connect: rtcConnector({ ndc, signal: (offer) => proxy.control("direct-rtc", { offer }, 15_000) }), pingMs: 2000 });

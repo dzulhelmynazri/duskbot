@@ -1,7 +1,7 @@
 // Page health and recorded browser steps against the pinned agent-browser and
 // its Chrome, through the real BrowserRuntime, relay, observer and store. Runs
-// when agent-browser resolves (tools directory, DUSK_AGENT_BROWSER_PATH or PATH)
-// or DUSK_UI_E2E=1 asks for the download; otherwise skipped. Chrome for Testing
+// when agent-browser resolves (tools directory, MADANI_AGENT_BROWSER_PATH or PATH)
+// or MADANI_UI_E2E=1 asks for the download; otherwise skipped. Chrome for Testing
 // starts the page at 1280x577, so the size checks are real.
 import { execFileSync } from "node:child_process";
 import { randomBytes } from "node:crypto";
@@ -19,13 +19,13 @@ import { BrowserSteps, type StepContext } from "../../server/browser-steps.ts";
 import { openGate, type EgressGate } from "../../server/browser/egress/gate.ts";
 import { refusalFor } from "../../server/browser/egress/policy.ts";
 import { removeTempDir } from "../../server/testing/cleanup.ts";
-import { launchVerificationServer, runControlDusk } from "../control-dusk.ts";
-import { ensureUiBrowser, UI_TOOLS_DIR } from "./control-dusk-ui.ts";
+import { launchVerificationServer, runControlMadani } from "../control-madani.ts";
+import { ensureUiBrowser, UI_TOOLS_DIR } from "./control-madani-ui.ts";
 
-const forced = process.env.DUSK_UI_E2E === "1";
+const forced = process.env.MADANI_UI_E2E === "1";
 const enabled = forced || Boolean(resolveAgentBrowserBinary({ dataDir: UI_TOOLS_DIR, env: process.env }));
 if (!enabled) {
-  console.log(`skipping browser evidence e2e: no agent-browser binary resolves (looked in ${UI_TOOLS_DIR}, DUSK_AGENT_BROWSER_PATH and PATH); set DUSK_UI_E2E=1 to install the pinned release`);
+  console.log(`skipping browser evidence e2e: no agent-browser binary resolves (looked in ${UI_TOOLS_DIR}, MADANI_AGENT_BROWSER_PATH and PATH); set MADANI_UI_E2E=1 to install the pinned release`);
 }
 const run = enabled ? it : it.skip;
 const posix = process.platform !== "win32";
@@ -72,7 +72,7 @@ describe("page health and browser steps on the real engine", () => {
   let chrome = "";
   let gate: EgressGate | undefined;
   const timings: BrowserTiming[] = [];
-  const session = `dusk-ev-${randomBytes(3).toString("hex")}`;
+  const session = `madani-ev-${randomBytes(3).toString("hex")}`;
 
   beforeAll(async () => {
     if (!enabled) return;
@@ -85,9 +85,9 @@ describe("page health and browser steps on the real engine", () => {
     });
     await new Promise<void>((resolve) => server.listen(0, "127.0.0.1", resolve));
     base = `http://127.0.0.1:${(server.address() as { port: number }).port}`;
-    home = mkdtempSync(join(tmpdir(), "dusk-evidence-e2e-"));
+    home = mkdtempSync(join(tmpdir(), "madani-evidence-e2e-"));
     // Unix socket paths must stay short (macOS temp paths are long).
-    sockets = mkdtempSync(join(posix ? "/tmp" : tmpdir(), "dusk-ev-"));
+    sockets = mkdtempSync(join(posix ? "/tmp" : tmpdir(), "madani-ev-"));
     mkdirSync(join(home, "tmp"), { recursive: true });
     // Desktop rules: the fixture page is a local dev server.
     gate = await openGate({ decide: (destination, addresses) => refusalFor(destination, addresses, {
@@ -277,7 +277,7 @@ describe("recorded browser steps through the real server", () => {
         { server: "browser", tool: "agent_browser_open", arguments: { url: `${base}/` } },
         { server: "browser", tool: "agent_browser_click", arguments: { selector: "#signup" } },
       ], reply: "Signed up." }] } }));
-      await runControlDusk(["send", "--bot", bot.id, "--task", bot.threadId, "--text", "Try the sign-up.", "--url", url]);
+      await runControlMadani(["send", "--bot", bot.id, "--task", bot.threadId, "--text", "Try the sign-up.", "--url", url]);
       await expect.poll(() => evidenceLines().length, { timeout: 90_000 }).toBe(1);
       const [turn] = evidenceLines();
       const results = turn.evidence.filter((entry: any) => entry.step?.server === "browser").map((entry: any) => entry.response.result.content.map((part: any) => part.text).join("\n"));

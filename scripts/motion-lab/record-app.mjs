@@ -1,7 +1,7 @@
 // Clips of the real phone app: open and close a chat, the bot sheet, a send and its reply. Run against a phone preview
-// on a fixture (DUSK_MOBILE_PORT=5371 pnpm mobile:preview --fixture), never a live workspace:
+// on a fixture (MADANI_MOBILE_PORT=5371 pnpm mobile:preview --fixture), never a live workspace:
 //   node scripts/motion-lab/record-app.mjs http://127.0.0.1:5371/ <out dir> [push|sheet|reply]
-// With --desktop, the desktop app (DUSK_PORT=<fixture harness port> DUSK_UI_PORT=5373 vite) at 1280 x 800: switching
+// With --desktop, the desktop app (MADANI_PORT=<fixture harness port> MADANI_UI_PORT=5373 vite) at 1280 x 800: switching
 // chats, the palette filtering and closing, a send and its reply.
 // Headless Chrome cannot screenshot 60 times a second, so the page clocks (performance.now, Date, rAF, timers) and the
 // document timeline run at RATE while frames are captured, stamped with page time, and resampled to 60 fps.

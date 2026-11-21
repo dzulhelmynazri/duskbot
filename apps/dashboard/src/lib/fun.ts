@@ -32,7 +32,7 @@ export function streakLine(days: number): string | null {
   return `${days} days straight. legendary.`;
 }
 
-const INVESTED_KEY = (account: string) => `dusk-dash-invested:${account}`;
+const INVESTED_KEY = (account: string) => `madani-dash-invested:${account}`;
 
 /** the sidebar card's invested copy: someone without a cloud who crossed a threshold, shown once per account */
 export function investedNoteDue(account: string | null | undefined, facts: InvestedFacts, hasCloud: boolean): boolean {

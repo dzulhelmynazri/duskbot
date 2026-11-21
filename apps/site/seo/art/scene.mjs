@@ -7,7 +7,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { createHash } from 'node:crypto';
-import DuskPixel from '../../mascot-src/pixel/engine.js';
+import MadaniPixel from '../../mascot-src/pixel/engine.js';
 import { CROWD, COLOURS } from '../../mascot-src/pixel/crowd.js';
 
 // each sky in words, for alt text, and how far down (0 top, 1 bottom) the hero shows it
@@ -61,7 +61,7 @@ const shuffle = (r, list) => list.map((v) => [r(), v]).sort((a, b) => a[0] - b[0
 
 const svgCache = new Map();
 function botSvg(shape, colour, size) {
-  if (!svgCache.has(shape)) { const r = DuskPixel.rest(shape); svgCache.set(shape, `<g transform="translate(10 10) scale(${80 / r.G})"><path fill="currentColor" d="${r.body}"/><path fill="#fff" d="${r.eyes}"/></g>`); }
+  if (!svgCache.has(shape)) { const r = MadaniPixel.rest(shape); svgCache.set(shape, `<g transform="translate(10 10) scale(${80 / r.G})"><path fill="currentColor" d="${r.body}"/><path fill="#fff" d="${r.eyes}"/></g>`); }
   return `<svg viewBox="0 0 100 100" width="${size}" height="${size}" shape-rendering="crispEdges" style="color:${COLOURS[colour]}">${svgCache.get(shape)}</svg>`;
 }
 

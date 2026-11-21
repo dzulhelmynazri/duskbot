@@ -4,15 +4,15 @@ import type { Block, EmailConfig, Rendered } from "./layout.ts";
 export type { EmailConfig, Rendered } from "./layout.ts";
 
 const DAY = 86_400_000;
-const ACCOUNT_REASON = "you got this because you have a dusk bot account. it's about your account, so it can't be turned off.";
+const ACCOUNT_REASON = "you got this because you have a madani bot account. it's about your account, so it can't be turned off.";
 
 export function emailConfig(env: NodeJS.ProcessEnv, { publicUrl, pageBase = "" }: { publicUrl: string; pageBase?: string }): EmailConfig {
   const origin = new URL(publicUrl).origin, trim = (value: string) => value.replace(/\/+$/, "");
   return {
-    assets: trim(env.DUSK_EMAIL_ASSET_BASE || "https://dusk.bot/email"),
-    site: trim(env.DUSK_EMAIL_SITE_URL || (pageBase ? origin : "https://dusk.bot")),
+    assets: trim(env.MADANI_EMAIL_ASSET_BASE || "https://madani.bot/email"),
+    site: trim(env.MADANI_EMAIL_SITE_URL || (pageBase ? origin : "https://madani.bot")),
     app: `${origin}${pageBase}`,
-    address: env.DUSK_MAIL_POSTAL_ADDRESS?.trim() || null,
+    address: env.MADANI_MAIL_POSTAL_ADDRESS?.trim() || null,
   };
 }
 
@@ -52,31 +52,31 @@ const billingLink = (cfg: EmailConfig, before: string): Block => ({ t: "link", b
 
 /** the sign-in or sign-up code */
 /** the subject both sign-in code emails end with */
-export const CODE_SUBJECT = / is your dusk bot code$/;
+export const CODE_SUBJECT = / is your madani bot code$/;
 export function codeEmail(cfg: EmailConfig, { code }: { code: string }): Rendered {
   return render(cfg, {
-    subject: `${code} is your dusk bot code`, preheader: `your dusk bot code is ${code}. it works for 10 minutes.`, tag: "sign in", ...SAY.code, transactional: true,
+    subject: `${code} is your madani bot code`, preheader: `your madani bot code is ${code}. it works for 10 minutes.`, tag: "sign in", ...SAY.code, transactional: true,
     blocks: [
       { t: "h1", text: "here's your code" },
       { t: "p", text: "pop it in where you signed in. it works for 10 minutes." },
       { t: "code", code },
       { t: "p", small: true, text: "didn't ask for this? you can ignore it. nobody gets in without the code." },
     ],
-    reason: "you got this because someone typed this address into dusk bot.",
+    reason: "you got this because someone typed this address into madani bot.",
   });
 }
 
 /** the desktop app's sign-in or sign-up by email: one button that opens the website signed in, and the app follows */
 export function magicLinkEmail(cfg: EmailConfig, { link }: { link: string }): Rendered {
   return render(cfg, {
-    subject: "your dusk bot sign-in link", preheader: "open it to finish signing in. it works for 10 minutes.", tag: "sign in", ...SAY.code, transactional: true,
+    subject: "your madani bot sign-in link", preheader: "open it to finish signing in. it works for 10 minutes.", tag: "sign in", ...SAY.code, transactional: true,
     blocks: [
       { t: "h1", text: "here's your sign-in link" },
-      { t: "button", label: "continue to dusk bot", href: link },
+      { t: "button", label: "continue to madani bot", href: link },
       { t: "p", text: "it signs you in (or makes your account), and the app signs itself in too. it works for 10 minutes." },
       { t: "p", small: true, text: "didn't ask for this? you can ignore it. nobody gets in without the link." },
     ],
-    reason: "you got this because someone typed this address into dusk bot.",
+    reason: "you got this because someone typed this address into madani bot.",
   });
 }
 
@@ -84,18 +84,18 @@ const WAYS: Record<string, string> = { email: "an emailed code", google: "google
 /** "can't sign in?": the code, a one-time link for the website, and the ways this address signs in. `ways` null: no
  *  account uses the address, so no code goes out */
 export function recoveryEmail(cfg: EmailConfig, { code, link = null, ways }: { code: string; link?: string | null; ways: string[] | null }): Rendered {
-  const reason = "you got this because someone asked to sign in to dusk bot with this address.";
+  const reason = "you got this because someone asked to sign in to madani bot with this address.";
   if (!ways) return render(cfg, {
-    subject: "signing in to dusk bot", preheader: "no dusk bot account uses this address.", tag: "sign in", ...SAY.nobody, transactional: true,
+    subject: "signing in to madani bot", preheader: "no madani bot account uses this address.", tag: "sign in", ...SAY.nobody, transactional: true,
     blocks: [
       { t: "h1", text: "no account uses this address" },
-      { t: "p", text: "someone asked to sign in to dusk bot with this address, but no account uses it. try another address you use." },
+      { t: "p", text: "someone asked to sign in to madani bot with this address, but no account uses it. try another address you use." },
       { t: "p", small: true, text: "didn't ask? you can ignore this email." },
     ], reason,
   });
   const list = joinOr(ways.map(way => WAYS[way] ?? way)) || WAYS.email;
   return render(cfg, {
-    subject: `${code} is your dusk bot code`, preheader: `your dusk bot code is ${code}. here's how you get back in.`, tag: "sign in", ...SAY.recover, transactional: true,
+    subject: `${code} is your madani bot code`, preheader: `your madani bot code is ${code}. here's how you get back in.`, tag: "sign in", ...SAY.recover, transactional: true,
     blocks: [
       { t: "h1", text: "here's how you get back in" },
       { t: "p", text: "use this code where you asked. it works for 10 minutes." },
@@ -110,15 +110,15 @@ export function recoveryEmail(cfg: EmailConfig, { code, link = null, ways }: { c
 /** after the first sign-up */
 export function welcomeEmail(cfg: EmailConfig, { cloudFromCents }: { cloudFromCents: number }): Rendered {
   return render(cfg, {
-    subject: "welcome to dusk bot", preheader: "a team of ai bots you text like teammates. here's how to get going.", tag: "welcome", ...SAY.welcome,
+    subject: "welcome to madani bot", preheader: "a team of ai bots you text like teammates. here's how to get going.", tag: "welcome", ...SAY.welcome,
     blocks: [
-      { t: "h1", text: "welcome to dusk bot" },
-      { t: "p", text: "dusk bot is a chat app for a team of ai bots. you text them like teammates, and they get real work done on your computer." },
+      { t: "h1", text: "welcome to madani bot" },
+      { t: "p", text: "madani bot is a chat app for a team of ai bots. you text them like teammates, and they get real work done on your computer." },
       { t: "button", label: "get the app", href: `${cfg.site}/download` },
-      { t: "cloud", eyebrow: "dusk cloud", title: "keep your bots awake 24/7",
-        text: "your laptop sleeps. your bots don't have to. dusk cloud gives them their own always-on computer, so routines run on time and replies land while your lid is shut.",
+      { t: "cloud", eyebrow: "madani cloud", title: "keep your bots awake 24/7",
+        text: "your laptop sleeps. your bots don't have to. madani cloud gives them their own always-on computer, so routines run on time and replies land while your lid is shut.",
         points: ["runs when your computer is off", "your desktop and phone reach it from anywhere", "set up and looked after for you, with backups"],
-        price: `from ${formatMoney(cloudFromCents).replace(/\.00$/, "")}/mo`, fine: "cancel any time", cta: { label: "get dusk cloud", href: `${cfg.app}/cloud` },
+        price: `from ${formatMoney(cloudFromCents).replace(/\.00$/, "")}/mo`, fine: "cancel any time", cta: { label: "get madani cloud", href: `${cfg.app}/cloud` },
         image: "cloud-day.png", alt: "three pixel bots wide awake on a cloud in a blue sky." },
       { t: "h2", text: "3 pro tips to start" },
       { t: "tips", items: [
@@ -141,14 +141,14 @@ const cloudRows = (cloud: CloudFacts, status: [string, "ok" | "warn" | "off"]): 
 /** a cloud's first time up */
 export function cloudReadyEmail(cfg: EmailConfig, cloud: CloudFacts): Rendered {
   return render(cfg, {
-    subject: `your dusk cloud is ready`, preheader: `${cloud.name} is up and running. pair the app and give it something to do.`, tag: "dusk cloud", ...SAY.ready, transactional: true,
+    subject: `your madani cloud is ready`, preheader: `${cloud.name} is up and running. pair the app and give it something to do.`, tag: "madani cloud", ...SAY.ready, transactional: true,
     blocks: [
-      { t: "h1", text: "your dusk cloud is ready" },
+      { t: "h1", text: "your madani cloud is ready" },
       { t: "p", text: `**${cloud.name}** is up and running. from now on your bots can work around the clock, even with your computer off.` },
       { t: "facts", rows: cloudRows(cloud, ["running", "ok"]) },
       { t: "h2", text: "what now" },
       { t: "steps", items: [
-        { title: "open the app and sign in", text: "use this email in dusk bot on your computer or phone. it finds your cloud by itself." },
+        { title: "open the app and sign in", text: "use this email in madani bot on your computer or phone. it finds your cloud by itself." },
         { title: "move a bot over", text: "pick a bot that should never sleep and move it to your cloud." },
         { title: "give it a first routine", text: "try: **\"every morning at 8, send me the top ai news.\"**" },
       ] },
@@ -161,7 +161,7 @@ export function cloudReadyEmail(cfg: EmailConfig, cloud: CloudFacts): Rendered {
 export interface ReceiptInput {
   amountCents: number; currency: string; description: string; paidAt: number; receiptId: string;
   periodStart: number | null; periodEnd: number | null; renews: boolean; first: boolean;
-  /** a dusk cloud plan: the button opens the cloud, otherwise the app */
+  /** a madani cloud plan: the button opens the cloud, otherwise the app */
   cloud: boolean;
   /** the first payment of a plan that brought back a paused cloud with its data */
   revived?: boolean;
@@ -180,7 +180,7 @@ export function receiptEmail(cfg: EmailConfig, input: ReceiptInput): Rendered {
       { t: "p", text: input.revived ? `your plan is active again, and your cloud and bots are restored where they stopped. here's your receipt for **${input.description}**.`
         : input.first ? `your plan is active. here's your receipt for **${input.description}**.` : `here's your receipt for **${input.description}**. nothing else to do.` },
       { t: "facts", rows },
-      input.cloud ? { t: "button", label: "open dusk cloud", href: `${cfg.app}/cloud` } : { t: "button", label: "open the app", href: `${cfg.site}/download` },
+      input.cloud ? { t: "button", label: "open madani cloud", href: `${cfg.app}/cloud` } : { t: "button", label: "open the app", href: `${cfg.site}/download` },
     ],
     reason: ACCOUNT_REASON,
   });
@@ -198,7 +198,7 @@ export function paymentFailedEmail(cfg: EmailConfig, input: PaymentFailedInput):
         ? `**${input.cloudName}** keeps running for now. fix the card by **${formatDate(input.fixBy)}** so it doesn't stop.`
         : `fix the card by **${formatDate(input.fixBy)}** to keep your plan.` } as Block] : []),
       billingLink(cfg, "the card on file lives on your"),
-      input.cloudName ? { t: "button", label: "open dusk cloud", href: `${cfg.app}/cloud` } : { t: "button", label: "open the app", href: `${cfg.site}/download` },
+      input.cloudName ? { t: "button", label: "open madani cloud", href: `${cfg.app}/cloud` } : { t: "button", label: "open the app", href: `${cfg.site}/download` },
       { t: "p", small: true, text: "already fixed it? then you're good, there's nothing else to do." },
     ],
     reason: ACCOUNT_REASON,
@@ -225,7 +225,7 @@ export function cancelledEmail(cfg: EmailConfig, input: CancelledInput): Rendere
       ] },
       ...(input.cloudName && !input.keptPaused ? [{ t: "note", tone: "warn", text: `after ${keepUntil ?? "that"}, ${input.cloudName} and what's on it are deleted. move anything you want to keep before then.` } as Block] : []),
       { t: "p", text: "whenever you want your bots running around the clock again, it's one step away." },
-      { t: "button", label: "come back to dusk cloud", href: `${cfg.app}/cloud` },
+      { t: "button", label: "come back to madani cloud", href: `${cfg.app}/cloud` },
     ],
     reason: ACCOUNT_REASON,
   });
@@ -234,13 +234,13 @@ export function cancelledEmail(cfg: EmailConfig, input: CancelledInput): Rendere
 /** a cloud that was taken down and its data removed */
 export function cloudDeletedEmail(cfg: EmailConfig, { name, at }: { name: string; at: number }): Rendered {
   return render(cfg, {
-    subject: `${name} was deleted`, preheader: `${name} and its data are gone. your account and the app on your computer are untouched.`, tag: "dusk cloud", ...SAY.cloudGone,
+    subject: `${name} was deleted`, preheader: `${name} and its data are gone. your account and the app on your computer are untouched.`, tag: "madani cloud", ...SAY.cloudGone,
     blocks: [
       { t: "h1", text: `${name} is deleted` },
       { t: "p", text: `we deleted **${name}** on ${formatDate(at)}. this can't be undone.` },
       { t: "h2", text: "what was removed" },
       { t: "list", items: ["the cloud computer itself", "the bots, chats, files and sign-ins that lived on it", "its backups, cleared out soon after if any are left"] },
-      { t: "note", tone: "info", text: "**what stays:** your dusk bot account, and the app and bots on your own computer." },
+      { t: "note", tone: "info", text: "**what stays:** your madani bot account, and the app and bots on your own computer." },
       { t: "button", label: "start a new cloud", href: `${cfg.app}/cloud` },
     ],
     reason: ACCOUNT_REASON,
@@ -249,16 +249,16 @@ export function cloudDeletedEmail(cfg: EmailConfig, { name, at }: { name: string
 
 export function accountDeletedEmail(cfg: EmailConfig, { email }: { email: string }): Rendered {
   return render(cfg, {
-    subject: "your dusk bot account is deleted", preheader: `everything tied to ${email} is gone.`, tag: "account", ...SAY.bye,
+    subject: "your madani bot account is deleted", preheader: `everything tied to ${email} is gone.`, tag: "account", ...SAY.bye,
     blocks: [
       { t: "h1", text: "your account is deleted" },
-      { t: "p", text: `thanks for trying dusk bot. the account for **${email}** is gone, and here's what went with it:` },
+      { t: "p", text: `thanks for trying madani bot. the account for **${email}** is gone, and here's what went with it:` },
       { t: "list", items: ["your account, sign-ins and sessions", "your plans, so no more charges", "your clouds: each one stops (at once, or when its paid time ends), is kept 30 days, then deleted with everything on it"] },
-      { t: "note", tone: "info", text: "**what stays:** the dusk bot app and your bots on your own computer are yours. uninstall the app to remove them. payment records we have to keep by law stay, without your details." },
+      { t: "note", tone: "info", text: "**what stays:** the madani bot app and your bots on your own computer are yours. uninstall the app to remove them. payment records we have to keep by law stay, without your details." },
       { t: "p", text: "if you ever want back in, signing up again takes a minute." },
       { t: "p", small: true, text: "didn't delete your account? reply to this email right away." },
     ],
-    reason: "you got this because your dusk bot account was just deleted. this is the last email we send to this address.",
+    reason: "you got this because your madani bot account was just deleted. this is the last email we send to this address.",
   });
 }
 
@@ -278,7 +278,7 @@ export function promoEmail(cfg: EmailConfig, input: PromoInput): Rendered {
       { t: "button", label: input.cta.label, href: input.cta.href },
       ...input.features.map(feature => ({ t: "feature", image: feature.image ?? null, alt: feature.alt ?? "", title: feature.title, text: feature.text }) as Block),
     ],
-    reason: "You got this because you signed up for dusk bot news.", unsubscribe: input.unsubscribe,
+    reason: "You got this because you signed up for madani bot news.", unsubscribe: input.unsubscribe,
   });
 }
 
@@ -298,7 +298,7 @@ export function cloudNoticeEmail(cfg: EmailConfig, { kind, name, at, link }: { k
 
 /** a cloud's machine stopped and was set up again, from its latest backup (`at`) or empty (null) */
 export function cloudBackEmail(cfg: EmailConfig, { name, at }: { name: string; at: number | null }): Rendered {
-  return render(cfg, { tag: "dusk cloud", reason: ACCOUNT_REASON, subject: `${name} is back`, preheader: "its computer stopped, so we set it up again. your app reconnects by itself.", ...SAY.back,
+  return render(cfg, { tag: "madani cloud", reason: ACCOUNT_REASON, subject: `${name} is back`, preheader: "its computer stopped, so we set it up again. your app reconnects by itself.", ...SAY.back,
     blocks: [{ t: "h1", text: `${name} is back` },
       { t: "p", text: at === null ? `${name}'s computer stopped before its first backup, so we set it up again, empty. bots you moved there can be moved again from your computer.`
         : `${name}'s computer stopped, so we set it up again from its latest backup, taken **${formatDate(at)}**. anything after that backup may be missing.` },
@@ -308,7 +308,7 @@ export function cloudBackEmail(cfg: EmailConfig, { name, at }: { name: string; a
 /** a heads-up before a cloud's data goes: the retention warning, and the owner's own deletion (confirm, then scheduled) */
 export function cloudDeletionEmail(cfg: EmailConfig, { kind, name, at, link, daysLeft = 7 }: { kind: "warning" | "confirm" | "scheduled"; name: string; at: number | null; link?: string; daysLeft?: number }): Rendered {
   const date = at === null ? null : formatDate(at), cloud = `${cfg.app}/cloud`, days = `${daysLeft} day${daysLeft === 1 ? "" : "s"}`;
-  const base = { tag: "dusk cloud", reason: ACCOUNT_REASON, ...SAY.headsUp };
+  const base = { tag: "madani cloud", reason: ACCOUNT_REASON, ...SAY.headsUp };
   if (kind === "confirm") return render(cfg, { ...base, ...SAY.confirm, tag: "security", subject: `confirm deleting ${name}`, preheader: "nothing happens unless you confirm within an hour.",
     blocks: [{ t: "h1", text: `delete ${name}?` }, { t: "p", text: `someone signed in to your account asked to delete **${name}** and all of its data. nothing happens unless you confirm within an hour. you may be asked to sign in again.` },
       { t: "button", label: "confirm deletion", href: link ?? cloud },
@@ -327,14 +327,14 @@ export function cloudDeletionEmail(cfg: EmailConfig, { kind, name, at, link, day
 /** an owner's invite to their team; the link carries the token in its fragment, so it never reaches a server log */
 export function teamInviteEmail(cfg: EmailConfig, { team, from, link, expiresAt }: { team: string; from: string; link: string; expiresAt: number }): Rendered {
   return render(cfg, {
-    subject: `${from} invited you to ${team} on dusk bot`, preheader: `join ${team} and use its bots and its dusk cloud. the link works until ${formatDate(expiresAt)}.`, tag: "team", ...SAY.invite, transactional: true,
+    subject: `${from} invited you to ${team} on madani bot`, preheader: `join ${team} and use its bots and its madani cloud. the link works until ${formatDate(expiresAt)}.`, tag: "team", ...SAY.invite, transactional: true,
     blocks: [
       { t: "h1", text: `join ${team}` },
-      { t: "p", text: `**${from}** invited you to their team on dusk bot. once you're in, you open the team's dusk cloud from the dusk bot app and use the bots they share with you.` },
+      { t: "p", text: `**${from}** invited you to their team on madani bot. once you're in, you open the team's madani cloud from the madani bot app and use the bots they share with you.` },
       { t: "button", label: "join the team", href: link },
       { t: "p", small: true, text: `sign in with this email address to join. the link works once, until ${formatDate(expiresAt)}. weren't expecting this? ignore it and nothing happens.` },
     ],
-    reason: "you got this because someone with a dusk bot team plan invited this address.",
+    reason: "you got this because someone with a madani bot team plan invited this address.",
   });
 }
 

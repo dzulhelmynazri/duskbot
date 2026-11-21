@@ -73,7 +73,7 @@ const PHONE_POST_BURST = 400;
 const PHONE_BYTES_PER_MINUTE = 256 * 1024 * 1024;
 const PHONE_READS_PER_MINUTE = 600;
 const LOOKUP_ID = /^[0-9a-f]{32}$/;
-/** a short line's code (`curl -fsSL https://dusk.bot/s/<code> | sh`): 7 characters with no l, o, 0 or 1, about 3.4e10
+/** a short line's code (`curl -fsSL https://madani.bot/s/<code> | sh`): 7 characters with no l, o, 0 or 1, about 3.4e10
  * of them, good for one setup session only while it is waiting or installing, with every miss counted */
 export const SHORT_ALPHABET = "abcdefghijkmnpqrstuvwxyz23456789";
 export const SHORT_CODE = /^[a-km-np-z2-9]{7}$/;
@@ -106,7 +106,7 @@ export const LANE_BURST_BYTES = 8 * 1024 * 1024;
 export const FRAME_TTL_MS = 60_000;
 /** every queued frame across every tunnel and channel; past it new frames are refused, never the process */
 export const MAX_QUEUED_BYTES = 1024 ** 3;
-/** linked servers one dusk account may have at once, by default */
+/** linked servers one madani account may have at once, by default */
 export const TUNNELS_PER_ACCOUNT = DEFAULT_LIMITS.tunnelsPerAccount;
 /** per client address: requests in flight at once, and a request rate (a bucket that refills per second) */
 export const IP_CONCURRENT = 512;
@@ -178,16 +178,16 @@ export function randomShort() {
 export function bootstrapScript(base, token, way) {
   const args = way ? ` -s -- --${way}` : "";
   return `#!/bin/sh
-# dusk bot: gets the installer for this setup, then runs it
-dusk_install() {
+# madani bot: gets the installer for this setup, then runs it
+madani_install() {
   for f in "" -4 "" -4 ""; do
     if s=$(curl -fsSL --connect-timeout 15 -m 120 $f ${base}/i/${token}); then printf '%s\\n' "$s" | sh${args}; exit $?; fi
     sleep 2
   done
-  echo "dusk bot could not be downloaded. check the internet and paste the line again." >&2
+  echo "madani bot could not be downloaded. check the internet and paste the line again." >&2
   exit 1
 }
-dusk_install
+madani_install
 `;
 }
 
@@ -381,7 +381,7 @@ function frameQueue(onPush = () => {}, memory = { bytes: 0 }, now = Date.now, on
  * null hides the turn routes. `box`, `turnWatch`: the box's own numbers and its turn server's health, for ops.
  * `limits`: start values under any saved relay-limits.json (tests); `sleep`: how a post waits for its share (tests).
  * `grantKeys`: the account service's public keys a new session's link grant must verify against; null opens sessions to
- * anyone (local development and tests only, server.mjs refuses it unless DUSK_LINK_OPEN=1).
+ * anyone (local development and tests only, server.mjs refuses it unless MADANI_LINK_OPEN=1).
  */
 export function createLinkService({ base, dataDir = null, scriptPath, uninstallPath = join(dirname(scriptPath), "uninstall.sh"), agentPath, gatePath = join(dirname(agentPath), "docker-gate.mjs"), packagesDir, trustProxy = true, now = Date.now, fetch: fetchImpl = fetch, log = () => {}, push = createPushRelay({ log }), grantKeys = null, maxQueuedBytes = MAX_QUEUED_BYTES, statsToken = null,
   ipLimits = { concurrent: IP_CONCURRENT, perSecond: IP_REQUESTS_PER_SECOND, burst: IP_REQUEST_BURST }, limits: startLimits = {},
@@ -767,7 +767,7 @@ export function createLinkService({ base, dataDir = null, scriptPath, uninstallP
       ttl: credential.ttl, expiresAt: credential.expiresAt,
     };
   }
-  /** how many live tunnels a dusk account has */
+  /** how many live tunnels a madani account has */
   function accountTunnels(acct) {
     let count = 0;
     for (const tunnel of store.tunnels.values()) if (tunnel.acct === acct) count += 1;
@@ -975,8 +975,8 @@ export function createLinkService({ base, dataDir = null, scriptPath, uninstallP
     const method = req.method ?? "GET";
     let parts;
 
-    if (method === "GET" && path === "/.well-known/duskbot/dashboard") {
-      const dashboard = process.env.DUSK_LINK_DASHBOARD_URL;
+    if (method === "GET" && path === "/.well-known/madanibot/dashboard") {
+      const dashboard = process.env.MADANI_LINK_DASHBOARD_URL;
       return dashboard ? send(res, 200, { v: 1, url: dashboard }) : fail(res, 404, "No account dashboard is configured.");
     }
     if (method === "GET" && (path === "/healthz" || path === "/health")) return send(res, 200, { ok: true });
@@ -1121,7 +1121,7 @@ export function createLinkService({ base, dataDir = null, scriptPath, uninstallP
       let acct = null, byAccount = null;
       if (grantKeys) {
         const verdict = verifyLinkGrant(body?.grant, { keys: grantKeys, now: now() });
-        if (!verdict.ok) return fail(res, 401, "Sign in to your dusk bot account in the app to link a server.", "account_required");
+        if (!verdict.ok) return fail(res, 401, "Sign in to your madani bot account in the app to link a server.", "account_required");
         acct = verdict.acct;
         if (accountTunnels(acct) >= limits.tunnelsPerAccount) return fail(res, 409, `This account already has ${limits.tunnelsPerAccount} linked servers. Remove one in the app to link another.`, "tunnel_limit");
         byAccount = (created.get(`acct:${acct}`) ?? []).filter((at) => t - at < 3_600_000);
@@ -1318,7 +1318,7 @@ export function createLinkService({ base, dataDir = null, scriptPath, uninstallP
         if (reads.length >= SERVER_RELEASE_READS_PER_HOUR) return fail(res, 429, "too many update checks", "rate_limited");
         reads.push(now());
         res.setHeader("cache-control", "no-store, private");
-        fleet.saw(id, req.headers["x-dusk-server-version"], req.headers["x-dusk-agent-version"]);
+        fleet.saw(id, req.headers["x-madani-server-version"], req.headers["x-madani-agent-version"]);
         if (!build) return fail(res, 404, "no build is published", "no_build");
         if (packages.paused()) return fail(res, 404, "updates are paused", "paused");
         const policy = packages.policy();

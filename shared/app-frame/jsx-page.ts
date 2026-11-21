@@ -18,7 +18,7 @@ export const JSX_PAGE_LIBRARIES = {
 const NPM = "https://cdn.jsdelivr.net/npm";
 const REACT = `${NPM}/react@${JSX_PAGE_LIBRARIES.react}/+esm`;
 
-/** What a page's file may import. `dusk` is the shell's own: Chart, useTheme, send, open and setContext. */
+/** What a page's file may import. `madani` is the shell's own: Chart, useTheme, send, open and setContext. */
 export const JSX_PAGE_IMPORTS: Readonly<Record<string, string>> = {
   react: REACT,
   "react/jsx-runtime": `${NPM}/react@${JSX_PAGE_LIBRARIES.react}/jsx-runtime/+esm`,
@@ -27,7 +27,7 @@ export const JSX_PAGE_IMPORTS: Readonly<Record<string, string>> = {
   "lucide-react": `${NPM}/lucide-react@${JSX_PAGE_LIBRARIES["lucide-react"]}/+esm`,
   echarts: `${NPM}/echarts@${JSX_PAGE_LIBRARIES.echarts}/dist/echarts.esm.min.js`,
 };
-export const JSX_PAGE_MODULES: readonly string[] = [...Object.keys(JSX_PAGE_IMPORTS), "dusk"];
+export const JSX_PAGE_MODULES: readonly string[] = [...Object.keys(JSX_PAGE_IMPORTS), "madani"];
 
 const CODEC = `${NPM}/@jridgewell/sourcemap-codec`;
 /** Fixes for jsDelivr's on-demand ESM builds, by address. react-dom/client and lucide-react import React by its peer
@@ -65,12 +65,12 @@ export const JSX_RUNTIME_SOURCE = `(function (env) {
   var OLD = ${scriptJson(LEGACY.short)};
   var OPTIONS = ${scriptJson(JSX_TRANSFORM_OPTIONS)};
   var html = doc.documentElement;
-  var mount = doc.getElementById("dusk-root");
+  var mount = doc.getElementById("madani-root");
   if (!html.getAttribute("data-theme")) {
     var dark = win.matchMedia && win.matchMedia("(prefers-color-scheme: dark)");
     var follow = function () { html.setAttribute("data-theme", dark && dark.matches ? "dark" : "light"); };
     follow();
-    if (dark && dark.addEventListener && !(win.dusk && win.dusk.send)) dark.addEventListener("change", follow);
+    if (dark && dark.addEventListener && !(win.madani && win.madani.send)) dark.addEventListener("change", follow);
   }
   var clip = function (text, limit) { text = String(text == null ? "" : text); return text.length > limit ? text.slice(0, limit - 1) + "\\u2026" : text; };
   var fail = function (kind, message, extra) { var error = new Error(message); error.pageProblem = kind; if (extra) for (var key in extra) error[key] = extra[key]; return error; };
@@ -92,8 +92,8 @@ export const JSX_RUNTIME_SOURCE = `(function (env) {
   var shown = false;
   var report = function (problem) {
     try {
-      if (win.dusk && typeof win.dusk.setContext === "function") {
-        win.dusk.setContext(clip("The page \\u201c" + env.title + "\\u201d shows an error instead of its content. " + problem.message +
+      if (win.madani && typeof win.madani.setContext === "function") {
+        win.madani.setContext(clip("The page \\u201c" + env.title + "\\u201d shows an error instead of its content. " + problem.message +
           (problem.line ? " (line " + problem.line + ")" : "") + (problem.excerpt ? "\\n" + problem.excerpt : ""), 1500));
       }
     } catch (ignored) { /* the bridge went away */ }
@@ -106,7 +106,7 @@ export const JSX_RUNTIME_SOURCE = `(function (env) {
     var box = doc.createElement("div");
     box.setAttribute("role", "alert");
     box.setAttribute("data-page-problem", problem.kind);
-    box.className = "dusk-problem";
+    box.className = "madani-problem";
     var title = doc.createElement("strong");
     title.textContent = TITLES[problem.kind] || TITLES.run;
     var body = doc.createElement("p");
@@ -119,7 +119,7 @@ export const JSX_RUNTIME_SOURCE = `(function (env) {
       box.appendChild(code);
     }
     var note = doc.createElement("p");
-    note.className = "dusk-problem-note";
+    note.className = "madani-problem-note";
     note.textContent = problem.kind === "offline" ? "" : "The bot hears about this with your next message, so it can fix it.";
     if (note.textContent) box.appendChild(note);
     (doc.body || html).appendChild(box);
@@ -160,7 +160,7 @@ export const JSX_RUNTIME_SOURCE = `(function (env) {
       return React.createElement("div", { ref: box, className: props.className, role: "img", "aria-label": props.label,
         style: Object.assign({ width: "100%", height: props.height || 320 }, props.style) });
     };
-    var bridge = function () { return win.dusk && typeof win.dusk.send === "function" ? win.dusk : null; };
+    var bridge = function () { return win.madani && typeof win.madani.send === "function" ? win.madani : null; };
     return {
       __esModule: true, Chart: Chart, useTheme: useTheme,
       send: function (text) { return bridge() ? bridge().send(text) : Promise.resolve(); },
@@ -181,7 +181,7 @@ export const JSX_RUNTIME_SOURCE = `(function (env) {
   var wanted = function (code) {
     var names = {}, found = [], pattern = /\\brequire\\((["'])([^"']+)\\1\\)/g, match;
     var text = code === null ? String(env.page) : code;
-    while ((match = pattern.exec(text))) { var name = match[2] === OLD ? "dusk" : match[2]; if (!names[name]) { names[name] = true; found.push(name); } }
+    while ((match = pattern.exec(text))) { var name = match[2] === OLD ? "madani" : match[2]; if (!names[name]) { names[name] = true; found.push(name); } }
     return found;
   };
   var run = function () {
@@ -193,7 +193,7 @@ export const JSX_RUNTIME_SOURCE = `(function (env) {
       }
       var needed = ["react", "react-dom/client"];
       names.forEach(function (name) {
-        var real = name === "dusk" ? "echarts" : name;
+        var real = name === "madani" ? "echarts" : name;
         if (needed.indexOf(real) === -1) needed.push(real);
       });
       var loaded = {};
@@ -204,9 +204,9 @@ export const JSX_RUNTIME_SOURCE = `(function (env) {
       var React = ready.loaded.react;
       var modules = {};
       Object.keys(ready.loaded).forEach(function (name) { modules[name] = wrap(ready.loaded[name]); });
-      modules.dusk = shellModule(React, ready.loaded.echarts);
+      modules.madani = shellModule(React, ready.loaded.echarts);
       var require = function (name) {
-        if (name === OLD) name = "dusk";
+        if (name === OLD) name = "madani";
         if (!Object.prototype.hasOwnProperty.call(modules, name)) throw fail("import", "It imports " + name + ", which isn't loaded.");
         return modules[name];
       };
@@ -238,13 +238,13 @@ const BASE_STYLE = [
   "html,body{margin:0}",
   "body{font-family:var(--font-sans,system-ui,sans-serif);color:var(--color-text-primary,#1d1d1f);",
   "background:var(--color-background-primary,#fff);-webkit-font-smoothing:antialiased}",
-  "#dusk-root:empty::before{content:\"Loading\\2026\";display:block;padding:24px;font:14px/20px system-ui,sans-serif;opacity:.6}",
-  ".dusk-problem{position:fixed;inset:12px;overflow:auto;z-index:2147483646;border-radius:12px;padding:16px 18px;",
+  "#madani-root:empty::before{content:\"Loading\\2026\";display:block;padding:24px;font:14px/20px system-ui,sans-serif;opacity:.6}",
+  ".madani-problem{position:fixed;inset:12px;overflow:auto;z-index:2147483646;border-radius:12px;padding:16px 18px;",
   "font:14px/1.5 system-ui,sans-serif;background:#fff6f5;color:#5c1712;border:1px solid #f3c2bd;box-shadow:0 8px 24px rgba(0,0,0,.12)}",
-  "[data-theme=dark] .dusk-problem{background:#2a1513;color:#ffd9d4;border-color:#6b2a24}",
-  ".dusk-problem strong{display:block;font-size:15px;margin-bottom:6px}.dusk-problem p{margin:0 0 8px}",
-  ".dusk-problem pre{margin:8px 0;padding:10px 12px;border-radius:8px;background:rgba(0,0,0,.06);font:12px/1.5 ui-monospace,Menlo,monospace;",
-  "white-space:pre-wrap;overflow-wrap:anywhere}.dusk-problem-note{opacity:.75;font-size:12.5px}",
+  "[data-theme=dark] .madani-problem{background:#2a1513;color:#ffd9d4;border-color:#6b2a24}",
+  ".madani-problem strong{display:block;font-size:15px;margin-bottom:6px}.madani-problem p{margin:0 0 8px}",
+  ".madani-problem pre{margin:8px 0;padding:10px 12px;border-radius:8px;background:rgba(0,0,0,.06);font:12px/1.5 ui-monospace,Menlo,monospace;",
+  "white-space:pre-wrap;overflow-wrap:anywhere}.madani-problem-note{opacity:.75;font-size:12.5px}",
 ].join("");
 
 /** Tailwind's `dark:` follows the theme the chat hands the page, not only the system setting. */
@@ -261,7 +261,7 @@ function shell(input: { title: string; head: string; boot: string }): string {
     `<style type="text/tailwindcss">${TAILWIND_SETUP}</style>`,
     `<style>${BASE_STYLE}</style>`,
     input.head,
-    "</head><body><div id=\"dusk-root\"></div>",
+    "</head><body><div id=\"madani-root\"></div>",
     `<script type="module">${input.boot}</script>`,
     "</body></html>",
   ].join("");
@@ -281,7 +281,7 @@ export function scriptSafe(code: string): string {
 /** A published page: the server's transpiled code in a plain function, the theme colours the chat would give it, and no
  * compiler and no eval. */
 export function jsxPublishedHtml(input: { title: string; compiled: string }): string {
-  const page = `<script>window.__duskPage=function(require,module,exports){${scriptSafe(input.compiled)}\n};</script>`;
-  const env = `{ doc: document, win: window, load: function (name) { return import(name); }, title: ${scriptJson(input.title)}, page: window.__duskPage }`;
+  const page = `<script>window.__madaniPage=function(require,module,exports){${scriptSafe(input.compiled)}\n};</script>`;
+  const env = `{ doc: document, win: window, load: function (name) { return import(name); }, title: ${scriptJson(input.title)}, page: window.__madaniPage }`;
   return shell({ title: input.title, head: `<style>${APP_THEME_STYLE}</style>${page}`, boot: `(${JSX_RUNTIME_SOURCE})(${env});` });
 }

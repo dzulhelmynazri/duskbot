@@ -1,16 +1,16 @@
 [Unit]
-Description=dusk bot backup of %i (encrypted, off-box)
+Description=madani bot backup of %i (encrypted, off-box)
 After=network-online.target
 Wants=network-online.target
 
 [Service]
 Type=oneshot
 # the set's paths, mongo source, age recipient and destinations, mode 0600 (backup.env.example)
-EnvironmentFile=/etc/dusk-backup/%i.env
-Environment=RCLONE_CONFIG=/etc/dusk-backup/rclone.conf
-ExecStart=/opt/dusk-backup/backup.sh
+EnvironmentFile=/etc/madani-backup/%i.env
+Environment=RCLONE_CONFIG=/etc/madani-backup/rclone.conf
+ExecStart=/opt/madani-backup/backup.sh
 # one email when it starts failing, one when it works again (backup-alert.mjs)
-ExecStopPost=/usr/bin/node /opt/dusk-backup/backup-alert.mjs %i
+ExecStopPost=/usr/bin/node /opt/madani-backup/backup-alert.mjs %i
 TimeoutStartSec=2h
 Nice=10
 IOSchedulingClass=idle

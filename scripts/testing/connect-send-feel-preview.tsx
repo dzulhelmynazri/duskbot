@@ -28,10 +28,10 @@ if (sendLag) {
   window.fetch = (input, init) => (init?.method === "POST" && /\/api\/bots\/[^/]+\/messages$/.test(String(input instanceof Request ? input.url : input)))
     ? new Promise((done) => setTimeout(done, sendLag)).then(() => send(input, init)) : send(input, init);
 }
-window.duskDesktop = {
+window.madaniDesktop = {
   platform: "darwin",
   getCapabilities: async () => initialDesktopCapabilities(),
-} as unknown as typeof window.duskDesktop;
+} as unknown as typeof window.madaniDesktop;
 
 function SendView() {
   const { state, dispatch } = useStore();

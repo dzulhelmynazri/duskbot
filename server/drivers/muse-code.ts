@@ -32,7 +32,7 @@ import { museMcpConfig, museMcpToolReferences } from "./muse-mcp.ts";
 
 const DRIVER_KIND = "museCode";
 const PROVIDER_ID = "meta";
-const CLIENT_INFO = { name: "duskbot", title: "dusk bot", version: "1" };
+const CLIENT_INFO = { name: "madanibot", title: "madani bot", version: "1" };
 const MUSE_CONTEXT_WINDOW = 1_048_576;
 const RE_ANCHOR_TURNS = 8;
 const STARTUP_TIMEOUT_MS = 30_000;
@@ -355,10 +355,10 @@ export const MuseCodeDriver: ProviderDriver<MuseConfig> = {
     };
 
     const refreshModels = async () => {
-      const cwd = mkdtempSync(join(tmpdir(), "dusk-muse-models-"));
+      const cwd = mkdtempSync(join(tmpdir(), "madani-muse-models-"));
       let host: Host | undefined;
       try {
-        host = await startHost(["serve", "--disable-shell", "--disable-write", "--no-session-log"], cwd, "models", false, "duskbot");
+        host = await startHost(["serve", "--disable-shell", "--disable-write", "--no-session-log"], cwd, "models", false, "madanibot");
         const result = await Promise.race([
           host.connection.request("model/list", {}),
           new Promise<never>((_resolve, reject) => setTimeout(() => reject(new Error("Muse Code did not list its models.")), MODEL_LIST_TIMEOUT_MS).unref?.()),

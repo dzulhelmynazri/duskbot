@@ -3,7 +3,7 @@ import type { CloudFilesBridge, CloudFilesState } from "../../electron/cloud-syn
 
 /** Shared folders live in this computer's own window: a companion connected to another computer has none. */
 export function cloudFilesBridge(): CloudFilesBridge | undefined {
-  return window.duskDesktop?.remoteClient?.active ? undefined : window.duskDesktop?.cloudAccount?.files;
+  return window.madaniDesktop?.remoteClient?.active ? undefined : window.madaniDesktop?.cloudAccount?.files;
 }
 
 /** Main's Files state, kept current; null until main answers (and when main can't). */

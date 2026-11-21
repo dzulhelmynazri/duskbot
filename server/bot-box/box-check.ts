@@ -11,12 +11,12 @@ import { detectBox } from "./detect.ts";
 import { BOX_MUTATIONS, type BoxMutation } from "./plan.ts";
 import { runBoxSelfCheck } from "./self-check.ts";
 
-export const CHECK_DENY_ENV: ReadonlySet<string> = new Set(["COMPOSIO_API_KEY", "DUSK_COMPOSIO_BROKER_TOKEN", "DUSK_HIGHLEVEL_TOKEN"]);
+export const CHECK_DENY_ENV: ReadonlySet<string> = new Set(["COMPOSIO_API_KEY", "MADANI_COMPOSIO_BROKER_TOKEN", "MADANI_HIGHLEVEL_TOKEN"]);
 
 export async function boxCheckMain(argv: readonly string[], env: Record<string, string | undefined> = process.env): Promise<number> {
   const mutate = new Set<BoxMutation>();
   let publicTarget: string | null | undefined;
-  let root = env.DUSK_DATA_DIR ? join(env.DUSK_DATA_DIR, "box") : join(tmpdir(), "dusk-box-check");
+  let root = env.MADANI_DATA_DIR ? join(env.MADANI_DATA_DIR, "box") : join(tmpdir(), "madani-box-check");
   for (const arg of argv) {
     const [name, value = ""] = arg.split("=", 2) as [string, string?];
     if (name === "--mutate") for (const item of value.split(",").filter(Boolean)) {
@@ -26,7 +26,7 @@ export async function boxCheckMain(argv: readonly string[], env: Record<string, 
     else if (name === "--root") root = value;
     else throw new Error(`unknown argument ${arg}`);
   }
-  const detection = detectBox({ env: { ...env, DUSK_BOT_BOX: env.DUSK_BOT_BOX ?? "1" } });
+  const detection = detectBox({ env: { ...env, MADANI_BOT_BOX: env.MADANI_BOT_BOX ?? "1" } });
   if (detection.box !== "bwrap" || !detection.tools) {
     process.stdout.write(`${JSON.stringify({ box: detection.box, reason: detection.reason })}\n`);
     return 2;

@@ -39,7 +39,7 @@ const until = (check: () => boolean) => vi.waitFor(() => expect(check()).toBe(tr
 
 beforeEach(async () => {
   fake = await startFakeSlack();
-  api = createSlackApi({ env: { DUSK_SLACK_API_URL: fake.url }, minGapMs: 0 });
+  api = createSlackApi({ env: { MADANI_SLACK_API_URL: fake.url }, minGapMs: 0 });
   const app = await api.call<{ app_id: string }>("apps.manifest.create", fake.config.access, {
     manifest: { settings: { socket_mode_enabled: true } },
   });

@@ -36,7 +36,7 @@ export function teamImportPreview(manifest: unknown): PendingTeamImport {
     throw new Error("This file does not contain a team.");
   }
   const root = withCurrentFormat(manifest) as Record<string, unknown>;
-  if (root.format === "dusk.backup") {
+  if (root.format === "madani.backup") {
     const backup = parseTeamBackup(manifest);
     return {
       manifest: backup, kind: "backup", name: backup.name, description: TEAM_BACKUP_CONTENTS,
@@ -49,7 +49,7 @@ export function teamImportPreview(manifest: unknown): PendingTeamImport {
     };
   }
   if (root.format === "openmaus.package") return packagePreview(root, manifest);
-  if (root.format !== "dusk.team") throw new Error("This is not a dusk bot backup, BotMRR playbook or legacy team.");
+  if (root.format !== "madani.team") throw new Error("This is not a madani bot backup, BotMRR playbook or legacy team.");
   if (root.version !== 1 && root.version !== 2) throw new Error(`Team file version ${String(root.version)} is not supported.`);
   if (!root.team || typeof root.team !== "object" || Array.isArray(root.team)) {
     throw new Error("This team file is missing its team definition.");

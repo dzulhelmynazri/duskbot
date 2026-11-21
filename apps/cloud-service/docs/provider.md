@@ -17,7 +17,7 @@ and checked on live machines, 2026-11-11.
   cannot (`runtime.processesPreserved: false`). `stop` keeps files only. A paused machine cannot be stopped or resized
   without a resume first. Stopped disks are never purged.
 - Create, start, stop, suspend, resume, delete and snapshot saves take an `Idempotency-Key`; a create whose operation
-  failed replays the failure for the same key, so the machine's unique name (`dusk-<cloud>-<attempt>-<scope>`) is what
+  failed replays the failure for the same key, so the machine's unique name (`madani-<cloud>-<attempt>-<scope>`) is what
   keeps a retried create from making a second one. `DELETE` needs `X-Confirm-Delete`.
 - `exec` runs `bash -lc` as the machine user (passwordless sudo), 10 minutes at most; a minutes-long call is dropped by
   the API, so long work runs detached and is polled. Exec is never retried.
@@ -65,7 +65,7 @@ The code is `apps/cloud-service/src/lifecycle.ts`, the adapter `src/instabox.ts`
   docker gate that never builds. It uses the registry's copy when one is public, else builds the image from the signed
   package's own kit (`deploy/bot-desktop/build.sh`), at low priority, retried a minute after a failure. Its state
   (`building`, `ready`, `failed`) is in `DESKTOP_IMAGE_STATUS` under `CLOUD_HOME.run`. The home's server learns that path
-  from `DUSK_BOT_DESKTOP_HOST_BUILD` and, when a bot's computer is first started, waits for the build (telling the chat
+  from `MADANI_BOT_DESKTOP_HOST_BUILD` and, when a bot's computer is first started, waits for the build (telling the chat
   it is building) instead of building through the gate; a failed build answers at once with a clear message. The image
   survives pauses, stops and reboots on the root disk.
 - **Sleep.** The dashboard reads the home's power once a minute and asks the power policy (`src/power/policy.ts`)
@@ -75,12 +75,12 @@ The code is `apps/cloud-service/src/lifecycle.ts`, the adapter `src/instabox.ts`
   browsers where they were. The policy, its rails and the cost study are in `docs/power.md`.
 - **Wake** on intent only: the app (`/api/cloud/desktop/wake`) for a send, a click or typing, never for opening or
   viewing; the dashboard's power button; the Slack edge and webhooks through our domain; a routine, 2 minutes before its
-  run (`DUSK_MANAGED_WAKE_LEAD_MINUTES`). The reconciler runs `omb-home start` after every resume; it is a no-op when the
+  run (`MADANI_MANAGED_WAKE_LEAD_MINUTES`). The reconciler runs `omb-home start` after every resume; it is a no-op when the
   home kept running with its origin, and starts it after a cold boot. The home notices a resume by the clock jump and its
   due timers re-check the wall clock every minute, so a routine due during a pause runs within a minute.
 - **Back up** `/data` (what lives there: `docs/home-data.md`) from the running home: `omb-home snapshot` copies each
   SQLite database through an online backup and the rest as it is, the service downloads it, seals it and keeps it in
-  `DUSK_MANAGED_BACKUP_DIR`. Taken before an idle sleep when one is due, before the sleep that ends a plan, and after two
+  `MADANI_MANAGED_BACKUP_DIR`. Taken before an idle sleep when one is due, before the sleep that ends a plan, and after two
   backup intervals awake. The home never holds a credential for that storage.
 - **Recover** a lost machine (repeated 404s and absent from the list): a fresh machine, then the newest verified backup
   restored into it in place (only our entries of `/data` are swapped; the platform's stay). A cold-booted machine is not
@@ -98,20 +98,20 @@ Every action is one line in `managed-audit.jsonl`. A deletion is a plain log lin
 
 ## Configuration (account service)
 
-- **Required:** `DUSK_MANAGED=1`; `INSTABOX_API_KEY` (only this service holds it); `DUSK_CLOUD_SEAL_KEY`;
-  `DUSK_MANAGED_HOME_PACKAGE_SHA256` with `DUSK_MANAGED_HOME_PACKAGE_FILE` or an https `DUSK_MANAGED_HOME_PACKAGE_URL`
+- **Required:** `MADANI_MANAGED=1`; `INSTABOX_API_KEY` (only this service holds it); `MADANI_CLOUD_SEAL_KEY`;
+  `MADANI_MANAGED_HOME_PACKAGE_SHA256` with `MADANI_MANAGED_HOME_PACKAGE_FILE` or an https `MADANI_MANAGED_HOME_PACKAGE_URL`
   (build it with `node apps/cloud-service/scripts/build-home-package.mjs`). Off loopback also
-  `DUSK_MANAGED_HOME_PACKAGE_SIGNATURE` (or `_SIGNATURE_FILE`), `DUSK_MANAGED_PUBLIC_DOMAIN` and `DUSK_MANAGED_EDGE_TOKEN`.
-- **Provider:** `INSTABOX_BASE_URL` (tests and staging), `DUSK_MANAGED_PROVIDER_PLAN` (`pro`, `builder` or `team`: its
-  starts a minute; default `pro`), `DUSK_MANAGED_PROVIDER_TEMPLATE` (default `universal`), `DUSK_MANAGED_IDLE_PAUSE_MINUTES`
+  `MADANI_MANAGED_HOME_PACKAGE_SIGNATURE` (or `_SIGNATURE_FILE`), `MADANI_MANAGED_PUBLIC_DOMAIN` and `MADANI_MANAGED_EDGE_TOKEN`.
+- **Provider:** `INSTABOX_BASE_URL` (tests and staging), `MADANI_MANAGED_PROVIDER_PLAN` (`pro`, `builder` or `team`: its
+  starts a minute; default `pro`), `MADANI_MANAGED_PROVIDER_TEMPLATE` (default `universal`), `MADANI_MANAGED_IDLE_PAUSE_MINUTES`
   (5 to 30, default 30: the machine's own dead-man pause).
-- **Optional:** `DUSK_MANAGED_BACKUP_KEY` (43 base64url characters; otherwise derived from `DUSK_CLOUD_SEAL_KEY`). Its
+- **Optional:** `MADANI_MANAGED_BACKUP_KEY` (43 base64url characters; otherwise derived from `MADANI_CLOUD_SEAL_KEY`). Its
   fingerprint is kept in the data folder, and a different key refuses to start unless the old one is set as
-  `DUSK_MANAGED_BACKUP_KEY_PREVIOUS`, which seals every backup again first. Also `DUSK_MANAGED_KINDS`, `_SCOPE`,
+  `MADANI_MANAGED_BACKUP_KEY_PREVIOUS`, which seals every backup again first. Also `MADANI_MANAGED_KINDS`, `_SCOPE`,
   `_IDLE_MINUTES`, `_LEASE_HOURS`, `_WAKE_LEAD_MINUTES` (1 to 30, default 2), `_EDGE_WAKES_PER_HOUR`, `_BACKUP_DIR`,
   `_BACKUP_HOURS`, `_BACKUP_KEEP`, `_BACKUP_TAIL_DAYS`, `_BACKUP_MAX_MB`, `_RETENTION_DAYS`, `_DELETE_DELAY_DAYS`,
-  `_LOST_AFTER_MINUTES`, `_HOME_RELEASE_FILE`, `DUSK_UPDATE_POLICY_FILE`, `DUSK_RELEASE_PUBLIC_KEYS` (staging keys).
-- **Minimums:** `DUSK_MANAGED_RETENTION_DAYS` is at least 30 and `DUSK_MANAGED_DELETE_DELAY_DAYS` at least 7; shorter
+  `_LOST_AFTER_MINUTES`, `_HOME_RELEASE_FILE`, `MADANI_UPDATE_POLICY_FILE`, `MADANI_RELEASE_PUBLIC_KEYS` (staging keys).
+- **Minimums:** `MADANI_MANAGED_RETENTION_DAYS` is at least 30 and `MADANI_MANAGED_DELETE_DELAY_DAYS` at least 7; shorter
   values stop the service at startup.
 - **Sizing:** the 30 starts a minute per Pro workspace bind first. Up to about 300 homes per workspace the policy beats
   every fixed idle timer; from about 600 it loses, and at 1,000 or more synchronized routines run late. Use a bigger plan

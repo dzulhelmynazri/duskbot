@@ -13,7 +13,7 @@ import { cn } from "@/lib/cn";
 import { footnoteCls, formBodyCls, formCloseCls, formHeaderCls, formSheetCls, formTitleCls, rowHintCls, smallButtonCls } from "./ui/GrokDialog";
 import { friendlyError } from "@/lib/plain-error";
 
-const dangerSmallCls = "dusk-press inline-flex h-6 shrink-0 cursor-pointer items-center justify-center gap-1 whitespace-nowrap rounded-full px-2 text-[12px] leading-4 tracking-[0.01em] text-danger outline-none hover:bg-danger/10 focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-focus disabled:cursor-default disabled:opacity-40";
+const dangerSmallCls = "madani-press inline-flex h-6 shrink-0 cursor-pointer items-center justify-center gap-1 whitespace-nowrap rounded-full px-2 text-[12px] leading-4 tracking-[0.01em] text-danger outline-none hover:bg-danger/10 focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-focus disabled:cursor-default disabled:opacity-40";
 
 export type BotConfirmKind = "archive" | "delete";
 

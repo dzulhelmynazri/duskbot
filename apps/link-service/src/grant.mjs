@@ -1,5 +1,5 @@
 // link grants: the account service signs a short-lived token (Ed25519) naming an opaque account reference; the link service
-// opens a setup session only with a fresh one, so every tunnel belongs to a dusk account. format: `l1.<kid>.<payload>.<sig>`,
+// opens a setup session only with a fresh one, so every tunnel belongs to a madani account. format: `l1.<kid>.<payload>.<sig>`,
 // base64url, the signature over `l1.<kid>.<payload>`; payload `{ v: 1, aud: "link", acct, iat, exp }`.
 import { createPublicKey, verify } from "node:crypto";
 
@@ -13,12 +13,12 @@ const KID = /^[a-z0-9][a-z0-9-]{0,31}$/;
 const B64URL = /^[A-Za-z0-9_-]+$/;
 const ACCT = /^[0-9a-f]{32}$/;
 
-/** `kid:x,kid:x` (DUSK_LINK_GRANT_KEYS): the public keys to trust instead of the pinned ones */
+/** `kid:x,kid:x` (MADANI_LINK_GRANT_KEYS): the public keys to trust instead of the pinned ones */
 export function parseGrantKeys(value) {
   if (!value?.trim()) return null;
   return value.split(",").map((item) => {
     const [kid, x] = item.trim().split(":");
-    if (!kid || !x || !KID.test(kid) || !B64URL.test(x) || Buffer.from(x, "base64url").length !== 32) throw new Error("DUSK_LINK_GRANT_KEYS must be kid:x pairs of Ed25519 public keys.");
+    if (!kid || !x || !KID.test(kid) || !B64URL.test(x) || Buffer.from(x, "base64url").length !== 32) throw new Error("MADANI_LINK_GRANT_KEYS must be kid:x pairs of Ed25519 public keys.");
     return { kid, x };
   });
 }

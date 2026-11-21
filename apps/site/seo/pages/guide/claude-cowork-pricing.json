@@ -117,7 +117,7 @@
     },
     {
       "h": "compare the costs of the workflow you want",
-      "md": "**add the bills before comparing the price.** list the ai plan, extra services and where the work runs. in dusk, your ai provider bills usage separately from dusk.[^5]\n\ndusk's desktop app is free for personal use. company work needs a work license, and dusk cloud has its own price.[^5]\n\nthe [cowork alternative guide](/alternatives/claude-cowork) compares that setup. put every part you need in the budget."
+      "md": "**add the bills before comparing the price.** list the ai plan, extra services and where the work runs. in madani, your ai provider bills usage separately from madani.[^5]\n\nmadani's desktop app is free for personal use. company work needs a work license, and madani cloud has its own price.[^5]\n\nthe [cowork alternative guide](/alternatives/claude-cowork) compares that setup. put every part you need in the budget."
     }
   ],
   "faq": [
@@ -156,7 +156,7 @@
       "checked": "2026-11-12"
     },
     {
-      "label": "dusk bot docs: billing",
+      "label": "madani bot docs: billing",
       "url": "/docs/account-and-billing"
     },
     {

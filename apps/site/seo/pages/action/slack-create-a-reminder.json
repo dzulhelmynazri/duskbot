@@ -15,7 +15,7 @@
   "updated": "2026-11-12",
   "review": {
     "status": "approved",
-    "by": "lead agent, after two independent reviewer passes, against dusk bot docs and the composio catalog",
+    "by": "lead agent, after two independent reviewer passes, against madani bot docs and the composio catalog",
     "at": "2026-11-12"
   },
   "tags": [
@@ -73,21 +73,21 @@
       "a": "**usually not.** only some slack connections can create reminders for other people. the bot should say when yours cannot."
     },
     {
-      "q": "do i need a dusk routine for every weekly reminder?",
-      "a": "**no.** ask once for a repeating slack reminder. use a dusk routine when the items needing reminders change each week."
+      "q": "do i need a madani routine for every weekly reminder?",
+      "a": "**no.** ask once for a repeating slack reminder. use a madani routine when the items needing reminders change each week."
     }
   ],
   "sources": [
     {
-      "label": "dusk bot docs: files and apps",
+      "label": "madani bot docs: files and apps",
       "url": "/docs/files-and-apps"
     },
     {
-      "label": "dusk bot docs: routines",
+      "label": "madani bot docs: routines",
       "url": "/docs/routines"
     },
     {
-      "label": "dusk bot docs: computer permissions",
+      "label": "madani bot docs: computer permissions",
       "url": "/docs/computer"
     }
   ],

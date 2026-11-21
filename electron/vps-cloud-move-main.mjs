@@ -55,9 +55,9 @@ export function installVpsCloudMoveMain(deps) {
         deps.tell(viewNow());
         return;
       }
-      if (!client?.webHandoff) throw new Error("Sign in to dusk cloud first.");
+      if (!client?.webHandoff) throw new Error("Sign in to madani cloud first.");
       const opened = await client.webHandoff({ plan: chosen, source: "app_computer_move" });
-      if (opened?.signedOut) throw Object.assign(new Error("Sign in to dusk cloud first."), { code: "signed_out" });
+      if (opened?.signedOut) throw Object.assign(new Error("Sign in to madani cloud first."), { code: "signed_out" });
     },
     openHome: deps.openHome,
     ...(deps.lastInput ? { lastInput: deps.lastInput } : {}),

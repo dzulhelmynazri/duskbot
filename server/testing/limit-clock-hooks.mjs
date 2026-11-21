@@ -1,10 +1,10 @@
-// Loaded with --import in isolated fixtures when DUSK_TEST_LIMIT_CLOCK=1: a limit-reset automation and a held turn start
+// Loaded with --import in isolated fixtures when MADANI_TEST_LIMIT_CLOCK=1: a limit-reset automation and a held turn start
 // a second after the reset instead of a minute or 30 s, and a routine still due is retried every 250 ms instead of every
 // 10 s, so a fixture can watch one run without waiting. No authorization or dispatch decision changes.
 import { registerHooks } from 'node:module';
 
-const dataDir = process.env.DUSK_DATA_DIR;
-if (!dataDir || dataDir !== process.env.HOME || process.env.DUSK_TEST_LIMIT_CLOCK !== '1') {
+const dataDir = process.env.MADANI_DATA_DIR;
+if (!dataDir || dataDir !== process.env.HOME || process.env.MADANI_TEST_LIMIT_CLOCK !== '1') {
   throw new Error('The limit clock requires an explicitly isolated fixture');
 }
 const seams = new Map([

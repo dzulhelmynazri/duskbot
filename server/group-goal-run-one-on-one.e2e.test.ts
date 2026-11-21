@@ -14,7 +14,7 @@ import { freePortBlock } from "./testing/ports.ts";
 const SERVER_DIR = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(SERVER_DIR, "..");
 const FAKE_CLAUDE = join(SERVER_DIR, "testing", "fake-claude-cli.ts");
-const envelope = (decision: Record<string, string>) => `<dusk-goal>${JSON.stringify(decision)}</dusk-goal>`;
+const envelope = (decision: Record<string, string>) => `<madani-goal>${JSON.stringify(decision)}</madani-goal>`;
 
 let child: ChildProcess;
 let home = "";
@@ -55,10 +55,10 @@ const sendGoal = (bot: { id: string; threadId: string }, text: string, extra: Re
   api("POST", `/api/bots/${bot.id}/messages`, { text, mode: "goal", threadId: bot.threadId, ...extra });
 
 beforeAll(async () => {
-  home = mkdtempSync(join(tmpdir(), "dusk-one-on-one-goal-"));
+  home = mkdtempSync(join(tmpdir(), "madani-one-on-one-goal-"));
   slowGate = join(home, "slow-finish");
   patientGate = join(home, "patient-finish");
-  const data = join(home, ".duskbot");
+  const data = join(home, ".madanibot");
   mkdirSync(data, { recursive: true });
   const fixture = (name: string, environment: Record<string, string>) => ({
     driver: "claudeAgent",
@@ -108,8 +108,8 @@ beforeAll(async () => {
       ...(process.env.SystemRoot ? { SystemRoot: process.env.SystemRoot } : {}),
       HOME: home,
       USERPROFILE: home,
-      DUSK_PORT: String(port),
-      DUSK_WEBHOOK_PORT: String(port + 1),
+      MADANI_PORT: String(port),
+      MADANI_WEBHOOK_PORT: String(port + 1),
     },
     stdio: ["ignore", "pipe", "pipe"],
   });
@@ -155,7 +155,7 @@ describe("one-on-one goal runs (a room of one)", () => {
 
     const messages = await messagesIn(bot.threadId);
     const afterGoal = messages.slice(messages.findIndex((message) => message.id === sent.body.message.id) + 1);
-    expect(JSON.stringify(messages)).not.toContain("dusk-goal");
+    expect(JSON.stringify(messages)).not.toContain("madani-goal");
     expect(afterGoal.filter((message) => message.kind === "text" && message.role === "bot").map((message) => message.text))
       .toEqual(["I fixed the parser test.", "Every test passes now."]);
     expect(messages.filter((message) => message.role === "user").map((message) => message.text)).toEqual(["Get every test passing"]);

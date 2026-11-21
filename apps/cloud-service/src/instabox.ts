@@ -147,7 +147,7 @@ export function createInstaboxProvider(options: InstaboxProviderOptions): Machin
     const headers: Record<string, string> = { "x-api-key": key, accept: "application/json", ...init.headers };
     if (init.body !== undefined) headers["content-type"] = "application/json";
     if (init.raw) headers["content-type"] = "application/octet-stream";
-    if (init.idempotent) headers["idempotency-key"] = init.idempotent === true ? `dusk-${randomUUID()}` : init.idempotent;
+    if (init.idempotent) headers["idempotency-key"] = init.idempotent === true ? `madani-${randomUUID()}` : init.idempotent;
     try {
       return await fetcher(`${base}${path}`, { method, redirect: "error", signal: AbortSignal.timeout(init.timeoutMs ?? 30_000), headers,
         ...(init.raw ? { body: init.raw } : init.body === undefined ? {} : { body: JSON.stringify(init.body) }) });
@@ -225,7 +225,7 @@ export function createInstaboxProvider(options: InstaboxProviderOptions): Machin
     if (known) return known;
     const listed = await call("GET", `/v1/machines/${id}/ports`);
     let found = (listed?.ports ?? []).find((p: Record<string, unknown>) => p?.port === INSTABOX_HOME_PORT && typeof p.url === "string")?.url as string | undefined;
-    if (!found) { const made = await call("POST", `/v1/machines/${id}/ports`, { body: { port: INSTABOX_HOME_PORT, name: "dusk bot" } }); found = typeof made?.url === "string" ? made.url : undefined; }
+    if (!found) { const made = await call("POST", `/v1/machines/${id}/ports`, { body: { port: INSTABOX_HOME_PORT, name: "madani bot" } }); found = typeof made?.url === "string" ? made.url : undefined; }
     const origin = found ? new URL(found).origin : "";
     if (!origin.startsWith("https://")) throw new RetryableCloudError();
     origins.set(id, origin);
@@ -395,8 +395,8 @@ export function createInstaboxProvider(options: InstaboxProviderOptions): Machin
     },
     async lease(serverId, ttlSeconds) {
       checkId(serverId);
-      if (ttlSeconds === null) { await call("DELETE", `/v1/machines/${serverId}/activity-leases/dusk-lifecycle`, { missingOk: true }); return; }
-      await call("PUT", `/v1/machines/${serverId}/activity-leases/dusk-lifecycle`, { body: { ttlSeconds: Math.min(3600, Math.max(30, Math.round(ttlSeconds))) } });
+      if (ttlSeconds === null) { await call("DELETE", `/v1/machines/${serverId}/activity-leases/madani-lifecycle`, { missingOk: true }); return; }
+      await call("PUT", `/v1/machines/${serverId}/activity-leases/madani-lifecycle`, { body: { ttlSeconds: Math.min(3600, Math.max(30, Math.round(ttlSeconds))) } });
     },
     async latestSnapshot(serverId) {
       const m = await get(serverId);
@@ -426,7 +426,7 @@ export function createInstaboxProvider(options: InstaboxProviderOptions): Machin
     },
     async requestDelete(serverId) {
       checkId(serverId);
-      const op = await call("DELETE", `/v1/machines/${serverId}`, { headers: { "x-confirm-delete": serverId }, idempotent: `dusk-delete-${serverId}`, missingOk: true });
+      const op = await call("DELETE", `/v1/machines/${serverId}`, { headers: { "x-confirm-delete": serverId }, idempotent: `madani-delete-${serverId}`, missingOk: true });
       if (!op) return { operationId: null, gone: true };
       origins.delete(serverId); setupKnown.delete(serverId);
       return { operationId: typeof op.id === "string" && OPERATION_ID.test(op.id) ? op.id : null, gone: false };
@@ -455,7 +455,7 @@ export function createInstaboxProvider(options: InstaboxProviderOptions): Machin
           await settle(serverId, x => x.state === "stopped");
         }
         let answer: Record<string, any> | null = null;
-        try { answer = await call("POST", `/v1/machines/${serverId}/snapshots`, { body: { name, description: "dusk bot: a home kept after its plan ended" }, idempotent: `dusk-snap-${name}` }); }
+        try { answer = await call("POST", `/v1/machines/${serverId}/snapshots`, { body: { name, description: "madani bot: a home kept after its plan ended" }, idempotent: `madani-snap-${name}` }); }
         catch (error) {
           // a lost or timed-out answer, or the name taken by the first request: the save may still be running
           if (!(error instanceof RetryableCloudError || error instanceof InstaboxError && error.status === 409)) throw error;
@@ -473,7 +473,7 @@ export function createInstaboxProvider(options: InstaboxProviderOptions): Machin
     },
     async deleteSnapshot(snapshotId) {
       if (!SNAPSHOT_ID.test(snapshotId)) throw new Error("Invalid InstaBox snapshot id.");
-      await call("DELETE", `/v1/snapshots/${snapshotId}`, { headers: { "x-confirm-delete": snapshotId }, idempotent: `dusk-snap-delete-${snapshotId}`, missingOk: true });
+      await call("DELETE", `/v1/snapshots/${snapshotId}`, { headers: { "x-confirm-delete": snapshotId }, idempotent: `madani-snap-delete-${snapshotId}`, missingOk: true });
     },
     // the clouds service never reaches this: managed machines are deleted only by the gated reconciler, through requestDelete
     async destroy() { throw new Error("InstaBox machines are deleted only by the retention reconciler."); },

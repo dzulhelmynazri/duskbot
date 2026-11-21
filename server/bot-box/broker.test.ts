@@ -51,7 +51,7 @@ linuxBox("the credential broker", () => {
       });
     });
     await new Promise<void>((resolve) => upstream.listen(0, "127.0.0.1", resolve));
-    dir = mkdtempSync(join(tmpdir(), "dusk-broker-"));
+    dir = mkdtempSync(join(tmpdir(), "madani-broker-"));
     broker = await openCredentialBroker({ socketPath: join(dir, "b.sock"), now: () => clock });
     return (upstream.address() as { port: number }).port;
   }

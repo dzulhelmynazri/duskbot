@@ -88,4 +88,4 @@ export function SheetGrid({ grid, editing, title, onChange }: {
 }
 
 const INPUT = "block h-8 w-full min-w-[96px] bg-transparent px-2.5 text-[13px] text-inherit outline-none focus:bg-accent/[0.08] focus:shadow-[inset_0_0_0_1.5px_var(--color-focus)]";
-const ADD = "dusk-press inline-flex h-7 items-center rounded-full bg-ink/[0.06] px-3 text-[13px] leading-5 text-ink hover:bg-ink/[0.1] focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-focus";
+const ADD = "madani-press inline-flex h-7 items-center rounded-full bg-ink/[0.06] px-3 text-[13px] leading-5 text-ink hover:bg-ink/[0.1] focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-focus";

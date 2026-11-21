@@ -36,7 +36,7 @@ describe("localVmUpdateNeed", () => {
     expect(localVmUpdateNeed(status({ imageMatches: false }), true)).toBe("recreate");
     expect(localVmUpdateNeed(status({ imageMatches: false, image: false }), false)).toBe("image");
     expect(localVmUpdateNeed(status({ container: "missing", image: false, imageMatches: false }), true)).toBe("image");
-    // Nothing to update: a current desktop, a person who never used the VM, a container dusk bot did not make, no runtime.
+    // Nothing to update: a current desktop, a person who never used the VM, a container madani bot did not make, no runtime.
     expect(localVmUpdateNeed(status({}), true)).toBeNull();
     expect(localVmUpdateNeed(status({ container: "missing", image: false, imageMatches: false }), false)).toBeNull();
     expect(localVmUpdateNeed(status({ managed: false, imageMatches: false }), true)).toBeNull();
@@ -57,7 +57,7 @@ describe("vpsDesktopOutdated", () => {
 });
 
 describe("createLocalVmUpdater", () => {
-  const target: LocalVmTarget = { key: "bot:abc", containerName: "duskbot-computer-abc", workspaceDir: "/nonexistent", viewerPort: null, label: "abc" };
+  const target: LocalVmTarget = { key: "bot:abc", containerName: "madanibot-computer-abc", workspaceDir: "/nonexistent", viewerPort: null, label: "abc" };
   const setup = (opts: { held?: () => boolean } = {}) => {
     let current = status({ imageMatches: false, image: false });
     const calls: string[] = [];

@@ -66,7 +66,7 @@ const DESKTOP_SYSTEM: Record<string, SystemEngine | undefined> = {
 
 export function currentVoiceDevice(): VoiceDevice {
   if (phone) return { kind: "phone", os: phone.os, system: phone.speech ? "phone-native" : null, providers: true };
-  const desktop = typeof window === "undefined" ? undefined : window.duskDesktop;
+  const desktop = typeof window === "undefined" ? undefined : window.madaniDesktop;
   if (desktop?.platform) {
     const capabilities = desktopCapabilitiesNow();
     const os = desktop.platform === "darwin" ? "mac" : desktop.platform === "win32" ? "windows" : "linux";

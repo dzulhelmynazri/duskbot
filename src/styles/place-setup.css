@@ -1,19 +1,19 @@
 /* Adding a place: each step slides in from the side it was reached from, quick and soft; the step's mark pops in when the
    setup moves on. Under reduced motion both only fade. */
-.place-step { animation: place-step-in 220ms var(--dusk-ease-quint) both; }
+.place-step { animation: place-step-in 220ms var(--madani-ease-quint) both; }
 .place-step[data-from="back"] { animation-name: place-step-back; }
-@keyframes place-step-in { from { opacity: 0; transform: translate3d(calc(12px * var(--dusk-inline-sign)), 0, 0); } }
-@keyframes place-step-back { from { opacity: 0; transform: translate3d(calc(-12px * var(--dusk-inline-sign)), 0, 0); } }
+@keyframes place-step-in { from { opacity: 0; transform: translate3d(calc(12px * var(--madani-inline-sign)), 0, 0); } }
+@keyframes place-step-back { from { opacity: 0; transform: translate3d(calc(-12px * var(--madani-inline-sign)), 0, 0); } }
 
-.place-mark { animation: place-mark-in 280ms var(--dusk-ease-spring) both; }
+.place-mark { animation: place-mark-in 280ms var(--madani-ease-spring) both; }
 @keyframes place-mark-in { from { opacity: 0; transform: scale(0.88); } }
 
-.place-reveal { animation: place-reveal-in 180ms var(--dusk-ease-out) both; }
+.place-reveal { animation: place-reveal-in 180ms var(--madani-ease-out) both; }
 @keyframes place-reveal-in { from { opacity: 0; transform: translate3d(0, -4px, 0); } }
 
 @media (prefers-reduced-motion: reduce) {
-  .place-step, .place-step[data-from="back"], .place-mark, .place-reveal { animation: dusk-fade-in 150ms ease-out both; }
+  .place-step, .place-step[data-from="back"], .place-mark, .place-reveal { animation: madani-fade-in 150ms ease-out both; }
 }
-:root[data-reduced-motion="true"] :is(.place-step, .place-mark, .place-reveal) { animation: dusk-fade-in 150ms ease-out both !important; }
+:root[data-reduced-motion="true"] :is(.place-step, .place-mark, .place-reveal) { animation: madani-fade-in 150ms ease-out both !important; }
 /* a step built on StepFrame arrives piece by piece itself (FunnelSteps), so its page does not slide as well */
 .place-step:has([data-step-cascade]) { animation: none !important; }

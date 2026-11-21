@@ -66,7 +66,7 @@ export function createDashboardRoutes(deps: DashboardRouteDeps): RouteHandler {
     if (!body || typeof body !== "object" || Array.isArray(body)) return json(res, 400, { error: "Expected a JSON object." });
     if (body.enrollToken !== undefined && (typeof body.enrollToken !== "string" || body.enrollToken.length !== 43 || !/^[A-Za-z0-9_-]{43}$/.test(body.enrollToken))) return json(res, 400, { error: "Invalid enrollment token." });
     // a workspace already linked (by the app after sign-in, say) keeps its dashboard unless another is named
-    let selected: unknown = body.url ?? (deps.reporter.status().connected ? deps.reporter.status().url ?? undefined : undefined) ?? (deps.env ?? process.env).DUSK_DASHBOARD_URL;
+    let selected: unknown = body.url ?? (deps.reporter.status().connected ? deps.reporter.status().url ?? undefined : undefined) ?? (deps.env ?? process.env).MADANI_DASHBOARD_URL;
     if (selected === undefined) {
       const base = deps.linkAgentBase();
       if (base) {

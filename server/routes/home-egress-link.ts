@@ -1,4 +1,4 @@
-// GET /api/computer/egress/link (websocket): the person's app on their own computer, so sites that block this dusk cloud
+// GET /api/computer/egress/link (websocket): the person's app on their own computer, so sites that block this madani cloud
 // home are browsed through their connection (server/home-egress-link.ts). Owner or admin only, from the app's paired
 // device (bearer), or the owner's own page; a cookie from another origin is refused.
 import { createWebSocketStream, WebSocketServer } from "ws";

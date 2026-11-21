@@ -10,7 +10,7 @@ reruns and recovery. It
 builds macOS (arm64 + x64, signed, notarized, stapled), Windows, and Ubuntu
 from a single pinned commit, verifies every artifact the way a user would
 receive it, and assembles the canonical draft in
-[dusk bot releases](https://github.com/DuskBotAI/duskbot/releases).
+[madani bot releases](https://github.com/dzulhelmynazri/madani-bot/releases).
 Tick **publish** to publish the release immediately, or leave it unticked to
 review the draft first.
 
@@ -35,9 +35,9 @@ name, size, or digest is absent or inconsistent.
 GitHub generates the release body (the changelog) from pull requests since the previous tag. Write PR titles for
 people: they become the release notes on the downloads repo.
 
-## Putting a release on dusk.bot
+## Putting a release on madani.bot
 
-The private repo's release is the canonical record; people download from the public downloads repo and dusk.bot.
+The private repo's release is the canonical record; people download from the public downloads repo and madani.bot.
 After publishing, run on the Mac:
 
 ```sh
@@ -45,17 +45,17 @@ scripts/publish-downloads.sh v0.1.142            # DRY_RUN=1 first to only verif
 ```
 
 It downloads the release, checks every installer against the run's signed `SHA256SUMS`, uploads the installers to
-the public `DuskBotAI/duskbot-releases` release (stable `/releases/latest/download/` names that
-dusk.bot/download links to), then puts `latest.json` and `SHA256SUMS` on dusk.bot through the deployd landing site.
-Desktop apps read `https://dusk.bot/releases/latest.json` (every 30 minutes) and accept it only when a pinned release key
-signed it. To also put the release on dusk clouds and own servers, with a canary and a staged desktop rollout, run
+the public `dzulhelmynazri/madani-bot-releases` release (stable `/releases/latest/download/` names that
+madani.bot/download links to), then puts `latest.json` and `SHA256SUMS` on madani.bot through the deployd landing site.
+Desktop apps read `https://madani.bot/releases/latest.json` (every 30 minutes) and accept it only when a pinned release key
+signed it. To also put the release on madani clouds and own servers, with a canary and a staged desktop rollout, run
 [`scripts/release-all.ts`](releases-auto-update.md) instead: it runs this script as one of its steps.
 
 ### The Mac browser part
 
 The Mac installers leave out the bots' browser (agent-browser and Chromium's headless shell, about 92 MB zipped).
 `pnpm package:mac` runs `scripts/pack-browser-part.mjs`, which signs it with the release's Developer ID (hardened
-runtime), zips it as `DuskBot-<version>-browser-darwin-<arch>.zip` in `release/`, and writes the `parts.json` the app
+runtime), zips it as `MadaniBot-<version>-browser-darwin-<arch>.zip` in `release/`, and writes the `parts.json` the app
 ships, pinning the zip's size and SHA-256 and the signing team. Both release paths notarize the zip and upload it with
 the installers; `publish-downloads.sh` copies it to the public downloads release, where the app fetches it on its first
 open (`server/app-parts.ts`) and uses it only after the size, SHA-256 and every Mach-O's signature check out. A release
@@ -67,9 +67,9 @@ AppArmor profile is bound to its install path).
 `electron/app-update.mjs`, packaged Mac builds only:
 
 1. Every 30 minutes (plus up to 10 minutes of jitter, the first 20 seconds after start, and 30 seconds after a wake), reads `latest.json`, checks its signature, and when the version is newer reads
-   `https://dusk.bot/releases/<version>/SHA256SUMS` and checks it against the sha256 the signature vouches for.
-2. Downloads `DuskBot-<version>-<arch>.zip` from the public downloads release
-   (`https://github.com/DuskBotAI/duskbot-releases/releases/download/v<version>/...`) into
+   `https://madani.bot/releases/<version>/SHA256SUMS` and checks it against the sha256 the signature vouches for.
+2. Downloads `MadaniBot-<version>-<arch>.zip` from the public downloads release
+   (`https://github.com/dzulhelmynazri/madani-bot-releases/releases/download/v<version>/...`) into
    `~/Library/Application Support/<app>/app-update/` and checks it against `SHA256SUMS`.
 3. Hands the zip to Electron's `autoUpdater` (Squirrel.Mac) through a feed on `127.0.0.1` at a random path, open only
    for that one download. Squirrel.Mac unpacks it and refuses it unless it is signed with the same Developer ID as the
@@ -80,7 +80,7 @@ AppArmor profile is bound to its install path).
 
 Anything that fails on the way, and every build that is not Developer ID signed (`codesign -dv` names no
 `Developer ID Application` authority and team), falls back to the old behaviour: one notification per version that
-opens dusk.bot/download (`electron/update-notice.mjs`). Windows and Linux keep that notification.
+opens madani.bot/download (`electron/update-notice.mjs`). Windows and Linux keep that notification.
 
 What is needed once the Apple certificate exists:
 
@@ -103,7 +103,7 @@ What is needed once the Apple certificate exists:
 
 Without `MAC_CERT_P12_BASE64` the release job builds the Mac app ad-hoc signed (`-c.mac.identity=-`) and skips
 notarizing and stapling. macOS stops a downloaded dmg the first time, so `apps/site/releases.json` has
-`"macNotarized": false`: dusk.bot/download leads with `curl -fsSL https://dusk.bot/install-mac | sh`
+`"macNotarized": false`: madani.bot/download leads with `curl -fsSL https://madani.bot/install-mac | sh`
 (`apps/site/install-mac.sh`, served by the site), which downloads this Mac's zip with curl (no quarantine flag),
 checks it against the release's `SHA256SUMS` (whose hash the signed `latest.json` carries), installs it into
 `/Applications` and opens it, and shows the three Open Anyway steps for the dmg. These builds cannot update themselves
@@ -130,7 +130,7 @@ must fail the build, not ship an installer that downloads them on first use.
 
 ## One-time setup: release secrets
 
-Set these in **dusk bot → Settings → Secrets and variables → Actions**.
+Set these in **madani bot → Settings → Secrets and variables → Actions**.
 
 The **Prepare next release** workflow also needs
 **Settings → Actions → General → Workflow permissions → Allow GitHub Actions
@@ -142,8 +142,8 @@ The Mac signing secrets, exactly these names (the Mac job signs, notarizes and s
 
 | Secret | Value |
 |---|---|
-| `MAC_CERT_P12_BASE64` | base64 of `~/.config/duskbot/apple/developer-id.p12` |
-| `MAC_CERT_PASSWORD` | `APPLE_DEVELOPER_ID_P12_PASSWORD` from `~/.config/duskbot/dusk.env` |
+| `MAC_CERT_P12_BASE64` | base64 of `~/.config/madanibot/apple/developer-id.p12` |
+| `MAC_CERT_PASSWORD` | `APPLE_DEVELOPER_ID_P12_PASSWORD` from `~/.config/madanibot/madani.env` |
 | `APPLE_API_KEY_P8_BASE64` | base64 of the App Store Connect API key (`AuthKey_<KEYID>.p8`) |
 | `APPLE_API_KEY_ID` | the key's Key ID |
 | `APPLE_API_ISSUER_ID` | the Issuer ID for a Team key; leave unset for an Individual key |
@@ -151,14 +151,14 @@ The Mac signing secrets, exactly these names (the Mac job signs, notarizes and s
 ### 1. `MAC_CERT_P12_BASE64` + `MAC_CERT_PASSWORD`
 
 The Developer ID Application certificate (team `S85QBF7KWC`). Its private key never left this Mac: it is
-`~/.config/duskbot/apple/developer-id.key`, the certificate Apple issued for its CSR is `developer_id.cer` beside it,
+`~/.config/madanibot/apple/developer-id.key`, the certificate Apple issued for its CSR is `developer_id.cer` beside it,
 and the first run of `scripts/release-mac-local.sh` (any mode but `--dry-run`) joins them into `developer-id.p12` with a
-generated password saved as `APPLE_DEVELOPER_ID_P12_PASSWORD` in `dusk.env`. To hand it to Actions without printing
+generated password saved as `APPLE_DEVELOPER_ID_P12_PASSWORD` in `madani.env`. To hand it to Actions without printing
 either:
 
 ```sh
-base64 -i ~/.config/duskbot/apple/developer-id.p12 | gh secret set MAC_CERT_P12_BASE64 -R DuskBotAI/duskbot
-sed -n 's/^APPLE_DEVELOPER_ID_P12_PASSWORD=//p' ~/.config/duskbot/dusk.env | gh secret set MAC_CERT_PASSWORD -R DuskBotAI/duskbot
+base64 -i ~/.config/madanibot/apple/developer-id.p12 | gh secret set MAC_CERT_P12_BASE64 -R dzulhelmynazri/madani-bot
+sed -n 's/^APPLE_DEVELOPER_ID_P12_PASSWORD=//p' ~/.config/madanibot/madani.env | gh secret set MAC_CERT_PASSWORD -R dzulhelmynazri/madani-bot
 ```
 
 ### 2. `APPLE_API_KEY_P8_BASE64` + `APPLE_API_KEY_ID` + `APPLE_API_ISSUER_ID`
@@ -169,22 +169,22 @@ password for CI: revocable, scoped, no 2FA dance):
 1. [App Store Connect → Users and Access → Integrations → App Store Connect API](https://appstoreconnect.apple.com/access/integrations/api)
 2. Generate a **Team Key** (Developer role is enough for notarizing; App Manager also covers TestFlight uploads), or an
    Individual Key under your own user
-3. Download the `.p8` (one chance only) into `~/.config/duskbot/apple/`, `chmod 600` it, and fill in `APPLE_API_KEY_ID`,
-   `APPLE_API_ISSUER` (Team keys only) and `APPLE_API_KEY_PATH` in `dusk.env`
+3. Download the `.p8` (one chance only) into `~/.config/madanibot/apple/`, `chmod 600` it, and fill in `APPLE_API_KEY_ID`,
+   `APPLE_API_ISSUER` (Team keys only) and `APPLE_API_KEY_PATH` in `madani.env`
 
 ```sh
-source_env() { sed -n "s/^$1=//p" ~/.config/duskbot/dusk.env; }
-base64 -i "$(source_env APPLE_API_KEY_PATH)" | gh secret set APPLE_API_KEY_P8_BASE64 -R DuskBotAI/duskbot
-source_env APPLE_API_KEY_ID | gh secret set APPLE_API_KEY_ID -R DuskBotAI/duskbot
-source_env APPLE_API_ISSUER | gh secret set APPLE_API_ISSUER_ID -R DuskBotAI/duskbot   # Team keys only
+source_env() { sed -n "s/^$1=//p" ~/.config/madanibot/madani.env; }
+base64 -i "$(source_env APPLE_API_KEY_PATH)" | gh secret set APPLE_API_KEY_P8_BASE64 -R dzulhelmynazri/madani-bot
+source_env APPLE_API_KEY_ID | gh secret set APPLE_API_KEY_ID -R dzulhelmynazri/madani-bot
+source_env APPLE_API_ISSUER | gh secret set APPLE_API_ISSUER_ID -R dzulhelmynazri/madani-bot   # Team keys only
 ```
 
-### 3. `DUSK_RELEASE_SIGNING_KEY`
+### 3. `MADANI_RELEASE_SIGNING_KEY`
 
 The Ed25519 release key (`kid:<pkcs8 base64url>`) whose public half is pinned in
 `apps/cloud-service/src/release-signing.ts` and `server/update-check.ts` (a test keeps them equal). The assemble job
 signs `latest.json` with it; without it the release still builds but apps never hear about it. A new key:
-`node apps/cloud-service/scripts/keygen.mjs rel-2027-01 ~/.config/duskbot/keys`, pin the printed public key in both
+`node apps/cloud-service/scripts/keygen.mjs rel-2027-01 ~/.config/madanibot/keys`, pin the printed public key in both
 files, ship an app with it, and only then switch the secret.
 
 ### Releasing the Mac app from this Mac (no Actions)
@@ -202,11 +202,11 @@ validate`, the same again with the quarantine flag set, and `syspolicy_check dis
 scripts/release-mac-local.sh --check         # what is present, what is missing, and where to get it
 scripts/release-mac-local.sh --dry-run       # ad-hoc signed, every check that needs no Apple credentials
 scripts/release-mac-local.sh --no-notarize   # Developer ID signed, not notarized (no API key needed)
-scripts/release-mac-local.sh                 # signed, notarized, stapled: release/DuskBot-<v>-{arm64,x64}.{dmg,zip}
+scripts/release-mac-local.sh                 # signed, notarized, stapled: release/MadaniBot-<v>-{arm64,x64}.{dmg,zip}
 ```
 
 Output lands in `release/` (plus `release/notary/*.json`, Apple's notarization logs, and `release/SHA256SUMS-mac`).
-Nothing is uploaded; attach the dmgs, zips and the stable `DuskBot.dmg` / `DuskBot-intel.dmg` copies to the release.
+Nothing is uploaded; attach the dmgs, zips and the stable `MadaniBot.dmg` / `MadaniBot-intel.dmg` copies to the release.
 
 ### Entitlements
 

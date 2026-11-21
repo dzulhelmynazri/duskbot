@@ -7,18 +7,18 @@
 #
 # The checkout only ever fast-forwards (no stash, no reset, no merge commit). It stops, changing nothing, when the
 # checkout is not on main, has commits origin/main lacks, or has local edits in files the update touches.
-# Env: DUSK_OWNER_CHECKOUT (default ~/Desktop/code/OpenMausBot), DUSK_SMOKE_HOME (default ~/.cache/dusk-smoke),
-# DUSK_SMOKE_SSH_HOST (owner's server, default oracle), DUSK_CLOUD_PACKAGE_HOST (preview host, default contabo).
+# Env: MADANI_OWNER_CHECKOUT (default ~/Desktop/code/OpenMausBot), MADANI_SMOKE_HOME (default ~/.cache/madani-smoke),
+# MADANI_SMOKE_SSH_HOST (owner's server, default oracle), MADANI_CLOUD_PACKAGE_HOST (preview host, default contabo).
 set -eu
 # smoke launches never report usage analytics (electron/product-events.mjs analyticsAllowed)
-export DUSK_ANALYTICS=0
-OWNER=${DUSK_OWNER_CHECKOUT:-$HOME/Desktop/code/OpenMausBot}
-HOME_DIR=${DUSK_SMOKE_HOME:-$HOME/.cache/dusk-smoke}
+export MADANI_ANALYTICS=0
+OWNER=${MADANI_OWNER_CHECKOUT:-$HOME/Desktop/code/OpenMausBot}
+HOME_DIR=${MADANI_SMOKE_HOME:-$HOME/.cache/madani-smoke}
 WT=$HOME_DIR/gate-worktree
-SERVER_HOST=${DUSK_SMOKE_SSH_HOST:-oracle}
-SERVER_USER=${DUSK_SMOKE_SERVER_USER:-maus}
-PACKAGE_HOST=${DUSK_CLOUD_PACKAGE_HOST:-contabo}
-PACKAGE_FILE=${DUSK_CLOUD_PACKAGE_FILE:-/var/lib/dusk-account-preview/home/omb-home.tgz}
+SERVER_HOST=${MADANI_SMOKE_SSH_HOST:-oracle}
+SERVER_USER=${MADANI_SMOKE_SERVER_USER:-maus}
+PACKAGE_HOST=${MADANI_CLOUD_PACKAGE_HOST:-contabo}
+PACKAGE_FILE=${MADANI_CLOUD_PACKAGE_FILE:-/var/lib/madani-account-preview/home/omb-home.tgz}
 CHECK_ONLY=0
 [ "${1:-}" = "--check" ] && CHECK_ONLY=1
 say() { printf '%s\n' "$*"; }
@@ -70,10 +70,10 @@ say ""
 
 # what the owner runs against: the server package on the owner's server and the cloud package on preview
 app_version=$(git -C "$OWNER" show "$target:package.json" | node -e 'let t="";process.stdin.on("data",c=>t+=c).on("end",()=>console.log(JSON.parse(t).version))')
-server_version=$(ssh -o BatchMode=yes -o ConnectTimeout=15 "$SERVER_HOST" "sudo -n -u $SERVER_USER sh -c 'cat ~/.local/lib/node_modules/duskbot/package.json'" 2>/dev/null | node -e 'let t="";process.stdin.on("data",c=>t+=c).on("end",()=>{try{console.log(JSON.parse(t).version)}catch{console.log("unknown")}})')
+server_version=$(ssh -o BatchMode=yes -o ConnectTimeout=15 "$SERVER_HOST" "sudo -n -u $SERVER_USER sh -c 'cat ~/.local/lib/node_modules/madanibot/package.json'" 2>/dev/null | node -e 'let t="";process.stdin.on("data",c=>t+=c).on("end",()=>{try{console.log(JSON.parse(t).version)}catch{console.log("unknown")}})')
 cloud_version=$(ssh -o BatchMode=yes -o ConnectTimeout=15 "$PACKAGE_HOST" "tar -xzOf $PACKAGE_FILE ./dist-server/package.json" 2>/dev/null | node -e 'let t="";process.stdin.on("data",c=>t+=c).on("end",()=>{try{console.log(JSON.parse(t).version)}catch{console.log("unknown")}})')
 say "versions: app $app_version, owner's server ($SERVER_HOST) $server_version, preview cloud package $cloud_version"
-[ "$server_version" = "$app_version" ] || say "  roll: the owner's server runs $server_version; update its duskbot package to $app_version"
+[ "$server_version" = "$app_version" ] || say "  roll: the owner's server runs $server_version; update its madanibot package to $app_version"
 [ "$cloud_version" = "$app_version" ] || say "  roll: the preview cloud package is $cloud_version; rebuild omb-home.tgz at $short and redeploy preview (deploy/account/deploy.sh preview)"
 
 git -C "$OWNER" worktree remove --force "$WT" >/dev/null 2>&1 || true

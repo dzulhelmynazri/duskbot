@@ -1,5 +1,5 @@
-// Server: --url, --port, DUSK_URL or DUSK_PORT, else the desktop ports. A credential never travels while a server
-// is being looked for; it comes from DUSK_TOKEN or --token-file only (a command line leaks).
+// Server: --url, --port, MADANI_URL or MADANI_PORT, else the desktop ports. A credential never travels while a server
+// is being looked for; it comes from MADANI_TOKEN or --token-file only (a command line leaks).
 import { readFileSync } from "node:fs";
 
 import { EXIT, flag, HeadlessError, usageError, type Flags } from "./args.ts";
@@ -11,7 +11,7 @@ export type ToolHooks = Parameters<ToolCaller>[4];
 
 export interface ClientDeps {
   env: NodeJS.ProcessEnv;
-  /** control-dusk: a verb that changes something never runs on a server it merely found. */
+  /** control-madani: a verb that changes something never runs on a server it merely found. */
   requireExplicitForMutations?: boolean;
   callTool?: ToolCaller;
   request?: Requester;
@@ -27,7 +27,7 @@ export async function loadMcp(): Promise<McpModule> {
     return await mcpModule;
   } catch (error) {
     mcpModule = undefined;
-    throw usageError(`DUSK_URL is not usable: ${error instanceof Error ? error.message : String(error)}`);
+    throw usageError(`MADANI_URL is not usable: ${error instanceof Error ? error.message : String(error)}`);
   }
 }
 
@@ -53,7 +53,7 @@ export function readToken(flags: Flags, env: NodeJS.ProcessEnv): string | undefi
     if (!token) throw usageError(`--token-file ${file} is empty`);
     return token;
   }
-  return env.DUSK_TOKEN?.trim() || undefined;
+  return env.MADANI_TOKEN?.trim() || undefined;
 }
 
 export function namedServer(flags: Flags, env: NodeJS.ProcessEnv): { url: string } | { port: string } | undefined {
@@ -61,8 +61,8 @@ export function namedServer(flags: Flags, env: NodeJS.ProcessEnv): { url: string
   if (url) return { url };
   const port = flag(flags, "port")?.trim();
   if (port) return { port };
-  if (env.DUSK_URL?.trim()) return { url: env.DUSK_URL.trim() };
-  return env.DUSK_PORT?.trim() ? { port: env.DUSK_PORT.trim() } : undefined;
+  if (env.MADANI_URL?.trim()) return { url: env.MADANI_URL.trim() };
+  return env.MADANI_PORT?.trim() ? { port: env.MADANI_PORT.trim() } : undefined;
 }
 
 export async function openClient(flags: Flags, deps: ClientDeps, mutating: boolean): Promise<HeadlessClient> {
@@ -82,17 +82,17 @@ export async function openClient(flags: Flags, deps: ClientDeps, mutating: boole
     baseUrl = `http://127.0.0.1:${port}`;
   } else {
     if (mutating && deps.requireExplicitForMutations) {
-      throw usageError("mutating commands require an explicit dusk bot instance", "start `control-dusk launch`, then pass its URL with --url");
+      throw usageError("mutating commands require an explicit madani bot instance", "start `control-madani launch`, then pass its URL with --url");
     }
     if (token) {
       throw usageError("a token needs a named server, so it is never sent while looking for one",
-        "pass --url (or --port), or set DUSK_URL or DUSK_PORT");
+        "pass --url (or --port), or set MADANI_URL or MADANI_PORT");
     }
     try {
       baseUrl = await mcp.probeBaseUrls(DISCOVERY_PORTS.map((port) => `http://127.0.0.1:${port}`));
     } catch {
-      throw new HeadlessError(`no dusk bot server answered on 127.0.0.1 ports ${DISCOVERY_PORTS.join(", ")}`, EXIT.unreachable,
-        "start one with `duskbot serve`, or name one with --url or DUSK_URL");
+      throw new HeadlessError(`no madani bot server answered on 127.0.0.1 ports ${DISCOVERY_PORTS.join(", ")}`, EXIT.unreachable,
+        "start one with `madanibot serve`, or name one with --url or MADANI_URL");
     }
   }
   const request = deps.request ?? mcp.request;
@@ -119,7 +119,7 @@ export async function openClient(flags: Flags, deps: ClientDeps, mutating: boole
 }
 
 export function serverWords(message: string): string {
-  const body = /^dusk bot API error \(\d+\): ([\s\S]*)$/i.exec(message)?.[1];
+  const body = /^madani bot API error \(\d+\): ([\s\S]*)$/i.exec(message)?.[1];
   if (body === undefined) return message;
   try {
     const said = (JSON.parse(body) as { error?: unknown }).error;
@@ -137,21 +137,21 @@ export async function explain(error: unknown, baseUrl?: string): Promise<Headles
   const status = typeof (error as { status?: unknown })?.status === "number" ? (error as { status: number }).status : undefined;
   if (status === 401) {
     return new HeadlessError("this server needs a credential and did not accept the one given", EXIT.unreachable,
-      "get one with `duskbot connect URL --out FILE`, then pass --token-file FILE or set DUSK_TOKEN");
+      "get one with `madanibot connect URL --out FILE`, then pass --token-file FILE or set MADANI_TOKEN");
   }
   if (status === 403) {
     return new HeadlessError(`not allowed: ${message}`, EXIT.unreachable,
-      "this needs a paired session with the right scope: `duskbot connect` mints one on this computer");
+      "this needs a paired session with the right scope: `madanibot connect` mints one on this computer");
   }
   if (status === 404 && /^no such (bot|channel|conversation|task|message)\b/i.test(message)) {
-    return usageError(message, "duskbot bots and duskbot channels list the ids");
+    return usageError(message, "madanibot bots and madanibot channels list the ids");
   }
-  if (/cannot report a conversation's job/.test(message)) return new HeadlessError(message, EXIT.unreachable, "update dusk bot on the server");
+  if (/cannot report a conversation's job/.test(message)) return new HeadlessError(message, EXIT.unreachable, "update madani bot on the server");
   const cause = (error as { cause?: { code?: unknown } })?.cause?.code;
   if ((error instanceof TypeError && /fetch failed/i.test(message)) || cause === "ECONNREFUSED" || cause === "ENOTFOUND"
     || (error instanceof Error && (error.name === "TimeoutError" || /timed out|aborted due to timeout/i.test(message)))) {
-    return new HeadlessError(`cannot reach dusk bot${baseUrl ? ` at ${baseUrl}` : ""}`, EXIT.unreachable,
-      "check the server is running and the address is right (duskbot doctor)");
+    return new HeadlessError(`cannot reach madani bot${baseUrl ? ` at ${baseUrl}` : ""}`, EXIT.unreachable,
+      "check the server is running and the address is right (madanibot doctor)");
   }
   if (error instanceof Error && error.name === "AbortError") return new HeadlessError("stopped", EXIT.interrupted);
   return new HeadlessError(message, EXIT.failed);
@@ -164,7 +164,7 @@ export async function readJob(client: HeadlessClient, threadId: string, query: R
     const status = (error as { status?: number }).status;
     const message = error instanceof Error ? error.message : String(error);
     if (status === 404 && !/no such conversation/.test(message)) {
-      throw new HeadlessError("this dusk bot server cannot report a conversation's job", EXIT.unreachable, "update dusk bot on the server");
+      throw new HeadlessError("this madani bot server cannot report a conversation's job", EXIT.unreachable, "update madani bot on the server");
     }
     throw error;
   }

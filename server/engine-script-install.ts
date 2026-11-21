@@ -80,7 +80,7 @@ async function fetchScript(url: string, fetchImpl: typeof fetch): Promise<string
 
 async function installOnce(installer: ScriptInstaller, options: ScriptInstallOptions): Promise<void> {
   const script = await fetchScript(installer.url, options.fetchImpl ?? fetch);
-  const dir = mkdtempSync(join(tmpdir(), "dusk-install-"));
+  const dir = mkdtempSync(join(tmpdir(), "madani-install-"));
   const file = join(dir, installer.shell === "powershell" ? "install.ps1" : "install.sh");
   try {
     writeFileSync(file, script, { mode: 0o700 });

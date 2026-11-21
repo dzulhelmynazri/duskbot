@@ -77,7 +77,7 @@ export function DeleteDataPage({ id }: { id: string }) {
       <Sheet
         title={`deleting on ${longDate(at)}`}
         error={error}
-        actions={<><Button onClick={() => void cancel()} disabled={busy !== null}>{busy === "cancel" ? "cancelling" : "cancel deletion"}</Button><ButtonLink to="/cloud" variant="ghost">back to dusk cloud</ButtonLink></>}
+        actions={<><Button onClick={() => void cancel()} disabled={busy !== null}>{busy === "cancel" ? "cancelling" : "cancel deletion"}</Button><ButtonLink to="/cloud" variant="ghost">back to madani cloud</ButtonLink></>}
       >
         <p className="mt-1.5 text-14 leading-[1.55] text-ink-3">the bots, chats, files, sign-ins and backups on {name} go then, and it cannot be undone after that. until then you can cancel and keep everything.</p>
       </Sheet>
@@ -86,15 +86,15 @@ export function DeleteDataPage({ id }: { id: string }) {
   if (clouds === null) return <div className="mx-auto max-w-[480px] pt-10" aria-busy="true" aria-label="loading"><Skeleton className="h-[300px] !rounded-card" /></div>;
   if (!cloud) {
     return (
-      <SkyEmpty title="this cloud is not on your account" action={<ButtonLink to="/cloud" variant="primary">go to dusk cloud</ButtonLink>}>
+      <SkyEmpty title="this cloud is not on your account" action={<ButtonLink to="/cloud" variant="primary">go to madani cloud</ButtonLink>}>
         you are signed in as {account?.email ?? "another account"}. sign in as the cloud's owner, then open the link from the email again.
       </SkyEmpty>
     );
   }
   if (!token) {
     return (
-      <SkyEmpty title="this link has nothing to confirm" action={<ButtonLink to="/cloud" variant="primary">go to dusk cloud</ButtonLink>}>
-        open the newest link from the email in this browser. if it has expired, ask again from your dusk cloud page.
+      <SkyEmpty title="this link has nothing to confirm" action={<ButtonLink to="/cloud" variant="primary">go to madani cloud</ButtonLink>}>
+        open the newest link from the email in this browser. if it has expired, ask again from your madani cloud page.
       </SkyEmpty>
     );
   }

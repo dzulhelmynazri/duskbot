@@ -3,7 +3,7 @@ import { existsSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { expect, it } from "vitest";
 
-import { launchVerificationServer, runControlDusk } from "../scripts/control-dusk.ts";
+import { launchVerificationServer, runControlMadani } from "../scripts/control-madani.ts";
 
 const FAKE_MCP = fileURLToPath(new URL("./testing/fake-mcp-server.ts", import.meta.url));
 const command = { command: process.execPath, args: ["--experimental-strip-types", FAKE_MCP] };
@@ -35,7 +35,7 @@ async function withFixture(mode: string, run: (helpers: {
         return result;
       },
       control: async (args) => {
-        const result = await runControlDusk([...args, "--url", fixture.info.url]);
+        const result = await runControlMadani([...args, "--url", fixture.info.url]);
         evidence.push({ command: args, result });
         return result;
       },

@@ -23,7 +23,7 @@ describe("reply display", () => {
     const snippet = replySnippet("<!--omb-citation-v1:eyJraW5kIjoiY2l0YXRpb24ifQ-->\n> Quoted message:\n> quoted text\n\nComment:\nwhy?");
     expect(snippet).toContain("quoted text");
     expect(snippet).toContain("why?");
-    expect(snippet).not.toContain("dusk-citation");
+    expect(snippet).not.toContain("madani-citation");
   });
 });
 

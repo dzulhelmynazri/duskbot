@@ -1,7 +1,7 @@
-# Verifying dusk bot
+# Verifying madani bot
 
-dusk bot has one development control surface: `pnpm control:dusk`. It runs
-the published `duskbot` verbs (docs/headless-cli.md), which call the MCP
+madani bot has one development control surface: `pnpm control:madani`. It runs
+the published `madanibot` verbs (docs/headless-cli.md), which call the MCP
 tools in `scripts/mcp-server.ts`, so verification uses the same URL
 validation, task pinning, bounded transcripts, wait states, and redaction as
 external MCP clients and scripts.
@@ -11,7 +11,7 @@ external MCP clients and scripts.
 Start a fixture in one terminal:
 
 ```sh
-node --experimental-strip-types scripts/control-dusk.ts launch
+node --experimental-strip-types scripts/control-madani.ts launch
 ```
 
 Run the foreground launcher directly rather than through `pnpm`; this ensures
@@ -20,20 +20,20 @@ it receives Ctrl-C and can stop its child before removing the temporary data.
 It gives the child a temporary data directory and home, chooses a free
 harness/webhook port pair, installs only the repository's fake engine, prints
 the URL, PID, data directory, and persistent log path, then stays attached to
-that exact child. The parent shell and the user's dusk bot data are
+that exact child. The parent shell and the user's madani bot data are
 untouched. Only `FAKE_CLAUDE_*` variables cross from the launcher's
 environment into that child, so a recipe can script the fake engine's mode,
 replies and tool calls without writing a wrapper CLI. Live calls add one
-exception: `DUSK_OPENAI_LIVE_URL` crosses when it is a loopback
+exception: `MADANI_OPENAI_LIVE_URL` crosses when it is a loopback
 `http://127.0.0.1:PORT` (the fake GPT-Live that
 `node --experimental-strip-types server/testing/fake-openai-live.ts` prints),
-and `DUSK_OPENAI_LIVE_KEY` crosses only with it, so that key can only ever
+and `MADANI_OPENAI_LIVE_KEY` crosses only with it, so that key can only ever
 reach the fake.
 
 Pass the printed URL explicitly from a second terminal:
 
 ```sh
-pnpm control:dusk doctor --url http://127.0.0.1:PORT
+pnpm control:madani doctor --url http://127.0.0.1:PORT
 ```
 
 Mutating commands refuse silent port discovery. This prevents a verification
@@ -53,7 +53,7 @@ Use only mapped, tested commands:
 - [OpenCode model variants through ACP](opencode-variants.md)
 - [Bot setup, model scope, and file continuity](bot-continuity.md)
 - [Reviewed Chief team setup and scoped deletion](team-setup.md)
-- [Dusk, everyone's helper](dusk.md)
+- [Madani, everyone's helper](madani.md)
 - [Profile proposal and credential-card lifecycle](proposal-cards.md)
 - [Full Access without duplicate approvals](full-access.md)
 - [Gmail draft creation, send approval and revision](gmail-drafts.md)
@@ -106,7 +106,7 @@ Use only mapped, tested commands:
 - [PDF extraction and assigned library files](pdf-extraction.md)
 - [Memory: recall, upkeep and the tidy-up](memory-layer.md)
 
-`control-dusk ui` ([Chat UI, driven headlessly](chat-ui.md)) drives the real
+`control-madani ui` ([Chat UI, driven headlessly](chat-ui.md)) drives the real
 renderer in a headless Chrome by accessible name, so composer sends, transcript
 rows, tool chips and server feature flags are provable from the command line.
 Other renderer-only behavior (Settings, sidebar drag-and-drop, the VM modal, and
@@ -241,7 +241,7 @@ digest rows and real message-scoped downloads from a disposable workspace.
 
 The [people invitation fixture](people.md) checks local workspace sign-in,
 roles and device revocation through the real HTTP API with a stubbed email
-service. It does not drive the People settings UI through `control-dusk`.
+service. It does not drive the People settings UI through `control-madani`.
 
 The [sidebar fixture](sidebar.md) checks archive and delete confirmations, their
 default focus, keyboard wrapping and focus return against two disposable bots;
@@ -277,7 +277,7 @@ interrupting a newer request.
 
 The [Live calls fixture](live-calls.md) checks the call id on spoken requests,
 the one "call" row a finished call leaves, its generated title and the desktop's
-record row, against the fake GPT-Live in a disposable workspace. `control-dusk`
+record row, against the fake GPT-Live in a disposable workspace. `control-madani`
 cannot start a call, so the recipe also calls the harness's own routes. It
 proves no real audio, OpenAI key or phone.
 

@@ -18,8 +18,8 @@ const cleanup: Array<() => void | Promise<void>> = [];
 afterEach(async () => { for (const fn of cleanup.splice(0).reverse()) await fn(); vi.unstubAllEnvs(); });
 
 async function fixture() {
-  for (const key of ["DUSK_BILLING_PROVIDER", "DUSK_CLOUD_PROVIDER", "DUSK_POOL_DRIVER", "DUSK_CLOUD_SEAL_KEY", "DUSK_DODO_PRODUCTS"]) vi.stubEnv(key, undefined);
-  const dir = mkdtempSync(join(tmpdir(), "dusk-notifications-"));
+  for (const key of ["MADANI_BILLING_PROVIDER", "MADANI_CLOUD_PROVIDER", "MADANI_POOL_DRIVER", "MADANI_CLOUD_SEAL_KEY", "MADANI_DODO_PRODUCTS"]) vi.stubEnv(key, undefined);
+  const dir = mkdtempSync(join(tmpdir(), "madani-notifications-"));
   cleanup.push(() => rmSync(dir, { recursive: true, force: true }));
   const mailer = memoryMailer(), server = createServer();
   await new Promise<void>(resolve => server.listen(0, "127.0.0.1", resolve));
@@ -103,7 +103,7 @@ describe("account emails follow the settings", () => {
     let since = f.mailer.outbox.length;
     options.cloudEvent!("ready", cloud(id));
     options.mail!(cloud(id), { subject: "back", text: "back", notice: { kind: "recovered", at: Date.now() } });
-    expect(sentTo(f, since)).toEqual(["your dusk cloud is ready", "studio is back"]);
+    expect(sentTo(f, since)).toEqual(["your madani cloud is ready", "studio is back"]);
     expect((await f.call("/v1/account/notifications", { method: "PUT", body: { cloudStatus: false, product: false } })).status).toBe(200);
     since = f.mailer.outbox.length;
     options.cloudEvent!("ready", cloud(id));
@@ -114,7 +114,7 @@ describe("account emails follow the settings", () => {
       periodStart: null, periodEnd: null, renews: true, first: true, cloudId: null, revived: false });
     options.notify!({ kind: "payment_failed", accountId: id, amountCents: 1200, currency: "USD", description: "plan", cloudId: null, fixBy: null });
     const subjects = sentTo(f, since);
-    expect(subjects).not.toContain("your dusk cloud is ready");
+    expect(subjects).not.toContain("your madani cloud is ready");
     expect(subjects).not.toContain("studio is back");
     expect(subjects).toHaveLength(4);
     expect(subjects[0]).toBe("studio will be deleted in 7 days");

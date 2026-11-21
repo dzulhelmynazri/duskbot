@@ -109,12 +109,12 @@ describe("dashboard link routes", () => {
     expect(dashboardUrl("https://host/dashboard/")).toBe("https://host/dashboard");
     expect(dashboardUrl("http://localhost:1234")).toBe("http://localhost:1234"); expect(dashboardUrl("http://127.0.0.1:1234")).toBe("http://127.0.0.1:1234");
     const discovery = vi.fn<typeof fetch>(async () => Response.json({ v: 1, url: "https://discovered.test" }));
-    const explicit = await routes({ env: { DUSK_DASHBOARD_URL: "https://env.test" }, fetch: discovery });
+    const explicit = await routes({ env: { MADANI_DASHBOARD_URL: "https://env.test" }, fetch: discovery });
     expect(await (await explicit.call("POST", { url: "https://body.test" })).json()).toMatchObject({ claimed: true, dashboardUrl: "https://body.test" });
     await explicit.call("POST", {}); expect(explicit.reporter.link).toHaveBeenLastCalledWith("https://env.test"); expect(discovery).not.toHaveBeenCalled();
     expect((await explicit.call("POST", { url: "http://bad.test" })).status).toBe(400);
     const discovered = await routes({ fetch: discovery }); await discovered.call("POST", {}); expect(discovered.reporter.link).toHaveBeenCalledWith("https://discovered.test");
-    expect(discovery).toHaveBeenCalledWith("https://link.test/.well-known/duskbot/dashboard", expect.objectContaining({ signal: expect.any(AbortSignal) }));
+    expect(discovery).toHaveBeenCalledWith("https://link.test/.well-known/madanibot/dashboard", expect.objectContaining({ signal: expect.any(AbortSignal) }));
     const fallback = await routes({ fetch: async () => { throw new Error("offline"); } }); await fallback.call("POST", {}); expect(fallback.reporter.link).toHaveBeenCalledWith(DEFAULT_DASHBOARD_URL);
     const invalid = await routes({ fetch: async () => Response.json({ v: 1, url: "http://bad.test" }) }); await invalid.call("POST", {}); expect(invalid.reporter.link).toHaveBeenCalledWith(DEFAULT_DASHBOARD_URL);
   });
@@ -126,7 +126,7 @@ describe("dashboard command routes", () => {
     const seen: Array<{ path: string; method: string; body: unknown }> = [];
     let nonce = "";
     const server = createServer(async (req, res) => {
-      nonce = String(req.headers["x-dusk-dashboard-command"]);
+      nonce = String(req.headers["x-madani-dashboard-command"]);
       const auth = commands.authenticate(req); expect(auth && commands.owns(auth)).toBe(true);
       expect(commands.authenticate(req)).toBeNull();
       seen.push({ path: req.url!, method: req.method!, body: req.method === "DELETE" ? null : await readBody(req) });
@@ -172,7 +172,7 @@ describe("dashboard app commands", () => {
   it("passes a workspace's refusal through but hides its internal failures", async () => {
     let status = 403;
     // a short plain reason is shown even from a 5xx (f3fdbf0be); one carrying a path, link or stack stays inside
-    const w = await workspace(() => [status, { error: status === 403 ? "Your team admin has not allowed this app." : "Composio authorization failed reading /data/.duskbot/composio.json" }]);
+    const w = await workspace(() => [status, { error: status === 403 ? "Your team admin has not allowed this app." : "Composio authorization failed reading /data/.madanibot/composio.json" }]);
     expect((await w.run("app.connect", "gmail")).message).toBe("Your team admin has not allowed this app.");
     status = 502;
     expect((await w.run("app.connect", "gmail")).message).toBe("The workspace could not complete this action.");

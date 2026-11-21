@@ -1,11 +1,11 @@
-// A stand-in for Dusk's pages: the Admin's token route and the pages Worker, as one fetch. Pages, quotas and tokens
+// A stand-in for Madani's pages: the Admin's token route and the pages Worker, as one fetch. Pages, quotas and tokens
 // are kept in memory; nothing reaches the network.
 import { pagesHomeSignature } from "../pages/access.ts";
 
 export const FAKE_ADMIN = "https://cloud.example.test";
 export const FAKE_TOKEN_URL = `${FAKE_ADMIN}/api/cloud/pages/token`;
 export const FAKE_UPLOAD = "https://upload.pages.test";
-export const FAKE_DESKTOP_TOKEN = `dusk_pd_${"d".repeat(43)}`;
+export const FAKE_DESKTOP_TOKEN = `madani_pd_${"d".repeat(43)}`;
 export const FAKE_HOME = { adminOrigin: FAKE_ADMIN, machineId: "cm-fake-home", bootstrapSecret: "b".repeat(43) };
 
 /** `admin` and `upload`: the token route's and the Worker's origins (one loopback server can be both). */
@@ -21,9 +21,9 @@ export function fakePagesService(options: { quota?: number; plan?: string; admin
 
   const caller = (request: Request, body: string): "desktop" | "home" | null => {
     if (request.headers.get("authorization") === `Bearer ${FAKE_DESKTOP_TOKEN}`) return "desktop";
-    const machine = request.headers.get("x-dusk-cloud-machine"), timestamp = request.headers.get("x-dusk-cloud-timestamp") ?? "", nonce = request.headers.get("x-dusk-cloud-nonce") ?? "";
+    const machine = request.headers.get("x-madani-cloud-machine"), timestamp = request.headers.get("x-madani-cloud-timestamp") ?? "", nonce = request.headers.get("x-madani-cloud-nonce") ?? "";
     const expected = `v1=${pagesHomeSignature(FAKE_HOME.bootstrapSecret, FAKE_HOME.machineId, timestamp, nonce, body)}`;
-    return machine === FAKE_HOME.machineId && request.headers.get("x-dusk-cloud-signature") === expected ? "home" : null;
+    return machine === FAKE_HOME.machineId && request.headers.get("x-madani-cloud-signature") === expected ? "home" : null;
   };
 
   const fetch: typeof globalThis.fetch = async (input, init) => {
@@ -32,16 +32,16 @@ export function fakePagesService(options: { quota?: number; plan?: string; admin
     if (state.down) throw new TypeError("fetch failed");
     if (url.href === tokenUrl) {
       const body = await request.text(), who = caller(request, body);
-      if (!who) return Response.json({ error: "invalid_token", message: "Sign in to dusk bot again to publish pages." }, { status: 401 });
+      if (!who) return Response.json({ error: "invalid_token", message: "Sign in to madani bot again to publish pages." }, { status: 401 });
       const { action, pageId } = JSON.parse(body) as { action: string; pageId?: string };
       minted.push({ action, ...(pageId ? { pageId } : {}), caller: who });
       if (action === "create" && pages.size >= state.quota) {
-        return Response.json({ error: "page_limit", message: `You’ve used your ${state.quota} free pages. dusk cloud gives you more, and pages without the badge.`,
+        return Response.json({ error: "page_limit", message: `You’ve used your ${state.quota} free pages. madani cloud gives you more, and pages without the badge.`,
           usage: usage(), plan: state.plan, upgrade: true }, { status: 402 });
       }
       const id = action === "create" ? newId() : pageId!, token = `fake-token-${minted.length}`;
       tokens.set(token, { action, pageId: id });
-      return Response.json({ token, pageId: id, action, uploadUrl: upload, pageUrl: `https://${id}.page.dusk.bot/`, plan: state.plan,
+      return Response.json({ token, pageId: id, action, uploadUrl: upload, pageUrl: `https://${id}.page.madani.bot/`, plan: state.plan,
         limits: { pages: state.quota, bytes: 5 * 1024 * 1024, files: 200, perHour: 30 }, badge: state.plan === "free",
         ...(action === "create" ? { limit: { message: `You’ve used your ${state.quota} free pages.`, upgrade: true } } : {}) });
     }
@@ -59,7 +59,7 @@ export function fakePagesService(options: { quota?: number; plan?: string; admin
       const files = new Map<string, string>();
       for (const [index, file] of manifest.files.entries()) files.set(file.path, await (form.get(`f${index}`) as Blob).text());
       pages.set(page, { title: manifest.title, files });
-      return Response.json({ pageId: page, url: `https://${page}.page.dusk.bot/`, version: 1, badge: state.plan === "free", usage: usage() });
+      return Response.json({ pageId: page, url: `https://${page}.page.madani.bot/`, version: 1, badge: state.plan === "free", usage: usage() });
     }
     throw new Error(`Unexpected request to ${url.href}`);
   };

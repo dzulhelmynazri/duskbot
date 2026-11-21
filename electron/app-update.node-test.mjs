@@ -13,13 +13,13 @@ const { privateKey } = generateKeyPairSync("ed25519");
 const keys = [{ kid: "test-desk", x: createPublicKey(privateKey).export({ format: "jwk" }).x }];
 const sha = (value) => createHash("sha256").update(value).digest("hex");
 function manifest(version, sums, kid = "test-desk", key = privateKey) {
-  const head = `r1.${kid}.${Buffer.from(JSON.stringify({ v: 1, kind: "desktop", name: "dusk bot", version, sha256: sha(sums), signedAt: 1 })).toString("base64url")}`;
+  const head = `r1.${kid}.${Buffer.from(JSON.stringify({ v: 1, kind: "desktop", name: "madani bot", version, sha256: sha(sums), signedAt: 1 })).toString("base64url")}`;
   return { v: 1, version, sha256sums: sha(sums), signature: `${head}.${sign(null, Buffer.from(head), key).toString("base64url")}` };
 }
 const IDLE = { ready: null, available: null, progress: null, checking: false, failed: false, retrying: false, blocked: null, manual: null };
 const noWait = { wait: async () => {} };
 
-/** a Response for `body`, honouring a Range header like GitHub and dusk.bot do */
+/** a Response for `body`, honouring a Range header like GitHub and madani.bot do */
 function served(body, init = {}) {
   const bytes = Buffer.from(body);
   const range = /^bytes=(\d+)-$/.exec(init.headers?.range ?? "");
@@ -38,15 +38,15 @@ function breaks(bytes, how, total = bytes.length * 4) {
 
 /** a release `version` on the network, its zip `zip`, and an updater around it */
 function world({ version = "1.1.0", current = "1.0.0", signed = true, zip = Buffer.from("zip bytes"), sumsZip = zip, manifestKey = privateKey, prepare = async () => {}, drop = [], blocked = null, installs = true, platform = "darwin", extra = {}, download = noWait, options = {} } = {}) {
-  const sums = `${sha(sumsZip)}  DuskBot-${version}-arm64.zip\n${sha("x")}  DuskBot-${version}-x64.zip\n${sha("exe")}  DuskBot-${version}-setup.exe\n${sha("deb")}  DuskBot-${version}-amd64.deb\n`;
+  const sums = `${sha(sumsZip)}  MadaniBot-${version}-arm64.zip\n${sha("x")}  MadaniBot-${version}-x64.zip\n${sha("exe")}  MadaniBot-${version}-setup.exe\n${sha("deb")}  MadaniBot-${version}-amd64.deb\n`;
   const routes = new Map([
     [DESKTOP_MANIFEST_URL, JSON.stringify(manifest(version, sums, "test-desk", manifestKey))],
     [sumsUrl(version), sums],
-    [zipUrl(version, `DuskBot-${version}-arm64.zip`), zip],
+    [zipUrl(version, `MadaniBot-${version}-arm64.zip`), zip],
     ...Object.entries(extra),
   ]);
   for (const url of drop) routes.delete(url);
-  const w = { told: 0, prepared: [], installed: 0, states: [], fetched: [], failures: [], routes, dir: mkdtempSync(join(tmpdir(), "dusk-app-update-")), quiet: false, timers: [] };
+  const w = { told: 0, prepared: [], installed: 0, states: [], fetched: [], failures: [], routes, dir: mkdtempSync(join(tmpdir(), "madani-app-update-")), quiet: false, timers: [] };
   w.updater = createAppUpdater({
     current, arch: "arm64", dir: w.dir, keys, signed: async () => signed, blocked: async () => blocked, installs, platform, download,
     fetchImpl: async (url, init) => {
@@ -123,7 +123,7 @@ test("a policy that pauses after the download keeps the quiet restart from happe
 });
 
 test("an install keeps its rollout bucket", () => {
-  const dir = mkdtempSync(join(tmpdir(), "dusk-bucket-")), file = join(dir, "b.json");
+  const dir = mkdtempSync(join(tmpdir(), "madani-bucket-")), file = join(dir, "b.json");
   assert.equal(storedBucket(file, () => 0.42), 42);
   assert.equal(storedBucket(file, () => 0.99), 42);
   rmSync(dir, { recursive: true, force: true });
@@ -147,7 +147,7 @@ test("it restarts into the update only at a quiet moment, or when the person ask
   done(asked);
 });
 
-test("an unsigned build downloads nothing: it names the version and dusk.bot, and tells the person", async () => {
+test("an unsigned build downloads nothing: it names the version and madani.bot, and tells the person", async () => {
   const w = world({ signed: false });
   assert.equal(await w.updater.check(), null);
   assert.equal(w.told, 1);
@@ -166,7 +166,7 @@ test("a forged manifest, sums that don't match it, or a zip that doesn't match i
   }
   assert.deepEqual(forged.failures.map((f) => [f.stage, f.reason]), [["manifest", "not_signed"]]);
   assert.deepEqual(swapped.failures.map((f) => [f.stage, f.reason]), [["checksum", "checksum"]]);
-  assert.equal(swapped.fetched.filter((u) => u === zipUrl("1.1.0", "DuskBot-1.1.0-arm64.zip")).length, 2, "a mismatch is fetched once more from scratch, then given up");
+  assert.equal(swapped.fetched.filter((u) => u === zipUrl("1.1.0", "MadaniBot-1.1.0-arm64.zip")).length, 2, "a mismatch is fetched once more from scratch, then given up");
   for (const w of [forged, swapped]) done(w);
 });
 
@@ -186,7 +186,7 @@ test("nothing newer, nothing done; an installer that fails falls back to the not
   assert.equal(broken.failures[0].reason, "install_could_not_get_code_signature_for");
   assert.equal(updateFailStage(broken.failures[0].m), "install", broken.failures[0].m);
   done(broken);
-  const unpublished = world({ drop: [zipUrl("1.1.0", "DuskBot-1.1.0-arm64.zip")] });
+  const unpublished = world({ drop: [zipUrl("1.1.0", "MadaniBot-1.1.0-arm64.zip")] });
   assert.equal(await unpublished.updater.check(), null);
   assert.equal(unpublished.told, 1);
   assert.deepEqual([unpublished.failures[0].stage, unpublished.failures[0].reason], ["download", "http_404"]);
@@ -213,11 +213,11 @@ test("the download's progress reaches the window in whole percents, and a failed
 
 test("a dropped download resumes from its .part with a Range request instead of starting over", async () => {
   const zip = Buffer.alloc(64 * 1024, 3);
-  const url = zipUrl("1.1.0", "DuskBot-1.1.0-arm64.zip");
+  const url = zipUrl("1.1.0", "MadaniBot-1.1.0-arm64.zip");
   const asked = [];
   let tries = 0;
   const w = world({ zip, extra: { [url]: (init) => { asked.push(init?.headers?.range ?? null); tries += 1; return tries === 1 ? breaks(zip.subarray(0, 20_000), "drop", zip.length) : served(zip, init); } } });
-  w.routes.set(mirrorUrl("1.1.0", "DuskBot-1.1.0-arm64.zip"), (init) => { asked.push(`mirror ${init?.headers?.range ?? null}`); return served(zip, init); });
+  w.routes.set(mirrorUrl("1.1.0", "MadaniBot-1.1.0-arm64.zip"), (init) => { asked.push(`mirror ${init?.headers?.range ?? null}`); return served(zip, init); });
   assert.equal(await w.updater.check(), "1.1.0");
   assert.deepEqual(asked, [null, "mirror bytes=20000-"], "the second try asks the other source for the rest only");
   assert.equal(w.prepared[0].bytes.equals(zip), true);
@@ -226,9 +226,9 @@ test("a dropped download resumes from its .part with a Range request instead of 
   done(w);
 });
 
-test("GitHub failing (an error answer or no answer at all) falls back to dusk.bot's copy", async () => {
+test("GitHub failing (an error answer or no answer at all) falls back to madani.bot's copy", async () => {
   const zip = Buffer.from("the real zip");
-  const name = "DuskBot-1.1.0-arm64.zip";
+  const name = "MadaniBot-1.1.0-arm64.zip";
   for (const github of [() => new Response("rate limited", { status: 403 }), () => { throw new TypeError("fetch failed", { cause: Object.assign(new Error("getaddrinfo ENOTFOUND"), { code: "ENOTFOUND" }) }); }]) {
     const w = world({ zip, extra: { [zipUrl("1.1.0", name)]: github, [mirrorUrl("1.1.0", name)]: zip } });
     assert.equal(await w.updater.check(), "1.1.0");
@@ -237,9 +237,9 @@ test("GitHub failing (an error answer or no answer at all) falls back to dusk.bo
   }
 });
 
-const dnsMiss = () => { throw new TypeError("fetch failed", { cause: Object.assign(new Error("getaddrinfo ENOTFOUND dusk.bot"), { code: "ENOTFOUND" }) }); };
+const dnsMiss = () => { throw new TypeError("fetch failed", { cause: Object.assign(new Error("getaddrinfo ENOTFOUND madani.bot"), { code: "ENOTFOUND" }) }); };
 
-test("dusk.bot unreachable (DNS, a proxy) takes the signed manifest and its sums from the downloads repo", async () => {
+test("madani.bot unreachable (DNS, a proxy) takes the signed manifest and its sums from the downloads repo", async () => {
   const probe = world();
   const manifestCopy = probe.routes.get(DESKTOP_MANIFEST_URL), sumsCopy = probe.routes.get(sumsUrl("1.1.0"));
   done(probe);
@@ -281,7 +281,7 @@ test("a network blip is waited out and tried again; an offline computer is not a
 });
 
 test("a connection that goes quiet is given up after the stall time and resumed, not waited on for half an hour", async () => {
-  const dir = mkdtempSync(join(tmpdir(), "dusk-stall-"));
+  const dir = mkdtempSync(join(tmpdir(), "madani-stall-"));
   const zip = Buffer.alloc(10_000, 9);
   const seen = [];
   let tries = 0;
@@ -297,10 +297,10 @@ test("a connection that goes quiet is given up after the stall time and resumed,
 
 test("a mac that wakes mid-download goes on at once from where it got", async () => {
   const zip = Buffer.alloc(30_000, 5);
-  const url = zipUrl("1.1.0", "DuskBot-1.1.0-arm64.zip");
+  const url = zipUrl("1.1.0", "MadaniBot-1.1.0-arm64.zip");
   let tries = 0;
   const w = world({ zip, download: { stallMs: 60_000, wait: async (ms) => { assert.equal(ms, 0, "a wake waits for nothing"); } }, extra: { [url]: (init) => (++tries === 1 ? breaks(zip.subarray(0, 1000), "stall", zip.length) : served(zip, init)) } });
-  w.routes.set(mirrorUrl("1.1.0", "DuskBot-1.1.0-arm64.zip"), (init) => served(zip, init));
+  w.routes.set(mirrorUrl("1.1.0", "MadaniBot-1.1.0-arm64.zip"), (init) => served(zip, init));
   const checking = w.updater.check();
   await new Promise((resolve) => setTimeout(resolve, 30));
   w.updater.soon();
@@ -309,7 +309,7 @@ test("a mac that wakes mid-download goes on at once from where it got", async ()
 });
 
 test("it gives up after its tries with the last reason, and a full disk stops at once", async () => {
-  const dir = mkdtempSync(join(tmpdir(), "dusk-tries-"));
+  const dir = mkdtempSync(join(tmpdir(), "madani-tries-"));
   let tries = 0;
   const waits = [];
   await assert.rejects(resumableDownload({ sources: ["https://a.test/z"], file: join(dir, "z.zip"), sha256: sha("z"), attempts: 3, wait: async (ms) => { waits.push(ms); },
@@ -324,7 +324,7 @@ test("it gives up after its tries with the last reason, and a full disk stops at
 });
 
 test("a .part longer than the file (416) is checked as it is, and a finished file is never fetched again", async () => {
-  const dir = mkdtempSync(join(tmpdir(), "dusk-done-"));
+  const dir = mkdtempSync(join(tmpdir(), "madani-done-"));
   const zip = Buffer.from("all of it");
   writeFileSync(join(dir, "z.zip.part"), zip);
   const seen = [];
@@ -338,7 +338,7 @@ test("failure reasons are short words with no paths, urls or quoted text", () =>
   assert.equal(failReason(new TypeError("terminated", { cause: { code: "UND_ERR_SOCKET" } })), "terminated_und_err_socket");
   assert.equal(failReason(new TypeError("fetch failed", { cause: { code: "ENOTFOUND" } })), "enotfound");
   assert.equal(failReason(Object.assign(new Error("EACCES: permission denied, open '/Users/sam/Library/x'"), { code: "EACCES" })), "no_access");
-  assert.equal(failReason(new Error("Cannot update while running on a read-only volume. The application is on /Volumes/dusk bot/DuskBot.app")), "cannot_update_while_running_on_a_read_on");
+  assert.equal(failReason(new Error("Cannot update while running on a read-only volume. The application is on /Volumes/madani bot/MadaniBot.app")), "cannot_update_while_running_on_a_read_on");
   assert.equal(failReason(new Error("could not open /Users/sam/Library/Application Support/x and https://example.com/a?b=c 'sam@example.com'")), "could_not_open");
   assert.equal(failReason(new DOMException("The operation was aborted due to timeout", "TimeoutError")), "timeout");
   for (const reason of ["terminated_und_err_socket", "no_access", "cannot_update_while_running_on_a_read_on"]) assert.match(reason, /^[a-z][a-z0-9_]{0,39}$/);
@@ -346,10 +346,10 @@ test("failure reasons are short words with no paths, urls or quoted text", () =>
 });
 
 test("a translocated or disk-image copy is asked to move, an unwritable folder downloads by hand, and nothing is downloaded", async () => {
-  assert.equal(updatePlace("/private/var/folders/x/T/AppTranslocation/ABC/d/DuskBot.app", () => true), "move");
-  assert.equal(updatePlace("/Volumes/dusk bot/DuskBot.app", () => false), "move");
-  assert.equal(updatePlace("/Applications/DuskBot.app", () => false), "readonly");
-  assert.equal(updatePlace("/Applications/DuskBot.app", () => true), null);
+  assert.equal(updatePlace("/private/var/folders/x/T/AppTranslocation/ABC/d/MadaniBot.app", () => true), "move");
+  assert.equal(updatePlace("/Volumes/madani bot/MadaniBot.app", () => false), "move");
+  assert.equal(updatePlace("/Applications/MadaniBot.app", () => false), "readonly");
+  assert.equal(updatePlace("/Applications/MadaniBot.app", () => true), null);
   const move = world({ blocked: "move" });
   assert.equal(await move.updater.check(), null);
   assert.deepEqual(move.updater.state(), { ...IDLE, available: "1.1.0", blocked: "move" });
@@ -364,8 +364,8 @@ test("a translocated or disk-image copy is asked to move, an unwritable folder d
   done(readonly);
 });
 
-test("Windows and Linux are given their own installer: dusk.bot's copy, or the downloads repo's", async () => {
-  const exe = mirrorUrl("1.1.0", "DuskBot-1.1.0-setup.exe");
+test("Windows and Linux are given their own installer: madani.bot's copy, or the downloads repo's", async () => {
+  const exe = mirrorUrl("1.1.0", "MadaniBot-1.1.0-setup.exe");
   const win = world({ installs: false, platform: "win32", extra: { [exe]: "exe" } });
   assert.equal(await win.updater.check(), null);
   assert.deepEqual(win.updater.state(), { ...IDLE, available: "1.1.0", manual: { version: "1.1.0", url: exe } });
@@ -374,18 +374,18 @@ test("Windows and Linux are given their own installer: dusk.bot's copy, or the d
   done(win);
   const linux = world({ installs: false, platform: "linux" });
   await linux.updater.check();
-  assert.equal(linux.updater.state().manual.url, zipUrl("1.1.0", "DuskBot-amd64.deb"), "no copy on dusk.bot: the downloads repo's stable name");
+  assert.equal(linux.updater.state().manual.url, zipUrl("1.1.0", "MadaniBot-amd64.deb"), "no copy on madani.bot: the downloads repo's stable name");
   done(linux);
-  assert.equal(installerIn(`${"a".repeat(64)}  DuskBot-1.1.0-x86_64.AppImage\n`, "1.1.0", "linux", { appImage: true }), "DuskBot-1.1.0-x86_64.AppImage");
-  assert.equal(installerIn(`${"a".repeat(64)}  DuskBot-1.1.0-amd64.deb\n`, "1.1.0", "linux", { appImage: true }), null);
+  assert.equal(installerIn(`${"a".repeat(64)}  MadaniBot-1.1.0-x86_64.AppImage\n`, "1.1.0", "linux", { appImage: true }), "MadaniBot-1.1.0-x86_64.AppImage");
+  assert.equal(installerIn(`${"a".repeat(64)}  MadaniBot-1.1.0-amd64.deb\n`, "1.1.0", "linux", { appImage: true }), null);
   assert.equal(await installerUrl("1.1.0", null), DOWNLOAD_PAGE);
 });
 
 test("verifiedRelease and zipIn read only what they vouch for", () => {
   assert.equal(verifiedRelease({ signature: "r1.rel-2026-11.e30.AAAA" }), null);
   assert.equal(verifiedRelease({}), null);
-  assert.deepEqual(zipIn(`${"a".repeat(64)}  DuskBot-1.2.3-x64.zip\n`, "1.2.3", "x64"), { name: "DuskBot-1.2.3-x64.zip", sha256: "a".repeat(64) });
-  assert.equal(zipIn(`${"a".repeat(64)}  DuskBot-1.2.3-x64.zip\n`, "1.2.3", "arm64"), null);
+  assert.deepEqual(zipIn(`${"a".repeat(64)}  MadaniBot-1.2.3-x64.zip\n`, "1.2.3", "x64"), { name: "MadaniBot-1.2.3-x64.zip", sha256: "a".repeat(64) });
+  assert.equal(zipIn(`${"a".repeat(64)}  MadaniBot-1.2.3-x64.zip\n`, "1.2.3", "arm64"), null);
 });
 
 test("quiet: away (locked, or idle and not typing) and nothing running", async () => {
@@ -433,8 +433,8 @@ test("Squirrel.Mac gets the verified zip from a feed on 127.0.0.1 at an unguessa
   const { EventEmitter } = await import("node:events");
   const { squirrelInstaller } = await import("./app-update.mjs");
   const { writeFileSync } = await import("node:fs");
-  const dir = mkdtempSync(join(tmpdir(), "dusk-squirrel-"));
-  const file = join(dir, "DuskBot-1.1.0-arm64.zip");
+  const dir = mkdtempSync(join(tmpdir(), "madani-squirrel-"));
+  const file = join(dir, "MadaniBot-1.1.0-arm64.zip");
   writeFileSync(file, "the zip");
   const updater = Object.assign(new EventEmitter(), {
     feed: null, quit: 0, got: null, guessed: null,

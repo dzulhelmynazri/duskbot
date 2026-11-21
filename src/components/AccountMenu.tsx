@@ -42,7 +42,7 @@ export function switchNote(result: Pick<RailOpenResult | AccountSwitchResult, "o
   }
 }
 
-/** Signing out of dusk cloud asks first, over whatever is open (the accounts sheet sits at z-[60]): what happens, in one line. */
+/** Signing out of madani cloud asks first, over whatever is open (the accounts sheet sits at z-[60]): what happens, in one line. */
 export function CloudSignOutConfirm({ open, pending = false, onCancel, onConfirm }: { open: boolean; pending?: boolean; onCancel: () => void; onConfirm: () => void }) {
   return <ConfirmDialog open={open} art={<PixelIcon name="cloud" size={28} />} title={t("accounts.signOutConfirmTitle")}
     body={t("accounts.signOutConfirmBody")} confirmLabel={t("accounts.signOut")} tone="neutral" pending={pending} layer="z-[70]"
@@ -52,9 +52,9 @@ export function CloudSignOutConfirm({ open, pending = false, onCancel, onConfirm
 /** Who is signed in on this device, on this app's own page; on any other page, only whether main offers the sheet. `signOut`
  * asks first: render `signOutConfirm` wherever the hook is used. */
 export function useAccounts(): AccountsAccess & { sheet: { email: string | null; note: string | null } | null; closeSheet(): void; signOutConfirm: ReactNode; picking: boolean; closeAvatar(): void } {
-  const bridge = window.duskDesktop?.remoteClient?.active ? undefined : window.duskDesktop?.accounts;
-  const remote = window.duskDesktop?.accountSheet;
-  const own = window.duskDesktop?.app?.ownPage === true && Boolean(bridge);
+  const bridge = window.madaniDesktop?.remoteClient?.active ? undefined : window.madaniDesktop?.accounts;
+  const remote = window.madaniDesktop?.accountSheet;
+  const own = window.madaniDesktop?.app?.ownPage === true && Boolean(bridge);
   const places = usePlaces();
   const [view, setView] = useState<AccountsView | null>(null);
   const [offered, setOffered] = useState(false);
@@ -101,8 +101,8 @@ const activeListeners = new Set<() => void>();
 let activeStop: (() => void) | null = null;
 function subscribeActive(listener: () => void) {
   activeListeners.add(listener);
-  const bridge = window.duskDesktop?.remoteClient?.active ? undefined : window.duskDesktop?.accounts;
-  if (!activeStop && bridge && window.duskDesktop?.app?.ownPage === true) {
+  const bridge = window.madaniDesktop?.remoteClient?.active ? undefined : window.madaniDesktop?.accounts;
+  if (!activeStop && bridge && window.madaniDesktop?.app?.ownPage === true) {
     const read = () => { void bridge.list().then((view) => { activeRow = view.active; for (const tell of activeListeners) tell(); }).catch(() => {}); };
     read();
     activeStop = bridge.onChanged(read);
@@ -112,12 +112,12 @@ function subscribeActive(listener: () => void) {
     if (!activeListeners.size) { activeStop?.(); activeStop = null; }
   };
 }
-/** The dusk cloud account in use on this app's own page, for its face; null anywhere else or signed out. */
+/** The madani cloud account in use on this app's own page, for its face; null anywhere else or signed out. */
 export function useActiveAccount(): AccountRow | null {
   return useSyncExternalStore(subscribeActive, () => activeRow, () => null);
 }
 
-/** The You menu's row for the dusk cloud page, on this app's own page: Sign in while nobody is signed in here, so whoever was
+/** The You menu's row for the madani cloud page, on this app's own page: Sign in while nobody is signed in here, so whoever was
  * told to sign in finds the words. Any other page knows nothing of who is signed in. */
 export function cloudRowLabel(view: AccountsView | null): string {
   return t(view && !view.active ? "accounts.signIn" : "settings.section.cloudAccount");
@@ -143,7 +143,7 @@ const EMAIL_STEP: CloudSignInPhase = { step: "email", intent: false, problem: nu
 /** Add another account in place: the emailed code, or the browser for single sign-on and two-step. The account in use goes
  * on until this succeeds; the code's attempt and the token stay in main. */
 function AddAccount({ start, onDone, onBack }: { start: string; onDone: (note: string | null) => void; onBack: () => void }) {
-  const bridge = window.duskDesktop?.accounts;
+  const bridge = window.madaniDesktop?.accounts;
   const [phase, setPhase] = useState<CloudSignInPhase>(EMAIL_STEP);
   const [email, setEmail] = useState(start);
   const [code, setCode] = useState("");
@@ -199,7 +199,7 @@ function AddAccount({ start, onDone, onBack }: { start: string; onDone: (note: s
 /** Over any place's page, on the rail's own page, or over this computer's: who is signed in here and Sign out, or a plain line
  * (`note`). `adding`: the sign-in, for this address when it has one: Add another account, or a saved account whose sign-in ended. */
 export function AccountsSheet({ onClose, adding = null, note: given = null }: { onClose: () => void; adding?: string | null; note?: string | null }) {
-  const bridge = window.duskDesktop?.accounts;
+  const bridge = window.madaniDesktop?.accounts;
   const [view, setView] = useState<AccountsView | null>(null);
   const [note, setNote] = useState<string | null>(given);
   const [add, setAdd] = useState<string | null>(adding);
@@ -222,7 +222,7 @@ export function AccountsSheet({ onClose, adding = null, note: given = null }: { 
   };
   const active = view?.active ?? null;
   // nobody signed in here: the sign-in continues in the browser at once, never a pointer to somewhere else
-  if (view && !active && !given && add === null && window.duskDesktop?.cloudAccount?.continueInBrowser) return <SignInInBrowser onClose={onClose} />;
+  if (view && !active && !given && add === null && window.madaniDesktop?.cloudAccount?.continueInBrowser) return <SignInInBrowser onClose={onClose} />;
   return <DialogScrimLayer className="ui-scrim fixed inset-0 z-[60] flex items-center justify-center p-4" onMouseDown={(event) => event.target === event.currentTarget && onClose()}>
     <DialogSheet role="dialog" aria-modal="true" aria-labelledby="cloud-add-title" data-accounts-sheet className={cn(SHEET, "relative w-full max-w-[420px]")}>
       <button type="button" onClick={onClose} aria-label={t("accounts.close")} className={cn(CLOSE, "absolute end-4 top-4 z-10")}><X size={16} /></button>
@@ -245,12 +245,12 @@ export function AccountsSheet({ onClose, adding = null, note: given = null }: { 
 /** The account's own page on the dashboard, signed in through the account handoff; the dashboard's home where that page
  * can't be asked for. */
 async function manageAccount(): Promise<void> {
-  const cloud = window.duskDesktop?.cloudAccount;
+  const cloud = window.madaniDesktop?.cloudAccount;
   if (!cloud) throw new Error("no account bridge");
   await cloud.openDashboard();
 }
 
-/** What the account card says of the plan: Free, or dusk cloud with its plan. Renewal dates live on the billing page. */
+/** What the account card says of the plan: Free, or madani cloud with its plan. Renewal dates live on the billing page. */
 export function accountPlanText(plan: AccountPlanLine | undefined): string | null {
   if (!plan) return null;
   if (plan.status === "free") return t("accounts.card.free");
@@ -266,7 +266,7 @@ function AccountCard({ account }: { account: AccountRow }) {
   const paid = account.plan?.status === "active";
   const [picking, setPicking] = useState(false);
   const faceRef = useRef<HTMLButtonElement>(null);
-  const editable = Boolean(window.duskDesktop?.accounts?.setAvatar) && !account.signIn;
+  const editable = Boolean(window.madaniDesktop?.accounts?.setAvatar) && !account.signIn;
   const face = <UserFace account={account} size={52} className="inset-ring inset-ring-ink/[0.08]" />;
   return <div data-accounts-active className="flex items-center gap-3.5 rounded-2xl bg-ink/[0.04] p-4">
     {editable
@@ -295,7 +295,7 @@ function AccountCard({ account }: { account: AccountRow }) {
 function SignInInBrowser({ onClose }: { onClose: () => void }) {
   useEffect(() => {
     void continueInBrowser({ kind: "signin" }).then((outcome) => { if (outcome !== "browser") onClose(); }, () => onClose());
-    const off = window.duskDesktop?.cloudAccount?.onState((state) => { if (state.account && state.status === "connected") onClose(); else if (state.status !== "connecting") onClose(); });
+    const off = window.madaniDesktop?.cloudAccount?.onState((state) => { if (state.account && state.status === "connected") onClose(); else if (state.status !== "connecting") onClose(); });
     return () => off?.();
   }, []);
   return <ContinueInBrowserSheet kind="signin" onClose={onClose} />;
@@ -303,17 +303,17 @@ function SignInInBrowser({ onClose }: { onClose: () => void }) {
 
 /** The sheet as the rail's page keeps it: asked for by main, from the person's click on the page beside the rail. */
 export function useAccountsSheet(): { open: boolean; close: () => void } {
-  const bridge = window.duskDesktop?.accounts;
+  const bridge = window.madaniDesktop?.accounts;
   const [open, setOpen] = useState(false);
   useEffect(() => {
     if (!bridge) return;
     void bridge.sheetPending().then((pending) => { if (pending) setOpen(true); }).catch(() => {});
     return bridge.onOpenSheet(() => setOpen(true));
   }, [bridge]);
-  useEffect(() => { if (open) void window.duskDesktop?.rail?.expand?.(true)?.catch(() => {}); }, [open]);
+  useEffect(() => { if (open) void window.madaniDesktop?.rail?.expand?.(true)?.catch(() => {}); }, [open]);
   return { open, close: () => {
     setOpen(false);
-    void window.duskDesktop?.rail?.expand?.(false)?.catch(() => {});
+    void window.madaniDesktop?.rail?.expand?.(false)?.catch(() => {});
     void bridge?.sheetClosed().catch(() => {});
   } };
 }

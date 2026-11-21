@@ -181,7 +181,7 @@ export async function startFakeInstaboxApi(options: { now?: () => number; key?: 
     }
     if (action === "exec" && method === "POST") {
       if (m.state !== "running") return error(res, 409, "machine_not_running");
-      if (typeof body?.cmd === "string" && body.cmd.includes("dusk-setup") && body.cmd.includes("setsid")) m.setupPolls = 0;
+      if (typeof body?.cmd === "string" && body.cmd.includes("madani-setup") && body.cmd.includes("setsid")) m.setupPolls = 0;
       const result = machineExec({ machine: m, cmd: String(body?.cmd ?? "") });
       return send(res, 200, { stdout: result.stdout, stderr: "", exitCode: result.exitCode, timedOut: false, truncated: false });
     }

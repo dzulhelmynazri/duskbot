@@ -12,7 +12,7 @@ import "../../styles/onboarding.css";
 /** The cloud being made, then opened onto its own first run, for a plan that came after this computer's first run. */
 export function LateCloudPlan({ viewer }: { viewer: WelcomeViewer | null }) {
   const { state, dispatch } = useStore();
-  const bridge = localDesktopPage() && window.duskDesktop?.remoteClient?.active !== true ? window.duskDesktop?.cloudAccount : undefined;
+  const bridge = localDesktopPage() && window.madaniDesktop?.remoteClient?.active !== true ? window.madaniDesktop?.cloudAccount : undefined;
   const [account, setAccount] = useState<CloudAccountState | null>(null);
   const welcomeShown = useWelcomeOnScreen();
   const [open, setOpen] = useState(false);

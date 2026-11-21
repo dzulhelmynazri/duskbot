@@ -1,5 +1,5 @@
 // "Your Mac": what a linked server's bot asks this Mac to do (shared/mac-control.ts MacJob), run here as the person who
-// is signed in, with every action appended to ~/Library/Logs/Dusk Bot/mac-control.log (never file contents).
+// is signed in, with every action appended to ~/Library/Logs/Madani Bot/mac-control.log (never file contents).
 import { execFile, spawn } from "node:child_process";
 import { randomBytes } from "node:crypto";
 import { createWriteStream, promises as fsp } from "node:fs";
@@ -15,7 +15,7 @@ const KILL_GRACE_MS = 3000;
 const DOWNLOAD_MAX = 2 * 1024 ** 3;
 
 export function macLogFile(home = homedir()) {
-  return path.join(home, "Library", "Logs", "Dusk Bot", "mac-control.log");
+  return path.join(home, "Library", "Logs", "Madani Bot", "mac-control.log");
 }
 
 /** `~`, `~/x` and relative paths start at the home folder */
@@ -28,7 +28,7 @@ export function resolveMacPath(value, home = homedir()) {
 
 /** a bot's name as one folder name */
 export function folderName(value) {
-  return String(value ?? "").replace(/[/\\:\0]/g, "-").replace(/^\.+/, "").trim().slice(0, 60) || "Dusk";
+  return String(value ?? "").replace(/[/\\:\0]/g, "-").replace(/^\.+/, "").trim().slice(0, 60) || "Madani";
 }
 
 function tail() {
@@ -220,10 +220,10 @@ export function createMacExecutor(options = {}) {
     },
     async mac_screenshot() {
       if (options.screenshot) return { text: "screenshot of the main screen", image: await options.screenshot() };
-      const file = path.join(tmpdir(), `dusk-mac-${randomBytes(6).toString("hex")}.jpg`);
+      const file = path.join(tmpdir(), `madani-mac-${randomBytes(6).toString("hex")}.jpg`);
       try {
         try { await run("/usr/sbin/screencapture", ["-x", "-t", "jpg", file]); }
-        catch { throw new Error("macOS did not allow a screenshot: allow Dusk Bot under System Settings > Privacy & Security > Screen Recording"); }
+        catch { throw new Error("macOS did not allow a screenshot: allow Madani Bot under System Settings > Privacy & Security > Screen Recording"); }
         await run("/usr/bin/sips", ["-Z", "1600", file]).catch(() => {});
         return { text: "screenshot of the main screen", image: { data: (await fsp.readFile(file)).toString("base64"), mimeType: "image/jpeg" } };
       } finally { await fsp.rm(file, { force: true }); }
@@ -248,7 +248,7 @@ export function createMacExecutor(options = {}) {
         outcome = { ok: true, result: { text: `saved ${size} bytes to ${file}` } };
       } else {
         const tool = tools[job.tool];
-        if (!tool) throw new Error(`this Mac app does not know ${job.tool}; update dusk bot on the Mac`);
+        if (!tool) throw new Error(`this Mac app does not know ${job.tool}; update madani bot on the Mac`);
         outcome = { ok: true, result: await tool(job.arguments ?? {}, { signal }) };
       }
     } catch (error) {

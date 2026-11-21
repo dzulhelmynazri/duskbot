@@ -1,4 +1,4 @@
-// The email-code sign-in the phone apps use (dusk-cloud server/cloud-app-signin.ts), typed into the app: it ends in
+// The email-code sign-in the phone apps use (madani-cloud server/cloud-app-signin.ts), typed into the app: it ends in
 // the same omc_ device token as the browser approval. The attempt and the token stay in main; the page sees outcomes only.
 export const SIGN_IN_START = "/api/cloud/app/sign-in/start";
 export const SIGN_IN_VERIFY = "/api/cloud/app/sign-in/verify";
@@ -71,12 +71,12 @@ export function verifyFailure(error) {
 export const APP_START = "/v1/auth/app/start";
 export const APP_TOKEN = "/v1/auth/app/token";
 export const APP_PROVIDERS = "/v1/auth/providers";
-export const APP_LINK = "duskbot://auth";
+export const APP_LINK = "madanibot://auth";
 export const LINK_PROVIDERS = Object.freeze(["google", "apple"]);
 /** How long the browser has to come back: the service keeps an app flow 10 minutes. */
 export const LINK_MS = 600_000;
 
-/** duskbot://auth?code=...&state=... or ?error=...&state=...; anything else is no sign-in link. */
+/** madanibot://auth?code=...&state=... or ?error=...&state=...; anything else is no sign-in link. */
 export function isAppLink(value) {
   return typeof value === "string" && (value === APP_LINK || value.startsWith(`${APP_LINK}?`) || value.startsWith(`${APP_LINK}/?`));
 }

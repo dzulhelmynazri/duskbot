@@ -1,4 +1,4 @@
-// the duskbot link agent on a person's vps. the install script runs it as:
+// the madanibot link agent on a person's vps. the install script runs it as:
 //   node agent.mjs probe    (root)  can the link service reach this server directly on port 80? exit 0 yes, 3 no
 //   node agent.mjs link     (omb-link)  mint a pairing code, seal it for the app, report the result, write tunnel.json
 //   node agent.mjs tunnel   (omb-link)  the steady-state relay: requests from the app, sealed end to end, to 127.0.0.1:8799
@@ -35,14 +35,14 @@ const OLD_CONFIG = "openmausbot-link";
 for (const key of Object.keys(process.env)) {
   const prefix = OLD_ENV.find((p) => key.toUpperCase().startsWith(p));
   if (!prefix) continue;
-  if (process.env[`DUSK_${key.slice(prefix.length)}`] === undefined) process.env[`DUSK_${key.slice(prefix.length)}`] = process.env[key];
+  if (process.env[`MADANI_${key.slice(prefix.length)}`] === undefined) process.env[`MADANI_${key.slice(prefix.length)}`] = process.env[key];
   delete process.env[key];
 }
-const isOwnHeader = (lower) => lower.startsWith("x-dusk-") || lower.startsWith(OLD_HEADER);
+const isOwnHeader = (lower) => lower.startsWith("x-madani-") || lower.startsWith(OLD_HEADER);
 const withLegacyHeaders = (headers) => Object.fromEntries(Object.entries(headers).flatMap(([key, value]) =>
-  key.startsWith("x-dusk-") ? [[key, value], [OLD_HEADER + key.slice(7), value]] : [[key, value]]));
-const fromLegacyPath = (path) => path === OLD_WELL_KNOWN || path.startsWith(`${OLD_WELL_KNOWN}/`) ? `/.well-known/duskbot${path.slice(OLD_WELL_KNOWN.length)}` : path;
-const toLegacyPath = (path) => path.startsWith("/.well-known/duskbot") ? OLD_WELL_KNOWN + path.slice("/.well-known/duskbot".length) : path;
+  key.startsWith("x-madani-") ? [[key, value], [OLD_HEADER + key.slice(7), value]] : [[key, value]]));
+const fromLegacyPath = (path) => path === OLD_WELL_KNOWN || path.startsWith(`${OLD_WELL_KNOWN}/`) ? `/.well-known/madanibot${path.slice(OLD_WELL_KNOWN.length)}` : path;
+const toLegacyPath = (path) => path.startsWith("/.well-known/madanibot") ? OLD_WELL_KNOWN + path.slice("/.well-known/madanibot".length) : path;
 
 export const SERVER = { host: "127.0.0.1", port: Number(process.env.LINK_SERVER_PORT) || 8799 };
 /**
@@ -937,14 +937,14 @@ export function wsDuplex(socket, { client, head = null, onText = null, heartbeat
 
 /** an install from before the rename keeps its folder until the installer runs again and moves it */
 const configDir = () => {
-  const next = join(homedir(), ".config", "duskbot-link"), old = join(homedir(), ".config", OLD_CONFIG);
+  const next = join(homedir(), ".config", "madanibot-link"), old = join(homedir(), ".config", OLD_CONFIG);
   return !existsSync(next) && existsSync(old) ? old : next;
 };
 const tunnelFile = () => join(configDir(), "tunnel.json");
 // on an install where this agent has its own account, its unit names a hand-off folder for these two: a root unit takes
 // them from there to the server (the token into its environment, the sign-in into its engine home)
-const enginesFile = () => process.env.DUSK_LINK_ENGINES_FILE || join(homedir(), ".config", "duskbot", "engines.env");
-const codexAuthFile = () => process.env.DUSK_LINK_CODEX_AUTH_FILE || join(process.env.CODEX_HOME || join(homedir(), ".codex"), "auth.json");
+const enginesFile = () => process.env.MADANI_LINK_ENGINES_FILE || join(homedir(), ".config", "madanibot", "engines.env");
+const codexAuthFile = () => process.env.MADANI_LINK_CODEX_AUTH_FILE || join(process.env.CODEX_HOME || join(homedir(), ".codex"), "auth.json");
 
 function writePrivate(path, text) {
   mkdirSync(dirname(path), { recursive: true, mode: 0o700 });
@@ -987,7 +987,7 @@ async function local(method, path, body) {
 function localOnce(method, path, body) {
   return new Promise((resolve, reject) => {
     const payload = body === undefined ? null : Buffer.from(JSON.stringify(body));
-    const req = httpRequest({ ...SERVER, method, path, headers: withLegacyHeaders({ accept: "application/json", "x-dusk-cli": "1", ...(payload ? { "content-type": "application/json", "content-length": String(payload.length) } : {}) }), timeout: 15_000 }, (res) => {
+    const req = httpRequest({ ...SERVER, method, path, headers: withLegacyHeaders({ accept: "application/json", "x-madani-cli": "1", ...(payload ? { "content-type": "application/json", "content-length": String(payload.length) } : {}) }), timeout: 15_000 }, (res) => {
       const chunks = [];
       res.on("data", (chunk) => chunks.push(chunk));
       res.on("end", () => {
@@ -996,7 +996,7 @@ function localOnce(method, path, body) {
         resolve({ status: res.statusCode ?? 0, body: parsed });
       });
     });
-    req.on("timeout", () => req.destroy(new Error("The dusk bot server here did not answer")));
+    req.on("timeout", () => req.destroy(new Error("The madani bot server here did not answer")));
     req.on("error", reject);
     req.end(payload ?? undefined);
   });
@@ -1021,7 +1021,7 @@ export function spkiOf(host, port = 443, tlsOptions = {}) {
 
 const ADDRESS_HOST = /^(?=.{4,253}$)(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z][a-z0-9-]{0,61}[a-z0-9]$/;
 const ADDRESS_VIAS = new Set(["relay", "ssh", "direct", "domain", "tailscale", "cloudflare"]);
-export const addressFile = () => process.env.DUSK_LINK_ADDRESS_FILE || "/etc/duskbot-address.json";
+export const addressFile = () => process.env.MADANI_LINK_ADDRESS_FILE || "/etc/madanibot-address.json";
 
 /** a quick tunnel's current name, from cloudflared's own metrics on this machine */
 export async function quickTunnelHost(url, fetchImpl = fetch) {
@@ -1083,10 +1083,10 @@ async function link() {
   if (claimed.status !== 200) throw new Error(claimed.body?.error ?? `the link service answered ${claimed.status}`);
   const appPub = claimed.body.appPub;
   const [pairing, environment] = await Promise.all([
-    local("POST", "/api/auth/pairing", { label: claimed.body.label || "dusk bot app" }),
-    local("GET", "/.well-known/duskbot/environment"),
+    local("POST", "/api/auth/pairing", { label: claimed.body.label || "madani bot app" }),
+    local("GET", "/.well-known/madanibot/environment"),
   ]);
-  if (pairing.status !== 200 || typeof pairing.body?.code !== "string") throw new Error(`The dusk bot server here would not make a pairing code (${pairing.status})`);
+  if (pairing.status !== 200 || typeof pairing.body?.code !== "string") throw new Error(`The madani bot server here would not make a pairing code (${pairing.status})`);
   const via = ADDRESS_VIAS.has(process.env.LINK_VIA ?? "") ? process.env.LINK_VIA : mode;
   const origin = mode === "direct" ? `https://${env("LINK_HOST")}` : null;
   // tailscale and cloudflare hold their own certificates and change their keys, so those addresses go unpinned
@@ -1218,31 +1218,31 @@ export function publicAddress({ servers = STUN, timeoutMs = 2500 } = {}) {
 }
 
 async function directKey(data, context) {
-  if (process.env.DUSK_LINK_DIRECT === "off") throw new Error("direct links are off on this server");
+  if (process.env.MADANI_LINK_DIRECT === "off") throw new Error("direct links are off on this server");
   const line = directKeyLine({ pub: data?.pub, id: context.id });
   const keys = hostKeys();
   if (!keys.length) throw new Error("this server's ssh keys could not be read");
-  const host = process.env.DUSK_LINK_DIRECT_HOST || await publicAddress();
-  const port = Number(process.env.DUSK_LINK_DIRECT_PORT) || 22;
+  const host = process.env.MADANI_LINK_DIRECT_HOST || await publicAddress();
+  const port = Number(process.env.MADANI_LINK_DIRECT_PORT) || 22;
   setDirectKey(context.id, line);
   return { v: 1, host, port, user: userInfo().username, hostKeys: keys };
 }
 
 /**
- * the address of this server's direct path over https: DUSK_LINK_WSS_URL when its operator put the agent's websocket
- * behind their own https (any reverse proxy to 127.0.0.1:DUSK_LINK_WSS_PORT), else the https address this install set up
+ * the address of this server's direct path over https: MADANI_LINK_WSS_URL when its operator put the agent's websocket
+ * behind their own https (any reverse proxy to 127.0.0.1:MADANI_LINK_WSS_PORT), else the https address this install set up
  */
 export function wssUrl({ origin = null } = {}, env = process.env) {
-  const given = env.DUSK_LINK_WSS_URL?.trim();
+  const given = env.MADANI_LINK_WSS_URL?.trim();
   if (given) {
-    if (!/^wss:\/\/[a-z0-9.-]+(:\d{1,5})?\/[A-Za-z0-9._~/-]*$/i.test(given)) throw new Error("DUSK_LINK_WSS_URL is not a wss:// address");
+    if (!/^wss:\/\/[a-z0-9.-]+(:\d{1,5})?\/[A-Za-z0-9._~/-]*$/i.test(given)) throw new Error("MADANI_LINK_WSS_URL is not a wss:// address");
     return given;
   }
   return typeof origin === "string" && /^https:\/\/[a-z0-9.-]+$/i.test(origin) ? `wss://${new URL(origin).host}${WS_PATH}` : null;
 }
 
 async function directWss(context, readSpki = spkiOf) {
-  if (process.env.DUSK_LINK_DIRECT === "off") throw new Error("direct links are off on this server");
+  if (process.env.MADANI_LINK_DIRECT === "off") throw new Error("direct links are off on this server");
   const url = wssUrl(context);
   if (!url) throw new Error("this server has no https address for a direct link");
   const target = new URL(url);
@@ -1315,7 +1315,7 @@ let backupTunnel = null;
 
 // ---- the direct path over webrtc: electron/vps-link-rtc.mjs is the app's end ----
 // ---- shared with electron/vps-link-rtc.mjs (keep both in step; a test checks they interoperate) ----
-export const RTC_LABEL = "dusk-link";
+export const RTC_LABEL = "madani-link";
 export const RTC_PIECE = 64 * 1024;
 const RTC_HIGH = 4 * 1024 * 1024;
 const RTC_LOW = 1024 * 1024;
@@ -1349,10 +1349,10 @@ export function channelDuplex(dc) {
 }
 // ---- end of the shared part ----
 
-/** node-datachannel the installer put beside this file (/opt/duskbot-link/node_modules), or the one this agent fetched
+/** node-datachannel the installer put beside this file (/opt/madanibot-link/node_modules), or the one this agent fetched
  * into its own folder (ensureRtc); null when neither is there */
 let rtcLoaded;
-export function rtcLibrary(dirs = [process.env.DUSK_LINK_NDC_DIR, dirname(fileURLToPath(import.meta.url)), configDir()].filter(Boolean)) {
+export function rtcLibrary(dirs = [process.env.MADANI_LINK_NDC_DIR, dirname(fileURLToPath(import.meta.url)), configDir()].filter(Boolean)) {
   if (rtcLoaded !== undefined) return rtcLoaded;
   rtcLoaded = null;
   for (const dir of dirs) {
@@ -1371,10 +1371,10 @@ let rtcFetching = null, rtcTriedAt = 0;
 /**
  * a server installed before webrtc, or whose install could not add it, gets node-datachannel here: npm puts the pinned
  * version (its registry integrity checked) into this agent's own folder, at most once every 6 hours, in the background.
- * best effort: without it the link keeps ssh, https and the relays. DUSK_LINK_RTC_FETCH=off leaves it alone
+ * best effort: without it the link keeps ssh, https and the relays. MADANI_LINK_RTC_FETCH=off leaves it alone
  */
 export function ensureRtc({ dir = configDir(), run = spawn, now = Date.now, log = (line) => console.error(line), has = () => Boolean(rtcLibrary()) } = {}) {
-  if (has() || rtcFetching || process.env.DUSK_LINK_RTC_FETCH === "off" || process.env.DUSK_LINK_DIRECT === "off") return rtcFetching;
+  if (has() || rtcFetching || process.env.MADANI_LINK_RTC_FETCH === "off" || process.env.MADANI_LINK_DIRECT === "off") return rtcFetching;
   if (rtcTriedAt && now() - rtcTriedAt < RTC_RETRY_MS) return null;
   rtcTriedAt = now();
   const npm = existsSync(join(dirname(process.execPath), "npm")) ? join(dirname(process.execPath), "npm") : "npm";
@@ -1403,11 +1403,11 @@ export const rtcOffer = (value) => (value?.type === "offer" && typeof value.sdp 
   && /^a=fingerprint:sha-256 [0-9A-F:]{95}\r?$/im.test(value.sdp) && /^m=application /m.test(value.sdp) && !/^m=(?:audio|video) /m.test(value.sdp) ? value.sdp : null);
 
 /** answers the app's offer; the channel, once open, is one more direct session of the tunnel's hub (sealed frames only) */
-/** the stun servers webrtc asks for this server's public address; DUSK_LINK_STUN (stun:host:port,...) replaces them */
-export const rtcStun = (env = process.env) => (env.DUSK_LINK_STUN ? env.DUSK_LINK_STUN.split(",").map((item) => item.trim()).filter((item) => /^stun:[^\s,]+$/.test(item)) : ["stun:stun.cloudflare.com:3478", "stun:stun.l.google.com:19302"]);
+/** the stun servers webrtc asks for this server's public address; MADANI_LINK_STUN (stun:host:port,...) replaces them */
+export const rtcStun = (env = process.env) => (env.MADANI_LINK_STUN ? env.MADANI_LINK_STUN.split(",").map((item) => item.trim()).filter((item) => /^stun:[^\s,]+$/.test(item)) : ["stun:stun.cloudflare.com:3478", "stun:stun.l.google.com:19302"]);
 
 export async function directRtc(data, context, lib = rtcLibrary()) {
-  if (process.env.DUSK_LINK_DIRECT === "off") throw new Error("direct links are off on this server");
+  if (process.env.MADANI_LINK_DIRECT === "off") throw new Error("direct links are off on this server");
   if (!lib) {
     void ensureRtc();
     throw new Error("webrtc is not installed on this server");
@@ -1416,8 +1416,8 @@ export async function directRtc(data, context, lib = rtcLibrary()) {
   if (!sdp) throw new Error("that is not a link offer");
   if (!context.hub) throw new Error("no tunnel here");
   if (rtcPeers >= RTC_MAX) throw new Error("too many webrtc links");
-  const range = /^(\d{4,5})-(\d{4,5})$/.exec(process.env.DUSK_SCREEN_DIRECT_PORTS ?? "");
-  const pc = new lib.PeerConnection("dusk-link", { iceServers: rtcStun(), maxMessageSize: 256 * 1024,
+  const range = /^(\d{4,5})-(\d{4,5})$/.exec(process.env.MADANI_SCREEN_DIRECT_PORTS ?? "");
+  const pc = new lib.PeerConnection("madani-link", { iceServers: rtcStun(), maxMessageSize: 256 * 1024,
     ...(range ? { portRangeBegin: Number(range[1]), portRangeEnd: Number(range[2]) } : {}) });
   rtcPeers += 1;
   let ended = false, accepted = false;
@@ -1455,7 +1455,7 @@ export async function directRtc(data, context, lib = rtcLibrary()) {
 }
 
 /** the server's version and link protocol, from its public descriptor; a server from before it counts as protocol 1 */
-export async function serverLink(read = () => local("GET", "/.well-known/duskbot/environment")) {
+export async function serverLink(read = () => local("GET", "/.well-known/madanibot/environment")) {
   try {
     const answer = await read();
     if (answer.status !== 200 || !answer.body || typeof answer.body !== "object") return null;
@@ -1488,8 +1488,8 @@ export async function control(op, data, context = {}) {
   if (op === "direct-off") { if (context.id) setDirectKey(context.id, null); return { ok: true }; }
   if (op === "pair") {
     // a fresh one-time code for the app's own sign-in here, when its session lapsed (sessions end after 180 days)
-    const answer = await local("POST", "/api/auth/pairing", { label: typeof data?.label === "string" ? data.label.slice(0, 60) : "dusk bot app" });
-    if (answer.status !== 200 || typeof answer.body?.code !== "string") throw new Error("The dusk bot server here would not make a pairing code");
+    const answer = await local("POST", "/api/auth/pairing", { label: typeof data?.label === "string" ? data.label.slice(0, 60) : "madani bot app" });
+    if (answer.status !== 200 || typeof answer.body?.code !== "string") throw new Error("The madani bot server here would not make a pairing code");
     return { code: answer.body.code };
   }
   if (op === "claude-token") {
@@ -1497,7 +1497,7 @@ export async function control(op, data, context = {}) {
     if (!/^[A-Za-z0-9._~+/=-]{20,4096}$/.test(value)) throw new Error("that is not a Claude token");
     let current = "";
     try { current = readFileSync(enginesFile(), "utf8"); } catch { /* none yet */ }
-    // the path unit restarts duskbot when this file changes, so the server's engines see the token
+    // the path unit restarts madanibot when this file changes, so the server's engines see the token
     writePrivate(enginesFile(), setEnvLine(current, "CLAUDE_CODE_OAUTH_TOKEN", value));
     return { ok: true };
   }
@@ -1513,7 +1513,7 @@ export async function control(op, data, context = {}) {
     const answer = op === "freeze"
       ? await local("POST", "/api/move/freeze", typeof data?.place === "string" ? { place: data.place.slice(0, 120) } : {})
       : await local("DELETE", "/api/move/freeze", undefined);
-    if (answer.status !== 200) throw new Error(answer.body?.error ?? `The dusk bot server here answered ${answer.status}`);
+    if (answer.status !== 200) throw new Error(answer.body?.error ?? `The madani bot server here answered ${answer.status}`);
     return { ok: true };
   }
   throw new Error("unknown request");
@@ -1525,7 +1525,7 @@ export async function control(op, data, context = {}) {
  * the file the install put here (root's, read-only to this account). a staged update runs from this account's own
  * folder, launched by that file, which ssh's forced command keeps naming
  */
-export const installedAgent = () => process.env.DUSK_LINK_LAUNCHER || fileURLToPath(import.meta.url);
+export const installedAgent = () => process.env.MADANI_LINK_LAUNCHER || fileURLToPath(import.meta.url);
 const releasesDir = () => join(configDir(), "releases");
 /** ed25519 public keys (base64, raw 32 bytes) a release must be signed by; with none, the link service's tls and hash vouch, as for the install */
 export const RELEASE_KEYS = Object.freeze(["beeDw16fb1PcswmcgHOGG4Dic9r/6Vpnvbwc9+v5m6E="]);
@@ -1584,7 +1584,7 @@ function proveRelease(file, version) {
  * are pinned, and a trial run all check out; `ready.json` is written last. it applies only after UPDATE_IDLE_MS idle,
  * by ending the tunnel so systemd starts it again, and the installed file launches the staged one (launchRelease).
  */
-export function createUpdater({ base, dir = releasesDir(), current = AGENT_VERSION, protocol = LINK_PROTOCOL, keys = [...RELEASE_KEYS, ...(process.env.DUSK_LINK_RELEASE_KEYS ?? "").split(",").map((key) => key.trim()).filter(Boolean)], fetchImpl = fetch, prove = proveRelease, idle = () => false, apply = () => {}, now = Date.now, log = () => {}, everyMs = UPDATE_EVERY_MS, firstMs = UPDATE_FIRST_MS }) {
+export function createUpdater({ base, dir = releasesDir(), current = AGENT_VERSION, protocol = LINK_PROTOCOL, keys = [...RELEASE_KEYS, ...(process.env.MADANI_LINK_RELEASE_KEYS ?? "").split(",").map((key) => key.trim()).filter(Boolean)], fetchImpl = fetch, prove = proveRelease, idle = () => false, apply = () => {}, now = Date.now, log = () => {}, everyMs = UPDATE_EVERY_MS, firstMs = UPDATE_FIRST_MS }) {
   let staged = null, checkedAt = null, error = null, timer = null, checking = null, applying = false;
   try {
     const ready = JSON.parse(readFileSync(join(dir, "ready.json"), "utf8"));
@@ -1679,11 +1679,11 @@ export function serverReleaseSigned(signature, sha256, keys = SERVER_RELEASE_KEY
 
 /**
  * stages the server build the link service hands out for root's updater (install.sh --update-server, run by
- * duskbot-server-update.timer): `<sha256>.tgz` once it matches its hash and, when signed, a pinned key; `ready.json`
+ * madanibot-server-update.timer): `<sha256>.tgz` once it matches its hash and, when signed, a pinned key; `ready.json`
  * last. it never installs anything: the server is root's, and root's updater takes signed builds only, so an unsigned
  * offer or a bad signature is never downloaded
  */
-export function createServerUpdater({ base, id, token, dir = serverReleaseDir(), keys = [...SERVER_RELEASE_KEYS, ...(process.env.DUSK_RELEASE_PUBLIC_KEYS ?? "").split(",").map((key) => key.trim()).filter(Boolean)], fetchImpl = fetch, current = async () => (await serverLink())?.version ?? null, now = Date.now, log = () => {}, everyMs = SERVER_UPDATE_EVERY_MS, firstMs = SERVER_UPDATE_FIRST_MS, jitterMs = SERVER_UPDATE_JITTER_MS, random = Math.random }) {
+export function createServerUpdater({ base, id, token, dir = serverReleaseDir(), keys = [...SERVER_RELEASE_KEYS, ...(process.env.MADANI_RELEASE_PUBLIC_KEYS ?? "").split(",").map((key) => key.trim()).filter(Boolean)], fetchImpl = fetch, current = async () => (await serverLink())?.version ?? null, now = Date.now, log = () => {}, everyMs = SERVER_UPDATE_EVERY_MS, firstMs = SERVER_UPDATE_FIRST_MS, jitterMs = SERVER_UPDATE_JITTER_MS, random = Math.random }) {
   let checking = null, timer = null, last = { checkedAt: null, staged: null, error: null }, said = null;
   const auth = { authorization: `Bearer ${token}` };
   // what a check found, once each time it changes: an hourly "nothing new" line would bury the journal
@@ -1703,7 +1703,7 @@ export function createServerUpdater({ base, id, token, dir = serverReleaseDir(),
 
   async function stage() {
     const running = await current().catch(() => null);
-    const answer = await fetchImpl(`${base}/v1/tunnels/${id}/server`, { headers: { ...auth, "x-dusk-agent-version": AGENT_VERSION, ...(running ? { "x-dusk-server-version": String(running) } : {}) }, signal: AbortSignal.timeout(30_000) });
+    const answer = await fetchImpl(`${base}/v1/tunnels/${id}/server`, { headers: { ...auth, "x-madani-agent-version": AGENT_VERSION, ...(running ? { "x-madani-server-version": String(running) } : {}) }, signal: AbortSignal.timeout(30_000) });
     if (answer.status === 404) {
       const code = await answer.json().then((body) => body?.code, () => null);
       tell(code === "paused" ? "link: server updates are paused on the link service; the server stays as it is" : "link: no server build is published on the link service (it answered 404); the server stays as it is");
@@ -1783,7 +1783,7 @@ export function launchRelease(release, { dir = releasesDir(), argv = ["tunnel"],
   const trial = { ...release.trial, starts: (release.trial.starts ?? 0) + (release.trial.good ? 0 : 1) };
   writePrivate(join(dir, "trial.json"), JSON.stringify(trial));
   log(`link: running agent ${release.version}`);
-  const child = spawn(process.execPath, [release.file, ...argv], { stdio: "inherit", env: { ...process.env, DUSK_LINK_LAUNCHER: installedAgent() } });
+  const child = spawn(process.execPath, [release.file, ...argv], { stdio: "inherit", env: { ...process.env, MADANI_LINK_LAUNCHER: installedAgent() } });
   const healthy = setTimeout(() => { if (!trial.good) writePrivate(join(dir, "trial.json"), JSON.stringify({ ...trial, good: true })); }, TRIAL_GOOD_MS);
   for (const signal of ["SIGINT", "SIGTERM"]) process.on(signal, () => child.kill(signal));
   return new Promise((resolve) => {
@@ -2118,7 +2118,7 @@ export function createEgressProxy({
 // ---- end egress ----
 
 /**
- * what the app's frames ask of this server, over either path: requests and websockets to Dusk Bot, control ops to this
+ * what the app's frames ask of this server, over either path: requests and websockets to Madani Bot, control ops to this
  * agent. `sink` takes the replies: push(frame), bytes(r, chunk) (false: pause), onDrain(resume), discard(r).
  */
 /** a stream's sender says how many bytes it sent so far after this many more, or this long, so a gap shows */
@@ -2204,7 +2204,7 @@ export function createServing({ server = SERVER, sink, stopped = () => false, co
       const out = {};
       for (const [name, value] of Object.entries(res.headers)) if (!HOP.has(name)) out[name] = value;
       // the length travels apart (content-length is per hop): the app needs it to pick a broken download up again
-      if (/^\d+$/.test(String(res.headers["content-length"] ?? ""))) out["x-dusk-length"] = res.headers["content-length"];
+      if (/^\d+$/.test(String(res.headers["content-length"] ?? ""))) out["x-madani-length"] = res.headers["content-length"];
       // `since`: when this process started, so a phone sees the agent restarted and ends what went through the one before
       emit({ t: "head", r: frame.r, status: res.statusCode ?? 502, headers: out, ...(since ? { since } : {}) });
       res.on("data", (chunk) => {
@@ -2217,7 +2217,7 @@ export function createServing({ server = SERVER, sink, stopped = () => false, co
       res.on("end", () => { if (pending.delete(frame.r)) emit(endOf(frame.r)); else sent.delete(frame.r); });
       res.on("error", () => { sent.delete(frame.r); if (pending.delete(frame.r)) emit({ t: "err", r: frame.r, message: "reply cut off" }); });
     }); } catch { emit({ t: "err", r: frame.r, message: "That request could not be sent." }); return; }
-    req.on("error", () => { if (pending.delete(frame.r)) emit({ t: "err", r: frame.r, message: "The dusk bot server did not answer" }); });
+    req.on("error", () => { if (pending.delete(frame.r)) emit({ t: "err", r: frame.r, message: "The madani bot server did not answer" }); });
     // bytes the app sent before the handshake was answered wait for the socket
     const early = [];
     let earlyBytes = 0;
@@ -2431,7 +2431,7 @@ export function createTunnelAgent({ base, id, key: keyText, token, origin = null
 export function harnessSync(server = SERVER) {
   return ({ base, tunnel, pub, origin = null, spki = null, applied, failed, wait, signal }) => new Promise((resolve, reject) => {
     const payload = Buffer.from(JSON.stringify({ base, tunnel, pub, origin, spki, applied, failed, wait }));
-    const req = httpRequest({ ...server, method: "POST", path: "/api/mobile/relay/sync", headers: withLegacyHeaders({ "x-dusk-cli": "1", "content-type": "application/json", "content-length": String(payload.length) }), signal: AbortSignal.any([...(signal ? [signal] : []), AbortSignal.timeout((wait + 15) * 1000)]) }, (res) => {
+    const req = httpRequest({ ...server, method: "POST", path: "/api/mobile/relay/sync", headers: withLegacyHeaders({ "x-madani-cli": "1", "content-type": "application/json", "content-length": String(payload.length) }), signal: AbortSignal.any([...(signal ? [signal] : []), AbortSignal.timeout((wait + 15) * 1000)]) }, (res) => {
       const chunks = [];
       res.on("data", (chunk) => chunks.push(chunk));
       res.on("error", reject);
@@ -2544,7 +2544,7 @@ export function createPhoneHub({ base, id, token, keys, server = SERVER, sync = 
     const outbox = createOutbox({ seal: (r, bytes) => sealBytes(key, cid, "to-app", r, bytes), post, delayMs: () => (fetchImpl.multiplexed?.() ? 0 : H1_POST_DELAY_MS), signal: closed.signal, parallel: () => (ordered ? fetchImpl.postsInFlight?.() ?? POSTS_IN_FLIGHT : 1), onError: () => { if (channels.get(cid) === channel) drop(cid); } });
     channel.limits = { controls: false, since: startedAt,
       forwardedFor: `198.51.100.${1 + (createHash("sha256").update(cid).digest()[0] % 254)}`,
-      allow: channel.kind === "grant" ? (method, path) => (method === "POST" && path === "/api/mobile/redeem") || (method === "GET" && ["/.well-known/duskbot/environment", "/api/health"].includes(fromLegacyPath(path))) : null };
+      allow: channel.kind === "grant" ? (method, path) => (method === "POST" && path === "/api/mobile/redeem") || (method === "GET" && ["/.well-known/madanibot/environment", "/api/health"].includes(fromLegacyPath(path))) : null };
     channel.emit = (frame) => { if (!closed.signal.aborted) outbox.push(sealFrame(key, cid, "to-app", frame), frame.r); };
     channel.serving = createServing({ server, stopped: () => closed.signal.aborted, ...channel.limits,
       sink: { push: channel.emit, bytes: outbox.bytes, onDrain: outbox.onDrain, discard: outbox.discard },
@@ -2778,10 +2778,10 @@ export function createDirectHub({ id, key, server = SERVER, guard, egress = null
   };
 }
 
-/** the cloud relay (apps/cloudflare/link-relay): DUSK_RELAY_URL moves it, `off` turns it off */
-export const CLOUD_RELAY_URL = "https://relay.dusk.bot";
+/** the cloud relay (apps/cloudflare/link-relay): MADANI_RELAY_URL moves it, `off` turns it off */
+export const CLOUD_RELAY_URL = "https://relay.madani.bot";
 export function cloudRelayUrl(env = process.env) {
-  const value = (env.DUSK_RELAY_URL ?? "").trim();
+  const value = (env.MADANI_RELAY_URL ?? "").trim();
   if (value === "off") return null;
   try {
     const url = new URL(value || CLOUD_RELAY_URL);
@@ -2789,7 +2789,7 @@ export function cloudRelayUrl(env = process.env) {
   } catch { return null; }
 }
 /** the relay's bearer for a tunnel, from the tunnel key both ends hold: the relay keeps only its sha256 */
-export const relayTokenOf = (key, id) => createHmac("sha256", Buffer.from(key, "base64url")).update(`dusk-relay-v1|${id}`).digest("base64url");
+export const relayTokenOf = (key, id) => createHmac("sha256", Buffer.from(key, "base64url")).update(`madani-relay-v1|${id}`).digest("base64url");
 export const RELAY_HEARTBEAT_MS = 25_000;
 const RELAY_BACKOFF_MS = [1000, 2000, 5000, 15_000, 30_000, 60_000, 120_000];
 /** the relay does not know this tunnel yet (the app registers it): asked again this often */
@@ -2918,11 +2918,11 @@ export async function listenDirectSocket(hub, file = directSocketPath(), log = (
 }
 
 /**
- * the direct path over https: a websocket on loopback (DUSK_LINK_WSS_PORT, 8797) that this server's https front passes
+ * the direct path over https: a websocket on loopback (MADANI_LINK_WSS_PORT, 8797) that this server's https front passes
  * WS_PATH to (caddy in a direct install, or an operator's own reverse proxy). anyone may connect; only frames sealed
  * with the tunnel key are ever opened, as on every other path. null when the port is taken
  */
-export async function listenDirectWss(hub, { host = "127.0.0.1", port = Number(process.env.DUSK_LINK_WSS_PORT) || 8797, log = (line) => console.error(line) } = {}) {
+export async function listenDirectWss(hub, { host = "127.0.0.1", port = Number(process.env.MADANI_LINK_WSS_PORT) || 8797, log = (line) => console.error(line) } = {}) {
   const refuse = (socket) => socket.end("HTTP/1.1 404 Not Found\r\ncontent-length: 0\r\nconnection: close\r\n\r\n");
   const listening = createServer((_req, res) => { res.writeHead(404, { "content-type": "text/plain" }); res.end("not found"); });
   listening.on("upgrade", (req, socket, head) => {
@@ -3075,11 +3075,11 @@ async function stillLinked({ base, id, token, fetchImpl = fetch }) {
 async function tunnel() {
   let saved;
   try { saved = JSON.parse(readFileSync(tunnelFile(), "utf8")); } catch { console.error("link: not linked yet; nothing to do"); return 0; }
-  // the installed file hands over to a newer staged release; a staged release (DUSK_LINK_LAUNCHER set) never looks further
+  // the installed file hands over to a newer staged release; a staged release (MADANI_LINK_LAUNCHER set) never looks further
   // self-update runs downloaded code as this agent, so it waits for a pinned release key
-  const releaseKeys = [...RELEASE_KEYS, ...(process.env.DUSK_LINK_RELEASE_KEYS ?? "").split(",").map((key) => key.trim()).filter(Boolean)];
-  const updates = process.env.DUSK_LINK_UPDATES !== "off" && releaseKeys.length > 0;
-  if (updates && !process.env.DUSK_LINK_LAUNCHER) {
+  const releaseKeys = [...RELEASE_KEYS, ...(process.env.MADANI_LINK_RELEASE_KEYS ?? "").split(",").map((key) => key.trim()).filter(Boolean)];
+  const updates = process.env.MADANI_LINK_UPDATES !== "off" && releaseKeys.length > 0;
+  if (updates && !process.env.MADANI_LINK_LAUNCHER) {
     const release = stagedRelease({ log: (line) => console.error(line) });
     if (release) return launchRelease(release);
   }
@@ -3089,7 +3089,7 @@ async function tunnel() {
   let cache = null;
   try { cache = JSON.parse(readFileSync(nodesFile(), "utf8")); } catch {}
   const known = Array.isArray(cache?.nodes) ? cache.nodes : [];
-  const placed = process.env.DUSK_LINK_NODES === "off" ? null : await placeTunnel({ base: saved.base, id: saved.id, token: saved.token, known, log: (line) => console.error(line) });
+  const placed = process.env.MADANI_LINK_NODES === "off" ? null : await placeTunnel({ base: saved.base, id: saved.id, token: saved.token, known, log: (line) => console.error(line) });
   if (placed?.url) { try { writePrivate(nodesFile(), JSON.stringify({ v: 1, home: placed.url, nodes: placed.nodes })); } catch {} }
   const home = placed?.url ?? (origin(cache?.home) && known.some((node) => node.url === cache.home) ? cache.home : saved.base);
   const nodesKnown = placed?.nodes ?? known;
@@ -3097,7 +3097,7 @@ async function tunnel() {
   const agent = createTunnelAgent({ ...saved, base: home, ...(updates ? { update: { base: saved.base } } : {}), othersUsedAt: () => phoneRun?.usedAt() ?? 0, egress: {
     report: async (state) => { const answer = await local("POST", "/api/computer/egress/agent", state); return answer.status === 200 ? answer.body : null; },
   } });
-  if (process.env.DUSK_LINK_PHONES !== "off") {
+  if (process.env.MADANI_LINK_PHONES !== "off") {
     const file = join(configDir(), "phone-keys.json");
     let keys = null;
     try { keys = JSON.parse(readFileSync(file, "utf8")); }
@@ -3109,13 +3109,13 @@ async function tunnel() {
     if (keys && (typeof keys.pub !== "string" || typeof keys.priv !== "string")) { console.error("link: phone keys are not valid; phones are off"); keys = null; }
     if (keys) phoneHub = () => createPhoneHub({ base: home, id: saved.id, token: saved.token, keys, origin: saved.mode === "direct" ? saved.origin : null, spki: null, where: currentAddress, sync: harnessSync(SERVER) });
   }
-  const serverUpdates = process.env.DUSK_LINK_SERVER_UPDATES === "off" ? null : createServerUpdater({ base: saved.base, id: saved.id, token: saved.token, log: (line) => console.error(line) });
+  const serverUpdates = process.env.MADANI_LINK_SERVER_UPDATES === "off" ? null : createServerUpdater({ base: saved.base, id: saved.id, token: saved.token, log: (line) => console.error(line) });
   serverUpdates?.start();
-  const [directSocket, directWs] = await Promise.all([listenDirectSocket(agent.direct), process.env.DUSK_LINK_DIRECT === "off" ? null : listenDirectWss(agent.direct)]);
+  const [directSocket, directWs] = await Promise.all([listenDirectSocket(agent.direct), process.env.MADANI_LINK_DIRECT === "off" ? null : listenDirectWss(agent.direct)]);
   // a server from before webrtc fetches node-datachannel for the app's link a minute after start (best effort)
   setTimeout(() => void ensureRtc(), 60_000).unref();
-  // the cloudflare backup path to the direct listener, whatever way this server was linked (DUSK_LINK_BACKUP=off: none)
-  backupTunnel = directWs && process.env.DUSK_LINK_BACKUP !== "off" ? createBackupTunnel({ wssPort: Number(process.env.DUSK_LINK_WSS_PORT) || 8797, log: (line) => console.error(line) }) : null;
+  // the cloudflare backup path to the direct listener, whatever way this server was linked (MADANI_LINK_BACKUP=off: none)
+  backupTunnel = directWs && process.env.MADANI_LINK_BACKUP !== "off" ? createBackupTunnel({ wssPort: Number(process.env.MADANI_LINK_WSS_PORT) || 8797, log: (line) => console.error(line) }) : null;
   backupTunnel?.start();
   process.on("exit", () => backupTunnel?.stop());
   // the sealed address in the directory carries the backup too, so an app whose relay path fails still finds it

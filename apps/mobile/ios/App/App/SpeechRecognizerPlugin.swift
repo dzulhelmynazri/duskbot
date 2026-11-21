@@ -9,7 +9,7 @@ import UIKit
 @objc(SpeechRecognizerPlugin)
 public class SpeechRecognizerPlugin: CAPPlugin, CAPBridgedPlugin {
     public let identifier = "SpeechRecognizerPlugin"
-    public let jsName = "DuskSpeech"
+    public let jsName = "MadaniSpeech"
     public let pluginMethods: [CAPPluginMethod] = [
         CAPPluginMethod(name: "checkPermissions", returnType: CAPPluginReturnPromise),
         CAPPluginMethod(name: "requestPermissions", returnType: CAPPluginReturnPromise),
@@ -201,7 +201,7 @@ public class SpeechRecognizerPlugin: CAPPlugin, CAPBridgedPlugin {
             DispatchQueue.main.async {
                 guard let self, self.active, !self.finishing, self.session == number else { return }
                 self.notifyListeners("level", data: ["level": level, "session": number])
-                NotificationCenter.default.post(name: .duskSpeechLevel, object: nil, userInfo: ["level": level])
+                NotificationCenter.default.post(name: .madaniSpeechLevel, object: nil, userInfo: ["level": level])
             }
         }
         engine.prepare()
@@ -384,5 +384,5 @@ struct SpeechTranscript {
 
 extension Notification.Name {
     /// the microphone's loudness while dictation listens, 0 to about 1, for native views that draw it
-    static let duskSpeechLevel = Notification.Name("DuskSpeechLevel")
+    static let madaniSpeechLevel = Notification.Name("MadaniSpeechLevel")
 }

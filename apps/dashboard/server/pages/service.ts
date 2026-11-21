@@ -49,7 +49,7 @@ export function createPagesService(options: {
   dataDir: string; store: ObjectStore; clouds: { get(id: string): StoredCloud | null }; unseal(v: string): string;
   publicUrl: string; pagesDomain?: string; limits?: Partial<Limits>; now?: () => number; random?: (size: number) => Buffer;
 }) {
-  const now = options.now ?? Date.now, random = options.random ?? randomBytes, pagesDomain = (options.pagesDomain ?? "page.dusk.bot").toLowerCase();
+  const now = options.now ?? Date.now, random = options.random ?? randomBytes, pagesDomain = (options.pagesDomain ?? "page.madani.bot").toLowerCase();
   if (!/^(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,63}$/.test(pagesDomain)) throw new Error("Invalid pages domain.");
   const limits = { pagesPerAccount: 50, bytes: PAGE_MAX_BYTES, files: PAGE_MAX_FILES, perHour: 120, ...options.limits };
   if (!Object.values(limits).every(value => Number.isSafeInteger(value) && value > 0) || limits.bytes > PAGE_MAX_BYTES || limits.files > PAGE_MAX_FILES) throw new Error("Invalid pages limits.");
@@ -82,7 +82,7 @@ export function createPagesService(options: {
     pagesDomain,
     mint(headers: HeadersInput, rawBody: Buffer): Response {
       cleanup();
-      const machine = header(headers, "x-dusk-cloud-machine"), timestamp = header(headers, "x-dusk-cloud-timestamp"), nonce = header(headers, "x-dusk-cloud-nonce"), signature = header(headers, "x-dusk-cloud-signature");
+      const machine = header(headers, "x-madani-cloud-machine"), timestamp = header(headers, "x-madani-cloud-timestamp"), nonce = header(headers, "x-madani-cloud-nonce"), signature = header(headers, "x-madani-cloud-signature");
       const cloud = options.clouds.get(machine), nonceKey = `${machine}:${nonce}`;
       if (header(headers, "authorization") || !cloud || ["destroyed", "destroying", "suspended", "checkout"].includes(cloud.status) || cloud.ended || cloud.suspended !== null
         || cloud.endsAt !== undefined && cloud.endsAt <= now() || cloud.destroyAt !== null && cloud.destroyAt <= now()

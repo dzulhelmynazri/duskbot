@@ -63,8 +63,8 @@ describe("transcript pages on bot and room frames", () => {
   const newestPage = Array.from({ length: 50 }, (_, i) => `message ${LONG - 50 + i}`);
 
   beforeAll(async () => {
-    home = mkdtempSync(join(tmpdir(), "dusk-thread-page-frames-"));
-    const data = join(home, ".duskbot");
+    home = mkdtempSync(join(tmpdir(), "madani-thread-page-frames-"));
+    const data = join(home, ".madanibot");
     mkdirSync(data, { recursive: true });
     // one deliberately unknown driver: no engine CLI runs, nothing answers
     writeFileSync(join(data, "config.json"), JSON.stringify({
@@ -78,7 +78,7 @@ describe("transcript pages on bot and room frames", () => {
       env: {
         ...(process.env.PATH ? { PATH: process.env.PATH } : {}),
         ...(process.env.SystemRoot ? { SystemRoot: process.env.SystemRoot } : {}),
-        HOME: home, USERPROFILE: home, DUSK_PORT: String(port), DUSK_WEBHOOK_PORT: String(port + 1),
+        HOME: home, USERPROFILE: home, MADANI_PORT: String(port), MADANI_WEBHOOK_PORT: String(port + 1),
       },
       stdio: ["ignore", "pipe", "pipe"],
     });
@@ -166,7 +166,7 @@ describe("transcript pages on bot and room frames", () => {
     let imported: any;
     const frames = await framesDuring(async () => {
       const reply = await api("POST", "/api/teams/import?mode=project", {
-        format: "dusk.team", version: 2, team: { name: "Imported", members: [
+        format: "madani.team", version: 2, team: { name: "Imported", members: [
           { key: "first", name: "Imported One", appearance: { color: "purple" } },
           { key: "second", name: "Imported Two", appearance: { color: "blue" } },
         ] },

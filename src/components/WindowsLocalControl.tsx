@@ -17,7 +17,7 @@ export function WindowsLocalControl() {
     setPending(true);
     setError(null);
     try {
-      await window.duskDesktop?.localControl?.retry();
+      await window.madaniDesktop?.localControl?.retry();
     } catch (reason) {
       setError(friendlyError(reason));
     } finally {

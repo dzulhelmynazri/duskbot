@@ -1,12 +1,12 @@
-// dusk.bot's own copy of each release's installers and mac update zips, so a GitHub outage or a network that can't
-// reach GitHub never blocks an update. scripts/mirror-release.sh puts them in DUSK_RELEASE_MIRROR/<version>/ under the
+// madani.bot's own copy of each release's installers and mac update zips, so a GitHub outage or a network that can't
+// reach GitHub never blocks an update. scripts/mirror-release.sh puts them in MADANI_RELEASE_MIRROR/<version>/ under the
 // names SHA256SUMS gives them, outside the deployed site so a deploy never drops them. the signed latest.json and
 // SHA256SUMS still vouch for every byte. a single Range is honoured: the desktop app resumes a broken download.
 import fs from 'node:fs';
 import path from 'node:path';
 import { pipeline } from 'node:stream/promises';
 
-export const MIRRORED = /^\/releases\/(\d+\.\d+\.\d+)\/(DuskBot-\1-[A-Za-z0-9_.-]+\.(?:zip|dmg|exe|deb|AppImage))$/;
+export const MIRRORED = /^\/releases\/(\d+\.\d+\.\d+)\/(MadaniBot-\1-[A-Za-z0-9_.-]+\.(?:zip|dmg|exe|deb|AppImage))$/;
 
 /** the start and end (inclusive) a Range header asks for in a file of `size` bytes; null for the whole file, false when unsatisfiable */
 export function byteRange(header, size) {
@@ -24,14 +24,14 @@ export function byteRange(header, size) {
 export const VOICE_MODEL = /^\/voice\/([0-9a-f]{64})\/([A-Za-z0-9_][A-Za-z0-9_.-]*\.(?:onnx|json|bin))$/;
 
 /** answers a mirrored release file and returns true, or returns false for any other address */
-export function serveMirrored(req, res, urlPath, root = process.env.DUSK_RELEASE_MIRROR || '/var/lib/dusk-releases') {
+export function serveMirrored(req, res, urlPath, root = process.env.MADANI_RELEASE_MIRROR || '/var/lib/madani-releases') {
   const m = MIRRORED.exec(urlPath);
   if (!m) return false;
   return serveFile(req, res, path.join(root, m[1], m[2]), m[2]);
 }
 
 /** answers a mirrored voice model file and returns true, or returns false for any other address */
-export function serveVoiceModel(req, res, urlPath, root = process.env.DUSK_VOICE_MIRROR || '/var/lib/dusk-voice') {
+export function serveVoiceModel(req, res, urlPath, root = process.env.MADANI_VOICE_MIRROR || '/var/lib/madani-voice') {
   const m = VOICE_MODEL.exec(urlPath);
   if (!m) return false;
   return serveFile(req, res, path.join(root, m[1], m[2]), m[2]);

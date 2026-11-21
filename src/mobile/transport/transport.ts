@@ -63,7 +63,7 @@ export function createSseParser(onEvent: (event: SseEvent) => void) {
 }
 
 function apiPath(path: string): boolean {
-  return path.startsWith("/api/") || path.startsWith("/.well-known/duskbot/");
+  return path.startsWith("/api/") || path.startsWith("/.well-known/madanibot/");
 }
 
 function workspaceUrl(origin: string): URL {
@@ -191,7 +191,7 @@ function srcsetPaths(value: string): Array<{ start: number; end: number; path: s
   return paths;
 }
 
-const FAILED = "data-dusk-media-failed";
+const FAILED = "data-madani-media-failed";
 
 function awaitingBlob(element: Element): boolean {
   return (element.getAttribute("src") ?? "").startsWith("/api/") || srcsetPaths(element.getAttribute("srcset") ?? "").length > 0;
@@ -252,7 +252,7 @@ function installMedia(): () => void {
     let marks = processed.get(element);
     if (!marks) { marks = new Map(); processed.set(element, marks); }
     marks.set(attribute, next);
-    element.setAttribute("data-dusk-media", "1");
+    element.setAttribute("data-madani-media", "1");
     element.setAttribute(attribute, next);
     if (element instanceof HTMLMediaElement) element.load();
     else if (element.tagName.toLowerCase() === "source" && element.parentElement instanceof HTMLMediaElement) element.parentElement.load();

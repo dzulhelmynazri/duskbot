@@ -9,7 +9,7 @@ import WebKit
 @objc(GlassChromePlugin)
 public class GlassChromePlugin: CAPPlugin, CAPBridgedPlugin {
     public let identifier = "GlassChromePlugin"
-    public let jsName = "DuskGlass"
+    public let jsName = "MadaniGlass"
     public let pluginMethods: [CAPPluginMethod] = [
         CAPPluginMethod(name: "supported", returnType: CAPPluginReturnPromise),
         CAPPluginMethod(name: "update", returnType: CAPPluginReturnNone),
@@ -132,10 +132,10 @@ public class GlassChromePlugin: CAPPlugin, CAPBridgedPlugin {
     }
 }
 
-/// Each keyboard step with the native clock in the device log, when the app's defaults have DuskKeyboardTrace
-/// (`xcrun simctl spawn booted defaults write bot.dusk.mobile DuskKeyboardTrace -bool YES`).
+/// Each keyboard step with the native clock in the device log, when the app's defaults have MadaniKeyboardTrace
+/// (`xcrun simctl spawn booted defaults write bot.madani.mobile MadaniKeyboardTrace -bool YES`).
 enum KeyboardTrace {
-    static let on = UserDefaults.standard.bool(forKey: "DuskKeyboardTrace")
+    static let on = UserDefaults.standard.bool(forKey: "MadaniKeyboardTrace")
 
     static func log(_ step: String, _ detail: [String: CGFloat]) {
         guard on else { return }

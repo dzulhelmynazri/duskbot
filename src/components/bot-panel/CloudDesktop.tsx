@@ -12,10 +12,10 @@ import { useCloudSendNotice } from "../CloudSendStrip";
 
 /** The bridges the row runs on: only in the desktop app, and only where main offers the one-time move's switch. */
 function bridges(cloudPage: boolean) {
-  const duskDesktop = typeof window === "undefined" || window.duskDesktop?.remoteClient?.active ? undefined : window.duskDesktop;
-  const send = duskDesktop?.cloudSendPage?.keepHere && duskDesktop.cloudSendPage.setKeepHere ? duskDesktop.cloudSendPage : undefined;
-  const account = cloudPage ? undefined : duskDesktop?.cloudAccount;
-  const plan = cloudPage ? duskDesktop?.cloudPlan : undefined;
+  const madaniDesktop = typeof window === "undefined" || window.madaniDesktop?.remoteClient?.active ? undefined : window.madaniDesktop;
+  const send = madaniDesktop?.cloudSendPage?.keepHere && madaniDesktop.cloudSendPage.setKeepHere ? madaniDesktop.cloudSendPage : undefined;
+  const account = cloudPage ? undefined : madaniDesktop?.cloudAccount;
+  const plan = cloudPage ? madaniDesktop?.cloudPlan : undefined;
   return send && (account || plan) ? { send, account, plan } : null;
 }
 

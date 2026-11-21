@@ -38,9 +38,9 @@ for whole jobs set up this way, with the message to send and the guard rails, se
 
 ## your computer has to be on
 
-routines run inside dusk bot. on your own computer, nothing runs while it's asleep or the app is closed. a run missed by less than 12 hours runs once when you're back; older ones are skipped.
+routines run inside madani bot. on your own computer, nothing runs while it's asleep or the app is closed. a run missed by less than 12 hours runs once when you're back; older ones are skipped.
 
-for routines that must run on time, put your bots on [dusk cloud](/docs/dusk-cloud).
+for routines that must run on time, put your bots on [madani cloud](/docs/madani-cloud).
 
 ## when a run needs you
 

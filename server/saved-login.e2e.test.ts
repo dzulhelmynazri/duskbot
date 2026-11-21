@@ -5,7 +5,7 @@ import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { expect, it } from "vitest";
 
-import { launchVerificationServer, runControlDusk } from "../scripts/control-dusk.ts";
+import { launchVerificationServer, runControlMadani } from "../scripts/control-madani.ts";
 import { removeTempDir } from "./testing/cleanup.ts";
 import { FakeLoginPage, LOGIN_FORM } from "./testing/fake-login-page.ts";
 import { freePortBlock } from "./testing/ports.ts";
@@ -53,7 +53,7 @@ async function browserFixture(url: string, cuaRecord?: string) {
   });
   await new Promise<void>((ready) => bridge.listen(port, "127.0.0.1", ready));
 
-  const tools = mkdtempSync(join(tmpdir(), "dusk-saved-login-e2e-"));
+  const tools = mkdtempSync(join(tmpdir(), "madani-saved-login-e2e-"));
   const binaryPath = join(tools, "agent-browser");
   // The stand-in agent-browser: always running, `close` and `set` do nothing, `mcp` answers get_url and eval from the
   // page, and every other command goes to the bridge.
@@ -77,7 +77,7 @@ else if (args[0] === "mcp") {
 else bridge("/engine", { args, proxy: process.env.AGENT_BROWSER_PROXY }).then((text) => { process.stdout.write(text); process.exit(0); }, () => process.exit(1));
 `, { mode: 0o755 });
 
-  const fixture = await launchVerificationServer(cuaRecord ? { DUSK_TEST_DESKTOP_CUA_CONNECTION: cuaRecord } : {}, undefined, undefined, { binaryPath, executablePath: join(tools, "chrome") }, { scripted: true });
+  const fixture = await launchVerificationServer(cuaRecord ? { MADANI_TEST_DESKTOP_CUA_CONNECTION: cuaRecord } : {}, undefined, undefined, { binaryPath, executablePath: join(tools, "chrome") }, { scripted: true });
   const base = fixture.info.url;
   const planPath = join(fixture.info.dataDir, "room-plan.json");
   const evidence = () => existsSync(`${planPath}.evidence.jsonl`)
@@ -118,7 +118,7 @@ it.skipIf(process.platform === "win32")("saves a login from the sign-in card wit
       { steps: [{ tool: "fill_login", arguments: {} }], reply: `Signed in. The password was ${PASSWORD}.` },
     ] } }));
 
-    await runControlDusk(["send", "--bot", bot.id, "--task", bot.threadId, "--text", "Download this month's invoices.", "--url", browser.base]);
+    await runControlMadani(["send", "--bot", bot.id, "--task", bot.threadId, "--text", "Download this month's invoices.", "--url", browser.base]);
     await expect.poll(() => evidence().length, { timeout: 20_000 }).toBe(1);
     const messages = async () => (await api("GET", `/api/threads/${bot.threadId}/messages`)).body.messages as any[];
     await expect.poll(async () => (await messages()).some((message) => message.kind === "signin"), { timeout: 15_000 }).toBe(true);
@@ -173,9 +173,9 @@ it.skipIf(process.platform === "win32")("fills a login saved for example.com on 
       { steps: [{ tool: "fill_login", arguments: {}, expectError: true }], reply: "The site refused it." },
     ] } }));
     const turn = async (text: string, count: number, status = "settled") => {
-      await runControlDusk(["send", "--bot", bot.id, "--task", bot.threadId, "--text", text, "--url", browser.base]);
+      await runControlMadani(["send", "--bot", bot.id, "--task", bot.threadId, "--text", text, "--url", browser.base]);
       await expect.poll(() => evidence().length, { timeout: 20_000 }).toBe(count);
-      expect(await runControlDusk(["wait", "--bot", bot.id, "--task", bot.threadId, "--timeout", "20", "--url", browser.base])).toMatchObject({ status });
+      expect(await runControlMadani(["wait", "--bot", bot.id, "--task", bot.threadId, "--timeout", "20", "--url", browser.base])).toMatchObject({ status });
     };
 
     await turn("Sign in to example.com.", 1);
@@ -194,7 +194,7 @@ it.skipIf(process.platform === "win32")("fills a login saved for example.com on 
     page.answer = () => ({ error: "Incorrect password." });
     // a clear wrong-password line removes the saved login, and a login card says so once and asks for it again
     await turn("Try www.", 3, "needs-user");
-    expect(answered(2, "fill_login")[0].content[0].text).toBe(`The site did not accept the login for ${USERNAME} on www.example.com. It said: “Incorrect password.”. Check the saved login in Settings → Logins, or call request_sign_in. The password was cleared from the page. The site said this login is wrong, so dusk bot removed it from the Vault and showed the person a login card to add it again, which says so. Do not repeat it or call fill_login again now: end your turn; dusk bot resumes you when they answer.`);
+    expect(answered(2, "fill_login")[0].content[0].text).toBe(`The site did not accept the login for ${USERNAME} on www.example.com. It said: “Incorrect password.”. Check the saved login in Settings → Logins, or call request_sign_in. The password was cleared from the page. The site said this login is wrong, so madani bot removed it from the Vault and showed the person a login card to add it again, which says so. Do not repeat it or call fill_login again now: end your turn; madani bot resumes you when they answer.`);
     expect((await api("GET", "/api/logins")).body.logins.map((login: { site: string }) => login.site)).toEqual(["alice.github.io"]);
     const cards = (await api("GET", `/api/threads/${bot.threadId}/messages`)).body.messages.filter((message: { kind: string }) => message.kind === "secret");
     expect(cards.map((card: { secret: { reason?: string } }) => card.secret.reason)).toEqual(["That example.com password didn't work, so I removed it. Add it again?"]);
@@ -210,7 +210,7 @@ it.skipIf(process.platform === "win32")("fills a login saved for example.com on 
 // Auto mounts this computer only on macOS and Windows, and the stand-in browser is a shebang script.
 it.runIf(process.platform === "darwin")("on Auto, signs in in the bot's own browser beside this computer, never on the person's screen", async () => {
   // What the desktop app hands its own server once computer control is ready; the driver itself never runs here.
-  const record = join(mkdtempSync(join(tmpdir(), "dusk-saved-login-cua-")), "cua-connection.json");
+  const record = join(mkdtempSync(join(tmpdir(), "madani-saved-login-cua-")), "cua-connection.json");
   writeFileSync(record, JSON.stringify({
     mode: "embedded", status: "ready", socketPath: join(dirname(record), "cua.sock"), mcpCommand: "/fixture/cua-driver", mcpArgs: ["mcp"], mcpEnv: {},
   }), { mode: 0o600 });
@@ -226,7 +226,7 @@ it.runIf(process.platform === "darwin")("on Auto, signs in in the bot's own brow
       { steps: [{ tool: "fill_login", arguments: {} }], reply: "Signed in." },
     ] } }));
 
-    await runControlDusk(["send", "--bot", bot.id, "--task", bot.threadId, "--text", "Sign in to example.com and get the invoices.", "--url", browser.base]);
+    await runControlMadani(["send", "--bot", bot.id, "--task", bot.threadId, "--text", "Sign in to example.com and get the invoices.", "--url", browser.base]);
     await expect.poll(() => evidence().length, { timeout: 20_000 }).toBe(1);
     const [turn] = evidence();
     expect(turn.system).toContain("Two surfaces are mounted");

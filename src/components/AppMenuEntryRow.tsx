@@ -6,7 +6,7 @@ type AppMenuEntry = { available: boolean; on: boolean };
 
 /** An AppImage's entry in this computer's app menu, which the app adds on its first run; off removes it for good. */
 export function AppMenuEntryRow() {
-  const bridge = window.duskDesktop?.appMenuEntry;
+  const bridge = window.madaniDesktop?.appMenuEntry;
   const [state, setState] = useState<AppMenuEntry | null>(null);
   const [busy, setBusy] = useState(false);
   const [failed, setFailed] = useState(false);

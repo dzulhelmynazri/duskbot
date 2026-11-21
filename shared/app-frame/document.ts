@@ -39,15 +39,15 @@ export function buildSrcdoc(input: { html: string; csp: string; botHelper?: bool
   return `${head}${base}${helper}${stripDocumentPreamble(input.html)}`;
 }
 
-/** `window.dusk` on a published page, where no chat answers it: send and setContext do nothing, open opens a tab. */
-const PUBLISHED_DUSK = "window.dusk={theme:matchMedia(\"(prefers-color-scheme: dark)\").matches?\"dark\":\"light\"," +
+/** `window.madani` on a published page, where no chat answers it: send and setContext do nothing, open opens a tab. */
+const PUBLISHED_MADANI = "window.madani={theme:matchMedia(\"(prefers-color-scheme: dark)\").matches?\"dark\":\"light\"," +
   "send:function(){return Promise.resolve()},setContext:function(){return Promise.resolve()}," +
   "open:function(u){window.open(String(u),\"_blank\",\"noopener\");return Promise.resolve()}};" +
-  `window[${JSON.stringify(LEGACY.short)}]=window.dusk;`;
+  `window[${JSON.stringify(LEGACY.short)}]=window.madani;`;
 
-/** A bot's HTML page as a published page serves it: the theme colours the chat would give it, and a quiet dusk. */
+/** A bot's HTML page as a published page serves it: the theme colours the chat would give it, and a quiet madani. */
 export function publishedBotHtml(html: string): string {
-  return `<!DOCTYPE html><style>${APP_THEME_STYLE}</style><script>${PUBLISHED_DUSK}</script>${stripDocumentPreamble(html)}`;
+  return `<!DOCTYPE html><style>${APP_THEME_STYLE}</style><script>${PUBLISHED_MADANI}</script>${stripDocumentPreamble(html)}`;
 }
 
 export const BOT_HTML_CAN: AppCan = { serverTools: false, serverResources: false, message: true, openLinks: true, modelContext: true };

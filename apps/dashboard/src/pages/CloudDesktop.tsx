@@ -24,12 +24,12 @@ import { useNow } from "../lib/now";
 import { useAccountUsage } from "../data/usage";
 import { MoveGuide } from "./cloud-card";
 
-/** no dusk cloud yet: the one pitch, then the sizes it comes in */
+/** no madani cloud yet: the one pitch, then the sizes it comes in */
 function Empty() {
   const { catalog } = useCloud();
   return (
     <div className="flex flex-col gap-4">
-      <CloudPitch title="keep your bots working" body="dusk cloud keeps your bots available, even while your mac sleeps." link={{ to: "/workspaces#add", label: "use my own server instead" }} />
+      <CloudPitch title="keep your bots working" body="madani cloud keeps your bots available, even while your mac sleeps." link={{ to: "/workspaces#add", label: "use my own server instead" }} />
       <Card className="enter" style={{ ["--i" as string]: 1 }} aria-labelledby="sizes-title">
         <SectionTitle id="sizes-title" action={<Link to="/billing" className="text-link inline-flex h-8 items-center text-13">plans and billing</Link>}>plans</SectionTitle>
         {catalog ? (
@@ -187,13 +187,13 @@ function Live({ cloud }: { cloud: CloudDesktop }) {
       {cloud.status === "error" && (
         <Card className="!py-4" aria-live="polite">
           <p className="text-14 text-bad">{cloud.error ?? "it stopped answering."}</p>
-          <p className="mt-1 text-13 text-ink-3">waking it usually fixes this. if it does not, <a href="mailto:hello@dusk.bot" className="text-link">write to us</a> and we look at it right away.</p>
+          <p className="mt-1 text-13 text-ink-3">waking it usually fixes this. if it does not, <a href="mailto:hello@madani.bot" className="text-link">write to us</a> and we look at it right away.</p>
         </Card>
       )}
       {cloud.egressLimit && (
         <Card className="!py-4" aria-live="polite">
           <p className="text-14 text-ink">{egressNotice(cloud.egressLimit)}</p>
-          <p className="mt-1 text-13 text-ink-3">chat, browsing and your apps use very little. a proxy, a file host or a big upload loop is what gets here. <a href="mailto:hello@dusk.bot" className="text-link">write to us</a> if that looks wrong.</p>
+          <p className="mt-1 text-13 text-ink-3">chat, browsing and your apps use very little. a proxy, a file host or a big upload loop is what gets here. <a href="mailto:hello@madani.bot" className="text-link">write to us</a> if that looks wrong.</p>
         </Card>
       )}
       {asleep && cloud.egressLimit?.state !== "paused" && (
@@ -231,7 +231,7 @@ export function CloudDesktopPage() {
   if (!cloud) {
     return (
       <div>
-        <PageHeader title="dusk cloud" sub="an always-on computer for your bots." />
+        <PageHeader title="madani cloud" sub="an always-on computer for your bots." />
         <Empty />
       </div>
     );
@@ -252,5 +252,5 @@ export function CloudDesktopPage() {
 /** the 1st, in utc: the day the month's limits lift */
 export function egressNotice(limit: NonNullable<CloudDesktop["egressLimit"]>): string {
   const day = new Date(limit.until), date = `${MONTH_NAMES[day.getUTCMonth()]!.toLowerCase()} ${day.getUTCDate()}`;
-  return limit.state === "paused" ? `your dusk cloud sent a lot of data this month, so it is paused until ${date}.` : `your dusk cloud sent a lot of data this month, so its connection is slowed until ${date}.`;
+  return limit.state === "paused" ? `your madani cloud sent a lot of data this month, so it is paused until ${date}.` : `your madani cloud sent a lot of data this month, so its connection is slowed until ${date}.`;
 }

@@ -7,7 +7,7 @@ import { claudeUserSkillsDir, settingsTurnFields } from "./turn-settings.ts";
 
 const dirs: string[] = [];
 const temp = () => {
-  const dir = mkdtempSync(join(tmpdir(), "dusk-turn-settings-"));
+  const dir = mkdtempSync(join(tmpdir(), "madani-turn-settings-"));
   dirs.push(dir);
   return dir;
 };

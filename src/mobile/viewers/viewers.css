@@ -38,7 +38,7 @@
   @keyframes viewer-note-in { from { opacity: 0; } }
 }
 
-.dusk-mobile .mobile-sheet { padding-inline: var(--m-safe-left) var(--m-safe-right); }
+.madani-mobile .mobile-sheet { padding-inline: var(--m-safe-left) var(--m-safe-right); }
 
 .table-viewer { touch-action: pan-x pan-y; }
 .table-viewer-edge { background: linear-gradient(to right, transparent, var(--color-app)); transition: opacity 160ms ease; }
@@ -50,10 +50,10 @@
 .table-viewer :is(th, td):first-child { position: sticky; inset-inline-start: 0; z-index: 1; font-weight: 600; }
 .table-viewer thead th:first-child { z-index: 3; }
 
-.dusk-mobile [data-table-card] [role="region"]:not([data-fit]) :is(th, td):first-child {
+.madani-mobile [data-table-card] [role="region"]:not([data-fit]) :is(th, td):first-child {
   position: sticky;
   inset-inline-start: 0;
   z-index: 1;
   background: var(--chat-card);
 }
-.dusk-mobile [data-table-card] [role="region"]:not([data-fit]) thead th:first-child { z-index: 11; }
+.madani-mobile [data-table-card] [role="region"]:not([data-fit]) thead th:first-child { z-index: 11; }

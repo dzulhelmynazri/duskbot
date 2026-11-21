@@ -16,10 +16,10 @@ export interface VpsCloudMoveBridge {
   view(): Promise<VpsCloudMoveView>;
   /** The four below need the person's click. */
   start(): Promise<VpsCloudMoveView>;
-  /** Opens the plans on dusk.bot already signed in; signed out, main opens the sign-in here first (`signingIn`) and the
-   *  checkout follows it by itself. Rejects with "Sign in to dusk cloud first." only where this app has no sign-in. */
+  /** Opens the plans on madani.bot already signed in; signed out, main opens the sign-in here first (`signingIn`) and the
+   *  checkout follows it by itself. Rejects with "Sign in to madani cloud first." only where this app has no sign-in. */
   buy(plan?: "plus" | "pro"): Promise<VpsCloudMoveView>;
-  /** What dusk cloud sells, signed in or out; absent on an older app. */
+  /** What madani cloud sells, signed in or out; absent on an older app. */
   offer?(): Promise<CloudOffer | null>;
   retry(): Promise<VpsCloudMoveView>;
   /** The sign-in a purchase waits on, opened again. */
@@ -32,10 +32,10 @@ export interface VpsCloudMoveBridge {
   onShow?(callback: () => void): () => void;
 }
 
-export const SIGN_IN_FIRST = "Sign in to dusk cloud first.";
+export const SIGN_IN_FIRST = "Sign in to madani cloud first.";
 
 export function vpsCloudMoveBridge(): VpsCloudMoveBridge | null {
-  const bridge = typeof window === "undefined" ? undefined : window.duskDesktop?.vpsCloudMove;
+  const bridge = typeof window === "undefined" ? undefined : window.madaniDesktop?.vpsCloudMove;
   return bridge ?? null;
 }
 
@@ -55,8 +55,8 @@ export function useVpsCloudMove(enabled: boolean): { bridge: VpsCloudMoveBridge 
 
 /** The plans' price: cloudAdd is the one account bridge a server's page gets. */
 export function useVpsCloudOffer(enabled: boolean): CloudOffer | null {
-  const move = enabled ? window.duskDesktop?.vpsCloudMove : undefined;
-  const add = enabled ? window.duskDesktop?.cloudAdd : undefined;
+  const move = enabled ? window.madaniDesktop?.vpsCloudMove : undefined;
+  const add = enabled ? window.madaniDesktop?.cloudAdd : undefined;
   const [offer, setOffer] = useState<CloudOffer | null>(null);
   useEffect(() => {
     let alive = true;
@@ -67,7 +67,7 @@ export function useVpsCloudOffer(enabled: boolean): CloudOffer | null {
   return offer;
 }
 
-/** the plan Get dusk cloud buys: the cheapest one on offer (Plus) */
+/** the plan Get madani cloud buys: the cheapest one on offer (Plus) */
 export function cheapestPlan(offer: CloudOffer | null): CloudOffer["plans"][number] | null {
   return offer?.plans.length ? offer.plans.reduce((low, plan) => (plan.amount < low.amount ? plan : low)) : null;
 }

@@ -15,12 +15,12 @@ afterEach(() => { for (const fn of cleanup.splice(0).reverse()) fn(); });
 const dedicatedPlan: DesktopPlan = { kind: "dedicated", placement: "dedicated", spec: { vcpu: 2, ramGb: 4, diskGb: 40 }, botComputers: null };
 const poolPlan: DesktopPlan = { kind: "shared_s", placement: "pool", spec: { vcpu: 2, ramGb: 4, diskGb: 20 }, botComputers: 1 };
 function fixture(options: { poolRam?: number; maxAttempts?: number; managed?: ManagedCloudFactory } = {}) {
-  const dataDir = mkdtempSync(join(tmpdir(), "dusk-cloud-service-")); cleanup.push(() => rmSync(dataDir, { recursive: true, force: true }));
+  const dataDir = mkdtempSync(join(tmpdir(), "madani-cloud-service-")); cleanup.push(() => rmSync(dataDir, { recursive: true, force: true }));
   let at = 1_790_000_000_000;
   const dedicated = createFakeCloudProvider(), driver = createFakePoolDriver({ hosts: [{ id: "pool1", region: "eu", domain: "pool.example.test", draining: false, capacity: { vcpu: 16, ramGb: options.poolRam ?? 32, diskGb: 200, slots: 10 } }] }), pool = createPoolProvider({ driver });
   const workspaces = { register: vi.fn(() => "workspace-1"), lastReportAt: vi.fn(() => at - 1000), remove: vi.fn() };
   const home = { healthy: vi.fn(async () => true), pair: vi.fn(async () => ({ code: "ABCD-EFGH-JKLM", expiresAt: at + 300_000 })) };
-  const deps = { dataDir, providers: { dedicated, pool }, workspaces, home, sealer: createSealer(Buffer.alloc(32, 3)), config: { adminOrigin: "https://admin.example.test", dashboardUrl: "https://dash.example.test", image: "ghcr.io/example/duskbot-cloud-home:1.2.3", maxAttempts: options.maxAttempts, poolQuota: (_kind: DesktopPlan["kind"], spec: DesktopPlan["spec"], botComputers: number | null) => ({ ...spec, netMbps: 100, pids: 1000, botComputers }) }, now: () => at };
+  const deps = { dataDir, providers: { dedicated, pool }, workspaces, home, sealer: createSealer(Buffer.alloc(32, 3)), config: { adminOrigin: "https://admin.example.test", dashboardUrl: "https://dash.example.test", image: "ghcr.io/example/madanibot-cloud-home:1.2.3", maxAttempts: options.maxAttempts, poolQuota: (_kind: DesktopPlan["kind"], spec: DesktopPlan["spec"], botComputers: number | null) => ({ ...spec, netMbps: 100, pids: 1000, botComputers }) }, now: () => at };
   const service = createCloudsService(options.managed ? { ...deps, managed: options.managed } : deps); cleanup.push(() => service.close());
   function order(plan = dedicatedPlan, accountId = "a") { return service.order({ ...plan, accountId, name: "My desktop", color: "blue", region: "eu" }); }
   async function ready(c: StoredCloud) { for (let n = 0; n < 20 && c.status === "provisioning"; n++) await service.reconcile(); expect(c.status).toBe("running"); }
@@ -107,7 +107,7 @@ it("moves a managed cloud between placements, and only a managed one", () => {
   expect(plain.service.movable?.(other.id, dedicatedPlan)).toBe(false);
   expect(() => plain.service.changePlan(other.id, dedicatedPlan)).toThrow(CloudError);
 });
-it("looks after dusk cloud machines a few at a time, so one slow step does not hold up the rest", async () => {
+it("looks after madani cloud machines a few at a time, so one slow step does not hold up the rest", async () => {
   const kinds = ["shared_s", "shared_m", "dedicated"] as const;
   let busy = 0, most = 0; const seen: string[] = [], gates: Array<() => void> = [];
   const backend = { kinds, fresh: () => ({}), retryAt: () => null, view: () => ({}), afterPass: async () => {}, resizing: () => false, close() {},
@@ -165,7 +165,7 @@ it("enforces owner and state checks, pairs only running desktops and validates c
   const grantWithCredential = { code: "ABCD-EFGH-JKLM", expiresAt: f.now() + 300_000, credential: "synthetic-private-credential" };
   f.home.pair.mockResolvedValueOnce(grantWithCredential);
   expect(await f.service.pair("a", c.id)).toEqual({ origin: c.origin, code: "ABCD-EFGH-JKLM", expiresAt: f.now() + 300_000, linkKey: c.linkPublicKey });
-  expect(f.home.pair).toHaveBeenCalledWith(c.origin, expect.any(String), { label: "dusk bot app (Cloud)", ttlSeconds: 300 });
+  expect(f.home.pair).toHaveBeenCalledWith(c.origin, expect.any(String), { label: "madani bot app (Cloud)", ttlSeconds: 300 });
   expect(() => f.service.hide("a", c.id)).toThrow(expect.objectContaining({ status: 409, code: "not_removable" }));
   for (const name of ["", "a".repeat(41), "<tag>", "a\nb"]) expect(() => f.service.rename("a", c.id, { name })).toThrow();
   f.service.rename("a", c.id, { name: "New name", color: null }); expect(c.name).toBe("New name"); expect(c.color).toBeNull();

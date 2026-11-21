@@ -54,13 +54,13 @@ describe("Settings > Models", () => {
     expect(host.textContent).toContain("Show 1 more providers");
   });
 
-  it("on dusk cloud leaves local models out and says why", async () => {
+  it("on madani cloud leaves local models out and says why", async () => {
     serve("cloud");
     flushSync(() => root.render(createElement(ModelDirectory)));
     await settle();
     expect(host.querySelector('[data-provider-row="ollama"]')).toBeNull();
-    expect(host.textContent).toContain("aren't offered on dusk cloud");
-    expect(host.querySelector("[data-model-directory-place]")?.textContent).toContain("dusk cloud");
+    expect(host.textContent).toContain("aren't offered on madani cloud");
+    expect(host.querySelector("[data-model-directory-place]")?.textContent).toContain("madani cloud");
   });
 
   it("searches every model, grouped by provider with badges and a connect button", async () => {

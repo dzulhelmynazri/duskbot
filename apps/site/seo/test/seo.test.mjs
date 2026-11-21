@@ -101,9 +101,9 @@ test('sitemaps: an index, a file per group, and a lastmod that moves only when t
   } finally { if (saved) fs.writeFileSync(ledger, saved); else fs.rmSync(ledger, { force: true }); fs.rmSync(site, { recursive: true, force: true }); }
 });
 test('robots lets every search and answer engine in and names the sitemap', () => {
-  const r = robotsTxt('https://dusk.bot');
+  const r = robotsTxt('https://madani.bot');
   for (const bot of ['OAI-SearchBot', 'ChatGPT-User', 'PerplexityBot', 'Claude-SearchBot', 'Googlebot', 'Bingbot']) assert.ok(SEARCH_BOTS.includes(bot) && r.includes(`User-agent: ${bot}\nAllow: /`), bot);
-  assert.match(r, /Sitemap: https:\/\/dusk\.bot\/sitemap\.xml/);
+  assert.match(r, /Sitemap: https:\/\/madani\.bot\/sitemap\.xml/);
   assert.doesNotMatch(r, /Disallow: \/\n/);
 });
 
@@ -119,7 +119,7 @@ test('a scene refuses kit pieces that do not exist', () => {
   assert.throws(() => scene({ path: '/x', kind: 'guide', h1: 'x', art: { logo: 'nope' } }, kit), /no mark/);
 });
 
-test('composio pages: reads and changes by dusk bot\'s own rule', () => {
+test('composio pages: reads and changes by madani bot\'s own rule', () => {
   assert.equal(isRead('GMAIL_FETCH_EMAILS', 'gmail'), true);
   assert.equal(isRead('GMAIL_SEND_EMAIL', 'gmail'), false);
   assert.equal(isRead('GMAIL_SETTINGS_GET_IMAP', 'gmail'), false);

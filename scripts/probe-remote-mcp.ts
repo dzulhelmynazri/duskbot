@@ -12,10 +12,10 @@ import { McpOAuthManager } from "../server/mcp-oauth.ts";
 
 const only = process.argv.slice(2);
 const apps = REMOTE_MCP_APPS.filter((app) => !only.length || only.includes(app.id));
-const dir = mkdtempSync(join(tmpdir(), "dusk-mcp-probe-"));
+const dir = mkdtempSync(join(tmpdir(), "madani-mcp-probe-"));
 const manager = new McpOAuthManager({ file: join(dir, "oauth.json"), lifetimeMs: 60_000 });
 const HEADERS = { "content-type": "application/json", accept: "application/json, text/event-stream" };
-const INIT = { protocolVersion: "2025-06-18", capabilities: {}, clientInfo: { name: "dusk bot", version: "1" } };
+const INIT = { protocolVersion: "2025-06-18", capabilities: {}, clientInfo: { name: "madani bot", version: "1" } };
 const rpc = (method: string, id: number, params: unknown = {}) => JSON.stringify({ jsonrpc: "2.0", id, method, params });
 
 async function rpcBody(response: Response): Promise<any> {
@@ -50,7 +50,7 @@ async function probe(app: (typeof apps)[number]): Promise<Row> {
     const location = page.headers.get("location") ?? "";
     await page.body?.cancel();
     const pageOk = page.status < 400 && !/[?&#]error=/u.test(location);
-    const fake = await fetch(app.url!, { method: "POST", headers: { ...HEADERS, authorization: "Bearer dusk-probe-not-a-token" }, body: rpc("initialize", 1, INIT), signal: AbortSignal.timeout(15_000) });
+    const fake = await fetch(app.url!, { method: "POST", headers: { ...HEADERS, authorization: "Bearer madani-probe-not-a-token" }, body: rpc("initialize", 1, INIT), signal: AbortSignal.timeout(15_000) });
     await fake.body?.cancel();
     const client = authorize.searchParams.get("client_id")?.startsWith("https://") ? "metadata document" : "registered";
     return { id: app.id, pass: pageOk, detail: `${client}, authorize ${page.status}${pageOk ? "" : ` ${location.slice(0, 80)}`}, fake token ${fake.status}` };

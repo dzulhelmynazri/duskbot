@@ -117,7 +117,7 @@ export function createEmailHost(deps: EmailHostDeps) {
     mounts,
     integration(bot: EmailBot, mint: () => string, harnessUrl: string): { command: string; args: string[]; env: Record<string, string> } | null {
       if (!mounts(bot)) return null;
-      return { command: process.execPath, args: [SPAWNED_PROXIES.harnessMcp, EMAIL_MCP_SERVER], env: { ...AGENTS_NODE_FLAG, [harnessMcpTokenEnv("email")]: mint(), DUSK_HARNESS_URL: harnessUrl } };
+      return { command: process.execPath, args: [SPAWNED_PROXIES.harnessMcp, EMAIL_MCP_SERVER], env: { ...AGENTS_NODE_FLAG, [harnessMcpTokenEnv("email")]: mint(), MADANI_HARNESS_URL: harnessUrl } };
     },
     prompt(bot: EmailBot): string {
       if (!allowedHere() || service.status().state === "unavailable" || !emailAllowedFor(bot)) return "";

@@ -189,7 +189,7 @@ let slideGlass: (path: SlidePath | null) => void = () => {};
 function Chat({ platform }: { platform: MobilePlatform }) {
   const ref = useRef<HTMLDivElement>(null);
   slideGlass = useNativeGlass(platform, ref, true);
-  return createElement("div", { ref, className: "dusk-mobile" },
+  return createElement("div", { ref, className: "madani-mobile" },
     createElement("div", { className: "mobile-page", id: "page" }, createElement("div", { "data-mobile-chat": "", id: "chat" },
       createElement("nav", { "data-glass-nav": "" },
         createElement("button", { "data-glass": "back", id: "back" }),
@@ -531,7 +531,7 @@ describe("useNativeGlass", () => {
 
   it("keeps the composer's gap while the page rides the keyboard down, so the native one follows the keyboard alone", () => {
     const { glass, $ } = mount();
-    const root = host.querySelector<HTMLElement>(".dusk-mobile")!;
+    const root = host.querySelector<HTMLElement>(".madani-mobile")!;
     // the keyboard is up and settled: the layout ends at its top
     root.style.setProperty("--m-kb", "300px");
     place($("shell"), 10, 460, 370, 48);

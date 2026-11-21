@@ -1,4 +1,4 @@
-// The wire shape of the AI sign-ins the first run on dusk cloud carries from the person's computer to their own Cloud,
+// The wire shape of the AI sign-ins the first run on madani cloud carries from the person's computer to their own Cloud,
 // through the Admin's sealed hold and the signed home channel. Only CLI logins kept in a plain file move; a login in the
 // OS keychain (Claude Code, Cursor, Copilot on a Mac) stays on its computer.
 //

@@ -31,7 +31,7 @@ export interface ToolSpan {
   endedAt?: number;
   status: TraceStatus;
   error?: string;
-  timedBy: "engine" | "dusk";
+  timedBy: "engine" | "madani";
 }
 
 export type SpanRecord = StepSpan | ToolSpan;

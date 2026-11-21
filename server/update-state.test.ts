@@ -7,7 +7,7 @@ import { browserPageCheck, runSelfTest, type SelfTestChecks } from "./update-sel
 
 const dirs: string[] = [];
 afterEach(() => { for (const dir of dirs.splice(0)) rmSync(dir, { recursive: true, force: true }); });
-const tmp = () => { const dir = mkdtempSync(join(tmpdir(), "dusk-update-")); dirs.push(dir); return dir; };
+const tmp = () => { const dir = mkdtempSync(join(tmpdir(), "madani-update-")); dirs.push(dir); return dir; };
 
 function boot(dataDir: string, version: string, at: number, checks: SelfTestChecks, runs: FinishedRun[] = []) {
   let clock = at;
@@ -74,7 +74,7 @@ describe("update state", () => {
 
   it("keeps the self-test's browser off the macOS keychain, so no keychain dialog appears", async () => {
     const dir = tmp(), bin = join(dir, "chrome"), args = join(dir, "args");
-    writeFileSync(bin, `#!/bin/sh\nprintf '%s\\n' "$@" > "${args}"\nprintf '%s' dusk-selftest-page\n`);
+    writeFileSync(bin, `#!/bin/sh\nprintf '%s\\n' "$@" > "${args}"\nprintf '%s' madani-selftest-page\n`);
     chmodSync(bin, 0o755);
     expect(await browserPageCheck(async () => bin)()).toBe(true);
     expect(readFileSync(args, "utf8").split("\n")).toEqual(expect.arrayContaining(["--use-mock-keychain", "--password-store=basic"]));

@@ -126,7 +126,7 @@ export function HomePage() {
   const crew = cloud ? null : bots.length ? <Crew rows={bots} /> : loading ? <Skeleton className="h-[200px] !rounded-card" /> : <CrewEmpty />;
   return (
     <div>
-      {/* the greeting is for someone who bought dusk cloud; everyone else starts on the offer */}
+      {/* the greeting is for someone who bought madani cloud; everyone else starts on the offer */}
       {cloud ? <div className="enter mb-8 max-sm:mb-6">
         <h1 className="t-title">hi {name}.</h1>
         <p className="mt-2 text-15 text-ink-3">{dailyLine(now)}</p>

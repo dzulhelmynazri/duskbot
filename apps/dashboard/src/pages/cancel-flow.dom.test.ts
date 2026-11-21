@@ -61,7 +61,7 @@ test("skipping the reason still offers a way to keep it, then a clearly labeled 
   expect(title()).toBe("cancel your plan?");
   expect(document.body.textContent).toContain("your 2 bots stop working when your mac sleeps");
   expect(document.body.textContent).toContain("your 3 routines only run while your mac is awake");
-  expect(document.body.textContent).toContain("your dusk cloud files are kept for 30 days, then deleted");
+  expect(document.body.textContent).toContain("your madani cloud files are kept for 30 days, then deleted");
   await click("cancel my plan");
   expect(spies.cancel).toHaveBeenCalledWith("");
   expect(spies.retentionStep).not.toHaveBeenCalled();
@@ -95,7 +95,7 @@ test("something broke: fix links first, then continue to cancel, and keeping the
   await pick("something broke");
   await click("continue");
   expect(title()).toBe("let's fix it first");
-  expect([...document.querySelectorAll("a")].map((a) => a.getAttribute("href"))).toEqual(expect.arrayContaining(["/cloud", expect.stringMatching(/^mailto:hello@dusk\.bot/)]));
+  expect([...document.querySelectorAll("a")].map((a) => a.getAttribute("href"))).toEqual(expect.arrayContaining(["/cloud", expect.stringMatching(/^mailto:hello@madani\.bot/)]));
   await click("continue to cancel");
   expect(title()).toBe("cancel your plan?");
   await click("keep my plan");
@@ -103,14 +103,14 @@ test("something broke: fix links first, then continue to cancel, and keeping the
   expect(spies.cancel).not.toHaveBeenCalled();
 });
 
-test("not using it shows what the bots did; a plan with a work license ends only the dusk cloud", async () => {
+test("not using it shows what the bots did; a plan with a work license ends only the madani cloud", async () => {
   await open(pro);
   await pick("i'm not using it");
   await click("continue");
   expect(document.body.textContent).toContain("this month your 2 bots took 42 turns.");
   await click("continue to cancel");
-  expect(title()).toBe("cancel your dusk cloud?");
-  await click("cancel dusk cloud");
+  expect(title()).toBe("cancel your madani cloud?");
+  await click("cancel madani cloud");
   expect(spies.changePlan).toHaveBeenCalledWith({ ...pro, desktop: "none", size: null });
   expect(spies.retentionStep).toHaveBeenLastCalledWith({ reason: "unused", step: "confirm", outcome: "cancelled" });
 });
@@ -142,8 +142,8 @@ test("switching on pro is offered plus first; keeping the plan is the main butto
   expect(title()).toBe("before you go");
   expect(button("switch to plus")).not.toBeNull();
   await click("continue to cancel");
-  expect(title()).toBe("cancel your dusk cloud?");
-  await click("cancel dusk cloud");
+  expect(title()).toBe("cancel your madani cloud?");
+  await click("cancel madani cloud");
   expect(spies.changePlan).toHaveBeenCalledWith({ ...pro, desktop: "none", size: null });
 });
 

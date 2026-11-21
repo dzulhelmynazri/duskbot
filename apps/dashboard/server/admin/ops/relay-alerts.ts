@@ -30,7 +30,7 @@ export function relayNodeReadings(cards: readonly OpsRelayCard[]): RelayReading[
     const where = card.url.replace(/^https?:\/\//, "");
     out.push({ id: id("down"), label: `link node ${name} down`, threshold: "no answer for 2 min", forMs: RELAY_RULES.downForMs,
       breach: !card.ok, value: card.ok ? "up" : card.error ?? "no answer",
-      action: `its servers move to the other node by themselves, in under a minute. check ${where}/healthz; on the box: systemctl status ${name === "contabo" ? "the autorunner app omb-link (deploy logs omb-link)" : "dusk-link-node, journalctl -u dusk-link-node"}.` });
+      action: `its servers move to the other node by themselves, in under a minute. check ${where}/healthz; on the box: systemctl status ${name === "contabo" ? "the autorunner app omb-link (deploy logs omb-link)" : "madani-link-node, journalctl -u madani-link-node"}.` });
     if (!s) continue;
     const limits = s.limits ?? {}, ceiling = typeof limits.globalCeilingBytesPerSec === "number" ? limits.globalCeilingBytesPerSec : null;
     out.push({ id: id("bandwidth"), label: `link node ${name} bandwidth high`, threshold: `over ${pct(RELAY_RULES.bandwidthShare * 100)} of its ceiling for 10 min`, forMs: RELAY_RULES.bandwidthForMs,

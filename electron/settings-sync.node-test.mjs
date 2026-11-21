@@ -27,15 +27,15 @@ const run = (places, options = {}) => syncSettings(places, { now: () => 1_000, .
 const value = (where, key) => where.state[key]?.value;
 
 test("the last change wins, wherever it was made, and reaches every place that differs", async () => {
-  const mac = place("local", "This computer", { language: { value: "fr", at: 100 }, "ui.dusk-skin": { value: "midnight", at: 50 } });
-  const cloud = place("cloud", "My Cloud", { language: { value: "de", at: 300 }, "ui.dusk-skin": { value: "midnight", at: 0 } });
-  const vps = place("server", "vps", { language: { value: undefined, at: 0 }, "ui.dusk-skin": { value: undefined, at: 0 } });
+  const mac = place("local", "This computer", { language: { value: "fr", at: 100 }, "ui.madani-skin": { value: "midnight", at: 50 } });
+  const cloud = place("cloud", "My Cloud", { language: { value: "de", at: 300 }, "ui.madani-skin": { value: "midnight", at: 0 } });
+  const vps = place("server", "vps", { language: { value: undefined, at: 0 }, "ui.madani-skin": { value: undefined, at: 0 } });
   const done = await run([mac, cloud, vps]);
   assert.deepEqual(done.failed, []);
   assert.equal(value(mac, "language"), "de");
   assert.equal(value(vps, "language"), "de");
   assert.equal(mac.state.language.at, 300, "taken with the time it changed there");
-  assert.equal(value(vps, "ui.dusk-skin"), "midnight");
+  assert.equal(value(vps, "ui.madani-skin"), "midnight");
   assert.deepEqual(cloud.calls.filter(([op]) => op === "put"), [], "My Cloud had the newest: nothing written there");
   const again = await run([mac, cloud, vps]);
   assert.deepEqual(again.changed, []);

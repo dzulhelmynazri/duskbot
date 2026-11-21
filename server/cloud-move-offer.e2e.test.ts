@@ -12,7 +12,7 @@ const TOKEN = `ops_fake-move-offer-${randomBytes(8).toString("hex")}`;
 let fx: CloudSendFixture;
 
 beforeAll(async () => {
-  fx = await launchCloudSendFixture({ onePasswordToken: TOKEN, offer: true, env: { DUSK_ENVIRONMENT_LABEL: "MacBook Air" } });
+  fx = await launchCloudSendFixture({ onePasswordToken: TOKEN, offer: true, env: { MADANI_ENVIRONMENT_LABEL: "MacBook Air" } });
 }, hostTimeout(90_000));
 afterAll(async () => { await fx?.close(); });
 
@@ -20,7 +20,7 @@ const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 const journal = () => (existsSync(fx.journalFile) ? JSON.parse(readFileSync(fx.journalFile, "utf8")) as { phase: string; counts?: { bots: number } } | null : null);
 const names = async (side: CloudSendFixture["local"]) => ((await side("GET", "/api/bots")).body.bots as Array<{ name: string }>).map((bot) => bot.name);
 
-it("bots on this computer wait for the person's yes; the yes moves them, checked, onto the other harness, and Open dusk cloud opens it", async () => {
+it("bots on this computer wait for the person's yes; the yes moves them, checked, onto the other harness, and Open madani cloud opens it", async () => {
   const { local, onCloud } = fx;
   for (const name of ["Nova", "Quill", "Rivet"]) {
     const bot = (await local("POST", "/api/bots", { name, modelSelection: { instanceId: "claude", model: "claude-sonnet-5" } })).body.bot as { id: string; threadId: string };
@@ -55,7 +55,7 @@ it("bots on this computer wait for the person's yes; the yes moves them, checked
   expect(journal()?.counts?.bots).toBe(3);
   expect(await names(onCloud)).toEqual(expect.arrayContaining(["Nova", "Quill", "Rivet"]));
   expect(await names(local)).toEqual(expect.arrayContaining(["Nova", "Quill", "Rivet"]));
-  expect(fx.spies.opened, "the window waits for Open dusk cloud").not.toContain("cloud");
+  expect(fx.spies.opened, "the window waits for Open madani cloud").not.toContain("cloud");
   const done = await fx.call<CloudSendNotice>("cloud-send:notice", "local");
   expect(done.offer).toBeUndefined();
   expect(done.move).toMatchObject({ phase: "done", counts: { bots: 3 } });

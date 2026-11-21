@@ -8,7 +8,7 @@ import { connect, type Socket } from "node:net";
 import { join } from "node:path";
 import { afterEach, expect, it } from "vitest";
 
-import { launchVerificationServer, runControlDusk, type VerificationServer } from "../scripts/control-dusk.ts";
+import { launchVerificationServer, runControlMadani, type VerificationServer } from "../scripts/control-madani.ts";
 import { botApiCurl } from "../shared/bot-api.ts";
 import { hostTimeout } from "./testing/host-timeout.ts";
 import { BOT_API_REFUSAL } from "./bot-api-fence.ts";
@@ -45,7 +45,7 @@ it("answers the card's own curl with the bot's reply, and refuses a wrong key, a
   fixture = await launchVerificationServer({ ...process.env, FAKE_CLAUDE_VERSION: "2.1.284" });
   const { url } = fixture.info;
   const api = appApi(url);
-  const bot = (await runControlDusk(["new-bot", "--name", "Scout", "--url", url]) as any).bot;
+  const bot = (await runControlMadani(["new-bot", "--name", "Scout", "--url", url]) as any).bot;
   const port = Number(new URL(url).port);
 
   // Off by default, and the card's address is the webhook receiver's.
@@ -95,7 +95,7 @@ it.each(["ask", "full", "auto"])("a bot at %s stops at the approval: nothing ans
   fixture = await launchVerificationServer({ ...process.env, FAKE_CLAUDE_VERSION: "2.1.284", FAKE_CLAUDE_MODE: "hang" });
   const { url, dataDir } = fixture.info;
   const api = appApi(url);
-  const bot = (await runControlDusk(["new-bot", "--name", "Careful", "--url", url]) as any).bot;
+  const bot = (await runControlMadani(["new-bot", "--name", "Careful", "--url", url]) as any).bot;
   await api("PATCH", `/api/bots/${bot.id}`, { approvalMode: level });
   const on = await api("POST", `/api/bots/${bot.id}/bot-api`, { enabled: true });
 
@@ -109,11 +109,11 @@ it.each(["ask", "full", "auto"])("a bot at %s stops at the approval: nothing ans
   expect(launch.argv[launch.argv.indexOf("--permission-mode") + 1]).toBe("default");
   expect(JSON.stringify(launch.prompt)).toContain("[UNTRUSTED BOT API MESSAGE]");
   expect(JSON.stringify(launch.systemPrompt)).toContain("through this bot's API");
-  // Whatever the bot's own level: confined, and no tool of dusk bot's, so it can start, schedule or change nothing.
+  // Whatever the bot's own level: confined, and no tool of madani bot's, so it can start, schedule or change nothing.
   expect(launch.argv).toContain("--restricted");
   expect(launch.argv[launch.argv.indexOf("--tools") + 1]).toBe("Read,Grep,Glob,Edit,Write,WebSearch");
-  expect(Object.keys(launch.mcpConfig.mcpServers)).toEqual(["dusk"]);
-  socket = connect(launch.mcpConfig.mcpServers.dusk.args.at(-1));
+  expect(Object.keys(launch.mcpConfig.mcpServers)).toEqual(["madani"]);
+  socket = connect(launch.mcpConfig.mcpServers.madani.args.at(-1));
   await new Promise<void>((resolve, reject) => { socket!.once("connect", resolve); socket!.once("error", reject); });
   const answers: any[] = [];
   socket.on("data", (chunk) => { for (const line of String(chunk).split("\n").filter(Boolean)) answers.push(JSON.parse(line)); });
@@ -137,7 +137,7 @@ it("stays on Ask when the person sets the whole bot to Full access afterwards", 
   fixture = await launchVerificationServer({ ...process.env, FAKE_CLAUDE_VERSION: "2.1.284", FAKE_CLAUDE_EXIT_AFTER_TURN: "1" });
   const { url, dataDir } = fixture.info;
   const api = appApi(url);
-  const bot = (await runControlDusk(["new-bot", "--name", "Flipped", "--url", url]) as any).bot;
+  const bot = (await runControlMadani(["new-bot", "--name", "Flipped", "--url", url]) as any).bot;
   await api("PATCH", `/api/bots/${bot.id}`, { approvalMode: "ask" });
   const on = await api("POST", `/api/bots/${bot.id}/bot-api`, { enabled: true });
   const first = await call(on.url, on.key, { message: "First" });
@@ -153,7 +153,7 @@ it("a saved command rule never answers for a call: the card waits for the person
   fixture = await launchVerificationServer({ ...process.env, FAKE_CLAUDE_VERSION: "2.1.284", FAKE_CLAUDE_MODE: "hang" });
   const { url, dataDir } = fixture.info;
   const api = appApi(url);
-  const bot = (await runControlDusk(["new-bot", "--name", "Ruled", "--url", url]) as any).bot;
+  const bot = (await runControlMadani(["new-bot", "--name", "Ruled", "--url", url]) as any).bot;
   await api("PATCH", `/api/bots/${bot.id}`, { approvalMode: "ask" });
   const on = await api("POST", `/api/bots/${bot.id}/bot-api`, { enabled: true });
   const pending = call(on.url, on.key, { message: "Run the fixture", wait: 20 }).catch((error: unknown) => ({ status: 0, body: { error: String(error) } }));
@@ -163,7 +163,7 @@ it("a saved command rule never answers for a call: the card waits for the person
   const task = ((await api("GET", "/api/bots")).bots as any[]).find((candidate) => candidate.id === bot.id).tasks.find((one: any) => one.botApi);
   const command = "printf 'rule fixture'";
   await api("POST", `/api/bots/${bot.id}/command-allowlist`, { command, cwd: task.cwd, providerInstanceId: "claude" });
-  socket = connect(dumped().mcpConfig.mcpServers.dusk.args.at(-1));
+  socket = connect(dumped().mcpConfig.mcpServers.madani.args.at(-1));
   await new Promise<void>((resolve, reject) => { socket!.once("connect", resolve); socket!.once("error", reject); });
   const answers: any[] = [];
   socket.on("data", (chunk) => { for (const line of String(chunk).split("\n").filter(Boolean)) answers.push(JSON.parse(line)); });
@@ -178,7 +178,7 @@ it("tells the model nothing about the person or their work, works in no folder o
   const api = appApi(url);
   const project = join(dataDir, "the-persons-project");
   mkdirSync(project, { recursive: true });
-  const bot = (await runControlDusk(["new-bot", "--name", "Fenced", "--url", url]) as any).bot;
+  const bot = (await runControlMadani(["new-bot", "--name", "Fenced", "--url", url]) as any).bot;
   await api("PATCH", `/api/bots/${bot.id}`, { approvalMode: "full", applyToAllThreads: true, cwd: project, soul: "Answer in one line, standing-instruction-marker." });
   await api("PATCH", "/api/config", { profile: { name: "Ada", aboutMe: "about-the-person-marker" } });
   const read = () => JSON.parse(readFileSync(join(dataDir, "fake-claude-dump.json"), "utf8"));
@@ -216,7 +216,7 @@ it("gives a caller fixed words and a person the Bot API's reason when the engine
   fixture = await launchVerificationServer({ ...process.env, FAKE_CLAUDE_VERSION: "2.1.200" });
   const { url } = fixture.info;
   const api = appApi(url);
-  const bot = (await runControlDusk(["new-bot", "--name", "Dated", "--url", url]) as any).bot;
+  const bot = (await runControlMadani(["new-bot", "--name", "Dated", "--url", url]) as any).bot;
   const on = await api("POST", `/api/bots/${bot.id}/bot-api`, { enabled: true });
   const failed = await call(on.url, on.key, { message: "Hello", wait: 20 });
   expect(failed.status).toBe(502);
@@ -233,7 +233,7 @@ it("says it is still working when the reply takes longer than the caller will wa
   fixture = await launchVerificationServer({ ...process.env, FAKE_CLAUDE_VERSION: "2.1.284", FAKE_CLAUDE_MODE: "hang" });
   const { url } = fixture.info;
   const api = appApi(url);
-  const bot = (await runControlDusk(["new-bot", "--name", "Slow", "--url", url]) as any).bot;
+  const bot = (await runControlMadani(["new-bot", "--name", "Slow", "--url", url]) as any).bot;
   const on = await api("POST", `/api/bots/${bot.id}/bot-api`, { enabled: true });
   expect(await call(on.url, on.key, { message: "Think about it", wait: 1 })).toMatchObject({ status: 202, body: { status: "working", thread: expect.any(String) } });
 }, hostTimeout(60_000));

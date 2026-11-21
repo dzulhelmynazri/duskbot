@@ -1,85 +1,85 @@
 /* grok bot motion tokens and keyframes, values read from its bundled css */
 :root {
-  --dusk-inline-sign: 1;
+  --madani-inline-sign: 1;
   --motion-scale: 1;
-  --dusk-duration-instant: 50ms;
-  --dusk-duration-fast: 100ms;
-  --dusk-duration-normal: 150ms;
-  --dusk-duration-slow: 200ms;
-  --dusk-duration-slower: 300ms;
-  --dusk-duration-drawer: 500ms;
+  --madani-duration-instant: 50ms;
+  --madani-duration-fast: 100ms;
+  --madani-duration-normal: 150ms;
+  --madani-duration-slow: 200ms;
+  --madani-duration-slower: 300ms;
+  --madani-duration-drawer: 500ms;
 
-  --dusk-ease: ease;
-  --dusk-ease-sharp: cubic-bezier(0.165, 0.84, 0.44, 1);
-  --dusk-ease-heavy: cubic-bezier(0.645, 0.045, 0.355, 1);
-  --dusk-ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
-  --dusk-ease-out: cubic-bezier(0.22, 1, 0.36, 1);
-  --dusk-ease-standard: cubic-bezier(0.2, 0, 0, 1);
-  --dusk-ease-quint: cubic-bezier(0.23, 1, 0.32, 1);
-  --dusk-ease-expo: cubic-bezier(0.16, 1, 0.3, 1);
-  --dusk-ease-swift: cubic-bezier(0.1, 0.9, 0.2, 1);
-  --dusk-ease-back: cubic-bezier(0.34, 1.56, 0.64, 1);
-  --dusk-ease-accelerate: cubic-bezier(0.4, 0, 1, 1);
+  --madani-ease: ease;
+  --madani-ease-sharp: cubic-bezier(0.165, 0.84, 0.44, 1);
+  --madani-ease-heavy: cubic-bezier(0.645, 0.045, 0.355, 1);
+  --madani-ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
+  --madani-ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --madani-ease-standard: cubic-bezier(0.2, 0, 0, 1);
+  --madani-ease-quint: cubic-bezier(0.23, 1, 0.32, 1);
+  --madani-ease-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --madani-ease-swift: cubic-bezier(0.1, 0.9, 0.2, 1);
+  --madani-ease-back: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --madani-ease-accelerate: cubic-bezier(0.4, 0, 1, 1);
 
   /* spring 1000/63 sampled over the animation; grok runs it at 240-300ms */
   /* the soft spring settled without overshoot as a 500ms curve: the sidebar's width between names and avatars, so the chat never wobbles */
-  --dusk-spring-soft: linear(0, 0.052, 0.172, 0.318, 0.462, 0.592, 0.701, 0.788, 0.855, 0.905, 0.94, 0.964, 0.979, 0.988, 0.994, 0.997, 0.999, 1);
-  --dusk-ease-spring: linear(0, 0.01588 2%, 0.05618 4%, 0.11201 6%, 0.1768 8%, 0.2458 10%, 0.31562 12%, 0.38392 14%, 0.44914 16%, 0.51029 18%, 0.56683 20%, 0.61852 22%, 0.66534 24%, 0.70743 26%, 0.74501 28%, 0.77838 30%, 0.80788 32%, 0.83383 34%, 0.85658 36%, 0.87645 38%, 0.89376 40%, 0.92183 44%, 0.94282 48%, 0.95838 52%, 0.96984 56%, 0.97823 60%, 0.98435 64%, 0.98878 68%, 0.99198 72%, 0.99594 80%, 0.99829 90%, 1 100%);
+  --madani-spring-soft: linear(0, 0.052, 0.172, 0.318, 0.462, 0.592, 0.701, 0.788, 0.855, 0.905, 0.94, 0.964, 0.979, 0.988, 0.994, 0.997, 0.999, 1);
+  --madani-ease-spring: linear(0, 0.01588 2%, 0.05618 4%, 0.11201 6%, 0.1768 8%, 0.2458 10%, 0.31562 12%, 0.38392 14%, 0.44914 16%, 0.51029 18%, 0.56683 20%, 0.61852 22%, 0.66534 24%, 0.70743 26%, 0.74501 28%, 0.77838 30%, 0.80788 32%, 0.83383 34%, 0.85658 36%, 0.87645 38%, 0.89376 40%, 0.92183 44%, 0.94282 48%, 0.95838 52%, 0.96984 56%, 0.97823 60%, 0.98435 64%, 0.98878 68%, 0.99198 72%, 0.99594 80%, 0.99829 90%, 1 100%);
   /* bencho's switch thumb, spring 420/28 sampled over 450ms (5% overshoot, visibly settled by about 330ms) */
-  --dusk-ease-thumb: linear(0, 0.041, 0.141, 0.273, 0.415, 0.553, 0.678, 0.785, 0.872, 0.938, 0.987, 1.020, 1.040, 1.050, 1.053, 1.051, 1.045, 1.038, 1.031, 1.024, 1.017, 1.011, 1.007, 1.003, 1.001, 0.999, 0.998, 0.997, 0.997, 0.997, 1);
+  --madani-ease-thumb: linear(0, 0.041, 0.141, 0.273, 0.415, 0.553, 0.678, 0.785, 0.872, 0.938, 0.987, 1.020, 1.040, 1.050, 1.053, 1.051, 1.045, 1.038, 1.031, 1.024, 1.017, 1.011, 1.007, 1.003, 1.001, 0.999, 0.998, 0.997, 0.997, 0.997, 1);
   /* bencho's press: down on the out curve in 160ms, back with a hair of overshoot in 200ms */
-  --dusk-ease-release: cubic-bezier(0.28, 1.4, 0.36, 1);
+  --madani-ease-release: cubic-bezier(0.28, 1.4, 0.36, 1);
   /* overshoot to 1.078, grok runs it at 500ms for reaction chips */
-  --dusk-ease-pop: linear(0 0%, 0.0334 2.5%, 0.1181 5%, 0.2337 7.5%, 0.3639 10%, 0.4963 12.5%, 0.6218 15%, 0.7346 17.5%, 0.8311 20%, 0.9102 22.5%, 0.9718 25%, 1.0172 27.5%, 1.0482 30%, 1.0672 32.5%, 1.0764 35%, 1.078 37.5%, 1.0743 40%, 1.0669 42.5%, 1.0575 45%, 1.0472 47.5%, 1.0369 50%, 1.0273 52.5%, 1.0188 55%, 1.0116 57.5%, 1.0057 60%, 1.0012 62.5%, 0.998 65%, 0.9958 67.5%, 0.9945 70%, 0.994 72.5%, 0.9939 75%, 0.9943 77.5%, 0.9949 80%, 0.9957 82.5%, 0.9965 85%, 0.9973 87.5%, 0.998 90%, 0.9987 92.5%, 0.9992 95%, 0.9996 97.5%, 1 100%);
+  --madani-ease-pop: linear(0 0%, 0.0334 2.5%, 0.1181 5%, 0.2337 7.5%, 0.3639 10%, 0.4963 12.5%, 0.6218 15%, 0.7346 17.5%, 0.8311 20%, 0.9102 22.5%, 0.9718 25%, 1.0172 27.5%, 1.0482 30%, 1.0672 32.5%, 1.0764 35%, 1.078 37.5%, 1.0743 40%, 1.0669 42.5%, 1.0575 45%, 1.0472 47.5%, 1.0369 50%, 1.0273 52.5%, 1.0188 55%, 1.0116 57.5%, 1.0057 60%, 1.0012 62.5%, 0.998 65%, 0.9958 67.5%, 0.9945 70%, 0.994 72.5%, 0.9939 75%, 0.9943 77.5%, 0.9949 80%, 0.9957 82.5%, 0.9965 85%, 0.9973 87.5%, 0.998 90%, 0.9987 92.5%, 0.9992 95%, 0.9996 97.5%, 1 100%);
 }
 
-[dir="rtl"] { --dusk-inline-sign: -1; }
+[dir="rtl"] { --madani-inline-sign: -1; }
 
-@keyframes dusk-fade-in { from { opacity: 0; } to { opacity: 1; } }
-@keyframes dusk-fade-out { from { opacity: 1; } to { opacity: 0; } }
-@keyframes dusk-popup-in { from { opacity: 0; transform: translate3d(var(--dusk-popup-x, 0), var(--dusk-popup-y, -2px), 0) scale(0.98); } }
-@keyframes dusk-dialog-in { from { opacity: 0; transform: scale(0.97); } to { opacity: 1; transform: scale(1); } }
-@keyframes dusk-dialog-out { from { opacity: 1; transform: scale(1); } to { opacity: 0; transform: scale(0.97); } }
-@keyframes dusk-card-in { from { opacity: 0; transform: translateY(8px) scale(0.985); } to { opacity: 1; transform: translateY(0) scale(1); } }
-@keyframes dusk-row-in { from { opacity: 0; height: 0; overflow: hidden; transform: translateY(-4px); } to { overflow: hidden; } }
-@keyframes dusk-row-out { from { overflow: hidden; } to { opacity: 0; height: 0; overflow: hidden; transform: translateY(-4px); } }
+@keyframes madani-fade-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes madani-fade-out { from { opacity: 1; } to { opacity: 0; } }
+@keyframes madani-popup-in { from { opacity: 0; transform: translate3d(var(--madani-popup-x, 0), var(--madani-popup-y, -2px), 0) scale(0.98); } }
+@keyframes madani-dialog-in { from { opacity: 0; transform: scale(0.97); } to { opacity: 1; transform: scale(1); } }
+@keyframes madani-dialog-out { from { opacity: 1; transform: scale(1); } to { opacity: 0; transform: scale(0.97); } }
+@keyframes madani-card-in { from { opacity: 0; transform: translateY(8px) scale(0.985); } to { opacity: 1; transform: translateY(0) scale(1); } }
+@keyframes madani-row-in { from { opacity: 0; height: 0; overflow: hidden; transform: translateY(-4px); } to { overflow: hidden; } }
+@keyframes madani-row-out { from { overflow: hidden; } to { opacity: 0; height: 0; overflow: hidden; transform: translateY(-4px); } }
 /* grok's wipe navigation (push and pop inside a dialog); x offsets follow the reading direction */
-@keyframes dusk-wipe-push-in { from { transform: translateX(calc(100% * var(--dusk-inline-sign, 1))); } to { transform: translateX(0); } }
-@keyframes dusk-wipe-push-out { from { opacity: 1; transform: translateX(0); } to { opacity: 0; transform: translateX(calc(-30% * var(--dusk-inline-sign, 1))); } }
-@keyframes dusk-wipe-pop-in { from { transform: translateX(calc(-30% * var(--dusk-inline-sign, 1))); } to { transform: translateX(0); } }
-@keyframes dusk-wipe-pop-out { from { transform: translateX(0); } to { transform: translateX(calc(100% * var(--dusk-inline-sign, 1))); } }
-@keyframes dusk-chip-pop { from { opacity: 0; transform: scale(0); } to { opacity: 1; transform: scale(1); } }
-@keyframes dusk-chip-bump { 0% { transform: scale(1); } 40% { transform: scale(1.06); } 100% { transform: scale(1); } }
-@keyframes dusk-typing-dot { 0%, 60%, 100% { opacity: 0.35; transform: translateY(0); } 30% { opacity: 1; transform: translateY(-2px); } }
-@keyframes dusk-breathe { 0%, 100% { opacity: 0.85; transform: scale(1); } 50% { opacity: 1; transform: scale(1.04); } }
-@keyframes dusk-zzz { 0% { opacity: 0; transform: translateY(0) scale(0.6); } 25% { opacity: 1; } 100% { opacity: 0; transform: translateY(-12px) scale(1); } }
+@keyframes madani-wipe-push-in { from { transform: translateX(calc(100% * var(--madani-inline-sign, 1))); } to { transform: translateX(0); } }
+@keyframes madani-wipe-push-out { from { opacity: 1; transform: translateX(0); } to { opacity: 0; transform: translateX(calc(-30% * var(--madani-inline-sign, 1))); } }
+@keyframes madani-wipe-pop-in { from { transform: translateX(calc(-30% * var(--madani-inline-sign, 1))); } to { transform: translateX(0); } }
+@keyframes madani-wipe-pop-out { from { transform: translateX(0); } to { transform: translateX(calc(100% * var(--madani-inline-sign, 1))); } }
+@keyframes madani-chip-pop { from { opacity: 0; transform: scale(0); } to { opacity: 1; transform: scale(1); } }
+@keyframes madani-chip-bump { 0% { transform: scale(1); } 40% { transform: scale(1.06); } 100% { transform: scale(1); } }
+@keyframes madani-typing-dot { 0%, 60%, 100% { opacity: 0.35; transform: translateY(0); } 30% { opacity: 1; transform: translateY(-2px); } }
+@keyframes madani-breathe { 0%, 100% { opacity: 0.85; transform: scale(1); } 50% { opacity: 1; transform: scale(1.04); } }
+@keyframes madani-zzz { 0% { opacity: 0; transform: translateY(0) scale(0.6); } 25% { opacity: 1; } 100% { opacity: 0; transform: translateY(-12px) scale(1); } }
 /* the working mascot: one pixel (1/16 of its box) of bob and glance, a quick blink; each on its own layer */
 @keyframes working-mascot-bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6.25%); } }
 @keyframes working-mascot-glance { 0%, 28% { transform: translateX(0); } 32%, 50% { transform: translateX(-6.25%); } 54%, 66% { transform: translateX(0); } 70%, 88% { transform: translateX(6.25%); } 92%, 100% { transform: translateX(0); } }
 @keyframes working-mascot-blink { 0%, 90%, 100% { transform: scaleY(1); } 94% { transform: scaleY(0.15); } }
 @keyframes working-mascot-blink-still { 0%, 90%, 100% { opacity: 1; } 94% { opacity: 0.3; } }
 
-.dusk-popup-in { animation: dusk-popup-in var(--dusk-duration-fast) var(--dusk-ease-sharp); }
-.dusk-dialog-in { animation: dusk-dialog-in var(--dusk-duration-slow) var(--dusk-ease-sharp) forwards; }
-.dusk-dialog-out { animation: dusk-dialog-out var(--dusk-duration-slow) var(--dusk-ease-sharp) forwards; }
-.dusk-backdrop-in { animation: dusk-fade-in var(--dusk-duration-slow) var(--dusk-ease-sharp) forwards; }
-.dusk-backdrop-out { animation: dusk-fade-out var(--dusk-duration-slow) var(--dusk-ease-sharp) forwards; }
-.dusk-card-in { animation: dusk-card-in 320ms var(--dusk-ease-out) backwards; }
-.dusk-row-in { animation: dusk-row-in 240ms var(--dusk-ease-spring) backwards; }
-.dusk-row-out { animation: dusk-row-out 240ms var(--dusk-ease-spring) forwards; }
-.dusk-wipe-push-in { animation: dusk-wipe-push-in 200ms var(--dusk-ease-out); }
-.dusk-wipe-push-out { animation: dusk-wipe-push-out 200ms var(--dusk-ease-out) forwards; }
-.dusk-wipe-pop-in { animation: dusk-wipe-pop-in 200ms var(--dusk-ease-out); }
-.dusk-wipe-pop-out { animation: dusk-wipe-pop-out 200ms var(--dusk-ease-out) forwards; }
-.dusk-chip-pop { animation: dusk-chip-pop 500ms var(--dusk-ease-pop) backwards; }
-.dusk-chip-bump { animation: dusk-chip-bump 240ms ease-out; }
-.dusk-typing-dot { animation: dusk-typing-dot 1.4s ease-in-out infinite both; }
-.dusk-typing-dot:nth-child(1) { animation-delay: -0.32s; }
-.dusk-typing-dot:nth-child(2) { animation-delay: -0.16s; }
-.dusk-breathe { animation: dusk-breathe 2.4s ease-in-out infinite; }
-.dusk-zzz { animation: dusk-zzz 2.4s ease-out infinite; }
-.dusk-zzz:nth-child(2) { animation-delay: -800ms; }
-.dusk-zzz:nth-child(3) { animation-delay: -1600ms; }
+.madani-popup-in { animation: madani-popup-in var(--madani-duration-fast) var(--madani-ease-sharp); }
+.madani-dialog-in { animation: madani-dialog-in var(--madani-duration-slow) var(--madani-ease-sharp) forwards; }
+.madani-dialog-out { animation: madani-dialog-out var(--madani-duration-slow) var(--madani-ease-sharp) forwards; }
+.madani-backdrop-in { animation: madani-fade-in var(--madani-duration-slow) var(--madani-ease-sharp) forwards; }
+.madani-backdrop-out { animation: madani-fade-out var(--madani-duration-slow) var(--madani-ease-sharp) forwards; }
+.madani-card-in { animation: madani-card-in 320ms var(--madani-ease-out) backwards; }
+.madani-row-in { animation: madani-row-in 240ms var(--madani-ease-spring) backwards; }
+.madani-row-out { animation: madani-row-out 240ms var(--madani-ease-spring) forwards; }
+.madani-wipe-push-in { animation: madani-wipe-push-in 200ms var(--madani-ease-out); }
+.madani-wipe-push-out { animation: madani-wipe-push-out 200ms var(--madani-ease-out) forwards; }
+.madani-wipe-pop-in { animation: madani-wipe-pop-in 200ms var(--madani-ease-out); }
+.madani-wipe-pop-out { animation: madani-wipe-pop-out 200ms var(--madani-ease-out) forwards; }
+.madani-chip-pop { animation: madani-chip-pop 500ms var(--madani-ease-pop) backwards; }
+.madani-chip-bump { animation: madani-chip-bump 240ms ease-out; }
+.madani-typing-dot { animation: madani-typing-dot 1.4s ease-in-out infinite both; }
+.madani-typing-dot:nth-child(1) { animation-delay: -0.32s; }
+.madani-typing-dot:nth-child(2) { animation-delay: -0.16s; }
+.madani-breathe { animation: madani-breathe 2.4s ease-in-out infinite; }
+.madani-zzz { animation: madani-zzz 2.4s ease-out infinite; }
+.madani-zzz:nth-child(2) { animation-delay: -800ms; }
+.madani-zzz:nth-child(3) { animation-delay: -1600ms; }
 .working-mascot-bob { animation: working-mascot-bob 1.4s ease-in-out infinite; }
 .working-mascot-glance { animation: working-mascot-glance 5.2s ease-in-out infinite; }
 .working-mascot-blink { animation: working-mascot-blink 3.8s ease-in-out infinite; }
@@ -112,37 +112,37 @@
 :root[data-reduced-motion="true"] .working-mascot-blink { animation-name: working-mascot-blink-still; }
 
 /* bencho's press: a button gives to 96% on the out curve and lets go with a hair of overshoot; colours keep Grok's 120ms */
-.dusk-press {
+.madani-press {
   transition-property: background-color, border-color, color, box-shadow, opacity, scale;
   transition-duration: 120ms, 120ms, 120ms, 120ms, 120ms, 200ms;
-  transition-timing-function: ease, ease, ease, ease, ease, var(--dusk-ease-release);
+  transition-timing-function: ease, ease, ease, ease, ease, var(--madani-ease-release);
 }
-.dusk-press:is(:enabled, a):active {
+.madani-press:is(:enabled, a):active {
   scale: 0.96;
   transition-duration: 120ms, 120ms, 120ms, 120ms, 120ms, 160ms;
-  transition-timing-function: ease, ease, ease, ease, ease, var(--dusk-ease-out);
+  transition-timing-function: ease, ease, ease, ease, ease, var(--madani-ease-out);
 }
 /* press-soft: a choice row or list row, pressed often, barely gives (98.5%); its colours on Grok's 140ms quint */
-.dusk-press-soft {
+.madani-press-soft {
   transition-property: background-color, border-color, color, scale;
   transition-duration: 140ms, 140ms, 140ms, 200ms;
-  transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1), cubic-bezier(0.16, 1, 0.3, 1), cubic-bezier(0.16, 1, 0.3, 1), var(--dusk-ease-release);
+  transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1), cubic-bezier(0.16, 1, 0.3, 1), cubic-bezier(0.16, 1, 0.3, 1), var(--madani-ease-release);
 }
-.dusk-press-soft:enabled:active { scale: 0.985; transition-duration: 140ms, 140ms, 140ms, 160ms; }
-:root[data-reduced-motion="true"] :is(.dusk-press, .dusk-press-soft):active { scale: none; }
+.madani-press-soft:enabled:active { scale: 0.985; transition-duration: 140ms, 140ms, 140ms, 160ms; }
+:root[data-reduced-motion="true"] :is(.madani-press, .madani-press-soft):active { scale: none; }
 /* the app's own reduced-motion switch: segmented pills and switch knobs jump, colours still fade */
 :root[data-reduced-motion="true"] :is([data-segmented-pill], [data-ui-toggle] > span) { transition: none; }
 :root[data-reduced-motion="true"] [data-panel-slot] { transition: none; }
 
 @media (prefers-reduced-motion: reduce) {
-  :is(.dusk-press, .dusk-press-soft):active { scale: none; }
-  .dusk-popup-in, .dusk-dialog-in, .dusk-card-in, .dusk-row-in, .dusk-wipe-push-in, .dusk-wipe-pop-in, .dusk-chip-pop {
-    animation-name: dusk-fade-in;
+  :is(.madani-press, .madani-press-soft):active { scale: none; }
+  .madani-popup-in, .madani-dialog-in, .madani-card-in, .madani-row-in, .madani-wipe-push-in, .madani-wipe-pop-in, .madani-chip-pop {
+    animation-name: madani-fade-in;
   }
-  .dusk-dialog-out, .dusk-row-out, .dusk-wipe-push-out, .dusk-wipe-pop-out {
-    animation-name: dusk-fade-out;
+  .madani-dialog-out, .madani-row-out, .madani-wipe-push-out, .madani-wipe-pop-out {
+    animation-name: madani-fade-out;
   }
-  .dusk-chip-bump, .dusk-typing-dot, .dusk-breathe, .dusk-zzz {
+  .madani-chip-bump, .madani-typing-dot, .madani-breathe, .madani-zzz {
     animation: none;
   }
   [data-working-mascot] :is(.working-mascot-bob, .working-mascot-glance) { animation: none; }

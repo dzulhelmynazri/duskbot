@@ -1,7 +1,7 @@
-# App Store listing draft: dusk bot for iPhone
+# App Store listing draft: madani bot for iPhone
 
 **Superseded by `docs/store-launch.md`** for the listing copy, privacy label, age rating and review notes; this first
-draft names other platforms and dusk cloud, which the iOS listing must not.
+draft names other platforms and madani cloud, which the iOS listing must not.
 
 Draft text for App Store Connect. Nothing here names a price, a plan or a place to buy one (guideline 3.1.1). Limits are
 Apple's; the count beside each field is the draft's length.
@@ -10,17 +10,17 @@ Apple's; the count beside each field is the draft's length.
 
 | Field | Value |
 |---|---|
-| App name (30) | dusk bot (8) |
+| App name (30) | madani bot (8) |
 | Subtitle (30) | Text your team of AI bots (25) |
-| Bundle ID | `bot.dusk.mobile` |
-| SKU | `dusk-mobile-ios` |
+| Bundle ID | `bot.madani.mobile` |
+| SKU | `madani-mobile-ios` |
 | Primary category | Productivity |
 | Secondary category | Developer Tools |
 | Version | 1.0 (build 1; raise the build for every upload) |
 | Copyright | 2026 [legal entity name] |
-| Support URL | https://dusk.bot/docs |
-| Marketing URL | https://dusk.bot |
-| Privacy Policy URL | https://dusk.bot/privacy |
+| Support URL | https://madani.bot/docs |
+| Marketing URL | https://madani.bot |
+| Privacy Policy URL | https://madani.bot/privacy |
 | Devices | iPhone only (runs on iPad as an iPhone app) |
 | Minimum iOS | 17.0 |
 
@@ -31,7 +31,7 @@ ping when the work is done. (148)
 
 ## Description (4000)
 
-dusk bot runs a team of AI bots on your own computer. This is the phone app: pair it with your computer once, and text
+madani bot runs a team of AI bots on your own computer. This is the phone app: pair it with your computer once, and text
 your bots from anywhere.
 
 WHAT YOU CAN DO
@@ -46,7 +46,7 @@ WHAT YOU CAN DO
 
 HOW IT WORKS
 
-Your bots, their chats and their files live in your workspace: the dusk bot app on your Mac, Windows PC or Linux
+Your bots, their chats and their files live in your workspace: the madani bot app on your Mac, Windows PC or Linux
 machine, or on a server of your own. Open Settings there, show the phone code, and scan it with this app. From then on
 the phone talks to your workspace directly, or through an encrypted link when you are away. Nothing is stored on the
 phone but the pairing.
@@ -59,7 +59,7 @@ PRIVATE BY DESIGN
 - Your chats stay in your own workspace
 - The pairing is kept in the iPhone Keychain
 
-dusk bot for your computer is at dusk.bot.
+madani bot for your computer is at madani.bot.
 
 ## Keywords (100)
 
@@ -67,7 +67,7 @@ ai,bots,agents,assistant,chat,automation,productivity,team,remote,tasks,routines
 
 ## What's New (4000)
 
-The first release of dusk bot for iPhone.
+The first release of madani bot for iPhone.
 
 ## Age rating answers
 
@@ -99,14 +99,14 @@ tracking, advertising or analytics:
 | Contact Info: Email Address | Yes, if the person signs in | The account email (sign-in on the first screen) |
 | Identifiers: User ID | Yes, if the person signs in | The account's id |
 | Identifiers: Device ID | Yes, if notifications are allowed | The APNs device token, kept so a notification can be sent |
-| User Content: Other User Content | Yes, only with a dusk cloud computer | Messages and files, when the workspace the phone is paired with is a computer we host |
-| Diagnostics: Crash Data | No (today) | Off unless a build sets `DUSK_ERROR_DSN`; if you turn it on, add Crash Data, not linked |
+| User Content: Other User Content | Yes, only with a madani cloud computer | Messages and files, when the workspace the phone is paired with is a computer we host |
+| Diagnostics: Crash Data | No (today) | Off unless a build sets `MADANI_ERROR_DSN`; if you turn it on, add Crash Data, not linked |
 
 Not collected: location, contacts, photos (a photo the person attaches goes to their own workspace), audio, browsing or
 search history, purchases, financial or health data, advertising data.
 
 Why the rest is not "collected": a phone paired with the person's own computer or server sends chats to that machine,
-which the person runs. Through the link relay (`link.dusk.bot`) the chats are sealed on the phone and opened on the
+which the person runs. Through the link relay (`link.madani.bot`) the chats are sealed on the phone and opened on the
 person's server, so the relay holds ciphertext it cannot read and keeps nothing. The same answers are in the app's
 privacy manifest (`apps/mobile/ios/App/App/PrivacyInfo.xcprivacy`); keep the two in step.
 
@@ -123,13 +123,13 @@ self-classification; it is a legal statement made in the owner's name.
 
 ## App Review notes (paste into "Notes")
 
-dusk bot for iPhone is the companion to dusk bot for Mac, Windows and Linux (https://dusk.bot), where a person runs
+madani bot for iPhone is the companion to madani bot for Mac, Windows and Linux (https://madani.bot), where a person runs
 their own team of AI bots. The iPhone app pairs with that workspace and lets them text their bots.
 
 The app has no built-in demo: a reviewer needs a live workspace to pair with, or a review account (see below).
 
 1. Launch the app. On the first screen choose "enter a code" and type the review code, or "log in" with the review
-   account and pick its dusk cloud.
+   account and pick its madani cloud.
 2. The home screen shows the review workspace's team. Tap a bot (for example "Quill") to open its chat and send a message.
 3. Tap the back button, then open "Launch room" to see a group chat with three bots.
 4. Tap the "+" button (top right) to create a bot, and the magnifier to search.

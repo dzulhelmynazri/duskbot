@@ -60,7 +60,7 @@ test("an unnamed or malformed event is dropped", () => {
 test("the export scrubber takes out emails, names, IPs, home paths and the person's own hosts, and keeps routes", () => {
   const nasty = {
     ev: "link.path", ts: "2026-11-14T10:00:00.000Z", from: "relay", to: "direct", via: "ssh",
-    host: "sidds-mac-mini", origin: "https://vps.siddz.example:8443", node: "eu-1.dusk.bot",
+    host: "sidds-mac-mini", origin: "https://vps.siddz.example:8443", node: "eu-1.madani.bot",
     name: "Ananya", botName: "Research Bot", email: "sidd@example.com", account: "acct_123",
     msg: "connect ECONNREFUSED 169.58.211.160:22 from 192.168.1.4 via fe80::1ff:fe23:4567:890a for meenasiddarth72@gmail.com at /Users/siddharth/Desktop/code/OpenMausBot/electron/main.mjs and /home/agent/x and C:\\Users\\Sidd\\AppData; host vps.siddz.example said no",
     stack: "at fn (/Users/siddharth/x.mjs:1:2)",
@@ -75,7 +75,7 @@ test("the export scrubber takes out emails, names, IPs, home paths and the perso
   assert.equal(out.from, "relay");
   assert.equal(out.to, "direct");
   assert.equal(out.via, "ssh");
-  assert.equal(out.node, "eu-1.dusk.bot");
+  assert.equal(out.node, "eu-1.madani.bot");
   assert.equal(out.path, "/api/bots/b_1/computer/control");
   assert.deepEqual(out.list, ["direct", "«ip»"]);
   assert.match(out.host, /^h-[0-9a-f]{10}$/);
@@ -91,10 +91,10 @@ test("a tool field keeps only a tool's name, even in a trail written before name
   assert.ok(!everyString(out).includes("upload"));
   assert.equal(scrubForExport({ ev: "bot.tool", tool: "Bash" }).tool, "Bash");
   assert.equal(scrubForExport({ ev: "bot.tool", tool: "invoice.pdf" }).tool, "tool");
-  assert.equal(redactEvent({ ev: "bot.card.shown", tool: "mcp__dusk__get_url" }).tool, "mcp__dusk__get_url");
+  assert.equal(redactEvent({ ev: "bot.card.shown", tool: "mcp__madani__get_url" }).tool, "mcp__madani__get_url");
 });
 
-const tmp = () => fs.mkdtempSync(path.join(os.tmpdir(), "dusk-trail-"));
+const tmp = () => fs.mkdtempSync(path.join(os.tmpdir(), "madani-trail-"));
 
 test("the writer batches, rotates past a fifth of the cap and keeps the total under it", async () => {
   const dir = tmp();

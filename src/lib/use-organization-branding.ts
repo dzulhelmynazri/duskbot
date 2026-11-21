@@ -4,8 +4,8 @@ import { parseOrganizationBranding } from "../../electron/organization-branding.
 
 /** Native enrollment only: never apply this computer's branding to a remote workspace. */
 export function useOrganizationBranding() {
-  const duskDesktop = typeof window === "undefined" ? undefined : window.duskDesktop;
-  const bridge = duskDesktop?.remoteClient?.active ? undefined : duskDesktop?.organization;
+  const madaniDesktop = typeof window === "undefined" ? undefined : window.madaniDesktop;
+  const bridge = madaniDesktop?.remoteClient?.active ? undefined : madaniDesktop?.organization;
   const [state, setState] = useState<ManagedDesktopState | null>(null);
   useEffect(() => {
     let active = true, revision = 0;

@@ -7,14 +7,14 @@ import { linkSignIn } from "./cloud-signin-link.mjs";
 import { APP_PROVIDERS, APP_TOKEN, cleanCode, cleanEmail, LINK_MS, LINK_PROVIDERS, linkFailure, parseAppLink, parseProviders, parseSignInStart, SIGN_IN_START, SIGN_IN_TRIES, SIGN_IN_VERIFY, signInIdentity, startFailure, verifyFailure } from "./cloud-signin.mjs";
 import { TRAIL_HEADER, newTrailId, trail, trailError } from "./trail.mjs";
 
-export const CLOUD_ORIGIN = "https://dusk.bot";
-/** The staging Admin (Dodo test mode, real test Clouds): a fixed address, on only with DUSK_CLOUD_STAGING=1. */
-export const STAGING_CLOUD_ORIGIN = "https://preview.dusk.bot";
+export const CLOUD_ORIGIN = "https://madani.bot";
+/** The staging Admin (Dodo test mode, real test Clouds): a fixed address, on only with MADANI_CLOUD_STAGING=1. */
+export const STAGING_CLOUD_ORIGIN = "https://preview.madani.bot";
 /** Which Admin this app signs in to, and the files that depend on it (the sign-in, saved servers with the Cloud's
  * entry, Files' state, the Cloud's chosen name): staging never reads or writes production's. */
 export function cloudTarget(env = process.env) {
-  if (customOrigin(env?.DUSK_CLOUD_ORIGIN)) return { origin: env.DUSK_CLOUD_ORIGIN, staging: false, custom: true, file: "cloud-account-custom.bin", saved: "cloud-accounts-custom.bin", places: "account-places-custom.json", environments: "environments-custom.json", sync: "cloud-sync-custom", look: "cloud-home-look-custom.json" };
-  return env?.DUSK_CLOUD_STAGING === "1"
+  if (customOrigin(env?.MADANI_CLOUD_ORIGIN)) return { origin: env.MADANI_CLOUD_ORIGIN, staging: false, custom: true, file: "cloud-account-custom.bin", saved: "cloud-accounts-custom.bin", places: "account-places-custom.json", environments: "environments-custom.json", sync: "cloud-sync-custom", look: "cloud-home-look-custom.json" };
+  return env?.MADANI_CLOUD_STAGING === "1"
     ? { origin: STAGING_CLOUD_ORIGIN, staging: true, custom: false, file: "cloud-account-staging.bin", saved: "cloud-accounts-staging.bin", places: "account-places-staging.json", environments: "environments-staging.json", sync: "cloud-sync-staging", look: "cloud-home-look-staging.json" }
     : { origin: CLOUD_ORIGIN, staging: false, custom: false, file: "cloud-account.bin", saved: "cloud-accounts.bin", places: "account-places.json", environments: "environments.json", sync: "cloud-sync", look: "cloud-home-look.json" };
 }
@@ -123,7 +123,7 @@ function customOrigin(value) {
 export function cloudOrigin(value = CLOUD_ORIGIN, fixture = false, custom = false) {
   const url = new URL(value);
   if (value !== url.origin || (![CLOUD_ORIGIN, STAGING_CLOUD_ORIGIN].includes(value) && !(custom && customOrigin(value)) && !(fixture && url.protocol === "http:" && ["127.0.0.1", "[::1]"].includes(url.hostname)))) {
-    throw new Error("Invalid dusk cloud address.");
+    throw new Error("Invalid madani cloud address.");
   }
   return value;
 }
@@ -237,7 +237,7 @@ export function createCloudAccountClient({ store, openBrowser, platform, deviceN
   // it or write it over the one taking its place, whoever asks (a window coming to the front, Settings' Refresh).
   let quiet = false;
   const current = stamp => !closed && !quiet && generation === stamp;
-  const versionHeader = text(appVersion, 40) && /^[0-9A-Za-z][0-9A-Za-z.+-]{0,39}$/.test(appVersion) ? { "x-dusk-version": appVersion } : {};
+  const versionHeader = text(appVersion, 40) && /^[0-9A-Za-z][0-9A-Za-z.+-]{0,39}$/.test(appVersion) ? { "x-madani-version": appVersion } : {};
   async function request(route, { method = "GET", body, token, signal = controller.signal, path = `/api/cloud/desktop/${route}`, timeoutMs = 20_000 } = {}) {
     // the trail: the account service records the same id (apps/dashboard/server/main.ts)
     const cid = newTrailId(), startedAt = Date.now();
@@ -288,7 +288,7 @@ export function createCloudAccountClient({ store, openBrowser, platform, deviceN
       !(input.expiresAt === null || timestamp(input.expiresAt)) || !Number.isSafeInteger(input.version) || input.version < 0) throw new Error("Invalid Cloud entitlement.");
     const plan = input.plan === "free" ? "free" : "pro";
     if (input.status === "active" && (plan !== "pro" || input.expiresAt === null || input.expiresAt <= serverNow())) throw new Error("Invalid active Cloud entitlement.");
-    if (newer && !newerPlans.has(input.plan)) { newerPlans.add(input.plan); warn(`[cloud] dusk cloud sent plan "${input.plan}", newer than this app; treating it as paid.`); }
+    if (newer && !newerPlans.has(input.plan)) { newerPlans.add(input.plan); warn(`[cloud] madani cloud sent plan "${input.plan}", newer than this app; treating it as paid.`); }
     const tier = typeof input.tier === "string" && TIER.test(input.tier) ? input.tier : newer ? input.plan : undefined;
     return { plan, ...(tier ? { tier } : {}), status: input.status,
       expiresAt: input.expiresAt, version: input.version };
@@ -498,7 +498,7 @@ export function createCloudAccountClient({ store, openBrowser, platform, deviceN
     if (closed || restoring || clearing || grant || issued || cleanupNeeded) throw new Error("Sign out before starting another Cloud connection.");
     const stamp = reset();
     opened = intent ? { plan: intent.plan, source: intent.source, startedAt: now(), signIn: true } : null;
-    // the packaged app owns duskbot://, so the browser comes back here signed in: no code to compare, no page to approve
+    // the packaged app owns madanibot://, so the browser comes back here signed in: no code to compare, no page to approve
     const magic = typeof email === "string" ? cleanEmail(email) : null;
     if (typeof email === "string" && !magic) throw new Error("Invalid email.");
     const link = !magic && appLinks && LINK_PROVIDERS.includes(provider) ? linkSignIn(origin, provider) : null;
@@ -606,7 +606,7 @@ export function createCloudAccountClient({ store, openBrowser, platform, deviceN
     if (typeof plan !== "string" || !TIER.test(plan) || !CHECKOUT_SOURCES.includes(source)) throw new Error("Invalid Cloud checkout.");
     const current = state();
     if (current.status === "signed-out" && !grant) return { outcome: "signing-in", state: await begin({ plan, source }) };
-    if (current.status !== "connected" || !grant) throw new Error("Sign in to dusk cloud before choosing a plan.");
+    if (current.status !== "connected" || !grant) throw new Error("Sign in to madani cloud before choosing a plan.");
     const signedIn = grant;
     let destination;
     try {
@@ -756,7 +756,7 @@ export function createCloudAccountClient({ store, openBrowser, platform, deviceN
     /** The Cloud this checkout bought was opened, announced or shown ready: the purchase is over (Add a Cloud… says one Cloud for now). */
     checkoutDone() { if (opened && !opened.done) { opened = { ...opened, done: true }; publish(value); } },
     async signInAgain() {
-      if (state().status !== "reauth-required") throw new Error("This computer is still signed in to dusk cloud.");
+      if (state().status !== "reauth-required") throw new Error("This computer is still signed in to madani cloud.");
       publish({ status: "connecting" });
       const forgotten = await forget({ quiet: true });
       if (forgotten.status === "unavailable") return forgotten;
@@ -773,7 +773,7 @@ export function createCloudAccountClient({ store, openBrowser, platform, deviceN
      * An account step in the browser, for its context (the account context redirect): already signed in, the one-time
      * handoff opens the right page (the plan checkout, billing or home) with no second sign-in; signed out, the browser
      * sign-in opens with the intent bound to it, the website lands on that page after signing in or up, and this app
-     * signs itself in when the person approves (polling, or duskbot://auth). Returning to the app is optional.
+     * signs itself in when the person approves (polling, or madanibot://auth). Returning to the app is optional.
      * Answers `opened` (already signed in), `browser` (a sign-in under way: state().status is "connecting") or `failed` (the
      * sign-in did not start).
      */
@@ -910,7 +910,7 @@ export function createCloudAccountClient({ store, openBrowser, platform, deviceN
     async interest(kind) {
       if (kind !== "another_cloud") throw new Error("Invalid Cloud interest.");
       const signedIn = grant;
-      if (!signedIn || state().status !== "connected") throw new Error("Sign in to dusk cloud first.");
+      if (!signedIn || state().status !== "connected") throw new Error("Sign in to madani cloud first.");
       const result = await request("interest", { method: "POST", body: { kind }, token: signedIn.token });
       if (result?.ok !== true) throw new Error("Invalid Cloud response.");
     },
@@ -1135,7 +1135,7 @@ export function createCloudAccountClient({ store, openBrowser, platform, deviceN
      * `installation`: this computer, which the Admin lets take it only if it is the one the Cloud's things come home to. */
     async exportHome({ installation } = {}) {
       const current = grant;
-      if (!current) throw new Error("Sign in to dusk cloud first.");
+      if (!current) throw new Error("Sign in to madani cloud first.");
       let result;
       try { result = await request("export", { method: "POST", body: installation ? { installation } : {}, token: current.token }); } catch (error) {
         if (error?.status === 409) return { notHeld: true };
@@ -1207,7 +1207,7 @@ export function createCloudAccountClient({ store, openBrowser, platform, deviceN
       catch (error) { if (error?.status === 402 || error?.status === 404) return null; throw error; }
       let relay = null;
       try { relay = typeof result?.url === "string" ? new URL(result.url) : null; } catch { relay = null; }
-      if (result?.cloudContractVersion !== 1 || !relay || relay.origin !== origin || typeof result.token !== "string" || !/^(?:dusk|omb)_xd_[A-Za-z0-9_-]{43}$/.test(result.token)) {
+      if (result?.cloudContractVersion !== 1 || !relay || relay.origin !== origin || typeof result.token !== "string" || !/^(?:madani|omb)_xd_[A-Za-z0-9_-]{43}$/.test(result.token)) {
         throw new Error("Invalid Cloud X research response.");
       }
       return { url: result.url, token: result.token };
@@ -1223,7 +1223,7 @@ export function createCloudAccountClient({ store, openBrowser, platform, deviceN
       catch (error) { if (error?.status === 404) return null; throw error; }
       let target = null;
       try { target = typeof result?.url === "string" ? new URL(result.url) : null; } catch { target = null; }
-      if (result?.cloudContractVersion !== 1 || !target || target.origin !== origin || typeof result.token !== "string" || !/^(?:dusk|omb)_pd_[A-Za-z0-9_-]{43}$/.test(result.token)) {
+      if (result?.cloudContractVersion !== 1 || !target || target.origin !== origin || typeof result.token !== "string" || !/^(?:madani|omb)_pd_[A-Za-z0-9_-]{43}$/.test(result.token)) {
         throw new Error("Invalid Cloud pages response.");
       }
       return { url: result.url, token: result.token };

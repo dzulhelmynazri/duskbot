@@ -12,7 +12,7 @@ function preload({ company = true } = {}) {
   const invoked = [];
   let bridge;
   const context = vm.createContext({
-    process: { platform: "fixture", argv: [`--dusk-local-origin=${ORIGIN}`, ...(company ? ["--dusk-company-desktop=1"] : [])] },
+    process: { platform: "fixture", argv: [`--madani-local-origin=${ORIGIN}`, ...(company ? ["--madani-company-desktop=1"] : [])] },
     location: { origin: ORIGIN }, TextEncoder, localStorage: { getItem: () => null },
     require: name => {
       assert.equal(name, "electron");

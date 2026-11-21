@@ -1,12 +1,12 @@
 #!/usr/bin/env node
-// builds one app's env file from the operator's single secrets file, ~/.config/duskbot/dusk.env (DUSK_ENV overrides).
+// builds one app's env file from the operator's single secrets file, ~/.config/madanibot/madani.env (MADANI_ENV overrides).
 //   node deploy/env.mjs <preview|production|landing> <out>     writes the app's env (mode 600) to <out>
 //   node deploy/env.mjs compare <target> <old env file>        names + match/mismatch per value, never the values
-// dusk.env is split into sections by "# [name]" lines:
+// madani.env is split into sections by "# [name]" lines:
 //   [account]     plain names, sent to both account services (preview and production)
 //   [preview]     NAME_PREVIEW, sent to preview as NAME (same for [production] and [landing])
 //   [local]       used on the Mac only (cloudflare, mongo admin, ...), never sent anywhere
-// a value written exactly as ${NAME} reuses another entry (define it higher up so `. dusk.env` resolves it too).
+// a value written exactly as ${NAME} reuses another entry (define it higher up so `. madani.env` resolves it too).
 // values are copied as written (quotes included), so the deploy CLI reads them the same way it read the old files.
 import { createHash } from "node:crypto";
 import { chmodSync, readFileSync, statSync, writeFileSync } from "node:fs";
@@ -15,7 +15,7 @@ import { join } from "node:path";
 
 const TARGETS = { preview: ["account", "preview"], production: ["account", "production"], landing: ["landing"] };
 const SECTIONS = new Set(["account", "preview", "production", "landing", "local"]);
-const source = process.env.DUSK_ENV || join(homedir(), ".config/duskbot/dusk.env");
+const source = process.env.MADANI_ENV || join(homedir(), ".config/madanibot/madani.env");
 
 const fail = (msg) => {
   console.error(`env: ${msg}`);

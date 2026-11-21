@@ -1,7 +1,7 @@
 import { readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { expect, it } from "vitest";
-import { launchVerificationServer } from "../scripts/control-dusk.ts";
+import { launchVerificationServer } from "../scripts/control-madani.ts";
 
 it("drops a legacy desktop token from disk, never shows it, and normalizes old client backend values through HTTP", async () => {
   const fixture = await launchVerificationServer();

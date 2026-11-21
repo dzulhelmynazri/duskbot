@@ -15,7 +15,7 @@ export function nativeAttach(): NativeAttach | null {
   return native;
 }
 
-const ATTACH_FILES_EVENT = "dusk:attach-files";
+const ATTACH_FILES_EVENT = "madani:attach-files";
 
 /** Files for the open chat's composer from outside the page's own field (an image pasted into the phone's native one). */
 export function attachToComposer(files: File[]): void {

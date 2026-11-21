@@ -92,7 +92,7 @@ function knownRoomResponder(value: unknown): unknown {
 }
 
 const backupSchema = z.object({
-  format: z.literal("dusk.backup"),
+  format: z.literal("madani.backup"),
   version: z.literal(1),
   name,
   exportedAt: timestamp,

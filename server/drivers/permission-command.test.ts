@@ -8,11 +8,11 @@ describe("acpPermissionCommand", () => {
   it("reads Antigravity's CommandLine/Cwd", () => {
     expect(acpPermissionCommand({
       CommandLine: "ls -la /home/user/workspace/notes/",
-      Cwd: "/home/user/.duskbot/task-workspaces/fc432790/4b7437fe",
+      Cwd: "/home/user/.madanibot/task-workspaces/fc432790/4b7437fe",
       WaitMsBeforeAsync: 5000,
     }, undefined)).toEqual({
       command: "ls -la /home/user/workspace/notes/",
-      cwd: "/home/user/.duskbot/task-workspaces/fc432790/4b7437fe",
+      cwd: "/home/user/.madanibot/task-workspaces/fc432790/4b7437fe",
     });
   });
 

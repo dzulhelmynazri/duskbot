@@ -22,8 +22,8 @@ const TEAM_TIERS: readonly string[] = ["team", "business"];
 export type UpgradeSource = "app_usage" | "app_settings" | "app_room";
 
 export function usageBridge(cloudHome: boolean): CloudPlanBridge | undefined {
-  if (window.duskDesktop?.remoteClient?.active === true) return undefined;
-  return localDesktopPage() ? (window.duskDesktop?.cloudAccount ? window.duskDesktop?.cloudPlan : undefined) : cloudHome ? window.duskDesktop?.cloudPlan : undefined;
+  if (window.madaniDesktop?.remoteClient?.active === true) return undefined;
+  return localDesktopPage() ? (window.madaniDesktop?.cloudAccount ? window.madaniDesktop?.cloudPlan : undefined) : cloudHome ? window.madaniDesktop?.cloudPlan : undefined;
 }
 
 export function useCloudUsage(): { usage: CloudUsage | null; bridge: CloudPlanBridge | undefined; teamHome: boolean } {

@@ -7,7 +7,7 @@ import UniformTypeIdentifiers
 /// which the page reads back through the web view's file scheme.
 enum PickedFiles {
     private static func folder() -> URL? {
-        let dir = FileManager.default.temporaryDirectory.appendingPathComponent("dusk-picks", isDirectory: true)
+        let dir = FileManager.default.temporaryDirectory.appendingPathComponent("madani-picks", isDirectory: true)
             .appendingPathComponent(UUID().uuidString, isDirectory: true)
         do { try FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true) } catch { return nil }
         return dir
@@ -82,7 +82,7 @@ final class PastingTextView: UITextView {
 @objc(PickerPlugin)
 public class PickerPlugin: CAPPlugin, CAPBridgedPlugin, PHPickerViewControllerDelegate, UIDocumentPickerDelegate {
     public let identifier = "PickerPlugin"
-    public let jsName = "DuskPicker"
+    public let jsName = "MadaniPicker"
     public let pluginMethods: [CAPPluginMethod] = [
         CAPPluginMethod(name: "photos", returnType: CAPPluginReturnPromise),
         CAPPluginMethod(name: "files", returnType: CAPPluginReturnPromise),

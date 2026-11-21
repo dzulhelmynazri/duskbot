@@ -17,7 +17,7 @@ afterEach(async () => { for (const close of cleanup.splice(0).reverse()) await c
 const tool = (name: string) => ({ name, inputSchema: { type: "object" } });
 
 async function fixture() {
-  const directory = mkdtempSync(join(tmpdir(), "dusk-remote-cache-"));
+  const directory = mkdtempSync(join(tmpdir(), "madani-remote-cache-"));
   cleanup.push(() => removeTempDir(directory));
   let blocked = false, release = () => {};
   let gate = Promise.resolve();
@@ -46,7 +46,7 @@ async function fixture() {
   const spec = { type: "http" as const, url: `http://127.0.0.1:${(server.address() as AddressInfo).port}/mcp`, headers: { Authorization: "Bearer fixture-one" } };
   const file = join(directory, `${remoteMcpCacheKey(spec, {})}.json`);
   function start(target: RemoteMcpSpec = spec, privateEnv = false) {
-    const configEnvName = privateEnv ? `DUSK_REMOTE_MCP_CONFIG_${"a".repeat(64)}` : undefined;
+    const configEnvName = privateEnv ? `MADANI_REMOTE_MCP_CONFIG_${"a".repeat(64)}` : undefined;
     const descriptor = mcpStdioServer(target, { configEnvName })!;
     const env = { ...descriptor.env };
     if (configEnvName) env[configEnvName] = JSON.stringify({ ...JSON.parse(env[configEnvName]!), [REMOTE_MCP_CACHE_ENV]: directory });

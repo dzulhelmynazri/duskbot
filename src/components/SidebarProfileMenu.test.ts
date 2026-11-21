@@ -3,7 +3,7 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it, vi } from "vitest";
 
 // the menus as the app ships; the developer row is checked on its own below
-vi.stubEnv("VITE_DUSK_DEV_TOOLS", "0");
+vi.stubEnv("VITE_MADANI_DEV_TOOLS", "0");
 vi.mock("react-dom", async (importOriginal) => ({ ...await importOriginal<typeof import("react-dom")>(), createPortal: (children: unknown) => children }));
 
 import {
@@ -105,7 +105,7 @@ describe("platformLabel", () => {
 describe("outward links", () => {
   it("sends Help Center to the docs the website also links to", () => {
     expect(HELP_CENTER_URL).toBe(DOCS_URL);
-    expect(DOCS_URL).toBe("https://dusk.bot/docs");
+    expect(DOCS_URL).toBe("https://madani.bot/docs");
   });
 
   it("sends Send Feedback to the Discord community", () => {
@@ -173,7 +173,7 @@ describe("the phone entries", () => {
 
   it("never offers the iOS-only entry it replaced", () => {
     for (const target of ["computer", "server"] as const) {
-      expect(items(target, null).list.map((item) => item.label)).not.toContain("Get dusk bot for iOS");
+      expect(items(target, null).list.map((item) => item.label)).not.toContain("Get madani bot for iOS");
     }
   });
 
@@ -210,7 +210,7 @@ describe("choosing where the phone connects", () => {
     expect(dispatch).not.toHaveBeenCalled();
   });
 
-  it("when the Cloud cannot be opened, lands on Settings → dusk cloud, which says what to do", async () => {
+  it("when the Cloud cannot be opened, lands on Settings → madani cloud, which says what to do", async () => {
     const bridge = { connectHomeForPhone: vi.fn().mockRejectedValue(new Error("offline")) };
     const dispatch = vi.fn();
     selectPhoneDestination(destinations(readyCloud)[0]!, { bridge, dispatch });
@@ -267,7 +267,7 @@ describe("profileMenuItems", () => {
     phone: [{ key: "phone-app", label: "Get the phone app", onSelect: noop }],
     usage: true,
     update: null,
-    account: "dusk bot Cloud",
+    account: "madani bot Cloud",
     onUsage: noop, onSettings: noop, onShortcuts: noop, onAbout: noop, onHelp: noop, onFeedback: noop, onAccount: noop,
     ...patch,
   });
@@ -277,17 +277,17 @@ describe("profileMenuItems", () => {
     expect(items.map((item) => item.key)).toEqual(["usage", "phone-app", "support", "feedback", "settings", "account"]);
     expect(items.filter((item) => item.separatorBefore).map((item) => item.key)).toEqual(["account"]);
     expect(items.find((item) => item.key === "support")!.submenu!.map((item) => item.key)).toEqual(["help", "shortcuts", "about"]);
-    expect(items.find((item) => item.key === "account")!.label).toBe("dusk bot Cloud");
+    expect(items.find((item) => item.key === "account")!.label).toBe("madani bot Cloud");
   });
 
   it("ends Support with start fresh in a developer build, never over the chat", async () => {
-    vi.stubEnv("VITE_DUSK_DEV_TOOLS", "");
+    vi.stubEnv("VITE_MADANI_DEV_TOOLS", "");
     try {
       const support = build().find((item) => item.key === "support")!.submenu!;
       expect(support.map((item) => item.key)).toEqual(["help", "shortcuts", "about", "dev-fresh-install"]);
       expect(support.at(-1)!.label).toBe("Dev: start fresh on this computer");
     } finally {
-      vi.stubEnv("VITE_DUSK_DEV_TOOLS", "0");
+      vi.stubEnv("VITE_MADANI_DEV_TOOLS", "0");
     }
   });
 
@@ -328,7 +328,7 @@ describe("Simple mode's account menu", () => {
     phone: simplePhoneItems({ connected: false, onGetApp: noop }),
     usage: true,
     update: { key: "update", label: "check for updates", onSelect: noop },
-    account: "dusk cloud",
+    account: "madani cloud",
     simple: { tools, places: placeMenuItems(place(), { owner: null, onCloudSettings: noop }) },
     onUsage: noop, onSettings: noop, onShortcuts: noop, onAbout: noop, onHelp: noop, onFeedback: noop, onAccount: noop,
     ...patch,
@@ -350,7 +350,7 @@ describe("Simple mode's account menu", () => {
   });
 
   it("raises an update that is ready or failed to its own top row with a pill, and keeps it out of support", () => {
-    const update = { key: "update", label: "Restart to update to dusk bot 0.2.0", subtitle: "notes", attention: true, onSelect: noop };
+    const update = { key: "update", label: "Restart to update to madani bot 0.2.0", subtitle: "notes", attention: true, onSelect: noop };
     const items = build({ update, updateTop: { label: "update ready", action: "restart" } });
     expect(groups(items)[0]).toEqual(["update"]);
     expect(items[0]).toMatchObject({ label: "update ready", subtitle: undefined, attention: false });
@@ -395,11 +395,11 @@ describe("Simple mode's account menu", () => {
   });
 
   it("adds the move to My Cloud: a short warning once failing, shared with automations, and a quiet segment on its way", () => {
-    expect(accountLabel("Omkar", { automationsNeedYou: false, update: null, move: "failed" })).toBe("Omkar · Your move to dusk cloud needs you");
+    expect(accountLabel("Omkar", { automationsNeedYou: false, update: null, move: "failed" })).toBe("Omkar · Your move to madani cloud needs you");
     expect(accountLabel("Omkar", { automationsNeedYou: true, update: null, move: "failed" })).toBe("Omkar · Your move and routines need you");
     expect(accountLabel("Omkar", { automationsNeedYou: true, update: "update ready", move: "failed" })).toBe("Omkar · Your move and routines need you · update ready");
-    expect(accountLabel("Omkar", { automationsNeedYou: false, update: null, move: "sending" })).toBe("Omkar · Moving to dusk cloud…");
-    expect(accountLabel("Omkar", { automationsNeedYou: true, update: null, move: "sending" })).toBe("Omkar · Automations need you · Moving to dusk cloud…");
+    expect(accountLabel("Omkar", { automationsNeedYou: false, update: null, move: "sending" })).toBe("Omkar · Moving to madani cloud…");
+    expect(accountLabel("Omkar", { automationsNeedYou: true, update: null, move: "sending" })).toBe("Omkar · Automations need you · Moving to madani cloud…");
     expect(accountLabel("Omkar", { automationsNeedYou: false, update: null, move: "done" })).toBe("Omkar");
     expect(accountLabel("Omkar", { automationsNeedYou: true, update: null, move: "done" })).toBe("Omkar · Automations need you");
     expect(accountLabel("Omkar", { automationsNeedYou: false, update: null, move: null })).toBe("Omkar");
@@ -419,8 +419,8 @@ describe("Simple mode's account menu", () => {
   });
 
   it("puts the move's row first, in its own group, above a raised update", () => {
-    const move = [{ key: "cloud-move", label: "Try moving to dusk cloud again", title: "My Cloud did not answer.", onSelect: noop }];
-    const update = { key: "update", label: "dusk bot 0.2.0 ready, restart", onSelect: noop };
+    const move = [{ key: "cloud-move", label: "Try moving to madani cloud again", title: "My Cloud did not answer.", onSelect: noop }];
+    const update = { key: "update", label: "madani bot 0.2.0 ready, restart", onSelect: noop };
     expect(groups(build({ move }))).toEqual([
       ["cloud-move"],
       ["usage", "phone-app", "support", "feedback", "settings"],
@@ -445,7 +445,7 @@ describe("Simple mode's account menu", () => {
   });
 
   it("puts the move's row first in Advanced's account menu too, under its own divider", () => {
-    const move = [{ key: "cloud-move", label: "moving to dusk cloud…", title: "moving your bots to dusk cloud… 34 of 120 chats", onSelect: noop }];
+    const move = [{ key: "cloud-move", label: "moving to madani cloud…", title: "moving your bots to madani cloud… 34 of 120 chats", onSelect: noop }];
     expect(groups(build({ simple: undefined, move }))).toEqual([["cloud-move"], ["usage", "phone-app", "support", "feedback", "settings", "update"], ["account"]]);
     expect(groups(build({ simple: undefined }))).toEqual([["usage", "phone-app", "support", "feedback", "settings", "update"], ["account"]]);
   });
@@ -567,7 +567,7 @@ describe("grok's profile menu", () => {
     expect(items[1]).toMatchObject({ key: "mobile", separatorBefore: true });
   });
 
-  it("signs in right there on this app's own page, not in Settings and not about dusk cloud", () => {
+  it("signs in right there on this app's own page, not in Settings and not about madani cloud", () => {
     const add = vi.fn(), onAddAccount = vi.fn();
     const items = grokProfileMenuItems({ ...base, onAddAccount, accounts: { view: { active: null, others: [] }, openSheet: null, signOut: vi.fn(), add } as never });
     items[0]!.onSelect();
@@ -577,10 +577,10 @@ describe("grok's profile menu", () => {
 
   it("signed in, leads with the account block (address, plan below) and ends with Sign out on its own row", () => {
     const signOut = vi.fn(), onSettings = vi.fn(), onDashboard = vi.fn();
-    const active = { id: "acc-1", email: "ada@qa.dusk.test", name: "Ada Lovelace", plan: { status: "active", tier: "starter" } };
+    const active = { id: "acc-1", email: "ada@qa.madani.test", name: "Ada Lovelace", plan: { status: "active", tier: "starter" } };
     const items = grokProfileMenuItems({ ...base, onSettings, onDashboard, accounts: { view: { active }, openSheet: null, signOut, add: vi.fn(), editAvatar: vi.fn() } as never });
     expect(items.map((item) => item.key)).toEqual(["who", "mobile", "dashboard", "support", "feedback", "settings", "log-out"]);
-    expect(items[0]).toMatchObject({ label: "Ada Lovelace", labelNote: "Plus", subtitle: "ada@qa.dusk.test", title: "ada@qa.dusk.test", large: true });
+    expect(items[0]).toMatchObject({ label: "Ada Lovelace", labelNote: "Plus", subtitle: "ada@qa.madani.test", title: "ada@qa.madani.test", large: true });
     expect(items[1]).toMatchObject({ key: "mobile", separatorBefore: true });
     expect(items.at(-1)).toMatchObject({ label: "Sign out", separatorBefore: true });
     const trial = grokProfileMenuItems({ ...base, accounts: { view: { active: { ...active, plan: { status: "active", tier: "starter", trial: true } } }, openSheet: null, signOut, add: vi.fn(), editAvatar: vi.fn() } as never });
@@ -590,22 +590,22 @@ describe("grok's profile menu", () => {
     expect(onDashboard).toHaveBeenCalledOnce();
     items.at(-1)!.onSelect();
     expect(signOut).toHaveBeenCalledWith("acc-1");
-    const free = grokProfileMenuItems({ ...base, accounts: { view: { active: { id: "acc-2", email: "bo@qa.dusk.test", plan: { status: "free" } } }, openSheet: null, signOut, add: vi.fn() } as never });
-    expect(free[0]).toMatchObject({ key: "who", label: "bo@qa.dusk.test", labelNote: "Free" });
-    const unknown = grokProfileMenuItems({ ...base, accounts: { view: { active: { id: "acc-3", email: "cy@qa.dusk.test" } }, openSheet: null, signOut, add: vi.fn() } as never });
+    const free = grokProfileMenuItems({ ...base, accounts: { view: { active: { id: "acc-2", email: "bo@qa.madani.test", plan: { status: "free" } } }, openSheet: null, signOut, add: vi.fn() } as never });
+    expect(free[0]).toMatchObject({ key: "who", label: "bo@qa.madani.test", labelNote: "Free" });
+    const unknown = grokProfileMenuItems({ ...base, accounts: { view: { active: { id: "acc-3", email: "cy@qa.madani.test" } }, openSheet: null, signOut, add: vi.fn() } as never });
     expect(unknown[0]?.subtitle).toBeUndefined();
   });
 
   it("on a Cloud's page shows the block it is given and a Sign out that opens the sheet, never one combined row", () => {
     const openSheet = vi.fn();
-    const header = { email: "ada@qa.dusk.test", plan: "dusk cloud · Pro", face: null };
+    const header = { email: "ada@qa.madani.test", plan: "madani cloud · Pro", face: null };
     const items = grokProfileMenuItems({ ...base, header, accounts: { view: null, openSheet, signOut: vi.fn(), add: vi.fn() } as never });
     expect(items.map((item) => item.key)).toEqual(["who", "mobile", "support", "feedback", "settings", "log-out"]);
-    expect(items[0]).toMatchObject({ label: "ada@qa.dusk.test", labelNote: "Pro" });
+    expect(items[0]).toMatchObject({ label: "ada@qa.madani.test", labelNote: "Pro" });
     items.at(-1)!.onSelect();
     expect(openSheet).toHaveBeenCalledOnce();
     const lent = grokProfileMenuItems({ ...base, header, accounts: { view: null, openSheet: null, signOut: vi.fn(), add: vi.fn() } as never });
-    expect(lent[0]).toMatchObject({ key: "who", label: "ada@qa.dusk.test" });
+    expect(lent[0]).toMatchObject({ key: "who", label: "ada@qa.madani.test" });
     const nobody = grokProfileMenuItems({ ...base, accounts: { view: null, openSheet, signOut: vi.fn(), add: vi.fn() } as never });
     expect(nobody.map((item) => item.key)).toEqual(["mobile", "support", "feedback", "settings", "log-out"]);
     expect(nobody.at(-1)).toMatchObject({ label: "Sign out" });
@@ -622,7 +622,7 @@ describe("grok's profile menu", () => {
 });
 
 describe("personFace", () => {
-  it("draws the dusk cloud account's face, else this place's photo, else a head from the address or name; nothing for nobody", async () => {
+  it("draws the madani cloud account's face, else this place's photo, else a head from the address or name; nothing for nobody", async () => {
     const { personFace } = await import("./SidebarProfileMenu");
     const account = { id: "acc_1", email: "ada@example.test", avatar: "g:abc123" };
     expect(personFace({ email: "ada@example.test" }, account)).toEqual({ id: "acc_1", avatar: "g:abc123" });
@@ -633,7 +633,7 @@ describe("personFace", () => {
 });
 
 describe("withAccountFace", () => {
-  it("lends the dusk cloud account's photo and name to the same person's profile, or to none, never to someone else's", async () => {
+  it("lends the madani cloud account's photo and name to the same person's profile, or to none, never to someone else's", async () => {
     const { withAccountFace } = await import("./SidebarProfileMenu");
     const account = { email: "ada@example.test", name: "Ada", avatarUrl: "https://photos.example.test/ada.png" };
     expect(withAccountFace(undefined, account)).toEqual(account);
@@ -670,7 +670,7 @@ describe("the account on a Cloud's page", () => {
     const lent = { ...face, email: "ada@example.test" };
     expect(placeAccount(undefined, { face: lent, owner: null })).toEqual({ profile: { email: "ada@example.test" }, account: lent });
     expect(placeAccount({}, { face: lent, owner: null })?.profile.email).toBe("ada@example.test");
-    expect(snapshotPlanText({ status: "paid", tier: "starter" })).toBe("dusk cloud · Plus");
+    expect(snapshotPlanText({ status: "paid", tier: "starter" })).toBe("madani cloud · Plus");
     expect(snapshotPlanText({ status: "none" })).toBeNull();
   });
 });

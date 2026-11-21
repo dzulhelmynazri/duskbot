@@ -12,11 +12,11 @@
     "ai agent vps",
     "run ai agent while laptop sleeps"
   ],
-  "answer": "nowhere. close the lid and an agent on your laptop stops: the 7am brief doesn't come, your phone can't reach it. to keep it working, it has to live on a computer that stays on. you have three choices: a spare machine at home, a server you rent and babysit, or a hosted computer like dusk cloud that someone else keeps running.",
+  "answer": "nowhere. close the lid and an agent on your laptop stops: the 7am brief doesn't come, your phone can't reach it. to keep it working, it has to live on a computer that stays on. you have three choices: a spare machine at home, a server you rent and babysit, or a hosted computer like madani cloud that someone else keeps running.",
   "updated": "2026-11-12",
   "review": {
     "status": "approved",
-    "by": "lead agent, against dusk bot docs",
+    "by": "lead agent, against madani bot docs",
     "at": "2026-11-12"
   },
   "tags": [
@@ -45,13 +45,13 @@
   "og_line": "four places a bot can live, and what each costs.",
   "table": {
     "h": "the four options side by side",
-    "intro": "**dusk bot's own prices only.** a spare machine and a rented server cost whatever you or your host charge. every option still uses your own ai plan.",
+    "intro": "**madani bot's own prices only.** a spare machine and a rented server cost whatever you or your host charge. every option still uses your own ai plan.",
     "cols": [
       "",
       "your laptop",
       "a spare computer at home",
       "a server you rent",
-      "dusk cloud"
+      "madani cloud"
     ],
     "rows": [
       {
@@ -68,7 +68,7 @@
         ]
       },
       {
-        "label": "dusk bot's charge",
+        "label": "madani bot's charge",
         "cells": [
           "free for personal use",
           "free for personal use",
@@ -135,7 +135,7 @@
   "sections": [
     {
       "h": "why your laptop can't be the home",
-      "md": "**an agent is just a program. programs stop when the computer sleeps.**\n\nin dusk bot you feel it two ways:\n\n- routines don't run while the laptop sleeps or the app is closed. missed by less than 12 hours? it runs once when you're back. longer than that, it's skipped.\n- your phone can't reach the bots until the laptop wakes up.\n\n**Settings**, **Remote access**, **Keep this computer awake** helps at your desk. it can't help in a backpack."
+      "md": "**an agent is just a program. programs stop when the computer sleeps.**\n\nin madani bot you feel it two ways:\n\n- routines don't run while the laptop sleeps or the app is closed. missed by less than 12 hours? it runs once when you're back. longer than that, it's skipped.\n- your phone can't reach the bots until the laptop wakes up.\n\n**Settings**, **Remote access**, **Keep this computer awake** helps at your desk. it can't help in a backpack."
     },
     {
       "h": "a spare computer at home",
@@ -143,15 +143,15 @@
     },
     {
       "h": "a server you rent",
-      "md": "**great if you like servers. a lost weekend if you don't.** [your own server](/docs/your-own-server) is free in dusk bot. you pay the host.\n\n- ubuntu 22.04 or 24.04, 2 gb of memory or more\n- paste one line, wait about ten minutes\n- no ports, no domain; the app and server talk through a sealed relay\n\nupdates, backups and the bill are yours. use a fresh server, never one holding things you wouldn't hand a bot."
+      "md": "**great if you like servers. a lost weekend if you don't.** [your own server](/docs/your-own-server) is free in madani bot. you pay the host.\n\n- ubuntu 22.04 or 24.04, 2 gb of memory or more\n- paste one line, wait about ten minutes\n- no ports, no domain; the app and server talk through a sealed relay\n\nupdates, backups and the bill are yours. use a fresh server, never one holding things you wouldn't hand a bot."
     },
     {
-      "h": "dusk cloud",
-      "md": "**a computer we host and look after. your bots just keep going.** it has its own storage no one else can reach, backed up every day.\n\nmoving takes a minute: pick a plan, sign in under **settings**, **dusk cloud**, and the welcome brings your bots over with their chats, memory and routines. your ai sign-in stays yours. ai usage never lands on the dusk bill.\n\none honest warning: a bot working around the clock uses your ai plan around the clock. for heavy use, a bigger plan or an api key works out better."
+      "h": "madani cloud",
+      "md": "**a computer we host and look after. your bots just keep going.** it has its own storage no one else can reach, backed up every day.\n\nmoving takes a minute: pick a plan, sign in under **settings**, **madani cloud**, and the welcome brings your bots over with their chats, memory and routines. your ai sign-in stays yours. ai usage never lands on the madani bill.\n\none honest warning: a bot working around the clock uses your ai plan around the clock. for heavy use, a bigger plan or an api key works out better."
     },
     {
       "h": "which one fits you",
-      "md": "**pick by how much you'll miss the work when the lid's shut.**\n\n- **bots only while you're at your desk?** stay on the laptop. it's free.\n- **want the brief before you wake, or replies from your phone at night?** that's the moment to move. most people pick dusk cloud because there's nothing to babysit.\n- **you already run servers and enjoy it?** your own server costs you only the server.\n- **spare computer that never leaves the house?** fine, as long as it stays on.\n\nyou can keep more than one and switch from the top of the sidebar. start on the laptop. move the day a missed routine annoys you."
+      "md": "**pick by how much you'll miss the work when the lid's shut.**\n\n- **bots only while you're at your desk?** stay on the laptop. it's free.\n- **want the brief before you wake, or replies from your phone at night?** that's the moment to move. most people pick madani cloud because there's nothing to babysit.\n- **you already run servers and enjoy it?** your own server costs you only the server.\n- **spare computer that never leaves the house?** fine, as long as it stays on.\n\nyou can keep more than one and switch from the top of the sidebar. start on the laptop. move the day a missed routine annoys you."
     }
   ],
   "faq": [
@@ -161,40 +161,40 @@
     },
     {
       "q": "do i need to know linux to keep an agent running 24/7?",
-      "a": "no. dusk cloud needs no server skills. running [your own server](/docs/your-own-server) is the option that needs some."
+      "a": "no. madani cloud needs no server skills. running [your own server](/docs/your-own-server) is the option that needs some."
     },
     {
-      "q": "what happens to my bots if i stop paying for dusk cloud?",
+      "q": "what happens to my bots if i stop paying for madani cloud?",
       "a": "bots on your own computer carry on. the cloud computer is kept for 30 days after the plan ends, then deleted, and we email you a week before. move your bots back or export a backup first."
     },
     {
       "q": "is it cheaper to run it on my own server?",
-      "a": "dusk bot charges nothing for it, so you pay only your hosting company. it's cheaper if your time looking after a server costs you nothing. the [always-on cost calculator](/tools/always-on-cost) puts the numbers side by side."
+      "a": "madani bot charges nothing for it, so you pay only your hosting company. it's cheaper if your time looking after a server costs you nothing. the [always-on cost calculator](/tools/always-on-cost) puts the numbers side by side."
     }
   ],
   "sources": [
     {
-      "label": "dusk bot docs: routines, your computer has to be on",
+      "label": "madani bot docs: routines, your computer has to be on",
       "url": "/docs/routines"
     },
     {
-      "label": "dusk bot docs: dusk cloud, where bots can live",
-      "url": "/docs/dusk-cloud"
+      "label": "madani bot docs: madani cloud, where bots can live",
+      "url": "/docs/madani-cloud"
     },
     {
-      "label": "dusk bot pricing",
+      "label": "madani bot pricing",
       "url": "/pricing"
     },
     {
-      "label": "dusk bot docs: your own server",
+      "label": "madani bot docs: your own server",
       "url": "/docs/your-own-server"
     },
     {
-      "label": "dusk bot docs: the phone app",
+      "label": "madani bot docs: the phone app",
       "url": "/docs/phone"
     },
     {
-      "label": "dusk bot docs: a bot's computer",
+      "label": "madani bot docs: a bot's computer",
       "url": "/docs/computer"
     }
   ],

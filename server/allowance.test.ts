@@ -10,7 +10,7 @@ const dirs: string[] = [];
 afterEach(() => { for (const dir of dirs.splice(0)) rmSync(dir, { recursive: true, force: true }); });
 
 function harness(options: { skipped?: Array<{ routineId: string; name: string; at: number }> } = {}) {
-  const dataDir = mkdtempSync(join(tmpdir(), "dusk-allowance-"));
+  const dataDir = mkdtempSync(join(tmpdir(), "madani-allowance-"));
   dirs.push(dataDir);
   // a Wednesday afternoon
   let now = new Date(2026, 10, 11, 15, 0).getTime();

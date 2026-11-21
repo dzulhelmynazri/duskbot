@@ -29,10 +29,10 @@ describe("web tools by engine", () => {
   });
 
   it("is off unless the harness says so, and read_pages runs beside other reads", () => {
-    const plain = availableTools(catalogProfileFromEnv({ DUSK_X_RESEARCH: "1", DUSK_RESEARCH: "1" }));
+    const plain = availableTools(catalogProfileFromEnv({ MADANI_X_RESEARCH: "1", MADANI_RESEARCH: "1" }));
     expect(plain.map((tool) => tool.name)).toContain("web_search_many");
     expect(plain.map((tool) => tool.name)).not.toContain("read_pages");
-    const reader = availableTools(catalogProfileFromEnv({ DUSK_PAGE_READER: "1" })).find((tool) => tool.name === "read_pages");
+    const reader = availableTools(catalogProfileFromEnv({ MADANI_PAGE_READER: "1" })).find((tool) => tool.name === "read_pages");
     expect(reader).toMatchObject({ annotations: { readOnlyHint: true, openWorldHint: true } });
   });
 });

@@ -4,18 +4,18 @@
   "title": "Read Google Sheets cell values with AI from a set range",
   "nav": "get spreadsheet values",
   "h1": "ask about the values in a specific google sheets range",
-  "description": "Read a chosen Google Sheets range with a bot, using calculated values or formulas. Set the exact file, tab and range, and understand its dusk bot access rule.",
+  "description": "Read a chosen Google Sheets range with a bot, using calculated values or formulas. Set the exact file, tab and range, and understand its madani bot access rule.",
   "keyword": "read google sheets values with ai",
   "keywords": [
     "google sheets get cell values with ai",
     "chatgpt read google sheets range",
     "claude retrieve spreadsheet values"
   ],
-  "answer": "**get the figures for your decision without digging through the workbook.** name the file, tab and cells. the bot can read displayed figures, raw calculated values or formulas from that range. dusk labels this lookup as a write, so allow read and write and limit the bot to this retrieval action.",
+  "answer": "**get the figures for your decision without digging through the workbook.** name the file, tab and cells. the bot can read displayed figures, raw calculated values or formulas from that range. madani labels this lookup as a write, so allow read and write and limit the bot to this retrieval action.",
   "updated": "2026-11-12",
   "review": {
     "status": "approved",
-    "by": "lead agent, after two independent reviewer passes, against dusk bot docs and the composio catalog",
+    "by": "lead agent, after two independent reviewer passes, against madani bot docs and the composio catalog",
     "at": "2026-11-12"
   },
   "tags": [
@@ -76,20 +76,20 @@
     },
     {
       "q": "why is read-only access refusing a cell lookup?",
-      "a": "**dusk classifies this lookup as a change.** give read and write access, then restrict it to this action. that keeps cell edits out."
+      "a": "**madani classifies this lookup as a change.** give read and write access, then restrict it to this action. that keeps cell edits out."
     }
   ],
   "sources": [
     {
-      "label": "dusk bot docs: files and apps",
+      "label": "madani bot docs: files and apps",
       "url": "/docs/files-and-apps"
     },
     {
-      "label": "dusk bot docs: routines",
+      "label": "madani bot docs: routines",
       "url": "/docs/routines"
     },
     {
-      "label": "dusk bot docs: computer permissions",
+      "label": "madani bot docs: computer permissions",
       "url": "/docs/computer"
     }
   ],

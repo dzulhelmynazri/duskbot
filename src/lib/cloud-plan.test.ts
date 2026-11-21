@@ -74,9 +74,9 @@ describe("the plan line", () => {
     entitlement: { plan: "pro", tier: "pro", status: "active", expiresAt: ENDS + 3 * DAY, version: 1 }, ...extra });
   it("a running trial is a free trial, not an active paid plan; once paid, or ended, it is not", () => {
     for (const state of ["active", "ending", "processing"] as const) {
-      expect(cloudPlanLine(cloudPlanView(connected({ trial: trial(state) })))).toBe("Pro free trial · verified by dusk cloud");
+      expect(cloudPlanLine(cloudPlanView(connected({ trial: trial(state) })))).toBe("Pro free trial · verified by madani cloud");
     }
-    expect(cloudPlanLine(cloudPlanView(connected({})))).toBe("Pro active · verified by dusk cloud");
+    expect(cloudPlanLine(cloudPlanView(connected({})))).toBe("Pro active · verified by madani cloud");
     expect(cloudPlanView(connected({ entitlement: { plan: "free", status: "inactive", expiresAt: null, version: 2 }, machine: { status: "stopped" }, trial: trial("ended") })).kind).toBe("attention");
   });
 
@@ -100,9 +100,9 @@ describe("the plan line", () => {
 
   it("a Personal subscriber's plan is Personal wherever the app names it", () => {
     const personal = { plan: "pro" as const, tier: "personal", expiresAt: ENDS + 3 * DAY, version: 1 };
-    expect(cloudPlanLine(cloudPlanView(connected({ entitlement: { ...personal, status: "active" } })))).toBe("Personal active · verified by dusk cloud");
+    expect(cloudPlanLine(cloudPlanView(connected({ entitlement: { ...personal, status: "active" } })))).toBe("Personal active · verified by madani cloud");
     expect(cloudPlanLine(cloudPlanView(connected({ entitlement: { ...personal, status: "inactive" } })))).toBe("Personal · not active right now");
-    expect(cloudPlanLine(cloudPlanView({ status: "unavailable", lastPlan: { tier: "personal", active: true } }))).toBe("Personal · checking with dusk cloud…");
+    expect(cloudPlanLine(cloudPlanView({ status: "unavailable", lastPlan: { tier: "personal", active: true } }))).toBe("Personal · checking with madani cloud…");
     expect(cloudPlanLine(cloudPlanView({ status: "reauth-required", message: "expired", lastPlan: { tier: "personal", active: true } }))).toBe("Personal plan");
     expect(cloudTrialView(trial("active", { tier: "personal", amount: 2900 })).body).toContain("Then Personal is $29/month plus tax");
   });
@@ -130,7 +130,7 @@ describe("what is for sale, as the Admin says", () => {
   });
 
   it("one card per plan on sale, in the Admin's order: name, price, promise, its own button and the money in one line; Most popular is the Admin's recommended plan", () => {
-    vi.stubEnv("VITE_DUSK_PHONE_APP", "0");
+    vi.stubEnv("VITE_MADANI_PHONE_APP", "0");
     expect(planCards(OFFER).map(({ rows: _rows, points: _points, spec: _spec, ...card }) => card)).toEqual([
       { tier: "starter", name: "Plus", price: "$15", popular: false, current: false, promise: "For your own bots",
         action: "Start free trial", terms: "7 days free, then $15/month + tax where applicable. Nothing charged until then. Cancel any time.", trialDays: 7 },
@@ -149,7 +149,7 @@ describe("what is for sale, as the Admin says", () => {
   });
 
   it("each card says what the plan does in a few points: how it stays on, its machine, the license or seats, backups, then routines and reach", () => {
-    vi.stubEnv("VITE_DUSK_PHONE_APP", "0");
+    vi.stubEnv("VITE_MADANI_PHONE_APP", "0");
     const team: CloudOfferPlan = { tier: "team", label: "Team", amount: 11900, allowances: { ...allowances(4, 60), memoryMb: 8192, seats: 2, snapshotDays: 14 } };
     const cards = planCards({ plans: [SLEEPS, { ...PLANS[1]!, allowances: { ...PLANS[1]!.allowances!, snapshotDays: 14 } }, team], recommended: "pro" });
     expect(cards.map(card => card.points.map(point => point.text))).toEqual([
@@ -298,13 +298,13 @@ describe("what is for sale, as the Admin says", () => {
   });
 
   it("the card after the update needs a trial, and says only the Admin's numbers: never a launch price or a later one", () => {
-    vi.stubEnv("VITE_DUSK_PHONE_APP", "0");
+    vi.stubEnv("VITE_MADANI_PHONE_APP", "0");
     expect(cloudIntroView(OFFER)).toEqual({ badge: "Free for 7 days",
       points: ["Routines run on time, day and night"],
       price: "Then from $15/month + tax where applicable. Cancel any time.", moneyBack: "14-day money-back on every plan." });
     const bare = cloudIntroView({ ...OFFER, refundDays: undefined })!;
     expect(bare.points).toEqual(["Routines run on time, day and night"]); expect(bare.moneyBack).toBeNull();
-    vi.stubEnv("VITE_DUSK_PHONE_APP", "1");
+    vi.stubEnv("VITE_MADANI_PHONE_APP", "1");
     expect(cloudIntroView(OFFER)!.points, "the phone only while its app is offered").toEqual(["Routines run on time, day and night", "Reach your bots from your phone, even with this computer off"]);
     vi.unstubAllEnvs();
     expect(cloudIntroView(noTrial(OFFER))).toBeNull(); expect(cloudIntroView(null)).toBeNull(); expect(cloudIntroView(undefined)).toBeNull();
@@ -349,7 +349,7 @@ describe("the buying sheet, one view per state", () => {
     expect(cloudAddView({ status: "signed-out", checkout: { plan: "pro", startedAt: NOW } }, OFFER, at).kind).toBe("offer");
   });
 
-  it("a checkout left open never takes over Get dusk cloud: the plans show, with a quiet Finish your checkout", () => {
+  it("a checkout left open never takes over Get madani cloud: the plans show, with a quiet Finish your checkout", () => {
     const email = "person@example.test";
     const old = connected({ checkout: { plan: "pro", startedAt: NOW - 31 * 60_000, link: true } });
     expect(cloudAddView(old, OFFER, at), "opened over 30 minutes ago").toEqual({ kind: "offer", offer: OFFER, signedOut: false, notice: null, pending: "pro" });
@@ -373,7 +373,7 @@ describe("the buying sheet, one view per state", () => {
     expect(cloudAddView(paid({ trial: running }), undefined, at)).toEqual({ kind: "starting", tier: "pro", trial: running, step: null, slow: false, received: false });
     expect(cloudAddView(paid({ machine: { status: "provisioning", setup: { step: "storage", slow: true } } }), undefined, at))
       .toEqual({ kind: "starting", tier: "pro", trial: null, step: "storage", slow: true, received: false });
-    const ready = { status: "ready" as const, origin: "https://dusk-u-1.fly.dev" };
+    const ready = { status: "ready" as const, origin: "https://madani-u-1.fly.dev" };
     expect(cloudAddView(paid({ machine: ready, checkout: { plan: "pro", startedAt: NOW - 3600_000 } }), undefined, at)).toEqual({ kind: "ready", tier: "pro", trial: null });
     expect(cloudAddView(paid({ machine: ready }), undefined, at), "Add a Cloud… with a Cloud: one Cloud for now").toEqual({ kind: "has-cloud" });
     expect(cloudAddView(paid({ machine: ready, checkout: { plan: "pro", startedAt: NOW - 3600_000, done: true } }), undefined, at),
@@ -388,7 +388,7 @@ describe("the buying sheet, one view per state", () => {
     const team = (machine: CloudTeam["machine"], extra: Partial<CloudTeam> = {}): CloudTeam => ({ id: "team-acme", name: "Acme", role: "owner", machine, ...extra });
     const onTeam = (tier: string, teams?: CloudTeam[], extra: Partial<CloudAccountState> = {}) =>
       paid({ entitlement: { plan: "pro", tier, status: "active", expiresAt: NOW + 30 * DAY, version: 2 }, ...(teams ? { teams } : {}), ...extra });
-    const up = { status: "ready" as const, origin: "https://dusk-t-2.fly.dev" };
+    const up = { status: "ready" as const, origin: "https://madani-t-2.fly.dev" };
     for (const tier of ["team", "business"]) {
       expect(cloudAddView(onTeam(tier, [team(up)]), undefined, at), tier).toEqual({ kind: "team-ready", team: { id: "team-acme", name: "Acme" } });
       expect(cloudAddView(onTeam(tier, [team(up)]), undefined, { ...at, arrived: true }), `${tier}, signed in here just now`).toEqual({ kind: "team-ready", team: { id: "team-acme", name: "Acme" } });
@@ -431,7 +431,7 @@ describe("the buying sheet, one view per state", () => {
 
   it("never offers anything to someone who pays or may pay: a problem, an ended sign-in or an unreachable Cloud is Settings' to say", () => {
     for (const account of [
-      connected({ entitlement: { plan: "pro", tier: "pro", status: "inactive", expiresAt: null, version: 3 }, machine: { status: "payment-problem", origin: "https://dusk-u-1.fly.dev" } }),
+      connected({ entitlement: { plan: "pro", tier: "pro", status: "inactive", expiresAt: null, version: 3 }, machine: { status: "payment-problem", origin: "https://madani-u-1.fly.dev" } }),
       connected({ machine: { status: "stopped" }, trial: trial("ended", { keep: "checkout" }) }),
       paid({ machine: { status: "failed" } }),
       { status: "reauth-required", message: "expired", lastPlan: { tier: "pro", active: true } },
@@ -448,7 +448,7 @@ describe("this computer's Cloud sign-in card", () => {
   const view = (account: CloudAccountState) => cloudNoticeKind(cloudPlanView(account), account);
   it("says sign in again where the sign-in ended, and nothing to someone signed in", () => {
     const base = { status: "connected" as const, account: { id: "a", email: "p@example.test" } };
-    const ready = { status: "ready" as const, origin: "https://dusk-u-1.fly.dev" };
+    const ready = { status: "ready" as const, origin: "https://madani-u-1.fly.dev" };
     expect(view({ ...base, entitlement: { plan: "pro", status: "active", expiresAt: NOW + DAY, version: 1 }, machine: ready })).toBeNull();
     expect(view({ status: "reauth-required", message: "expired", lastPlan: { active: true } })).toBe("sign-in-again");
     expect(view({ status: "reauth-required", message: "expired", lastPlan: { active: false } })).toBeNull();

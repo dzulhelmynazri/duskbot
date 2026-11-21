@@ -38,7 +38,7 @@ final class ForegroundNotificationDelegate: NSObject, UNUserNotificationCenterDe
 @objc(PhoneNotificationsPlugin)
 public class PhoneNotificationsPlugin: CAPPlugin, CAPBridgedPlugin {
     public let identifier = "PhoneNotificationsPlugin"
-    public let jsName = "DuskNotifications"
+    public let jsName = "MadaniNotifications"
     public let pluginMethods: [CAPPluginMethod] = [
         CAPPluginMethod(name: "setViewing", returnType: CAPPluginReturnPromise),
         CAPPluginMethod(name: "delivered", returnType: CAPPluginReturnPromise),
@@ -63,7 +63,7 @@ public class PhoneNotificationsPlugin: CAPPlugin, CAPBridgedPlugin {
             let list: [JSObject] = notifications.map { one in
                 var entry: JSObject = ["id": one.request.identifier]
                 if let thread = NotificationPresentation.threadId(of: one.request.content) { entry["threadId"] = thread }
-                if let dusk = one.request.content.userInfo["dusk"] as? [AnyHashable: Any], let id = dusk["id"] as? String { entry["notificationId"] = id }
+                if let madani = one.request.content.userInfo["madani"] as? [AnyHashable: Any], let id = madani["id"] as? String { entry["notificationId"] = id }
                 return entry
             }
             call.resolve(["notifications": list])

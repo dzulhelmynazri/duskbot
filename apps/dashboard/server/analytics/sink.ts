@@ -208,7 +208,7 @@ export async function mongoSink(db: Db): Promise<AnalyticsSink> {
   return { ...sink, rollups: mongoRollupStore(db) };
 }
 
-/** another service's analytics, read only (preview's admin reading dusk.bot's): no setup, and every write refuses */
+/** another service's analytics, read only (preview's admin reading madani.bot's): no setup, and every write refuses */
 export function readonlySink(db: Db): AnalyticsSink {
   const refuse = () => Promise.reject(new Error("These analytics are read only."));
   return { ...sinkOf(db, "live"), insert: refuse, bump: refuse, once: refuse, forget: refuse, audit: refuse, saveNote: refuse, deleteNote: refuse, crawl: refuse };

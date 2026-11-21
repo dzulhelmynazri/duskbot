@@ -105,7 +105,7 @@ function botActivity(app: AppMove): ActivitySource | null {
   if (top === ".hermes") return "hermes";
   if (top === ".claude") return "claudeCode";
   if (top === ".gemini") return "gemini";
-  if (/^\.(?:openmausbot|opengrokbot|duskbot)$/.test(top)) return "openmausbot";
+  if (/^\.(?:openmausbot|opengrokbot|madanibot)$/.test(top)) return "openmausbot";
   return null;
 }
 

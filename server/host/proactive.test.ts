@@ -18,7 +18,7 @@ afterEach(() => {
 });
 
 function setup(options: { team?: boolean; driver?: string; configured?: () => boolean; cloud?: boolean; busy?: () => boolean } = {}) {
-  const dir = mkdtempSync(join(tmpdir(), "dusk-proactive-"));
+  const dir = mkdtempSync(join(tmpdir(), "madani-proactive-"));
   dirs.push(dir);
   const store = new Store(() => ({ instanceId: "claude", model: "claude-sonnet-5" }));
   const chief = store.createBot({ name: "Chief" });

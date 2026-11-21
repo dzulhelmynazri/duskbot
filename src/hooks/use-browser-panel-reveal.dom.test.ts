@@ -11,7 +11,7 @@ const { useBrowserPanelReveal } = await import("./use-browser-panel-reveal");
 
 const dispatch = vi.fn();
 function Probe({ panel }: { panel: string | null }) {
-  useBrowserPanelReveal({ bot: { id: "dusk", threadId: "t1", browser: true }, active: true, panel, dispatch });
+  useBrowserPanelReveal({ bot: { id: "madani", threadId: "t1", browser: true }, active: true, panel, dispatch });
   return null;
 }
 const started = (title: string, turnId: string, threadId = "t1") => publishLiveFrame({ kind: "runtime", event: {
@@ -23,7 +23,7 @@ const render = async (panel: string | null) => { await act(async () => root!.ren
 
 beforeEach(() => {
   dispatch.mockClear();
-  (window as unknown as { duskDesktop: unknown }).duskDesktop = { platform: "darwin" };
+  (window as unknown as { madaniDesktop: unknown }).madaniDesktop = { platform: "darwin" };
   root = createRoot(document.body.appendChild(document.createElement("div")));
 });
 afterEach(async () => { await act(async () => root?.unmount()); root = null; });

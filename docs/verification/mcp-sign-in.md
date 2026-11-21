@@ -18,11 +18,11 @@ preview. It runs Doctor against that exact server, creates one synthetic MCP
 server, and pairs an admin browser. It never contacts the user's running app,
 reads their OAuth credentials, or signs into a real provider.
 
-The browser tools follow the existing `control-dusk ui` setup: set
-`DUSK_AGENT_BROWSER_PATH` and `AGENT_BROWSER_EXECUTABLE_PATH` to reuse installed
+The browser tools follow the existing `control-madani ui` setup: set
+`MADANI_AGENT_BROWSER_PATH` and `AGENT_BROWSER_EXECUTABLE_PATH` to reuse installed
 binaries, or let the fixture install the pinned tools. Set
-`DUSK_UI_EVIDENCE_DIR` to choose the screenshots directory (default:
-`.dusk-scratch/mcp-oauth-evidence`).
+`MADANI_UI_EVIDENCE_DIR` to choose the screenshots directory (default:
+`.madani-scratch/mcp-oauth-evidence`).
 
 The fixture verifies:
 

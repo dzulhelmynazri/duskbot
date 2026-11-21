@@ -3,7 +3,7 @@ import test from "node:test";
 
 import { newServerReach, serverAnswers, serverAnswersWithin, serverOpens, TUNNEL_GRACE_MS, tunnelOrigin } from "./saved-server.mjs";
 
-const office = { id: "vps", name: "pro cloud", origin: "https://dusk-u-gone.fly.dev" };
+const office = { id: "vps", name: "pro cloud", origin: "https://madani-u-gone.fly.dev" };
 const answering = (status) => async () => new Response("{}", { status });
 const gone = async () => { throw new TypeError("fetch failed"); };
 const asked = (responses) => {
@@ -29,7 +29,7 @@ test("one that doesn't answer is the person's choice: Cancel stays put, Remove f
   const cancel = asked([2]);
   assert.equal(await serverOpens(office, { fetch: gone, dialog: cancel.dialog, forget: () => assert.fail("not asked to") }), false);
   assert.equal(cancel.shown[0].message, "pro cloud isn't answering");
-  assert.match(cancel.shown[0].detail, /dusk-u-gone\.fly\.dev/);
+  assert.match(cancel.shown[0].detail, /madani-u-gone\.fly\.dev/);
   assert.deepEqual(cancel.shown[0].buttons, ["Try again", "Remove from list", "Cancel"]);
 
   const forgotten = [];
@@ -84,7 +84,7 @@ test("a server being added opens only once it answers; one that doesn't is kept 
 
   const keep = asked([1]);
   assert.equal(await newServerReach(office, { fetch: gone, dialog: keep.dialog }), "keep");
-  assert.equal(keep.shown[0].message, "dusk-u-gone.fly.dev isn't answering yet");
+  assert.equal(keep.shown[0].message, "madani-u-gone.fly.dev isn't answering yet");
   assert.deepEqual(keep.shown[0].buttons, ["Try again", "Keep in list", "Cancel"]);
   assert.doesNotMatch(keep.shown[0].detail, /nothing is lost/i);
 

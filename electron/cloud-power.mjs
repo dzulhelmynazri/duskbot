@@ -3,9 +3,9 @@ import { readHeader, withLegacyHeaders } from "./legacy-names.mjs";
 // app's background work (Files, lending) never calls My Cloud while the Admin says it sleeps, nor after My Cloud
 // answered that it is going to sleep. Without the session's `cloud.power` and without such an answer, nothing here acts.
 
-export const CLOUD_POWER_HEADER = "x-dusk-cloud-power";
+export const CLOUD_POWER_HEADER = "x-madani-cloud-power";
 /** The home never counts a request with this header as the person using My Cloud. */
-export const BACKGROUND_HEADERS = Object.freeze(withLegacyHeaders({ "x-dusk-background": "1" }));
+export const BACKGROUND_HEADERS = Object.freeze(withLegacyHeaders({ "x-madani-background": "1" }));
 /** Longer than the home's own "going to sleep" state (120 s): a sleep that never came stops holding work back. */
 export const ASLEEP_HOLD_MS = 150_000;
 export const SIGNED_IN_MS = 5_000;
@@ -23,7 +23,7 @@ export class CloudAsleepError extends Error {
 /** My Cloud's answer to a held or new background call while it goes to sleep. */
 export const asleepAnswer = response => response?.status === 503 && readHeader(response.headers, CLOUD_POWER_HEADER) === "asleep";
 
-/** The edge's answer for a dusk cloud that was deleted (apps/cloud-service/edge/worker.js): it never answers again. */
+/** The edge's answer for a madani cloud that was deleted (apps/cloud-service/edge/worker.js): it never answers again. */
 export const goneAnswer = response => response?.status === 410 && readHeader(response.headers, CLOUD_POWER_HEADER) === "gone";
 
 /** `power()`: the Admin's last word (`{ state, since, sleeps }`) or null. `wanted()`: background work waits for My Cloud. */

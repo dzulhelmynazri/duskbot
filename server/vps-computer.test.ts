@@ -62,7 +62,7 @@ import {
 } from "./vps-computer.ts";
 
 // these fixtures are the Cua XFCE desktop; the bot desktop has its own in bot-desktop.test.ts
-beforeAll(() => { vi.stubEnv("DUSK_VPS_DESKTOP", "cua"); vpsTransportTiming.retryDelays = [0, 0]; });
+beforeAll(() => { vi.stubEnv("MADANI_VPS_DESKTOP", "cua"); vpsTransportTiming.retryDelays = [0, 0]; });
 afterAll(() => { vi.unstubAllEnvs(); });
 
 const BOT_ID = "bot-1234-abcd";
@@ -227,11 +227,11 @@ function fixture({
     }
     if (command === "exec") {
       if (screenshotCaptureFails && args.includes("--screenshot-out-file")) throw new Error("capture failed");
-      if (args.includes("duskbot-preview")) return { stdout: screenshotValid ? screenshot.toString("base64") : "not-an-image", stderr: "" };
+      if (args.includes("madanibot-preview")) return { stdout: screenshotValid ? screenshot.toString("base64") : "not-an-image", stderr: "" };
       if (args.includes("tail")) {
         return { stdout: "X display :1 did not become ready within 45 seconds\n", stderr: "" };
       }
-      if (args.includes("dusk-desktop-probe")) {
+      if (args.includes("madani-desktop-probe")) {
         if (desktopProbeFails) throw new Error("driver unavailable");
         return { stdout: JSON.stringify({ schema_version: "1", overall: "ok", checks: [] }), stderr: "" };
       }
@@ -240,10 +240,10 @@ function fixture({
         return { stdout: `cua-driver ${CUA_DRIVER_VERSION}\n`, stderr: "" };
       }
       if (args.includes("status")) return { stdout: "running\n", stderr: "" };
-      if ((args.includes("dusk-desktop-probe") || args.includes("health_report"))) {
+      if ((args.includes("madani-desktop-probe") || args.includes("health_report"))) {
         return { stdout: JSON.stringify({ schema_version: "1", overall: "ok", checks: [] }), stderr: "" };
       }
-      if ((args.includes("dusk-desktop-probe") || args.includes("get_desktop_state"))) return { stdout: "{}\n", stderr: "" };
+      if ((args.includes("madani-desktop-probe") || args.includes("get_desktop_state"))) return { stdout: "{}\n", stderr: "" };
       return { stdout: "{}\n", stderr: "" };
     }
     if (command === "pull") return { stdout: "pulled\n", stderr: "" };
@@ -348,19 +348,19 @@ describe("VPS computer", () => {
     const probes = fake.calls.filter(
       ({ args }) =>
         args[2] === "exec" &&
-        args.includes("dusk-desktop-probe"),
+        args.includes("madani-desktop-probe"),
     );
     expect(probes).toHaveLength(1);
     expect(probes.every(({ args }) => args.includes(CONTAINER_ID))).toBe(true);
     expect(probes.every(({ args }) => !args.includes(fake.name))).toBe(true);
     expect(probes.every(({ args }) => args.includes(`DISPLAY=${DISPLAY}`))).toBe(true);
     expect(probes.every(({ args }) => args.includes("CUA_DRIVER_RS_TELEMETRY_ENABLED=0"))).toBe(true);
-    expect(fake.calls.some(({ args }) => args.includes("duskbot-preview"))).toBe(false);
+    expect(fake.calls.some(({ args }) => args.includes("madanibot-preview"))).toBe(false);
     expect(fake.calls.some(({ args }) => args.includes("--screenshot-out-file"))).toBe(false);
   });
 
   it.skipIf(process.platform === "win32")("runs every readiness check in one exec and stops at a failed check", () => {
-    const dir = mkdtempSync(join(tmpdir(), "dusk-desktop-probe-"));
+    const dir = mkdtempSync(join(tmpdir(), "madani-desktop-probe-"));
     const driver = join(dir, "driver");
     const log = join(dir, "calls");
     const args = vpsDesktopProbeArgs(CONTAINER_ID);
@@ -375,7 +375,7 @@ case "$1 $2" in
   *) exit 2 ;;
 esac
 `, { mode: 0o700 });
-    const run = (fail: string) => execFileSync("sh", ["-ec", script, "dusk-desktop-probe", driver, `cua-driver ${CUA_DRIVER_VERSION}`, "/run/fixture.sock"], {
+    const run = (fail: string) => execFileSync("sh", ["-ec", script, "madani-desktop-probe", driver, `cua-driver ${CUA_DRIVER_VERSION}`, "/run/fixture.sock"], {
       encoding: "utf8", env: { PATH: process.env.PATH, PROBE_LOG: log, PROBE_FAIL: fail }, stdio: ["ignore", "pipe", "pipe"],
     });
     try {
@@ -388,7 +388,7 @@ esac
       }
       const waitArgs = vpsDesktopWaitProbeArgs(CONTAINER_ID, 1_000);
       const waitScript = waitArgs[waitArgs.indexOf("-ec") + 1]!;
-      const runWait = (fail: string) => execFileSync("sh", ["-ec", waitScript, "dusk-desktop-probe", driver, `cua-driver ${CUA_DRIVER_VERSION}`, "/run/fixture.sock", waitArgs.at(-1)!], {
+      const runWait = (fail: string) => execFileSync("sh", ["-ec", waitScript, "madani-desktop-probe", driver, `cua-driver ${CUA_DRIVER_VERSION}`, "/run/fixture.sock", waitArgs.at(-1)!], {
         encoding: "utf8", env: { PATH: process.env.PATH, PROBE_LOG: log, PROBE_FAIL: fail }, stdio: ["ignore", "pipe", "pipe"],
       });
       writeFileSync(log, "");
@@ -666,7 +666,7 @@ esac
     const fake = fixture();
     expect((await vpsComputerAction("provision", CONFIG, BOT_ID, fake.runner)).ready).toBe(true);
     expect(fake.calls.filter(({ args }) => args[2] === "image")).toHaveLength(1);
-    expect(fake.calls.filter(({ args }) => (args.includes("dusk-desktop-probe") || args.includes("get_desktop_state")))).toHaveLength(1);
+    expect(fake.calls.filter(({ args }) => (args.includes("madani-desktop-probe") || args.includes("get_desktop_state")))).toHaveLength(1);
   });
 
   it("shares a slow provision instead of rejecting its second caller after five seconds", async () => {
@@ -688,7 +688,7 @@ esac
       const results = await Promise.all([first, second]);
       expect(results[0]).toEqual(results[1]);
       expect(fake.calls.filter(({ args }) => args[2] === "run")).toHaveLength(1);
-      expect(fake.calls.filter(({ args }) => (args.includes("dusk-desktop-probe") || args.includes("get_desktop_state")))).toHaveLength(1);
+      expect(fake.calls.filter(({ args }) => (args.includes("madani-desktop-probe") || args.includes("get_desktop_state")))).toHaveLength(1);
     } finally {
       release();
       await Promise.allSettled([first, second]);
@@ -787,10 +787,10 @@ esac
       "-e",
       "CUA_DRIVER_RS_TELEMETRY_ENABLED=0",
       vpsContainerName(BOT_ID),
-      "/usr/local/libexec/duskbot/cua-driver",
+      "/usr/local/libexec/madanibot/cua-driver",
       "mcp",
       "--socket",
-      "/run/user/1000/duskbot-cua.sock",
+      "/run/user/1000/madanibot-cua.sock",
     ]);
   });
 
@@ -798,11 +798,11 @@ esac
     const fake = fixture();
     const frame = await vpsComputerScreenshot(CONFIG, BOT_ID, fake.runner);
     expect(frame).toEqual({ png: screenshot.toString("base64"), format: "png" });
-    expect(fake.calls.some(({ args }) => (args.includes("dusk-desktop-probe") || args.includes("get_desktop_state")))).toBe(true);
-    const transfer = fake.calls.find(({ args }) => args.includes("duskbot-preview"))!.args;
+    expect(fake.calls.some(({ args }) => (args.includes("madani-desktop-probe") || args.includes("get_desktop_state")))).toBe(true);
+    const transfer = fake.calls.find(({ args }) => args.includes("madanibot-preview"))!.args;
     expect(transfer.slice(2)).toEqual([
       "exec", "-u", "cua", "-e", "HOME=/home/cua", CONTAINER_ID,
-      "sh", "-c", expect.stringContaining('quality=70'), "duskbot-preview", "/tmp/duskbot-vps-preview.png",
+      "sh", "-c", expect.stringContaining('quality=70'), "madanibot-preview", "/tmp/madanibot-vps-preview.png",
     ]);
     expect(transfer[transfer.indexOf("-c") + 1]).toContain("image.thumbnail((1280, 1280))");
     expect(fake.calls.some(({ args }) => args.includes("rm") && args.includes("-f"))).toBe(true);
@@ -817,16 +817,16 @@ esac
   it.skipIf(!hasPillow)("transfers real JPEG previews at quality 70, within 1280px without upscaling", async () => {
     const fake = fixture();
     await vpsComputerScreenshot(CONFIG, BOT_ID, fake.runner);
-    const transfer = fake.calls.find(({ args }) => args.includes("duskbot-preview"))!.args;
+    const transfer = fake.calls.find(({ args }) => args.includes("madanibot-preview"))!.args;
     // The exact in-container script with only the local Pillow interpreter and a disposable image swapped in; no Docker or SSH.
     const script = transfer[transfer.indexOf("-c") + 1].replace("/opt/venv/bin/python", "python3");
-    const scratch = mkdtempSync(join(tmpdir(), "dusk-vps-preview-image-"));
+    const scratch = mkdtempSync(join(tmpdir(), "madani-vps-preview-image-"));
     try {
       for (const [width, height, expected] of [[2560, 1600, [1280, 800]], [1600, 2560, [800, 1280]], [320, 200, [320, 200]]] as const) {
         const original = execFileSync("python3", ["-I", "-c", `from PIL import Image; import sys; Image.effect_noise((${width}, ${height}), 64).convert("RGBA").save(sys.stdout.buffer, format="PNG")`], { maxBuffer: 32 * 1024 * 1024 });
         const path = join(scratch, "preview.png");
         writeFileSync(path, original);
-        const encoded = execFileSync("sh", ["-c", script, "duskbot-preview", path], { encoding: "utf8", maxBuffer: 16 * 1024 * 1024 });
+        const encoded = execFileSync("sh", ["-c", script, "madanibot-preview", path], { encoding: "utf8", maxBuffer: 16 * 1024 * 1024 });
         const jpeg = Buffer.from(encoded, "base64");
         const decoded = execFileSync("python3", ["-I", "-c", [
           "from PIL import Image",
@@ -840,7 +840,7 @@ esac
         expect(JSON.parse(decoded)).toEqual({ format: "JPEG", size: expected, mode: "RGB", quality70: true });
         expect(jpeg.length).toBeLessThan(original.length / 2);
         expect(readFileSync(path).equals(original)).toBe(true);
-        const frame = await vpsComputerScreenshot(CONFIG, BOT_ID, async (args, options) => args.includes("duskbot-preview")
+        const frame = await vpsComputerScreenshot(CONFIG, BOT_ID, async (args, options) => args.includes("madanibot-preview")
           ? { stdout: encoded, stderr: "" }
           : fake.runner(args, options));
         expect(frame).toEqual({ png: encoded, format: "jpeg" });
@@ -851,15 +851,15 @@ esac
   it.skipIf(process.platform === "win32")("falls back to the original PNG when conversion is unavailable or fails", async () => {
     const fake = fixture();
     await vpsComputerScreenshot(CONFIG, BOT_ID, fake.runner);
-    const transfer = fake.calls.find(({ args }) => args.includes("duskbot-preview"))!.args;
+    const transfer = fake.calls.find(({ args }) => args.includes("madanibot-preview"))!.args;
     const originalScript = transfer[transfer.indexOf("-c") + 1];
-    const scratch = mkdtempSync(join(tmpdir(), "dusk-vps-preview-fallback-"));
+    const scratch = mkdtempSync(join(tmpdir(), "madani-vps-preview-fallback-"));
     try {
       const path = join(scratch, "preview.png");
       writeFileSync(path, screenshot);
       for (const interpreter of [join(scratch, "missing-python"), "false"]) {
         const script = originalScript.replace("/opt/venv/bin/python", interpreter);
-        const encoded = execFileSync("sh", ["-c", script, "duskbot-preview", path], { encoding: "utf8" });
+        const encoded = execFileSync("sh", ["-c", script, "madanibot-preview", path], { encoding: "utf8" });
         expect(encoded).toBe(screenshot.toString("base64"));
       }
     } finally { rmSync(scratch, { recursive: true, force: true }); }
@@ -883,7 +883,7 @@ esac
     const frames = await Promise.all([first, second]);
     expect(frames[0]).toEqual(frames[1]);
     expect(fake.calls.filter(({ args }) => args.includes("--screenshot-out-file"))).toHaveLength(1);
-    expect(fake.calls.filter(({ args }) => args.includes("duskbot-preview"))).toHaveLength(1);
+    expect(fake.calls.filter(({ args }) => args.includes("madanibot-preview"))).toHaveLength(1);
     expect(fake.calls.filter(({ args }) => args.includes("rm"))).toHaveLength(1);
     expect(vpsLifecycleBusy()).toBe(false);
   });
@@ -907,7 +907,7 @@ esac
     await first;
     for (const alias of ["first-preview-vps", "second-preview-vps"]) {
       expect(fake.calls.filter(({ args }) => args[1] === `ssh://${alias}` && args.includes("--screenshot-out-file"))).toHaveLength(1);
-      expect(fake.calls.filter(({ args }) => args[1] === `ssh://${alias}` && args.includes("duskbot-preview"))).toHaveLength(1);
+      expect(fake.calls.filter(({ args }) => args[1] === `ssh://${alias}` && args.includes("madanibot-preview"))).toHaveLength(1);
     }
   });
 
@@ -919,7 +919,7 @@ esac
       const runner: VpsCommandRunner = async (args, options) => {
         const timeoutMs = options?.timeoutMs ?? 120_000;
         calls.push({ args, timeoutMs });
-        if (args.includes("duskbot-preview") || args.includes("rm")) {
+        if (args.includes("madanibot-preview") || args.includes("rm")) {
           // Like defaultRunner: time out, terminate, then wait its 6s kill grace before settling.
           await new Promise((resolve) => setTimeout(resolve, timeoutMs + 6_000));
           throw new Error("Docker-over-SSH command timed out");
@@ -932,7 +932,7 @@ esac
       const first = vpsComputerScreenshot(CONFIG, BOT_ID, runner).finally(() => { settled = true; });
       const rejected = expect(first).rejects.toMatchObject({ status: 504 });
       await vi.advanceTimersByTimeAsync(35_000);
-      expect(calls.find(({ args }) => args.includes("duskbot-preview"))?.timeoutMs).toBe(21_000);
+      expect(calls.find(({ args }) => args.includes("madanibot-preview"))?.timeoutMs).toBe(21_000);
       expect(calls.find(({ args }) => args.includes("rm"))?.timeoutMs).toBe(4_000);
       expect(vpsLifecycleBusy()).toBe(true);
       expect(settled).toBe(false);
@@ -1059,7 +1059,7 @@ esac
     const probing = new Promise<void>((resolve) => { entered = resolve; });
     let probes = 0;
     mockTransport(async (args, options) => {
-      if ((args.includes("dusk-desktop-probe") || args.includes("get_desktop_state")) && ++probes === 1) { entered(); await gate; }
+      if ((args.includes("madani-desktop-probe") || args.includes("get_desktop_state")) && ++probes === 1) { entered(); await gate; }
       return fake.runner(args, options);
     });
     const stale = vpsComputerStatus(cfg, BOT_ID);
@@ -1089,7 +1089,7 @@ esac
     const diagnosing = new Promise<void>((resolve) => { enteredPoll = resolve; });
     let probes = 0;
     mockTransport(async (args, options) => {
-      if ((args.includes("dusk-desktop-probe") || args.includes("get_desktop_state"))) {
+      if ((args.includes("madani-desktop-probe") || args.includes("get_desktop_state"))) {
         if (++probes === 1) { enteredReady(); await readyGate; }
         else if (probes === 2) throw new Error("desktop is still starting");
       }
@@ -1141,7 +1141,7 @@ esac
     expect(imageStatus.problem).toBe("The VPS's Docker can't be reached over SSH right now. Check that the VPS is online and Docker is running on it, then try again.");
   });
 
-  const GATE_EOF = 'error during connect: Get "http://%2Frun%2Fopenmausbot-docker%2Fdocker.sock/v1.56/images/ghcr.io/duskbotai/dusk-desktop:v6/json": EOF';
+  const GATE_EOF = 'error during connect: Get "http://%2Frun%2Fopenmausbot-docker%2Fdocker.sock/v1.56/images/ghcr.io/madanibotai/madani-desktop:v6/json": EOF';
 
   it("rides out a docker gate that drops the connection (EOF) twice, then answers", async () => {
     const fake = fixture();
@@ -1223,7 +1223,7 @@ esac
     expect(rebuilt.ready).toBe(true);
   });
 
-  it("never removes a container dusk bot did not create", async () => {
+  it("never removes a container madani bot did not create", async () => {
     const unowned = fixture({ managed: false });
     await expect(vpsComputerAction("remove", CONFIG, BOT_ID, unowned.runner)).rejects.toThrow(/did not create/);
     expect(unowned.calls.some(({ args }) => args[2] === "rm")).toBe(false);
@@ -1253,7 +1253,7 @@ esac
     try {
       const fake = fixture({ running: false });
       const runner: VpsCommandRunner = async (args, options) => {
-        if (args.includes("dusk-desktop-probe")) await new Promise(resolve => setTimeout(resolve, 2_000));
+        if (args.includes("madani-desktop-probe")) await new Promise(resolve => setTimeout(resolve, 2_000));
         return fake.runner(args, options);
       };
       const startedAt = Date.now();
@@ -1279,7 +1279,7 @@ esac
       const fake = fixture({ running: false });
       let waits = 0;
       const runner: VpsCommandRunner = async (args, options) => {
-        if (args.includes("dusk-desktop-probe")) {
+        if (args.includes("madani-desktop-probe")) {
           waits++;
           await new Promise(resolve => setTimeout(resolve, 3_000));
           fake.state.running = false;
@@ -1289,7 +1289,7 @@ esac
       };
       const pending = vpsComputerAction("provision", CONFIG, BOT_ID, runner);
       await vi.advanceTimersByTimeAsync(3_000);
-      expect(await pending).toMatchObject({ ready: false, desktopReady: false, container: "stopped", problem: "The dusk bot VPS container is stopped" });
+      expect(await pending).toMatchObject({ ready: false, desktopReady: false, container: "stopped", problem: "The madani bot VPS container is stopped" });
       expect(waits).toBe(1);
     } finally { vi.useRealTimers(); }
   });
@@ -1304,7 +1304,7 @@ esac
       const fake = fixture({ running: false });
       const runner: VpsCommandRunner = async (args, options) => {
         const result = await fake.runner(args, options);
-        return args.includes("dusk-desktop-probe") ? { stdout: JSON.stringify(report), stderr: "" } : result;
+        return args.includes("madani-desktop-probe") ? { stdout: JSON.stringify(report), stderr: "" } : result;
       };
       const pending = vpsComputerAction("provision", CONFIG, BOT_ID, runner);
       await vi.advanceTimersByTimeAsync(60_000);
@@ -1318,7 +1318,7 @@ esac
     fake.state.startedAt = new Date(++fixtureBootMs).toISOString();
     const before = fake.calls.length;
     expect((await vpsComputerStatus(CONFIG, BOT_ID, fake.runner, { fresh: true })).ready).toBe(true);
-    expect(fake.calls.slice(before).filter(({ args }) => args.includes("dusk-desktop-probe"))).toHaveLength(1);
+    expect(fake.calls.slice(before).filter(({ args }) => args.includes("madani-desktop-probe"))).toHaveLength(1);
   });
 
   it("keeps wait probe values out of the script and validates its wait", () => {
@@ -1341,7 +1341,7 @@ esac
     vi.useFakeTimers({ toFake: ["Date"] });
     try {
       const fake = fixture();
-      const probes = () => fake.calls.filter(({ args }) => args.includes("dusk-desktop-probe")).length;
+      const probes = () => fake.calls.filter(({ args }) => args.includes("madani-desktop-probe")).length;
       expect((await vpsComputerStatus(CONFIG, BOT_ID, fake.runner)).ready).toBe(true);
       expect(probes()).toBe(1);
       const status = await vpsComputerStatus(CONFIG, BOT_ID, fake.runner);
@@ -1361,7 +1361,7 @@ esac
       const fake = fixture({ container: false });
       const desktopTimeouts: number[] = [];
       const runner: VpsCommandRunner = async (args, options) => {
-        if ((args.includes("dusk-desktop-probe") || args.includes("get_desktop_state"))) {
+        if ((args.includes("madani-desktop-probe") || args.includes("get_desktop_state"))) {
           const timeoutMs = options?.timeoutMs ?? 120_000;
           desktopTimeouts.push(timeoutMs);
           await new Promise((resolve) => setTimeout(resolve, timeoutMs + 6_000));

@@ -60,8 +60,8 @@ function stubOpenRouter(options: {
 
 const createOpenRouter = (key: string, config: Record<string, unknown> = {}) => OpenAICompatDriver.create({
   instanceId: "openrouter", displayName: "OpenRouter", enabled: true,
-  config: OpenAICompatDriver.decodeConfig({ url: OPENROUTER, apiKeyEnv: "DUSK_OPENROUTER_API_KEY", ...config }),
-  environment: { DUSK_OPENROUTER_API_KEY: key },
+  config: OpenAICompatDriver.decodeConfig({ url: OPENROUTER, apiKeyEnv: "MADANI_OPENROUTER_API_KEY", ...config }),
+  environment: { MADANI_OPENROUTER_API_KEY: key },
 });
 
 async function openRouterInstance(key: string, config: Record<string, unknown> = {}) {

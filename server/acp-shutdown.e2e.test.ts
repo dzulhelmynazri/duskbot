@@ -5,7 +5,7 @@ import { DatabaseSync } from "node:sqlite";
 import { fileURLToPath } from "node:url";
 import { expect, it } from "vitest";
 
-import { launchVerificationServer, runControlDusk, verificationServerArgs, verificationServerEnvironment } from "../scripts/control-dusk.ts";
+import { launchVerificationServer, runControlMadani, verificationServerArgs, verificationServerEnvironment } from "../scripts/control-madani.ts";
 import { waitForExit } from "./testing/cleanup.ts";
 
 it("keeps an ACP partial reply in the transcript across graceful shutdown and restart", async () => {
@@ -35,7 +35,7 @@ it("keeps an ACP partial reply in the transcript across graceful shutdown and re
       await waitForExit(server, { signal: "SIGTERM" });
     }
   };
-  const cli = (...args: string[]) => runControlDusk([...args, "--url", url]) as Promise<any>;
+  const cli = (...args: string[]) => runControlMadani([...args, "--url", url]) as Promise<any>;
   try {
     await stop();
     const configPath = join(dataDir, "config.json");

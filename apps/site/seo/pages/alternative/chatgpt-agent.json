@@ -4,14 +4,14 @@
   "title": "ChatGPT agent alternatives now that Work has replaced it",
   "nav": "chatgpt agent",
   "h1": "chatgpt agent is gone: compare work with a team of bots",
-  "description": "ChatGPT Work replaced agent mode. Compare the current option with dusk bot on local work, models, phone access and shared usage limits.",
+  "description": "ChatGPT Work replaced agent mode. Compare the current option with madani bot on local work, models, phone access and shared usage limits.",
   "keyword": "chatgpt agent alternative",
   "keywords": [
     "chatgpt agent review",
     "chatgpt agent use cases",
     "openai operator alternative"
   ],
-  "answer": "**try work before you leave chatgpt over agent mode.** as of 12 november 2026, openai says agent is no longer available.[^1] work handles longer, multi-step tasks and finished deliverables instead. it can also run locally through the desktop app. dusk suits you if separate bots, their own memory and different ai choices matter more than staying inside chatgpt.",
+  "answer": "**try work before you leave chatgpt over agent mode.** as of 12 november 2026, openai says agent is no longer available.[^1] work handles longer, multi-step tasks and finished deliverables instead. it can also run locally through the desktop app. madani suits you if separate bots, their own memory and different ai choices matter more than staying inside chatgpt.",
   "updated": "2026-11-12",
   "review": {
     "status": "approved",
@@ -49,18 +49,18 @@
       "**keep openai models and plan usage together.** one product may be enough.",
       "**use web, phone or desktop.** desktop work also has a local option."
     ],
-    "dusk": [
+    "madani": [
       "**give each helper a job.** named bots keep their own chats and memory.",
       "**change the ai per bot.** its chats, files and memory stay put.",
       "**bring bots together.** use a group thread with a leader or mentions."
     ]
   },
   "compare": {
-    "h": "the current comparison: work and dusk bot",
+    "h": "the current comparison: work and madani bot",
     "intro": "**compare today's work, not yesterday's agent caps.** status and prices are as of 12 november 2026. old agent message limits aren't work allowances.",
     "cols": [
       "ChatGPT Work",
-      "dusk bot"
+      "madani bot"
     ],
     "rows": [
       {
@@ -79,7 +79,7 @@
         "label": "where tasks run",
         "cells": [
           "cloud on web and mobile; desktop can work locally with files, apps and browser",
-          "your computer, your own server or dusk cloud"
+          "your computer, your own server or madani cloud"
         ],
         "src": [
           3,
@@ -147,19 +147,19 @@
       }
     ]
   },
-  "method": "**here's what you're buying in each app.** we make dusk bot. we compared openai's pages checked on 12 november 2026 with our own docs.\n\nthese are feature and price comparisons; we didn't run matching tasks. work has its own usage rules, so retired agent message caps don't belong in the budget.",
+  "method": "**here's what you're buying in each app.** we make madani bot. we compared openai's pages checked on 12 november 2026 with our own docs.\n\nthese are feature and price comparisons; we didn't run matching tasks. work has its own usage rules, so retired agent message caps don't belong in the budget.",
   "sections": [
     {
       "h": "your old agent guide might be the problem",
-      "md": "**you don't need another app just because the button disappeared.** openai's help article says agent is no longer available and points to work.[^1] start with the current work instructions.[^2]\n\nan old review may accurately describe a retired feature. look for its date and whether it covers work before paying for a plan. use [work versus dusk](/vs/chatgpt-agent) when those are your final two choices."
+      "md": "**you don't need another app just because the button disappeared.** openai's help article says agent is no longer available and points to work.[^1] start with the current work instructions.[^2]\n\nan old review may accurately describe a retired feature. look for its date and whether it covers work before paying for a plan. use [work versus madani](/vs/chatgpt-agent) when those are your final two choices."
     },
     {
       "h": "take the same document into either desktop app",
-      "md": "**you can try the document job on the machine you already own.** web and mobile run in the cloud. the desktop app can work locally with files, apps and a browser.[^3]\n\ndusk's difference is the team you keep: separate jobs, chats and memory. each bot can hold several threads. switching its ai keeps those chats, files and notes.[^9] in a [group chat](/ai-group-chat), each keeps its own ai and permissions.[^13]\n\ntry an attached planning document first. ask for a decision brief with evidence and open questions.[^12] read it beside the source."
+      "md": "**you can try the document job on the machine you already own.** web and mobile run in the cloud. the desktop app can work locally with files, apps and a browser.[^3]\n\nmadani's difference is the team you keep: separate jobs, chats and memory. each bot can hold several threads. switching its ai keeps those chats, files and notes.[^9] in a [group chat](/ai-group-chat), each keeps its own ai and permissions.[^13]\n\ntry an attached planning document first. ask for a decision brief with evidence and open questions.[^12] read it beside the source."
     },
     {
       "h": "count shared usage before buying",
-      "md": "**work and codex draw from shared usage.** openai groups their pricing, credits and limits together.[^4] openai doesn't give a fixed work task count per plan. include codex use when you budget.\n\nas of 12 november 2026, plus costs $20 monthly. pro tiers cost $100, $200 or $500 monthly. local prices can differ.[^5][^6] dusk cloud hosting and ai usage are separate bills.[^8][^10]\n\nfor repeat jobs, read the [scheduled tasks guide](/guides/chatgpt-scheduled-tasks). dusk routines need the app open and computer awake locally; cloud runs them on time.[^14] check your ai provider's current terms before relying on a sign-in."
+      "md": "**work and codex draw from shared usage.** openai groups their pricing, credits and limits together.[^4] openai doesn't give a fixed work task count per plan. include codex use when you budget.\n\nas of 12 november 2026, plus costs $20 monthly. pro tiers cost $100, $200 or $500 monthly. local prices can differ.[^5][^6] madani cloud hosting and ai usage are separate bills.[^8][^10]\n\nfor repeat jobs, read the [scheduled tasks guide](/guides/chatgpt-scheduled-tasks). madani routines need the app open and computer awake locally; cloud runs them on time.[^14] check your ai provider's current terms before relying on a sign-in."
     }
   ],
   "faq": [
@@ -208,35 +208,35 @@
       "checked": "2026-11-12"
     },
     {
-      "label": "dusk bot: getting started",
+      "label": "madani bot: getting started",
       "url": "/docs/getting-started"
     },
     {
-      "label": "dusk bot: dusk cloud",
-      "url": "/docs/dusk-cloud"
+      "label": "madani bot: madani cloud",
+      "url": "/docs/madani-cloud"
     },
     {
-      "label": "dusk bot: bots",
+      "label": "madani bot: bots",
       "url": "/docs/bots"
     },
     {
-      "label": "dusk bot: account and billing",
+      "label": "madani bot: account and billing",
       "url": "/docs/account-and-billing"
     },
     {
-      "label": "dusk bot: phone",
+      "label": "madani bot: phone",
       "url": "/docs/phone"
     },
     {
-      "label": "dusk bot: files and apps",
+      "label": "madani bot: files and apps",
       "url": "/docs/files-and-apps"
     },
     {
-      "label": "dusk bot: group chats",
+      "label": "madani bot: group chats",
       "url": "/docs/group-chats"
     },
     {
-      "label": "dusk bot: routines",
+      "label": "madani bot: routines",
       "url": "/docs/routines"
     }
   ],
@@ -254,7 +254,7 @@
       "fix": "look for work and current shared usage in the review, along with its date."
     },
     {
-      "mistake": "choosing dusk just for local file access",
+      "mistake": "choosing madani just for local file access",
       "fix": "work has a local desktop option too. decide whether separate bot roles matter."
     }
   ],
@@ -271,7 +271,7 @@
       ],
       [
         "different ai choices for different helpers",
-        "dusk bots"
+        "madani bots"
       ],
       [
         "a local document task",
@@ -279,7 +279,7 @@
       ],
       [
         "several bots discussing one job",
-        "dusk group chat"
+        "madani group chat"
       ]
     ]
   },

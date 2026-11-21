@@ -119,7 +119,7 @@ describe("describeQuiet", () => {
 
 describe("LogTail", () => {
   it("skips what was there, then returns only new complete lines", () => {
-    const dir = mkdtempSync(join(tmpdir(), "dusk-logtail-"));
+    const dir = mkdtempSync(join(tmpdir(), "madani-logtail-"));
     try {
       const file = join(dir, "s.txt");
       writeFileSync(file, "old line\n");
@@ -137,7 +137,7 @@ describe("LogTail", () => {
   });
 
   it("reads a log that appears after the watch began from its start", () => {
-    const dir = mkdtempSync(join(tmpdir(), "dusk-logtail-"));
+    const dir = mkdtempSync(join(tmpdir(), "madani-logtail-"));
     try {
       const file = join(dir, "later.txt");
       const tail = new LogTail(file);

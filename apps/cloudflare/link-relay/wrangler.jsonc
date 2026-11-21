@@ -1,16 +1,16 @@
-// The link relay (README.md). The top level is the preview (relay-preview.dusk.bot plus workers.dev); `--env production`
-// serves relay.dusk.bot, the address agents and apps dial by default. The route beside each custom domain keeps the
-// zone's *.dusk.bot edge route from taking the host.
+// The link relay (README.md). The top level is the preview (relay-preview.madani.bot plus workers.dev); `--env production`
+// serves relay.madani.bot, the address agents and apps dial by default. The route beside each custom domain keeps the
+// zone's *.madani.bot edge route from taking the host.
 // Secrets (optional): OPS_TOKEN for /v1/ops/*, GRANT_KEYS to trust other grant keys than the pinned one.
 {
   "$schema": "../../../node_modules/wrangler/config-schema.json",
-  "name": "dusk-link-relay-preview",
+  "name": "madani-link-relay-preview",
   "main": "src/index.js",
   "compatibility_date": "2026-08-18",
   "workers_dev": true,
   "routes": [
-    { "pattern": "relay-preview.dusk.bot", "custom_domain": true },
-    { "pattern": "relay-preview.dusk.bot/*", "zone_name": "dusk.bot" }
+    { "pattern": "relay-preview.madani.bot", "custom_domain": true },
+    { "pattern": "relay-preview.madani.bot/*", "zone_name": "madani.bot" }
   ],
   "durable_objects": {
     "bindings": [
@@ -27,11 +27,11 @@
   "observability": { "enabled": true, "logs": { "enabled": true, "head_sampling_rate": 0.1 } },
   "env": {
     "production": {
-      "name": "dusk-link-relay",
+      "name": "madani-link-relay",
       "workers_dev": false,
       "routes": [
-        { "pattern": "relay.dusk.bot", "custom_domain": true },
-        { "pattern": "relay.dusk.bot/*", "zone_name": "dusk.bot" }
+        { "pattern": "relay.madani.bot", "custom_domain": true },
+        { "pattern": "relay.madani.bot/*", "zone_name": "madani.bot" }
       ],
       "durable_objects": {
         "bindings": [

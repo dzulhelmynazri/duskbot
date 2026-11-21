@@ -25,8 +25,8 @@ const pairedDesktop = { ...desktop, remoteClient: { active: true } };
 let host: HTMLDivElement;
 let root: Root;
 const dispatch = vi.fn();
-function render(engine: InstanceInfo, duskDesktop: object | undefined, cloudHome = false): string {
-  vi.stubGlobal("duskDesktop", duskDesktop);
+function render(engine: InstanceInfo, madaniDesktop: object | undefined, cloudHome = false): string {
+  vi.stubGlobal("madaniDesktop", madaniDesktop);
   const store = { state: { config: cloudHome ? { cloudHome: true } : {} }, dispatch, refreshInstances: vi.fn(), refreshModels: vi.fn() } as unknown as ReturnType<typeof useStore>;
   flushSync(() => root.render(createElement(BotEditorStore, { value: store, children: createElement(EngineSetup, { instance: engine }) })));
   return host.innerHTML;
@@ -66,8 +66,8 @@ describe("signed out: the in-app code", () => {
   it.each([
     ["a desktop paired to another server", pairedDesktop, false],
     ["My Cloud in the desktop app's window", desktop, true],
-  ] as const)("never hands %s a terminal command", (_where, duskDesktop, cloudHome) => {
-    const html = render(signedOut, duskDesktop, cloudHome);
+  ] as const)("never hands %s a terminal command", (_where, madaniDesktop, cloudHome) => {
+    const html = render(signedOut, madaniDesktop, cloudHome);
     expect(html).toContain('data-device-sign-in="grok"');
     expect(html).not.toContain("grok login");
   });
@@ -77,8 +77,8 @@ describe("Grok cannot run here: an xAI key instead", () => {
   it.each([
     ["a server's page in a browser", undefined, false],
     ["My Cloud in the desktop app's window", desktop, true],
-  ] as const)("says so in one line, with the xAI key's own field right there on %s", (_where, duskDesktop, cloudHome) => {
-    const html = render(missing, duskDesktop, cloudHome);
+  ] as const)("says so in one line, with the xAI key's own field right there on %s", (_where, madaniDesktop, cloudHome) => {
+    const html = render(missing, madaniDesktop, cloudHome);
     expect(grokKeyInstead(missing)).toBe(true);
     expect(html).toContain("data-engine-setup-key-instead");
     expect(html).toContain(NOT_INSTALLED);
@@ -102,7 +102,7 @@ describe("Grok cannot run here: an xAI key instead", () => {
     expect(html).not.toContain("<button");
   });
 
-  it("installs Grok in place wherever dusk bot can, and never shows the installer command", () => {
+  it("installs Grok in place wherever madani bot can, and never shows the installer command", () => {
     const installable = { ...missing, install: { ...missing.install, server: { script: true } } };
     for (const where of [undefined, desktop]) {
       const html = render(installable, where);
@@ -116,7 +116,7 @@ describe("Grok cannot run here: an xAI key instead", () => {
   });
 
   it("is about Grok Build alone, and only while it cannot run", () => {
-    vi.stubGlobal("duskDesktop", undefined);
+    vi.stubGlobal("madaniDesktop", undefined);
     expect(grokKeyInstead(signedOut)).toBe(false);
     expect(grokKeyInstead({ ...missing, driverKind: "kimiAgent" })).toBe(false);
   });

@@ -22,9 +22,9 @@ export type BrowserEngineKind = "agent-browser" | "chrome";
 export const browserEngineConfigSchema = z.object({
   attachCdpUrl: z.string().trim().max(2048).refine((value) => value === "" || isValidCdpTarget(value),
     { message: "browserEngine.attachCdpUrl must be a CDP port (1-65535) or an http(s)/ws(s) URL" }).optional(),
-  idleTimeoutMinutes: z.number().int().min(1).max(60).optional(), // an unused browser closes after this; 40 when unset, 3 on dusk cloud
+  idleTimeoutMinutes: z.number().int().min(1).max(60).optional(), // an unused browser closes after this; 40 when unset, 3 on madani cloud
   egress: browserEgressConfigSchema.optional(),
-  /** "chrome" runs the bots' browsers on dusk bot's own Chrome driver, an early test; agent-browser is the default. */
+  /** "chrome" runs the bots' browsers on madani bot's own Chrome driver, an early test; agent-browser is the default. */
   engine: z.enum(["agent-browser", "chrome"]).optional(),
 });
 

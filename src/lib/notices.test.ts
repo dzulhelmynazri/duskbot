@@ -42,11 +42,11 @@ it("keeps the launch quiet after its first notice closes", () => {
 
 it("keeps the first launch claim and ignores removed campaign ids", () => {
   expect(launchNotice()).toBeNull();
-  session.set("dusk.launch.notice", "retired-credit-2026-11");
+  session.set("madani.launch.notice", "retired-credit-2026-11");
   expect(launchNotice()).toBeNull();
   markLaunchNotice(WHATS_NEW_NOTICE); markLaunchNotice(CLOUD_NOTICE);
   expect(launchNotice()).toBe(WHATS_NEW_NOTICE);
-  expect(session.get("dusk.launch.notice")).toBe(WHATS_NEW_NOTICE);
+  expect(session.get("madani.launch.notice")).toBe(WHATS_NEW_NOTICE);
   session.clear();
   vi.stubGlobal("sessionStorage", { getItem: () => { throw new Error("blocked"); }, setItem: () => { throw new Error("blocked"); } });
   markLaunchNotice(CLOUD_NOTICE);

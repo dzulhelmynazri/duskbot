@@ -169,7 +169,7 @@ function ModalSheet({ open, onClose, title, label, children, full = false, back,
   });
   useLayoutEffect(() => {
     if (!mounted || !recede) return;
-    page.current = sheetRef.current?.closest(".dusk-mobile")?.querySelector<HTMLElement>(":scope > .mobile-nav") ?? null;
+    page.current = sheetRef.current?.closest(".madani-mobile")?.querySelector<HTMLElement>(":scope > .mobile-nav") ?? null;
     return () => {
       const nav = page.current;
       if (nav) { nav.style.transform = ""; nav.style.borderRadius = ""; }

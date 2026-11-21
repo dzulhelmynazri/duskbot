@@ -1,12 +1,12 @@
 // @ts-nocheck: this live harness runs page.evaluate callbacks in the browser, and the server tsconfig has no DOM types
-// A person's whole dusk cloud journey on the deployed service, with both of their apps on screen: sign-up on the site,
-// onboarding, a dusk cloud plan, the cloud machine on InstaBox, the desktop app signing in and opening its cloud (the
+// A person's whole madani cloud journey on the deployed service, with both of their apps on screen: sign-up on the site,
+// onboarding, a madani cloud plan, the cloud machine on InstaBox, the desktop app signing in and opening its cloud (the
 // page its window loads, in headless Chromium), two bots, messages, a bot using its own computer's browser, a routine on
 // schedule, the phone app (src/mobile web build) linked from the desktop and in sync with it, pause and resume, and
 // everything deleted at the end. Every step is timed and written to --out.
 //
-//   INSTABOX_API_KEY=... DUSK_OPS_TOKEN=... PLAYWRIGHT_CORE=/path/to/playwright-core/index.mjs \
-//     node apps/cloud-service/scripts/preview-e2e.ts --origin https://preview.dusk.bot --out e2e.json [--state s.json] [--phase setup|run|teardown|all]
+//   INSTABOX_API_KEY=... MADANI_OPS_TOKEN=... PLAYWRIGHT_CORE=/path/to/playwright-core/index.mjs \
+//     node apps/cloud-service/scripts/preview-e2e.ts --origin https://preview.madani.bot --out e2e.json [--state s.json] [--phase setup|run|teardown|all]
 //
 // Phases share --state (a 0600 file under the tmp dir) so the slow setup runs once while later steps are iterated on.
 // Test-only parts, each listed in the results: a throwaway mail.tm inbox, the operator plan grant (checkout is closed on
@@ -26,15 +26,15 @@ import { createInstaboxProvider } from "../src/instabox.ts";
 
 const args = process.argv.slice(2);
 const option = (name: string) => { const at = args.indexOf(name); return at === -1 ? null : args[at + 1] ?? null; };
-const origin = (option("--origin") ?? "https://preview.dusk.bot").replace(/\/$/, "");
+const origin = (option("--origin") ?? "https://preview.madani.bot").replace(/\/$/, "");
 const out = resolve(option("--out") ?? "preview-e2e.json"), shots = resolve(option("--shots") ?? "preview-e2e-shots");
-const statePath = resolve(option("--state") ?? join(tmpdir(), "dusk-e2e-state.json"));
+const statePath = resolve(option("--state") ?? join(tmpdir(), "madani-e2e-state.json"));
 const phase = option("--phase") ?? "all";
-const apiKey = process.env.INSTABOX_API_KEY, opsToken = process.env.DUSK_OPS_TOKEN;
-if (!apiKey || !opsToken) { console.error("INSTABOX_API_KEY and DUSK_OPS_TOKEN are required."); process.exit(2); }
+const apiKey = process.env.INSTABOX_API_KEY, opsToken = process.env.MADANI_OPS_TOKEN;
+if (!apiKey || !opsToken) { console.error("INSTABOX_API_KEY and MADANI_OPS_TOKEN are required."); process.exit(2); }
 interface Cookie { name: string; value: string; httpOnly: boolean; secure: boolean; sameSite: string }
 const { chromium } = await import(process.env.PLAYWRIGHT_CORE ?? "playwright-core") as { chromium: { launch(options: object): Promise<any> } };
-const scope = process.env.DUSK_MANAGED_SCOPE ?? createHash("sha256").update(new URL(origin).origin).digest("hex").slice(0, 16);
+const scope = process.env.MADANI_MANAGED_SCOPE ?? createHash("sha256").update(new URL(origin).origin).digest("hex").slice(0, 16);
 const ibx = createInstaboxProvider({ apiKey, scope });
 mkdirSync(shots, { recursive: true });
 
@@ -92,7 +92,7 @@ async function mt(path: string, init: RequestInit = {}, tries = 0): Promise<any>
 async function inbox() {
   if (!state.mail) {
     const domain = (await mt("/domains"))["hydra:member"][0].domain;
-    state.mail = { address: `dusk-e2e-${Date.now().toString(36)}@${domain}`, password: randomUUID() };
+    state.mail = { address: `madani-e2e-${Date.now().toString(36)}@${domain}`, password: randomUUID() };
     await mt("/accounts", { method: "POST", body: JSON.stringify(state.mail) });
     keep();
   }
@@ -119,14 +119,14 @@ async function inbox() {
 }
 
 const mail = await inbox();
-results.email = mail.address.replace(/^[^@]+/, "dusk-e2e-…");
+results.email = mail.address.replace(/^[^@]+/, "madani-e2e-…");
 const browser = await chromium.launch({ headless: true, args: ["--use-mock-keychain", "--password-store=basic"] });
 const web = await browser.newContext({ viewport: { width: 1280, height: 860 }, ...(state.web ? { storageState: state.web } : {}) });
 const page = await web.newPage();
 const shot = (p: any, name: string) => p.screenshot({ path: join(shots, `${name}.png`) }).catch(() => {});
-const csrf = async () => ((await web.cookies(origin)) as Cookie[]).find(c => c.name === "dusk_csrf")?.value ?? "";
+const csrf = async () => ((await web.cookies(origin)) as Cookie[]).find(c => c.name === "madani_csrf")?.value ?? "";
 async function account(method: string, path: string, body?: unknown) {
-  const r = await web.request.fetch(`${origin}${path}`, { timeout: 120_000, method, headers: { origin, "x-dusk-csrf": await csrf(), ...(body === undefined ? {} : { "content-type": "application/json" }) }, ...(body === undefined ? {} : { data: JSON.stringify(body) }) });
+  const r = await web.request.fetch(`${origin}${path}`, { timeout: 120_000, method, headers: { origin, "x-madani-csrf": await csrf(), ...(body === undefined ? {} : { "content-type": "application/json" }) }, ...(body === undefined ? {} : { data: JSON.stringify(body) }) });
   const text = await r.text(); let data: any = text; try { data = JSON.parse(text); } catch {}
   if (!r.ok()) throw new Error(`${method} ${path} ${r.status()} ${text.slice(0, 200)}`);
   return data;
@@ -155,7 +155,7 @@ async function signInWeb() {
 
 async function setup() {
   if (state.cloudId) { if (!state.web) await signInWeb(); return waitForCloud(); }
-  await step("site: dusk preview home loads through Cloudflare", async () => {
+  await step("site: madani preview home loads through Cloudflare", async () => {
     const r = await page.goto(`${origin}/`);
     if (r?.status() !== 200 || r.headers()["server"] !== "cloudflare") throw new Error(`home ${r?.status()} via ${r?.headers()["server"]}`);
     await shot(page, "01-site");
@@ -167,11 +167,11 @@ async function setup() {
     await page.locator("input[type=email]").waitFor();
     await shot(page, "02-signup");
   }, true);
-  await step("sign-up: an emailed code from account@dusk.bot makes the account", async () => {
+  await step("sign-up: an emailed code from account@madani.bot makes the account", async () => {
     await page.fill("input[type=email]", mail.address);
     const sent = Date.now(); await page.click("button[type=submit]");
     const got = await mail.code(sent);
-    if (got.from !== "account@dusk.bot") throw new Error(`code came from ${got.from}`);
+    if (got.from !== "account@madani.bot") throw new Error(`code came from ${got.from}`);
     results.codeMail = { ms: got.ms, subject: got.subject };
     await page.locator("input:visible").first().fill(got.code);
     await page.waitForURL(/\/app\/welcome/, { timeout: 20_000 });
@@ -195,7 +195,7 @@ async function setup() {
 
 async function waitForCloud() {
   const timeline: Array<{ s: number; status: string; step: string | null }> = [];
-  await step("cloud: the dashboard shows dusk cloud provisioning, then running", async () => {
+  await step("cloud: the dashboard shows madani cloud provisioning, then running", async () => {
     const started = Date.now();
     await page.goto(`${origin}/app/`);
     let shotTaken = false;
@@ -279,7 +279,7 @@ async function run() {
   }, true);
 
   // what a real person would see for engines before any test tooling: is any AI signed in on the cloud?
-  const engineCheck = await onMachine(`command -v claude codex opencode gemini qwen 2>/dev/null; ls ${CLOUD_HOME.data} 2>/dev/null | head -40; test -e /opt/dusk-test/fake-claude.mjs && echo fake-installed || echo no-fake`);
+  const engineCheck = await onMachine(`command -v claude codex opencode gemini qwen 2>/dev/null; ls ${CLOUD_HOME.data} 2>/dev/null | head -40; test -e /opt/madani-test/fake-claude.mjs && echo fake-installed || echo no-fake`);
   results.enginesOnCloud = engineCheck.stdout.trim().split("\n");
 
   let owner: any = null;
@@ -291,7 +291,7 @@ async function run() {
   await step("pair: the app pairs with the home at its public name", async () => {
     const { grant, session } = await ownerSession();
     homeOrigin = grant.origin;
-    if (!/^https:\/\/d[0-9a-f]{20}\.dusk\.bot$/.test(homeOrigin)) throw new Error(`home origin ${homeOrigin}`);
+    if (!/^https:\/\/d[0-9a-f]{20}\.madani\.bot$/.test(homeOrigin)) throw new Error(`home origin ${homeOrigin}`);
     owner = session;
     const engines = await owner.call("GET", "/api/health").catch(() => null);
     results.enginesSeenByHome = engines ? JSON.stringify(engines.body).slice(0, 600) : null;
@@ -300,24 +300,24 @@ async function run() {
 
   // test tooling: the synthetic engine, with a tool-calls file the test rewrites per turn (missing: no tool calls)
   await step("engine: synthetic engine on the home (test tooling)", async () => {
-    if (!process.argv.includes("--reinstall-engine") && (await onMachine("test -x /usr/local/bin/claude && test -e /opt/dusk-test/fake-claude.mjs && echo yes")).stdout.includes("yes")) return;
-    const dir = mkdtempSync(join(tmpdir(), "dusk-engine-")), file = join(dir, "fake-claude.mjs");
+    if (!process.argv.includes("--reinstall-engine") && (await onMachine("test -x /usr/local/bin/claude && test -e /opt/madani-test/fake-claude.mjs && echo yes")).stdout.includes("yes")) return;
+    const dir = mkdtempSync(join(tmpdir(), "madani-engine-")), file = join(dir, "fake-claude.mjs");
     execFileSync(resolve("node_modules/.bin/esbuild"), ["server/testing/fake-claude-cli.ts", "--bundle", "--platform=node", "--format=esm", `--outfile=${file}`, "--log-level=error",
       "--banner:js=import { createRequire as __cr } from 'node:module'; const require = __cr(import.meta.url);"], { stdio: "inherit" });
-    const wrapper = `#!/bin/sh\nif [ "$1" = auth ]; then echo '{"loggedIn":true,"email":"person@example.test"}'; exit 0; fi\nexport FAKE_CLAUDE_VERSION=2.1.284\nexport FAKE_CLAUDE_TOOL_CALLS_FILE=/opt/dusk-test/tools.json\nexport FAKE_CLAUDE_USES_CLOUD_COMPUTER=1\nexec ${CLOUD_HOME.root}/node/bin/node /opt/dusk-test/fake-claude.mjs "$@"\n`;
+    const wrapper = `#!/bin/sh\nif [ "$1" = auth ]; then echo '{"loggedIn":true,"email":"person@example.test"}'; exit 0; fi\nexport FAKE_CLAUDE_VERSION=2.1.284\nexport FAKE_CLAUDE_TOOL_CALLS_FILE=/opt/madani-test/tools.json\nexport FAKE_CLAUDE_USES_CLOUD_COMPUTER=1\nexec ${CLOUD_HOME.root}/node/bin/node /opt/madani-test/fake-claude.mjs "$@"\n`;
     const id = await machine();
     await ibx.upload(id, "/data/home/fake-claude.mjs", readFileSync(file));
     await ibx.upload(id, "/data/home/claude-wrapper.sh", Buffer.from(wrapper));
     rmSync(dir, { recursive: true, force: true });
-    const done = await onMachine("sudo install -d -m 0777 /opt/dusk-test && sudo install -m 0755 /data/home/fake-claude.mjs /opt/dusk-test/fake-claude.mjs && sudo install -m 0755 /data/home/claude-wrapper.sh /usr/local/bin/claude && sudo rm -f /opt/dusk-test/tools.json && sudo systemctl restart omb-home && for i in $(seq 1 60); do curl -fsS -m 2 http://127.0.0.1:8799/api/health >/dev/null && break; sleep 1; done && echo ok", 180);
+    const done = await onMachine("sudo install -d -m 0777 /opt/madani-test && sudo install -m 0755 /data/home/fake-claude.mjs /opt/madani-test/fake-claude.mjs && sudo install -m 0755 /data/home/claude-wrapper.sh /usr/local/bin/claude && sudo rm -f /opt/madani-test/tools.json && sudo systemctl restart omb-home && for i in $(seq 1 60); do curl -fsS -m 2 http://127.0.0.1:8799/api/health >/dev/null && break; sleep 1; done && echo ok", 180);
     if (!done.stdout.includes("ok")) throw new Error(`engine install: ${done.stdout.slice(-200)}`);
     const again = await ownerSession(); owner = again.session;
   });
   const setTools = async (calls: unknown[] | null) => {
     const id = await machine();
-    if (!calls) { await onMachine("sudo rm -f /opt/dusk-test/tools.json"); return; }
+    if (!calls) { await onMachine("sudo rm -f /opt/madani-test/tools.json"); return; }
     await ibx.upload(id, "/data/home/tools.json", Buffer.from(JSON.stringify(calls)));
-    await onMachine("sudo install -m 0644 /data/home/tools.json /opt/dusk-test/tools.json");
+    await onMachine("sudo install -m 0644 /data/home/tools.json /opt/madani-test/tools.json");
   };
   await setTools(null);
 
@@ -410,8 +410,8 @@ async function run() {
     if (!(woke.status < 300 && woke.body?.ready === true)) throw new Error(`computer ${woke.status} ${JSON.stringify(woke.body).slice(0, 200)}`);
   });
   await step("browser: Borealis opens a web page in his computer's browser during a turn", async () => {
-    const marker = `dusk-${randomUUID().slice(0, 6)}`;
-    const command = `curl -s -m 10 -X PUT "http://127.0.0.1:\${DUSK_CDP_PORT:-9222}/json/new?https://example.com/?${marker}" >/dev/null || (chromium "https://example.com/?${marker}" >/dev/null 2>&1 &); for i in $(seq 1 20); do sleep 1; curl -s -m 5 http://127.0.0.1:\${DUSK_CDP_PORT:-9222}/json/list | grep -q '"title": "Example Domain"' && break; done; curl -s -m 5 http://127.0.0.1:\${DUSK_CDP_PORT:-9222}/json/list | grep -E '"(title|url)"' | head -6`;
+    const marker = `madani-${randomUUID().slice(0, 6)}`;
+    const command = `curl -s -m 10 -X PUT "http://127.0.0.1:\${MADANI_CDP_PORT:-9222}/json/new?https://example.com/?${marker}" >/dev/null || (chromium "https://example.com/?${marker}" >/dev/null 2>&1 &); for i in $(seq 1 20); do sleep 1; curl -s -m 5 http://127.0.0.1:\${MADANI_CDP_PORT:-9222}/json/list | grep -q '"title": "Example Domain"' && break; done; curl -s -m 5 http://127.0.0.1:\${MADANI_CDP_PORT:-9222}/json/list | grep -E '"(title|url)"' | head -6`;
     await setTools([{ server: "computer", name: "vm_exec", input: { command, timeout_seconds: 60 } }]);
     const before = (await botReplies(bo)).length, sent = Date.now();
     await api("POST", `/api/bots/${bo.id}/messages`, { text: "open example.com in your browser and tell me its title", threadId: bo.threadId, sendId: randomUUID() });
@@ -481,7 +481,7 @@ async function run() {
   // the phone: the src/mobile production build, served to headless Chromium as the native app's origin (http://localhost,
   // one the home's mobile CORS names); CapacitorHttp sends its requests natively, so they are made here outside the page's
   // CORS, while its live stream stays the WebView's own fetch (CapacitorWebFetch) on the real CORS path
-  const dist = mkdtempSync(join(tmpdir(), "dusk-phone-"));
+  const dist = mkdtempSync(join(tmpdir(), "madani-phone-"));
   cleanups.push(() => rmSync(dist, { recursive: true, force: true }));
   execFileSync(process.execPath, ["node_modules/vite/bin/vite.js", "build", "--config", "apps/mobile/vite.config.ts", "--outDir", dist, "--emptyOutDir", "--logLevel", "error"], { stdio: "inherit" });
   const types: Record<string, string> = { js: "text/javascript", css: "text/css", html: "text/html", svg: "image/svg+xml", png: "image/png", woff2: "font/woff2", json: "application/json", webp: "image/webp", wasm: "application/wasm", mp3: "audio/mpeg" };
@@ -493,7 +493,7 @@ async function run() {
     if (!file.startsWith(dist) || !existsSync(file) || !statSync(file).isFile()) file = join(dist, "index.html");
     await route.fulfill({ status: 200, body: readFileSync(file), headers: { "content-type": types[file.split(".").pop()!] ?? "application/octet-stream" } });
   });
-  await phoneCtx.route(/^https:\/\/d[0-9a-f]{20}\.dusk\.bot\//, async (route: any) => {
+  await phoneCtx.route(/^https:\/\/d[0-9a-f]{20}\.madani\.bot\//, async (route: any) => {
     const req = route.request(), cors = { "access-control-allow-origin": "http://localhost", "access-control-allow-headers": "*", "access-control-allow-methods": "*", "access-control-expose-headers": "*" };
     if (req.method() === "OPTIONS" && /authorization/i.test(req.headers()["access-control-request-headers"] ?? "") && /\/api\/events/.test(req.url())) return route.continue();
     if (/text\/event-stream/.test(req.headers()["accept"] ?? "")) return route.continue();
@@ -511,7 +511,7 @@ async function run() {
     try { const r = await route.fetch({ headers, timeout: 60_000 }); await route.fulfill({ response: r, headers: { ...r.headers(), ...cors } }); }
     catch { await route.abort("failed").catch(() => {}); }
   });
-  await step("phone: signs in with the Dusk account, picks the cloud, and lists the same chats", async () => {
+  await step("phone: signs in with the Madani account, picks the cloud, and lists the same chats", async () => {
     await phone.goto(`http://localhost/?account=1&accountOrigin=${encodeURIComponent(origin)}`);
     await sleep(3000); await shot(phone, "11-phone-first");
     const email = phone.locator('input[type="email"]');

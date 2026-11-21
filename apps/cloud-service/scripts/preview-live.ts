@@ -1,10 +1,10 @@
 // One person's whole life on the deployed service, through its public URLs (Cloudflare in front): the site, sign-up
-// with a real emailed code, onboarding, a dusk cloud plan, the cloud machine on InstaBox, the desktop app's own
+// with a real emailed code, onboarding, a madani cloud plan, the cloud machine on InstaBox, the desktop app's own
 // account client signing in and pairing with the home through its public name, a bot answering, cancelling, deleting
 // the account, and the provider left with nothing. Times every step and writes them to --out.
 //
-//   INSTABOX_API_KEY=... DUSK_OPS_TOKEN=... PLAYWRIGHT_CORE=/path/to/playwright-core \
-//     node apps/cloud-service/scripts/preview-live.ts --origin https://preview.dusk.bot --out preview-live.json
+//   INSTABOX_API_KEY=... MADANI_OPS_TOKEN=... PLAYWRIGHT_CORE=/path/to/playwright-core \
+//     node apps/cloud-service/scripts/preview-live.ts --origin https://preview.madani.bot --out preview-live.json
 //
 // Test-only parts, each listed in the results: the inbox is a throwaway mail.tm address; checkout is closed on preview, so
 // the operator grants the plan (POST /v1/billing/ops/grant, the same checkout, webhook and provisioning path with nothing
@@ -22,14 +22,14 @@ import { createInstaboxProvider } from "../src/instabox.ts";
 
 const args = process.argv.slice(2);
 const option = (name: string) => { const at = args.indexOf(name); return at === -1 ? null : args[at + 1] ?? null; };
-const origin = (option("--origin") ?? "https://preview.dusk.bot").replace(/\/$/, "");
+const origin = (option("--origin") ?? "https://preview.madani.bot").replace(/\/$/, "");
 const out = resolve(option("--out") ?? "preview-live.json"), shots = resolve(option("--shots") ?? "preview-live-shots");
-const apiKey = process.env.INSTABOX_API_KEY, opsToken = process.env.DUSK_OPS_TOKEN;
-if (!apiKey || !opsToken) { console.error("INSTABOX_API_KEY and DUSK_OPS_TOKEN are required."); process.exit(2); }
+const apiKey = process.env.INSTABOX_API_KEY, opsToken = process.env.MADANI_OPS_TOKEN;
+if (!apiKey || !opsToken) { console.error("INSTABOX_API_KEY and MADANI_OPS_TOKEN are required."); process.exit(2); }
 interface Cookie { name: string; value: string; httpOnly: boolean; secure: boolean; sameSite: string }
 // playwright-core is not a dependency of this repo: PLAYWRIGHT_CORE names an install of it
 const { chromium } = await import(process.env.PLAYWRIGHT_CORE ?? "playwright-core") as { chromium: { launch(options: object): Promise<any> } };
-const scope = process.env.DUSK_MANAGED_SCOPE ?? createHash("sha256").update(new URL(origin).origin).digest("hex").slice(0, 16);
+const scope = process.env.MADANI_MANAGED_SCOPE ?? createHash("sha256").update(new URL(origin).origin).digest("hex").slice(0, 16);
 const ibx = createInstaboxProvider({ apiKey, scope });
 mkdirSync(shots, { recursive: true });
 
@@ -66,7 +66,7 @@ async function mt(path: string, init: RequestInit = {}, tries = 0): Promise<any>
 }
 async function inbox() {
   const domain = (await mt("/domains"))["hydra:member"][0].domain;
-  const address = `dusk-live-${Date.now().toString(36)}@${domain}`, password = randomUUID();
+  const address = `madani-live-${Date.now().toString(36)}@${domain}`, password = randomUUID();
   await mt("/accounts", { method: "POST", body: JSON.stringify({ address, password }) });
   const { token } = await mt("/token", { method: "POST", body: JSON.stringify({ address, password }) });
   const seen = new Set<string>();
@@ -91,14 +91,14 @@ async function inbox() {
 }
 
 const mail = await inbox();
-results.email = mail.address.replace(/^[^@]+/, "dusk-live-…");
+results.email = mail.address.replace(/^[^@]+/, "madani-live-…");
 const browser = await chromium.launch({ headless: true, args: ["--use-mock-keychain", "--password-store=basic"] });
 const context = await browser.newContext({ viewport: { width: 1280, height: 860 } });
 const page = await context.newPage();
 const shot = (name: string) => page.screenshot({ path: join(shots, `${name}.png`) });
-const csrf = async () => ((await context.cookies(origin)) as Cookie[]).find(c => c.name === "dusk_csrf")?.value ?? "";
+const csrf = async () => ((await context.cookies(origin)) as Cookie[]).find(c => c.name === "madani_csrf")?.value ?? "";
 async function web(method: string, path: string, body?: unknown) {
-  const r = await context.request.fetch(`${origin}${path}`, { method, headers: { origin, "x-dusk-csrf": await csrf(), ...(body === undefined ? {} : { "content-type": "application/json" }) }, ...(body === undefined ? {} : { data: JSON.stringify(body) }) });
+  const r = await context.request.fetch(`${origin}${path}`, { method, headers: { origin, "x-madani-csrf": await csrf(), ...(body === undefined ? {} : { "content-type": "application/json" }) }, ...(body === undefined ? {} : { data: JSON.stringify(body) }) });
   const text = await r.text(); let data: any = text; try { data = JSON.parse(text); } catch {}
   if (!r.ok()) throw new Error(`${method} ${path} ${r.status()} ${text.slice(0, 200)}`);
   return data;
@@ -109,7 +109,7 @@ const client = createCloudAccountClient({ origin, custom: true, platform: "darwi
 
 try {
   // 1. the site and sign-up, as a person does it in a fresh browser
-  await step("site: dusk preview home loads through Cloudflare", async () => {
+  await step("site: madani preview home loads through Cloudflare", async () => {
     const r = await page.goto(`${origin}/`);
     if (r?.status() !== 200 || r.headers()["server"] !== "cloudflare") throw new Error(`home ${r?.status()} via ${r?.headers()["server"]}`);
     await shot("01-site");
@@ -121,15 +121,15 @@ try {
     await page.locator("input[type=email]").waitFor();
     await shot("02-signup");
   }, true);
-  await step("sign-up: an emailed code from account@dusk.bot makes the account", async () => {
+  await step("sign-up: an emailed code from account@madani.bot makes the account", async () => {
     await page.fill("input[type=email]", mail.address);
     const sent = Date.now(); await page.click("button[type=submit]");
     const got = await mail.code(sent);
-    if (got.from !== "account@dusk.bot") throw new Error(`code came from ${got.from}`);
+    if (got.from !== "account@madani.bot") throw new Error(`code came from ${got.from}`);
     results.codeMailMs = got.ms;
     await page.locator("input:visible").first().fill(got.code);
     await page.waitForURL(/\/app\/welcome/, { timeout: 20_000 });
-    const cookies = await context.cookies(origin) as Cookie[], session = cookies.find(c => c.name === "dusk_dash");
+    const cookies = await context.cookies(origin) as Cookie[], session = cookies.find(c => c.name === "madani_dash");
     if (!session?.httpOnly || !session.secure || session.sameSite !== "Lax") throw new Error("session cookie flags");
     await shot("03-welcome");
   }, true);
@@ -153,7 +153,7 @@ try {
     cloudId = body.subscriptions[0].cloudId ?? "";
   }, true);
   const timeline: Array<{ s: number; status: string; step: string | null }> = [];
-  await step("cloud: the dashboard shows dusk cloud provisioning, then running", async () => {
+  await step("cloud: the dashboard shows madani cloud provisioning, then running", async () => {
     const started = Date.now();
     await page.goto(`${origin}/app/`);
     while (Date.now() - started < 25 * 60_000) {
@@ -190,22 +190,22 @@ try {
     // the account's first cloud is its home, paired without an id (an id names one of its other clouds)
     const grant = await client.pairHome() as { origin: string; code: string; expiresAt: number };
     homeOrigin = grant.origin;
-    if (!/^https:\/\/d[0-9a-f]{20}\.dusk\.bot$/.test(homeOrigin)) throw new Error(`home origin ${homeOrigin}`);
+    if (!/^https:\/\/d[0-9a-f]{20}\.madani\.bot$/.test(homeOrigin)) throw new Error(`home origin ${homeOrigin}`);
     const session = await openOwnerSession({ origin: homeOrigin, grant: async () => grant }, globalThis.fetch, { label: "Live app", background: false });
     results.pairMs = Date.now() - started;
     return session;
   }, true))!;
   await step("engine: synthetic engine on the home (test tooling)", async () => {
-    const dir = mkdtempSync(join(tmpdir(), "dusk-engine-")), file = join(dir, "fake-claude.mjs");
+    const dir = mkdtempSync(join(tmpdir(), "madani-engine-")), file = join(dir, "fake-claude.mjs");
     execFileSync(resolve("node_modules/.bin/esbuild"), ["server/testing/fake-claude-cli.ts", "--bundle", "--platform=node", "--format=esm", `--outfile=${file}`, "--log-level=error",
       "--banner:js=import { createRequire as __cr } from 'node:module'; const require = __cr(import.meta.url);"], { stdio: "inherit" });
     const machine = (await ibx.find(cloudId))?.id;
     if (!machine) throw new Error("no machine");
-    const wrapper = `#!/bin/sh\nif [ "$1" = auth ]; then echo '{"loggedIn":true,"email":"person@example.test"}'; exit 0; fi\nexport FAKE_CLAUDE_VERSION=2.1.284\nexec ${CLOUD_HOME.root}/node/bin/node /opt/dusk-test/fake-claude.mjs "$@"\n`;
+    const wrapper = `#!/bin/sh\nif [ "$1" = auth ]; then echo '{"loggedIn":true,"email":"person@example.test"}'; exit 0; fi\nexport FAKE_CLAUDE_VERSION=2.1.284\nexec ${CLOUD_HOME.root}/node/bin/node /opt/madani-test/fake-claude.mjs "$@"\n`;
     await ibx.upload(machine, "/data/home/fake-claude.mjs", readFileSync(file));
     await ibx.upload(machine, "/data/home/claude-wrapper.sh", Buffer.from(wrapper));
     rmSync(dir, { recursive: true, force: true });
-    const done = await ibx.run(machine, "sudo install -d -m 0755 /opt/dusk-test && sudo install -m 0755 /data/home/fake-claude.mjs /opt/dusk-test/fake-claude.mjs && sudo install -m 0755 /data/home/claude-wrapper.sh /usr/local/bin/claude && sudo systemctl restart omb-home && for i in $(seq 1 60); do curl -fsS -m 2 http://127.0.0.1:8799/api/health >/dev/null && break; sleep 1; done && echo ok", 180);
+    const done = await ibx.run(machine, "sudo install -d -m 0755 /opt/madani-test && sudo install -m 0755 /data/home/fake-claude.mjs /opt/madani-test/fake-claude.mjs && sudo install -m 0755 /data/home/claude-wrapper.sh /usr/local/bin/claude && sudo systemctl restart omb-home && for i in $(seq 1 60); do curl -fsS -m 2 http://127.0.0.1:8799/api/health >/dev/null && break; sleep 1; done && echo ok", 180);
     if (!done.stdout.includes("ok")) throw new Error(`engine install: ${done.stdout.slice(-200)}`);
   });
   await step("bot: a bot made from the app answers on the cloud", async () => {

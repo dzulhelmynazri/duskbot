@@ -7,7 +7,7 @@ const SECRET_KEY_PARTS = [
 
 export function isSecretName(name: string): boolean {
   const lower = name.toLowerCase();
-  if (["dusk_", "omb_"].some((p) => lower === `${p}gate_upstream` || lower === `${p}remote_mcp_server` || lower.startsWith(`${p}remote_mcp_config_`))) return true;
+  if (["madani_", "omb_"].some((p) => lower === `${p}gate_upstream` || lower === `${p}remote_mcp_server` || lower.startsWith(`${p}remote_mcp_config_`))) return true;
   if (SECRET_KEY_PARTS.some((part) => lower.includes(part))) return true;
   return /(^|[_.-])keys?$/.test(lower);
 }

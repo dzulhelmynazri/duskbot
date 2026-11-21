@@ -28,7 +28,7 @@ let registry: SessionRegistry;
 const file = () => join(dir, "sessions.json");
 
 beforeEach(() => {
-  dir = mkdtempSync(join(tmpdir(), "dusk-sessions-"));
+  dir = mkdtempSync(join(tmpdir(), "madani-sessions-"));
   clock = 1_700_000_000_000;
   registry = new SessionRegistry({ file: file(), now: () => clock });
 });
@@ -89,7 +89,7 @@ describe("the native-app encoding of a pairing window", () => {
   });
 });
 
-describe("a browser sign-in window (a dusk bot Cloud page's \"Use in your browser\")", () => {
+describe("a browser sign-in window (a madani bot Cloud page's \"Use in your browser\")", () => {
   it("is redeemed only by a browser sign-in, only by its credential, and only once", () => {
     const { code, credential } = registry.openPairing({ scopes: ["admin", "client"], label: "Web browser", browser: true });
     expect(registry.exchange({ code: credential, label: "", source: "10.0.0.5" }).ok).toBe(false);
@@ -445,7 +445,7 @@ describe("sessions", () => {
     if (process.platform !== "win32") expect(statSync(file()).mode & 0o777).toBe(0o600); // Windows has no POSIX modes
     const reloaded = new SessionRegistry({ file: file(), now: () => clock });
     expect(reloaded.authenticate(token)?.id).toBe(session.id);
-    expect(reloaded.authenticate("dusk_sess_nope")).toBeNull();
+    expect(reloaded.authenticate("madani_sess_nope")).toBeNull();
   });
 
   it("expires after 30 days and can be revoked", () => {
@@ -558,7 +558,7 @@ describe("stream tickets", () => {
   });
 });
 
-describe("admin scope only (a dusk bot Cloud home is personal: server/cloud-owner.ts)", () => {
+describe("admin scope only (a madani bot Cloud home is personal: server/cloud-owner.ts)", () => {
   const PERSONAL = "My Cloud is personal: only your own devices can connect.";
   it("opens, redeems, issues and accepts nothing without admin scope; the owner's devices are unaffected", () => {
     // Made before the rule applies (as a stored session is at boot).

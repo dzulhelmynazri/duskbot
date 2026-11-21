@@ -1,14 +1,14 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import { universalPairLink, type MobileDevice, type MobilePairingRequest, type MobilePairingResponse } from "../../shared/mobile-link";
-import type { PhoneRelayState } from "../types/duskDesktop";
+import type { PhoneRelayState } from "../types/madaniDesktop";
 import { companionBridge } from "./companion-bridge";
 import { t } from "./i18n";
 import { friendlyError } from "./plain-error";
 import { api } from "@/state/store";
 
 export const phoneRelayBridge = () =>
-  (typeof window === "undefined" ? undefined : window.duskDesktop?.phoneRelay) ?? null;
+  (typeof window === "undefined" ? undefined : window.madaniDesktop?.phoneRelay) ?? null;
 
 /** a pairing code from this computer reaches it from any network: its relay is up, or comes up when asked */
 export const relayPairingUsable = (relay: PhoneRelayState | null): boolean =>

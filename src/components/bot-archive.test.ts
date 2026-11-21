@@ -59,10 +59,10 @@ describe("archiving a bot", () => {
 
   it("archives a Chief of Staff, which stops being the Chief, instead of losing its chats to a delete", async () => {
     const chief = make("chief", { chiefOfStaff: true });
-    const dusk = make("dusk", { chiefOfStaff: true, defaultBot: {} });
+    const madani = make("madani", { chiefOfStaff: true, defaultBot: {} });
     expect(archivableChief([chief, scout], "chief")).toBe(chief);
     expect(archivableChief([chief], "chief"), "the last active bot stays").toBeUndefined();
-    expect(archivableChief([dusk, scout], "dusk"), "the place's own Dusk is never deleted or archived").toBeUndefined();
+    expect(archivableChief([madani, scout], "madani"), "the place's own Madani is never deleted or archived").toBeUndefined();
     expect(archivableChief([chief, scout], "scout"), "only a Chief is offered this").toBeUndefined();
     expect(botConfirmCopy("delete", "Chief", true).body).toContain("Archive it instead to keep its chats");
     // the Chief's dialog still says deleting is permanent

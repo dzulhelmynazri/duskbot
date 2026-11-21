@@ -51,7 +51,7 @@ async function start() {
     env: {
       ...(process.env.PATH ? { PATH: process.env.PATH } : {}),
       ...(process.env.SystemRoot ? { SystemRoot: process.env.SystemRoot } : {}),
-      HOME: home, USERPROFILE: home, DUSK_PORT: String(PORT), DUSK_WEBHOOK_PORT: String(PORT + 1),
+      HOME: home, USERPROFILE: home, MADANI_PORT: String(PORT), MADANI_WEBHOOK_PORT: String(PORT + 1),
     },
     stdio: ["ignore", "pipe", "pipe"],
   });
@@ -102,8 +102,8 @@ const month = () => new Date().toISOString().slice(0, 7);
 
 posixOnly("admin activity log", () => {
   beforeAll(async () => {
-    home = mkdtempSync(join(tmpdir(), "dusk-admin-activity-"));
-    data = join(home, ".duskbot");
+    home = mkdtempSync(join(tmpdir(), "madani-admin-activity-"));
+    data = join(home, ".madanibot");
     mkdirSync(join(data, "decisions"), { recursive: true });
     writeFileSync(join(data, "config.json"), JSON.stringify({ signIn: { admins: [BOSS], members: [ADA] } }));
     // One card Ada answered earlier, as the decision log recorded it.
@@ -136,7 +136,7 @@ posixOnly("admin activity log", () => {
     expect((await api("PUT", "/api/config", { signIn: { admins: [BOSS], members: [ADA, "carol@example.test"] } }, BOSS)).status).toBe(200);
     expect((await api("PUT", "/api/config", { anthropic: { key: SECRET } }, BOSS)).status).toBe(200);
     expect((await api("PUT", "/api/config", { decisions: { retentionDays: 400 } })).status).toBe(200); // the owner, on this machine
-    expect((await api("PUT", "/api/config", { profile: { name: "Ops desk" } }, undefined, { "x-dusk-cli": "1" })).status).toBe(200);
+    expect((await api("PUT", "/api/config", { profile: { name: "Ops desk" } }, undefined, { "x-madani-cli": "1" })).status).toBe(200);
 
     const people = (await activity("?what=people"))[0];
     expect(people).toMatchObject({ type: "admin", who: BOSS, what: "people", action: "people.update", changed: ["signIn.members"],

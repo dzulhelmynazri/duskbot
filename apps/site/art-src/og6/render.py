@@ -5,14 +5,14 @@ import asyncio, glob, io, json, os, shutil, subprocess, sys, tempfile
 from playwright.async_api import async_playwright
 from PIL import Image
 here = os.path.dirname(os.path.abspath(__file__))
-dusk = os.path.abspath(os.path.join(here, '..', '..'))
-out = os.path.join(dusk, 'public', 'landing', 'art', 'og6')
+madani = os.path.abspath(os.path.join(here, '..', '..'))
+out = os.path.join(madani, 'public', 'landing', 'art', 'og6')
 ledger = os.path.join(here, 'rendered.json')
 
 async def main():
     tmp = tempfile.mkdtemp()
     subprocess.check_call(['node', os.path.join(here, 'cards.mjs'), tmp])
-    cards = json.load(open(os.path.join(dusk, 'seo', 'art', 'og6.json')))
+    cards = json.load(open(os.path.join(madani, 'seo', 'art', 'og6.json')))
     done = json.load(open(ledger)) if os.path.exists(ledger) and '--all' not in sys.argv else {}
     os.makedirs(out, exist_ok=True)
     todo = [c for c in cards if done.get(c['id']) != c['hash'] or not os.path.exists(os.path.join(out, c['id'] + '.jpg'))]
@@ -36,7 +36,7 @@ async def main():
     for f in glob.glob(os.path.join(out, '*.jpg')):
         if os.path.basename(f)[:-4] not in ids: os.remove(f)
     json.dump({k: v for k, v in sorted(done.items()) if k in ids}, open(ledger, 'w'), indent=1)
-    shutil.copy(os.path.join(out, 'home.jpg'), os.path.join(dusk, 'public', 'landing', 'art', 'og.jpg'))
+    shutil.copy(os.path.join(out, 'home.jpg'), os.path.join(madani, 'public', 'landing', 'art', 'og.jpg'))
     shutil.rmtree(tmp)
     print(f'{len(todo)} drawn, {len(cards) - len(todo)} up to date')
 

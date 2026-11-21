@@ -7,18 +7,18 @@ import { createAuthStore } from "./store.ts";
 describe("auth persistence", () => {
   let dataDir: string;
   let store: ReturnType<typeof createAuthStore> | undefined;
-  beforeEach(() => { dataDir = mkdtempSync(join(tmpdir(), "dusk-auth-store-")); vi.stubEnv("DUSK_AUTH_SECRET", undefined); });
+  beforeEach(() => { dataDir = mkdtempSync(join(tmpdir(), "madani-auth-store-")); vi.stubEnv("MADANI_AUTH_SECRET", undefined); });
   afterEach(() => { store?.close(); store = undefined; rmSync(dataDir, { recursive: true, force: true }); vi.unstubAllEnvs(); vi.useRealTimers(); });
   it("requires at least 32 characters in an explicit secret", () => {
     for (const secret of ["", "a".repeat(31)]) {
-      vi.stubEnv("DUSK_AUTH_SECRET", secret);
+      vi.stubEnv("MADANI_AUTH_SECRET", secret);
       expect(() => createAuthStore(dataDir)).toThrow("at least 32 characters");
     }
   });
   it("uses the supplied secret without persisting it", () => {
-    vi.stubEnv("DUSK_AUTH_SECRET", "fixture-secret-".repeat(4));
+    vi.stubEnv("MADANI_AUTH_SECRET", "fixture-secret-".repeat(4));
     store = createAuthStore(dataDir);
-    expect(store.secret).toBe(process.env.DUSK_AUTH_SECRET);
+    expect(store.secret).toBe(process.env.MADANI_AUTH_SECRET);
     store.close();
     expect(existsSync(`${dataDir}/auth-secret`)).toBe(false);
     expect(readFileSync(`${dataDir}/auth.json`, "utf8")).not.toContain(store.secret);

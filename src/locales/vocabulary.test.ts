@@ -10,10 +10,10 @@ import en from "./en.json";
 import { locales } from "./index";
 
 const RETIRED: ReadonlyArray<readonly [string, RegExp, string]> = [
-  ["Dusk Bot Cloud", /Dusk Bot Cloud/i, "Dusk Cloud"],
-  ["Dusk Pro", /Dusk Pro\b/, "Dusk Cloud"],
-  // \b before "_" fails, so environment names such as DUSK_PUBLIC_IPV4 pass.
-  ["OMB", /\bOMB\b/, "Dusk Bot"],
+  ["Madani Bot Cloud", /Madani Bot Cloud/i, "Madani Cloud"],
+  ["Madani Pro", /Madani Pro\b/, "Madani Cloud"],
+  // \b before "_" fails, so environment names such as MADANI_PUBLIC_IPV4 pass.
+  ["OMB", /\bOMB\b/, "Madani Bot"],
   ["Cloud box", /Cloud box/i, "cloud desktop"],
   ["Hosted desktop", /Hosted desktop/i, "cloud desktop"],
   ["Cloud VM", /Cloud VM/i, "cloud desktop"],
@@ -84,18 +84,18 @@ const allows = (entry: (typeof ALLOWED)[number], finding: { file: string; text: 
   !RETIRED_PROVIDER.test(finding.text) && entry.file === finding.file && (entry.snippet === undefined || finding.text.includes(entry.snippet));
 
 describe("one name per thing", () => {
-  it("English copy uses Dusk Cloud, the Cloud, Cloud desktop, This computer and Plan page", () => {
+  it("English copy uses Madani Cloud, the Cloud, Cloud desktop, This computer and Plan page", () => {
     const offending = Object.entries(en as Record<string, string>)
       .flatMap(([key, value]) => [...(RETIRED_PROVIDER.test(key) ? retiredIn(key) : []), ...retiredIn(value)].map((what) => `${key}: ${what}`));
     expect(offending).toEqual([]);
   });
 
-  const productNames = RETIRED.filter(([, , use]) => use === "Dusk Cloud");
-  it("translations never show retired provider names, Dusk Bot, T3 or an old name for Dusk Cloud, and keep its name as it is", () => {
+  const productNames = RETIRED.filter(([, , use]) => use === "Madani Cloud");
+  it("translations never show retired provider names, Madani Bot, T3 or an old name for Madani Cloud, and keep its name as it is", () => {
     const offending = Object.entries(locales).filter(([code]) => code !== "en").flatMap(([code, pack]) =>
       Object.entries(pack)
         .filter(([key, value]) => /\bOMB\b|\bT3\b/.test(value!) || productNames.some(([, pattern]) => pattern.test(value!))
-          || (/Dusk Cloud/.test((en as Record<string, string>)[key]!) && !/Dusk Cloud/.test(value!))
+          || (/Madani Cloud/.test((en as Record<string, string>)[key]!) && !/Madani Cloud/.test(value!))
           || RETIRED_PROVIDER.test(key) || RETIRED_PROVIDER.test(value!))
         .map(([key]) => `${code}: ${key}`));
     expect([...new Set(offending)]).toEqual([]);
@@ -136,7 +136,7 @@ describe("one name per thing", () => {
 
   it("the check catches every retired provider mention and lets live env names through", () => {
     for (const bad of [
-      "Sign in to OMB Cloud", "Sign in to Dusk Bot Cloud", "Get Dusk Pro", "Dusk Pro plans",
+      "Sign in to OMB Cloud", "Sign in to Madani Bot Cloud", "Get Madani Pro", "Madani Pro plans",
       "restart OMB", "Cloud box", "Hosted desktop", "Run it in its cloud VM", `${PROVIDER_WORD} cloud runner`,
       "Open your Cloud dashboard", "Connect to my Cloud", "Your Cloud is ready", "Let my Cloud use this Mac",
       "Local (this computer)", "Choose Cloud to wake", "Auto, Cloud or Browser", "including one from T3",
@@ -145,8 +145,8 @@ describe("one name per thing", () => {
       `Bots here can get their own cloud desktops from ${PROVIDER_WORD}, a paid service`, `Cloud desktops by ${PROVIDER_WORD}`,
     ]) expect(retiredIn(bad), bad).not.toEqual([]);
     for (const good of [
-      "Sign in to Dusk Cloud", "Pro active · verified by Dusk Cloud", "Restart Dusk Bot", "locked by another Dusk Bot process",
-      "set DUSK_PUBLIC_IPV4", "Open My Cloud", "Open the Cloud", "Choose Cloud desktop to wake", "Auto, Cloud desktop or Browser",
+      "Sign in to Madani Cloud", "Pro active · verified by Madani Cloud", "Restart Madani Bot", "locked by another Madani Bot process",
+      "set MADANI_PUBLIC_IPV4", "Open My Cloud", "Open the Cloud", "Choose Cloud desktop to wake", "Auto, Cloud desktop or Browser",
       "Included with your Cloud plan",
       "Local VM", "Open your Plan page",
     ]) expect(retiredIn(good), good).toEqual([]);

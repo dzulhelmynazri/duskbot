@@ -1,4 +1,4 @@
-// The public front of managed cloud desktops: https://<label>.<DUSK_MANAGED_PUBLIC_DOMAIN> -> the machine's own hosted
+// The public front of managed cloud desktops: https://<label>.<MADANI_MANAGED_PUBLIC_DOMAIN> -> the machine's own hosted
 // URL at the provider. The client only ever sees our domain. The label is opaque (it names no person, cloud id or
 // provider); the account service answers which upstream it maps to and whether that home is awake, for this Worker only.
 // A sleeping home is woken for a webhook (/hooks/*) or a signed-in client's action (a send or click, never a read);
@@ -8,7 +8,7 @@
 // client's action, the request is held until the home answers.
 //
 // Bindings: ROUTE_URL (the account service origin, or several comma-separated: route.js routeServices), EDGE_TOKEN
-// (secret, its DUSK_MANAGED_EDGE_TOKEN, or one per origin in the same order),
+// (secret, its MADANI_MANAGED_EDGE_TOKEN, or one per origin in the same order),
 // PUBLIC_DOMAIN (the wildcard's parent, e.g. desktops.example.com), and for the queue HOOK_QUEUE (Durable Object,
 // class HookQueue) with HOOK_SEAL_KEY (secret, 32+ characters, only here). Route: *.<PUBLIC_DOMAIN>/*.
 import { DOWN, LABEL, askWake, lookupRoute, upstreamRequest } from "./route.js";
@@ -70,7 +70,7 @@ export async function routeFor(label, env, ctx, { fresh = false } = {}) {
 export function wakeReason(request, url) {
   if (url.pathname.startsWith("/hooks/")) return "webhook";
   // the app's background pings (focus and the like) are hints, never intent
-  if (request.headers.get("x-dusk-background") === "1" || request.headers.get("x-omb-background") === "1") return null;
+  if (request.headers.get("x-madani-background") === "1" || request.headers.get("x-omb-background") === "1") return null;
   const acting = !["GET", "HEAD", "OPTIONS"].includes(request.method);
   if (acting && (request.headers.has("authorization") || request.headers.has("cookie"))) return "client";
   return null;
@@ -91,21 +91,21 @@ async function wakeAndWait(label, reason, env, ctx, now = () => Date.now()) {
   return { status: 503 };
 }
 
-/** `asleep`: the home sleeps and a person's action would wake it, so the page's x-dusk-cloud-power answer (src/lib/cloud-power.ts)
+/** `asleep`: the home sleeps and a person's action would wake it, so the page's x-madani-cloud-power answer (src/lib/cloud-power.ts)
  *  tells it to stop polling and wake it on the next key press or click, instead of reconnecting forever */
 function waking(status, { asleep = false, wakeable = true } = {}) {
   // asleep and not being woken (a read never wakes a home): say so, never "waking up", or a reader waits for a wake that
   // nobody started
-  const text = status === 429 ? "This dusk bot was woken too often this hour. Try again later."
-    : asleep ? "This dusk bot is asleep. It wakes when someone uses it." : "This dusk bot is waking up. Try again in a few seconds.";
+  const text = status === 429 ? "This madani bot was woken too often this hour. Try again later."
+    : asleep ? "This madani bot is asleep. It wakes when someone uses it." : "This madani bot is waking up. Try again in a few seconds.";
   return new Response(text, { status: status === 429 ? 429 : 503, headers: { "content-type": "text/plain; charset=utf-8", "retry-after": status === 429 ? "300" : "5", "cache-control": "no-store",
-    ...(status === 429 || !wakeable ? {} : { "x-dusk-cloud-power": asleep ? "asleep" : "waking", "x-omb-cloud-power": asleep ? "asleep" : "waking" }) } });
+    ...(status === 429 || !wakeable ? {} : { "x-madani-cloud-power": asleep ? "asleep" : "waking", "x-omb-cloud-power": asleep ? "asleep" : "waking" }) } });
 }
 
-/** a deleted home: final, so the app stops asking (x-dusk-cloud-power: gone, src/lib/cloud-power.ts goneAnswer) */
+/** a deleted home: final, so the app stops asking (x-madani-cloud-power: gone, src/lib/cloud-power.ts goneAnswer) */
 function goneHome() {
-  return new Response("This dusk bot was deleted.", { status: 410, headers: { "content-type": "text/plain; charset=utf-8", "cache-control": "no-store",
-    "x-dusk-cloud-power": "gone", "access-control-allow-origin": "*", "access-control-expose-headers": "x-dusk-cloud-power" } });
+  return new Response("This madani bot was deleted.", { status: 410, headers: { "content-type": "text/plain; charset=utf-8", "cache-control": "no-store",
+    "x-madani-cloud-power": "gone", "access-control-allow-origin": "*", "access-control-expose-headers": "x-madani-cloud-power" } });
 }
 
 async function forward(request, url, upstream, body) {
@@ -141,7 +141,7 @@ async function queueHook(request, url, label, body, env) {
   const accepted = await queue.fetch("https://hook-queue/accept", { method: "POST", headers: { "x-hook-id": id, "x-hook-label": label, "x-hook-host": url.hostname },
     body: envelope({ method: request.method, path: url.pathname + url.search, headers: request.headers, body }) });
   await accepted.body?.cancel().catch(() => {});
-  const taken = () => new Response("Accepted. This dusk bot is waking up and gets it as soon as it answers.", { status: 202, headers: { "content-type": "text/plain; charset=utf-8", "cache-control": "no-store", "x-dusk-delivery": id } });
+  const taken = () => new Response("Accepted. This madani bot is waking up and gets it as soon as it answers.", { status: 202, headers: { "content-type": "text/plain; charset=utf-8", "cache-control": "no-store", "x-madani-delivery": id } });
   // already queued or delivered: a sender's retry, and no second wake
   if (accepted.status === 200) return taken();
   if (accepted.status !== 202) return accepted.status === 507 ? waking(503) : null;

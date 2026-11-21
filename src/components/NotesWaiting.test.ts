@@ -17,9 +17,9 @@ import { ARRIVAL_SHOWN_MS, noteArrival, notesWork, resetNotesArrivalForTests } f
 import { NotesWaitingLine, useNotesIntake } from "./NotesWaiting";
 
 (globalThis as { IS_REACT_ACT_ENVIRONMENT?: boolean }).IS_REACT_ACT_ENVIRONMENT = true;
-const maus = { id: "maus", name: "Dusk", threadId: "maus-thread", defaultBot: {}, messages: [] };
+const maus = { id: "maus", name: "Madani", threadId: "maus-thread", defaultBot: {}, messages: [] };
 const atlas = { id: "atlas", name: "Atlas", threadId: "atlas-thread", messages: [] };
-const NOTES = "---\nformat: dusk-bot-notes\nversion: 3\nfrom: ChatGPT\n---\n\n# Memories\n- Likes tea\n\nEND OF DUSK BOT NOTES\n";
+const NOTES = "---\nformat: madani-bot-notes\nversion: 3\nfrom: ChatGPT\n---\n\n# Memories\n- Likes tea\n\nEND OF MADANI BOT NOTES\n";
 
 let host: HTMLDivElement, root: Root;
 let take: ReturnType<typeof useNotesIntake> | null = null;
@@ -113,7 +113,7 @@ describe("the notes card above the message box", () => {
     f.state = { ...f.state, selectedId: "atlas" };
     f.api.mockResolvedValue({});
     await show("atlas");
-    await act(async () => take!("I'm moving to a new assistant\nfrom: <name of this app, e.g. ChatGPT>\nformat: dusk-bot-notes", undefined, "paste", "atlas"));
+    await act(async () => take!("I'm moving to a new assistant\nfrom: <name of this app, e.g. ChatGPT>\nformat: madani-bot-notes", undefined, "paste", "atlas"));
     expect(card()?.dataset.notesArrived).toBe("failed");
     expect(card()?.textContent).toMatch(/^That's the prompt itself/);
     await act(async () => { vi.advanceTimersByTime(ARRIVAL_SHOWN_MS); });

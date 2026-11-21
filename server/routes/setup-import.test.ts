@@ -32,7 +32,7 @@ const AUTH: Record<string, RequestAuth> = {
 
 /** A fixture home with one skill and one MCP server; never the real one. */
 function fixtureHome() {
-  const home = mkdtempSync(join(tmpdir(), "dusk-setup-route-home-"));
+  const home = mkdtempSync(join(tmpdir(), "madani-setup-route-home-"));
   homes.push(home);
   const put = (path: string, text: string) => {
     mkdirSync(dirname(join(home, path)), { recursive: true });
@@ -101,7 +101,7 @@ describe("the setup import routes", () => {
     mkdirSync(join(home, ".hermes", "memories"), { recursive: true });
     writeFileSync(join(home, ".hermes", "SOUL.md"), "You are Hermes, calm and brief.");
     writeFileSync(join(home, ".hermes", ".env"), "TELEGRAM_BOT_TOKEN=123:never-read");
-    const local = await serve({ home, dataDir: join(home, ".duskbot") });
+    const local = await serve({ home, dataDir: join(home, ".madanibot") });
     for (const auth of ["paired", "service"]) expect((await local.call("GET", "/api/setup-import/bots", { auth })).status, auth).toBe(403);
     expect((await (await serve({ local: false, home })).call("GET", "/api/setup-import/bots")).status).toBe(403);
     expect((await local.call("POST", "/api/setup-import/bots", { body: {} })).status).toBe(405);

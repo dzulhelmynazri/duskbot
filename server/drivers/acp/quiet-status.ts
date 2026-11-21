@@ -14,7 +14,7 @@ import { FREE_POOL_LIMIT } from "./free-ladder.ts";
 // one model request (its SDK waits up to 600 s); a wedged OpenCode turn goes silent forever.
 export const DEFAULT_ACP_PROMPT_IDLE_MS = 15 * 60_000;
 export const promptIdleTimeoutMs = (): number => {
-  const raw = process.env.DUSK_ACP_PROMPT_IDLE_TIMEOUT_MS;
+  const raw = process.env.MADANI_ACP_PROMPT_IDLE_TIMEOUT_MS;
   if (raw === undefined) return DEFAULT_ACP_PROMPT_IDLE_MS;
   const ms = Number(raw);
   return Number.isFinite(ms) && ms > 0 ? ms : 0;
@@ -22,28 +22,28 @@ export const promptIdleTimeoutMs = (): number => {
 export const formatQuietLimit = (ms: number): string =>
   ms >= 120_000 && ms % 60_000 === 0 ? `${ms / 60_000} min` : `${Math.round(ms / 1000)} s`;
 
-/** Silence before the first "what is it doing" notice (DUSK_ACP_QUIET_NOTICE_MS overrides). */
+/** Silence before the first "what is it doing" notice (MADANI_ACP_QUIET_NOTICE_MS overrides). */
 export const DEFAULT_QUIET_NOTICE_MS = 60_000;
-/** How often a quiet turn or a long tool call is looked at again (DUSK_ACP_QUIET_TICK_MS overrides). */
+/** How often a quiet turn or a long tool call is looked at again (MADANI_ACP_QUIET_TICK_MS overrides). */
 export const DEFAULT_QUIET_TICK_MS = 15_000;
 
 const knob = (name: string, fallback: number): number => {
   const ms = Number(process.env[name]);
   return Number.isFinite(ms) && ms > 0 ? ms : fallback;
 };
-export const quietNoticeMs = (): number => knob("DUSK_ACP_QUIET_NOTICE_MS", DEFAULT_QUIET_NOTICE_MS);
-export const quietTickMs = (): number => knob("DUSK_ACP_QUIET_TICK_MS", DEFAULT_QUIET_TICK_MS);
+export const quietNoticeMs = (): number => knob("MADANI_ACP_QUIET_NOTICE_MS", DEFAULT_QUIET_NOTICE_MS);
+export const quietTickMs = (): number => knob("MADANI_ACP_QUIET_TICK_MS", DEFAULT_QUIET_TICK_MS);
 
 /** A free backup model that sends no first word, thought or tool call this long into a prompt is given up on, and the
- * turn runs again on the next free model (DUSK_ACP_FIRST_REPLY_MS overrides). OpenCode's free models answer in seconds
+ * turn runs again on the next free model (MADANI_ACP_FIRST_REPLY_MS overrides). OpenCode's free models answer in seconds
  * when they answer at all; a hung one would otherwise hold the turn for the full silence guard. Short enough that three
  * hung models still fit the turn's free budget. */
 export const DEFAULT_FIRST_REPLY_MS = 12_000;
-export const firstReplyMs = (): number => knob("DUSK_ACP_FIRST_REPLY_MS", DEFAULT_FIRST_REPLY_MS);
+export const firstReplyMs = (): number => knob("MADANI_ACP_FIRST_REPLY_MS", DEFAULT_FIRST_REPLY_MS);
 /** All free models together get this long from the turn's first prompt to send a first word; past it the turn ends with
- * a plain line instead of trying another (DUSK_ACP_FREE_TURN_MS overrides). */
+ * a plain line instead of trying another (MADANI_ACP_FREE_TURN_MS overrides). */
 export const DEFAULT_FREE_TURN_MS = 45_000;
-export const freeTurnMs = (): number => knob("DUSK_ACP_FREE_TURN_MS", DEFAULT_FREE_TURN_MS);
+export const freeTurnMs = (): number => knob("MADANI_ACP_FREE_TURN_MS", DEFAULT_FREE_TURN_MS);
 /** Free models one turn tries before it ends with a plain line instead of silence. */
 export const FREE_MODEL_ATTEMPTS = 4;
 
@@ -328,18 +328,18 @@ export const LIMIT_WORDS = /\b429\b|rate.?limit|too many requests|usage limit|qu
 
 /** How long an engine may stay quiet after a model request failed on a limit before the turn is ended as a usage limit,
  * so the bot carries on with another AI: longer than any retry an engine makes without a provider's retry-after
- * (DUSK_ACP_LIMIT_QUIET_MS overrides). */
+ * (MADANI_ACP_LIMIT_QUIET_MS overrides). */
 export const DEFAULT_LIMIT_QUIET_MS = 2 * 60_000;
-export const limitQuietMs = (): number => knob("DUSK_ACP_LIMIT_QUIET_MS", DEFAULT_LIMIT_QUIET_MS);
+export const limitQuietMs = (): number => knob("MADANI_ACP_LIMIT_QUIET_MS", DEFAULT_LIMIT_QUIET_MS);
 
 /** A 429 whose wait is longer than any engine retries on its own is a usage limit, not a short rate limit. */
 export const usageLimitWait = (status: number | null | undefined, waitMs: number | null | undefined): boolean =>
   status === 429 && (waitMs ?? 0) > limitQuietMs();
 
 /** No open request, no CPU and nothing logged, this long: the engine is stuck, and the turn is stopped
- * (DUSK_ACP_NO_SIGNS_STOP_MS overrides). */
+ * (MADANI_ACP_NO_SIGNS_STOP_MS overrides). */
 export const DEFAULT_NO_SIGNS_STOP_MS = 5 * 60_000;
-export const noSignsStopMs = (): number => knob("DUSK_ACP_NO_SIGNS_STOP_MS", DEFAULT_NO_SIGNS_STOP_MS);
+export const noSignsStopMs = (): number => knob("MADANI_ACP_NO_SIGNS_STOP_MS", DEFAULT_NO_SIGNS_STOP_MS);
 
 /** Whether this quiet state is an engine waiting out a usage or rate limit. */
 export function waitingOutLimit(signal: LogSignal | null): boolean {

@@ -72,7 +72,7 @@ describe("the link service and agent when a link is repeated", () => {
     const home = mkdtempSync(join(dir, "home-"));
     const first = await claimed();
     await agentLink(home, first.made.id, first.vpsToken);
-    const file = join(home, ".config", "duskbot-link", "tunnel.json");
+    const file = join(home, ".config", "madanibot-link", "tunnel.json");
     const old = JSON.parse(readFileSync(file, "utf8"));
     expect(service.store.tunnels.has(old.id)).toBe(true);
     mkdirSync(join(home, ".ssh"), { recursive: true });
@@ -92,7 +92,7 @@ describe("the link service and agent when a link is repeated", () => {
     const home = mkdtempSync(join(dir, "home-"));
     const first = await claimed();
     await agentLink(home, first.made.id, first.vpsToken);
-    const file = join(home, ".config", "duskbot-link", "tunnel.json");
+    const file = join(home, ".config", "madanibot-link", "tunnel.json");
     const oldId = JSON.parse(readFileSync(file, "utf8")).id;
     // the session ends (cancelled in the app, or expired) after the claim, before the result
     const second = await claimed();
@@ -144,10 +144,10 @@ describe("frames between two clocks that disagree", () => {
 async function sh(actions) {
   const at = mkdtempSync(join(dir, "sh-"));
   const home = join(at, "home"), state = join(at, "state");
-  for (const sub of [join(home, ".local/lib/node_modules/duskbot"), join(home, ".local/bin"), join(home, ".cache/duskbot-link"), state, join(home, ".duskbot")]) mkdirSync(sub, { recursive: true });
+  for (const sub of [join(home, ".local/lib/node_modules/madanibot"), join(home, ".local/bin"), join(home, ".cache/madanibot-link"), state, join(home, ".madanibot")]) mkdirSync(sub, { recursive: true });
   mkdirSync(join(at, "bin"));
   writeFileSync(join(at, "fixture.sh"), `${script}
-SVC_HOME=${home} STATE=${state} DATA=${home}/.duskbot TMP=${at} PKGS=${at}/pkgs LOGS=${at} LINK_HOME=${at}/link NODE_BIN=${process.execPath} SELFTEST_WAIT=2
+SVC_HOME=${home} STATE=${state} DATA=${home}/.madanibot TMP=${at} PKGS=${at}/pkgs LOGS=${at} LINK_HOME=${at}/link NODE_BIN=${process.execPath} SELFTEST_WAIT=2
 log=${at}/log; : > "$log"
 stub() { printf '#!/bin/sh\n%s\n' "$2" > "$TMP/bin/$1"; chmod +x "$TMP/bin/$1"; }
 retry() { "$@"; }
@@ -167,8 +167,8 @@ const sha = (text) => createHash("sha256").update(text).digest("hex");
 describe("install.sh run again after a stop", () => {
   it("a line already used by this server, stopped before it noted the link, repairs instead of refusing", async () => {
     const s = await sh(`
-mkdir -p "$LINK_HOME/.config/duskbot-link"
-printf '{"v":1,"base":"x","id":"abcdefghij","key":"k","token":"t","before":[{"id":"zzzzzzzzzz"}]}' > "$LINK_HOME/.config/duskbot-link/tunnel.json"
+mkdir -p "$LINK_HOME/.config/madanibot-link"
+printf '{"v":1,"base":"x","id":"abcdefghij","key":"k","token":"t","before":[{"id":"zzzzzzzzzz"}]}' > "$LINK_HOME/.config/madanibot-link/tunnel.json"
 state_set id abcdefghij
 LINK_ID=abcdefghij PROTO==http VPS_TOKEN=t LINK_BASE=http://127.0.0.1:1
 curl() { while [ $# -gt 0 ]; do [ "$1" = -o ] && { printf '{"error":"used","code":"used"}' > "$2"; shift; }; shift; done; printf 410; }
@@ -189,10 +189,10 @@ claim; echo "not reached"`);
   it("an update stopped inside npm still has its rollback noted, and the next run finishes the install", async () => {
     const oldSha = sha("v=1.0.0"), newSha = sha("v=1.1.0");
     const s = await sh(`
-printf '{\\n  "version": "1.0.0"\\n}\\n' > "$SVC_HOME/.local/lib/node_modules/duskbot/package.json"
-printf '#!/bin/sh\\n' > "$SVC_HOME/.local/bin/duskbot"; chmod +x "$SVC_HOME/.local/bin/duskbot"
+printf '{\\n  "version": "1.0.0"\\n}\\n' > "$SVC_HOME/.local/lib/node_modules/madanibot/package.json"
+printf '#!/bin/sh\\n' > "$SVC_HOME/.local/bin/madanibot"; chmod +x "$SVC_HOME/.local/bin/madanibot"
 state_set package sha256:${oldSha}
-printf 'v=1.0.0' > "$SVC_HOME/.cache/duskbot-link/duskbot-${oldSha}.tgz"
+printf 'v=1.0.0' > "$SVC_HOME/.cache/madanibot-link/madanibot-${oldSha}.tgz"
 PKG_SHA=${newSha} PKG_VERSION=1.1.0 OFFLINE=0
 get_package() { printf 'v=1.1.0' > "$1"; }
 as_user() { [ "$1" = npm ] || { "$@"; return; }; echo "npm stopped" >> "$log"; return 130; }
@@ -204,14 +204,14 @@ PKG_SHA="" OFFLINE=1
     expect(s.out).toContain("first run stopped");
     expect(s.out).toContain(`after stop: package=sha256:${oldSha} pending=1.1.0 prev=sha256:${oldSha} half=sha256:${newSha}`);
     expect(s.out).toContain(`repair finished: package=sha256:${newSha} half=`);
-    expect(s.log).toContain(`duskbot-${newSha}.tgz`);
+    expect(s.log).toContain(`madanibot-${newSha}.tgz`);
   });
 
   it("a rollback stopped part way keeps the update pending, so the next run rolls back again", async () => {
     const oldSha = sha("v=1.0.0"), newSha = sha("v=1.1.0");
     const s = await sh(`
-printf '#!/bin/sh\\n' > "$SVC_HOME/.local/bin/duskbot"; chmod +x "$SVC_HOME/.local/bin/duskbot"
-printf 'v=1.0.0' > "$SVC_HOME/.cache/duskbot-link/duskbot-${oldSha}.tgz"
+printf '#!/bin/sh\\n' > "$SVC_HOME/.local/bin/madanibot"; chmod +x "$SVC_HOME/.local/bin/madanibot"
+printf 'v=1.0.0' > "$SVC_HOME/.cache/madanibot-link/madanibot-${oldSha}.tgz"
 state_set package sha256:${newSha}; state_set package-prev sha256:${oldSha}; state_set update-pending 1.1.0
 printf '{"v":1,"selfTest":{"version":"1.1.0","ok":false}}' > "$DATA/update-state.json"
 wait_health() { return 0; }
@@ -234,23 +234,23 @@ gate_up() { :; }; box_works() { :; }; wait_health() { return 0; }; systemctl() {
 state_set package sha256:new; state_set running-package sha256:old
 do_service; echo "running=$(state_get running-package)"
 do_service`);
-    const starts = s.log.split("\n").filter((line) => line.endsWith(" duskbot.service"));
-    expect(starts).toEqual(["x systemctl restart duskbot.service", "x systemctl start duskbot.service"]);
+    const starts = s.log.split("\n").filter((line) => line.endsWith(" madanibot.service"));
+    expect(starts).toEqual(["x systemctl restart madanibot.service", "x systemctl start madanibot.service"]);
     expect(s.out).toContain("running=sha256:new");
   });
 
   it("a first build that never started here does not stop the build before it from coming back", async () => {
     const broken = sha("v=1.1.0"), good = sha("v=1.0.0");
     const s = await sh(`
-printf '{\n  "version": "1.1.0"\n}\n' > "$SVC_HOME/.local/lib/node_modules/duskbot/package.json"
-printf '#!/bin/sh\n' > "$SVC_HOME/.local/bin/duskbot"; chmod +x "$SVC_HOME/.local/bin/duskbot"
+printf '{\n  "version": "1.1.0"\n}\n' > "$SVC_HOME/.local/lib/node_modules/madanibot/package.json"
+printf '#!/bin/sh\n' > "$SVC_HOME/.local/bin/madanibot"; chmod +x "$SVC_HOME/.local/bin/madanibot"
 state_set package sha256:${broken}
 get_gate() { :; }; handoff_script() { :; }; server_unit() { return 1; }; helper_units() { return 1; }; ssh_guard() { return 1; }
 gate_up() { :; }; box_works() { :; }; wait_health() { return 1; }; systemctl() { :; }; journalctl() { :; }; ss() { :; }
 do_service || echo "service failed, failed=$(state_get update-failed)"
 PKG_SHA=${good} PKG_VERSION=1.0.0 OFFLINE=0
 get_package() { printf 'v=1.0.0' > "$1"; }
-as_user() { [ "$1" = npm ] || { "$@"; return; }; printf '{\n  "version": "1.0.0"\n}\n' > "$SVC_HOME/.local/lib/node_modules/duskbot/package.json"; }
+as_user() { [ "$1" = npm ] || { "$@"; return; }; printf '{\n  "version": "1.0.0"\n}\n' > "$SVC_HOME/.local/lib/node_modules/madanibot/package.json"; }
 do_app && echo "package=$(state_get package)"`);
     expect(s.out).toContain("service failed, failed=1.1.0");
     expect(s.out).toContain(`package=sha256:${good}`);

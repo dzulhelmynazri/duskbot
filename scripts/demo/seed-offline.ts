@@ -1,12 +1,12 @@
-// Phase two of the seed, run while the demo harness is stopped and only with DUSK_DATA_DIR set to the demo folder:
+// Phase two of the seed, run while the demo harness is stopped and only with MADANI_DATA_DIR set to the demo folder:
 // replaces each imported conversation's text-only rows with the full ones (tool calls, reactions, cards, shared files,
 // a work summary) through the server's own message store, marks the unread chats and adds past routine runs.
 import { randomUUID } from "node:crypto";
 import { mkdirSync, readFileSync, renameSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 
-const expected = process.env.DUSK_DEMO_EXPECTED_DIR;
-if (!expected || !process.env.DUSK_DATA_DIR || resolve(process.env.DUSK_DATA_DIR) !== resolve(expected)) {
+const expected = process.env.MADANI_DEMO_EXPECTED_DIR;
+if (!expected || !process.env.MADANI_DATA_DIR || resolve(process.env.MADANI_DATA_DIR) !== resolve(expected)) {
   throw new Error("seed-offline runs only from scripts/demo/demo.mjs, against the demo data folder");
 }
 

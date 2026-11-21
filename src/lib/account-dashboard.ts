@@ -27,7 +27,7 @@ export async function accountDashboardUrl(): Promise<string> {
 /** the desktop app signed in to the account opens the workspace's page already signed in (a one-time handoff link), so
  * the browser never asks for a second sign-in; anywhere else, the claim link or the workspace's page */
 export async function openAccountDashboard(): Promise<void> {
-  const desktop = window.duskDesktop?.remoteClient?.active ? undefined : window.duskDesktop;
+  const desktop = window.madaniDesktop?.remoteClient?.active ? undefined : window.madaniDesktop;
   // this computer's own window, or a cloud of the account seen in the app
   const openPage = desktop?.cloudAccount?.openPage ?? desktop?.cloudPlan?.openPage;
   const link = await dashboardLink();

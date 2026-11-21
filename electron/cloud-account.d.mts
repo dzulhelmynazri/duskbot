@@ -20,7 +20,7 @@ export interface CloudAccountState {
   entitlement?: { plan: "free" | "pro"; tier?: string; status: "active" | "inactive"; expiresAt: number | null; version: number };
   verifiedAt?: number;
   verifiedUntil?: number;
-  /** Connected, but the last checks with dusk cloud failed; the snapshot is the last verified one. */
+  /** Connected, but the last checks with madani cloud failed; the snapshot is the last verified one. */
   checking?: true;
   /** Not connected (unavailable, or the sign-in ended): the paid plan last
    * verified for this account, for display only. It activates nothing. */
@@ -36,13 +36,13 @@ export interface CloudAccountState {
   addCloud?: { canAdd: true } | { canAdd: false; blocked: CloudAddBlock };
   /** With `clouds`, for the account a Team plan with organizations is billed to: whether ＋ may add one to it now. */
   organizations?: import("./cloud-list.mjs").CloudOrganizations;
-  /** The newest dusk bot release the Admin knows, while it follows releases (with `clouds`); absent otherwise. */
+  /** The newest madani bot release the Admin knows, while it follows releases (with `clouds`); absent otherwise. */
   latestVersion?: string;
   /** Another Cloud this app is buying (in the last 24 hours): its id, name, swatch and plan, when its checkout opened,
    * whether main keeps that page (`link`), and `done` once it was opened or announced. */
   /** `cloudId` null: a checkout the Admin said is still open, before the session lists its Cloud. */
   adding?: { cloudId: string | null; name: string; color: import("./cloud-list.mjs").CloudSwatch | null; tier: string | null; startedAt: number; link?: true; done?: true };
-  /** A payment dusk cloud received and is still linking to this account. */
+  /** A payment madani cloud received and is still linking to this account. */
   purchase?: import("./cloud-home.mjs").CloudPurchase;
   /** Connected: "open" while the website takes this new account through its first steps (name, plan), which the app's
    * first run waits on; then where those steps put the bots, "free" (this computer) or "cloud" (a plan picked). Absent
@@ -62,7 +62,7 @@ export interface CloudAccountState {
    * and Copy link use that same page. `found`: not opened by this app run, only found
    * still open at the Admin after a restart (so `startedAt` is when it was found). */
   checkout?: { plan: string; startedAt: number; signIn?: true; link?: true; done?: true; found?: true };
-  /** This app talks to the staging Admin (DUSK_CLOUD_STAGING=1): test payments, test Clouds. */
+  /** This app talks to the staging Admin (MADANI_CLOUD_STAGING=1): test payments, test Clouds. */
   staging?: true;
   /** Connected: opening My Cloud waits for it to wake. */
   waking?: true;
@@ -185,9 +185,9 @@ export interface CloudAccountBridge {
   /** Cancel trial / Cancel plan, after the survey when it says anything; Keep my plan. The Cloud is the verified session's own, never the page's. Absent on an older app. */
   cancelPlan?(survey: CloudCancelSurvey | null): Promise<CloudRenewalResult>;
   keepPlan?(): Promise<CloudRenewalResult>;
-  /** The first run on dusk cloud: this computer's AI sign-ins, held for the account's own Cloud until it runs. */
+  /** The first run on madani cloud: this computer's AI sign-ins, held for the account's own Cloud until it runs. */
   holdSignIns?(): Promise<CloudHeldSignIns>;
-  /** The first run on dusk cloud: the AIs signed in here (instance ids) whose sign-in goes along to the account's own Cloud. Absent on an older app. */
+  /** The first run on madani cloud: the AIs signed in here (instance ids) whose sign-in goes along to the account's own Cloud. Absent on an older app. */
   carriedAis?(): Promise<{ instanceIds: string[] }>;
   onState(callback: (state: CloudAccountState) => void): () => void;
   files?: import("./cloud-sync.mjs").CloudFilesBridge;
@@ -265,12 +265,12 @@ export interface CloudPlanBridge {
   manage(): Promise<void>;
   /** A page of the account website, opened signed in (only from the person's click). Absent on an older app. */
   openPage?(page: Exclude<CloudHandoffPage, "plans">, workspaceId?: string): Promise<CloudWebHandoffResult>;
-  /** This device's dusk cloud sign-in, again, once it has ended: only from the person's click. */
+  /** This device's madani cloud sign-in, again, once it has ended: only from the person's click. */
   signIn?(): Promise<void>;
   /** A code (and its QR) that logs a phone in to this account, after main's presence check; `renew` swaps the one on
    * screen without asking again for about an hour. Absent on an older app. */
   phoneSignIn?(renew?: boolean): Promise<CloudPhoneSignIn>;
-  /** Whether this computer is signed in to a dusk bot account. Absent on an older app. */
+  /** Whether this computer is signed in to a madani bot account. Absent on an older app. */
   signedIn?(): Promise<boolean>;
   /** The trial's popup due now was shown: main shows it no more today. Absent on an older app. */
   noticeSeen?(): Promise<void>;
@@ -351,7 +351,7 @@ export interface CloudAccountClient {
   emailStart(email: string, options?: { recover?: boolean }): Promise<CloudSignInStart>;
   emailVerify(code: string): Promise<CloudSignInVerify>;
   emailCancel(): void;
-  /** duskbot://auth from the browser: redeems the code of the sign-in this app started; any other link is ignored. */
+  /** madanibot://auth from the browser: redeems the code of the sign-in this app started; any other link is ignored. */
   finishLink(url: string): Promise<{ outcome: "signed-in" | "failed" | "ignored"; state: CloudAccountState }>;
   /** The provider buttons the account service says sign in, and whether it mails recovery; none when it doesn't say. */
   signInOptions(): Promise<{ providers: import("./cloud-signin.mjs").CloudLinkProvider[]; recovery: boolean }>;
@@ -454,7 +454,7 @@ export declare function createCloudAccountClient(options: {
   warn?: (message: string) => void;
   /** Files or lending waits for a sleeping Cloud to wake: the session is read every 15 s. */
   awaitingWake?: () => boolean;
-  /** This app owns duskbot:// (packaged): provider sign-in comes back through the link instead of a code to approve. */
+  /** This app owns madanibot:// (packaged): provider sign-in comes back through the link instead of a code to approve. */
   appLinks?: boolean;
 }): CloudAccountClient;
 export declare function cloudPlanSnapshot(state: CloudAccountState | null | undefined, extra?: { notice?: import("./cloud-home.mjs").CloudTrialState | null }): CloudPlanSnapshot;

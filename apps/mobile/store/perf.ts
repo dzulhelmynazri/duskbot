@@ -6,7 +6,7 @@
 //
 //   node --experimental-strip-types apps/mobile/store/perf.ts --out perf.json [--rate 4] [--runs 3] [--video dir] [--only sheet|switch] [--long 320]
 //     [--bots 50] [--trace trace.json]
-//   DUSK_STAGE_PLATFORM=android runs it as the Android app: a Pixel 7's screen, no native glass, typed into the page's composer
+//   MADANI_STAGE_PLATFORM=android runs it as the Android app: a Pixel 7's screen, no native glass, typed into the page's composer
 import { spawnSync } from "node:child_process";
 import { mkdirSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
@@ -19,7 +19,7 @@ import { TEAM } from "./team.mjs";
 
 const { values: args } = parseArgs({ options: { out: { type: "string" }, rate: { type: "string", default: "4" }, runs: { type: "string", default: "3" }, video: { type: "string" }, profile: { type: "string" }, only: { type: "string" }, long: { type: "string", default: "320" },
   bots: { type: "string", default: "50" }, trace: { type: "string" } } });
-const ANDROID = process.env.DUSK_STAGE_PLATFORM === "android";
+const ANDROID = process.env.MADANI_STAGE_PLATFORM === "android";
 const repoRoot = fileURLToPath(new URL("../../../", import.meta.url));
 const RATE = Number(args.rate);
 const RUNS = Number(args.runs);
@@ -277,10 +277,10 @@ async function swipeReply(stage: Stage) {
 }
 
 console.log("building the phone app");
-const out = join(tmpdir(), `dusk-perf-build-${process.pid}`);
-const build = spawnSync(join(repoRoot, "node_modules/.bin/vite"), ["build", "--config", "apps/mobile/store/perf.vite.config.ts", "--logLevel", "warn"], { cwd: repoRoot, env: { ...process.env, DUSK_PERF_OUT: out }, stdio: "inherit" });
+const out = join(tmpdir(), `madani-perf-build-${process.pid}`);
+const build = spawnSync(join(repoRoot, "node_modules/.bin/vite"), ["build", "--config", "apps/mobile/store/perf.vite.config.ts", "--logLevel", "warn"], { cwd: repoRoot, env: { ...process.env, MADANI_PERF_OUT: out }, stdio: "inherit" });
 if (build.status !== 0) process.exit(1);
-process.env.DUSK_PERF_OUT = out;
+process.env.MADANI_PERF_OUT = out;
 
 // about 30 tokens a second, four characters to a token
 process.env.FAKE_CLAUDE_STREAM_CADENCE ??= "4:33";
@@ -312,7 +312,7 @@ try {
 
   if (args.trace) {
     // a timeline of one long chat opening: every style and layout pass with the script that forced it
-    await stage.page.send("Tracing.start", { categories: ["devtools.timeline,disabled-by-default-devtools.timeline,disabled-by-default-devtools.timeline.stack,v8.execute", process.env.DUSK_TRACE_CATEGORIES].filter(Boolean).join(","), transferMode: "ReturnAsStream" });
+    await stage.page.send("Tracing.start", { categories: ["devtools.timeline,disabled-by-default-devtools.timeline,disabled-by-default-devtools.timeline.stack,v8.execute", process.env.MADANI_TRACE_CATEGORIES].filter(Boolean).join(","), transferMode: "ReturnAsStream" });
     await openChat(stage, LONG);
     const done = new Promise<{ stream: string }>((resolve) => { const off = stage.page.on("Tracing.tracingComplete", (event) => { off(); resolve(event); }); });
     await stage.page.send("Tracing.end");

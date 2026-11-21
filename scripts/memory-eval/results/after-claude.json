@@ -1,6 +1,6 @@
 {
   "label": "after-claude",
-  "repo": "/private/tmp/claude-501/dusk-memory",
+  "repo": "/private/tmp/claude-501/madani-memory",
   "model": "claude-sonnet-5-5",
   "judge": "claude-sonnet-5-5",
   "started": "2026-11-14T10:20:59.565Z",
@@ -481,5 +481,5 @@
     "notesBytes": 385,
     "minutes": 4.4
   },
-  "serverLog": "/private/tmp/claude-501/memeval/runs/dusk-memory-eval-0M0ohC/server.log"
+  "serverLog": "/private/tmp/claude-501/memeval/runs/madani-memory-eval-0M0ohC/server.log"
 }

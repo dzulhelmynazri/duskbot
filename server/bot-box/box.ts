@@ -218,9 +218,9 @@ export function requiredFence(home: string, dataDir: string): BoxFence {
   return { whole: [resolve(home), resolve(dataDir)], inside: HOME_PRIVATE.map((name) => join(resolve(home), name)) };
 }
 
-/** DUSK_BOX_CODE_ROOTS: more folders of code (an npm prefix's bin and lib in the server's HOME) the box sees read-only. */
+/** MADANI_BOX_CODE_ROOTS: more folders of code (an npm prefix's bin and lib in the server's HOME) the box sees read-only. */
 export function extraCodeRoots(env: Record<string, string | undefined>): string[] {
-  return (env.DUSK_BOX_CODE_ROOTS ?? "").split(delimiter).filter((root) => root && isAbsolute(root)).map((root) => resolve(root));
+  return (env.MADANI_BOX_CODE_ROOTS ?? "").split(delimiter).filter((root) => root && isAbsolute(root)).map((root) => resolve(root));
 }
 
 export function defaultCodeRoots(): string[] {
@@ -309,7 +309,7 @@ export class BotBox {
 
   enabled(): boolean { return this.runner !== null; }
 
-  /** True when no bot's turn may run unboxed here (DUSK_BOT_BOX=required), whether or not the box started. */
+  /** True when no bot's turn may run unboxed here (MADANI_BOT_BOX=required), whether or not the box started. */
   isRequired(): boolean { return this.required; }
 
   /** The box a bot's Chrome runs in: the system read-only, private /tmp and /run, the host's network (the browser's own

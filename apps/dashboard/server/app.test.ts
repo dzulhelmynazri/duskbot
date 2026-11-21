@@ -41,8 +41,8 @@ describe("hosted dashboard service", () => {
   let keys: { publicKey: KeyObject; privateKey: KeyObject };
 
   beforeEach(async () => {
-    dataDir = mkdtempSync(join(tmpdir(), "dusk-dashboard-test-"));
-    staticDir = mkdtempSync(join(tmpdir(), "dusk-dashboard-static-"));
+    dataDir = mkdtempSync(join(tmpdir(), "madani-dashboard-test-"));
+    staticDir = mkdtempSync(join(tmpdir(), "madani-dashboard-static-"));
     writeFileSync(`${staticDir}/index.html`, "<!doctype html><title>dashboard fixture</title>");
     writeFileSync(`${staticDir}/.env`, "fixture-only");
     time = Date.now();
@@ -82,7 +82,7 @@ describe("hosted dashboard service", () => {
     const raw = JSON.stringify({ v: 1, publicKey: keys.publicKey.export({ type: "spki", format: "der" }).toString("base64"), ...workspace });
     const at = time + ++nonce;
     const signature = sign(null, Buffer.from(signedPayload("POST", "/v1/enroll", at, createHash("sha256").update(raw).digest("hex"))), keys.privateKey).toString("base64");
-    return fetch(`${url}/v1/enroll`, { method: "POST", body: raw, headers: { "content-type": "application/json", origin, ...(withSignature ? { "x-dusk-time": String(at), "x-dusk-signature": signature } : {}) } });
+    return fetch(`${url}/v1/enroll`, { method: "POST", body: raw, headers: { "content-type": "application/json", origin, ...(withSignature ? { "x-madani-time": String(at), "x-madani-signature": signature } : {}) } });
   }
   async function enroll() {
     const response = await enrollRequest();
@@ -101,7 +101,7 @@ describe("hosted dashboard service", () => {
     const at = settings.time ?? time + ++nonce;
     const payload = signedPayload(method, path, at, createHash("sha256").update(raw).digest("hex"));
     const signature = sign(null, Buffer.from(payload), keys.privateKey).toString("base64");
-    const headers = { "content-type": "application/json", "x-dusk-workspace": id, "x-dusk-time": String(at), "x-dusk-signature": settings.bad ? Buffer.alloc(64).toString("base64") : signature };
+    const headers = { "content-type": "application/json", "x-madani-workspace": id, "x-madani-time": String(at), "x-madani-signature": settings.bad ? Buffer.alloc(64).toString("base64") : signature };
     return { raw, method, headers, send: () => fetch(`${url}${path}`, { method, headers, ...(method === "POST" ? { body: raw } : {}) }) };
   }
   function report(seq = 1): WorkspaceReport { return { v: 1, seq, at: time, workspace }; }
@@ -519,11 +519,11 @@ describe("hosted dashboard service", () => {
     expect(health.headers.get("cache-control")).toBe("no-store");
   });
 
-  it("serves dusk bot's MCP client metadata document under the address it names as its client id", async () => {
+  it("serves madani bot's MCP client metadata document under the address it names as its client id", async () => {
     const answer = await page("/v1/oauth/mcp-client.json");
     expect(answer.status).toBe(200);
     const body = await answer.json();
-    expect(body).toMatchObject({ client_id: "https://dusk.bot/v1/oauth/mcp-client.json", redirect_uris: ["http://127.0.0.1:47615/mcp-oauth/callback"], token_endpoint_auth_method: "none" });
+    expect(body).toMatchObject({ client_id: "https://madani.bot/v1/oauth/mcp-client.json", redirect_uris: ["http://127.0.0.1:47615/mcp-oauth/callback"], token_endpoint_auth_method: "none" });
     expect(answer.headers.get("content-type")).toContain("application/json");
   });
 
@@ -534,7 +534,7 @@ describe("hosted dashboard service", () => {
     const other = await login("other@example.com");
     const answer = await page("/v1/account/export", undefined, cookie);
     expect(answer.status).toBe(200);
-    expect(answer.headers.get("content-disposition")).toMatch(/^attachment; filename="dusk-bot-account-\d{4}-\d{2}-\d{2}\.json"$/);
+    expect(answer.headers.get("content-disposition")).toMatch(/^attachment; filename="madani-bot-account-\d{4}-\d{2}-\d{2}\.json"$/);
     const text = await answer.text(), data = JSON.parse(text);
     expect(data.account.email).toBe("owner@example.com");
     expect(data.workspaces.map((ws: { id: string }) => ws.id)).toEqual([id]);
@@ -551,7 +551,7 @@ describe("hosted dashboard service", () => {
     app = createDashboardApp({ dataDir, publicUrl: origin, mailer, staticDir, now: () => time, errors: { service: reporter, page: reporter } });
     server.removeAllListeners("request");
     server.on("request", app.handle);
-    const sent = await page("/v1/client-error", { type: "TypeError", message: "x is undefined", stack: "at a (https://dusk.bot/assets/i.js:1:2)", page: "/billing" });
+    const sent = await page("/v1/client-error", { type: "TypeError", message: "x is undefined", stack: "at a (https://madani.bot/assets/i.js:1:2)", page: "/billing" });
     expect(sent.status).toBe(204);
     expect(captured).toHaveLength(1);
     expect(captured[0]!.name).toBe("TypeError");
@@ -561,7 +561,7 @@ describe("hosted dashboard service", () => {
   });
 
   it("serves discovery and html fallback, blocks traversal and dotfiles, and disables pages without staticDir", async () => {
-    const discovery = await page("/.well-known/duskbot/dashboard");
+    const discovery = await page("/.well-known/madanibot/dashboard");
     expect(await discovery.json()).toEqual({ v: 1, url: origin });
     expect(discovery.headers.get("cache-control")).toBe("no-store");
     const fallback = await page("/claim");

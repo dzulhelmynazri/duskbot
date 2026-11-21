@@ -13,7 +13,7 @@ function fill(g: CanvasRenderingContext2D, d: string | undefined, px: number) {
 
 function hold() {
   if (PAGES_WITHOUT_THE_APP.has(location.pathname)) return;
-  const look = window.duskDesktop?.workspaces?.takeLook?.();
+  const look = window.madaniDesktop?.workspaces?.takeLook?.();
   if (!look) return;
   (window as unknown as Record<string, unknown>)[HANDED_KEY] = look;
   const sprite = (CREW as Record<string, Sprite>)[look.crew];

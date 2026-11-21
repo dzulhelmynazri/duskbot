@@ -134,7 +134,7 @@ export function createCloudMoveOffer({ store, cloud, journal, keep, own = () => 
     /** The person's yes, from `from`: kept for this Cloud, a choice to keep the bots here is let go of, and the move starts. */
     async accept(from) {
       const mine = current();
-      if (!mine || state().stage === "none") throw new Error("There is nothing to move to dusk cloud right now.");
+      if (!mine || state().stage === "none") throw new Error("There is nothing to move to madani cloud right now.");
       const source = OFFER_SOURCES.includes(from) ? from : "settings";
       save({ ...saved(mine), accepted: { at: now(), from: source } });
       track(`cloud_move_${source}`, { action: "accepted" });

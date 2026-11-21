@@ -121,7 +121,7 @@ export function HomeScreen({ onOpenChat, onOpenSheet }: { onOpenChat: (id: strin
 
   const actionsFor = useCallback((entry: Entry): ContextAction[] => {
     // the desktop app already opens these links (electron/chat-link.mjs), so the phone hands it the same ones
-    const desktopLink = entry.kind === "bot" ? threadRefUrl({ botId: entry.id, threadId: entry.bot.threadId }) : `duskbot://thread/${encodeURIComponent(entry.group.threadId)}`;
+    const desktopLink = entry.kind === "bot" ? threadRefUrl({ botId: entry.id, threadId: entry.bot.threadId }) : `madanibot://thread/${encodeURIComponent(entry.group.threadId)}`;
     const list: ContextAction[] = [];
     if (entry.kind === "bot") {
       const bot = entry.bot;

@@ -319,7 +319,7 @@
       "use_tool"
     ]
   },
-  "default+dusk": {
+  "default+madani": {
     "bytes": 19822,
     "sha256": "378bdccf12d184051cd18b9bf8257f8108e7915389bc26e050c6b806da63c5d8",
     "tools": [
@@ -343,7 +343,7 @@
       "use_tool"
     ]
   },
-  "skills+voice+dusk": {
+  "skills+voice+madani": {
     "bytes": 20627,
     "sha256": "91f8a653e3323979763ef979cef5574af3a386c0e85ed0b34407433ee0e59dda",
     "tools": [

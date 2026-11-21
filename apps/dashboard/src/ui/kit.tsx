@@ -64,7 +64,7 @@ export function Badge({ children, tone = "plain", className }: { children: React
   return <span className={cx("tag shrink-0", color, className)}>{children}</span>;
 }
 
-/** a workspace's state: a dusk cloud reads by the cloud itself (pass it), any other place by its last report */
+/** a workspace's state: a madani cloud reads by the cloud itself (pass it), any other place by its last report */
 export function FreshnessTag({ freshness, at, now, cloud, className }: { freshness: Freshness; at: number | null; now: number; cloud?: CloudDesktop | null; className?: string }) {
   const s = placeState(freshness, at, now, cloud);
   return (

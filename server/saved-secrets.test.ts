@@ -19,13 +19,13 @@ const removals: Array<() => void> = [];
 afterEach(() => { while (removals.length) removals.pop()!(); });
 
 function homes() {
-  const root = mkdtempSync(join(tmpdir(), "dusk-saved-secrets-"));
-  return { dataDir: join(root, "data"), keyFile: join(root, "config", "duskbot", "saved-secrets.key") };
+  const root = mkdtempSync(join(tmpdir(), "madani-saved-secrets-"));
+  return { dataDir: join(root, "data"), keyFile: join(root, "config", "madanibot", "saved-secrets.key") };
 }
 
 describe("saved secrets at rest", () => {
   it("a headless server from before the rename keeps its Vault: the old key file is found and copied, never replaced", () => {
-    const root = mkdtempSync(join(tmpdir(), "dusk-saved-secrets-legacy-"));
+    const root = mkdtempSync(join(tmpdir(), "madani-saved-secrets-legacy-"));
     const previous = process.env.XDG_CONFIG_HOME;
     process.env.XDG_CONFIG_HOME = join(root, "config");
     removals.push(() => { if (previous === undefined) delete process.env.XDG_CONFIG_HOME; else process.env.XDG_CONFIG_HOME = previous; });
@@ -34,7 +34,7 @@ describe("saved secrets at rest", () => {
     const tag = createHash("sha256").update(oldData).digest("hex").slice(0, 16);
     const oldKey = fileSavedSecretsKey(oldData, join(root, "config", LEGACY.devName, `saved-secrets-${tag}.key`));
     new SavedSecretStore({ dataDir: oldData, key: oldKey }).save({ label: "Card", botId: "b", value: CANARY });
-    const moved = join(root, ".duskbot");
+    const moved = join(root, ".madanibot");
     renameSync(oldData, moved);
     const key = fileSavedSecretsKey(moved);
     expect(key.peek()).toBe(oldKey.get());
@@ -89,7 +89,7 @@ describe("saved secrets at rest", () => {
     expect(store.ready()).toBe(false);
     expect(() => store.save({ label: "Key", botId: "b", value: CANARY })).toThrow(SavedSecretsUnavailable);
     expect(store.secretValues()).toEqual([]);
-    expect(key.receive({ type: "duskbot:saved-secrets-key", key: randomBytes(32).toString("hex") })).toBe(true);
+    expect(key.receive({ type: "madanibot:saved-secrets-key", key: randomBytes(32).toString("hex") })).toBe(true);
     const saved = store.save({ label: "Key", botId: "b", value: CANARY });
     expect(existsSync(keyFile)).toBe(false);
     expect(store.remove(saved.id)).toBe(true);

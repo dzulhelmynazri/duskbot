@@ -58,7 +58,7 @@ export function carriedSteps(messages: ReadonlyArray<{ role: string; content?: u
 
 /** where the steps wait: next to the held turns (limit-held-turns.json), so a restart during the wait keeps them */
 export function carriedWorkFile(env: NodeJS.ProcessEnv = process.env): string {
-  return join(dataDirFor(env.DUSK_DATA_DIR, homedir()), "limit-carried-steps.json");
+  return join(dataDirFor(env.MADANI_DATA_DIR, homedir()), "limit-carried-steps.json");
 }
 
 type Kept = { at: number; steps: CarriedMessage[]; next?: true };

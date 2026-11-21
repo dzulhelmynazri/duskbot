@@ -16,7 +16,7 @@ pnpm exec vitest run server/memory-entries.test.ts server/recall.test.ts server/
 pnpm exec vitest run server/side-jobs.test.ts server/helper-model.e2e.test.ts
 pnpm exec vitest run server/memory-facts.test.ts server/memory-time.test.ts server/memory-migrate.test.ts server/memory-snapshot.test.ts server/memory-trust.test.ts server/memory-v2-writes.test.ts server/memory-consolidate.test.ts
 # local embeddings, with the model files placed once in a folder of your choice
-DUSK_MEMORY_EMBED=1 DUSK_MODEL_DIR=/path/to/models pnpm exec vitest run server/memory-embed.test.ts
+MADANI_MEMORY_EMBED=1 MADANI_MODEL_DIR=/path/to/models pnpm exec vitest run server/memory-embed.test.ts
 pnpm exec vitest run src/components/BotSettingsDialog.simple.test.ts src/components/bot-panel/MemoryPage.team.test.ts src/lib/memory.test.ts server/drivers/agents-catalog-wire.test.ts
 ```
 

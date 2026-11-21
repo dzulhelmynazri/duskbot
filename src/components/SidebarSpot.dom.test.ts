@@ -26,7 +26,7 @@ function Probe() { opened = useFeedbackOpen(); return null; }
 let host: HTMLDivElement, root: Root;
 beforeEach(() => {
   now = { ready: null, available: null, progress: null, mode: "self" };
-  (window as unknown as { duskDesktop: unknown }).duskDesktop = { appUpdate: bridge, openExternal };
+  (window as unknown as { madaniDesktop: unknown }).madaniDesktop = { appUpdate: bridge, openExternal };
   host = document.createElement("div");
   document.body.append(host);
   root = createRoot(host);
@@ -75,13 +75,13 @@ describe("the sidebar's feedback and update spot", () => {
     expect(bridge.restart).toHaveBeenCalledTimes(1);
   });
 
-  it("a download that failed says so and offers dusk.bot, instead of trying again in silence", async () => {
+  it("a download that failed says so and offers madani.bot, instead of trying again in silence", async () => {
     now = { ready: null, available: "0.2.7", progress: null, mode: "self" };
     bridge.download.mockImplementationOnce(async () => { tell({ ready: null, available: "0.2.7", progress: null, checking: false, failed: true, mode: "self" }); return null; });
     await mount();
     await act(async () => { spot()!.click(); });
     expect(spot()?.dataset.appUpdateState).toBe("failed");
-    expect(spot()?.textContent).toBe("Download from dusk.bot0.2.7");
+    expect(spot()?.textContent).toBe("Download from madani.bot0.2.7");
     await act(async () => { spot()!.click(); });
     expect(bridge.open).toHaveBeenCalledTimes(1);
     expect(bridge.download).toHaveBeenCalledTimes(1);
@@ -118,7 +118,7 @@ describe("the sidebar's feedback and update spot", () => {
   });
 
   it("on Windows and Linux: Download with its version, which opens that installer", async () => {
-    now = { ready: null, available: "0.2.7", progress: null, mode: "notice", manual: { version: "0.2.7", url: "https://dusk.bot/releases/0.2.7/DuskBot-0.2.7-setup.exe" } };
+    now = { ready: null, available: "0.2.7", progress: null, mode: "notice", manual: { version: "0.2.7", url: "https://madani.bot/releases/0.2.7/MadaniBot-0.2.7-setup.exe" } };
     await mount();
     expect(spot()?.dataset.appUpdateState).toBe("manual");
     expect(spot()?.textContent).toBe("Download 0.2.7");
@@ -135,13 +135,13 @@ describe("the sidebar's feedback and update spot", () => {
   });
 
   it("is Give feedback on a page that isn't this computer's own, and in a browser", async () => {
-    (window as unknown as { duskDesktop: unknown }).duskDesktop = { appUpdate: bridge, remoteClient: { active: true } };
+    (window as unknown as { madaniDesktop: unknown }).madaniDesktop = { appUpdate: bridge, remoteClient: { active: true } };
     now = { ready: "0.2.7", available: "0.2.7", progress: null, mode: "self" };
     await mount();
     expect(spot()?.dataset.sidebarSpot).toBe("feedback");
     await act(async () => { root.unmount(); });
     root = createRoot(host);
-    (window as unknown as { duskDesktop: unknown }).duskDesktop = undefined;
+    (window as unknown as { madaniDesktop: unknown }).madaniDesktop = undefined;
     await mount();
     expect(spot()?.dataset.sidebarSpot).toBe("feedback");
   });
@@ -157,10 +157,10 @@ describe("the sidebar's feedback and update spot", () => {
 
   describe("an offer in Give feedback's place", () => {
     const started = vi.fn();
-    /** the footer's side: the offer holds until its close ends it, as the dusk cloud nudge does */
+    /** the footer's side: the offer holds until its close ends it, as the madani cloud nudge does */
     function WithOffer() {
       const [on, setOn] = useState(true);
-      const cta: SpotCta | null = on ? { id: "cloud", title: "Keep your bots working", hint: "On dusk cloud, they keep replying", art: "clock", closeLabel: "Hide",
+      const cta: SpotCta | null = on ? { id: "cloud", title: "Keep your bots working", hint: "On madani cloud, they keep replying", art: "clock", closeLabel: "Hide",
         onStart: started, onClose: () => setOn(false) } : null;
       return createElement(SidebarSpot, { cta });
     }

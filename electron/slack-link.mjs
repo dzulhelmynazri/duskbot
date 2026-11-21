@@ -1,4 +1,4 @@
-const PREFIX = "duskbot://slack/oauth?";
+const PREFIX = "madanibot://slack/oauth?";
 
 export function slackOAuthLinkFrom(value) {
   if (typeof value !== "string") return null;
@@ -6,7 +6,7 @@ export function slackOAuthLinkFrom(value) {
   if (link.length > 2048 || !link.startsWith(PREFIX)) return null;
   let url;
   try { url = new URL(link); } catch { return null; }
-  if (url.protocol !== "duskbot:" || url.host !== "slack" || url.pathname !== "/oauth" || url.username || url.password || url.hash || link.includes("#")) return null;
+  if (url.protocol !== "madanibot:" || url.host !== "slack" || url.pathname !== "/oauth" || url.username || url.password || url.hash || link.includes("#")) return null;
   const params = url.searchParams;
   const keys = [...params.keys()];
   if (keys.length !== 2 || new Set(keys).size !== 2 || keys.some((key) => !["code", "error", "state"].includes(key))) return null;

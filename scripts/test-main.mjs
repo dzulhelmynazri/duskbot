@@ -1,9 +1,9 @@
 // `pnpm test:main`: what CI's required jobs check on main (lint, typecheck, locales, every vitest project, the node --test
 // suites; not the production builds, packaging or e2e smokes), locally and in one command, for while GitHub Actions is off.
-// Each step's output goes to .dusk-scratch/test-main/<step>.log; the end prints one line a step and the tail of each
+// Each step's output goes to .madani-scratch/test-main/<step>.log; the end prints one line a step and the tail of each
 // failure. Every step runs even after one fails, so one run names everything that is red.
 //   --only=lint,vitest   run these steps     --skip=vitest   leave these out     --list   print the steps
-// DUSK_VITEST_WORKERS sets the root suite's parallel files (default: half the cores, at most 6).
+// MADANI_VITEST_WORKERS sets the root suite's parallel files (default: half the cores, at most 6).
 import { spawn } from "node:child_process";
 import { createWriteStream, mkdirSync, readFileSync } from "node:fs";
 import { availableParallelism } from "node:os";
@@ -11,8 +11,8 @@ import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const ROOT = fileURLToPath(new URL("..", import.meta.url));
-const LOGS = join(ROOT, ".dusk-scratch", "test-main");
-const workers = process.env.DUSK_VITEST_WORKERS || String(Math.max(1, Math.min(6, Math.floor(availableParallelism() / 2))));
+const LOGS = join(ROOT, ".madani-scratch", "test-main");
+const workers = process.env.MADANI_VITEST_WORKERS || String(Math.max(1, Math.min(6, Math.floor(availableParallelism() / 2))));
 // the dashboard's node --test files, which its vitest run leaves out (ci.yml, static job)
 const DASHBOARD_NODE = ["connector-rows", "live", "place", "plan-total", "usage-math"].map((name) => `apps/dashboard/src/data/${name}.test.ts`);
 
@@ -22,10 +22,10 @@ const STEPS = [
   { name: "typecheck", cmd: "pnpm", args: ["typecheck"] },
   { name: "check-electron", cmd: "pnpm", args: ["check:electron"] },
   { name: "typecheck-dashboard", cmd: "pnpm", args: ["typecheck:dashboard"] },
-  { name: "typecheck-mobile", cmd: "pnpm", args: ["--filter", "@duskbot/mobile", "typecheck"] },
+  { name: "typecheck-mobile", cmd: "pnpm", args: ["--filter", "@madanibot/mobile", "typecheck"] },
   { name: "vitest-dashboard", cmd: "pnpm", args: ["exec", "vitest", "run", "--config", "apps/dashboard/vite.config.ts", "--root", ".", "--exclude", "apps/dashboard/src/data/{connector-rows,live,place,plan-total,usage-math}.test.ts", "apps/dashboard/src"] },
   { name: "node-test-dashboard", cmd: "node", args: ["--test", ...DASHBOARD_NODE] },
-  { name: "vitest", cmd: "pnpm", args: ["exec", "vitest", "run"], env: { DUSK_VITEST_WORKERS: workers } },
+  { name: "vitest", cmd: "pnpm", args: ["exec", "vitest", "run"], env: { MADANI_VITEST_WORKERS: workers } },
   { name: "vitest-broker", cmd: "pnpm", args: ["broker:test"] },
   { name: "node-test-electron", cmd: "pnpm", args: ["test:electron"] },
   // the deploy scripts' own node tests (backup, uptime and host report), which no CI job runs

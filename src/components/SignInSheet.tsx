@@ -8,7 +8,7 @@ import { signedInNow } from "@/lib/sign-in-sheet";
 /** The one calm state while an account step goes on in the browser: what to do there, Open again and Cancel. It closes
  *  by itself when the app is signed in (the person may finish in the browser and never come back here). */
 export function ContinueInBrowserSheet({ kind, onClose }: { kind: "signin" | "upgrade" | "billing"; onClose: () => void }) {
-  const bridge = window.duskDesktop?.cloudAccount;
+  const bridge = window.madaniDesktop?.cloudAccount;
   const [busy, setBusy] = useState(false);
   return <ModalLayer><div className="ui-scrim fixed inset-0 z-[70] flex items-center justify-center p-4">
     <div role="dialog" aria-modal="true" aria-labelledby="continue-browser-title" data-continue-in-browser={kind} className="relative w-full max-w-[400px] rounded-[20px] bg-app p-7 shadow-xl">
@@ -27,7 +27,7 @@ export function ContinueInBrowserSheet({ kind, onClose }: { kind: "signin" | "up
 /** Mounted once on the app's page: shows the sheet while the app waits on the browser, and goes on once signed in. */
 export function SignInSheetHost() {
   const waiting = useWaitingInBrowser();
-  const bridge = window.duskDesktop?.cloudAccount;
+  const bridge = window.madaniDesktop?.cloudAccount;
   const [connecting, setConnecting] = useState(false);
   useEffect(() => {
     if (!waiting || !bridge) return;

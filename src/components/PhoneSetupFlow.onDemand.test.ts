@@ -6,7 +6,7 @@ import { createRoot, type Root } from "react-dom/client";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { setLocale } from "@/lib/i18n";
-import type { CompanionAccountState } from "../types/duskDesktop";
+import type { CompanionAccountState } from "../types/madaniDesktop";
 import { PhoneSetupFlowView, usePhoneSetupController, type CompanionState } from "./PhoneSetupFlow";
 
 vi.mock("@/state/store", async (actual) => ({ ...(await actual<object>()), useStore: () => ({ dispatch: vi.fn() }) }));
@@ -16,7 +16,7 @@ function PhoneSetupFlow() {
   return createElement(PhoneSetupFlowView, { controller: usePhoneSetupController() });
 }
 
-const HOSTED = "https://c-opaque.cloud.dusk.bot";
+const HOSTED = "https://c-opaque.cloud.madani.bot";
 const FULL =
   "Secure HTTPS links are temporarily full. Try again in 10 minutes, or pair on this Wi-Fi or with Tailscale.";
 
@@ -103,11 +103,11 @@ beforeEach(() => {
 afterEach(() => {
   flushSync(() => root.unmount());
   host.remove();
-  delete (globalThis as { duskDesktop?: unknown }).duskDesktop;
+  delete (globalThis as { madaniDesktop?: unknown }).madaniDesktop;
 });
 
 async function startPairing(fake: ReturnType<typeof desktop>) {
-  (globalThis as { duskDesktop?: unknown }).duskDesktop = fake.bridge;
+  (globalThis as { madaniDesktop?: unknown }).madaniDesktop = fake.bridge;
   flushSync(() => root.render(createElement(PhoneSetupFlow)));
   await vi.waitFor(() => expect(button("Pair")?.disabled).toBe(false));
   button("Pair")!.click();
@@ -225,7 +225,7 @@ describe("pairing when the hosted secure service is not there", () => {
     await startPairing({ ...fake, bridge: { ...fake.bridge, phoneRelay: relay } as typeof fake.bridge });
 
     await vi.waitFor(() => expect(text()).toContain("Pair from anywhere"));
-    expect(text()).toContain("Sign in to your dusk bot account to pair from anywhere");
+    expect(text()).toContain("Sign in to your madani bot account to pair from anywhere");
     expect(button("Sign in")).not.toBeNull();
     expect(button("Use Wi-Fi")).not.toBeNull();
     expect(text()).not.toMatch(/Secure access|isn’t offered|Tailscale/);
@@ -237,8 +237,8 @@ describe("pairing when the hosted secure service is not there", () => {
     const fake = desktop();
     fake.noHostedService();
     const relay = {
-      state: vi.fn(async () => ({ status: "error" as const, code: "unreachable", message: "dusk bot could not reach its relay." })),
-      ready: vi.fn(async () => ({ status: "error" as const, code: "unreachable", message: "dusk bot could not reach its relay." })),
+      state: vi.fn(async () => ({ status: "error" as const, code: "unreachable", message: "madani bot could not reach its relay." })),
+      ready: vi.fn(async () => ({ status: "error" as const, code: "unreachable", message: "madani bot could not reach its relay." })),
     };
     await startPairing({ ...fake, bridge: { ...fake.bridge, phoneRelay: relay } as typeof fake.bridge });
 

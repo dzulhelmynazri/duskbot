@@ -29,7 +29,7 @@ describe("admin panel api", () => {
   const csrf = new Map<string, string>();
 
   beforeEach(async () => {
-    dataDir = mkdtempSync(join(tmpdir(), "dusk-admin-test-"));
+    dataDir = mkdtempSync(join(tmpdir(), "madani-admin-test-"));
     time = Date.parse("2026-11-12T12:00:00Z");
     mailer = memoryMailer();
     sink = memorySink(() => time);
@@ -56,7 +56,7 @@ describe("admin panel api", () => {
     const method = init.method ?? (init.body === undefined ? "GET" : "POST");
     return fetch(`${url}${path}`, { method, headers: { origin, ...(init.body === undefined ? {} : { "content-type": "application/json" }),
       // the fixture's accounts are on example.test, which the panel hides unless asked
-      "x-dusk-admin-tests": "show", "x-dusk-admin-money": "all", ...(init.cookie ? { cookie: init.cookie, ...(init.csrf === false ? {} : { [CSRF_HEADER]: csrf.get(init.cookie) ?? "" }) } : {}), ...init.headers },
+      "x-madani-admin-tests": "show", "x-madani-admin-money": "all", ...(init.cookie ? { cookie: init.cookie, ...(init.csrf === false ? {} : { [CSRF_HEADER]: csrf.get(init.cookie) ?? "" }) } : {}), ...init.headers },
       ...(init.body === undefined ? {} : { body: JSON.stringify(init.body) }) });
   }
   async function login(email: string) {
@@ -93,7 +93,7 @@ describe("admin panel api", () => {
       // no relay token in this service's env: it says which one to set
       const answer = await call(path, { method: "PUT", body, cookie: admin });
       expect(answer.status).toBe(409);
-      expect((await answer.json() as { error: string }).error).toContain("DUSK_CF_RELAY_OPS_TOKEN");
+      expect((await answer.json() as { error: string }).error).toContain("MADANI_CF_RELAY_OPS_TOKEN");
       expect((await call("/v1/admin/ops/relays/nope/limits", { method: "PUT", body, cookie: admin })).status).toBe(404);
     });
 
@@ -147,7 +147,7 @@ describe("admin panel api", () => {
       app.close();
       await new Promise<void>(resolve => { server.close(() => resolve()); server.closeAllConnections(); });
       rmSync(dataDir, { recursive: true, force: true });
-      dataDir = mkdtempSync(join(tmpdir(), "dusk-admin-test-"));
+      dataDir = mkdtempSync(join(tmpdir(), "madani-admin-test-"));
       app = createDashboardApp({ dataDir, publicUrl: origin, mailer, staticDir: null, now: () => time, admin: { emails: [], env: {} } });
       server = createServer(app.handle);
       await new Promise<void>(resolve => server.listen(0, "127.0.0.1", resolve));
@@ -173,7 +173,7 @@ describe("admin panel api", () => {
     expect(app.billing.store.state.subscriptions.filter(sub => sub.accountId === given.id || sub.accountId === comped.id).length).toBe(2);
     // the grants were charged, so without the rule they would read as two more paying customers
     expect(app.billing.store.state.invoices.filter(row => (row.accountId === given.id || row.accountId === comped.id) && row.status === "paid").map(row => row.amountCents)).toEqual([1500, 1500]);
-    const all = { "x-dusk-admin-money": "all" };
+    const all = { "x-madani-admin-money": "all" };
     const overview = await (await call("/v1/admin/overview?days=7", { cookie: admin, headers: all })).json() as { totals: { paying: number } };
     expect(overview.totals.paying).toBe(1);
     const revenue = await (await call("/v1/admin/revenue?mode=all", { cookie: admin })).json() as { customers: Array<{ accountId: string }>; headline: { customers: number } };
@@ -193,7 +193,7 @@ describe("admin panel api", () => {
     app.close();
     await new Promise<void>(resolve => { server.close(() => resolve()); server.closeAllConnections(); });
     app = createDashboardApp({ dataDir, publicUrl: origin, mailer, staticDir: null, now: () => time, analytics: { sink, waitlist, infra },
-      admin: { emails: [ADMIN], environment: "production", env: { DUSK_ADMIN_ALERTS: "paid" } } });
+      admin: { emails: [ADMIN], environment: "production", env: { MADANI_ADMIN_ALERTS: "paid" } } });
     server = createServer(app.handle);
     await new Promise<void>(resolve => server.listen(0, "127.0.0.1", resolve));
     url = `http://127.0.0.1:${(server.address() as { port: number }).port}`;
@@ -267,7 +267,7 @@ describe("admin panel api", () => {
     await login("smoke@example.com");
     await login("pat.real@gmail.com");
     await grantCloud("smoke@example.com");
-    const hide = { "x-dusk-admin-tests": "" };
+    const hide = { "x-madani-admin-tests": "" };
     type Users = { total: number; users: Array<{ email: string }> };
     const hidden = await (await call("/v1/admin/users", { cookie: admin, headers: hide })).json() as Users;
     expect(hidden.users.map(user => user.email)).toEqual(["pat.real@gmail.com"]);
@@ -285,7 +285,7 @@ describe("admin panel api", () => {
     const admin = await login(ADMIN);
     await login("pat.real@gmail.com");
     const pat = app.auth.accountByEmail("pat.real@gmail.com")!.id;
-    const hide = { "x-dusk-admin-tests": "" };
+    const hide = { "x-madani-admin-tests": "" };
     for (let i = 0; i < 6; i++) await sink.insert({ id: `qa${i}`, name: "app_open", at: time - 1000 + i, accountId: null, props: { kind: "desktop" }, ctx: { install: `app:qatest_${i}` } });
     await sink.insert({ id: "real1", name: "app_open", at: time - 5000, accountId: pat, props: { kind: "desktop" }, ctx: { install: "app:real" } });
     const events = await (await call("/v1/admin/events?name=app_open&limit=3", { cookie: admin, headers: hide })).json() as { events: Array<{ id: string }> };
@@ -317,7 +317,7 @@ describe("admin panel api", () => {
     await login("pat.real@gmail.com");
     await login("sam.real@gmail.com");
     app.analytics.setOptOut(app.auth.accountByEmail("sam.real@gmail.com")!.id, true);
-    const hide = { "x-dusk-admin-tests": "" };
+    const hide = { "x-madani-admin-tests": "" };
     const overview = await (await call("/v1/admin/overview?days=7", { cookie: admin, headers: hide })).json() as { totals: { accounts: number; activeToday: number; untracked: number | null } };
     expect(overview.totals).toMatchObject({ accounts: 2, activeToday: 2, untracked: 1 });
     const events = await (await call("/v1/admin/events", { cookie: admin, headers: hide })).json() as { untracked: number | null };
@@ -444,7 +444,7 @@ describe("admin panel api", () => {
       expect(overview.range).toHaveLength(7);
       expect(overview.totals).toMatchObject({ accounts: 2, paying: 1, waitlist: 2, clouds: 1, activeToday: 2 });
       // the fake provider's money is test money: the panel's default (live) counts none of it
-      const live = await (await call("/v1/admin/overview?days=7", { cookie: admin, headers: { "x-dusk-admin-money": "" } })).json() as { totals: { paying: number } };
+      const live = await (await call("/v1/admin/overview?days=7", { cookie: admin, headers: { "x-madani-admin-money": "" } })).json() as { totals: { paying: number } };
       expect(live.totals.paying).toBe(0);
       expect(overview.series.signups.at(-1)).toBe(2);
       expect(overview.series.waitlist.reduce((a, b) => a + b, 0)).toBe(2);
@@ -469,7 +469,7 @@ describe("admin panel api", () => {
     });
   });
 
-  describe("live analytics (preview reading dusk.bot)", () => {
+  describe("live analytics (preview reading madani.bot)", () => {
     let live: ReturnType<typeof memorySink>;
     beforeEach(async () => {
       app.close();
@@ -481,7 +481,7 @@ describe("admin panel api", () => {
       await live.insert({ id: "ev_live1", name: "signup", at: time - 1000, accountId: "acct_live", props: { method: "email" } });
       const accounts = [{ id: "acct_live", email: "real@example.test", name: null, createdAt: time - 1000 }];
       app = createDashboardApp({ dataDir, publicUrl: origin, mailer, staticDir: null, now: () => time, analytics: { sink, waitlist, infra },
-        admin: { emails: [ADMIN], env: {}, live: { label: "dusk.bot", sink: live, accounts: async () => accounts, infra: async () => [], daily: async () => [], latest: async () => null } } });
+        admin: { emails: [ADMIN], env: {}, live: { label: "madani.bot", sink: live, accounts: async () => accounts, infra: async () => [], daily: async () => [], latest: async () => null } } });
       server = createServer(app.handle);
       await new Promise<void>(resolve => server.listen(0, "127.0.0.1", resolve));
       const address = server.address();
@@ -491,20 +491,20 @@ describe("admin panel api", () => {
 
     it("shows the live site's counts, sign-ups and waitlist by default, and this service's own on request", async () => {
       const admin = await login(ADMIN);
-      expect(await (await call("/v1/admin/me", { cookie: admin })).json()).toMatchObject({ live: "dusk.bot" });
+      expect(await (await call("/v1/admin/me", { cookie: admin })).json()).toMatchObject({ live: "madani.bot" });
       type Answer = { data: string; totals: { accounts: number; waitlist: number | null; clouds: number }; series: { visitors: number[]; views: number[] } };
       const real = await (await call("/v1/admin/overview?days=7", { cookie: admin })).json() as Answer;
-      expect(real.data).toBe("dusk.bot");
+      expect(real.data).toBe("madani.bot");
       expect(real.series.visitors.at(-1)).toBe(41);
       expect(real.series.views.at(-1)).toBe(97);
       expect(real.totals).toMatchObject({ accounts: 1, waitlist: 2, clouds: 0 });
-      const own = await (await call("/v1/admin/overview?days=7", { cookie: admin, headers: { "x-dusk-admin-data": "own" } })).json() as Answer;
+      const own = await (await call("/v1/admin/overview?days=7", { cookie: admin, headers: { "x-madani-admin-data": "own" } })).json() as Answer;
       expect(own.data).toBe("own");
       expect(own.series.visitors.at(-1)).toBe(0);
       expect(own.totals).toMatchObject({ accounts: 1, waitlist: null });
       const events = await (await call("/v1/admin/events?name=signup", { cookie: admin })).json() as { events: Array<{ id: string; email: string | null }> };
       expect(events.events).toEqual([expect.objectContaining({ id: "ev_live1", email: "real@example.test" })]);
-      const ownEvents = await (await call("/v1/admin/events?name=signup", { cookie: admin, headers: { "x-dusk-admin-data": "own" } })).json() as { events: Array<{ id: string }> };
+      const ownEvents = await (await call("/v1/admin/events?name=signup", { cookie: admin, headers: { "x-madani-admin-data": "own" } })).json() as { events: Array<{ id: string }> };
       expect(ownEvents.events.map(event => event.id)).not.toContain("ev_live1");
       expect((await call("/v1/admin/web", { cookie: admin })).status).toBe(200);
       expect((await call("/v1/admin/journeys/acct_live", { cookie: admin })).status).toBe(200);

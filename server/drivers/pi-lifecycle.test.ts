@@ -20,7 +20,7 @@ let events: EventRecorder;
 beforeEach(async () => {
   ensureDirs();
   chmodSync(CLI, 0o755);
-  dir = mkdtempSync(join(tmpdir(), "dusk-pi-lifecycle-"));
+  dir = mkdtempSync(join(tmpdir(), "madani-pi-lifecycle-"));
   instance = await PiDriver.create({
     instanceId: "pi-lifecycle",
     displayName: "Pi lifecycle fixture",

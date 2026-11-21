@@ -31,7 +31,7 @@ export function Footer({ children, className }: { children: ReactNode; className
 
 /** The name this app keeps for the server open in the window; My Cloud wherever the app has none. */
 export function useCloudName(): string {
-  const bridge = window.duskDesktop?.workspaces;
+  const bridge = window.madaniDesktop?.workspaces;
   const [name, setName] = useState<string | null>(null);
   useEffect(() => {
     let alive = true;

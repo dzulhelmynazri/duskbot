@@ -1,4 +1,4 @@
-// dusk pixel engine: one colour pixel mascots, body and eyes only. still at rest, full body motion while busy. no dependencies.
+// madani pixel engine: one colour pixel mascots, body and eyes only. still at rest, full body motion while busy. no dependencies.
 // the site's copy of explore/pixel/engine.js: it draws into two svg paths instead of a canvas, so a bot keeps any css size,
 // sits inside other svg, and the build can write its rest frame into the page
 (function (root) {
@@ -310,7 +310,7 @@
     constructor(el, o = {}) {
       listen();
       const def = typeof o.body == 'object' ? o.body : DEFS[o.body] || DEFS[Object.keys(DEFS)[0]];
-      if (!def) throw new Error('dusk pixel: no bodies defined');
+      if (!def) throw new Error('madani pixel: no bodies defined');
       this.el = el; this.def = def; this.o = o;
       const N = def.N;
       let s = o.scale || 4, G = o.grid || N;
@@ -655,6 +655,6 @@
     states: Object.keys(STATES), aliases: ALIAS, reactions: Object.keys(RX).concat('poke'), pokes: POKES,
     set reduced(v) { reduce = !!v; wake(); }, get reduced() { return reduce; },
   };
-  root.DuskPixel = api;
+  root.MadaniPixel = api;
 })(typeof window != 'undefined' ? window : globalThis);
-export default globalThis.DuskPixel;
+export default globalThis.MadaniPixel;

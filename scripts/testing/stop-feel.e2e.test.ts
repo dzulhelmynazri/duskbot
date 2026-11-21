@@ -1,22 +1,22 @@
 // Stop, headless, frame by frame, against the real server and the fake Claude streaming a reply: how long from the
 // press to the button giving way, the working line leaving and the chat holding still, and whether any word of the
 // stopped turn lands after the press. ?lag holds the Stop on its way out as the owner's app answered (about 400 ms).
-// Evidence (frames, track.json, report.json) goes to DUSK_UI_EVIDENCE_DIR/stop-feel.
+// Evidence (frames, track.json, report.json) goes to MADANI_UI_EVIDENCE_DIR/stop-feel.
 //
-//   DUSK_UI_E2E=1 pnpm exec vitest run scripts/testing/stop-feel.e2e.test.ts
+//   MADANI_UI_E2E=1 pnpm exec vitest run scripts/testing/stop-feel.e2e.test.ts
 import { spawn, type ChildProcess } from "node:child_process";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { expect, it } from "vitest";
-import { launchVerificationServer, type VerificationServer } from "../control-dusk.ts";
+import { launchVerificationServer, type VerificationServer } from "../control-madani.ts";
 import { waitForExit } from "../../server/testing/cleanup.ts";
-import { ensureUiBrowser } from "./control-dusk-ui.ts";
+import { ensureUiBrowser } from "./control-madani-ui.ts";
 import { fixtureApi, mountPreview, REPO_ROOT, type MountedPreview } from "./preview-fixture.ts";
 import { connect } from "./chat-gallery/cdp.ts";
 import { NOTICES } from "../../src/lib/notices.ts";
 
-const enabled = process.env.DUSK_UI_E2E === "1";
-if (!enabled) console.log("skipping the stop check: set DUSK_UI_E2E=1 for isolated browser qualification");
+const enabled = process.env.MADANI_UI_E2E === "1";
+if (!enabled) console.log("skipping the stop check: set MADANI_UI_E2E=1 for isolated browser qualification");
 
 const PARTS = [
   "Cheese begins as milk, warm from the morning, and a little culture to wake it up.",
@@ -34,8 +34,8 @@ type Run = { rows: Row[]; serverIdle: number | null; interruptMs: number | null 
   let preview: MountedPreview | undefined;
   let chrome: ChildProcess | undefined;
   let cdp: Awaited<ReturnType<typeof connect>> | undefined;
-  const label = process.env.DUSK_STOP_LABEL ?? "run";
-  const evidence = join(process.env.DUSK_UI_EVIDENCE_DIR || join(REPO_ROOT, ".dusk-scratch", "verify-evidence"), "stop-feel", label);
+  const label = process.env.MADANI_STOP_LABEL ?? "run";
+  const evidence = join(process.env.MADANI_UI_EVIDENCE_DIR || join(REPO_ROOT, ".madani-scratch", "verify-evidence"), "stop-feel", label);
   mkdirSync(evidence, { recursive: true });
   const report: Record<string, unknown> = {};
   try {

@@ -3,7 +3,7 @@
 export const MAC_TOOL_NAMES = [
   "mac_exec", "mac_read_file", "mac_write_file", "mac_list", "mac_open", "mac_save_from_cloud", "mac_screenshot",
 ] as const;
-/** Only a dusk cloud's bots get these (shared/cloud-mac.ts). */
+/** Only a madani cloud's bots get these (shared/cloud-mac.ts). */
 export const CLOUD_ONLY_MAC_TOOL_NAMES = ["mac_download"] as const;
 export type MacToolName = (typeof MAC_TOOL_NAMES)[number] | (typeof CLOUD_ONLY_MAC_TOOL_NAMES)[number];
 
@@ -13,7 +13,7 @@ export function isMacToolName(value: unknown): value is MacToolName {
 
 /** GET and PUT /api/mac answer this. */
 export interface MacControlStatus {
-  /** On a dusk cloud, as the Mac last said: when actions ask first, and the folders it is limited to, if any. */
+  /** On a madani cloud, as the Mac last said: when actions ask first, and the folders it is limited to, if any. */
   cloud?: { folders: string[]; mode: "auto" | "ask" | "never"; limited: boolean };
   /** The owner's Mac app has served this server at least once: the switch means something here. */
   available: boolean;
@@ -30,7 +30,7 @@ export interface MacControlStatus {
  * holding the bytes a mac_save_from_cloud job writes. */
 export interface MacJob {
   id: string;
-  /** On a dusk cloud: the person allowed this one on its card (reads never ask). */
+  /** On a madani cloud: the person allowed this one on its card (reads never ask). */
   approved?: true;
   tool: MacToolName;
   arguments: Record<string, unknown>;

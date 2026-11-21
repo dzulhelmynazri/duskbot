@@ -2,7 +2,7 @@ import { createHash } from "node:crypto";
 import { existsSync, mkdirSync, readFileSync, renameSync, rmdirSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { expect, it } from "vitest";
-import { launchVerificationServer, runControlDusk } from "../scripts/control-dusk.ts";
+import { launchVerificationServer, runControlMadani } from "../scripts/control-madani.ts";
 
 it("preserves conversations and scheduled work when deletion cannot save, then safely retries", async () => {
   const fixture = await launchVerificationServer();
@@ -19,7 +19,7 @@ it("preserves conversations and scheduled work when deletion cannot save, then s
     return result;
   };
   const control = async (...args: string[]) => {
-    const result = await runControlDusk([...args, "--url", url]) as any;
+    const result = await runControlMadani([...args, "--url", url]) as any;
     evidence.push({ command: args, result });
     return result;
   };

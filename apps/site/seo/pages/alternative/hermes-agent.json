@@ -4,14 +4,14 @@
   "title": "Hermes Agent alternatives: self-run or hosted?",
   "nav": "hermes agent",
   "h1": "hermes agent alternatives when upkeep is the question",
-  "description": "Compare Hermes Agent's open source, desktop and Nous cloud options with dusk bot, including the sign-in limits stated in Hermes' provider docs.",
+  "description": "Compare Hermes Agent's open source, desktop and Nous cloud options with madani bot, including the sign-in limits stated in Hermes' provider docs.",
   "keyword": "hermes agent alternative",
   "keywords": [
     "hermes agent alternatives",
     "hermes agent vs openclaw",
     "hermes agent"
   ],
-  "answer": "**keep hermes if you want to change the code. pick dusk if you want to brief a teammate.** hermes has mit-licensed code, persistent memory, self-created skills and configurable subagents. it already has desktop apps and cloud hosting on paid nous portal plans. dusk gives named bots separate jobs in an app. compare the ai sign-in rules before comparing monthly bills.[^1][^2][^3]",
+  "answer": "**keep hermes if you want to change the code. pick madani if you want to brief a teammate.** hermes has mit-licensed code, persistent memory, self-created skills and configurable subagents. it already has desktop apps and cloud hosting on paid nous portal plans. madani gives named bots separate jobs in an app. compare the ai sign-in rules before comparing monthly bills.[^1][^2][^3]",
   "updated": "2026-11-12",
   "review": {
     "status": "approved",
@@ -50,9 +50,9 @@
       "**you want to change the code.** mit licensing, persistent memory and self-created skills matter to your work.",
       "**you want configurable helpers and chat channels.** paid nous portal plans also offer a cloud agent."
     ],
-    "dusk": [
+    "madani": [
       "**you want to give bots jobs in plain words.** name a few teammates in an app.",
-      "**you want dusk to look after the machine.** choose a hosted computer with daily backups, or keep bots on your own."
+      "**you want madani to look after the machine.** choose a hosted computer with daily backups, or keep bots on your own."
     ]
   },
   "compare": {
@@ -60,7 +60,7 @@
     "intro": "**you can buy hosting on either side.** tiers and sign-in limits below are as of 12 november 2026. read the current provider terms before choosing a connection.",
     "cols": [
       "Hermes Agent",
-      "dusk bot"
+      "madani bot"
     ],
     "rows": [
       {
@@ -89,7 +89,7 @@
         "label": "local or hosted",
         "cells": [
           "your computer or server; paid nous portal tiers include a cloud agent",
-          "your computer, your server or your own dusk cloud computer, not shared"
+          "your computer, your server or your own madani cloud computer, not shared"
         ],
         "src": [
           1,
@@ -123,7 +123,7 @@
         "label": "paid hosting entry",
         "cells": [
           "nous portal plus $20 monthly, including a cloud agent with 4 gb ram and 25 gb disk",
-          "dusk cloud plus $20 monthly, 4 gb memory and 40 gb disk; ai usage separate"
+          "madani cloud plus $20 monthly, 4 gb memory and 40 gb disk; ai usage separate"
         ],
         "src": [
           1,
@@ -155,19 +155,19 @@
       }
     ]
   },
-  "method": "**compare the upkeep and sign-in bill before moving.** we make dusk bot. we read the saved hermes homepage, readme and provider docs against dusk docs on 12 november 2026.\n\nwe did not run matching jobs, measure minimum hardware or test isolation strength. use this comparison to choose a trial, then judge the result yourself.",
+  "method": "**compare the upkeep and sign-in bill before moving.** we make madani bot. we read the saved hermes homepage, readme and provider docs against madani docs on 12 november 2026.\n\nwe did not run matching jobs, measure minimum hardware or test isolation strength. use this comparison to choose a trial, then judge the result yourself.",
   "sections": [
     {
       "h": "keep hermes if the code matters",
-      "md": "**choose hermes when changing the code for work is part of the job.** its mit license lets you do that.[^4] dusk is source-available under polyform noncommercial: you can change it and pass it on for noncommercial use only. work needs a license.[^5]\n\nhermes also has persistent memory, self-created skills and configurable subagents.[^1] if those are why you use it, an easier screenshot is a weak reason to move. compare [openclaw and hermes](/vs/openclaw-vs-hermes-agent) for another open project."
+      "md": "**choose hermes when changing the code for work is part of the job.** its mit license lets you do that.[^4] madani is source-available under polyform noncommercial: you can change it and pass it on for noncommercial use only. work needs a license.[^5]\n\nhermes also has persistent memory, self-created skills and configurable subagents.[^1] if those are why you use it, an easier screenshot is a weak reason to move. compare [openclaw and hermes](/vs/openclaw-vs-hermes-agent) for another open project."
     },
     {
       "h": "find the bill behind the sign-in",
-      "md": "**claude max can leave you paying for extra usage.** hermes lists chatgpt/codex sign-in. its anthropic route needs claude max and bills purchased extra usage, outside the base max allowance. claude pro cannot use that route.[^2]\n\ndusk runs vendors' own command-line apps. you sign in yourself on the bot's machine.[^11] read current terms, supported sign-ins and usage limits before scheduling work. a working sign-in does not make every use permitted."
+      "md": "**claude max can leave you paying for extra usage.** hermes lists chatgpt/codex sign-in. its anthropic route needs claude max and bills purchased extra usage, outside the base max allowance. claude pro cannot use that route.[^2]\n\nmadani runs vendors' own command-line apps. you sign in yourself on the bot's machine.[^11] read current terms, supported sign-ins and usage limits before scheduling work. a working sign-in does not make every use permitted."
     },
     {
       "h": "hosting removes upkeep, not judgment",
-      "md": "**pay for hosting when you want your evenings back.** as of 12 november 2026, nous portal plus costs $20 monthly, super $100 and ultra $200. paid tiers include a cloud agent.[^1]\n\ndusk cloud includes a computer we look after and back up daily. ai usage stays on your provider's bill.[^6][^9] you still choose the jobs and permissions. start app reviews read only.[^12]\n\ncompare [homes for an always-on agent](/agents-when-laptop-closed) if missed routines are the pain. the [openclaw alternatives](/alternatives/openclaw) cover other ways to package an assistant."
+      "md": "**pay for hosting when you want your evenings back.** as of 12 november 2026, nous portal plus costs $20 monthly, super $100 and ultra $200. paid tiers include a cloud agent.[^1]\n\nmadani cloud includes a computer we look after and back up daily. ai usage stays on your provider's bill.[^6][^9] you still choose the jobs and permissions. start app reviews read only.[^12]\n\ncompare [homes for an always-on agent](/agents-when-laptop-closed) if missed routines are the pain. the [openclaw alternatives](/alternatives/openclaw) cover other ways to package an assistant."
     }
   ],
   "faq": [
@@ -181,7 +181,7 @@
     },
     {
       "q": "can i make a group chat of agents?",
-      "a": "**choose the interaction you want.** hermes has isolated subagents for parallel work. dusk has shared chats with mentions and an optional leader. those are different ways to hand work around.[^1][^8]"
+      "a": "**choose the interaction you want.** hermes has isolated subagents for parallel work. madani has shared chats with mentions and an optional leader. those are different ways to hand work around.[^1][^8]"
     }
   ],
   "sources": [
@@ -196,7 +196,7 @@
       "checked": "2026-11-12"
     },
     {
-      "label": "dusk getting started",
+      "label": "madani getting started",
       "url": "/docs/getting-started"
     },
     {
@@ -205,35 +205,35 @@
       "checked": "2026-11-12"
     },
     {
-      "label": "dusk licensing faq",
+      "label": "madani licensing faq",
       "url": "/docs/faq"
     },
     {
-      "label": "dusk cloud machine and plans",
-      "url": "/docs/dusk-cloud"
+      "label": "madani cloud machine and plans",
+      "url": "/docs/madani-cloud"
     },
     {
-      "label": "dusk phone browser",
+      "label": "madani phone browser",
       "url": "/docs/phone"
     },
     {
-      "label": "dusk group chats",
+      "label": "madani group chats",
       "url": "/docs/group-chats"
     },
     {
-      "label": "dusk ai billing",
+      "label": "madani ai billing",
       "url": "/docs/account-and-billing"
     },
     {
-      "label": "dusk routines",
+      "label": "madani routines",
       "url": "/docs/routines"
     },
     {
-      "label": "dusk ai apps on your server",
+      "label": "madani ai apps on your server",
       "url": "/docs/your-own-server"
     },
     {
-      "label": "dusk connected-app permissions",
+      "label": "madani connected-app permissions",
       "url": "/docs/files-and-apps"
     }
   ],
@@ -274,11 +274,11 @@
       ],
       [
         "named bots in a shared conversation",
-        "dusk bot"
+        "madani bot"
       ],
       [
         "hosting without running your own server",
-        "compare nous portal and dusk cloud"
+        "compare nous portal and madani cloud"
       ]
     ]
   },

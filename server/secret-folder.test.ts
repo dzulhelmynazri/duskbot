@@ -20,7 +20,7 @@ let workspace = "";
 let secret = "";
 
 beforeEach(() => {
-  data = mkdtempSync(join(tmpdir(), "dusk-secret-folder-"));
+  data = mkdtempSync(join(tmpdir(), "madani-secret-folder-"));
   workspace = join(data, "workspaces", "atlas");
   mkdirSync(join(workspace, SECRET_FOLDER, "thread-1"), { recursive: true });
   secret = join(workspace, SECRET_FOLDER, "thread-1", "card-1");
@@ -62,12 +62,12 @@ describe("a bot's private secret files", () => {
 
 describe("the secret folder's name", () => {
   it("matches whatever the case on a filesystem that ignores case, and only exactly on one that does not", () => {
-    for (const path of [`workspaces/atlas/${SECRET_FOLDER}/t/c`, "workspaces/atlas/.DUSKBOT-SECRETS/t/c", ".DuskBot-Secrets/card"]) {
+    for (const path of [`workspaces/atlas/${SECRET_FOLDER}/t/c`, "workspaces/atlas/.MADANIBOT-SECRETS/t/c", ".MadaniBot-Secrets/card"]) {
       expect(inSecretFolder(path, "darwin"), path).toBe(true);
       expect(inSecretFolder(path, "win32"), path).toBe(true);
     }
     expect(inSecretFolder(`workspaces/atlas/${SECRET_FOLDER}/t/c`, "linux")).toBe(true);
-    expect(inSecretFolder("workspaces/atlas/.DUSKBOT-SECRETS/t/c", "linux")).toBe(false);
+    expect(inSecretFolder("workspaces/atlas/.MADANIBOT-SECRETS/t/c", "linux")).toBe(false);
     expect(inSecretFolder("workspaces/atlas/notes.txt", "darwin")).toBe(false);
   });
 });

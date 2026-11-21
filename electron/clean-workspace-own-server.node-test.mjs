@@ -10,7 +10,7 @@ import { createDevServerChild } from "./dev-server-child.mjs";
 import { world } from "./fixtures/home-window-world.mjs";
 import { installOwnHome } from "./own-home-main.mjs";
 
-// A computer whose bots moved to a server of the person's own: its own view is a clean workspace with a fresh dusk bot, the
+// A computer whose bots moved to a server of the person's own: its own view is a clean workspace with a fresh madani bot, the
 // frozen copy stays exactly as it was on disk, and moving back runs that copy again.
 const SERVER = "https://garage.example.test";
 const PLACE = "instance-20261103-1451";
@@ -39,10 +39,10 @@ function tree(dir) {
 
 /** This computer's data folder, frozen by a finished move to PLACE, as the owner's install is. */
 function frozenInstall() {
-  const root = fs.mkdtempSync(path.join(os.tmpdir(), "dusk-own-clean-"));
-  const data = path.join(root, ".duskbot");
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), "madani-own-clean-"));
+  const data = path.join(root, ".madanibot");
   fs.mkdirSync(path.join(data, "bots", "maus"), { recursive: true });
-  fs.writeFileSync(path.join(data, "bots.json"), JSON.stringify([{ id: "maus", name: "Dusk" }, { id: "nova", name: "Nova" }]));
+  fs.writeFileSync(path.join(data, "bots.json"), JSON.stringify([{ id: "maus", name: "Madani" }, { id: "nova", name: "Nova" }]));
   fs.writeFileSync(path.join(data, "bots", "maus", "chat.jsonl"), "{\"text\":\"an old chat\"}\n");
   fs.writeFileSync(path.join(data, "config.json"), JSON.stringify({ language: "de", onboarding: { completedAt: "2026-01-01T00:00:00.000Z" } }));
   fs.writeFileSync(path.join(data, "environment-id"), "7c1d2e3f-4a5b-4c6d-8e7f-9a0b1c2d3e4f\n");
@@ -100,7 +100,7 @@ test("an install already frozen switches on its next launch; the frozen copy sta
     const config = JSON.parse(fs.readFileSync(path.join(fresh, "config.json"), "utf8"));
     assert.equal(config.language, "de");
     assert.ok(config.onboarding.completedAt, "never the new-user setup");
-    assert.deepEqual(fs.readdirSync(fresh), ["config.json"], "a fresh workspace: its server adds the default dusk bot");
+    assert.deepEqual(fs.readdirSync(fresh), ["config.json"], "a fresh workspace: its server adds the default madani bot");
     assert.deepEqual(tree(data), before, "the frozen copy is untouched");
 
     // a second launch with the same marker keeps it, and seeds nothing over what the clean workspace made meanwhile
@@ -135,7 +135,7 @@ test("a launch after the move starts straight on the clean workspace, so the fro
     assert.equal(clean.startFolder(), cleanWorkspaceDir(data));
     assert.equal(JSON.parse(fs.readFileSync(path.join(cleanWorkspaceDir(data), "config.json"), "utf8")).language, "de");
     assert.deepEqual(tree(data), before);
-    fs.writeFileSync(path.join(data, "moved.json"), JSON.stringify({ v: 1, at: 1, cloud: "https://dusk-t-1.fly.dev" }));
+    fs.writeFileSync(path.join(data, "moved.json"), JSON.stringify({ v: 1, at: 1, cloud: "https://madani-t-1.fly.dev" }));
     assert.equal(clean.startFolder(), data, "My Cloud's freeze: the window decides, by who is signed in");
     fs.rmSync(path.join(data, "moved.json"));
     assert.equal(clean.startFolder(), data);
@@ -175,14 +175,14 @@ test("the dev app's own harness restarts on another folder, and a later source r
     return proc;
   };
   const dev = createDevServerChild({ fork: (_entry, _args, options) => { const proc = child(options.env); forks.push(proc); return proc; },
-    entry: "server/dev-server.ts", env: { DUSK_DATA_DIR: "/home/.duskbot" }, port: 1, grant: () => {}, taken: async () => false });
+    entry: "server/dev-server.ts", env: { MADANI_DATA_DIR: "/home/.madanibot" }, port: 1, grant: () => {}, taken: async () => false });
   assert.equal(await dev.start(), true);
   await new Promise((done) => setTimeout(done, 0));
-  assert.equal(await dev.retarget({ DUSK_DATA_DIR: "/home/.duskbot-clean", DUSK_NO_TEST_BOTS: "1" }), true);
-  assert.deepEqual(forks.map((proc) => proc.env.DUSK_DATA_DIR), ["/home/.duskbot", "/home/.duskbot-clean"]);
+  assert.equal(await dev.retarget({ MADANI_DATA_DIR: "/home/.madanibot-clean", MADANI_NO_TEST_BOTS: "1" }), true);
+  assert.deepEqual(forks.map((proc) => proc.env.MADANI_DATA_DIR), ["/home/.madanibot", "/home/.madanibot-clean"]);
   dev.restart();
   await new Promise((done) => setTimeout(done, 0));
-  assert.equal(forks.at(-1).env.DUSK_DATA_DIR, "/home/.duskbot-clean");
-  assert.equal(dev.env().DUSK_NO_TEST_BOTS, "1");
+  assert.equal(forks.at(-1).env.MADANI_DATA_DIR, "/home/.madanibot-clean");
+  assert.equal(dev.env().MADANI_NO_TEST_BOTS, "1");
   await dev.stop();
 });

@@ -17,9 +17,9 @@ function nvmBinDirs(): string[] {
   }
 }
 
-/** A sealed test fixture sees only its own PATH, DUSK_EXTRA_PATH, app-managed dirs and its temporary home, never this machine's CLIs or keychain. */
+/** A sealed test fixture sees only its own PATH, MADANI_EXTRA_PATH, app-managed dirs and its temporary home, never this machine's CLIs or keychain. */
 export function sealedFixture(): boolean {
-  return process.env.DUSK_TEST_SEALED_PATH === "1";
+  return process.env.MADANI_TEST_SEALED_PATH === "1";
 }
 
 /** A workspace in the system temp folder is a throwaway (a test or fixture server with its own fresh home): it never
@@ -121,7 +121,7 @@ export function augmentedPath(): string {
     const fallback = [...bundledAppDirs(), ...fallbackDirs].filter((d) => existsSync(d));
     cached = mergePaths([
       ...registeredDirs.filter((d) => existsSync(d)),
-      ...(process.env.DUSK_EXTRA_PATH ? process.env.DUSK_EXTRA_PATH.split(delimiter) : []),
+      ...(process.env.MADANI_EXTRA_PATH ? process.env.MADANI_EXTRA_PATH.split(delimiter) : []),
       ...(process.env.PATH ? process.env.PATH.split(delimiter) : []),
       // Keep the last login-shell result while a rescan re-probes, or rc-only CLIs vanish for the response that triggered it.
       ...(loginShellPath ? loginShellPath.split(delimiter) : []),
@@ -151,7 +151,7 @@ function probeLoginShellPath(): void {
 
 /** The PATH an interactive login shell sets up, or null. Runs the shell in its own session, with no terminal: an
  * interactive bash that finds a terminal whose foreground group is not its own sends SIGTTIN to its whole group, which
- * stops the caller with it for good (`duskbot` run by the installer from an ssh session). Killed with SIGKILL at the
+ * stops the caller with it for good (`madanibot` run by the installer from an ssh session). Killed with SIGKILL at the
  * deadline, since an interactive bash ignores SIGTERM. */
 export function readLoginShellPath(shell: string, timeoutMs = 5000): Promise<string | null> {
   return new Promise((resolvePath) => {
@@ -159,7 +159,7 @@ export function readLoginShellPath(shell: string, timeoutMs = 5000): Promise<str
     let child: ReturnType<typeof spawn>;
     try {
       // -l -i: nvm and friends live in .zshrc/.bashrc, which only interactive shells read; a marker isolates $PATH from rc noise.
-      child = spawn(shell, ["-l", "-i", "-c", 'printf "__DUSK_PATH__%s" "$PATH"'], { detached: true, stdio: ["ignore", "pipe", "ignore"] });
+      child = spawn(shell, ["-l", "-i", "-c", 'printf "__MADANI_PATH__%s" "$PATH"'], { detached: true, stdio: ["ignore", "pipe", "ignore"] });
     } catch {
       return resolvePath(null);
     }
@@ -170,7 +170,7 @@ export function readLoginShellPath(shell: string, timeoutMs = 5000): Promise<str
     child.on("error", () => { clearTimeout(timer); resolvePath(null); });
     child.on("close", (code) => {
       clearTimeout(timer);
-      const m = code === 0 ? /__DUSK_PATH__([^\n]*)/.exec(out) : null;
+      const m = code === 0 ? /__MADANI_PATH__([^\n]*)/.exec(out) : null;
       resolvePath(m?.[1] || null);
     });
   });

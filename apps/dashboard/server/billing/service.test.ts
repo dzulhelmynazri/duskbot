@@ -64,7 +64,7 @@ function signed(type: string, data: object, id = `event_${store.state.webhookEve
   return provider.sign(id, { business_id: "fixture", timestamp: new Date(time).toISOString(), type, data });
 }
 beforeEach(() => {
-  dataDir = mkdtempSync(join(tmpdir(), "dusk-billing-fixture-")); time = Date.UTC(2026, 10, 8); config = structuredClone(BILLING_CONFIG);
+  dataDir = mkdtempSync(join(tmpdir(), "madani-billing-fixture-")); time = Date.UTC(2026, 10, 8); config = structuredClone(BILLING_CONFIG);
   store = createBillingStore(dataDir); provider = createFakeBillingProvider({ now: () => time }); clouds = fakeClouds();
   service = createBillingService({ store, provider, clouds, config, publicUrl: "https://dashboard.test", now: () => time });
 });

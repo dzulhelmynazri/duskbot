@@ -7,13 +7,13 @@ import { homedir } from "node:os";
 import { join } from "node:path";
 
 const home = homedir();
-const APP = join(home, "Library", "Application Support", "duskbot");
-const LOGS = join(home, "Library", "Logs", "duskbot");
+const APP = join(home, "Library", "Application Support", "madanibot");
+const LOGS = join(home, "Library", "Logs", "madanibot");
 // what only the owner changes: any byte different is a failure
 const STRICT = [
-  ...listFiles(join(home, ".config", "duskbot")),
+  ...listFiles(join(home, ".config", "madanibot")),
   ...["environments.json", "environments-staging.json", "places-chosen.json", "own-home.json", "own-home-choice.json", "own-home-send.json", "companion-settings.json", "desktop-prefs.json", "server-enroll.json", "account-places.json"].map((name) => join(APP, name)),
-  join(home, ".duskbot", "config.json"),
+  join(home, ".madanibot", "config.json"),
 ];
 
 function listFiles(dir) {

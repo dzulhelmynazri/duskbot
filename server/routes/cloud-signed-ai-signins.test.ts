@@ -31,8 +31,8 @@ function routes() {
   const handle = createCloudSignedRoutes({ secret, sessions, health, now, aiSignIns: async (items) => { got.push(items); } });
   const sign = (body: string, key = secret) => {
     const timestamp = String(Math.floor(now() / 1000)), nonce = `nonce-${String(++counter).padStart(12, "0")}`;
-    return { "content-type": "application/json", "x-dusk-cloud-timestamp": timestamp, "x-dusk-cloud-nonce": nonce,
-      "x-dusk-cloud-signature": `v1=${cloudRequestSignature(key, timestamp, nonce, "POST", CLOUD_AI_SIGNINS_PATH, body)}` };
+    return { "content-type": "application/json", "x-madani-cloud-timestamp": timestamp, "x-madani-cloud-nonce": nonce,
+      "x-madani-cloud-signature": `v1=${cloudRequestSignature(key, timestamp, nonce, "POST", CLOUD_AI_SIGNINS_PATH, body)}` };
   };
   const send = async (headers: Record<string, string>, body: string) => {
     const req = Object.assign(new PassThrough(), { method: "POST", url: CLOUD_AI_SIGNINS_PATH, headers, socket: { remoteAddress: "127.0.0.1" } }) as unknown as IncomingMessage;
@@ -64,7 +64,7 @@ describe("POST /api/cloud/ai-signins", () => {
 
 describe("applying held sign-ins", () => {
   it("writes the ChatGPT login only where none is, readable by this account alone", () => {
-    const home = mkdtempSync(join(tmpdir(), "dusk-codex-home-"));
+    const home = mkdtempSync(join(tmpdir(), "madani-codex-home-"));
     cleanup.push(home);
     const env = { CODEX_HOME: join(home, "codex") };
     expect(applyCloudAiSignIns([{ kind: "codex-auth", auth }], env)).toEqual({ applied: ["codex-auth"], kept: [] });
@@ -78,7 +78,7 @@ describe("applying held sign-ins", () => {
   });
 
   it("writes Grok, Gemini and Kimi logins where their CLIs read them, and keeps any login already there", () => {
-    const home = mkdtempSync(join(tmpdir(), "dusk-cli-home-"));
+    const home = mkdtempSync(join(tmpdir(), "madani-cli-home-"));
     cleanup.push(home);
     const env = { HOME: home };
     const grok = JSON.stringify({ "https://auth.x.ai::id": { refresh_token: "grok-secret" } });

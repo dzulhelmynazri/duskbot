@@ -67,7 +67,7 @@ const CONTAINER_ID = /^[a-f0-9]{12,64}$/i;
 const FULL_CONTAINER_ID = /^[a-f0-9]{64}$/i;
 const IMAGE_ID = /^sha256:[a-f0-9]{64}$/i;
 const DRIVER_VERSION = /^\d{1,4}\.\d{1,4}\.\d{1,4}$/;
-const SCREENSHOT_PATH = "/tmp/duskbot-vps-preview.png";
+const SCREENSHOT_PATH = "/tmp/madanibot-vps-preview.png";
 // The Cua XFCE base ships Pillow in /opt/venv; a container without it returns the original PNG.
 const SCREENSHOT_TRANSFER = `/opt/venv/bin/python -I -c 'import base64, io, sys
 from PIL import Image
@@ -90,13 +90,13 @@ const DESKTOP_PROBE = `version="$("$1" --version)"
 export function vpsDesktopProbeArgs(container: string, driver = CUA_DRIVER_VERSION): string[] {
   if (!DRIVER_VERSION.test(driver)) throw new Error("invalid Cua Driver version");
   const args = cuaExecArgs([], { container });
-  return [...args.slice(0, -1), "sh", "-ec", DESKTOP_PROBE, "dusk-desktop-probe", CUA_EXECUTABLE, `cua-driver ${driver}`, CUA_SOCKET];
+  return [...args.slice(0, -1), "sh", "-ec", DESKTOP_PROBE, "madani-desktop-probe", CUA_EXECUTABLE, `cua-driver ${driver}`, CUA_SOCKET];
 }
 
 export function vpsDesktopWaitProbeArgs(container: string, waitMs: number, driver = CUA_DRIVER_VERSION): string[] {
   if (!Number.isFinite(waitMs) || waitMs <= 0) throw new Error("invalid VPS desktop wait");
   const args = vpsDesktopProbeArgs(container, driver);
-  args[args.indexOf("-ec") + 1] = `timeout "$4" sh -ec 'until "$1" status --socket "$3" >/dev/null 2>&1; do sleep 0.05; done' dusk-desktop-wait "$1" "$2" "$3"
+  args[args.indexOf("-ec") + 1] = `timeout "$4" sh -ec 'until "$1" status --socket "$3" >/dev/null 2>&1; do sleep 0.05; done' madani-desktop-wait "$1" "$2" "$3"
 ${DESKTOP_PROBE}`;
   return [...args, (Math.max(100, Math.floor(waitMs / 100) * 100) / 1000).toFixed(1)];
 }
@@ -192,7 +192,7 @@ export interface VpsComputerStatus {
   container_id: string | null;
   container_started_at?: string;
   image_id: string | null;
-  /** A bot desktop dusk bot made from an older image, otherwise safe: it is replaced on its home volume by itself. */
+  /** A bot desktop madani bot made from an older image, otherwise safe: it is replaced on its home volume by itself. */
   outdated?: boolean;
   /** An outdated desktop that runs as it is, on its own image and Cua Driver, until its update is ready on the host. */
   runsOlderVersion?: boolean;
@@ -451,16 +451,16 @@ function statusProblem(status: VpsComputerStatus): string | null {
   if (status.outdated && !status.runsOlderVersion) return "This computer is on an older version and updates itself before its next use";
   if (!status.image && !status.runsOlderVersion) {
     return status.desktop === "cua"
-      ? `Prepare the pinned dusk bot Cua image on the VPS (Driver ${CUA_DRIVER_VERSION})`
-      : `Prepare the dusk bot desktop image on the VPS (${BOT_DESKTOP_IMAGE})`;
+      ? `Prepare the pinned madani bot Cua image on the VPS (Driver ${CUA_DRIVER_VERSION})`
+      : `Prepare the madani bot desktop image on the VPS (${BOT_DESKTOP_IMAGE})`;
   }
-  if (status.container === "missing") return "No dusk bot container exists for this bot on the VPS";
-  if (!status.imageMatches && !status.runsOlderVersion) return "The VPS container uses an incompatible or untrusted dusk bot image";
-  if (!status.managed) return "The VPS container name is occupied by a container dusk bot did not create";
+  if (status.container === "missing") return "No madani bot container exists for this bot on the VPS";
+  if (!status.imageMatches && !status.runsOlderVersion) return "The VPS container uses an incompatible or untrusted madani bot image";
+  if (!status.managed) return "The VPS container name is occupied by a container madani bot did not create";
   if (status.network === "unsafe") return "The VPS container uses an unapproved network or publishes ports; refusing to use it";
   if (status.mounts === "unsafe") return "The VPS container has host mounts; refusing to use it";
   if (status.security === "unsafe") return "The VPS container has unsupported privilege, isolation, or automatic-removal settings";
-  if (status.container === "stopped") return "The dusk bot VPS container is stopped";
+  if (status.container === "stopped") return "The madani bot VPS container is stopped";
   if (status.desktop_error) return `The VPS Cua desktop failed to start: ${status.desktop_error}`;
   if (!status.desktopReady) return "The VPS container started, but Cua Driver is not ready yet";
   return null;
@@ -856,7 +856,7 @@ export function vpsContainerRunArgs(
   ];
 }
 
-/** A bot desktop dusk bot made, safe in every way but made from another image: replacing it on its home volume keeps its
+/** A bot desktop madani bot made, safe in every way but made from another image: replacing it on its home volume keeps its
  * saved files and sign-ins, so it happens by itself. A Cua desktop keeps nothing inside it, so a person replaces that one. */
 export function vpsDesktopReplaceable(status: Pick<VpsComputerStatus, "desktop" | "managed" | "container" | "imageMatches" | "network" | "mounts" | "security">): boolean {
   return status.desktop === "bot-desktop" && status.managed && status.container !== "missing" && !status.imageMatches &&
@@ -1140,7 +1140,7 @@ export async function vpsComputerAction(
         if (before.container === "missing") return before;
         if (!before.managed) {
           throw Object.assign(
-            new Error("The VPS container name is occupied by a container dusk bot did not create: remove it on the VPS yourself"),
+            new Error("The VPS container name is occupied by a container madani bot did not create: remove it on the VPS yourself"),
             { status: 409 },
           );
         }
@@ -1460,7 +1460,7 @@ export async function vpsComputerScreenshot(
         "sh",
         "-c",
         SCREENSHOT_TRANSFER,
-        "duskbot-preview",
+        "madanibot-preview",
         SCREENSHOT_PATH,
       ]), { timeoutMs: 30_000 })).stdout.trim();
       const checked = wholeScreenshot(Buffer.from(encoded, "base64"));

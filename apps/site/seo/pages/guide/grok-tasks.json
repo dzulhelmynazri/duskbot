@@ -52,11 +52,11 @@
     },
     {
       "h": "decide where the work runs before shutting the lid",
-      "md": "**grok bot’s cloud keeps working after you close the laptop.** xai says that about grok bot as of 12 november 2026.[^2]\n\ngrok build instead describes scripts, bots and acp. first launch uses browser sign-in; environments without a browser use an api key.[^3]\n\nxai’s consumer terms were last updated 27 october 2026. they forbid sharing credentials or making your account available to others. you remain responsible for its activity. the build docs do not settle every other app’s use of your sign-in.[^6]\n\ncheck current provider terms. [using your existing ai subscription](/use-your-ai-subscription) explains dusk’s official-app route alongside those boundaries."
+      "md": "**grok bot’s cloud keeps working after you close the laptop.** xai says that about grok bot as of 12 november 2026.[^2]\n\ngrok build instead describes scripts, bots and acp. first launch uses browser sign-in; environments without a browser use an api key.[^3]\n\nxai’s consumer terms were last updated 27 october 2026. they forbid sharing credentials or making your account available to others. you remain responsible for its activity. the build docs do not settle every other app’s use of your sign-in.[^6]\n\ncheck current provider terms. [using your existing ai subscription](/use-your-ai-subscription) explains madani’s official-app route alongside those boundaries."
     },
     {
       "h": "when another routine app earns its place",
-      "md": "**keep a working grok routine if it already does the job.** another app can add setup without adding value.\n\ndusk suits someone who wants each bot’s job, memory, recurring work and follow-up questions together. send a routine request and read its schedule card for the next run. automations in the sidebar shows run history.[^7][^8]\n\na local dusk routine stops when the computer sleeps or the app closes. dusk cloud provides the always-on computer.[^8]\n\ncompare [scheduled ai tasks](/scheduled-ai-tasks) around your actual job. choose the home that keeps its sources, results and review in reach."
+      "md": "**keep a working grok routine if it already does the job.** another app can add setup without adding value.\n\nmadani suits someone who wants each bot’s job, memory, recurring work and follow-up questions together. send a routine request and read its schedule card for the next run. automations in the sidebar shows run history.[^7][^8]\n\na local madani routine stops when the computer sleeps or the app closes. madani cloud provides the always-on computer.[^8]\n\ncompare [scheduled ai tasks](/scheduled-ai-tasks) around your actual job. choose the home that keeps its sources, results and review in reach."
     }
   ],
   "faq": [
@@ -105,11 +105,11 @@
       "checked": "2026-11-12"
     },
     {
-      "label": "dusk bot: bots",
+      "label": "madani bot: bots",
       "url": "/docs/bots"
     },
     {
-      "label": "dusk bot: routines",
+      "label": "madani bot: routines",
       "url": "/docs/routines"
     }
   ],

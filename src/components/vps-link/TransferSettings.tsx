@@ -1,4 +1,4 @@
-// Settings > Transfer: where the bots live now, moving them back to this computer, taking dusk bot off the server, and
+// Settings > Transfer: where the bots live now, moving them back to this computer, taking madani bot off the server, and
 // the backups a move keeps
 import { useCallback, useEffect, useRef, useState } from "react";
 import { t } from "@/lib/i18n";
@@ -65,8 +65,8 @@ export function TransferSettings() {
   const loadSequence = useRef(0);
   const device = deviceWord();
   const { state, dispatch } = useStore();
-  // dusk cloud is the way offered here; a server of one's own stays on the Connect from elsewhere page
-  const cloud = Boolean(window.duskDesktop?.cloudAccount) && window.duskDesktop?.remoteClient?.active !== true && !state.config?.cloudHome;
+  // madani cloud is the way offered here; a server of one's own stays on the Connect from elsewhere page
+  const cloud = Boolean(window.madaniDesktop?.cloudAccount) && window.madaniDesktop?.remoteClient?.active !== true && !state.config?.cloudHome;
 
   const load = useCallback(() => {
     if (!bridge) return;
@@ -83,7 +83,7 @@ export function TransferSettings() {
     return () => { alive.current = false; loadSequence.current++; };
   }, [load, ready, refreshKey]);
 
-  const openPlace = window.duskDesktop?.workspaces?.open;
+  const openPlace = window.madaniDesktop?.workspaces?.open;
   if (!bridge && openPlace) return <Card label={t("vpsLink.transfer.whereTitle")}>
     <NavRow data-open-this-device="" title={t("vpsLink.transfer.openThisDevice", { device })} hint={t("vpsLink.transfer.fromServerPage", { device })}
       onClick={() => void openPlace("local").catch((cause) => setError(message(cause)))} />

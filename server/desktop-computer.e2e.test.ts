@@ -1,4 +1,4 @@
-// Only the desktop app's own server may use this computer. A second dusk bot server on the same computer (a copy run
+// Only the desktop app's own server may use this computer. A second madani bot server on the same computer (a copy run
 // from source, a demo) finds the app's driver record on disk, in the folder the app keeps it in, and still never mounts
 // this computer or drives it; the app's own server, which hears the record over its parent port, still can.
 import { spawn, type ChildProcess } from "node:child_process";
@@ -12,7 +12,7 @@ import { freePortBlock } from "./testing/ports.ts";
 import { removeTempDir, waitForExit } from "./testing/cleanup.ts";
 
 const ROOT = fileURLToPath(new URL("..", import.meta.url));
-const NOT_THE_APP = "Only the dusk bot app on this computer can let a bot use it.";
+const NOT_THE_APP = "Only the madani bot app on this computer can let a bot use it.";
 
 describe("this computer belongs to the desktop app's own server", () => {
   let home = "";
@@ -74,13 +74,13 @@ describe("this computer belongs to the desktop app's own server", () => {
     const proc = spawn(process.execPath, [...hooks, join(ROOT, "server/index.ts")], {
       cwd: ROOT, env: {
         PATH: dirname(process.execPath), ...(process.env.SystemRoot ? { SystemRoot: process.env.SystemRoot } : {}),
-        HOME: home, USERPROFILE: home, DUSK_DATA_DIR: data,
+        HOME: home, USERPROFILE: home, MADANI_DATA_DIR: data,
         APPDATA: join(home, "appdata"), LOCALAPPDATA: join(home, "localappdata"),
         TEMP: home, TMP: home, TMPDIR: home,
-        DUSK_PORT: String(port), DUSK_WEBHOOK_PORT: String(port + 1), DUSK_STATIC_DIR: ui, DUSK_TEST_VM_STATE: stateFile,
+        MADANI_PORT: String(port), MADANI_WEBHOOK_PORT: String(port + 1), MADANI_STATIC_DIR: ui, MADANI_TEST_VM_STATE: stateFile,
         // The app's record, where the app keeps it and where this server is pointed: neither lets it in.
-        DUSK_USER_DATA: join(home, "user-data"),
-        ...(desktop ? { DUSK_TEST_DESKTOP_CUA_CONNECTION: join(home, "user-data", "cua-connection.json") } : {}),
+        MADANI_USER_DATA: join(home, "user-data"),
+        ...(desktop ? { MADANI_TEST_DESKTOP_CUA_CONNECTION: join(home, "user-data", "cua-connection.json") } : {}),
         ...env,
       }, stdio: ["ignore", "pipe", "pipe"],
     });
@@ -102,7 +102,7 @@ describe("this computer belongs to the desktop app's own server", () => {
   const itHost = process.platform === "linux" ? it.skip : it;
 
   beforeAll(() => {
-    home = mkdtempSync(join(tmpdir(), "dusk-desktop-computer-"));
+    home = mkdtempSync(join(tmpdir(), "madani-desktop-computer-"));
     data = join(home, "data");
     ui = join(home, "static");
     stateFile = join(home, "vm.json");
@@ -113,7 +113,7 @@ describe("this computer belongs to the desktop app's own server", () => {
     mkdirSync(join(ui, "assets"), { recursive: true });
     writeFileSync(join(ui, "index.html"), "<title>Desktop computer</title>");
     writeFileSync(join(ui, "assets", "test.css"), "body{}");
-    for (const folder of [join(home, "user-data"), join(home, "Library", "Application Support", "Dusk Bot")]) {
+    for (const folder of [join(home, "user-data"), join(home, "Library", "Application Support", "Madani Bot")]) {
       mkdirSync(folder, { recursive: true, mode: 0o700 });
       writeFileSync(join(folder, "cua-connection.json"), JSON.stringify(record), { mode: 0o600 });
     }
@@ -165,7 +165,7 @@ describe("this computer belongs to the desktop app's own server", () => {
     resetTurn();
     await apiOk("POST", `/api/bots/${bot.id}/messages`, { text: "Open Chrome on this computer.", threadId: task.threadId });
     const sent = await dump();
-    expect(sent.mcpConfig.mcpServers.computer.env.DUSK_CUA_COMMAND).toBe("/fixture/cua-driver");
+    expect(sent.mcpConfig.mcpServers.computer.env.MADANI_CUA_COMMAND).toBe("/fixture/cua-driver");
     writeFileSync(finishFile, "finish");
     await idle(bot.id, task.threadId);
   });
@@ -184,7 +184,7 @@ describe("this computer belongs to the desktop app's own server", () => {
     expect((await rows(task.threadId)).join("\n")).not.toContain("can't use this computer yet");
     writeFileAtomic(grantFile, JSON.stringify(record));
     const sent = await dump();
-    expect(sent.mcpConfig.mcpServers.computer.env.DUSK_CUA_COMMAND).toBe("/fixture/cua-driver");
+    expect(sent.mcpConfig.mcpServers.computer.env.MADANI_CUA_COMMAND).toBe("/fixture/cua-driver");
     writeFileSync(finishFile, "finish");
     await idle(bot.id, task.threadId);
     expect((await rows(task.threadId)).filter(line => line === "Open Chrome on this computer.")).toHaveLength(1);
@@ -196,7 +196,7 @@ describe("this computer belongs to the desktop app's own server", () => {
     }));
     const browser = join(home, "agent-browser");
     writeFileSync(browser, "#!/bin/sh\necho '{\"success\":true,\"data\":{\"sessions\":[]}}'\n", { mode: 0o755 });
-    await start(true, { DUSK_AGENT_BROWSER_PATH: browser });
+    await start(true, { MADANI_AGENT_BROWSER_PATH: browser });
     const { bot } = await apiOk("POST", "/api/bots", { name: "No Permission Bot" });
     await apiOk("PATCH", `/api/bots/${bot.id}`, { computer: "local" });
     const { task } = await apiOk("POST", `/api/bots/${bot.id}/tasks`, {});
@@ -207,14 +207,14 @@ describe("this computer belongs to the desktop app's own server", () => {
     expect(sent.mcpConfig?.mcpServers?.browser).toBeDefined();
     const prompt = JSON.stringify(sent);
     expect(prompt).toContain("go straight to your built-in browser and do it; never say you cannot open a website");
-    expect(prompt).toContain("controlling a computer's apps also comes with dusk cloud plans");
+    expect(prompt).toContain("controlling a computer's apps also comes with madani cloud plans");
     expect(prompt).not.toMatch(/notice above the message box, and the person|allow it from the notice/);
-    expect(prompt).toContain("macOS has not given dusk bot Screen Recording on this Mac yet");
+    expect(prompt).toContain("macOS has not given madani bot Screen Recording on this Mac yet");
     expect(prompt).toContain("Never call it for web work");
     const agents = sent.mcpConfig.mcpServers.agents;
-    expect(agents.env.DUSK_SCREEN_ACCESS).toBe("1");
+    expect(agents.env.MADANI_SCREEN_ACCESS).toBe("1");
     const asked = await fetch(`${base}/api/internal/request-screen-access`, {
-      method: "POST", headers: { "content-type": "application/json", authorization: `Bearer ${agents.env.DUSK_COMMS_TOKEN}` },
+      method: "POST", headers: { "content-type": "application/json", authorization: `Bearer ${agents.env.MADANI_COMMS_TOKEN}` },
       body: JSON.stringify({ reason: "Open Keynote" }),
     });
     expect(await asked.json()).toEqual({ shown: true, missing: ["Screen Recording"] });

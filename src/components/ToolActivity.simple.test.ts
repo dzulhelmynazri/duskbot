@@ -9,11 +9,11 @@ const render = (tool: Parameters<typeof ToolActivity>[0]["tool"]) => renderToSta
 
 describe("ToolActivity", () => {
   it("names the step in plain words and keeps the tool's own name in the details", () => {
-    const html = render({ name: "mcp__dusk__computer_batch", ok: true, input: '{"actions":[]}' });
+    const html = render({ name: "mcp__madani__computer_batch", ok: true, input: '{"actions":[]}' });
     expect(html).toContain("Use the screen · Completed · tool details");
     expect(html).toMatch(/<span class="min-w-0 max-w-\[30rem\] truncate font-medium leading-5">Use the screen<\/span>/);
     expect(html).toContain('data-testid="tool-name"');
-    expect(html).toContain("mcp__dusk__computer_batch");
+    expect(html).toContain("mcp__madani__computer_batch");
   });
 
   it("shows the line the harness wrote for an MCP server change, with the tool's name in the details", () => {
@@ -37,7 +37,7 @@ describe("ActivityRun", () => {
   const steps = [
     { id: "a", at: 1, role: "bot" as const, kind: "activity" as const, tool: { name: "Bash", ok: true, summary: "ls" } },
     { id: "b", at: 2, role: "bot" as const, kind: "activity" as const, tool: { name: "ls -la /tmp", ok: true, summary: "ls -la /tmp" } },
-    { id: "c", at: 3, role: "bot" as const, kind: "activity" as const, tool: { name: "mcp__dusk__screenshot", ok: true } },
+    { id: "c", at: 3, role: "bot" as const, kind: "activity" as const, tool: { name: "mcp__madani__screenshot", ok: true } },
   ];
 
   it("sums a folded run up in plain words", () => {
@@ -50,7 +50,7 @@ describe("ActivityRun at narrow widths", () => {
   it("lets the run's row shrink and truncate its summary instead of running off the screen", () => {
     const steps = [
       { id: "a", at: 1, role: "bot" as const, kind: "activity" as const, tool: { name: "Read", ok: true } },
-      { id: "b", at: 2, role: "bot" as const, kind: "activity" as const, tool: { name: "mcp__dusk__screenshot", ok: true } },
+      { id: "b", at: 2, role: "bot" as const, kind: "activity" as const, tool: { name: "mcp__madani__screenshot", ok: true } },
     ];
     const html = renderToStaticMarkup(createElement(ActivityRun, { messages: steps, children: null }));
     expect(html).toMatch(/<button[^>]*class="-ms-2 flex min-w-0 max-w-full /);

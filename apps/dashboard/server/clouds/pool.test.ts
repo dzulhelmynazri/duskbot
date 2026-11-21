@@ -14,7 +14,7 @@ it("chooses best RAM fit, breaks ties by id, filters region and draining hosts, 
   expect((await provider.create(input(1))).id).toBe(server.id);
   expect(driver.calls.filter(c => c.method === "createSlot")).toHaveLength(1);
   const call = driver.calls.find(c => c.method === "createSlot")!;
-  expect(JSON.parse((call.input as { bootstrap: string }).bootstrap).env.DUSK_PUBLIC_URL).toBe(server.origin);
+  expect(JSON.parse((call.input as { bootstrap: string }).bootstrap).env.MADANI_PUBLIC_URL).toBe(server.origin);
   expect((await provider.create(input(2, "us"))).id).toMatch(/^other:/);
 });
 it("scales CPU, RAM and disk capacity independently and counts stopped slots", async () => {

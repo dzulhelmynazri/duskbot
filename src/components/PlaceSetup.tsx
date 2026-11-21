@@ -1,6 +1,6 @@
-// Add a place, without leaving where the person is: dusk cloud (the buying sheet), or a server of their own, linked by one
+// Add a place, without leaving where the person is: madani cloud (the buying sheet), or a server of their own, linked by one
 // line (with the way it should be reached on the end) with its progress and anything it needs from the person shown live,
-// or a dusk bot already running somewhere, by its address and code.
+// or a madani bot already running somewhere, by its address and code.
 import { useCallback, useEffect, useRef, useState, type FormEvent } from "react";
 import { Building2, ChevronRight, Loader2, UserRound } from "../icons";
 import type { RailAddChoices } from "../../electron/cloud-rail.mjs";
@@ -23,8 +23,8 @@ import "../styles/place-setup.css";
 
 /** The ways a server of one's own connects besides the plain relay line, in the order they are offered (Cloudflare first,
  * then the relay's plain line between it and the rest). Each but the last is the same one line with a way on the end
- * (apps/link-service/install.sh): it installs dusk bot, sets up the way, shows here what only the person can do (a
- * sign-in) and links by itself. The last connects to a dusk bot that is already running somewhere, by its address and
+ * (apps/link-service/install.sh): it installs madani bot, sets up the way, shows here what only the person can do (a
+ * sign-in) and links by itself. The last connects to a madani bot that is already running somewhere, by its address and
  * pairing code. */
 export const WAYS = [
   { key: "cloudflare", title: "placeSetup.way.cloudflare", sub: "placeSetup.way.cloudflareSub", flag: "--cloudflare", last: "placeSetup.steps.cloudflare" },
@@ -57,14 +57,14 @@ const depth = (view: View) => (view === "choose" ? 0 : view === "server" || view
 
 /** The one sheet for adding a place, from the rail's ＋, the places hub, the switcher and Settings (it never reads the
  * app's store, so the window's own rail can draw it too). `choices`: main's offer for the rail (a new organization,
- * another account); `onBuy`: buying a first dusk cloud; `onServer`: the rail hands a server of one's own to the app
+ * another account); `onBuy`: buying a first madani cloud; `onServer`: the rail hands a server of one's own to the app
  * window's sheet, which has the setup's whole flow; `connect`: a server of theirs signed in to their account but not
  * connected to this app yet; `start`: the screen it opens on. */
 export function PlaceSetup({ onClose, start, choices, onAccount, onBuy, onServer, connect }: {
   onClose: () => void; start?: PlaceSetupView; choices?: RailAddChoices; onAccount?: () => void; onBuy?: () => void; onServer?: () => void; connect?: string;
 }) {
   const rail = usePlaces();
-  const canBuy = (choices ? choices.cloud : Boolean(window.duskDesktop?.cloudAccount)) && window.duskDesktop?.remoteClient?.active !== true;
+  const canBuy = (choices ? choices.cloud : Boolean(window.madaniDesktop?.cloudAccount)) && window.madaniDesktop?.remoteClient?.active !== true;
   const organization = choices?.organization === true;
   const account = choices?.account === true && Boolean(onAccount);
   const server = choices ? choices.link || choices.address === true : true;
@@ -84,7 +84,7 @@ export function PlaceSetup({ onClose, start, choices, onAccount, onBuy, onServer
     onClose();
     onBuy?.();
   };
-  const firstCloud = () => { onClose(); void window.duskDesktop?.workspaces?.add?.("cloud").catch(() => {}); };
+  const firstCloud = () => { onClose(); void window.madaniDesktop?.workspaces?.add?.("cloud").catch(() => {}); };
   const back = (to: View) => () => setView(to);
   const fromServer = connect ? undefined : back("server");
   return <RailSheet above wide={view === "cloud" && wide} focusKey={view} onClose={onClose}>
@@ -121,7 +121,7 @@ export function PlaceSetup({ onClose, start, choices, onAccount, onBuy, onServer
  * rest of the ways on the line and an address. */
 export function ServerWays({ onPick }: { onPick: (key: "relay" | WayKey) => void }) {
   const relay = vpsLinkAvailable();
-  const address = Boolean(window.duskDesktop?.workspaces?.add);
+  const address = Boolean(window.madaniDesktop?.workspaces?.add);
   const ways = WAYS.filter((entry) => (lineWay(entry) ? relay : address)).map((entry) => ({ key: entry.key, title: t(entry.title), sub: t(entry.sub), tag: entry.key === "cloudflare" }));
   const rows = [
     ...ways.filter((row) => row.key === "cloudflare"),
@@ -200,7 +200,7 @@ export function InstallSetup({ way, title: named, onBack, onClose }: { way?: Lin
     const reconnect = () => {
       setBusy(true);
       setError("");
-      void (window.duskDesktop?.workspaces?.open?.(home.id) ?? Promise.reject(new Error("no place")))
+      void (window.madaniDesktop?.workspaces?.open?.(home.id) ?? Promise.reject(new Error("no place")))
         .then(onClose, () => { if (alive.current) setError(t("placeSetup.openFailed", { name: home.name })); })
         .finally(() => { if (alive.current) setBusy(false); });
     };
@@ -263,8 +263,8 @@ export function InstallSetup({ way, title: named, onBack, onClose }: { way?: Lin
     {onBack && <BackLink label={t("rail.back")} onClick={onBack} />}
     <Heading title={t("continueBrowser.title")} sub={t("placeSetup.signInBrowser")} />
     <div className="flex flex-wrap gap-2">
-      <button type="button" data-continue-open="" className="ui-button ui-button-primary" onClick={() => { void window.duskDesktop?.cloudAccount?.reopen().catch(() => {}); }}>{t("continueBrowser.open")}</button>
-      <button type="button" data-continue-cancel="" className="ui-button" onClick={() => { void window.duskDesktop?.cloudAccount?.cancel().catch(() => {}); void run(() => bridge.cancel()); onClose(); }}>{t("continueBrowser.cancel")}</button>
+      <button type="button" data-continue-open="" className="ui-button ui-button-primary" onClick={() => { void window.madaniDesktop?.cloudAccount?.reopen().catch(() => {}); }}>{t("continueBrowser.open")}</button>
+      <button type="button" data-continue-cancel="" className="ui-button" onClick={() => { void window.madaniDesktop?.cloudAccount?.cancel().catch(() => {}); void run(() => bridge.cancel()); onClose(); }}>{t("continueBrowser.cancel")}</button>
     </div>
   </div>;
 
@@ -318,7 +318,7 @@ export function WaySetup({ way, title, onBack, onClose }: { way: Way; title?: st
   return <AddressSetup way={way} title={title} onBack={onBack} onClose={onClose} />;
 }
 
-/** A dusk bot already running somewhere: connected by the link `duskbot pair` prints, or by its address and code. */
+/** A madani bot already running somewhere: connected by the link `madanibot pair` prints, or by its address and code. */
 function AddressSetup({ way, title, onBack, onClose }: { way: Extract<Way, { key: "address" }>; title?: string; onBack?: () => void; onClose: () => void }) {
   const [address, setAddress] = useState("");
   const [code, setCode] = useState("");
@@ -334,7 +334,7 @@ function AddressSetup({ way, title, onBack, onClose }: { way: Extract<Way, { key
     setBusy(true);
     setError(null);
     try {
-      if (await window.duskDesktop?.workspaces?.add?.("link", made.link) !== false) onClose();
+      if (await window.madaniDesktop?.workspaces?.add?.("link", made.link) !== false) onClose();
     } catch (cause) {
       setError({ field: null, text: message(cause) });
     } finally {

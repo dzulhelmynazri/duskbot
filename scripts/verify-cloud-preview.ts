@@ -1,13 +1,13 @@
 // Real ComputerPanel + isolated fake-engine server, with only its cloud
 // transport simulated. No real VPS or user's app data is contacted.
 // Run: node --experimental-strip-types scripts/verify-cloud-preview.ts
-import { launchVerificationServer, runControlDusk } from "./control-dusk.ts";
+import { launchVerificationServer, runControlMadani } from "./control-madani.ts";
 import { mountPreview, parkUntilSignal, type MountedPreview } from "./testing/preview-fixture.ts";
 
 const fixture = await launchVerificationServer();
 let ui: MountedPreview | undefined;
 try {
-  await runControlDusk(["new-bot", "--name", "VPS Preview Test", "--url", fixture.info.url]);
+  await runControlMadani(["new-bot", "--name", "VPS Preview Test", "--url", fixture.info.url]);
   ui = await mountPreview(fixture, {
     entry: "/scripts/testing/cloud-preview.tsx", route: "/__cloud-preview.html", title: "Isolated VPS Preview Test",
   });

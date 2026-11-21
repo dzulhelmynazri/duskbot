@@ -17,7 +17,7 @@ function loadPreload(origin) {
   let bridge;
   const invoked = [];
   vm.runInNewContext(preloadSource, {
-    process: { platform: "darwin", argv: [`--dusk-local-origin=${LOCAL}`] },
+    process: { platform: "darwin", argv: [`--madani-local-origin=${LOCAL}`] },
     location: { origin },
     navigator: {},
     TextEncoder,

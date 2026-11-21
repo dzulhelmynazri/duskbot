@@ -1,4 +1,4 @@
-// dusk bot's own MCP servers (agents, browser, computer, data, email) over MCP's Streamable HTTP transport, JSON
+// madani bot's own MCP servers (agents, browser, computer, data, email) over MCP's Streamable HTTP transport, JSON
 // responses only, for engines that reach MCP servers by URL: one endpoint in this process instead of a stdio proxy
 // process per server in every session. The turn's capability rides the Authorization header, and the endpoints behind
 // these answers check it, as they check the stdio proxies'.
@@ -20,7 +20,7 @@ function agentsEnv(headers: IncomingHttpHeaders, token: string, harness: string)
     const parsed = typeof raw === "string" ? JSON.parse(Buffer.from(raw, "base64url").toString("utf8")) as unknown : null;
     if (parsed && typeof parsed === "object" && !Array.isArray(parsed)) settings = parsed as Record<string, unknown>;
   } catch {}
-  const env: NodeJS.ProcessEnv = { DUSK_HARNESS_URL: harness, DUSK_COMMS_TOKEN: token };
+  const env: NodeJS.ProcessEnv = { MADANI_HARNESS_URL: harness, MADANI_COMMS_TOKEN: token };
   for (const key of AGENTS_MCP_ENV) if (typeof settings[key] === "string") env[key] = settings[key];
   return env;
 }

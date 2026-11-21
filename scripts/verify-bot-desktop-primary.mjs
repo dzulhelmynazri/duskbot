@@ -9,30 +9,30 @@ import WebSocket from "ws";
 import { connectMcp, eventually, httpFixture, socket } from "./testing/bot-desktop-fixture.mjs";
 
 const run = promisify(execFile);
-const image = process.env.DUSK_VERIFY_DESKTOP_IMAGE;
-assert.ok(image, "select a fixture image with DUSK_VERIFY_DESKTOP_IMAGE");
+const image = process.env.MADANI_VERIFY_DESKTOP_IMAGE;
+assert.ok(image, "select a fixture image with MADANI_VERIFY_DESKTOP_IMAGE");
 const imageId = (await run("docker", ["image", "inspect", image, "--format", "{{.Id}}"])).stdout.trim();
 assert.match(imageId, /^sha256:[a-f0-9]{64}$/);
-const evidence = await mkdtemp(join(process.platform === "win32" ? tmpdir() : "/tmp", "dusk-primary-"));
-process.env.DUSK_DATA_DIR = join(evidence, "server-data");
+const evidence = await mkdtemp(join(process.platform === "win32" ? tmpdir() : "/tmp", "madani-primary-"));
+process.env.MADANI_DATA_DIR = join(evidence, "server-data");
 const { boxChromeExecArgs, boxChromeRelay } = await import("../server/vps-local.ts");
 const suffix = `${process.pid}-${Date.now()}`;
-const volume = `dusk-primary-home-${suffix}`;
+const volume = `madani-primary-home-${suffix}`;
 const names = new Set();
 const receipt = { imageId, evidence, volume, cases: [], ok: false };
 const docker = args => run("docker", args, { timeout: 20_000, maxBuffer: 4 * 1024 * 1024 });
 let madeVolume = false;
 
 async function create(label, browser = true) {
-  const name = `dusk-primary-${suffix}-${label}`;
+  const name = `madani-primary-${suffix}-${label}`;
   names.add(name);
   const result = await docker([
-    "run", "-d", "--name", name, "--label", "bot.dusk.verification=primary-lifecycle",
+    "run", "-d", "--name", name, "--label", "bot.madani.verification=primary-lifecycle",
     "--network", "none", "--user", "1000:1000", "--cap-drop", "ALL", "--security-opt", "no-new-privileges",
     "--read-only", "--memory", "4g", "--cpus", "2", "--pids-limit", "4096", "--shm-size", "512m",
     "--mount", `type=volume,source=${volume},target=/home/cua`,
     "--tmpfs", "/tmp:rw,nosuid,nodev,size=512m", "--tmpfs", "/run:rw,nosuid,nodev,size=128m,uid=1000,gid=1000,mode=0755",
-    "-e", "DUSK_START_URL=about:blank", "-e", `DUSK_BROWSER_AT_START=${browser ? "on" : "off"}`, imageId,
+    "-e", "MADANI_START_URL=about:blank", "-e", `MADANI_BROWSER_AT_START=${browser ? "on" : "off"}`, imageId,
   ]);
   const container = result.stdout.trim();
   assert.match(container, /^[a-f0-9]{64}$/);
@@ -97,7 +97,7 @@ async function navigate(send, url) {
 }
 
 try {
-  await docker(["volume", "create", "--label", "bot.dusk.verification=primary-lifecycle", volume]);
+  await docker(["volume", "create", "--label", "bot.madani.verification=primary-lifecycle", volume]);
   madeVolume = true;
   const fixture = await create("cookie");
   await fixtureServer(fixture);

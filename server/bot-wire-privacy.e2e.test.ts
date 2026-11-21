@@ -46,9 +46,9 @@ describe("bot wire privacy against the real server", () => {
       cwd: ROOT,
       env: {
         PATH: dirname(process.execPath), ...(process.env.SystemRoot ? { SystemRoot: process.env.SystemRoot } : {}),
-        HOME: home, USERPROFILE: home, DUSK_DATA_DIR: data,
+        HOME: home, USERPROFILE: home, MADANI_DATA_DIR: data,
         APPDATA: join(home, "appdata"), LOCALAPPDATA: join(home, "localappdata"),
-        DUSK_PORT: String(port), DUSK_WEBHOOK_PORT: String(port + 1),
+        MADANI_PORT: String(port), MADANI_WEBHOOK_PORT: String(port + 1),
       },
       stdio: ["ignore", "pipe", "pipe"],
     });
@@ -78,7 +78,7 @@ describe("bot wire privacy against the real server", () => {
 
   beforeAll(() => {
     chmodSync(FAKE_CLI, 0o755);
-    home = mkdtempSync(join(tmpdir(), "dusk-bot-wire-privacy-"));
+    home = mkdtempSync(join(tmpdir(), "madani-bot-wire-privacy-"));
     data = join(home, "data");
     mkdirSync(data, { recursive: true });
   });

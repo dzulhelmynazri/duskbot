@@ -92,7 +92,7 @@
     },
     {
       "h": "let the scheduling bot see only scheduling material",
-      "md": "**find a slot without opening every interview assessment.** connect the chosen calendars and scheduling mailbox. **connected apps** limits access per bot; read only is enough here. the [calendar guide](/integrations/google-calendar) covers availability.\n\nconfirm time zones and availability before sending the invitation yourself. if you later allow calendar writes, include 'ask me before you change anything'.\n\nrecruiting is work use and needs a work license. dusk cloud pro includes one for one person. [account and billing](/docs/account-and-billing) explains team use.[^3]"
+      "md": "**find a slot without opening every interview assessment.** connect the chosen calendars and scheduling mailbox. **connected apps** limits access per bot; read only is enough here. the [calendar guide](/integrations/google-calendar) covers availability.\n\nconfirm time zones and availability before sending the invitation yourself. if you later allow calendar writes, include 'ask me before you change anything'.\n\nrecruiting is work use and needs a work license. madani cloud pro includes one for one person. [account and billing](/docs/account-and-billing) explains team use.[^3]"
     }
   ],
   "faq": [
@@ -111,15 +111,15 @@
   ],
   "sources": [
     {
-      "label": "dusk bot docs: files and apps",
+      "label": "madani bot docs: files and apps",
       "url": "/docs/files-and-apps"
     },
     {
-      "label": "dusk bot docs: routines",
+      "label": "madani bot docs: routines",
       "url": "/docs/routines"
     },
     {
-      "label": "dusk bot docs: account and billing",
+      "label": "madani bot docs: account and billing",
       "url": "/docs/account-and-billing"
     },
     {

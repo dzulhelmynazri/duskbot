@@ -60,12 +60,12 @@ describe("dictation while the bot works", () => {
     vi.spyOn(HTMLElement.prototype, "scrollIntoView").mockImplementation(() => {});
     speechStop = vi.fn().mockResolvedValue(undefined);
     setVoicePrefs({ firstRunSeen: true });
-    window.duskDesktop = {
+    window.madaniDesktop = {
       platform: "darwin",
       speechStart: vi.fn().mockResolvedValue(undefined), speechStop,
       onSpeechTranscript: (cb: typeof transcript) => { transcript = cb; return vi.fn(); },
       onSpeechEnd: () => vi.fn(),
-    } as unknown as typeof window.duskDesktop;
+    } as unknown as typeof window.madaniDesktop;
     container = document.createElement("div");
     document.body.append(container);
     root = createRoot(container);
@@ -75,7 +75,7 @@ describe("dictation while the bot works", () => {
     flushSync(() => root.unmount());
     container.remove();
     restoreComposerDraft(draftId, { text: "", attachments: [] });
-    delete window.duskDesktop;
+    delete window.madaniDesktop;
     setVoicePrefs(DEFAULT_VOICE_PREFS);
     vi.clearAllMocks();
     vi.restoreAllMocks();

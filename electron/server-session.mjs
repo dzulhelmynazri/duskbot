@@ -1,4 +1,4 @@
-// How this app's Electron sessions and listeners meet the local dusk bot server. The server treats the app window
+// How this app's Electron sessions and listeners meet the local madani bot server. The server treats the app window
 // as its owner only by a header the default session adds; no other session (desktop viewers, VM panes) may reach the
 // server at all; and the server learns every port this app listens on, so its bots' browsers never reach them.
 import { subscribe } from "node:diagnostics_channel";
@@ -54,7 +54,7 @@ let reportTo = null;
 
 function report() {
   try {
-    reportTo?.postMessage({ type: "duskbot:own-listeners", ports: [...ownPorts] });
+    reportTo?.postMessage({ type: "madanibot:own-listeners", ports: [...ownPorts] });
   } catch {}
 }
 

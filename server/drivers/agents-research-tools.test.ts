@@ -6,7 +6,7 @@ import { WEB_SEARCH_NOT_CONFIGURED } from "../web-search-many.ts";
 describe("web_search_many on the agents server", () => {
   it("is listed only with the research credential and availability switches", () => {
     for (const x of ["0", "1"]) for (const research of ["0", "1"]) {
-      const listed = availableTools(catalogProfileFromEnv({ DUSK_X_RESEARCH: x, DUSK_RESEARCH: research }));
+      const listed = availableTools(catalogProfileFromEnv({ MADANI_X_RESEARCH: x, MADANI_RESEARCH: research }));
       expect(listed.some((tool) => tool.name === "web_search_many")).toBe(x === "1" && research === "1");
       if (x === "1" && research === "1") expect(listed.find((tool) => tool.name === "web_search_many")).toMatchObject({ annotations: { readOnlyHint: true, openWorldHint: true } });
     }

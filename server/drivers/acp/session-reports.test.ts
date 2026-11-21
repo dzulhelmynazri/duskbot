@@ -185,13 +185,13 @@ describe("ACP plan lines", () => {
     expect(acpPlanLinesEnabled({})).toBe(true);
   });
 
-  it("follow DUSK_ACP_PLAN_LINES over the file when it is 1 or 0", () => {
-    expect(acpPlanLinesEnabled({ DUSK_ACP_PLAN_LINES: "1" })).toBe(true);
+  it("follow MADANI_ACP_PLAN_LINES over the file when it is 1 or 0", () => {
+    expect(acpPlanLinesEnabled({ MADANI_ACP_PLAN_LINES: "1" })).toBe(true);
     // anything else is not an answer: the file decides
-    expect(acpPlanLinesEnabled({ DUSK_ACP_PLAN_LINES: "true" })).toBe(false);
+    expect(acpPlanLinesEnabled({ MADANI_ACP_PLAN_LINES: "true" })).toBe(false);
     saveConfig({ features: { acpPlanLines: true } });
-    expect(acpPlanLinesEnabled({ DUSK_ACP_PLAN_LINES: "0" })).toBe(false);
-    expect(acpPlanLinesEnabled({ DUSK_ACP_PLAN_LINES: "" })).toBe(true);
+    expect(acpPlanLinesEnabled({ MADANI_ACP_PLAN_LINES: "0" })).toBe(false);
+    expect(acpPlanLinesEnabled({ MADANI_ACP_PLAN_LINES: "" })).toBe(true);
   });
 });
 
@@ -199,10 +199,10 @@ describe("readSessionReport: plan", () => {
   const plan = (...entries: Array<[status: string, content: string]>) => ({
     sessionUpdate: "plan", entries: entries.map(([status, content]) => entry(status, content)),
   });
-  const on = { DUSK_ACP_PLAN_LINES: "1" };
+  const on = { MADANI_ACP_PLAN_LINES: "1" };
 
   it("says nothing while plan lines are off", () => {
-    expect(readSessionReport(plan(["in_progress", "Read the brief"]), undefined, turn(), live(), { DUSK_ACP_PLAN_LINES: "0" })).toEqual({});
+    expect(readSessionReport(plan(["in_progress", "Read the brief"]), undefined, turn(), live(), { MADANI_ACP_PLAN_LINES: "0" })).toEqual({});
   });
 
   it("gives one step each time the plan reads differently, with the list as its input", () => {

@@ -7,7 +7,7 @@ import { walkthrough } from "./flows/recorder.mjs";
 
 const sleep = (ms) => new Promise((done) => setTimeout(done, ms));
 const js = (value) => JSON.stringify(value);
-export const TEST_CARD = { number: "4242424242424242", expiry: "12/30", cvc: "123", name: "Dusk Smoke" };
+export const TEST_CARD = { number: "4242424242424242", expiry: "12/30", cvc: "123", name: "Madani Smoke" };
 
 /** checkoutUrl: a test.checkout.dodopayments.com page. Returns { url: the page it ended on, shots } */
 export async function payDodoTestCheckout(checkoutUrl, { shot = null, log = () => {}, timeout = 180_000, browser: given = null } = {}) {
@@ -72,7 +72,7 @@ export async function payDodoTestCheckout(checkoutUrl, { shot = null, log = () =
     await sleep(800);
     // "pay now" may sit in the page or in the card frame
     const inPage = await browser.evaluate(`Boolean([...document.querySelectorAll("button")].find((b) => /^pay now$/i.test(b.innerText.trim()) && b.getClientRects().length))`);
-    if (inPage) await press(`button[data-dusk-pay]`, `[...document.querySelectorAll("button")].find((b) => /^pay now$/i.test(b.innerText.trim()) && b.getClientRects().length)?.setAttribute("data-dusk-pay", "1")`);
+    if (inPage) await press(`button[data-madani-pay]`, `[...document.querySelectorAll("button")].find((b) => /^pay now$/i.test(b.innerText.trim()) && b.getClientRects().length)?.setAttribute("data-madani-pay", "1")`);
     else { walkthrough.did(`clicks "Pay"`, "browser"); await card.evaluate(`[...document.querySelectorAll("button")].find((b) => /pay/i.test(b.innerText))?.click(); true`); }
     log("paid, waiting for the confirmation");
     // a card from an Indian address goes through 3-D Secure: the test page's own "complete" button passes it

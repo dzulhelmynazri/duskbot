@@ -83,7 +83,7 @@ describe("the app's end for its cloud home", () => {
 
   function app(over: Partial<Parameters<typeof createAppLink>[0]> = {}) {
     const dials: string[] = [];
-    let origin: string | null = "https://home.dusk.test", awake = true, t = 0;
+    let origin: string | null = "https://home.madani.test", awake = true, t = 0;
     const deps = {
       origin: () => origin, awake: () => awake, cookie: async () => "s=1", checkMs: 60_000, now: () => t,
       connect: async (url: string) => { dials.push(url); return { readable: new PassThrough() as unknown as Duplex, close: () => {} }; },
@@ -105,7 +105,7 @@ describe("the app's end for its cloud home", () => {
     one.set({ awake: true });
     one.link.check();
     await settle();
-    expect(one.dials).toEqual(["wss://home.dusk.test/api/computer/egress/link"]);
+    expect(one.dials).toEqual(["wss://home.madani.test/api/computer/egress/link"]);
     expect(one.link.linked()).toBe(true);
     one.set({ awake: false });
     one.link.check();

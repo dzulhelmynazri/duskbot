@@ -190,7 +190,7 @@
       ],
       "state": "idle",
       "ms": 10410,
-      "output": "I’m canceling your daily morning summary now.\n---\nI couldn’t find a daily morning summary automation for me or dusk bot, so nothing was cancelled. Where do you receive the summary?"
+      "output": "I’m canceling your daily morning summary now.\n---\nI couldn’t find a daily morning summary automation for me or madani bot, so nothing was cancelled. Where do you receive the summary?"
     },
     {
       "model": "gpt-6.1-terra",
@@ -618,7 +618,7 @@
       ],
       "state": "idle",
       "ms": 3534,
-      "output": "Works on is Off in this bot's settings, so I can't access your file system or rename that folder directly. \n\nYou can rename it yourself in Terminal with this command:\n`mv ~/Documents/dusk-bto ~/Documents/dusk-bot`"
+      "output": "Works on is Off in this bot's settings, so I can't access your file system or rename that folder directly. \n\nYou can rename it yourself in Terminal with this command:\n`mv ~/Documents/madani-bto ~/Documents/madani-bot`"
     },
     {
       "model": "gemini-3.1-flash-lite",

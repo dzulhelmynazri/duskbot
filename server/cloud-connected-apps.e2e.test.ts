@@ -16,7 +16,7 @@ import { removeTempDir, waitForExit } from "./testing/cleanup.ts";
 import { freePortBlock } from "./testing/ports.ts";
 
 const SERVER_DIR = dirname(fileURLToPath(import.meta.url));
-const HOST = "dusk-t-0123456789ab.fly.dev";
+const HOST = "madani-t-0123456789ab.fly.dev";
 const secret = randomBytes(32).toString("base64url");
 const brokerToken = randomBytes(32).toString("hex");
 const CATALOG = ["outlook", "linkedin", "calendly", "gmail", "slack"];
@@ -61,11 +61,11 @@ globalThis.fetch = async (input, init) => {
       PATH: process.env.PATH,
       ...(process.env.PATHEXT ? { PATHEXT: process.env.PATHEXT } : {}),
       ...(process.env.SystemRoot ? { SystemRoot: process.env.SystemRoot } : {}),
-      HOME: home, USERPROFILE: home, DUSK_DATA_DIR: dataDir, DUSK_PORT: String(port), DUSK_WEBHOOK_PORT: String(port + 1), DUSK_STATIC_DIR: join(home, "web"),
-      DUSK_CLOUD_ROLE: "home", DUSK_CLOUD_MACHINE_ID: "3f9c2a4e-8b1d-4c6e-9a7f-2d5e8c1b0a93", DUSK_CLOUD_ADMIN_URL: "https://cloud.example.test",
-      DUSK_CLOUD_BOOTSTRAP_SECRET: secret, DUSK_PUBLIC_URL: `https://${HOST}`,
+      HOME: home, USERPROFILE: home, MADANI_DATA_DIR: dataDir, MADANI_PORT: String(port), MADANI_WEBHOOK_PORT: String(port + 1), MADANI_STATIC_DIR: join(home, "web"),
+      MADANI_CLOUD_ROLE: "home", MADANI_CLOUD_MACHINE_ID: "3f9c2a4e-8b1d-4c6e-9a7f-2d5e8c1b0a93", MADANI_CLOUD_ADMIN_URL: "https://cloud.example.test",
+      MADANI_CLOUD_BOOTSTRAP_SECRET: secret, MADANI_PUBLIC_URL: `https://${HOST}`,
       // From source the server registers nowhere unless told where, as here.
-      DUSK_COMPOSIO_BROKER_URL: brokerUrl,
+      MADANI_COMPOSIO_BROKER_URL: brokerUrl,
     },
     stdio: ["ignore", "pipe", "pipe"],
   });
@@ -81,11 +81,11 @@ globalThis.fetch = async (input, init) => {
     if (Date.now() > deadline) throw new Error(`the Cloud home did not start:\n${log}`);
     await new Promise((resolve) => setTimeout(resolve, 100));
   }
-  const body = JSON.stringify({ label: "dusk bot app (Cloud)", ttlSeconds: 300 });
+  const body = JSON.stringify({ label: "madani bot app (Cloud)", ttlSeconds: 300 });
   const timestamp = String(Math.floor(Date.now() / 1000)), nonce = randomBytes(16).toString("base64url");
   const granted = await api("POST", "/api/cloud/pairing", { remote: true, headers: {
-    "content-type": "application/json", "x-dusk-cloud-timestamp": timestamp, "x-dusk-cloud-nonce": nonce,
-    "x-dusk-cloud-signature": `v1=${cloudPairingSignature(secret, timestamp, nonce, body)}`,
+    "content-type": "application/json", "x-madani-cloud-timestamp": timestamp, "x-madani-cloud-nonce": nonce,
+    "x-madani-cloud-signature": `v1=${cloudPairingSignature(secret, timestamp, nonce, body)}`,
   }, body: JSON.parse(body) });
   ownerToken = (await api("POST", "/api/auth/pair", { remote: true, body: { code: granted.body.code } })).body.token as string;
 }
@@ -124,8 +124,8 @@ beforeAll(async () => {
   await new Promise<void>((resolve) => broker.listen(0, "127.0.0.1", resolve));
   brokerUrl = `http://127.0.0.1:${(broker.address() as AddressInfo).port}`;
 
-  home = mkdtempSync(join(tmpdir(), "dusk-cloud-connected-apps-"));
-  dataDir = join(home, ".duskbot");
+  home = mkdtempSync(join(tmpdir(), "madani-cloud-connected-apps-"));
+  dataDir = join(home, ".madanibot");
   mkdirSync(dataDir, { recursive: true });
   const cli = join(home, "fixture-claude.mjs");
   writeFileSync(cli, `#!/usr/bin/env node
@@ -142,7 +142,7 @@ await import(${JSON.stringify(pathToFileURL(join(SERVER_DIR, "testing", "fake-cl
     },
   }));
   mkdirSync(join(home, "web"));
-  writeFileSync(join(home, "web", "index.html"), "<!doctype html><title>dusk bot</title>");
+  writeFileSync(join(home, "web", "index.html"), "<!doctype html><title>madani bot</title>");
   port = await freePortBlock([0, 1]);
   base = `http://127.0.0.1:${port}`;
   await boot();

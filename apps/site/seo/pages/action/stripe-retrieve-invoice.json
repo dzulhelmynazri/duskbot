@@ -16,7 +16,7 @@
   "updated": "2026-11-12",
   "review": {
     "status": "approved",
-    "by": "lead agent, after two independent reviewer passes, against dusk bot docs and the composio catalog",
+    "by": "lead agent, after two independent reviewer passes, against madani bot docs and the composio catalog",
     "at": "2026-11-12"
   },
   "tags": [
@@ -68,7 +68,7 @@
     "**retrieval opens one invoice.** another lookup finds it first. an unclear customer name is not enough.",
     "**linked reads stop at four levels.** if a detail does not return, the bot should say it does not know.",
     "**search can lag behind new bills.** usually within a minute; outages can delay it up to an hour. try listing fresh invoices instead.",
-    "**local routines need an awake computer.** a run under 12 hours late runs once on return. older runs skip; dusk cloud runs on time."
+    "**local routines need an awake computer.** a run under 12 hours late runs once on return. older runs skip; madani cloud runs on time."
   ],
   "faq": [
     {
@@ -86,11 +86,11 @@
   ],
   "sources": [
     {
-      "label": "dusk bot docs: files and apps",
+      "label": "madani bot docs: files and apps",
       "url": "/docs/files-and-apps"
     },
     {
-      "label": "dusk bot docs: routines",
+      "label": "madani bot docs: routines",
       "url": "/docs/routines"
     }
   ],

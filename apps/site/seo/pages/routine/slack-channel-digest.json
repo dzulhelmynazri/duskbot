@@ -11,7 +11,7 @@
     "slack channel summary routine",
     "end of day slack summary"
   ],
-  "answer": "**stop rereading three channels just to find what changed.** get an end-of-day digest of decisions, commitments and open questions from the channels you name. it follows the replies and keeps a message link beside each item.\n\nthe result comes to your dusk chat. slack can stay read only while you decide which conversation needs your attention.",
+  "answer": "**stop rereading three channels just to find what changed.** get an end-of-day digest of decisions, commitments and open questions from the channels you name. it follows the replies and keeps a message link beside each item.\n\nthe result comes to your madani chat. slack can stay read only while you decide which conversation needs your attention.",
   "updated": "2026-11-12",
   "review": {
     "status": "approved",
@@ -52,7 +52,7 @@
     "**match the working day.** change the reporting time or widen the window for a team across time zones.",
     "**follow a topic.** try customer escalations, keeping source links so you can judge the selection.",
     "**keep it short.** cap it at five items and group repeat mentions of the same decision.",
-    "**keep the destination simple.** return the digest to dusk chat, where you can read it before sharing."
+    "**keep the destination simple.** return the digest to madani chat, where you can read it before sharing."
   ],
   "fails": [
     "**a proposal sounds final.** require an explicit confirming message. anything weaker stays a proposal.",
@@ -63,7 +63,7 @@
   "sections": [
     {
       "h": "keep the discussion one click away",
-      "md": "**open the decision without hunting for it again.** the [slack connection](/integrations/slack) supports history, threads and message links. ask for the link beside each item. read sensitive disagreements in full.\n\na [product manager](/for/product-managers) may choose release and feedback channels. an operations lead may need handoffs. remove channels that only add noise.\n\nneed a morning view? try a [daily briefing](/use-cases/daily-briefing). local runs need an awake computer and dusk open."
+      "md": "**open the decision without hunting for it again.** the [slack connection](/integrations/slack) supports history, threads and message links. ask for the link beside each item. read sensitive disagreements in full.\n\na [product manager](/for/product-managers) may choose release and feedback channels. an operations lead may need handoffs. remove channels that only add noise.\n\nneed a morning view? try a [daily briefing](/use-cases/daily-briefing). local runs need an awake computer and madani open."
     }
   ],
   "faq": [
@@ -73,7 +73,7 @@
     },
     {
       "q": "will the digest be posted into slack?",
-      "a": "**the digest comes to dusk chat.** slack stays read only. posting is a separate job, with its own allowed action and sending setting.[^3]"
+      "a": "**the digest comes to madani chat.** slack stays read only. posting is a separate job, with its own allowed action and sending setting.[^3]"
     },
     {
       "q": "does it read every channel and my direct messages?",
@@ -82,15 +82,15 @@
   ],
   "sources": [
     {
-      "label": "dusk bot docs: routines",
+      "label": "madani bot docs: routines",
       "url": "/docs/routines"
     },
     {
-      "label": "dusk bot docs: app access and sending",
+      "label": "madani bot docs: app access and sending",
       "url": "/docs/files-and-apps"
     },
     {
-      "label": "dusk bot docs: sending settings",
+      "label": "madani bot docs: sending settings",
       "url": "/docs/computer"
     },
     {

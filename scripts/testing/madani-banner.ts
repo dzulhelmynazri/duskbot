@@ -1,4 +1,4 @@
-// A banner picture for scripts/verify-cloud-rail.ts, drawn here (a dusk sky over two hills, no file needed); the script
+// A banner picture for scripts/verify-cloud-rail.ts, drawn here (a madani sky over two hills, no file needed); the script
 // keeps it on the fixture server through the server's own route, as the app's upload would.
 import { deflateSync } from "node:zlib";
 
@@ -10,8 +10,8 @@ const chunk = (type: string, data: Buffer) => {
   out.writeUInt32BE(crc32(out.subarray(4, 8 + data.length)), 8 + data.length);
   return out;
 };
-/** A dusk sky over two hills, as a PNG. */
-export function duskPng(width = 960, height = 320): Buffer {
+/** A madani sky over two hills, as a PNG. */
+export function madaniPng(width = 960, height = 320): Buffer {
   const rows = Buffer.alloc(height * (width * 3 + 1));
   const mix = (a: number[], b: number[], t: number) => a.map((value, i) => Math.round(value + (b[i]! - value) * t));
   for (let y = 0; y < height; y++) {

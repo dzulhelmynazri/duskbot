@@ -23,7 +23,7 @@ const plan: DesktopPlan = { kind: "shared_s", placement: "pool", spec: { vcpu: 2
 const SEAL = Buffer.alloc(32, 7), BACKUP_SECRET = Buffer.alloc(32, 9);
 
 async function fixture() {
-  const dataDir = mkdtempSync(join(tmpdir(), "dusk-review-")); cleanup.push(() => rmSync(dataDir, { recursive: true, force: true }));
+  const dataDir = mkdtempSync(join(tmpdir(), "madani-review-")); cleanup.push(() => rmSync(dataDir, { recursive: true, force: true }));
   let at = Date.UTC(2026, 10, 9, 12);
   const now = () => at;
   const api = await startFakeInstaboxApi({ now }); cleanup.push(() => api.close());

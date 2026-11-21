@@ -26,7 +26,7 @@ const listen = (server: Server) => new Promise<number>((resolve) => server.liste
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 async function launchFixture(): Promise<{ url: string; stop: () => void }> {
-  const child = spawn(process.execPath, ["--experimental-strip-types", "scripts/control-dusk.ts", "launch"], { stdio: ["ignore", "pipe", "inherit"] });
+  const child = spawn(process.execPath, ["--experimental-strip-types", "scripts/control-madani.ts", "launch"], { stdio: ["ignore", "pipe", "inherit"] });
   let text = "";
   const url = await new Promise<string>((resolve, reject) => {
     child.stdout.on("data", (chunk: Buffer) => {
@@ -158,7 +158,7 @@ async function exercise(label: string, harness: string, phone: ReturnType<typeof
 }
 
 async function relayPath(harness: string, botId: string, cleanups: Array<() => unknown>) {
-  const dir = mkdtempSync(join(tmpdir(), "dusk-mobile-relay-"));
+  const dir = mkdtempSync(join(tmpdir(), "madani-mobile-relay-"));
   cleanups.push(() => rmSync(dir, { recursive: true, force: true }));
   const service = createLinkService({ base: "http://link.test", dataDir: join(dir, "data"), scriptPath: "apps/link-service/install.sh", agentPath: "apps/link-service/agent.mjs", trustProxy: false });
   const relayServer = createServer((req, res) => void service.handler(req, res));
@@ -213,7 +213,7 @@ async function relayPath(harness: string, botId: string, cleanups: Array<() => u
 }
 
 async function companionPath(harness: string, botId: string, cleanups: Array<() => unknown>) {
-  const dir = mkdtempSync(join(tmpdir(), "dusk-mobile-companion-"));
+  const dir = mkdtempSync(join(tmpdir(), "madani-mobile-companion-"));
   cleanups.push(() => rmSync(dir, { recursive: true, force: true }));
   const mobile = createMobileSessions({ file: join(dir, "mobile-sessions.json") });
   const proxy = createProxyHandler({ harnessPort: Number(new URL(harness).port), mobile, authenticate: () => null, redeem: () => ({ error: "no companion pairing here" }), serverName: () => "Test Mac" });
@@ -231,7 +231,7 @@ async function companionPath(harness: string, botId: string, cleanups: Array<() 
   const phone = phoneClient(via.url, null, () => token);
   const redeemed = await phone.json("POST", "/api/mobile/redeem", { secret: payload.grant.secret, attemptId: randomUUID(), device: { name: "Mac phone", platform: "android" } });
   const answer = redeemed.body as MobileRedeemResponse;
-  check("mac", "redeem through the companion gives a session", redeemed.status === 200 && (answer.token ?? "").startsWith("dusk_sess_"), `${redeemed.status}`);
+  check("mac", "redeem through the companion gives a session", redeemed.status === 200 && (answer.token ?? "").startsWith("madani_sess_"), `${redeemed.status}`);
   token = answer.token;
   const browser = await fetch(`${companion}/api/bots?messages=0`, { headers: { authorization: `Bearer ${token}`, origin: "https://evil.example" } });
   check("mac", "a browser origin is still refused at the companion", browser.status === 403, `${browser.status}`);

@@ -27,9 +27,9 @@ import { tapConsole, watchDatabase, watchProcess } from "./incidents/process.ts"
 import { stateBackend } from "./persistence/backend.ts";
 import { gracefulStop, listenWhenFree, readyGate } from "./serve.ts";
 
-const port = Number(process.env.DUSK_DASHBOARD_PORT ?? 7480);
+const port = Number(process.env.MADANI_DASHBOARD_PORT ?? 7480);
 if (!Number.isInteger(port) || port < 1 || port > 65535) throw new Error("Invalid dashboard port.");
-const host = process.env.DUSK_DASHBOARD_HOST ?? "127.0.0.1";
+const host = process.env.MADANI_DASHBOARD_HOST ?? "127.0.0.1";
 // the port is taken as soon as it is free; requests that come while this start waits for the writer lease and loads
 // are held until the app is ready instead of refused
 const gate = readyGate();
@@ -48,73 +48,73 @@ async function stop(why: string) {
   process.exit(how === "clean" ? 0 : 1);
 }
 for (const signal of ["SIGINT", "SIGTERM"] as const) process.once(signal, () => void stop(signal));
-const publicUrl = process.env.DUSK_DASHBOARD_PUBLIC_URL ?? `http://127.0.0.1:${port}`;
+const publicUrl = process.env.MADANI_DASHBOARD_PUBLIC_URL ?? `http://127.0.0.1:${port}`;
 const home = process.env.HOME ?? process.env.USERPROFILE;
-if (!process.env.DUSK_DASHBOARD_DATA && !home) throw new Error("Set DUSK_DASHBOARD_DATA.");
-const dataDir = process.env.DUSK_DASHBOARD_DATA ?? `${home}/.duskbot-dashboard`;
+if (!process.env.MADANI_DASHBOARD_DATA && !home) throw new Error("Set MADANI_DASHBOARD_DATA.");
+const dataDir = process.env.MADANI_DASHBOARD_DATA ?? `${home}/.madanibot-dashboard`;
 const defaultStatic = decodeURIComponent(new URL("../dist", import.meta.url).pathname);
-const staticDir = process.env.DUSK_DASHBOARD_STATIC ?? (existsSync(defaultStatic) ? defaultStatic : null);
+const staticDir = process.env.MADANI_DASHBOARD_STATIC ?? (existsSync(defaultStatic) ? defaultStatic : null);
 const publicAddress = new URL(publicUrl);
-const dev = process.env.DUSK_DASHBOARD_DEV === "1" || (publicAddress.protocol === "http:" && ["127.0.0.1", "localhost"].includes(publicAddress.hostname));
+const dev = process.env.MADANI_DASHBOARD_DEV === "1" || (publicAddress.protocol === "http:" && ["127.0.0.1", "localhost"].includes(publicAddress.hostname));
 const version = (JSON.parse(readFileSync(new URL("../../../package.json", import.meta.url), "utf8")) as { version: string }).version;
-const environment = process.env.DUSK_ENVIRONMENT ?? (dev ? "development" : "production");
-const service = createErrorReporter({ dsn: process.env.DUSK_ERROR_DSN, component: "dashboard", release: version, environment, spool: fileSpool(`${dataDir}/error-spool`) });
+const environment = process.env.MADANI_ENVIRONMENT ?? (dev ? "development" : "production");
+const service = createErrorReporter({ dsn: process.env.MADANI_ERROR_DSN, component: "dashboard", release: version, environment, spool: fileSpool(`${dataDir}/error-spool`) });
 reportProcessErrors(service).flush();
-const page = createErrorReporter({ dsn: process.env.DUSK_ERROR_DSN, component: "dashboard-web", release: version, environment });
+const page = createErrorReporter({ dsn: process.env.MADANI_ERROR_DSN, component: "dashboard-web", release: version, environment });
 
 if (!process.env.MONGODB_URI && !dev) throw new Error("MONGODB_URI is required outside local development (docs/mongodb.md).");
 const database = process.env.MONGODB_URI
-  ? await openMongoBackend({ uri: process.env.MONGODB_URI, db: process.env.MONGODB_DB || "dusk", acquireWaitMs: Infinity,
+  ? await openMongoBackend({ uri: process.env.MONGODB_URI, db: process.env.MONGODB_DB || "madani", acquireWaitMs: Infinity,
     onLeaseLost: error => { console.error(error.message); process.exit(1); } })
   : null;
 databaseRef = database;
 if (database) { useStateBackend(database.backend); console.log("state: mongodb"); } else console.log("state: json files (development)");
-// the waitlist the admin shows: DUSK_WAITLIST_DB names the database the dusk.bot site writes, "off" shows none
-const waitlistDb = process.env.DUSK_WAITLIST_DB?.trim();
-const trackOrigins = (process.env.DUSK_TRACK_ORIGINS ?? "").split(",").map(item => item.trim()).filter(Boolean);
+// the waitlist the admin shows: MADANI_WAITLIST_DB names the database the madani.bot site writes, "off" shows none
+const waitlistDb = process.env.MADANI_WAITLIST_DB?.trim();
+const trackOrigins = (process.env.MADANI_TRACK_ORIGINS ?? "").split(",").map(item => item.trim()).filter(Boolean);
 const analytics = { ...(database ? { sink: await mongoSink(database.db), usage: await mongoUsageStore(database.db), infra: await mongoInfraStore(database.db), ops: await mongoOpsStore(database.db), db: database.db, waitlist: waitlistDb === "off" ? null : mongoWaitlist(waitlistDb ? database.sibling(waitlistDb) : database.db) } : {}), trackOrigins };
-// preview's admin shows dusk.bot's analytics: DUSK_ADMIN_ANALYTICS_URI is a user with only read on DUSK_ADMIN_ANALYTICS_DB (dusk_prod)
-const liveUri = process.env.DUSK_ADMIN_ANALYTICS_URI?.trim(), liveDb = process.env.DUSK_ADMIN_ANALYTICS_DB?.trim();
-const live = liveUri && liveDb ? await openLiveData(liveUri, liveDb, "dusk.bot")
+// preview's admin shows madani.bot's analytics: MADANI_ADMIN_ANALYTICS_URI is a user with only read on MADANI_ADMIN_ANALYTICS_DB (madani_prod)
+const liveUri = process.env.MADANI_ADMIN_ANALYTICS_URI?.trim(), liveDb = process.env.MADANI_ADMIN_ANALYTICS_DB?.trim();
+const live = liveUri && liveDb ? await openLiveData(liveUri, liveDb, "madani.bot")
   .catch((error: Error) => { console.warn(`admin: the live analytics could not be opened (${error.name}); showing this service's own`); return null; }) : null;
 if (live) console.log(`admin: analytics read from ${liveDb} (${live.label}), read only`);
-const adminEmails = parseAdminEmails(process.env.DUSK_ADMIN_EMAILS);
+const adminEmails = parseAdminEmails(process.env.MADANI_ADMIN_EMAILS);
 console.log(`admin: ${adminEmails.length} allowed account${adminEmails.length === 1 ? "" : "s"}`);
 
 // each provider's sends today and this month, for its caps (auth/mail-router.ts); this service counts its own
 const mailer = mailerFromEnv(process.env, { dev, usage: database ? await mongoMailUsage(database.db) : undefined });
-const alertEmails = process.env.DUSK_ALERT_EMAILS ? parseAdminEmails(process.env.DUSK_ALERT_EMAILS) : adminEmails;
+const alertEmails = process.env.MADANI_ALERT_EMAILS ? parseAdminEmails(process.env.MADANI_ALERT_EMAILS) : adminEmails;
 // "something's wrong" mail comes from production only: preview's incidents are test runs and stay on its health page.
-// DUSK_ALERTS=on mails from any environment (a one-off check), off from none
-const alertsOn = process.env.DUSK_ALERTS !== "off" && alertEmails.length > 0 && (!dev || !!process.env.DUSK_ALERT_EMAILS)
-  && (environment === "production" || process.env.DUSK_ALERTS === "on");
+// MADANI_ALERTS=on mails from any environment (a one-off check), off from none
+const alertsOn = process.env.MADANI_ALERTS !== "off" && alertEmails.length > 0 && (!dev || !!process.env.MADANI_ALERT_EMAILS)
+  && (environment === "production" || process.env.MADANI_ALERTS === "on");
 // an alert brevo refuses gets a second try through resend, within resend's caps
 const fallbackMailer = "only" in mailer ? mailer.only("resend") : null;
 const incidentStore = database ? await mongoIncidentStore(database.db).catch(() => { console.warn("incidents: the incidents collection is unavailable; kept in memory"); return memoryIncidentStore(); }) : memoryIncidentStore();
 const pagePublic = new URL(publicUrl).origin;
 const incidents = createIncidents({ env: environment, store: incidentStore, to: () => alertEmails, mailers: fallbackMailer ? [mailer, fallbackMailer] : [mailer],
-  email: emailConfig(process.env, { publicUrl: pagePublic, pageBase: process.env.DUSK_DASHBOARD_PAGE_BASE || "" }), panelUrl: `${pagePublic}/admin/health`, mail: alertsOn });
+  email: emailConfig(process.env, { publicUrl: pagePublic, pageBase: process.env.MADANI_DASHBOARD_PAGE_BASE || "" }), panelUrl: `${pagePublic}/admin/health`, mail: alertsOn });
 await incidents.load().catch(() => console.warn("incidents: recent incidents could not be loaded"));
 tapConsole(incidents);
 watchProcess(incidents, { spoolPath: `${dataDir}/incident-spool` });
 watchDatabase(incidents, () => stateBackend()?.health() ?? null);
 console.log(`alerts: ${alertsOn ? `emailing ${alertEmails.length} address${alertEmails.length === 1 ? "" : "es"}` : "off"}`);
 
-// mail to @qa.dusk.test never leaves the service; only preview and development keep it for test harnesses to read
+// mail to @qa.madani.test never leaves the service; only preview and development keep it for test harnesses to read
 const testMail = createTestMailbox({ readable: environment === "preview" || dev });
 console.log(`test mail: ${testMail.readable ? "kept for harnesses" : "dropped"}`);
 // without MongoDB (development) reports are kept in memory; production refuses to start without it above
 const bugReportStore = database ? await mongoBugReportStore(database.db) : undefined;
-const app = createDashboardApp({ errors: { service, page }, incidents, bugReports: { store: bugReportStore, mail: { on: alertsOn && process.env.DUSK_BUG_REPORT_MAIL === "1", to: () => alertEmails, mailers: fallbackMailer ? [mailer, fallbackMailer] : [mailer] } }, version, dataDir, publicUrl, mailer, testMail, oauth: providersFromEnv(process.env), dev,
-  signupOpen: process.env.DUSK_AUTH_SIGNUP_OPEN !== "0", trustProxy: process.env.DUSK_TRUST_PROXY === "1", staticDir: staticDir || null,
-  pageBase: process.env.DUSK_DASHBOARD_PAGE_BASE || "", waitlistOnly: process.env.DUSK_PRELAUNCH_WAITLIST_ONLY === "1", mailPerHour: process.env.DUSK_AUTH_MAIL_PER_HOUR ? Number(process.env.DUSK_AUTH_MAIL_PER_HOUR) : undefined, mailPerDay: process.env.DUSK_AUTH_MAIL_PER_DAY ? Number(process.env.DUSK_AUTH_MAIL_PER_DAY) : undefined, siteUpstream: process.env.DUSK_SITE_UPSTREAM || null, linkUpstream: process.env.DUSK_LINK_UPSTREAM || null,
-  analytics, admin: { emails: adminEmails, environment, live, readCacheMs: 30_000, warm: database ? { store: await mongoWarmStore(database.db) } : null, backupDir: process.env.DUSK_BACKUP_DIR || (database ? "/root/backups/mongo-dusk" : null) } });
+const app = createDashboardApp({ errors: { service, page }, incidents, bugReports: { store: bugReportStore, mail: { on: alertsOn && process.env.MADANI_BUG_REPORT_MAIL === "1", to: () => alertEmails, mailers: fallbackMailer ? [mailer, fallbackMailer] : [mailer] } }, version, dataDir, publicUrl, mailer, testMail, oauth: providersFromEnv(process.env), dev,
+  signupOpen: process.env.MADANI_AUTH_SIGNUP_OPEN !== "0", trustProxy: process.env.MADANI_TRUST_PROXY === "1", staticDir: staticDir || null,
+  pageBase: process.env.MADANI_DASHBOARD_PAGE_BASE || "", waitlistOnly: process.env.MADANI_PRELAUNCH_WAITLIST_ONLY === "1", mailPerHour: process.env.MADANI_AUTH_MAIL_PER_HOUR ? Number(process.env.MADANI_AUTH_MAIL_PER_HOUR) : undefined, mailPerDay: process.env.MADANI_AUTH_MAIL_PER_DAY ? Number(process.env.MADANI_AUTH_MAIL_PER_DAY) : undefined, siteUpstream: process.env.MADANI_SITE_UPSTREAM || null, linkUpstream: process.env.MADANI_LINK_UPSTREAM || null,
+  analytics, admin: { emails: adminEmails, environment, live, readCacheMs: 30_000, warm: database ? { store: await mongoWarmStore(database.db) } : null, backupDir: process.env.MADANI_BACKUP_DIR || (database ? "/root/backups/mongo-madani" : null) } });
 
 /** a client hears an answer only once what the request changed is written; when that fails it gets a dropped
  *  connection, never a success that was not kept */
-// the debug trail (electron/trail.mjs): a request the app named with x-dusk-trail is one line here, in the same format as
-// the app's own, so one action can be followed across machines. DUSK_TRAIL_DIR writes a file; otherwise the service's output.
-configureTrail({ src: "cloud", writer: process.env.DUSK_TRAIL_DIR ? createTrailWriter({ dir: process.env.DUSK_TRAIL_DIR, prefix: "trail-cloud", capBytes: 50 * 1024 * 1024 }) : createStdoutWriter() });
+// the debug trail (electron/trail.mjs): a request the app named with x-madani-trail is one line here, in the same format as
+// the app's own, so one action can be followed across machines. MADANI_TRAIL_DIR writes a file; otherwise the service's output.
+configureTrail({ src: "cloud", writer: process.env.MADANI_TRAIL_DIR ? createTrailWriter({ dir: process.env.MADANI_TRAIL_DIR, prefix: "trail-cloud", capBytes: 50 * 1024 * 1024 }) : createStdoutWriter() });
 function traced(req: IncomingMessage, res: ServerResponse) {
   const cid = req.headers[TRAIL_HEADER];
   if (validTrailId(cid)) {

@@ -32,10 +32,10 @@ Object.assign(window, { cloudMoveCalls: calls });
 let ticker: ReturnType<typeof setInterval> | null = null;
 
 // ?cloud=ready: the account already has My Cloud, and this computer's bots have not moved (?clean=1: the clean workspace runs,
-// so main offers no move from it). Switch to dusk cloud is recorded as "switch-cloud".
+// so main offers no move from it). Switch to madani cloud is recorded as "switch-cloud".
 const cloud = params.get("cloud") === "ready";
 const HOME = { id: "c-home", name: "My Cloud", color: null, role: "owner", tier: "pro", runsOn: "cloud", status: "ready", origin: "https://home.example.test", teamId: null, primary: true, managed: true, provider: "managed" };
-const account = { status: "connected", account: { id: "acct-1", email: "owner@qa.dusk.test" }, entitlement: { plan: "pro", tier: "personal", status: "active" }, clouds: [HOME] };
+const account = { status: "connected", account: { id: "acct-1", email: "owner@qa.madani.test" }, entitlement: { plan: "pro", tier: "personal", status: "active" }, clouds: [HOME] };
 let kept = { shown: params.get("clean") !== "1", on: false, moved: false, coming: false };
 const cloudBridges = cloud ? {
   cloudAccount: {
@@ -44,7 +44,7 @@ const cloudBridges = cloud ? {
   },
 } : {};
 
-window.duskDesktop = {
+window.madaniDesktop = {
   platform: "darwin",
   ...cloudBridges,
   getCapabilities: async () => initialDesktopCapabilities(),
@@ -78,7 +78,7 @@ window.duskDesktop = {
       return tell({ ...BASE, offer: { stage: which === "prompt" ? "banner" : "settings", bots: 12 } });
     },
   },
-} as unknown as typeof window.duskDesktop;
+} as unknown as typeof window.madaniDesktop;
 
 applySkin((params.get("skin") ?? "midnight") as SkinId);
 createRoot(document.getElementById("root")!).render(<App />);

@@ -6,23 +6,23 @@
 #   apps/mobile/scripts/build-ios-release.sh --upload     archive + upload straight to App Store Connect (TestFlight)
 #   apps/mobile/scripts/build-ios-release.sh --unsigned   archive with signing off, to prove the project compiles
 #
-# Signing is manual and needs no registered device: an Apple Distribution certificate and the "dusk bot App Store"
+# Signing is manual and needs no registered device: an Apple Distribution certificate and the "madani bot App Store"
 # profile (both made with `node apps/mobile/scripts/asc.mjs dist-cert|store-profile`, docs/store-launch.md). The key
 # and certificate go into a throwaway keychain deleted on exit, never the login keychain. The overrides are passed to
-# xcodebuild only, so the project (and Debug) stays on automatic signing. From the environment, else dusk.env:
+# xcodebuild only, so the project (and Debug) stays on automatic signing. From the environment, else madani.env:
 #   APPLE_TEAM_ID                     the 10 character team id
-#   APPLE_DISTRIBUTION_KEY_PATH       default ~/.config/duskbot/apple/apple-distribution.key (PEM private key)
-#   APPLE_DISTRIBUTION_CERT_PATH      default ~/.config/duskbot/apple/apple-distribution.cer (DER, from Apple)
-#   APPLE_APPSTORE_PROFILE_PATH       default ~/.config/duskbot/apple/dusk-bot-app-store.mobileprovision
+#   APPLE_DISTRIBUTION_KEY_PATH       default ~/.config/madanibot/apple/apple-distribution.key (PEM private key)
+#   APPLE_DISTRIBUTION_CERT_PATH      default ~/.config/madanibot/apple/apple-distribution.cer (DER, from Apple)
+#   APPLE_APPSTORE_PROFILE_PATH       default ~/.config/madanibot/apple/madani-bot-app-store.mobileprovision
 #   APPLE_API_KEY_ID, APPLE_API_ISSUER, APPLE_API_KEY_PATH   the App Store Connect API key, for --upload
-# The build number is DUSK_IOS_BUILD_NUMBER, default a UTC timestamp (every upload needs a higher one).
+# The build number is MADANI_IOS_BUILD_NUMBER, default a UTC timestamp (every upload needs a higher one).
 set -euo pipefail
 here=$(cd "$(dirname "$0")" && pwd)
 mobile=$(cd "$here/.." && pwd)
 repo=$(cd "$mobile/../.." && pwd)
 project="$mobile/ios/App/App.xcodeproj"
 out="$mobile/ios/App/build"
-apple="$HOME/.config/duskbot/apple"
+apple="$HOME/.config/madanibot/apple"
 mode=export
 case "${1:-}" in
   --check) mode=check ;; --upload) mode=upload ;; --unsigned) mode=unsigned ;; "") ;;
@@ -30,12 +30,12 @@ case "${1:-}" in
 esac
 
 . "$here/release-env.sh"
-dusk_env_load APPLE_TEAM_ID APPLE_API_KEY_ID APPLE_API_ISSUER APPLE_API_KEY_PATH \
+madani_env_load APPLE_TEAM_ID APPLE_API_KEY_ID APPLE_API_ISSUER APPLE_API_KEY_PATH \
   APPLE_DISTRIBUTION_KEY_PATH APPLE_DISTRIBUTION_CERT_PATH APPLE_APPSTORE_PROFILE_PATH
 key_file="${APPLE_DISTRIBUTION_KEY_PATH:-$apple/apple-distribution.key}"
 cer_file="${APPLE_DISTRIBUTION_CERT_PATH:-$apple/apple-distribution.cer}"
-profile_file="${APPLE_APPSTORE_PROFILE_PATH:-$apple/dusk-bot-app-store.mobileprovision}"
-widget_profile_file="${APPLE_WIDGET_PROFILE_PATH:-$apple/dusk-bot-activity-app-store.mobileprovision}"
+profile_file="${APPLE_APPSTORE_PROFILE_PATH:-$apple/madani-bot-app-store.mobileprovision}"
+widget_profile_file="${APPLE_WIDGET_PROFILE_PATH:-$apple/madani-bot-activity-app-store.mobileprovision}"
 
 problems=()
 [ -n "${APPLE_TEAM_ID:-}" ] || problems+=("APPLE_TEAM_ID is not set (developer.apple.com, Account, Membership details, Team ID)")
@@ -63,17 +63,17 @@ if [ "$mode" != unsigned ] && [ ${#problems[@]} -gt 0 ]; then
   exit 1
 fi
 
-build_number="${DUSK_IOS_BUILD_NUMBER:-$(date -u +%y%m%d%H%M)}"
+build_number="${MADANI_IOS_BUILD_NUMBER:-$(date -u +%y%m%d%H%M)}"
 cd "$repo"
 echo "== web bundle"
-pnpm --filter @duskbot/mobile build
+pnpm --filter @madanibot/mobile build
 echo "== release gate"
 node apps/mobile/scripts/release-gate.mjs
 echo "== cap sync ios"
 (cd "$mobile" && npx cap sync ios)
 
 mkdir -p "$out"
-archive="$out/dusk-bot.xcarchive"
+archive="$out/madani-bot.xcarchive"
 rm -rf "$archive"
 echo "== archive (build $build_number)"
 if [ "$mode" = unsigned ]; then
@@ -84,7 +84,7 @@ if [ "$mode" = unsigned ]; then
 fi
 
 # ---------------------------------------------------------------- throwaway signing keychain
-work=$(mktemp -d "${TMPDIR:-/tmp}/dusk-ios-release.XXXXXX")
+work=$(mktemp -d "${TMPDIR:-/tmp}/madani-ios-release.XXXXXX")
 keychain=""
 original_keychains=()
 cleanup() {
@@ -99,9 +99,9 @@ trap cleanup EXIT
 p12_password=$(openssl rand -hex 24)
 openssl x509 -inform DER -in "$cer_file" -out "$work/cert.pem" 2>/dev/null || cp "$cer_file" "$work/cert.pem"
 # 3DES/SHA1 so `security import` reads it (OpenSSL 3 defaults to AES, which macOS refuses)
-(umask 077; openssl pkcs12 -export -inkey "$key_file" -in "$work/cert.pem" -name "dusk bot distribution" \
+(umask 077; openssl pkcs12 -export -inkey "$key_file" -in "$work/cert.pem" -name "madani bot distribution" \
   -keypbe PBE-SHA1-3DES -certpbe PBE-SHA1-3DES -macalg sha1 -passout "pass:$p12_password" -out "$work/dist.p12")
-keychain="$work/dusk-ios-signing.keychain-db"
+keychain="$work/madani-ios-signing.keychain-db"
 kc_password=$(openssl rand -hex 24)
 while IFS= read -r line; do
   line="${line#"${line%%[![:space:]]*}"}"; line="${line%\"}"; line="${line#\"}"
@@ -134,11 +134,11 @@ install_profile() {
 profile_name=$(install_profile "$profile_file")
 widget_profile_name=$(install_profile "$widget_profile_file")
 
-# each target names its own profile (DUSK_APP_PROFILE, DUSK_WIDGET_PROFILE): one PROVISIONING_PROFILE_SPECIFIER here would
+# each target names its own profile (MADANI_APP_PROFILE, MADANI_WIDGET_PROFILE): one PROVISIONING_PROFILE_SPECIFIER here would
 # put the app's profile on the Live Activity extension too
 xcodebuild -quiet -project "$project" -scheme App -configuration Release -destination 'generic/platform=iOS' \
   -archivePath "$archive" DEVELOPMENT_TEAM="$APPLE_TEAM_ID" CODE_SIGN_STYLE=Manual \
-  CODE_SIGN_IDENTITY="Apple Distribution" DUSK_APP_PROFILE="$profile_name" DUSK_WIDGET_PROFILE="$widget_profile_name" \
+  CODE_SIGN_IDENTITY="Apple Distribution" MADANI_APP_PROFILE="$profile_name" MADANI_WIDGET_PROFILE="$widget_profile_name" \
   OTHER_CODE_SIGN_FLAGS="--keychain $keychain" CURRENT_PROJECT_VERSION="$build_number" archive
 
 options="$out/ExportOptions.plist"
@@ -153,7 +153,7 @@ cat > "$options" <<PLIST
   <key>teamID</key><string>$APPLE_TEAM_ID</string>
   <key>signingStyle</key><string>manual</string>
   <key>signingCertificate</key><string>Apple Distribution</string>
-  <key>provisioningProfiles</key><dict><key>bot.dusk.mobile</key><string>$profile_name</string><key>bot.dusk.mobile.activity</key><string>$widget_profile_name</string></dict>
+  <key>provisioningProfiles</key><dict><key>bot.madani.mobile</key><string>$profile_name</string><key>bot.madani.mobile.activity</key><string>$widget_profile_name</string></dict>
   <key>destination</key><string>$destination</string>
   <key>uploadSymbols</key><true/>
   <key>manageAppVersionAndBuildNumber</key><false/>

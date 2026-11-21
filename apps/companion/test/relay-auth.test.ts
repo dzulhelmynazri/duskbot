@@ -35,9 +35,9 @@ it("adds the private capability only after authenticating and authorizing, never
   const call = async (path: string, token = "paired", method = "POST") => {
     const res = await fetch(`http://127.0.0.1:${port}${path}`, { method, headers: {
       authorization: `Bearer ${token}`,
-      "x-dusk-companion-auth": "forged",
-      "x-dusk-desktop-owner": "forged-owner",
-      "x-dusk-companion-device": "forged-phone",
+      "x-madani-companion-auth": "forged",
+      "x-madani-desktop-owner": "forged-owner",
+      "x-madani-companion-device": "forged-phone",
     } });
     await res.text();
     return res.status;
@@ -51,10 +51,10 @@ it("adds the private capability only after authenticating and authorizing, never
   expect(received).toHaveLength(0);
   expect(await call("/api/bots/b/read")).toBe(200);
   expect(received).toHaveLength(1);
-  expect(received[0]["x-dusk-companion-auth"]).toBe(capability);
-  expect(received[0]["x-dusk-companion-device"]).toBe("real-phone");
-  expect(received[0]["x-dusk-desktop-owner"]).toBeUndefined();
+  expect(received[0]["x-madani-companion-auth"]).toBe(capability);
+  expect(received[0]["x-madani-companion-device"]).toBe("real-phone");
+  expect(received[0]["x-madani-desktop-owner"]).toBeUndefined();
   expect(received[0].authorization).toBeUndefined();
   await call("/api/health", "unpaired", "GET");
-  expect(received[1]["x-dusk-companion-auth"]).toBeUndefined();
+  expect(received[1]["x-madani-companion-auth"]).toBeUndefined();
 });

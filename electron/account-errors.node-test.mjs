@@ -5,7 +5,7 @@ import { createAccountErrors } from "./account-errors.mjs";
 
 function setup(on = true) {
   const calls = [];
-  const errors = createAccountErrors({ origin: "https://dusk.bot/x", enabled: () => on, platform: "darwin", release: "25.0.0", version: "0.1.141",
+  const errors = createAccountErrors({ origin: "https://madani.bot/x", enabled: () => on, platform: "darwin", release: "25.0.0", version: "0.1.141",
     fetch: async (url, init) => { calls.push({ url, init, body: JSON.parse(init.body) }); return new Response(null, { status: 204 }); } });
   return { errors, calls };
 }
@@ -16,7 +16,7 @@ test("posts a renderer report once, without credentials, with version and os", (
   assert.equal(errors.send(report), true);
   assert.equal(errors.send(report), false);
   assert.equal(calls.length, 1);
-  assert.equal(calls[0].url, "https://dusk.bot/v1/errors");
+  assert.equal(calls[0].url, "https://madani.bot/v1/errors");
   assert.equal(calls[0].init.credentials, "omit");
   assert.equal(calls[0].init.headers.authorization, undefined);
   assert.deepEqual(calls[0].body, { source: "desktop", type: "TypeError", message: "x is undefined", stack: "    at a (assets/i.js:1:2)", path: "/chat/42qsecret", version: "0.1.141", os: "darwin 25.0.0" });
@@ -53,12 +53,12 @@ test("a gone child names its process and reads its Windows exit code", () => {
   const app = new EventEmitter();
   let quitting = false;
   errors.watch(app, new EventEmitter(), { ending: () => quitting, platform: "win32" });
-  app.emit("child-process-gone", {}, { type: "Utility", name: "dusk bot companion", reason: "crashed", exitCode: -36861 });
+  app.emit("child-process-gone", {}, { type: "Utility", name: "madani bot companion", reason: "crashed", exitCode: -36861 });
   app.emit("child-process-gone", {}, { type: "Utility", name: "Network Service", reason: "crashed", exitCode: -1073741819 });
   quitting = true;
   app.emit("child-process-gone", {}, { type: "GPU", reason: "crashed", exitCode: -1073740791 });
   assert.deepEqual(calls.map(call => call.body.message), [
-    "Utility process dusk bot companion crashed (exit -36861 0xFFFF7003)",
+    "Utility process madani bot companion crashed (exit -36861 0xFFFF7003)",
     "Utility process Network Service crashed (exit 0xC0000005 access violation)",
     "GPU process crashed (exit 0xC0000409 fail-fast) while quitting",
   ]);

@@ -19,8 +19,8 @@ import { PREVIEW_ORIGIN } from "./environment";
 vi.mock("@/components/Avatar", () => ({ MausAvatar: () => createElement("span") }));
 (globalThis as { IS_REACT_ACT_ENVIRONMENT?: boolean }).IS_REACT_ACT_ENVIRONMENT = true;
 
-const ACCOUNT = "https://dusk.bot";
-const CLOUD = "https://d0123456789abcdef0123.dusk.bot";
+const ACCOUNT = "https://madani.bot";
+const CLOUD = "https://d0123456789abcdef0123.madani.bot";
 const person = { id: "person", email: "person@example.com" };
 const accountToken = `omc_${"t".repeat(43)}`;
 const cloudRecord: MobileConnectionRecord = {
@@ -39,15 +39,15 @@ function launchPlatform(kind: "ios" | "android" = "ios"): MobilePlatform {
     prefs: { get: async (key) => prefs.get(key) ?? null, set: async (key, value) => { prefs.set(key, value); }, remove: async (key) => { prefs.delete(key); }, keys: async () => [...prefs.keys()] },
     secrets: { get: async (key) => secrets.get(key) ?? null, set: async (key, value) => { secrets.set(key, value); }, remove: async (key) => { secrets.delete(key); } } };
 }
-const keepSignIn = () => secrets.set("dusk.account", JSON.stringify({ origin: ACCOUNT, token: accountToken, expiresAt: Date.now() + 86_400_000, account: person, deviceId: "phone" }));
+const keepSignIn = () => secrets.set("madani.account", JSON.stringify({ origin: ACCOUNT, token: accountToken, expiresAt: Date.now() + 86_400_000, account: person, deviceId: "phone" }));
 const keepCloud = () => {
-  prefs.set("dusk.mobile.connections.v1", JSON.stringify([cloudRecord]));
-  prefs.set("dusk.mobile.active.v1", "cloud");
+  prefs.set("madani.mobile.connections.v1", JSON.stringify([cloudRecord]));
+  prefs.set("madani.mobile.active.v1", "cloud");
   secrets.set("token.cloud", "cloud-token");
 };
 
 beforeEach(() => {
-  setLocale("en"); vi.stubEnv("VITE_DUSK_ALLOW_SIGNED_OUT", ""); vi.stubEnv("VITE_DUSK_ACCOUNT_ORIGIN", "");
+  setLocale("en"); vi.stubEnv("VITE_MADANI_ALLOW_SIGNED_OUT", ""); vi.stubEnv("VITE_MADANI_ACCOUNT_ORIGIN", "");
   host = document.createElement("div"); document.body.append(host); root = null;
   prefs = new Map(); secrets = new Map(); sessionStorage.clear();
   accountAnswer = async () => session();
@@ -104,23 +104,23 @@ describe("what a launch shows", () => {
     platform = launchPlatform(kind);
     keepSignIn(); keepCloud();
     // an older build kept the open chat as a bare id
-    sessionStorage.setItem("dusk.mobile.openChat", "nova");
+    sessionStorage.setItem("madani.mobile.openChat", "nova");
     accountAnswer = () => new Promise<Response>(() => {});
     await launch();
     expect(inside()).toBe("person@example.com on cloud chat null");
     expect(prefs.get(INSTALLED_KEY)).toBe("1");
-    expect(secrets.has("dusk.account")).toBe(true);
+    expect(secrets.has("madani.account")).toBe(true);
   });
 
   it.each(["ios", "android"] as const)("%s: an update holding a sign-in and other settings but no place is not a reinstall either: the account's places show at once", async (kind) => {
     platform = launchPlatform(kind);
     keepSignIn();
-    prefs.set("dusk.mobile.signInOffer", "dismissed");
+    prefs.set("madani.mobile.signInOffer", "dismissed");
     accountAnswer = () => new Promise<Response>(() => {});
     await launch();
     expect(heading()).toBe("Pick a cloud");
     expect(inside()).toBeNull();
-    expect(prefs.get("dusk.mobile.connections.v1")).toBeUndefined();
+    expect(prefs.get("madani.mobile.connections.v1")).toBeUndefined();
   });
 
   it("a real reinstall waits for the service before showing the kept sign-in, then lists the places and opens none by itself", async () => {
@@ -134,7 +134,7 @@ describe("what a launch shows", () => {
     await act(async () => { answer(session()); });
     await settle();
     expect(heading()).toBe("Pick a cloud");
-    expect(prefs.get("dusk.mobile.connections.v1")).toBeUndefined();
+    expect(prefs.get("madani.mobile.connections.v1")).toBeUndefined();
   });
 
   it("a reinstall whose kept sign-in the service no longer knows starts on the first screen, signed out", async () => {
@@ -142,13 +142,13 @@ describe("what a launch shows", () => {
     accountAnswer = async () => json({ error: "invalid_token", code: "invalid_token" }, 401);
     await launch();
     expect(heading()).toBe("Your bots, on your phone");
-    expect(secrets.has("dusk.account")).toBe(false);
+    expect(secrets.has("madani.account")).toBe(false);
   });
 
   it("after Sign out the next launch is the first screen, with no chat to reopen", async () => {
     keepSignIn(); keepCloud(); prefs.set(INSTALLED_KEY, "1");
     rememberOpenChat("nova", "cloud");
-    await signOutPhone({ platform, signOutAccount: async () => { secrets.delete("dusk.account"); }, fetch: async () => json({}) });
+    await signOutPhone({ platform, signOutAccount: async () => { secrets.delete("madani.account"); }, fetch: async () => json({}) });
     platform = launchPlatform();
     await launch();
     expect(heading()).toBe("Your bots, on your phone");
@@ -175,22 +175,22 @@ describe("Settings in each storage state, and the chats", () => {
     vi.stubGlobal("localStorage", { getItem: (key: string) => stored.get(key) ?? null, setItem: (key: string, value: string) => { stored.set(key, value); }, removeItem: (key: string) => { stored.delete(key); } });
   });
 
-  it("a dusk cloud link with no account session (the owner's phone): chats open, Settings says the cloud and Sign out, never Log in", async () => {
+  it("a madani cloud link with no account session (the owner's phone): chats open, Settings says the cloud and Sign out, never Log in", async () => {
     keepCloud();
     await launchSettings();
     expect(settings()).toBe("my cloud | signOut");
   });
 
-  it("a dusk cloud link whose account the phone learned, with the session gone: signed in as that email, Sign out", async () => {
+  it("a madani cloud link whose account the phone learned, with the session gone: signed in as that email, Sign out", async () => {
     keepCloud();
-    prefs.set("dusk.mobile.connections.v1", JSON.stringify([{ ...cloudRecord, account: person }]));
+    prefs.set("madani.mobile.connections.v1", JSON.stringify([{ ...cloudRecord, account: person }]));
     await launchSettings();
     expect(settings()).toBe("person@example.com | signOut");
   });
 
-  it("a dusk cloud link and an expired session the service refuses: still the cloud and Sign out, never Log in", async () => {
+  it("a madani cloud link and an expired session the service refuses: still the cloud and Sign out, never Log in", async () => {
     keepCloud();
-    secrets.set("dusk.account", JSON.stringify({ origin: ACCOUNT, token: accountToken, expiresAt: Date.now() - 1000, account: person, deviceId: "phone" }));
+    secrets.set("madani.account", JSON.stringify({ origin: ACCOUNT, token: accountToken, expiresAt: Date.now() - 1000, account: person, deviceId: "phone" }));
     accountAnswer = async () => json({ error: "invalid_token", code: "invalid_token" }, 401);
     await launchSettings();
     expect(settings()).toBe("my cloud | signOut");
@@ -200,7 +200,7 @@ describe("Settings in each storage state, and the chats", () => {
     keepSignIn(); keepCloud();
     await launchSettings();
     expect(settings()).toBe("person@example.com | signOut,deleteAccount");
-    const [saved] = JSON.parse(prefs.get("dusk.mobile.connections.v1")!) as MobileConnectionRecord[];
+    const [saved] = JSON.parse(prefs.get("madani.mobile.connections.v1")!) as MobileConnectionRecord[];
     expect(saved?.account).toEqual(person);
   });
 
@@ -211,12 +211,12 @@ describe("Settings in each storage state, and the chats", () => {
     expect(heading()).toBe("Pick a cloud");
   });
 
-  it("neither: the first screen; with only a paired computer, Connected to it and the dusk cloud sign-in apart", async () => {
+  it("neither: the first screen; with only a paired computer, Connected to it and the madani cloud sign-in apart", async () => {
     await launchSettings();
     expect(heading()).toBe("Your bots, on your phone");
     await act(async () => root?.unmount());
-    prefs.set("dusk.mobile.connections.v1", JSON.stringify([{ ...cloudRecord, id: "mac", label: "Studio Mac", origin: CLOUD.replace("d0123456789abcdef0123.dusk.bot", "mac.example.org"), sessionRef: "token.mac" }]));
-    prefs.set("dusk.mobile.active.v1", "mac");
+    prefs.set("madani.mobile.connections.v1", JSON.stringify([{ ...cloudRecord, id: "mac", label: "Studio Mac", origin: CLOUD.replace("d0123456789abcdef0123.madani.bot", "mac.example.org"), sessionRef: "token.mac" }]));
+    prefs.set("madani.mobile.active.v1", "mac");
     secrets.set("token.mac", "mac-token");
     platform = launchPlatform();
     vi.stubGlobal("fetch", vi.fn(async () => json({})));
@@ -225,12 +225,12 @@ describe("Settings in each storage state, and the chats", () => {
   });
 
   it("a sign-in kept from the preview stack is followed there instead of showing signed out", async () => {
-    secrets.set("dusk.account", JSON.stringify({ origin: PREVIEW_ORIGIN, token: accountToken, expiresAt: Date.now() + 86_400_000, account: person, deviceId: "phone" }));
+    secrets.set("madani.account", JSON.stringify({ origin: PREVIEW_ORIGIN, token: accountToken, expiresAt: Date.now() + 86_400_000, account: person, deviceId: "phone" }));
     keepCloud();
     const asked: string[] = [];
     vi.stubGlobal("fetch", vi.fn(async (input: RequestInfo | URL) => { asked.push(String(input)); return String(input).startsWith(PREVIEW_ORIGIN) ? session() : json({}); }));
     await launchSettings();
-    expect(stored.get("dusk.mobile.environment")).toBe("preview");
+    expect(stored.get("madani.mobile.environment")).toBe("preview");
     expect(settings()).toBe("person@example.com | signOut,deleteAccount");
     expect(asked.some((url) => url.startsWith(`${PREVIEW_ORIGIN}/`))).toBe(true);
   });

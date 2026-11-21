@@ -195,7 +195,7 @@ export function createBotPackageExport(input: {
     }];
   });
 
-  const id = portableKey(input.name, "dusk-package", new Set());
+  const id = portableKey(input.name, "madani-package", new Set());
   const agents: BotPackageDefinition["agents"] = bots.map((bot) => {
     const appearance: BotPackageDefinition["agents"][number]["appearance"] = { color: bot.color };
     if (bot.mascotExpression) appearance.mascotExpression = bot.mascotExpression;
@@ -218,10 +218,10 @@ export function createBotPackageExport(input: {
     id,
     release: "1.0.0",
     name: input.name,
-    tagline: `A portable dusk bot setup with ${bots.length} ${bots.length === 1 ? "bot" : "bots"}.`,
-    summary: "Exported from dusk bot. Review the roles, rooms, playbooks, connector requirements, and paused routines before sharing or publishing.",
+    tagline: `A portable madani bot setup with ${bots.length} ${bots.length === 1 ? "bot" : "bots"}.`,
+    summary: "Exported from madani bot. Review the roles, rooms, playbooks, connector requirements, and paused routines before sharing or publishing.",
     category: "Community",
-    author: { name: input.authorName?.trim() || "dusk bot user" },
+    author: { name: input.authorName?.trim() || "madani bot user" },
     license: "Unspecified",
     outcomes: ["Recreate this bot setup without copying private runtime state."],
     setupMinutes: Math.min(240, Math.max(2, bots.length + requirements.size * 2)),
@@ -351,12 +351,12 @@ export function createLibraryPackageExport(input: LibraryExportInput): LibraryEx
     id: packageId,
     release,
     name: displayName,
-    tagline: input.tagline?.trim() || "A preset bot for dusk bot's New bot dialog.",
+    tagline: input.tagline?.trim() || "A preset bot for madani bot's New bot dialog.",
     summary: input.summary?.trim() ||
-      "Shared from dusk bot. Adds a preset bot to New bot. Its skills arrive switched off; model choices, computers, approval levels and connected apps never travel.",
+      "Shared from madani bot. Adds a preset bot to New bot. Its skills arrive switched off; model choices, computers, approval levels and connected apps never travel.",
     ...(notes ? { notes } : {}),
     category: "Community",
-    author: { name: input.authorName?.trim() || "dusk bot user" },
+    author: { name: input.authorName?.trim() || "madani bot user" },
     license: "Unspecified",
     outcomes: ["Start new bots from a shared preset."],
     setupMinutes: 2,
@@ -377,7 +377,7 @@ export function createLibraryPackageExport(input: LibraryExportInput): LibraryEx
   }
   return {
     document,
-    filename: `${document.package.id}-${document.package.release}.dusk.json`,
+    filename: `${document.package.id}-${document.package.release}.madani.json`,
     redacted,
     skipped,
     published: { packageId, lastRelease: release },

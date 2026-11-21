@@ -51,7 +51,7 @@ export async function askWake(label, reason, env) {
   return asked.ok ? asked.status : 503;
 }
 
-/** a request to the home as the client sent it, under the public name the home keeps (DUSK_PUBLIC_URL) */
+/** a request to the home as the client sent it, under the public name the home keeps (MADANI_PUBLIC_URL) */
 export function upstreamRequest(upstream, host, { method, path, headers, body }) {
   const sent = new Headers(headers);
   sent.set("x-forwarded-host", host);

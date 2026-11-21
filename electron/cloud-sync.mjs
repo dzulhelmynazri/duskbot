@@ -1,5 +1,5 @@
 // Files, the desktop service: the folders the person shared go to My Cloud, and what Cloud bots make comes to
-// Documents/Dusk Bot. This computer decides what is shared (settings.shared); a folder My Cloud names is never synced
+// Documents/Madani Bot. This computer decides what is shared (settings.shared); a folder My Cloud names is never synced
 // unless this computer registered it. It drives every pass over the Cloud sign-in the window holds.
 import { DATA_DIR_NAMES, LEGACY } from "./legacy-names.mjs";
 import { randomUUID } from "node:crypto";
@@ -58,7 +58,7 @@ export function createCloudFilesService({
   let settings = readSettings(settingsFile);
   const state = openSyncState(stateFile);
   // a folder made before the rename stays where the person knows it
-  const newOutputs = path.join(documentsDir, "Dusk Bot"), oldOutputs = path.join(documentsDir, LEGACY.documentsFolder);
+  const newOutputs = path.join(documentsDir, "Madani Bot"), oldOutputs = path.join(documentsDir, LEGACY.documentsFolder);
   const outputsDir = !fs.existsSync(newOutputs) && fs.existsSync(oldOutputs) ? oldOutputs : newOutputs;
   let closed = false, interval = null, poller = null, cursor = 0, chain = Promise.resolve(), pending = null;
   let status = { phase: "unavailable", lastSyncedAt: null, disk: null, shared: [], outputs: { enabled: true, dir: outputsDir, folders: 0, problem: null } };
@@ -116,7 +116,7 @@ export function createCloudFilesService({
     return { name, pcPath: real, files, bytes, partial, refusal: null };
   }
 
-  /** Bot output folders that hold work from since the person turned this on, each in Documents/Dusk Bot/<bot>/<conversation>. */
+  /** Bot output folders that hold work from since the person turned this on, each in Documents/Madani Bot/<bot>/<conversation>. */
   async function outputPlaces(cloud, folders) {
     const places = new Map();
     const taken = (dir) => {

@@ -2,7 +2,7 @@
 
 ## Report a vulnerability
 
-Email **security@dusk.bot**. Please do not open a public issue, pull request or discussion for a security problem.
+Email **security@madani.bot**. Please do not open a public issue, pull request or discussion for a security problem.
 
 Include:
 
@@ -20,8 +20,8 @@ public disclosure with us. There is no bug bounty yet.
 
 ## Scope
 
-dusk.bot (including the dashboard and API), link.dusk.bot, the dusk bot desktop and phone apps, and the VPS installer.
+madani.bot (including the dashboard and API), link.madani.bot, the madani bot desktop and phone apps, and the VPS installer.
 Denial of service, social engineering and third-party providers are out of scope.
 
-The full policy, including safe harbour for good-faith research, is at [dusk.bot/security](https://dusk.bot/security)
-([source](docs/legal/security.md)). Machine-readable contact details: [security.txt](https://dusk.bot/.well-known/security.txt).
+The full policy, including safe harbour for good-faith research, is at [madani.bot/security](https://madani.bot/security)
+([source](docs/legal/security.md)). Machine-readable contact details: [security.txt](https://madani.bot/.well-known/security.txt).

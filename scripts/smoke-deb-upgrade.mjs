@@ -17,22 +17,22 @@ const candidate = path.resolve(process.argv[2] ?? "");
 if (!candidate.endsWith(".deb") || !fs.existsSync(candidate)) fail("pass the newly built DEB path");
 
 try {
-  const status = execFileSync("dpkg-query", ["-W", "-f=${db:Status-Abbrev}", "duskbot"], {
+  const status = execFileSync("dpkg-query", ["-W", "-f=${db:Status-Abbrev}", "madanibot"], {
     encoding: "utf8",
     stdio: ["ignore", "pipe", "ignore"],
   }).trim();
-  if (status.startsWith("ii")) fail("refusing to replace a pre-existing dusk bot installation");
+  if (status.startsWith("ii")) fail("refusing to replace a pre-existing madani bot installation");
 } catch (error) {
   if (String(error?.message ?? error).includes("refusing to replace")) throw error;
 }
 
-const temporary = fs.mkdtempSync(path.join(path.resolve(runnerTemp), "dusk-deb-upgrade-"));
+const temporary = fs.mkdtempSync(path.join(path.resolve(runnerTemp), "madani-deb-upgrade-"));
 if (path.dirname(temporary) !== path.resolve(runnerTemp)) fail("temporary fixture escaped RUNNER_TEMP");
 const legacyRoot = path.join(temporary, "legacy-package");
 const controlRoot = path.join(legacyRoot, "DEBIAN");
-const legacyApp = path.join(legacyRoot, "opt", "dusk-bot");
+const legacyApp = path.join(legacyRoot, "opt", "madani-bot");
 const legacyResources = path.join(legacyApp, "resources");
-const legacyDeb = path.join(temporary, "duskbot_0.1.7_amd64.deb");
+const legacyDeb = path.join(temporary, "madanibot_0.1.7_amd64.deb");
 
 try {
   fs.mkdirSync(controlRoot, { recursive: true, mode: 0o755 });
@@ -42,11 +42,11 @@ try {
   fs.writeFileSync(
     path.join(controlRoot, "control"),
     [
-      "Package: duskbot",
+      "Package: madanibot",
       "Version: 0.1.7",
       "Architecture: amd64",
-      "Maintainer: dusk bot CI <ci@duskbot.invalid>",
-      "Description: Legacy dusk bot directory-mode upgrade fixture",
+      "Maintainer: madani bot CI <ci@madanibot.invalid>",
+      "Description: Legacy madani bot directory-mode upgrade fixture",
       "",
     ].join("\n"),
     { mode: 0o644 },
@@ -57,7 +57,7 @@ try {
     stdio: "inherit",
   });
   execFileSync("dpkg", ["--install", legacyDeb], { stdio: "inherit" });
-  for (const directory of ["/opt/dusk-bot", "/opt/dusk-bot/resources"]) {
+  for (const directory of ["/opt/madani-bot", "/opt/madani-bot/resources"]) {
     const mode = fs.lstatSync(directory).mode & 0o777;
     if (mode !== 0o775) fail(`legacy fixture did not reproduce 0775 at ${directory}`);
   }
@@ -70,9 +70,9 @@ try {
     stdio: "inherit",
   });
   for (const directory of [
-    "/opt/dusk-bot",
-    "/opt/dusk-bot/resources",
-    "/opt/dusk-bot/resources/cua-linux-x64",
+    "/opt/madani-bot",
+    "/opt/madani-bot/resources",
+    "/opt/madani-bot/resources/cua-linux-x64",
   ]) {
     const details = fs.lstatSync(directory);
     if (!details.isDirectory() || details.isSymbolicLink()) fail(`unsafe upgraded directory: ${directory}`);
@@ -81,14 +81,14 @@ try {
     }
   }
   for (const executable of ["cua-driver", "cua-cursor-theme"]) {
-    const file = path.join("/opt/dusk-bot/resources/cua-linux-x64", executable);
+    const file = path.join("/opt/madani-bot/resources/cua-linux-x64", executable);
     const details = fs.lstatSync(file);
     if (!details.isFile() || details.isSymbolicLink()) fail(`unsafe upgraded executable: ${file}`);
     if (details.uid !== 0 || details.gid !== 0 || (details.mode & 0o777) !== 0o755) {
       fail(`upgraded executable is not root:root 0755: ${file}`);
     }
   }
-  const chromiumSandbox = "/opt/dusk-bot/chrome-sandbox";
+  const chromiumSandbox = "/opt/madani-bot/chrome-sandbox";
   const sandboxDetails = fs.lstatSync(chromiumSandbox);
   if (!sandboxDetails.isFile() || sandboxDetails.isSymbolicLink()) {
     fail(`unsafe upgraded Chromium sandbox: ${chromiumSandbox}`);
@@ -100,7 +100,7 @@ try {
   ) {
     fail(`upgraded Chromium sandbox is not root:root 4755: ${chromiumSandbox}`);
   }
-  const installedVersion = execFileSync("dpkg-query", ["-W", "-f=${Version}", "duskbot"], {
+  const installedVersion = execFileSync("dpkg-query", ["-W", "-f=${Version}", "madanibot"], {
     encoding: "utf8",
   }).trim();
   console.log(

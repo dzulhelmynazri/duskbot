@@ -8,16 +8,16 @@
   }
   try {
     var w = window, d = document, n = navigator, loc = w.location;
-    var queue = (w.dusk && w.dusk.q) || [];
-    w.dusk = noop;
+    var queue = (w.madani && w.madani.q) || [];
+    w.madani = noop;
     var script = d.currentScript;
     var endpoint = (script && script.getAttribute("data-api")) || "/v1/t";
     var ignored = false;
     try {
-      var ignore = new URLSearchParams(loc.search).get("dusk_ignore");
-      if (ignore === "1") w.localStorage.setItem("dusk_ignore", "1");
-      if (ignore === "0") w.localStorage.removeItem("dusk_ignore");
-      ignored = w.localStorage.getItem("dusk_ignore") === "1";
+      var ignore = new URLSearchParams(loc.search).get("madani_ignore");
+      if (ignore === "1") w.localStorage.setItem("madani_ignore", "1");
+      if (ignore === "0") w.localStorage.removeItem("madani_ignore");
+      ignored = w.localStorage.getItem("madani_ignore") === "1";
     } catch (e) { ignored = ignore === "1"; }
     var local = /^(localhost|0\.0\.0\.0|\[::1\])$|^127\.|\.local$/i.test(loc.hostname) || loc.protocol === "file:";
     if (ignored || n.webdriver || n.globalPrivacyControl === true || n.doNotTrack === "1" ||
@@ -30,7 +30,7 @@
         return match ? match[1] : "";
       } catch (e) { return ""; }
     }
-    var vid = read("dusk_vid"), sid = read("dusk_sid"), first = !sid;
+    var vid = read("madani_vid"), sid = read("madani_sid"), first = !sid;
     // nothing is stored until the service answers a page view with {persist: true}; where consent would be needed it
     // answers false and ids live only in this page
     var keep = null, asking = false, domain = "", parts = loc.hostname.split("."), domains = [];
@@ -42,18 +42,18 @@
     function remember(persist) {
       keep = persist;
       if (!persist) {
-        ["dusk_vid", "dusk_sid"].forEach(function (name) {
+        ["madani_vid", "madani_sid"].forEach(function (name) {
           if (read(name)) [""].concat(domains).forEach(function (at) { cookie(name, "", 0, at); });
         });
         return;
       }
       if (!domain) domains.some(function (candidate) {
-        cookie("dusk_test", 1, 60, candidate);
-        if (read("dusk_test")) { cookie("dusk_test", "", 0, candidate); domain = candidate; }
+        cookie("madani_test", 1, 60, candidate);
+        if (read("madani_test")) { cookie("madani_test", "", 0, candidate); domain = candidate; }
         return domain;
       });
-      cookie("dusk_vid", vid, 31536000, domain);
-      cookie("dusk_sid", sid, 1800, domain);
+      cookie("madani_vid", vid, 31536000, domain);
+      cookie("madani_sid", sid, 1800, domain);
     }
     function random(bytes) {
       var data = new Uint8Array(bytes), binary = "";
@@ -70,15 +70,15 @@
     }
     function sectionName(el) {
       var classes = (el.getAttribute("class") || "").split(/\s+/).filter(function (name) { return name && name !== "wrap"; });
-      return slug(el.getAttribute("data-dusk-section") || el.id || classes[0]);
+      return slug(el.getAttribute("data-madani-section") || el.id || classes[0]);
     }
     function sectionOf(el) {
-      var section = el.closest("[data-dusk-section], section");
+      var section = el.closest("[data-madani-section], section");
       return section ? sectionName(section) : "";
     }
     function labelOf(el) {
       if (el.closest('[contenteditable]:not([contenteditable="false"])')) return "";
-      var label = el.getAttribute("data-dusk-label") || el.getAttribute("aria-label") ||
+      var label = el.getAttribute("data-madani-label") || el.getAttribute("aria-label") ||
         (!el.querySelector("input,textarea,select,[contenteditable]") && el.textContent) || "";
       return /@|\d{4}/.test(label) ? "" : slug(label.trim().split(/\s+/).slice(0, 4).join(" "));
     }
@@ -99,11 +99,11 @@
           });
         });
       }), { threshold: 0.5 });
-      Array.prototype.forEach.call(d.querySelectorAll("section, [data-dusk-section]"), function (el) {
+      Array.prototype.forEach.call(d.querySelectorAll("section, [data-madani-section]"), function (el) {
         var name = sectionName(el), parent = el.parentElement;
         if (!name) return;
         while (parent) {
-          if (parent.matches("section, [data-dusk-section]") && sectionName(parent) === name) return;
+          if (parent.matches("section, [data-madani-section]") && sectionName(parent) === name) return;
           parent = parent.parentElement;
         }
         var section;
@@ -117,7 +117,7 @@
       return value.split("/").map(function (segment) { return /@|%40/i.test(segment) ? ":id" : segment; }).join("/").slice(0, 200);
     }
     function send(event, extra) {
-      if (keep) cookie("dusk_sid", sid, 1800, domain);
+      if (keep) cookie("madani_sid", sid, 1800, domain);
       var payload = { v: 1, e: event, vid: vid, sid: sid, pv: pv, h: loc.hostname, p: path };
       Object.keys(extra).forEach(function (key) { payload[key] = extra[key]; });
       var json = JSON.stringify(payload);
@@ -207,14 +207,14 @@
       var meta = { section: sectionOf(el), label: labelOf(el) };
       for (var k = 0; k < el.attributes.length; k++) {
         var attr = el.attributes[k];
-        if (attr.name.startsWith("data-dusk-") && !/^data-dusk-(goal|section|label)$/.test(attr.name)) meta[attr.name.slice(10)] = attr.value;
+        if (attr.name.startsWith("data-madani-") && !/^data-madani-(goal|section|label)$/.test(attr.name)) meta[attr.name.slice(10)] = attr.value;
       }
       return meta;
     }
     function start() {
       pageview();
       if (!pv) return;
-      w.dusk = goal;
+      w.madani = goal;
       for (var q = 0; q < queue.length; q++) goal.apply(null, queue[q]);
       queue = [];
     }
@@ -247,7 +247,7 @@
     d.addEventListener("click", safe(function (event) {
       var el = event.target;
       if (el && !el.closest) el = el.parentElement;
-      if (!el || !el.closest || el.closest("input, textarea, select, [data-dusk-ignore]")) return;
+      if (!el || !el.closest || el.closest("input, textarea, select, [data-madani-ignore]")) return;
       var now = Date.now(), x = event.clientX, y = event.clientY;
       if (!rage || now - rage.at > 700 || Math.pow(x - rage.x, 2) + Math.pow(y - rage.y, 2) > 900) {
         rage = { at: now, x: x, y: y, count: 0 };
@@ -255,8 +255,8 @@
       var target = el.closest('a[href], button, [role="button"]') || el;
       var meta = { section: sectionOf(target), label: labelOf(target) };
       if (++rage.count === 3) goal("rage_click", meta);
-      var tagged = el.closest("[data-dusk-goal]");
-      if (tagged) { goal(tagged.getAttribute("data-dusk-goal"), attributes(tagged)); return; }
+      var tagged = el.closest("[data-madani-goal]");
+      if (tagged) { goal(tagged.getAttribute("data-madani-goal"), attributes(tagged)); return; }
       var link = el.closest("a[href]"), name = "click";
       if (link) {
         var url = new URL(link.href, loc.href), host = url.hostname;
@@ -271,7 +271,7 @@
       }
       if (name === "download_click") {
         var destination = (url.hostname + url.pathname).toLowerCase();
-        var platform = slug(link.getAttribute("data-dusk-platform"));
+        var platform = slug(link.getAttribute("data-madani-platform"));
         if (!platform) {
           if (/\.dmg|mac/.test(destination)) platform = "mac";
           else if (/\.exe|\.msi|win/.test(destination)) platform = "windows";
@@ -282,23 +282,23 @@
         }
         if (platform) meta.value = platform;
       } else {
-        var value = slug(target.getAttribute("data-dusk-value") || target.getAttribute("data-period") || target.getAttribute("data-platform"));
+        var value = slug(target.getAttribute("data-madani-value") || target.getAttribute("data-period") || target.getAttribute("data-platform"));
         if (value) meta.value = value;
       }
       if (name !== "click" || (target.matches('a[href], button, [role="button"]') && meta.label)) goal(name, meta);
     }), true);
     d.addEventListener("play", safe(function (event) {
       var el = event.target;
-      if (!el || !/^(VIDEO|AUDIO)$/.test(el.tagName) || el.closest("[data-dusk-ignore]") || el.duskPlayed === pv) return;
-      el.duskPlayed = pv;
-      goal(el.getAttribute("data-dusk-goal") || "video_play", attributes(el));
+      if (!el || !/^(VIDEO|AUDIO)$/.test(el.tagName) || el.closest("[data-madani-ignore]") || el.madaniPlayed === pv) return;
+      el.madaniPlayed = pv;
+      goal(el.getAttribute("data-madani-goal") || "video_play", attributes(el));
     }), true);
     d.addEventListener("focusin", safe(function (event) {
       var el = event.target;
-      if (!el || !el.matches("input, textarea, select") || el.closest("[data-dusk-ignore]")) return;
+      if (!el || !el.matches("input, textarea, select") || el.closest("[data-madani-ignore]")) return;
       var form = el.closest("form");
       if (!form || !form.querySelector('input[type="email"]') || forms.some(function (item) { return item.el === form; })) return;
-      var meta = { label: slug(form.getAttribute("data-dusk-goal") || form.id || "form"), section: sectionOf(form) };
+      var meta = { label: slug(form.getAttribute("data-madani-goal") || form.id || "form"), section: sectionOf(form) };
       forms.push({ el: form, meta: meta, submitted: false });
       goal("form_start", meta);
     }), true);
@@ -306,7 +306,7 @@
       var form = event.target;
       if (!form || form.tagName !== "FORM") return;
       forms.forEach(function (item) { if (item.el === form) item.submitted = true; });
-      if (form.hasAttribute("data-dusk-goal")) { goal(form.getAttribute("data-dusk-goal"), attributes(form)); return; }
+      if (form.hasAttribute("data-madani-goal")) { goal(form.getAttribute("data-madani-goal"), attributes(form)); return; }
       var email = form.querySelector('input[type="email"]');
       if (/waitlist|\bwl-form\b/i.test([form.id, form.className, form.getAttribute("action"), form.getAttribute("name")].join(" ")) &&
           email && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value)) goal("waitlist_join");

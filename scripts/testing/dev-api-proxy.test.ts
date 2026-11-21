@@ -19,7 +19,7 @@ async function harnessAndProxy() {
   await new Promise<void>((done) => harness.listen(0, "127.0.0.1", done));
   closers.push(() => new Promise((done) => { harness.closeAllConnections(); harness.close(done); }));
   const vite: ViteDevServer = await createServer({ configFile: false, logLevel: "silent", root: import.meta.dirname,
-    cacheDir: join(import.meta.dirname, "..", "..", ".dusk-scratch", "vite-dev-api-proxy"),
+    cacheDir: join(import.meta.dirname, "..", "..", ".madani-scratch", "vite-dev-api-proxy"),
     server: { host: "127.0.0.1", port: 0, hmr: false, proxy: { "/api": devApiProxy((harness.address() as AddressInfo).port) } } });
   await vite.listen();
   closers.unshift(() => vite.close());
@@ -34,7 +34,7 @@ describe("the dev renderer's /api proxy", () => {
     const harnessPort = (closed.address() as AddressInfo).port;
     await new Promise((done) => closed.close(done));
     const vite: ViteDevServer = await createServer({ configFile: false, logLevel: "silent", root: import.meta.dirname,
-      cacheDir: join(import.meta.dirname, "..", "..", ".dusk-scratch", "vite-dev-api-proxy"),
+      cacheDir: join(import.meta.dirname, "..", "..", ".madani-scratch", "vite-dev-api-proxy"),
       server: { host: "127.0.0.1", port: 0, hmr: false, proxy: { "/api": devApiProxy(harnessPort) } } });
     await vite.listen();
     closers.unshift(() => vite.close());

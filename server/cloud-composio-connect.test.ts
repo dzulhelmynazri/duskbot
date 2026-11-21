@@ -10,7 +10,7 @@ const dirs: string[] = [];
 afterEach(() => { for (const dir of dirs.splice(0)) rmSync(dir, { recursive: true, force: true }); });
 
 function cloud(answers: Record<string, AppConnection> = {}, removes = true) {
-  const dataDir = mkdtempSync(join(tmpdir(), "dusk-cloud-connect-"));
+  const dataDir = mkdtempSync(join(tmpdir(), "madani-cloud-connect-"));
   dirs.push(dataDir);
   const servers: Record<string, unknown> = {};
   const state = { signedIn: false, signIns: 0, asked: [] as string[] };
@@ -27,7 +27,7 @@ function cloud(answers: Record<string, AppConnection> = {}, removes = true) {
   return { connect: createCloudComposioConnect(deps), state, servers };
 }
 
-describe("connecting an app on a dusk cloud with no Composio key", () => {
+describe("connecting an app on a madani cloud with no Composio key", () => {
   it("first time: Composio's own sign-in, and its callback sends the same tab on to the app's page", async () => {
     const c = cloud({ "add:gmail": { status: "started", url: "https://connect.composio.dev/link/lk_1" } });
     expect(await c.connect.connect("gmail")).toEqual({ url: "https://connect.composio.dev/oauth/authorize?client_id=c&state=st1" });
@@ -46,7 +46,7 @@ describe("connecting an app on a dusk cloud with no Composio key", () => {
     expect(c.state.signIns).toBe(0);
   });
 
-  it("says why when Composio cannot hand back a page dusk bot trusts", async () => {
+  it("says why when Composio cannot hand back a page madani bot trusts", async () => {
     const c = cloud({ "add:gmail": { status: "started", url: "https://evil.example/link" }, "add:slack": { status: "connected" }, "add:notion": { status: "failed", message: "Toolkit is not available." } });
     c.state.signedIn = true;
     await expect(c.connect.connect("gmail")).rejects.toMatchObject({ status: 502 });

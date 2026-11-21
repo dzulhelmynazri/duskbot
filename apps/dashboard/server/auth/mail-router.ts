@@ -11,11 +11,11 @@ export interface MailCaps { daily: number; monthly: number }
 export const DEFAULT_MAIL_CAPS: Record<MailProviderId, MailCaps> = { resend: { daily: 100, monthly: 3_000 }, brevo: { daily: 300, monthly: 10_000 } };
 
 const positive = (value: string | undefined, fallback: number) => { const n = Number(value); return Number.isSafeInteger(n) && n > 0 ? n : fallback; };
-/** DUSK_RESEND_DAILY_LIMIT, DUSK_RESEND_MONTHLY_LIMIT, DUSK_BREVO_DAILY_LIMIT, DUSK_BREVO_MONTHLY_LIMIT */
+/** MADANI_RESEND_DAILY_LIMIT, MADANI_RESEND_MONTHLY_LIMIT, MADANI_BREVO_DAILY_LIMIT, MADANI_BREVO_MONTHLY_LIMIT */
 export function mailCapsFromEnv(env: NodeJS.ProcessEnv): Record<MailProviderId, MailCaps> {
   return {
-    resend: { daily: positive(env.DUSK_RESEND_DAILY_LIMIT, DEFAULT_MAIL_CAPS.resend.daily), monthly: positive(env.DUSK_RESEND_MONTHLY_LIMIT, DEFAULT_MAIL_CAPS.resend.monthly) },
-    brevo: { daily: positive(env.DUSK_BREVO_DAILY_LIMIT, DEFAULT_MAIL_CAPS.brevo.daily), monthly: positive(env.DUSK_BREVO_MONTHLY_LIMIT, DEFAULT_MAIL_CAPS.brevo.monthly) },
+    resend: { daily: positive(env.MADANI_RESEND_DAILY_LIMIT, DEFAULT_MAIL_CAPS.resend.daily), monthly: positive(env.MADANI_RESEND_MONTHLY_LIMIT, DEFAULT_MAIL_CAPS.resend.monthly) },
+    brevo: { daily: positive(env.MADANI_BREVO_DAILY_LIMIT, DEFAULT_MAIL_CAPS.brevo.daily), monthly: positive(env.MADANI_BREVO_MONTHLY_LIMIT, DEFAULT_MAIL_CAPS.brevo.monthly) },
   };
 }
 
@@ -124,7 +124,7 @@ export function createMailRouter(options: {
   }
 
   async function deliver(order: MailProviderId[], message: MailMessage, fallbackOnError: boolean) {
-    // harness addresses (@qa.dusk.test, qa*@dusk.bot) never reach a provider, whatever sends to them
+    // harness addresses (@qa.madani.test, qa*@madani.bot) never reach a provider, whatever sends to them
     if (isTestAddress(message.to)) return;
     const day = dayOf(now()), [first, second] = order.filter(configured);
     let why: string;

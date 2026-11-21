@@ -14,12 +14,12 @@ vi.mock("@/lib/vps-cloud-move", () => ({ useVpsCloudMove: () => ({ view: null })
 vi.mock("./CloudMoveSettings", () => ({ CloudMoveRow: () => null }));
 import { WorkspacesGroup } from "./WorkspacesSettings";
 
-afterEach(() => { vi.unstubAllGlobals(); delete (window as { duskDesktop?: unknown }).duskDesktop; document.body.replaceChildren(); });
+afterEach(() => { vi.unstubAllGlobals(); delete (window as { madaniDesktop?: unknown }).madaniDesktop; document.body.replaceChildren(); });
 
 async function addRow(desktop: unknown) {
   vi.stubGlobal("IS_REACT_ACT_ENVIRONMENT", true);
   setLocale("en");
-  (window as { duskDesktop?: unknown }).duskDesktop = desktop;
+  (window as { madaniDesktop?: unknown }).madaniDesktop = desktop;
   const host = document.body.appendChild(document.createElement("div"));
   const root = createRoot(host);
   const onAdd = vi.fn();
@@ -36,7 +36,7 @@ it("offers adding a cloud or a server of one's own on this computer's own page, 
   expect(onAdd).toHaveBeenCalledTimes(1);
 });
 
-it("leaves the row out entirely in a dusk cloud or server window and in a remote client", async () => {
+it("leaves the row out entirely in a madani cloud or server window and in a remote client", async () => {
   expect((await addRow({ app: { version: "1", ownPage: false }, workspaces: {} })).shown).toBe(false);
   expect((await addRow({ app: { version: "1", ownPage: true }, remoteClient: { active: true } })).shown).toBe(false);
 });

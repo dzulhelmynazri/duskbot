@@ -4,7 +4,7 @@ import { appendFileSync, closeSync, openSync, readFileSync, writeFileSync } from
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { expect, it } from "vitest";
-import { launchVerificationServer, verificationServerEnvironment } from "../scripts/control-dusk.ts";
+import { launchVerificationServer, verificationServerEnvironment } from "../scripts/control-madani.ts";
 import { waitForExit } from "./testing/cleanup.ts";
 
 // The owner's "hi" to a bot with no AI chosen waited on every engine being read. It now starts on the first one found

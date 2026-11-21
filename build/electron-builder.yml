@@ -1,13 +1,13 @@
-appId: bot.dusk.app
-productName: Dusk Bot
-copyright: Copyright © 2026 dusk bot
-artifactName: DuskBot-${version}-${arch}.${ext}
+appId: bot.madani.app
+productName: Madani Bot
+copyright: Copyright © 2026 madani bot
+artifactName: MadaniBot-${version}-${arch}.${ext}
 
 protocols:
-  - name: Dusk Bot package install
-    schemes: [duskbot]
+  - name: Madani Bot package install
+    schemes: [madanibot]
   # links made before the rename (chat history, notifications) still open the app; electron/legacy-names.mjs reads them
-  - name: Dusk Bot links from before the rename
+  - name: Madani Bot links from before the rename
     schemes: [openmausbot]
 
 publish: null
@@ -33,7 +33,7 @@ files:
   - "!electron/resources/speech-helper"
   - "!electron/resources/speech-helper.swift"
   - "!electron/resources/speech-helper-Info.plist"
-  - "!electron/resources/Dusk Bot Speech.app/**"
+  - "!electron/resources/Madani Bot Speech.app/**"
   # windows ships it in Resources (win.extraResources): powershell cannot read inside app.asar
   - "!electron/resources/windows-speech.ps1"
   # The Teach a skill recorder is gone, but a machine that once ran
@@ -41,7 +41,7 @@ files:
   - "!electron/resources/recorder-helper"
   - "!electron/resources/recorder-helper.swift"
   - "!electron/resources/recorder-helper-Info.plist"
-  - "!electron/resources/Dusk Bot Recorder.app/**"
+  - "!electron/resources/Madani Bot Recorder.app/**"
   - "!**/node_modules/**"
   - package.json
   # the phone relay hub a linked VPS runs; electron/phone-relay.mjs runs it for this computer's own phones
@@ -112,8 +112,8 @@ mac:
   entitlementsInherit: build/entitlements.mac.plist
   # the dictation helper is a signed background app — Windows and Linux never see it
   extraResources:
-    - from: electron/resources/Dusk Bot Speech.app
-      to: Dusk Bot Speech.app
+    - from: electron/resources/Madani Bot Speech.app
+      to: Madani Bot Speech.app
     # CUA must live outside ASAR. prepare-cua stages the signed executable and
     # a self-contained JS/native SDK bundle selected for macOS arm64.
     # ${arch} resolves per built arch — each bundle carries its own natives
@@ -139,8 +139,8 @@ mac:
     NSSpeechRecognitionUsageDescription: Your voice is transcribed on this Mac to type messages for you.
     NSAccessibilityUsageDescription: Accessibility is used when you let a bot control this Mac.
     NSScreenCaptureUsageDescription: Screen Recording lets bots see this Mac before acting.
-    NSAppleEventsUsageDescription: Automation lets dusk bot open Terminal and lets bots control the apps you allow.
-    NSDownloadsFolderUsageDescription: Downloads is checked for the notes file another AI saved for you (dusk-bot-notes.json), so it comes in by itself.
+    NSAppleEventsUsageDescription: Automation lets madani bot open Terminal and lets bots control the apps you allow.
+    NSDownloadsFolderUsageDescription: Downloads is checked for the notes file another AI saved for you (madani-bot-notes.json), so it comes in by itself.
   # Notarization runs manually after the build (notarytool + staple),
   # mirroring the BlueyLite ship_release.sh flow.
   notarize: false
@@ -148,11 +148,11 @@ mac:
 dmg:
   sign: true
   # the mounted volume's name in the Finder sidebar and the install window's title bar
-  title: dusk bot
+  title: madani bot
   # ${arch} is load-bearing: without it the x64 dmg silently overwrites
   # the arm64 one when both arches build (this section overrides both the
   # top-level and mac-level artifactName, so it must carry the arch itself)
-  artifactName: DuskBot-${version}-${arch}.dmg
+  artifactName: MadaniBot-${version}-${arch}.dmg
   # x/y are icon centres in points, drawn around by build/dmg/render.mjs.
   # electron-builder 26.15.3 sets the window frame (title bar included) to
   # build/background.png's size and ignores dmg.window whenever a background is
@@ -168,8 +168,8 @@ dmg:
       path: /Applications
 
 win:
-  # the portable zip needs its own name: DuskBot-<version>-x64.zip is the intel mac's updater zip on the same release
-  artifactName: DuskBot-${version}-win-${arch}.${ext}
+  # the portable zip needs its own name: MadaniBot-<version>-x64.zip is the intel mac's updater zip on the same release
+  artifactName: MadaniBot-${version}-win-${arch}.${ext}
   target:
     - target: nsis
       arch: x64
@@ -201,11 +201,11 @@ nsis:
   # by name, but electron-builder 26 shows them only on the assisted installer's pages; oneClick never draws them
   oneClick: true
   perMachine: false
-  shortcutName: Dusk Bot
+  shortcutName: Madani Bot
   # Versioned, like the .dmg. The README's /latest/download/ button needs a
-  # STABLE filename, so ship a second copy named DuskBot-setup.exe on the
-  # release — the same trick as Dusk Bot.dmg beside DuskBot-${version}.dmg.
-  artifactName: DuskBot-${version}-setup.${ext}
+  # STABLE filename, so ship a second copy named MadaniBot-setup.exe on the
+  # release — the same trick as Madani Bot.dmg beside MadaniBot-${version}.dmg.
+  artifactName: MadaniBot-${version}-setup.${ext}
 
 linux:
   target:
@@ -217,11 +217,11 @@ linux:
   # lone 1024px PNG is not indexed by GNOME's hicolor theme on Ubuntu 24.04.
   icon: build/icon.svg
   category: Utility
-  executableName: duskbot
+  executableName: madanibot
   synopsis: Your own team of AI bots, in a chat app
   description: A local-first chat app for running a team of AI agents.
-  maintainer: dusk bot <hello@dusk.bot>
-  vendor: dusk bot
+  maintainer: madani bot <hello@madani.bot>
+  vendor: madani bot
   syncDesktopName: true
   # The reviewed x64 CLI runtime is staged before packaging and remains
   # outside ASAR so executable modes and adjacent sidecars are preserved.
@@ -234,16 +234,16 @@ linux:
       to: browser-engine
     - from: dist-native/duckdb/linux-x64/node_modules
       to: duckdb/node_modules
-    - from: build/linux-dusk-browser.apparmor
-      to: duskbot-browser.apparmor
+    - from: build/linux-madani-browser.apparmor
+      to: madanibot-browser.apparmor
     # the icon an AppImage copies into the person's app menu (electron/appimage-menu-entry.mjs)
     - from: build/icon.svg
       to: icon.svg
-  # the install folder is /opt/<productName>: package:linux passes -c.productName=dusk-bot, because Chromium splits the
-  # setuid sandbox's path on spaces and "/opt/Dusk Bot" crashed every launch. the name people see is this one
+  # the install folder is /opt/<productName>: package:linux passes -c.productName=madani-bot, because Chromium splits the
+  # setuid sandbox's path on spaces and "/opt/Madani Bot" crashed every launch. the name people see is this one
   desktop:
     entry:
-      Name: dusk bot
+      Name: madani bot
       Comment: Your own team of AI bots, in a chat app
       Keywords: AI;Agents;Chat;Productivity;
 

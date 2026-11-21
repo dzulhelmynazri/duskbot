@@ -3,8 +3,8 @@ import { appendFileSync, writeFileSync } from "node:fs";
 import { syncBuiltinESMExports } from "node:module";
 import { basename, join } from "node:path";
 
-const directory = process.env.DUSK_DATA_DIR;
-if (!directory || directory !== process.env.HOME || process.env.DUSK_TEST_LOCAL_BROWSER_GUARD !== "1") {
+const directory = process.env.MADANI_DATA_DIR;
+if (!directory || directory !== process.env.HOME || process.env.MADANI_TEST_LOCAL_BROWSER_GUARD !== "1") {
   throw new Error("The local browser guard requires an explicitly isolated fixture");
 }
 writeFileSync(join(directory, "local-browser-guard.json"), JSON.stringify({ installed: true, platform: process.platform }));

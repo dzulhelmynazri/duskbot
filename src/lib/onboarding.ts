@@ -100,7 +100,7 @@ export function hintSeenPatch(
 
 
 /** Every screen the first run can show, in the order it shows them; the chat comes after the last. */
-// where the bots live comes first on the desktop app; the account follows it only where this Mac is the place (dusk cloud
+// where the bots live comes first on the desktop app; the account follows it only where this Mac is the place (madani cloud
 // signs in and pays in the browser, "checkout"); the Mac's permissions come last, right before the app
 export const BEAT_ORDER = ["welcome", "account", "place", "checkout", "ai", "bring", "phone", "making", "permissions"] as const;
 export type BeatId = (typeof BEAT_ORDER)[number];
@@ -131,7 +131,7 @@ export function useWelcomeOnScreen(): boolean {
   return useSyncExternalStore((listener) => { welcomeListeners.add(listener); return () => welcomeListeners.delete(listener); }, welcomeOnScreen, () => false);
 }
 
-const WELCOME_FINISHED_KEY = "dusk.onboarding.welcomeFinished";
+const WELCOME_FINISHED_KEY = "madani.onboarding.welcomeFinished";
 /** The first-run welcome ended in this app session (never a replay): the full-screen Cloud Pro popup waits for a later
  * launch rather than following it. Kept for the window's session, so a reload counts as the same launch. */
 // Where browser storage is blocked, this page's memory stands in for it.
@@ -151,13 +151,13 @@ export function welcomeFinishedThisLaunch(): boolean {
   }
 }
 
-export const DEFAULT_ADMIN_ORIGIN = "https://dusk.bot";
+export const DEFAULT_ADMIN_ORIGIN = "https://madani.bot";
 
 export function organisationSignIn<Bridge>(
-  duskDesktop: { organization?: Bridge; remoteClient?: { active?: boolean } } | undefined,
+  madaniDesktop: { organization?: Bridge; remoteClient?: { active?: boolean } } | undefined,
 ): Bridge | undefined {
-  if (!duskDesktop || duskDesktop.remoteClient?.active === true) return undefined;
-  return duskDesktop.organization;
+  if (!madaniDesktop || madaniDesktop.remoteClient?.active === true) return undefined;
+  return madaniDesktop.organization;
 }
 
 export function companyModelCount(state: { providers?: Array<{ configured: boolean; models: string[] }> } | null): number {

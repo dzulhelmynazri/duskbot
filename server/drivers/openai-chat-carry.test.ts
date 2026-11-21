@@ -48,7 +48,7 @@ describe("carriedSteps", () => {
 
 describe("sharedCarriedWork", () => {
   it("is one store per file, so a backup engine takes the steps another engine kept", () => {
-    const dir = mkdtempSync(join(tmpdir(), "dusk-carry-"));
+    const dir = mkdtempSync(join(tmpdir(), "madani-carry-"));
     try {
       const file = join(dir, "limit-carried-steps.json");
       sharedCarriedWork(file).keep("t", [{ role: "assistant", content: null }]);
@@ -80,7 +80,7 @@ describe("createCarriedWork", () => {
     expect(work.take("other", resume)).toEqual([]);
   });
   it("hands them to the person's own next turn once their message ended the wait, a restart in between included", () => {
-    const dir = mkdtempSync(join(tmpdir(), "dusk-carry-"));
+    const dir = mkdtempSync(join(tmpdir(), "madani-carry-"));
     try {
       const file = join(dir, "limit-carried-steps.json");
       const work = createCarriedWork({ file });
@@ -97,7 +97,7 @@ describe("createCarriedWork", () => {
     }
   });
   it("keeps them across a restart in its file, which holds nothing once they are used", () => {
-    const dir = mkdtempSync(join(tmpdir(), "dusk-carry-"));
+    const dir = mkdtempSync(join(tmpdir(), "madani-carry-"));
     try {
       const file = join(dir, "limit-carried-steps.json");
       createCarriedWork({ file }).keep("t", step);

@@ -39,7 +39,7 @@ const BROWSER_RESTART_TOOL_SPEC = {
 };
 export const BROWSER_UPLOAD_TOOL = "agent_browser_upload";
 export const BROWSER_HOVER_TOOL = "agent_browser_hover";
-/** agent-browser 0.37.0 offers upload and hover only in its 156-tool "all" profile, so dusk bot runs these two through the daemon's relay. */
+/** agent-browser 0.37.0 offers upload and hover only in its 156-tool "all" profile, so madani bot runs these two through the daemon's relay. */
 const RELAYED_TOOL_SPECS = [
   {
     name: BROWSER_UPLOAD_TOOL,
@@ -92,7 +92,7 @@ export function ownsBrowserViewport(env: NodeJS.ProcessEnv): boolean {
 
 export class TransportError extends Error {}
 
-/** One timed browser action (ms), logged with DUSK_BROWSER_TIMING=1; `inFlight` is this session's work already running. */
+/** One timed browser action (ms), logged with MADANI_BROWSER_TIMING=1; `inFlight` is this session's work already running. */
 export interface BrowserTiming {
   session: string;
   tool: string;
@@ -175,7 +175,7 @@ class BrowserClient {
     this.child.on("close", () => { void this.stop(new TransportError("Browser connection closed.")); });
     this.ready = this.rpc("initialize", {
       protocolVersion: "2024-11-05", capabilities: {},
-      clientInfo: { name: "duskbot-browser", version: "1" },
+      clientInfo: { name: "madanibot-browser", version: "1" },
     }, Math.max(this.requestTimeoutMs, HANDSHAKE_TIMEOUT_MS)).then((result) => {
       if (!result || typeof result !== "object" || !("protocolVersion" in result)) {
         throw new TransportError("Browser engine returned an invalid handshake.");
@@ -299,7 +299,7 @@ class BrowserClient {
 export type ApplyViewport = (spec: BrowserSpawnSpec, size: PageSize) => Promise<unknown>;
 
 type LaunchSpec = { command: string; env?: Record<string, string | undefined> };
-/** The browser the engine starts, prepared by dusk bot. */
+/** The browser the engine starts, prepared by madani bot. */
 export interface BrowserLaunch {
   /** Before the engine may start the browser; rejects with a message for the bot while it cannot start yet. */
   ready(spec: LaunchSpec): Promise<void>;
@@ -566,7 +566,7 @@ export class BrowserRuntime {
     const gate = this.gate(session);
     if (method === "tools/call") await this.heldBack(session, deadline, beforeDispatch);
     if (gate.uncertain) {
-      if (method === "tools/list") return withDuskTools(this.toolLists.get(session) ?? { tools: [] });
+      if (method === "tools/list") return withMadaniTools(this.toolLists.get(session) ?? { tools: [] });
       const lostCall = gate.lostCall;
       if (lostCall === null) return stuckBrowserToolError();
       beforeDispatch?.();
@@ -605,7 +605,7 @@ export class BrowserRuntime {
           .then((result) => firstText(result).trim(), (error: unknown) => { if (error instanceof TransportError) throw error; return ""; });
         const heldNote = this.holds.note(session);
         if (toolName === "agent_browser_eval" && await this.holds.refuses(session, pageUrl)) return { isError: true, content: [{ type: "text", text: heldNote ?? SECRET_ON_PAGE }] };
-        // Launch and session parameters dusk bot owns never reach the engine from a call.
+        // Launch and session parameters madani bot owns never reach the engine from a call.
         const stripped = method === "tools/call" ? stripHarnessOwnedArguments(params) : params;
         const labelled = toolName === "agent_browser_tab_new" && ctx
           ? { ...stripped as object, arguments: this.threadTabs.labelNewTab(ctx.threadId, ((stripped as { arguments?: Record<string, unknown> }).arguments) ?? {}) } : stripped;
@@ -665,7 +665,7 @@ export class BrowserRuntime {
         phases.engineMs = performance.now() - engineStarted;
         beforeDispatch?.();
         if (method === "tools/list") {
-          const tools = withDuskTools(slimBrowserToolList(result));
+          const tools = withMadaniTools(slimBrowserToolList(result));
           this.toolLists.set(session, tools);
           return tools;
         }
@@ -1142,7 +1142,7 @@ export class BrowserRuntime {
   }
 }
 
-function withDuskTools(result: unknown): unknown {
+function withMadaniTools(result: unknown): unknown {
   if (!result || typeof result !== "object" || !Array.isArray((result as { tools?: unknown }).tools)) return result;
   const own = [...RELAYED_TOOL_SPECS, AGENT_BROWSER_BATCH_SPEC, BROWSER_RESTART_TOOL_SPEC];
   const tools = ((result as { tools: unknown[] }).tools).filter((tool) => !own.some((spec) => spec.name === (tool as { name?: unknown } | null)?.name));

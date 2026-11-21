@@ -58,7 +58,7 @@ describe("skins", () => {
   it("adds Meadow without moving or replacing the original eight", () => {
     expect(SKIN_IDS).toContain("meadow");
     expect(SKIN_IDS.slice(0, 8)).toEqual([
-      "midnight", "atelier", "foundry", "lagoon", "graphite", "linen", "dusk", "daylight",
+      "midnight", "atelier", "foundry", "lagoon", "graphite", "linen", "madani", "daylight",
     ]);
     expect(PRIOR_INSTALL_SKIN).toBe("midnight");
   });
@@ -78,7 +78,7 @@ describe("skins", () => {
 
   it("adds Pop after Meadow with its own inverted bubble and sticker scope", () => {
     expect(SKIN_IDS.slice(0, 9)).toEqual([
-      "midnight", "atelier", "foundry", "lagoon", "graphite", "linen", "dusk", "daylight", "meadow",
+      "midnight", "atelier", "foundry", "lagoon", "graphite", "linen", "madani", "daylight", "meadow",
     ]);
     expect(SKIN_IDS[9]).toBe("pop");
     expect(css).toMatch(/@scope \(\[data-skin="pop"\]\) to \(\[data-skin\]\)\s*\{\s*\.bg-bubble-user\s*\{/);

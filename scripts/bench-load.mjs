@@ -2,7 +2,7 @@
 // How long the app takes to open over a slow link: from navigation to the bots in the sidebar and the open chat's
 // messages, cold (empty browser profile) and warm (the same profile reopened), with every request's timing.
 //
-//   on the server, as its user:  node scripts/bench-load.mjs record --out /tmp/dusk-load [--url http://127.0.0.1:8799]
+//   on the server, as its user:  node scripts/bench-load.mjs record --out /tmp/madani-load [--url http://127.0.0.1:8799]
 //   on a Mac:                    node scripts/bench-load.mjs run --fixture <copied dir> --dist dist [--rtt 564] [--kbps 10000]
 //                                 [--runs 5] [--out result.json]
 //
@@ -35,9 +35,9 @@ const BOOT_PATHS = (selected) => [
 
 async function record() {
   const base = opt("url", "http://127.0.0.1:8799");
-  const out = opt("out", "/tmp/dusk-load");
+  const out = opt("out", "/tmp/madani-load");
   mkdirSync(out, { recursive: true });
-  const headers = { "x-dusk-cli": "1" };
+  const headers = { "x-madani-cli": "1" };
   const bots = await (await fetch(`${base}/api/bots?messages=0`, { headers })).json();
   const selected = opt("selected", bots.bots?.find((bot) => bot.name === (opt("bot", "Cinder")))?.id ?? bots.bots?.[0]?.id ?? "");
   const extra = (opt("paths", "") || "").split(",").filter(Boolean);
@@ -72,7 +72,7 @@ function serve({ dist, fixture, rttMs, kbps, misses }) {
   const wire = link({ rttMs, kbps });
   const encoded = new Map();
   // one multiplexed http/2 connection, as the app has to the relay: no six-connections-per-host queue
-  const certDir = mkdtempSync(join(tmpdir(), "dusk-load-cert-"));
+  const certDir = mkdtempSync(join(tmpdir(), "madani-load-cert-"));
   execFileSync("openssl", ["req", "-x509", "-newkey", "ec", "-pkeyopt", "ec_paramgen_curve:prime256v1", "-nodes", "-subj", "/CN=127.0.0.1", "-days", "1", "-keyout", join(certDir, "key.pem"), "-out", join(certDir, "cert.pem")], { stdio: "ignore" });
   const tls = { key: readFileSync(join(certDir, "key.pem")), cert: readFileSync(join(certDir, "cert.pem")) };
   rmSync(certDir, { recursive: true, force: true });
@@ -134,11 +134,11 @@ const PROBE = () => {
 };
 
 async function run() {
-  const playwright = opt("playwright", process.env.DUSK_PLAYWRIGHT ?? "playwright-core");
+  const playwright = opt("playwright", process.env.MADANI_PLAYWRIGHT ?? "playwright-core");
   const { chromium } = await import(playwright);
-  const executablePath = opt("chrome", process.env.DUSK_CHROME);
+  const executablePath = opt("chrome", process.env.MADANI_CHROME);
   const dist = resolve(opt("dist", "dist"));
-  const fixture = resolve(opt("fixture", "/tmp/dusk-load"));
+  const fixture = resolve(opt("fixture", "/tmp/madani-load"));
   const rttMs = Number(opt("rtt", "564"));
   const kbps = Number(opt("kbps", "10000"));
   const runs = Number(opt("runs", "3"));
@@ -147,14 +147,14 @@ async function run() {
   const origin = `https://127.0.0.1:${port}`;
   const results = [];
   for (let i = 0; i < runs; i += 1) {
-    const profile = mkdtempSync(join(tmpdir(), "dusk-load-"));
+    const profile = mkdtempSync(join(tmpdir(), "madani-load-"));
     for (const phase of ["cold", "warm"]) {
       const context = await chromium.launchPersistentContext(profile, {
         executablePath, headless: true, viewport: { width: 1400, height: 900 },
         args: [`--ignore-certificate-errors-spki-list=${spki}`, "--use-mock-keychain", "--password-store=basic"],
       });
       await context.addInitScript(PROBE);
-      if (phase === "cold") await context.addInitScript((id) => { try { localStorage.setItem("duskbot.lastConversation.v1", id); } catch { } }, selected);
+      if (phase === "cold") await context.addInitScript((id) => { try { localStorage.setItem("madanibot.lastConversation.v1", id); } catch { } }, selected);
       const page = context.pages()[0] ?? await context.newPage();
       const requests = [];
       page.on("requestfinished", async (request) => {

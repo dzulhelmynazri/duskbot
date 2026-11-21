@@ -2,7 +2,7 @@ import type { AppState } from "@/state/store";
 import { threadsNeedingPages } from "@/state/use-selected-transcript";
 import type { MobileConnectionRecord } from "../../shared/mobile-link";
 
-const OPEN_CHAT_KEY = "dusk.mobile.openChat";
+const OPEN_CHAT_KEY = "madani.mobile.openChat";
 
 /** The chat open when the page last unloaded on this place: iOS reclaiming a backgrounded web view reloads the page,
  * sessionStorage stays. A chat kept for another place, or before a sign-out, is not reopened. */

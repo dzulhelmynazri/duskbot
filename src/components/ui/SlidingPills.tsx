@@ -68,7 +68,7 @@ export function SlidingPills<V extends string>({ options, value, onPick, classNa
             title={option.title}
             onClick={() => onPick(option.value)}
             className={cn(
-              "dusk-press-soft h-6 min-w-0 truncate rounded-full text-[12px] leading-4 touch:h-8", pillClassName,
+              "madani-press-soft h-6 min-w-0 truncate rounded-full text-[12px] leading-4 touch:h-8", pillClassName,
               "focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-focus",
               picked ? "text-ink" : "text-ink-secondary hover:text-ink",
             )}

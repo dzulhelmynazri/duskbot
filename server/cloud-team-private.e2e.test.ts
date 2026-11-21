@@ -1,5 +1,5 @@
 // A member's private chat with a team bot is theirs alone, the Owner and every Admin included (docs/team-cloud.md "The
-// audience rule"). A real Team Cloud (DUSK_CLOUD_ROLE=team) with the Owner, an Admin and Bob, a member, paired with the
+// audience rule"). A real Team Cloud (MADANI_CLOUD_ROLE=team) with the Owner, an Admin and Bob, a member, paired with the
 // Admin's signed claims: Bob's chat, its words, its files and its live frames never reach the Owner or the Admin through
 // any route, the event stream, search, a bot's tools or another bot; they cannot write in it; Bob uses it as before; and
 // when Bob leaves the team it is deleted, never handed over. The engine is the synthetic Claude CLI.
@@ -32,7 +32,7 @@ const scriptToolCalls = (calls: unknown[] | null) => {
   const file = join(team.home, "tool-calls.json");
   if (calls) writeFileSync(file, JSON.stringify(calls)); else rmSync(file, { force: true });
 };
-const dataDir = (...rest: string[]) => join(team.home, ".duskbot", ...rest);
+const dataDir = (...rest: string[]) => join(team.home, ".madanibot", ...rest);
 const messages = (token: string, threadId: string) => team.as(token, "GET", `/api/threads/${threadId}/messages?limit=200`);
 const idle = async (token: string) => ((await team.as(token, "GET", "/api/bots")).body.bots as Array<{ activity?: string; busy?: boolean }>)
   .every((entry) => entry.activity !== "working" && !entry.busy);
@@ -116,12 +116,12 @@ it("Bob reads and writes his own private chat, with its words, its file, his sea
   expect((await team.as(bob, "DELETE", `/api/attachments/${bobFile}`)).status).toBe(409);
   expect((await team.as(bob, "DELETE", `/api/attachments/${discarded}`)).status).toBe(200);
   expect(existsSync(dataDir("attachments", discarded))).toBe(false);
-  // He changes no team bot's look, which everyone sees; his own Dusk's he does.
+  // He changes no team bot's look, which everyone sees; his own Madani's he does.
   const recolour = await team.as(bob, "PATCH", `/api/bots/${bot.id}`, { color: "blue" });
   expect(recolour.status).toBe(403);
   expect(recolour.body.error).toContain("\"color\"");
-  const dusk = ((await team.as(bob, "GET", "/api/bots")).body.bots as Array<{ id: string; name: string }>).find((entry) => entry.name === DEFAULT_BOT_NAME)!;
-  expect((await team.as(bob, "PATCH", `/api/bots/${dusk.id}`, { color: "blue" })).status).toBe(200);
+  const madani = ((await team.as(bob, "GET", "/api/bots")).body.bots as Array<{ id: string; name: string }>).find((entry) => entry.name === DEFAULT_BOT_NAME)!;
+  expect((await team.as(bob, "PATCH", `/api/bots/${madani.id}`, { color: "blue" })).status).toBe(200);
   // The session says which conversations are his.
   expect((await team.as(bob, "GET", "/api/auth/session")).body.openedThreads).toContain(bobThread);
 }, hostTimeout(60_000));
@@ -282,8 +282,8 @@ it("when Bob leaves the team, his private chats and everything only his are dele
   expect(existsSync(layer)).toBe(true);
   expect(existsSync(adminsLayer)).toBe(true);
   for (const file of [bobFile, bobDoc, bobUnsent]) expect(existsSync(dataDir("attachments", file))).toBe(true);
-  const bobsDusk = ((await team.as(bob, "GET", "/api/bots")).body.bots as Array<{ id: string; threadId: string; name: string }>).find((entry) => entry.name === DEFAULT_BOT_NAME)!;
-  expect(bobsDusk).toBeDefined();
+  const bobsMadani = ((await team.as(bob, "GET", "/api/bots")).body.bots as Array<{ id: string; threadId: string; name: string }>).find((entry) => entry.name === DEFAULT_BOT_NAME)!;
+  expect(bobsMadani).toBeDefined();
   const room = (await team.as(owner, "POST", "/api/groups", { name: "Desk", memberIds: [bot.id], setup: { bulletin: "", defaultResponder: { kind: "everyone" } } })).body.group as { id: string; threadId: string };
   expect((await team.as(owner, "POST", `/api/groups/${room.id}/messages`, { text: "@Scout hello" })).status).toBe(202);
   await until(async () => await idle(owner) && ((await messages(owner, room.threadId)).body.messages as unknown[]).length >= 2);
@@ -318,12 +318,12 @@ it("when Bob leaves the team, his private chats and everything only his are dele
   expect(roomReads(), "where he read up to in each room goes too").not.toContain(bobKey);
   expect((await team.as(owner, "DELETE", `/api/groups/${room.id}`)).status).toBe(200);
   expect(roomReads(), "a deleted room's read lines go with it").not.toContain(room.id);
-  // His own Dusk and its chat go with him.
+  // His own Madani and its chat go with him.
   for (const token of [owner, admin]) {
-    expect(((await team.as(token, "GET", "/api/bots")).body.bots as Array<{ id: string }>).map((entry) => entry.id)).not.toContain(bobsDusk.id);
-    expect((await messages(token, bobsDusk.threadId)).status).toBe(404);
+    expect(((await team.as(token, "GET", "/api/bots")).body.bots as Array<{ id: string }>).map((entry) => entry.id)).not.toContain(bobsMadani.id);
+    expect((await messages(token, bobsMadani.threadId)).status).toBe(404);
   }
-  expect(existsSync(dataDir("workspaces", bobsDusk.id))).toBe(false);
+  expect(existsSync(dataDir("workspaces", bobsMadani.id))).toBe(false);
   // The team's own things stay: the bot, its main chat, and the Admin's own chat and notes.
   expect((await messages(owner, bot.mainThreadId)).status).toBe(200);
   expect((await messages(admin, adminThread)).status).toBe(200);

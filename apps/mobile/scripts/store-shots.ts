@@ -21,12 +21,12 @@ const PORTS = { harness: 8930, ui: 5330, phone: 5331 };
 /** css points and scale per store size: 6.9 inch is 1320 x 2868, 6.5 inch is 1284 x 2778 */
 const SIZES = [{ name: "6.9", width: 440, height: 956, scale: 3 }, { name: "6.5", width: 428, height: 926, scale: 3 }];
 
-const scratch = mkdtempSync(join(tmpdir(), "dusk-store-shots-"));
+const scratch = mkdtempSync(join(tmpdir(), "madani-store-shots-"));
 const workspaceEnv = {
   ...process.env,
-  DUSK_DEMO_DIR: join(scratch, "store-demo"),
-  DUSK_DEMO_PORT: String(PORTS.harness),
-  DUSK_DEMO_UI_PORT: String(PORTS.ui),
+  MADANI_DEMO_DIR: join(scratch, "store-demo"),
+  MADANI_DEMO_PORT: String(PORTS.harness),
+  MADANI_DEMO_UI_PORT: String(PORTS.ui),
 };
 
 const run = (args: string[]) => new Promise<void>((resolve, reject) => {
@@ -38,7 +38,7 @@ const run = (args: string[]) => new Promise<void>((resolve, reject) => {
 async function startPhone(): Promise<ChildProcess> {
   const vite = spawn(join(REPO, "node_modules/.bin/vite"), ["--config", "apps/mobile/vite.config.ts"], {
     cwd: REPO, stdio: ["ignore", "pipe", "inherit"],
-    env: { ...process.env, DUSK_PORT: String(PORTS.harness), DUSK_MOBILE_PORT: String(PORTS.phone) },
+    env: { ...process.env, MADANI_PORT: String(PORTS.harness), MADANI_MOBILE_PORT: String(PORTS.phone) },
   });
   await new Promise<void>((resolve, reject) => {
     let output = "";
@@ -59,7 +59,7 @@ const back = (page: HeadlessPage) => click(page, `document.querySelector("[data-
 
 async function shoot(base: string) {
   for (const size of SIZES) {
-    const profile = mkdtempSync(join(tmpdir(), "dusk-store-chrome-"));
+    const profile = mkdtempSync(join(tmpdir(), "madani-store-chrome-"));
     const page = await openHeadlessChrome(profile);
     const dir = join(out, size.name);
     mkdirSync(dir, { recursive: true });
@@ -67,7 +67,7 @@ async function shoot(base: string) {
     const open = async (scheme: "light" | "dark", query = "") => {
       await page.send("Page.navigate", { url: `${base}/?frame=1&scheme=${scheme}${query}` });
       await delay(1500);
-      await page.evaluate(`localStorage.clear(); localStorage.setItem("dusk.mobile.introSeen", "1"); location.reload()`);
+      await page.evaluate(`localStorage.clear(); localStorage.setItem("madani.mobile.introSeen", "1"); location.reload()`);
       await delay(2500);
     };
     const chat = async (name: string, waitFor: string) => {

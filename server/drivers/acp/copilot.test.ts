@@ -31,7 +31,7 @@ describe("GitHub Copilot ACP driver", () => {
 
   beforeEach(() => {
     ensureDirs();
-    scratch = mkdtempSync(join(tmpdir(), "dusk-copilot-contract-"));
+    scratch = mkdtempSync(join(tmpdir(), "madani-copilot-contract-"));
   });
   afterEach(async () => {
     recorder?.stop();
@@ -199,27 +199,27 @@ describe("GitHub Copilot ACP driver", () => {
   it("removes only the session folder the discovery itself left behind", async () => {
     const home = join(scratch, "copilot-home");
     // The fields and their plain-scalar style are Copilot CLI 1.0.105's own workspace.yaml.
-    const session = (id: string, cwd: string, client = "duskbot-model-discovery") => {
+    const session = (id: string, cwd: string, client = "madanibot-model-discovery") => {
       mkdirSync(join(home, "session-state", id, "checkpoints"), { recursive: true });
       writeFileSync(join(home, "session-state", id, "workspace.yaml"), `id: ${id}\ncwd: ${cwd}\nclient_name: ${client}\nuser_named: false\n`
         + "summary_count: 0\nfork_count: 0\ncreated_at: 2026-10-28T01:45:38.058Z\nupdated_at: 2026-10-28T01:45:38.116Z\n");
       return join(home, "session-state", id);
     };
     const env = { COPILOT_HOME: home };
-    const ours = session("ours", join(scratch, "dusk-acp-models-x"));
-    await forgetCopilotDiscoverySession({ sessionId: "ours", cwd: join(scratch, "dusk-acp-models-x"), env });
+    const ours = session("ours", join(scratch, "madani-acp-models-x"));
+    await forgetCopilotDiscoverySession({ sessionId: "ours", cwd: join(scratch, "madani-acp-models-x"), env });
     expect(existsSync(ours)).toBe(false);
     // A quoted value, a trailing separator or (on Windows) another case still names the same folder.
-    const quoted = session("quoted", JSON.stringify(join(scratch, "dusk-acp-models-y")));
-    await forgetCopilotDiscoverySession({ sessionId: "quoted", cwd: join(scratch, "dusk-acp-models-y"), env });
-    const spelled = session("spelled", `${process.platform === "win32" ? join(scratch, "DUSK-ACP-MODELS-Z") : join(scratch, "dusk-acp-models-z")}${sep}`);
-    await forgetCopilotDiscoverySession({ sessionId: "spelled", cwd: join(scratch, "dusk-acp-models-z"), env });
+    const quoted = session("quoted", JSON.stringify(join(scratch, "madani-acp-models-y")));
+    await forgetCopilotDiscoverySession({ sessionId: "quoted", cwd: join(scratch, "madani-acp-models-y"), env });
+    const spelled = session("spelled", `${process.platform === "win32" ? join(scratch, "MADANI-ACP-MODELS-Z") : join(scratch, "madani-acp-models-z")}${sep}`);
+    await forgetCopilotDiscoverySession({ sessionId: "spelled", cwd: join(scratch, "madani-acp-models-z"), env });
     expect([existsSync(quoted), existsSync(spelled)]).toEqual([false, false]);
     const person = session("person", join(scratch, "project"), "copilot-cli");
     await forgetCopilotDiscoverySession({ sessionId: "person", cwd: join(scratch, "project"), env });
     const elsewhere = session("elsewhere", join(scratch, "other"));
-    await forgetCopilotDiscoverySession({ sessionId: "elsewhere", cwd: join(scratch, "dusk-acp-models-x"), env });
-    await forgetCopilotDiscoverySession({ sessionId: "../copilot-home", cwd: join(scratch, "dusk-acp-models-x"), env });
+    await forgetCopilotDiscoverySession({ sessionId: "elsewhere", cwd: join(scratch, "madani-acp-models-x"), env });
+    await forgetCopilotDiscoverySession({ sessionId: "../copilot-home", cwd: join(scratch, "madani-acp-models-x"), env });
     expect([existsSync(person), existsSync(elsewhere), existsSync(home)]).toEqual([true, true, true]);
   });
 
@@ -279,9 +279,9 @@ describe("GitHub Copilot ACP driver", () => {
         threadId: "copilot-tools", text: "Which automation controls are available?", model: "auto",
         integrations: {
           agents: { command: process.execPath, args: [SPAWNED_PROXIES.agents],
-            env: { DUSK_HARNESS_URL: "http://127.0.0.1:1", DUSK_COMMS_TOKEN: "fixture-token", DUSK_BOT_ID: "fixture" } },
+            env: { MADANI_HARNESS_URL: "http://127.0.0.1:1", MADANI_COMMS_TOKEN: "fixture-token", MADANI_BOT_ID: "fixture" } },
           browser: { command: process.execPath, args: [SPAWNED_PROXIES.mcpRemote],
-            env: { DUSK_REMOTE_MCP_SERVER: JSON.stringify({ type: "http", url: browser.url }) } },
+            env: { MADANI_REMOTE_MCP_SERVER: JSON.stringify({ type: "http", url: browser.url }) } },
         },
       });
       expect(await recorder.until((event) => event.type === "turn.completed" && event.turnId === turnId)).toMatchObject({ ok: true });
@@ -289,7 +289,7 @@ describe("GitHub Copilot ACP driver", () => {
       expect(text).toContain("agents:");
       expect(text).toContain("trigger");
       expect(text).toContain("trigger_info");
-      expect(text).toContain("duskbot_browser: agent_browser_open");
+      expect(text).toContain("madanibot_browser: agent_browser_open");
       expect(text).not.toMatch(/(^|\n)browser:/);
     } finally { await browser.close(); }
   });
@@ -298,7 +298,7 @@ describe("GitHub Copilot ACP driver", () => {
     const launches = join(scratch, "launches.txt");
     const { instance, recorder } = await create({ FAKE_ACP_MODE: "mcp-tools", FAKE_ACP_LAUNCH_COUNT_FILE: launches });
     const agents = (token: string) => ({ agents: { command: process.execPath, args: [SPAWNED_PROXIES.agents],
-      env: { DUSK_HARNESS_URL: "http://127.0.0.1:1", DUSK_COMMS_TOKEN: token, DUSK_BOT_ID: "fixture" } } });
+      env: { MADANI_HARNESS_URL: "http://127.0.0.1:1", MADANI_COMMS_TOKEN: token, MADANI_BOT_ID: "fixture" } } });
     const run = async (threadId: string, token: string, allow: string[], resumeCursor?: string) => {
       const { turnId } = await instance.adapter.sendTurn({
         threadId, text: "List tools", model: "auto", resumeCursor, integrations: agents(token), toolScope: { allow },

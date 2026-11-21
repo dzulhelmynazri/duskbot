@@ -42,7 +42,7 @@ interface Person {
   device: string | null; os: string | null; browser: string | null; country: string | null; city: string | null; lastPage: string | null;
 }
 export { CHANNEL };
-export const SURFACES: Array<{ value: Surface; label: string }> = [{ value: "all", label: "all" }, { value: "site", label: "dusk.bot" }, { value: "account", label: "account page" }, { value: "desktop", label: "desktop app" }, { value: "phone", label: "phone app" }];
+export const SURFACES: Array<{ value: Surface; label: string }> = [{ value: "all", label: "all" }, { value: "site", label: "madani.bot" }, { value: "account", label: "account page" }, { value: "desktop", label: "desktop app" }, { value: "phone", label: "phone app" }];
 export const dimLabel = (tab: string, key: string) => tab === "channel" ? CHANNEL[key] ?? key : tab === "country" ? countryName(key) : tab === "surface" ? SURFACES.find((s) => s.value === key)?.label ?? key : key === "unknown" ? "unknown" : key;
 const AI_KIND: Record<string, string> = { answers: "ai answers", indexing: "indexing", training: "training" };
 
@@ -220,7 +220,7 @@ function AiCard({ crawlers }: { crawlers: WebAnswer["crawlers"] }) {
         <RankCard title="crawlers" metric="requests" tabs={[{ id: "bot", label: "crawlers" }]} data={{ bot: crawlers.bot }} />
         <RankCard title="pages they read" metric="requests" tabs={[{ id: "page", label: "pages they read" }]} data={{ page: crawlers.page }} />
       </div>
-      <p className="px-3 pb-1 pt-2 text-12 text-ink-3"><SwapText text={kind === "answers" ? "a person asked an ai assistant, and it read dusk.bot to answer." : kind === "indexing" ? "search and answer engines building their index." : kind === "training" ? "collected to train models." : "every request from a known ai crawler."} /></p>
+      <p className="px-3 pb-1 pt-2 text-12 text-ink-3"><SwapText text={kind === "answers" ? "a person asked an ai assistant, and it read madani.bot to answer." : kind === "indexing" ? "search and answer engines building their index." : kind === "training" ? "collected to train models." : "every request from a known ai crawler."} /></p>
     </section>
   );
 }

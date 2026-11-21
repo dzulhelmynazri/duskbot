@@ -19,10 +19,10 @@ const accounts = () => [{ id: "acct_one", email: "one@example.test" }];
 describe("relay cards", () => {
   it("asks each configured relay with its own token and names the accounts it knows", async () => {
     const { fetcher, calls } = fakeFetch(() => json(200, STATS));
-    const relays = createRelays({ env: { DUSK_CF_RELAY_URL: "https://relay-preview.example", DUSK_CF_RELAY_OPS_TOKEN: "cf-token" }, fetch: fetcher, now: () => 1, accounts });
+    const relays = createRelays({ env: { MADANI_CF_RELAY_URL: "https://relay-preview.example", MADANI_CF_RELAY_OPS_TOKEN: "cf-token" }, fetch: fetcher, now: () => 1, accounts });
     const { relays: cards } = await relays.list();
     expect(cards.map(card => [card.id, card.configured, card.ok])).toEqual([["contabo", false, false], ["cloudflare", true, true]]);
-    expect(cards[0]!.error).toContain("DUSK_LINK_STATS_TOKEN");
+    expect(cards[0]!.error).toContain("MADANI_LINK_STATS_TOKEN");
     expect(calls).toHaveLength(1);
     expect(calls[0]!.url).toBe("https://relay-preview.example/ops/relay/stats");
     expect((calls[0]!.init.headers as Record<string, string>).authorization).toBe("Bearer cf-token");
@@ -31,16 +31,16 @@ describe("relay cards", () => {
   });
   it("shows a relay that refuses the token or is down as failing, without the other failing", async () => {
     const { fetcher } = fakeFetch(url => url.includes("link") ? json(404, { error: "not found" }) : json(200, STATS));
-    const relays = createRelays({ env: { DUSK_LINK_URL: "https://link.example", DUSK_LINK_STATS_TOKEN: "a", DUSK_CF_RELAY_URL: "https://cf.example", DUSK_CF_RELAY_OPS_TOKEN: "b" }, fetch: fetcher, now: () => 1, accounts });
+    const relays = createRelays({ env: { MADANI_LINK_URL: "https://link.example", MADANI_LINK_STATS_TOKEN: "a", MADANI_CF_RELAY_URL: "https://cf.example", MADANI_CF_RELAY_OPS_TOKEN: "b" }, fetch: fetcher, now: () => 1, accounts });
     const { relays: cards } = await relays.list();
     expect(cards[0]).toMatchObject({ ok: false, configured: true, stats: null });
     expect(cards[1]).toMatchObject({ ok: true });
   });
   it("sends a limits change as PUT and passes the relay's refusal on as a 400", async () => {
     const { fetcher, calls } = fakeFetch((_url, init) => init.method === "PUT" ? json(400, { error: "maxTunnels must be a whole number" }) : json(200, STATS));
-    const relays = createRelays({ env: { DUSK_LINK_STATS_TOKEN: "a" }, fetch: fetcher, now: () => 1, accounts });
+    const relays = createRelays({ env: { MADANI_LINK_STATS_TOKEN: "a" }, fetch: fetcher, now: () => 1, accounts });
     await expect(relays.setLimits("contabo", { maxTunnels: 5 })).rejects.toMatchObject({ status: 400, message: "maxTunnels must be a whole number" });
-    expect(calls[0]).toMatchObject({ url: "https://link.dusk.bot/ops/relay/limits", init: { method: "PUT", body: JSON.stringify({ maxTunnels: 5 }) } });
+    expect(calls[0]).toMatchObject({ url: "https://link.madani.bot/ops/relay/limits", init: { method: "PUT", body: JSON.stringify({ maxTunnels: 5 }) } });
     await expect(relays.setLimits("cloudflare", { maxTunnels: 5 })).rejects.toMatchObject({ status: 409 });
   });
   it("only forwards whole numbers, off and on", () => {
@@ -73,7 +73,7 @@ describe("relay stats with missing fields", () => {
   });
 
   it("answers a relay with incomplete numbers as a card that says so, not a crash", async () => {
-    const relays = createRelays({ env: { DUSK_LINK_STATS_TOKEN: "t", DUSK_CF_RELAY_OPS_TOKEN: "t" }, now: () => 0, accounts: () => [],
+    const relays = createRelays({ env: { MADANI_LINK_STATS_TOKEN: "t", MADANI_CF_RELAY_OPS_TOKEN: "t" }, now: () => 0, accounts: () => [],
       fetch: (async () => new Response(JSON.stringify({ relay: "x" }), { status: 200 })) as typeof fetch });
     const cards = (await relays.list()).relays;
     expect(cards.every(card => card.stats === null && card.error === "The relay's numbers are not reported yet.")).toBe(true);

@@ -121,7 +121,7 @@ describe("the welcome's progress", () => {
       stored.clear();
       resetCloudWelcome();
       expect(await saveWelcomeHints(undefined, [end], vi.fn(), async () => {})).toBe(false);
-      expect(stored.get("dusk.cloudWelcome.done")).toBe("1");
+      expect(stored.get("madani.cloudWelcome.done")).toBe("1");
       resetCloudWelcome();
       const next = await read();
       expect(next).toMatchObject({ ended: true, doneHere: true });
@@ -133,7 +133,7 @@ describe("the welcome's progress", () => {
   it("keeps nothing for a step it could not save: the welcome opens on that step again", async () => {
     vi.mocked(api).mockRejectedValue(new Error("offline"));
     expect(await saveWelcomeHints(undefined, [welcomeStepHint("bring")], vi.fn(), async () => {})).toBe(false);
-    expect(stored.has("dusk.cloudWelcome.done")).toBe(false);
+    expect(stored.has("madani.cloudWelcome.done")).toBe(false);
     expect((await read()).doneHere).toBe(false);
   });
 });
@@ -145,7 +145,7 @@ describe("one welcome only", () => {
     const stored = new Map<string, string>();
     vi.stubGlobal("localStorage", { getItem: (key: string) => stored.get(key) ?? null, setItem: (key: string, value: string) => { stored.set(key, value); }, removeItem: (key: string) => { stored.delete(key); } });
     const replaceState = vi.fn();
-    vi.stubGlobal("location", { href: "https://c1.dusk.test/?welcomed=1&x=2#t" });
+    vi.stubGlobal("location", { href: "https://c1.madani.test/?welcomed=1&x=2#t" });
     vi.stubGlobal("history", { state: null, replaceState });
     resetCloudWelcome();
     const { createElement } = await import("react");
@@ -155,7 +155,7 @@ describe("one welcome only", () => {
     renderToStaticMarkup(createElement(Probe));
     expect(welcome!.ended).toBe(true);
     expect(welcome!.early).toContain(CLOUD_WELCOME_DONE);
-    expect(stored.get("dusk.cloudWelcome.done"), "kept here until the Cloud's record has it").toBe("1");
+    expect(stored.get("madani.cloudWelcome.done"), "kept here until the Cloud's record has it").toBe("1");
     expect(replaceState).toHaveBeenCalledWith(null, "", "/?x=2#t");
     const facts = { viewer: { canSave: true, cloudHome: true }, connected: true, enginesKnown: true, onboarding: EMPTY_ONBOARDING };
     expect(cloudWelcomeVisible(facts, welcome!)).toBe(false);
@@ -164,7 +164,7 @@ describe("one welcome only", () => {
   it("an address without it changes nothing", async () => {
     vi.stubGlobal("localStorage", { getItem: () => null, setItem: vi.fn(), removeItem: vi.fn() });
     const replaceState = vi.fn();
-    vi.stubGlobal("location", { href: "https://c1.dusk.test/?x=2" });
+    vi.stubGlobal("location", { href: "https://c1.madani.test/?x=2" });
     vi.stubGlobal("history", { state: null, replaceState });
     resetCloudWelcome();
     expect(replaceState).not.toHaveBeenCalled();

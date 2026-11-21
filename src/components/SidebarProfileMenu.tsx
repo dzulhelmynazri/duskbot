@@ -71,7 +71,7 @@ import {
 } from "@/lib/phone-pairing";
 import { phoneAppEnabled } from "@/lib/feature-flags";
 
-/** The dusk cloud account signed in on this computer lends its name and photo where this place's profile has none: the same
+/** The madani cloud account signed in on this computer lends its name and photo where this place's profile has none: the same
  * person by address, or a profile with no address of its own. */
 export function withAccountFace(profile: { name?: string; email?: string; avatarUrl?: string } | undefined, account: { id?: string; email: string; name?: string; avatarUrl?: string; avatar?: string } | null): { name?: string; email?: string; avatarUrl?: string; face?: { id: string; avatarUrl?: string; avatar?: string } } | undefined {
   if (!account) return profile;
@@ -110,7 +110,7 @@ function useAccountName(enabled: boolean, profile: AccountNamedProfile | undefin
     if (!enabled || !wanted || asked.current === wanted) return;
     let active = true;
     void (async () => {
-      const computer = (await window.duskDesktop?.desktopProfile?.systemName().catch(() => null))?.trim() || null;
+      const computer = (await window.madaniDesktop?.desktopProfile?.systemName().catch(() => null))?.trim() || null;
       if (!active) return;
       const adopted = adoptedAccountName(profile, account, computer);
       if (!adopted) { asked.current = wanted; return; }
@@ -127,7 +127,7 @@ function useAccountName(enabled: boolean, profile: AccountNamedProfile | undefin
 /** What `UserFace` draws for a person: an id to seed the drawn head, and the photo and choice that may stand in for it. */
 export type PersonFace = { id: string; avatarUrl?: string; avatar?: string };
 
-/** The person's face: the dusk cloud account's, where it lends one (withAccountFace); else this place's photo, or a head drawn
+/** The person's face: the madani cloud account's, where it lends one (withAccountFace); else this place's photo, or a head drawn
  * from their address or name. Nobody to draw for a profile with neither. */
 export function personFace(profile: { name?: string; email?: string; avatarUrl?: string } | undefined, account: { id?: string; email: string; avatarUrl?: string; avatar?: string } | null): PersonFace | null {
   const lent = withAccountFace(profile, account);
@@ -176,7 +176,7 @@ export function profileInitials(profile?: { name?: string; email?: string }): st
 export function useComputerName(enabled: boolean): string | null {
   const [name, setName] = useState<string | null>(null);
   useEffect(() => {
-    const bridge = window.duskDesktop?.desktopProfile;
+    const bridge = window.madaniDesktop?.desktopProfile;
     if (!enabled || !bridge) return;
     let active = true;
     void (async () => {
@@ -288,7 +288,7 @@ function useConnectPhoneEntry(cloudHome: boolean): ConnectPhoneEntry | null {
 }
 
 export function useCloudPhoneDestination(enabled: boolean): { cloud: CloudPhoneDestination; bridge?: CloudAccountBridge } {
-  const bridge = enabled && !window.duskDesktop?.remoteClient?.active ? window.duskDesktop?.cloudAccount : undefined;
+  const bridge = enabled && !window.madaniDesktop?.remoteClient?.active ? window.madaniDesktop?.cloudAccount : undefined;
   const [account, setAccount] = useState<CloudAccountState | null>(null);
   useEffect(() => {
     if (!bridge) return;
@@ -561,10 +561,10 @@ export function grokProfileMenuItems({ onGetApp, onHelp, onShortcuts, onFeedback
   const who: MenuAccountHeader | null = header ?? (active ? { name: active.name, email: active.email, plan: accountPlanText(active.plan), face: <UserFace account={active} size={32} /> } : null);
   const named = who?.name?.trim();
   const top: SidebarMenuItem[] = who
-    ? [{ key: "who", label: named || who.email, ...(who.plan ? { labelNote: who.plan.replace(/^dusk cloud · /, "").replace(/ free trial$/, " trial") } : {}), title: who.email, ...(named ? { subtitle: who.email } : {}), icon: who.face, large: true, onSelect: onDashboard ?? accounts.openSheet ?? onSettings }]
+    ? [{ key: "who", label: named || who.email, ...(who.plan ? { labelNote: who.plan.replace(/^madani cloud · /, "").replace(/ free trial$/, " trial") } : {}), title: who.email, ...(named ? { subtitle: who.email } : {}), icon: who.face, large: true, onSelect: onDashboard ?? accounts.openSheet ?? onSettings }]
     // nobody signed in here: Sign in, first, where the account would be; it continues in the browser for its context (the
     // account context redirect), where this app can; otherwise the sheet that signs in right there
-    : signOut ? [] : [{ key: "sign-in", label: t("accounts.signIn"), icon: icon("person"), onSelect: typeof window !== "undefined" && window.duskDesktop?.cloudAccount?.continueInBrowser ? () => openSignIn() : accounts.view ? () => accounts.add() : onAddAccount }];
+    : signOut ? [] : [{ key: "sign-in", label: t("accounts.signIn"), icon: icon("person"), onSelect: typeof window !== "undefined" && window.madaniDesktop?.cloudAccount?.continueInBrowser ? () => openSignIn() : accounts.view ? () => accounts.add() : onAddAccount }];
   const last: SidebarMenuItem[] = signOut ? [{ key: "log-out", label: t("accounts.signOut"), icon: icon("arrow-bracket-from-left"), onSelect: signOut }] : [];
   const menu: SidebarMenuItem[] = [
     ...(onGetApp ? [{ key: "mobile", label: t("sidebar.menu.connectPhone"), icon: icon("device-mobile"), onSelect: onGetApp } satisfies SidebarMenuItem] : []),
@@ -616,7 +616,7 @@ export function SidebarProfileMenu({ iconOnly = false, rail = false, circle = fa
   const [menuOpen, setMenuOpen] = useState(false);
   const cloudPlan = useCloudPlanSnapshot(simple ? usageBridge(state.config?.cloudHome === true) : undefined);
   const cloudUsage = cloudUsageSummary(cloudPlan);
-  const engineUsage = usePlanUsageSummary(simple && menuOpen && cloudUsage === null && window.duskDesktop?.remoteClient?.active !== true);
+  const engineUsage = usePlanUsageSummary(simple && menuOpen && cloudUsage === null && window.madaniDesktop?.remoteClient?.active !== true);
   const phone = useSidebarPhoneStatus();
   const connectPhone = useConnectPhoneEntry(state.config?.cloudHome === true);
   const cloudPhone = useCloudPhoneDestination(connectPhone?.target === "computer");
@@ -637,7 +637,7 @@ export function SidebarProfileMenu({ iconOnly = false, rail = false, circle = fa
 
   const accounts = useAccounts();
   const sessionProfile = profileForSession(state.config?.profile, session);
-  useAccountName(localDesktopPage() && window.duskDesktop?.remoteClient?.active !== true && !state.config?.cloudHome && !state.config?.team,
+  useAccountName(localDesktopPage() && window.madaniDesktop?.remoteClient?.active !== true && !state.config?.cloudHome && !state.config?.team,
     state.config?.profile, accounts.view?.active ?? null, dispatch);
   const place = placeAccount(sessionProfile, { face: accounts.face ?? null, owner: state.config?.team ? null : account?.owner ?? null });
   const ownProfile = place?.profile ?? sessionProfile;
@@ -648,8 +648,8 @@ export function SidebarProfileMenu({ iconOnly = false, rail = false, circle = fa
   const computer = useComputerName(simple && !profile?.name?.trim() && !profile?.email?.trim());
   const name = computer ?? profileLabel(profile);
   const connectTo = (destination: PhoneDestination) => selectPhoneDestination(destination, { bridge: cloudPhone.bridge, dispatch });
-  const remote = window.duskDesktop?.remoteClient?.active === true;
-  const cloudAccount = !remote && Boolean(window.duskDesktop?.cloudAccount || (window.duskDesktop?.cloudPlan && state.config?.cloudHome === true));
+  const remote = window.madaniDesktop?.remoteClient?.active === true;
+  const cloudAccount = !remote && Boolean(window.madaniDesktop?.cloudAccount || (window.madaniDesktop?.cloudPlan && state.config?.cloudHome === true));
   const openCloudAccount = () => dispatch({ type: "toggleAppSettings", open: true, section: "cloudAccount" });
   const phoneApp = phoneAppEnabled();
   const move = useAccountMove(state.config?.cloudHome === true, { onOpen: openCloudAccount, onPairPhone: phoneApp ? () => dispatch(phonePairingSettingsAction()) : undefined });

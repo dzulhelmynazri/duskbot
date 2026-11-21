@@ -22,7 +22,7 @@ const cleanup: Array<() => unknown> = [];
 afterEach(async () => { for (const fn of cleanup.splice(0).reverse()) await fn(); vi.restoreAllMocks(); vi.unstubAllEnvs(); });
 
 async function fixture() {
-  const dir = mkdtempSync(join(tmpdir(), "dusk-app-security-")); cleanup.push(() => rmSync(dir, { recursive: true, force: true }));
+  const dir = mkdtempSync(join(tmpdir(), "madani-app-security-")); cleanup.push(() => rmSync(dir, { recursive: true, force: true }));
   let time = Date.UTC(2026, 10, 9, 12);
   const now = () => time, mailer = memoryMailer();
   const api = await startFakeInstaboxApi({ now }); cleanup.push(() => api.close());
@@ -33,9 +33,9 @@ async function fixture() {
     }
     return null;
   });
-  for (const key of ["DUSK_BILLING_PROVIDER", "DUSK_CLOUD_PROVIDER", "DUSK_POOL_DRIVER", "DUSK_CLOUD_SEAL_KEY", "DUSK_DODO_PRODUCTS"]) vi.stubEnv(key, undefined);
-  vi.stubEnv("DUSK_MANAGED", "1"); vi.stubEnv("INSTABOX_API_KEY", api.key); vi.stubEnv("INSTABOX_BASE_URL", api.baseUrl);
-  vi.stubEnv("DUSK_MANAGED_HOME_PACKAGE_URL", "https://packages.example.test/home.tgz"); vi.stubEnv("DUSK_MANAGED_HOME_PACKAGE_SHA256", "b".repeat(64));
+  for (const key of ["MADANI_BILLING_PROVIDER", "MADANI_CLOUD_PROVIDER", "MADANI_POOL_DRIVER", "MADANI_CLOUD_SEAL_KEY", "MADANI_DODO_PRODUCTS"]) vi.stubEnv(key, undefined);
+  vi.stubEnv("MADANI_MANAGED", "1"); vi.stubEnv("INSTABOX_API_KEY", api.key); vi.stubEnv("INSTABOX_BASE_URL", api.baseUrl);
+  vi.stubEnv("MADANI_MANAGED_HOME_PACKAGE_URL", "https://packages.example.test/home.tgz"); vi.stubEnv("MADANI_MANAGED_HOME_PACKAGE_SHA256", "b".repeat(64));
   // the homes answer their signed reads; nothing else leaves the machine
   let idle = false;
   const fetcher: typeof fetch = async (input, init) => {

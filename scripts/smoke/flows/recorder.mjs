@@ -1,4 +1,4 @@
-// The walkthrough's recorder (walkthrough.mjs): with DUSK_WALKTHROUGH_DIR set, a flow smoke shoots every visible state
+// The walkthrough's recorder (walkthrough.mjs): with MADANI_WALKTHROUGH_DIR set, a flow smoke shoots every visible state
 // change of the smoke app's window and of every headless browser page it opens, as a new person would see them, and
 // records each surface as a short video (devtools screencast frames, joined by ffmpeg). Unset, every call here is a no-op,
 // so the flows run exactly as before.
@@ -13,7 +13,7 @@ import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node
 import { join } from "node:path";
 import { connectCdp } from "../app.mjs";
 
-const DIR = process.env.DUSK_WALKTHROUGH_DIR || null;
+const DIR = process.env.MADANI_WALKTHROUGH_DIR || null;
 /** the app's normal window (electron/window-state.cjs DEFAULT_BOUNDS) and the browser's */
 export const APP_SIZE = { width: 1040, height: 760 };
 export const BROWSER_SIZE = { width: 1280, height: 860 };
@@ -52,8 +52,8 @@ function autoWarnings(look) {
   let m;
   if ((m = hit(/\b(something went wrong|went wrong|failed to [a-z]+|an error occurred|internal server error|unexpected error|not found|can't reach|couldn['’]t [a-z]+ [a-z]+|try again later)\b[^\n]{0,60}/i))) found.push(`error words on screen: "${m.trim()}"`);
   if ((m = hit(/\b(undefined|NaN|\[object Object\]|null)\b/))) found.push(`a raw value on screen: "${m}"`);
-  if ((m = hit(/\b[a-z]+(?:\.[a-z][a-zA-Z]+){2,}\b/)) && !/\b(dusk\.bot|qa\.dusk\.test|apps\.siddz|dodopayments|[a-z]+\.(com|dev|io|sh|net|org|app|bot))\b/.test(m)) found.push(`what looks like an untranslated key: "${m}"`);
-  if ((m = hit(/\b(Dusk ?Bot|DuskBot|Dusk bot|Dusk Cloud|Dusk cloud)\b/))) found.push(`off-brand name "${m}" (the brand is lowercase "dusk bot", "dusk cloud")`);
+  if ((m = hit(/\b[a-z]+(?:\.[a-z][a-zA-Z]+){2,}\b/)) && !/\b(madani\.bot|qa\.madani\.test|apps\.siddz|dodopayments|[a-z]+\.(com|dev|io|sh|net|org|app|bot))\b/.test(m)) found.push(`what looks like an untranslated key: "${m}"`);
+  if ((m = hit(/\b(Madani ?Bot|MadaniBot|Madani bot|Madani Cloud|Madani cloud)\b/))) found.push(`off-brand name "${m}" (the brand is lowercase "madani bot", "madani cloud")`);
   if (text.includes("\u2014")) found.push("an em dash on screen");
   if (look.overflow) found.push(`the page scrolls sideways at ${look.width}x${look.height}`);
   return found;
@@ -63,7 +63,7 @@ function makeRecorder(dir) {
   mkdirSync(join(dir, "shots"), { recursive: true });
   mkdirSync(join(dir, "frames"), { recursive: true });
   const t0 = Date.now();
-  const meta = { section: process.env.DUSK_WALKTHROUGH_SECTION ?? null, startedAt: new Date(t0).toISOString(), email: null };
+  const meta = { section: process.env.MADANI_WALKTHROUGH_SECTION ?? null, startedAt: new Date(t0).toISOString(), email: null };
   const captures = [], warnings = [], steps = [], surfaces = new Map(), videos = [];
   let step = { id: "start", title: "starting", status: "running" }, shotCount = 0, finished = false;
 
@@ -286,5 +286,5 @@ function makeRecorder(dir) {
 export const typedWords = (text) => (/^\s*\d{4,10}\s*$/.test(text) ? "types the emailed code" : /@/.test(text) && text.length < 80 ? `types ${text.trim()}` : text.length > 80 ? `pastes ${text.length} characters` : `types "${text.trim()}"`);
 
 const NOOP = new Proxy({ enabled: false }, { get: (target, key) => (key in target ? target[key] : () => Promise.resolve()) });
-/** the run's recorder: real with DUSK_WALKTHROUGH_DIR, else a no-op */
+/** the run's recorder: real with MADANI_WALKTHROUGH_DIR, else a no-op */
 export const walkthrough = DIR ? makeRecorder(DIR) : NOOP;

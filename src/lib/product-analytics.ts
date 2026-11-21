@@ -51,11 +51,11 @@ function clear(): void {
   ++revision;
 }
 
-/** on by default in the desktop app (an opt-out): "help improve dusk bot" off stops everything. The phone app (and a page
+/** on by default in the desktop app (an opt-out): "help improve madani bot" off stops everything. The phone app (and a page
  * that hasn't said which app it is yet) sends nothing unless the switch was turned on there. */
 export function usageAnalyticsEnabled(): boolean {
   try {
-    const saved = localStorage.getItem("dusk-usage-analytics");
+    const saved = localStorage.getItem("madani-usage-analytics");
     optedOut = saved === "off" || (options?.kind !== "desktop" && saved !== "on");
   } catch {
     // no storage: the choice made in this session stands; the phone app stays off
@@ -68,7 +68,7 @@ export function usageAnalyticsEnabled(): boolean {
 
 export function setUsageAnalytics(enabled: boolean): void {
   optedOut = !enabled;
-  try { localStorage.setItem("dusk-usage-analytics", enabled ? "on" : "off"); } catch {}
+  try { localStorage.setItem("madani-usage-analytics", enabled ? "on" : "off"); } catch {}
   if (!enabled) { clear(); options?.relay?.clear().catch(() => {}); }
 }
 
@@ -78,10 +78,10 @@ function randomId(): string {
 
 function identity(): void {
   if (!install) {
-    try { install = localStorage.getItem("dusk-install-id") ?? ""; } catch {}
+    try { install = localStorage.getItem("madani-install-id") ?? ""; } catch {}
     if (!ID.test(install)) {
       install = randomId();
-      try { localStorage.setItem("dusk-install-id", install); } catch {}
+      try { localStorage.setItem("madani-install-id", install); } catch {}
     }
   }
   session ||= randomId();
@@ -156,7 +156,7 @@ export function screen(path: string): void {
 }
 
 export type SharingPlace = "settings" | "first_run";
-/** the "help improve dusk bot" switch moved in `where`. On is an ordinary event. Off drops everything still queued and
+/** the "help improve madani bot" switch moved in `where`. On is an ordinary event. Off drops everything still queued and
  * sends this one event, once and without retries; nothing follows it. */
 export function usageSharingChanged(on: boolean, where: SharingPlace): void {
   try {
@@ -268,7 +268,7 @@ function listen(): void {
   // the browser's ResizeObserver loop notice is not a failure: nothing broke and nothing is lost
   window.addEventListener("error", event => { if (!/ResizeObserver loop/.test(event.message ?? "")) error("window", "error"); });
   window.addEventListener("unhandledrejection", () => error("window", "rejection"));
-  window.addEventListener("storage", event => { if (event.key === "dusk-usage-analytics") usageAnalyticsEnabled(); });
+  window.addEventListener("storage", event => { if (event.key === "madani-usage-analytics") usageAnalyticsEnabled(); });
 }
 
 export function configure(next: Options): void {
@@ -285,7 +285,7 @@ export function configure(next: Options): void {
     if ((origin || next.relay) && !opened) {
       opened = true;
       track("app_open", { kind: next.kind, platform: next.platform, appVersion: options.version });
-      const env = environment(next.platform, typeof window === "undefined" ? undefined : window.duskDesktop?.arch);
+      const env = environment(next.platform, typeof window === "undefined" ? undefined : window.madaniDesktop?.arch);
       if (env) action("env", env);
     }
     schedule();

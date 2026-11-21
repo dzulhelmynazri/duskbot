@@ -47,7 +47,7 @@ describe("a bot's progress checklist", () => {
   });
 
   it("reads a list the bot edited by hand, and keeps its file in the conversation's task workspace", () => {
-    const root = mkdtempSync(join(tmpdir(), "dusk-checklist-"));
+    const root = mkdtempSync(join(tmpdir(), "madani-checklist-"));
     dirs.push(root);
     const dir = checklistDir(root, "bot1", "thread1")!;
     expect(checklistDir(root, "../bot", "thread1")).toBeNull();

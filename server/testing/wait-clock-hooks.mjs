@@ -1,8 +1,8 @@
 // Loaded with --import in isolated fixtures: moves the clock long-waits.ts reads, and nothing else, by the milliseconds in
-// the file DUSK_TEST_WAIT_CLOCK names, so a fixture can make a question a day old without moving sessions or schedules.
+// the file MADANI_TEST_WAIT_CLOCK names, so a fixture can make a question a day old without moving sessions or schedules.
 import { registerHooks } from "node:module";
 
-const file = process.env.DUSK_TEST_WAIT_CLOCK;
+const file = process.env.MADANI_TEST_WAIT_CLOCK;
 if (file) {
   const target = new URL("../host/long-waits.ts", import.meta.url).href;
   const seam = "export const waitNow = () => Date.now();";

@@ -32,7 +32,7 @@ const room: Group = {
 };
 
 const dom = (element: ReactElement) => {
-  vi.stubGlobal("window", { ...globalThis.window, duskDesktop: { platform: PLATFORM[fixture.chrome] } });
+  vi.stubGlobal("window", { ...globalThis.window, madaniDesktop: { platform: PLATFORM[fixture.chrome] } });
   const markup = renderToStaticMarkup(createElement(DesktopCapabilitiesProvider, null, createElement(StoreProvider, null, element)));
   const window = new Window();
   window.document.body.innerHTML = markup;
@@ -51,7 +51,7 @@ const cutOut = (control: DomNode, header: DomNode) => {
 };
 
 beforeEach(() => {
-  vi.stubGlobal("window", { duskDesktop: undefined, location: { protocol: "http:", search: "" }, innerWidth: 1280 });
+  vi.stubGlobal("window", { madaniDesktop: undefined, location: { protocol: "http:", search: "" }, innerWidth: 1280 });
   vi.stubGlobal("localStorage", { getItem: () => null, setItem: () => {} });
 });
 afterEach(() => vi.unstubAllGlobals());

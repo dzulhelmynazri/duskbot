@@ -14,7 +14,7 @@ import { isAiCrawler } from "./sources.ts";
 
 export interface AnalyticsOptions {
   sink: AnalyticsSink; dataDir: string; now?: () => number; trustProxy?: boolean;
-  /** origins whose pages send site events to /v1/t: the service's own and DUSK_TRACK_ORIGINS */
+  /** origins whose pages send site events to /v1/t: the service's own and MADANI_TRACK_ORIGINS */
   trackOrigins?: string[];
 }
 interface RouteHelpers {
@@ -29,7 +29,7 @@ interface RouteHelpers {
   /** a signed-in admin's browser */
   isOwner(req: IncomingMessage): boolean;
 }
-/** `optOut`: accounts that turned "help improve dusk bot" off: no usage counts, notes or events from them are kept */
+/** `optOut`: accounts that turned "help improve madani bot" off: no usage counts, notes or events from them are kept */
 interface OptOutState { v: 1; optOut: string[] }
 
 export const MAX_BATCH = 20;
@@ -39,7 +39,7 @@ function safeUrl(value: string, origin: string) { try { const url = new URL(valu
 const VISITOR = /^[A-Za-z0-9_-]{22}$/;
 /** the site tracker's visitor cookie, readable here when the account page shares the site's domain */
 export const visitorCookie = (req: IncomingMessage) => {
-  const value = req.headers.cookie?.split(";").map(item => item.trim()).find(item => item.startsWith("dusk_vid="))?.slice(9);
+  const value = req.headers.cookie?.split(";").map(item => item.trim()).find(item => item.startsWith("madani_vid="))?.slice(9);
   return value && VISITOR.test(value) ? value : null;
 };
 export async function readLimited(req: IncomingMessage, max: number) {

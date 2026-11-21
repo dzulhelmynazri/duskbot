@@ -577,7 +577,7 @@ export interface AppState {
   hydrated?: true;
   /** the first chat snapshot failed; it is being asked for again (`retryLoad` asks now) */
   loadFailed?: true;
-  /** the first chat snapshot is waiting for the person's dusk cloud to wake; asked for again every moment meanwhile */
+  /** the first chat snapshot is waiting for the person's madani cloud to wake; asked for again every moment meanwhile */
   loadWaking?: true;
   error: string | null;
   notice: { kind: "thread-gone" | "bot-gone" | "steer-images" | "note"; botName: string | null; text?: string;
@@ -1910,8 +1910,8 @@ type TrustedApprovalBridge = {
 };
 
 export function desktopApprovalBridge(): TrustedApprovalBridge | undefined {
-  if (typeof window === "undefined" || !window.duskDesktop?.approvals) return undefined;
-  return desktopCapabilitiesNow().host.packaged ? window.duskDesktop.approvals : undefined;
+  if (typeof window === "undefined" || !window.madaniDesktop?.approvals) return undefined;
+  return desktopCapabilitiesNow().host.packaged ? window.madaniDesktop.approvals : undefined;
 }
 
 export async function persistTaskApproval(
@@ -2072,7 +2072,7 @@ export const StoreContext = createContext<{
 } | null>(null);
 
 /** Grok Bot keeps its info pane open across reloads (`sand.infoPane.open`): only the person closes it. */
-export const BOT_PANEL_OPEN_KEY = "duskbot.botPanelOpen.v1";
+export const BOT_PANEL_OPEN_KEY = "madanibot.botPanelOpen.v1";
 
 function restoreBotSettingsSection(state: AppState): AppState {
   const section = readLastBotSection();
@@ -2712,7 +2712,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
               memberIds: action.memberIds,
               name: action.name,
               section: action.section,
-              ...(window.duskDesktop?.remoteClient?.active
+              ...(window.madaniDesktop?.remoteClient?.active
                 ? { setup: { bulletin: "", defaultResponder: { kind: "mentions" } } }
                 : action.memberIds.length > 1 ? { defaultResponder: { kind: "member", botId: action.memberIds[0], leader: true } } : {}),
             }),
@@ -3008,7 +3008,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
           return () => rawDispatch({ type: "notificationsHydrated", notifications: Array.isArray(notifications) ? notifications : [] });
         },
       },
-      ...(window.duskDesktop?.remoteClient?.active ? [] : [{
+      ...(window.madaniDesktop?.remoteClient?.active ? [] : [{
         key: "webhooks",
         request: async () => {
           const { webhooks, attempts, ingress } = snapshotArrays(await readSnapshot<{ webhooks: WebhookTrigger[]; attempts?: WebhookAttempt[]; ingress: WebhookIngressStatus }>("/api/webhooks"), "webhooks");
@@ -3135,7 +3135,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
         } while (alive && rehydrateRequested);
         if (!alive) return false;
         if (!loaded) {
-          // a dusk cloud waking up answers nothing useful for a while: keep asking every moment, not as a failure
+          // a madani cloud waking up answers nothing useful for a while: keep asking every moment, not as a failure
           if (cloudWakingLoad(chatError) && Date.now() - (wakingSince ||= Date.now()) < WAKING_LOAD_MS) {
             rawDispatch({ type: "loadWaking" });
             clearTimeout(loadRetry);

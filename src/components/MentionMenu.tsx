@@ -12,10 +12,10 @@ import type { MenuMotion } from "./MenuMotion";
 import { PersonFace } from "./TeamOwner";
 import { DEVS_TAG } from "../../shared/devs-mention";
 
-/** One row of the @ list: a bot, a teammate on a Team Cloud, everyone, or the Dusk team (@devs). */
+/** One row of the @ list: a bot, a teammate on a Team Cloud, everyone, or the Madani team (@devs). */
 export type MentionChoice = { id: string; name: string; bot?: Bot; person?: TeamPerson; all?: { count: number }; devs?: true };
 
-/** The last row of every @ list: a message that tags it is a bug report the app sends to the Dusk team. */
+/** The last row of every @ list: a message that tags it is a bug report the app sends to the Madani team. */
 export const DEVS_CHOICE: MentionChoice = { id: "__devs__", name: DEVS_TAG, devs: true };
 
 /** The @ list's rows for a Team Cloud's teammates, after the bots. */

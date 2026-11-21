@@ -1,7 +1,7 @@
 // The signed update policy (shared/update-guard.ts): the floor no install may run below and the versions pulled after
 // release. CI signs it with the release key (scripts/sign-update-policy.ts); this service serves it, unchanged, at
 // `GET /v1/updates/policy` for self-hosted installs, and applies it to its own managed homes. The operator blocks a bad
-// version by writing a newly signed file at DUSK_UPDATE_POLICY_FILE: it is read again whenever the file changes, and a
+// version by writing a newly signed file at MADANI_UPDATE_POLICY_FILE: it is read again whenever the file changes, and a
 // file that does not verify is ignored (the last good one stays).
 import { createHash } from "node:crypto";
 import { readFileSync, statSync } from "node:fs";
@@ -29,7 +29,7 @@ export function verifyPolicy(doc: unknown, keys: readonly ReleaseKey[]): UpdateP
   return policy;
 }
 
-/** DUSK_UPDATE_POLICY_FILE, verified, re-read when it changes; null with no file */
+/** MADANI_UPDATE_POLICY_FILE, verified, re-read when it changes; null with no file */
 export function createPolicySource(file: string | null | undefined, keys: readonly ReleaseKey[], log: (line: string) => void = line => console.warn(line)) {
   let held: { mtime: number; doc: SignedPolicy; policy: UpdatePolicy } | null = null, refused = 0;
   function current() {
@@ -44,7 +44,7 @@ export function createPolicySource(file: string | null | undefined, keys: readon
       held = { mtime, doc: { body: doc.body, signature: doc.signature }, policy };
     } catch (error) {
       refused = mtime;
-      log(`updates: ALERT the update policy at DUSK_UPDATE_POLICY_FILE was not taken (${error instanceof Error ? error.message : String(error)}); the last good one stays`);
+      log(`updates: ALERT the update policy at MADANI_UPDATE_POLICY_FILE was not taken (${error instanceof Error ? error.message : String(error)}); the last good one stays`);
     }
     return held;
   }

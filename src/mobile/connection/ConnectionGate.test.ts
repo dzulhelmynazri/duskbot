@@ -23,7 +23,7 @@ let fetcher: ReturnType<typeof vi.fn<typeof fetch>>;
 beforeEach(() => {
   setLocale("en");
   host = document.createElement("div"); document.body.append(host);
-  prefs = new Map([["dusk.mobile.connections.v1", JSON.stringify([record("mac", "Studio Mac"), record("vps", "Box")])], ["dusk.mobile.active.v1", "mac"]]);
+  prefs = new Map([["madani.mobile.connections.v1", JSON.stringify([record("mac", "Studio Mac"), record("vps", "Box")])], ["madani.mobile.active.v1", "mac"]]);
   const secrets = new Map([["token.mac", "mac-token"], ["token.vps", "vps-token"]]);
   platform = { ...webPlatform(),
     prefs: { get: async (key) => prefs.get(key) ?? null, set: async (key, value) => { prefs.set(key, value); }, remove: async (key) => { prefs.delete(key); } },
@@ -48,17 +48,17 @@ it("an offline server at launch keeps the link, retries, and offers the other sa
   expect(host.querySelector("h1")?.textContent).toBe("Can't reach Studio Mac");
   expect(host.textContent).not.toContain("Link to your");
   expect(host.textContent).toContain("Box");
-  expect(prefs.get("dusk.mobile.active.v1")).toBe("mac");
+  expect(prefs.get("madani.mobile.active.v1")).toBe("mac");
 
   fetcher.mockResolvedValue(new Response("{}"));
   await click("Try again"); await settle();
   expect(host.textContent).toBe("home");
 });
 
-it("a dusk cloud its edge says was deleted is said once, never retried, and Remove takes it off and opens the next place", async () => {
+it("a madani cloud its edge says was deleted is said once, never retried, and Remove takes it off and opens the next place", async () => {
   vi.useFakeTimers({ shouldAdvanceTime: true });
   fetcher.mockImplementation(async (input) => String(input).startsWith("https://mac.example.test")
-    ? new Response("This dusk bot was deleted.", { status: 410, headers: { "x-dusk-cloud-power": "gone" } })
+    ? new Response("This madani bot was deleted.", { status: 410, headers: { "x-madani-cloud-power": "gone" } })
     : new Response("{}"));
   await mount(); await settle();
   expect(host.querySelector("h1")?.textContent).toBe("Studio Mac was deleted");
@@ -69,8 +69,8 @@ it("a dusk cloud its edge says was deleted is said once, never retried, and Remo
   await settle();
   expect(fetcher.mock.calls.length).toBe(asked);
   await click("Remove from this phone"); await settle();
-  expect(JSON.parse(prefs.get("dusk.mobile.connections.v1")!).map((entry: MobileConnectionRecord) => entry.id)).toEqual(["vps"]);
-  expect(prefs.get("dusk.mobile.active.v1")).toBe("vps");
+  expect(JSON.parse(prefs.get("madani.mobile.connections.v1")!).map((entry: MobileConnectionRecord) => entry.id)).toEqual(["vps"]);
+  expect(prefs.get("madani.mobile.active.v1")).toBe("vps");
   expect(host.textContent).toBe("home");
   vi.useRealTimers();
 });
@@ -99,7 +99,7 @@ it("switches to another saved installation from the unreachable screen", async (
   fetcher.mockImplementation(async (input) => String(input).startsWith("https://vps.") ? new Response("{}") : Promise.reject(new TypeError("offline")));
   await mount(); await settle();
   await click("Box"); await settle();
-  expect(prefs.get("dusk.mobile.active.v1")).toBe("vps");
+  expect(prefs.get("madani.mobile.active.v1")).toBe("vps");
   expect(host.textContent).toBe("home");
 });
 
@@ -107,7 +107,7 @@ it("a refused token still goes to pairing", async () => {
   fetcher.mockResolvedValue(new Response("{}", { status: 401 }));
   await mount(); await settle();
   expect(host.querySelector("h1")?.textContent).not.toContain("Can't reach");
-  expect(prefs.get("dusk.mobile.active.v1")).toBeUndefined();
+  expect(prefs.get("madani.mobile.active.v1")).toBeUndefined();
 });
 
 it("a phone removed on the computer while the app is open leaves for pairing at once, with the reason", async () => {
@@ -120,8 +120,8 @@ it("a phone removed on the computer while the app is open leaves for pairing at 
   await settle();
   expect(host.textContent).not.toBe("home");
   expect(host.textContent).toContain("This phone was unlinked");
-  expect(prefs.get("dusk.mobile.active.v1")).toBeUndefined();
-  expect(prefs.get("dusk.mobile.connections.v1")).not.toContain("Studio Mac");
+  expect(prefs.get("madani.mobile.active.v1")).toBeUndefined();
+  expect(prefs.get("madani.mobile.connections.v1")).not.toContain("Studio Mac");
   expect(sessionEnded()).toBe(false);
 });
 
@@ -132,14 +132,14 @@ it("a refused request on a session that still answers changes nothing", async ()
   await act(async () => { await api("/api/bots").catch(() => {}); await sessionCheck(); });
   await settle();
   expect(host.textContent).toBe("home");
-  expect(prefs.get("dusk.mobile.active.v1")).toBe("mac");
+  expect(prefs.get("madani.mobile.active.v1")).toBe("mac");
 });
 
-it("a dusk cloud asleep at launch opens on its chats and is woken, never the can't reach screen it could not leave", async () => {
+it("a madani cloud asleep at launch opens on its chats and is woken, never the can't reach screen it could not leave", async () => {
   // the edge never wakes a cloud for a read, so the launch check only ever hears that it sleeps
   fetcher.mockImplementation(async (input, init) => {
     const method = (input instanceof Request ? input.method : init?.method) ?? "GET";
-    return method === "GET" ? new Response("asleep", { status: 503, headers: { "x-dusk-cloud-power": "asleep", "retry-after": "5" } }) : new Response("{}");
+    return method === "GET" ? new Response("asleep", { status: 503, headers: { "x-madani-cloud-power": "asleep", "retry-after": "5" } }) : new Response("{}");
   });
   await mount(); await settle();
   expect(host.textContent).toBe("home");
@@ -147,19 +147,19 @@ it("a dusk cloud asleep at launch opens on its chats and is woken, never the can
   expect(posts.map(([input]) => String(input instanceof Request ? input.url : input))).toContain("https://mac.example.test/api/cloud/wake");
 });
 
-describe("two accounts, each with its own dusk cloud", () => {
-  const cloudOrigin = "https://d2222222222222222222b.dusk.bot";
+describe("two accounts, each with its own madani cloud", () => {
+  const cloudOrigin = "https://d2222222222222222222b.madani.bot";
   const tokenOf = (who: string) => `omc_${who[0]!.repeat(43)}`;
-  const kept = (id: string) => ({ origin: "https://dusk.bot", token: tokenOf(id), expiresAt: Date.now() + 86_400_000, deviceId: "phone", account: { id, email: `${id}@example.com` } });
+  const kept = (id: string) => ({ origin: "https://madani.bot", token: tokenOf(id), expiresAt: Date.now() + 86_400_000, deviceId: "phone", account: { id, email: `${id}@example.com` } });
   const json = (value: unknown, status = 200) => new Response(JSON.stringify(value), { status });
   let secrets: Map<string, string>;
   const asked = (path: string) => fetcher.mock.calls.filter(([input]) => String(input).endsWith(path));
   const authOf = (call: Parameters<typeof fetch>) => (call[1]?.headers as Record<string, string> | undefined)?.authorization;
   const bobCloud = (tagged: boolean): MobileConnectionRecord => ({ ...record("bob-cloud", "Bob cloud"), origin: cloudOrigin, ...(tagged ? { account: { id: "bob", email: "bob@example.com" } } : {}) });
   const start = async (cloud: MobileConnectionRecord) => {
-    vi.stubEnv("VITE_DUSK_ALLOW_SIGNED_OUT", ""); vi.stubEnv("VITE_DUSK_ACCOUNT_ORIGIN", "");
-    secrets = new Map([["token.bob-cloud", "cloud-token"], ["dusk.account", JSON.stringify(kept("alice"))], ["dusk.account.others", JSON.stringify([kept("bob")])]]);
-    prefs = new Map([["dusk.mobile.connections.v1", JSON.stringify([cloud])], ["dusk.mobile.active.v1", "bob-cloud"], ["dusk.mobile.installed", "1"]]);
+    vi.stubEnv("VITE_MADANI_ALLOW_SIGNED_OUT", ""); vi.stubEnv("VITE_MADANI_ACCOUNT_ORIGIN", "");
+    secrets = new Map([["token.bob-cloud", "cloud-token"], ["madani.account", JSON.stringify(kept("alice"))], ["madani.account.others", JSON.stringify([kept("bob")])]]);
+    prefs = new Map([["madani.mobile.connections.v1", JSON.stringify([cloud])], ["madani.mobile.active.v1", "bob-cloud"], ["madani.mobile.installed", "1"]]);
     platform = { ...platform, native: true, kind: "android",
       prefs: { get: async (key) => prefs.get(key) ?? null, set: async (key, value) => { prefs.set(key, value); }, remove: async (key) => { prefs.delete(key); } },
       secrets: { get: async (key) => secrets.get(key) ?? null, set: async (key, value) => { secrets.set(key, value); }, remove: async (key) => { secrets.delete(key); } },
@@ -177,7 +177,7 @@ describe("two accounts, each with its own dusk cloud", () => {
       root = createRoot(host);
       root.render(createElement(PlatformContext, { value: platform }, createElement(AccountGate, null, createElement(ConnectionGate, null, createElement("p", null, "home")))));
     });
-    for (let i = 0; i < 30 && JSON.parse(secrets.get("dusk.account")!).account.id !== "bob"; i++) await settle();
+    for (let i = 0; i < 30 && JSON.parse(secrets.get("madani.account")!).account.id !== "bob"; i++) await settle();
     await settle();
   };
   afterEach(() => { vi.unstubAllEnvs(); });
@@ -185,15 +185,15 @@ describe("two accounts, each with its own dusk cloud", () => {
   it("opening the other account's cloud puts that account in use and keeps the first one signed in", async () => {
     await start(bobCloud(true));
     expect(host.textContent).toBe("home");
-    expect(JSON.parse(secrets.get("dusk.account")!).account.id).toBe("bob");
-    expect(JSON.parse(secrets.get("dusk.account.others")!).map((one: { account: { id: string } }) => one.account.id)).toEqual(["alice"]);
+    expect(JSON.parse(secrets.get("madani.account")!).account.id).toBe("bob");
+    expect(JSON.parse(secrets.get("madani.account.others")!).map((one: { account: { id: string } }) => one.account.id)).toEqual(["alice"]);
     expect(asked("/v1/app/enroll-grant").map(authOf).filter((auth) => auth === `Bearer ${tokenOf("alice")}`), "never enrolled into the other account").toEqual([]);
   });
 
   it("a cloud linked before the phone knew whose it was is tagged with the account that lists it, which takes over", async () => {
     await start(bobCloud(false));
-    expect(JSON.parse(secrets.get("dusk.account")!).account.id).toBe("bob");
-    expect(JSON.parse(prefs.get("dusk.mobile.connections.v1")!)[0].account).toEqual({ id: "bob", email: "bob@example.com" });
+    expect(JSON.parse(secrets.get("madani.account")!).account.id).toBe("bob");
+    expect(JSON.parse(prefs.get("madani.mobile.connections.v1")!)[0].account).toEqual({ id: "bob", email: "bob@example.com" });
     expect(asked("/v1/app/enroll-grant").map(authOf).filter((auth) => auth === `Bearer ${tokenOf("alice")}`)).toEqual([]);
   });
 });

@@ -39,9 +39,9 @@ beforeEach(() => {
   fixture.dispatch.mockClear();
   fixture.frameDrawn.mockClear();
   place = { local: false, name: "My Cloud", origin: "https://cloud.example", color: "blue" };
-  Object.assign(window, { duskDesktop: { workspaces: { state: async () => place, onChanged: () => () => {}, menu: async () => {} } } });
+  Object.assign(window, { madaniDesktop: { workspaces: { state: async () => place, onChanged: () => () => {}, menu: async () => {} } } });
 });
-afterEach(async () => { await act(async () => root?.unmount()); root = null; host.remove(); delete (window as { duskDesktop?: unknown }).duskDesktop; });
+afterEach(async () => { await act(async () => root?.unmount()); root = null; host.remove(); delete (window as { madaniDesktop?: unknown }).madaniDesktop; });
 
 async function mount(element: ReturnType<typeof createElement>) {
   root = createRoot(host);
@@ -96,7 +96,7 @@ describe("the window frame's top bar", () => {
   });
 
   it("names nothing where main says nothing (a browser, a remote client, an older app)", async () => {
-    delete (window as { duskDesktop?: unknown }).duskDesktop;
+    delete (window as { madaniDesktop?: unknown }).madaniDesktop;
     await mount(createElement(WindowFrameBar));
     expect(middle()).toBeNull();
     expect(bar()!.children).toHaveLength(3);

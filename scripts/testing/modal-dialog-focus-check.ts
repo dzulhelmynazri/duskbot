@@ -1,11 +1,11 @@
-// Run against a fresh, owned `control-dusk ui launch` handle, never the live app:
+// Run against a fresh, owned `control-madani ui launch` handle, never the live app:
 // node --experimental-strip-types scripts/testing/modal-dialog-focus-check.ts UI_HANDLE
 import assert from "node:assert/strict";
-import { runControlDusk } from "../control-dusk.ts";
+import { runControlMadani } from "../control-madani.ts";
 
 const handle = process.argv[2];
 assert(handle, "Pass the isolated ui launch handle.");
-const checked = await runControlDusk(["ui", "eval", "--ui", handle, "--js", String.raw`
+const checked = await runControlMadani(["ui", "eval", "--ui", handle, "--js", String.raw`
 (async () => {
   const React = (await import('/node_modules/.vite/deps/react.js')).default;
   const {createRoot} = (await import('/node_modules/.vite/deps/react-dom_client.js')).default;

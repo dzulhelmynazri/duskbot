@@ -11,11 +11,11 @@ import { PANEL_DOCKS_AT } from "../PanelSlot";
 import { WelcomeFlow } from "./WelcomeFlow";
 
 /**
- * Security: a remote page the desktop app loads gets a reduced but truthy window.duskDesktop without remoteClient, and is no
+ * Security: a remote page the desktop app loads gets a reduced but truthy window.madaniDesktop without remoteClient, and is no
  * more the owner than a browser.
  */
 export function localDesktopPage(): boolean {
-  return window.duskDesktop?.remoteClient !== undefined;
+  return window.madaniDesktop?.remoteClient !== undefined;
 }
 
 export function useWelcomeViewer(): WelcomeViewer | null {
@@ -43,7 +43,7 @@ const panelDocks = () => !window.matchMedia?.(PHONE_LAYOUT).matches && window.ma
 export function WelcomeGate({ viewer }: { viewer: WelcomeViewer | null }) {
   const { state, dispatch } = useStore();
   const [dismissed, setDismissed] = useState(false);
-  const remoteClient = window.duskDesktop?.remoteClient?.active === true;
+  const remoteClient = window.madaniDesktop?.remoteClient?.active === true;
   // A welcome finished elsewhere (another window, an older version's record) leaves no draft behind to resume later.
   const finished = Boolean(viewer && state.config) && !welcomeDue(state.config, {
     remoteClient, legacyDone: emailGateDone(), canSave: viewer?.canSave, cloudHome: viewer?.cloudHome, fromApp: openedFromTheApp(),

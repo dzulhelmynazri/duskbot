@@ -44,7 +44,7 @@ function AboutSheet({ onClose }: { onClose: () => void }) {
   const played = useDialogMotion();
   const server = useOtherServerName(true);
   const [copied, setCopied] = useState(false);
-  const lines = aboutVersionLines({ app: window.duskDesktop?.app, bundle: appVersion(), platform: platformLabel(window.duskDesktop?.platform), server });
+  const lines = aboutVersionLines({ app: window.madaniDesktop?.app, bundle: appVersion(), platform: platformLabel(window.madaniDesktop?.platform), server });
   const [version, connected] = lines;
   const copy = () => void copyText([productName(), ...lines].join("\n")).then((result) => setCopied(result === "copied"));
 

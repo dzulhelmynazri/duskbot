@@ -16,7 +16,7 @@ check(NotificationPresentation.options(threadId: "", viewing: "") == banner, "an
 
 let fromHost = UNMutableNotificationContent()
 fromHost.threadIdentifier = "aps-thread"
-fromHost.userInfo = ["dusk": ["threadId": "t9", "id": "n1"]]
+fromHost.userInfo = ["madani": ["threadId": "t9", "id": "n1"]]
 check(NotificationPresentation.threadId(of: fromHost) == "t9", "the bot host's own thread id comes first")
 let apsOnly = UNMutableNotificationContent()
 apsOnly.threadIdentifier = "t3"

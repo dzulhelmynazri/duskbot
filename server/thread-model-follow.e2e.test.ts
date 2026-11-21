@@ -3,7 +3,7 @@ import { closeSync, existsSync, mkdirSync, openSync, readFileSync, writeFileSync
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { expect, it } from "vitest";
-import { launchVerificationServer, runControlDusk, verificationServerEnvironment } from "../scripts/control-dusk.ts";
+import { launchVerificationServer, runControlMadani, verificationServerEnvironment } from "../scripts/control-madani.ts";
 import { waitForExit } from "./testing/cleanup.ts";
 
 const SPARE = "spare";
@@ -34,7 +34,7 @@ async function withEngines(check: (fixture: Fixture) => Promise<void>) {
     expect(response.ok, `${method} ${path}: ${JSON.stringify(result)}`).toBe(true);
     return result;
   };
-  const control = (...args: string[]) => runControlDusk([...args, "--url", url]) as Promise<any>;
+  const control = (...args: string[]) => runControlMadani([...args, "--url", url]) as Promise<any>;
   const restart = async (engines: Engines) => {
     await waitForExit(server ?? fixture.child, { signal: "SIGTERM" });
     const configPath = join(dataDir, "config.json");

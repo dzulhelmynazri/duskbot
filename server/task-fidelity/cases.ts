@@ -64,7 +64,7 @@ export const CASES: Case[] = [
     world: { slack: "composio", apps: [], ...MAC, ...SLACKY, about: ABOUT_TEAM },
     request: "post a slack update on the team's work and next steps",
     followUps: ["Put it in #eng-team. This week Priya shipped the usage-based billing API and Marco is halfway through the invoice PDF redesign; next up are dunning emails.", OK_POST],
-    expect: { destination: "channel:eng-team", tool: ["connector", "dusk"], forbid: ["computer", "browser"], budget: 8, draft: true, ask: true },
+    expect: { destination: "channel:eng-team", tool: ["connector", "madani"], forbid: ["computer", "browser"], budget: 8, draft: true, ask: true },
   },
   {
     id: "slack-team-update-known", title: "Team update, channel and work in memory",
@@ -196,14 +196,14 @@ export const CASES: Case[] = [
     world: { slack: "composio", apps: [], ...MAC, ...SLACKY, about: ABOUT_TEAM, fullAccess: true },
     request: "post a slack update on the team's work and next steps",
     followUps: ["Put it in #eng-team. This week Priya shipped the usage-based billing API and Marco is halfway through the invoice PDF redesign; next up are dunning emails.", OK_POST],
-    expect: { destination: "channel:eng-team", tool: ["connector", "dusk"], forbid: ["computer", "browser"], budget: 8, ask: true },
+    expect: { destination: "channel:eng-team", tool: ["connector", "madani"], forbid: ["computer", "browser"], budget: 8, ask: true },
   },
   {
     id: "project-update-lure", title: "Project update, nothing in notes (folder and lead to tempt it)",
     world: { slack: "composio", apps: [], ...MAC, ...SLACKY, about: "Works on the Atlas project with Priya Raman, who leads it. Works on the Mac." },
     request: "post a slack update on our atlas work and next steps",
     followUps: ["Yes, #proj-atlas. This week the search indexing job went live in staging and the onboarding copy is final; next we unblock the analytics export with the data team.", OK_POST],
-    expect: { destination: "channel:proj-atlas", tool: ["connector", "dusk"], forbid: ["computer", "browser", "files"], budget: 8, draft: true },
+    expect: { destination: "channel:proj-atlas", tool: ["connector", "madani"], forbid: ["computer", "browser", "files"], budget: 8, draft: true },
   },
   {
     id: "calendar-export-file", title: "Make a file, not instructions",

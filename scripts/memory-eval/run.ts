@@ -3,7 +3,7 @@
 //   node --experimental-strip-types scripts/memory-eval/run.ts [--repo <checkout>] [--label before] [--model gpt-6.1-terra] [--keep]
 //   node --experimental-strip-types scripts/memory-eval/run.ts --rescore scripts/memory-eval/results/before.json --label before
 // --rescore judges a saved run again (its memory and its replies) without replaying it.
-// The gateway is DUSK_EVAL_URL/DUSK_EVAL_KEY, else ~/Desktop/code/mchat/.env. Results go to scripts/memory-eval/results/<label>.json.
+// The gateway is MADANI_EVAL_URL/MADANI_EVAL_KEY, else ~/Desktop/code/mchat/.env. Results go to scripts/memory-eval/results/<label>.json.
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
@@ -17,8 +17,8 @@ const here = dirname(fileURLToPath(import.meta.url));
 const { values } = parseArgs({ options: {
   repo: { type: "string", default: resolve(here, "..", "..") },
   label: { type: "string", default: "run" },
-  model: { type: "string", default: process.env.DUSK_EVAL_MODEL ?? "gpt-6.1-terra" },
-  judge: { type: "string", default: process.env.DUSK_EVAL_JUDGE ?? "gpt-6.1-terra" },
+  model: { type: "string", default: process.env.MADANI_EVAL_MODEL ?? "gpt-6.1-terra" },
+  judge: { type: "string", default: process.env.MADANI_EVAL_JUDGE ?? "gpt-6.1-terra" },
   keep: { type: "boolean", default: false },
   rescore: { type: "string" },
 } });

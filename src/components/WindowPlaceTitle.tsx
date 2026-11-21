@@ -4,13 +4,13 @@ import { usePlaceLook } from "@/lib/place-look";
 import { useStore } from "@/state/store";
 import { PlaceMark } from "./PlacesRail";
 
-type WorkspaceState = Awaited<ReturnType<NonNullable<NonNullable<typeof window.duskDesktop>["workspaces"]>["state"]>>;
+type WorkspaceState = Awaited<ReturnType<NonNullable<NonNullable<typeof window.madaniDesktop>["workspaces"]>["state"]>>;
 
 /** The place this window shows, as main tells this page: null in a browser, on a remote client, or until main answers. */
 export function useWindowPlace(): WorkspaceState | null {
   const [place, setPlace] = useState<WorkspaceState | null>(null);
   useEffect(() => {
-    const workspaces = window.duskDesktop?.remoteClient?.active ? undefined : window.duskDesktop?.workspaces;
+    const workspaces = window.madaniDesktop?.remoteClient?.active ? undefined : window.madaniDesktop?.workspaces;
     if (!workspaces) return;
     let alive = true;
     const read = () => void workspaces.state().then((next) => { if (alive) setPlace(next); }).catch(() => {});

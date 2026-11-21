@@ -22,7 +22,7 @@ afterEach(async () => {
 });
 
 async function serve(overrides: Partial<DataRouteDeps> = {}) {
-  const dir = mkdtempSync(join(tmpdir(), "dusk-data-routes-"));
+  const dir = mkdtempSync(join(tmpdir(), "madani-data-routes-"));
   dirs.push(dir);
   const database = new FakeDataDatabase("bot-1");
   database.tables.set("orders", { columns: [{ name: "id", type: "INTEGER" }, { name: "total", type: "DOUBLE" }], rows: [[1, 9.5], [2, 3.25], [3, 7]] });
@@ -106,7 +106,7 @@ describe("the Data routes", () => {
     const page = await call("POST", "/api/bots/bot-1/data/page", { cardId: "c_1", offset: 0, limit: 10 });
     expect(page.status).toBe(200);
     expect(page.body).toMatchObject({ rowCount: 2, offset: 0, rows: [[1], [2]] });
-    expect(database.calls.at(-1)).toMatchObject({ method: "page", target: 'dusk_results."c_1"' });
+    expect(database.calls.at(-1)).toMatchObject({ method: "page", target: 'madani_results."c_1"' });
 
     const tablePage = await call("POST", "/api/bots/bot-1/data/page", { table: "orders", offset: 1, limit: 1 });
     expect(tablePage.body.rows).toEqual([[2, 3.25]]);
@@ -133,7 +133,7 @@ describe("the Data routes", () => {
   });
 
   it("pages column-filtered results through real DuckDB and rejects stale column names even with no text", async () => {
-    const dir = mkdtempSync(join(tmpdir(), "dusk-data-column-filter-"));
+    const dir = mkdtempSync(join(tmpdir(), "madani-data-column-filter-"));
     dirs.push(dir);
     const engine = createDataEngine({ dataDir: dir, botFolder: (id) => join(dir, id) });
     try {

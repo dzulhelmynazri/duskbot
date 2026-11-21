@@ -1,7 +1,7 @@
 import { animate, type AnimationPlaybackControls, type MotionValue } from "motion/react";
 import { MOTION, pacedSpring } from "@/lib/motion-speed";
 
-/** The bencho token set (~/dusk-ref BENCHO-MOTION.md): every phone surface draws from these and nothing else. */
+/** The bencho token set (~/madani-ref BENCHO-MOTION.md): every phone surface draws from these and nothing else. */
 export const dur = { fast: 0.16, base: 0.22, slow: 0.42, long: 0.6 } as const;
 export const ease = {
   out: [0.22, 1, 0.36, 1] as const,

@@ -15,7 +15,7 @@
   "updated": "2026-11-12",
   "review": {
     "status": "approved",
-    "by": "lead agent, after two independent reviewer passes, against dusk bot docs and the composio catalog",
+    "by": "lead agent, after two independent reviewer passes, against madani bot docs and the composio catalog",
     "at": "2026-11-12"
   },
   "tags": [
@@ -67,7 +67,7 @@
     "**issue numbers repeat across repositories.** use the full link with the owner, repository and issue number.",
     "**people can read what you post.** remove private customer details even if they helped the investigation.",
     "**use a general comment for discussion.** a fix still needs code, and a formal code review needs its own action.",
-    "**events arrive at once; sleeping bots cannot act.** local work needs the computer awake and the app open. dusk cloud stays on."
+    "**events arrive at once; sleeping bots cannot act.** local work needs the computer awake and the app open. madani cloud stays on."
   ],
   "faq": [
     {
@@ -81,15 +81,15 @@
   ],
   "sources": [
     {
-      "label": "dusk bot docs: files and apps",
+      "label": "madani bot docs: files and apps",
       "url": "/docs/files-and-apps"
     },
     {
-      "label": "dusk bot docs: routines",
+      "label": "madani bot docs: routines",
       "url": "/docs/routines"
     },
     {
-      "label": "dusk bot docs: computer permissions",
+      "label": "madani bot docs: computer permissions",
       "url": "/docs/computer"
     }
   ],
@@ -97,7 +97,7 @@
     "steps": [
       "paste one github issue link",
       "ask it to read the thread",
-      "ask for a question in your dusk chat",
+      "ask for a question in your madani chat",
       "confirm the repository before allowing the post"
     ]
   },

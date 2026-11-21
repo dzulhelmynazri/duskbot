@@ -1,17 +1,17 @@
 {
   "$schema": "../../../node_modules/wrangler/config-schema.json",
-  "name": "duskbot-composio",
+  "name": "madanibot-composio",
   "main": "src/index.ts",
   "compatibility_date": "2026-08-18",
   "compatibility_flags": ["nodejs_compat"],
-  // dusk bot's own cloudflare account (the dusk.bot zone): scripts/deploy-composio-broker.sh creates the database,
+  // madani bot's own cloudflare account (the madani.bot zone): scripts/deploy-composio-broker.sh creates the database,
   // writes its id below, applies the migrations, sets the secrets and deploys
   "workers_dev": false,
-  "routes": [{ "pattern": "composio.dusk.bot", "custom_domain": true }, { "pattern": "composio.dusk.bot/*", "zone_name": "dusk.bot" }],
+  "routes": [{ "pattern": "composio.madani.bot", "custom_domain": true }, { "pattern": "composio.madani.bot/*", "zone_name": "madani.bot" }],
   "vars": {
     "COMPOSIO_API_BASE": "https://backend.composio.dev/api/v3.1",
     "COMPOSIO_TOOLKIT_BASE": "https://backend.composio.dev/api/v3",
-    // dusk bot pays nothing per tool call: no new installations, and the test installations that exist stay inside
+    // madani bot pays nothing per tool call: no new installations, and the test installations that exist stay inside
     // composio's free allowance
     "REGISTRATION_MODE": "closed",
     "GLOBAL_DAILY_TOOL_CALLS": "500"
@@ -20,7 +20,7 @@
   "d1_databases": [
     {
       "binding": "DB",
-      "database_name": "duskbot-composio",
+      "database_name": "madanibot-composio",
       "database_id": "284c79d9-d1b6-406f-b08b-eb7d1abd1ac6",
       "migrations_dir": "migrations"
     }

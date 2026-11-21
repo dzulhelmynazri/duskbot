@@ -37,7 +37,7 @@ require.cache[electronEntry] = {
   loaded: true,
   exports: fakeElectron,
 };
-process.argv.push("--dusk-account-gate=1");
+process.argv.push("--madani-account-gate=1");
 require("./preload.cjs");
 
 const emit = (channel, ...args) => {
@@ -45,8 +45,8 @@ const emit = (channel, ...args) => {
 };
 const subscriberCount = (channel) => listeners.get(channel)?.size ?? 0;
 
-test("exposes the full local-shell bridge on window.duskDesktop", () => {
-  assert.equal(exposed.name, "duskDesktop");
+test("exposes the full local-shell bridge on window.madaniDesktop", () => {
+  assert.equal(exposed.name, "madaniDesktop");
   assert.equal(typeof exposed.api, "object");
   assert.equal(typeof exposed.api.onOpenAppSettings, "function");
 });
@@ -147,7 +147,7 @@ test("native Settings requests accept only the fixed organisation section, Cloud
   emit("app:open-settings", "cloud-settings");
   emit("app:open-settings", "https://other.example");
   emit("app:open-settings", "cloudAccount");
-  emit("app:open-settings", "duskbot://cloud");
+  emit("app:open-settings", "madanibot://cloud");
   emit("app:open-settings", { section: "organization", url: "https://other.example" });
   emit("app:open-settings", ["cloud"]);
   assert.deepEqual(calls, ["organization", "cloud", "cloud-settings", undefined, undefined, undefined, undefined, undefined]);

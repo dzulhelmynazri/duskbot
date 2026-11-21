@@ -14,7 +14,7 @@ const dirs: string[] = [];
 afterEach(() => { for (const dir of dirs.splice(0)) rmSync(dir, { recursive: true, force: true }); });
 
 function harness(options: { earlyMs?: (routine: Routine) => number; start?: Date } = {}) {
-  const dir = mkdtempSync(join(tmpdir(), "dusk-quiet-"));
+  const dir = mkdtempSync(join(tmpdir(), "madani-quiet-"));
   dirs.push(dir);
   let now = (options.start ?? new Date(2026, 9, 22, 9, 0, 0)).getTime();
   const answers: RoutineCheckResult[] = [];

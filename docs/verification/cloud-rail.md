@@ -19,7 +19,7 @@ The rail's sheets cover the window while open. Its circles are small and named
 on hover; the place on screen wears a ring. Beside the rail the sidebar's
 switcher and the profile menu's Switch to… step aside. The person can hide the
 rail; the page then has the whole window, and those two come back.
-Nothing here needs a real dusk cloud account, a payment or the Electron app.
+Nothing here needs a real madani cloud account, a payment or the Electron app.
 
 ## Contract
 
@@ -37,7 +37,7 @@ Nothing here needs a real dusk cloud account, a payment or the Electron app.
   (Simple: General → Appearance; Advanced: Appearance). Both are there only
   while the window has a rail. The choice is this desktop's (`railHidden` in
   desktop-prefs.json), never a server's or a place's.
-- The page beside the rail offers that button through `window.duskDesktop.rail`
+- The page beside the rail offers that button through `window.madaniDesktop.rail`
   (`state`, `setHidden`, `onState`; its main frame only, and a server's page
   only from the person's click), and learns only whether there is a rail and
   whether it is hidden. Main hides the rail only beside a document that offered
@@ -113,7 +113,7 @@ own wiring of the choice.
 ## Rendered workflow
 
 ```sh
-node --experimental-strip-types scripts/verify-cloud-rail.ts --shots .dusk-scratch/verify-evidence/cloud-rail
+node --experimental-strip-types scripts/verify-cloud-rail.ts --shots .madani-scratch/verify-evidence/cloud-rail
 ```
 
 It starts a disposable fake-engine server with three bots and the real app in

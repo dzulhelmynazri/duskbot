@@ -7,7 +7,7 @@ import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { createProxyHandler } from "../src/proxy.ts";
 import { gzipTunnelReplies } from "../src/tunnel-gzip.ts";
 
-const TOKEN = "dusk_test_token";
+const TOKEN = "madani_test_token";
 const BOTS = { bots: Array.from({ length: 100 }, (_, i) => ({ id: `b${i}`, name: `Bot ${i}` })), resumeCursors: { agent: "secret" } };
 const SCRUBBED = JSON.stringify({ bots: BOTS.bots });
 /** Long enough that the sidecar's own endpoints reply passes 1 KB. */

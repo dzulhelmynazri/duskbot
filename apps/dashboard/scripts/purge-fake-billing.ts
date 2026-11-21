@@ -11,7 +11,7 @@ import { MongoClient, type Document } from "mongodb";
 const { values } = parseArgs({ options: { apply: { type: "boolean", default: false }, live: { type: "boolean", default: false } } });
 const raw = process.env.MONGODB_URI, dbName = process.env.MONGODB_DB;
 if (!raw || !dbName) { console.error("MONGODB_URI and MONGODB_DB are required."); process.exit(2); }
-if (process.env.DUSK_ENVIRONMENT === "production" || /prod/i.test(dbName)) { console.error("refused: this is a production database."); process.exit(2); }
+if (process.env.MADANI_ENVIRONMENT === "production" || /prod/i.test(dbName)) { console.error("refused: this is a production database."); process.exit(2); }
 let uri = raw;
 if (process.env.MONGODB_TUNNEL) {
   const scheme = raw.slice(0, raw.indexOf("://")), parsed = new URL(raw.replace(/^[^:]+:/, "http:"));

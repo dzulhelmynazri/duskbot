@@ -15,7 +15,7 @@ export interface AutomationNeedingYou {
 export function useAutomationNeedingYou(): AutomationNeedingYou | null {
   const { state } = useStore();
   const appTriggers = useAppTriggers();
-  const routinesOnly = typeof window !== "undefined" && window.duskDesktop?.remoteClient?.active === true;
+  const routinesOnly = typeof window !== "undefined" && window.madaniDesktop?.remoteClient?.active === true;
   const unseen = useMemo(() => automationsFrom({
     routines: state.routines, webhooks: routinesOnly ? [] : state.webhooks, appTriggers: appTriggers.triggers, runs: state.routineRuns, bots: state.bots,
   }).find((automation) => hasUnseenProblemRun([automation])), [state.routines, state.webhooks, appTriggers.triggers, state.routineRuns, state.bots, routinesOnly]);

@@ -1,7 +1,7 @@
 import { useSyncExternalStore } from "react";
 
 /** what the workspace switcher says, with no workspace yet, while a page is in the middle of the app's own step (linking
- *  a server, buying dusk cloud): a calm line about what is happening instead of "connect one from the app" */
+ *  a server, buying madani cloud): a calm line about what is happening instead of "connect one from the app" */
 export type FlowNote = { title: string; sub: string };
 
 let current: FlowNote | null = null;

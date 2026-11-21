@@ -19,7 +19,7 @@ export function voiceBridgeFor(engine: ResolvedEngine, prefs: VoicePrefs): Voice
   switch (engine.engine) {
     case "apple-speech":
     case "windows-speech":
-      return (globalThis.window?.duskDesktop as VoiceBridge | undefined) ?? null;
+      return (globalThis.window?.madaniDesktop as VoiceBridge | undefined) ?? null;
     case "fish-audio":
       return fishSpeech;
     case "phone-native":

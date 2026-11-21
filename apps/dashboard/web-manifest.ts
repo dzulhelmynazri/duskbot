@@ -11,7 +11,7 @@ const ICONS = [
  * manifest names their hashed paths under `base` */
 export function webManifest(iconDir: string, base: string): Plugin {
   return {
-    name: "dusk-web-manifest",
+    name: "madani-web-manifest",
     apply: "build",
     transformIndexHtml: () => [{ tag: "link", attrs: { rel: "manifest", href: `${base}manifest.webmanifest` }, injectTo: "head" }],
     generateBundle() {
@@ -22,7 +22,7 @@ export function webManifest(iconDir: string, base: string): Plugin {
       this.emitFile({
         type: "asset",
         fileName: "manifest.webmanifest",
-        source: JSON.stringify({ id: base, name: "dusk bot", short_name: "dusk bot", start_url: base, scope: base, display: "standalone", background_color: "#ffffff", theme_color: "#ffffff", icons }, null, 2),
+        source: JSON.stringify({ id: base, name: "madani bot", short_name: "madani bot", start_url: base, scope: base, display: "standalone", background_color: "#ffffff", theme_color: "#ffffff", icons }, null, 2),
       });
     },
   };

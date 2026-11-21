@@ -4,13 +4,13 @@
   "title": "Relevance AI alternatives for people who do not build agents",
   "nav": "relevance ai",
   "h1": "relevance ai alternatives for a smaller job",
-  "description": "Compare Relevance AI with dusk bot, including the conflicting pricing pages, workforce setup and when a smaller team of bots fits better.",
+  "description": "Compare Relevance AI with madani bot, including the conflicting pricing pages, workforce setup and when a smaller team of bots fits better.",
   "keyword": "relevance ai alternatives",
   "keywords": [
     "relevance ai pricing",
     "relevance ai review"
   ],
-  "answer": "**need a sales deployment, or just help with tomorrow's handoff?** relevance ai builds business agent teams for sales and operations. dusk lets you name a bot and give it that smaller job in plain words. as of 12 november 2026, relevance ai's marketing and docs disagree on plans. get an offer you can buy before budgeting around either price.",
+  "answer": "**need a sales deployment, or just help with tomorrow's handoff?** relevance ai builds business agent teams for sales and operations. madani lets you name a bot and give it that smaller job in plain words. as of 12 november 2026, relevance ai's marketing and docs disagree on plans. get an offer you can buy before budgeting around either price.",
   "updated": "2026-11-12",
   "review": {
     "status": "approved",
@@ -48,7 +48,7 @@
       "**its app catalogue matters.** you need the native and pipedream connections it lists.",
       "**you want workforces.** its offer includes unlimited workforces and curated multi-agent systems."
     ],
-    "dusk": [
+    "madani": [
       "**your first job is small.** name a bot and describe what it should do.",
       "**you want separate memories.** decide which bots learn from group conversations.",
       "**you want to try personal work locally.** choose hosting later if you need it."
@@ -59,7 +59,7 @@
     "intro": "**get a quote before you build the budget.** as of 12 november 2026, relevance ai's marketing and docs list different plans. ask which docs prices a new account can actually buy.",
     "cols": [
       "Relevance AI",
-      "dusk bot"
+      "madani bot"
     ],
     "rows": [
       {
@@ -88,7 +88,7 @@
         "label": "hosting",
         "cells": [
           "their cloud",
-          "your disk, your own server or dusk cloud"
+          "your disk, your own server or madani cloud"
         ],
         "src": [
           2,
@@ -112,7 +112,7 @@
         "label": "usage units",
         "cells": [
           "actions plus vendor credits; optional own api keys on every plan",
-          "your ai provider bills ai usage; it is never on the dusk bill"
+          "your ai provider bills ai usage; it is never on the madani bill"
         ],
         "src": [
           3,
@@ -144,7 +144,7 @@
       }
     ]
   },
-  "method": "**use the offer to choose a trial, then judge the work.** we make dusk bot. we compared relevance ai's own pages on 12 november 2026.\n\nits pages disagree about plans. we show both. we did not run matching jobs or test a deployment with its sales team.",
+  "method": "**use the offer to choose a trial, then judge the work.** we make madani bot. we compared relevance ai's own pages on 12 november 2026.\n\nits pages disagree about plans. we show both. we did not run matching jobs or test a deployment with its sales team.",
   "sections": [
     {
       "h": "get the plan in writing",
@@ -152,11 +152,11 @@
     },
     {
       "h": "start with one handoff you can judge",
-      "md": "**start with the handoff that keeps falling through.** relevance ai offers business workforces and curated multi-agent systems.[^1][^2] that can fit an organisation planning a deployment.\n\nfor a smaller trial, attach sales handoff notes to dusk. ask it to separate confirmed commitments from unanswered questions. keep each source filename beside the finding and leave the originals alone.[^9]\n\nneed more viewpoints? [ai teammates](/ai-teammates) explains the setup. a dusk group can have a leader handing out tasks. each bot keeps its own ai and permissions. group learning stays off unless you enable it.[^10][^11]"
+      "md": "**start with the handoff that keeps falling through.** relevance ai offers business workforces and curated multi-agent systems.[^1][^2] that can fit an organisation planning a deployment.\n\nfor a smaller trial, attach sales handoff notes to madani. ask it to separate confirmed commitments from unanswered questions. keep each source filename beside the finding and leave the originals alone.[^9]\n\nneed more viewpoints? [ai teammates](/ai-teammates) explains the setup. a madani group can have a leader handing out tasks. each bot keeps its own ai and permissions. group learning stays off unless you enable it.[^10][^11]"
     },
     {
       "h": "give the first bot one useful job",
-      "md": "**a good first brief ends with a decision you can make.** a [founder](/for/founders) can start with sales handoff notes and a list of unanswered questions. attach the files the bot needs.\n\nkeep app reviews read only. if you later allow edits, write \"ask me before you change anything\". dusk can restrict access per bot.[^9][^12]\n\nneed a building platform for business workflows? compare [gumloop](/alternatives/gumloop). read current ai provider terms before signing in. this comparison measures neither safety nor accuracy."
+      "md": "**a good first brief ends with a decision you can make.** a [founder](/for/founders) can start with sales handoff notes and a list of unanswered questions. attach the files the bot needs.\n\nkeep app reviews read only. if you later allow edits, write \"ask me before you change anything\". madani can restrict access per bot.[^9][^12]\n\nneed a building platform for business workflows? compare [gumloop](/alternatives/gumloop). read current ai provider terms before signing in. this comparison measures neither safety nor accuracy."
     }
   ],
   "faq": [
@@ -166,7 +166,7 @@
     },
     {
       "q": "can non-technical business owners use an agent team?",
-      "a": "**start with a handoff you already understand.** relevance ai offers deployment help through sales.[^2] dusk lets you make bots and groups in an app.[^6][^10] neither can rescue an unclear brief."
+      "a": "**start with a handoff you already understand.** relevance ai offers deployment help through sales.[^2] madani lets you make bots and groups in an app.[^6][^10] neither can rescue an unclear brief."
     },
     {
       "q": "can i bring my own model credentials to relevance ai?",
@@ -200,31 +200,31 @@
       "checked": "2026-11-12"
     },
     {
-      "label": "dusk bot: bots",
+      "label": "madani bot: bots",
       "url": "/docs/bots"
     },
     {
-      "label": "dusk bot: dusk cloud",
-      "url": "/docs/dusk-cloud"
+      "label": "madani bot: madani cloud",
+      "url": "/docs/madani-cloud"
     },
     {
-      "label": "dusk bot: billing",
+      "label": "madani bot: billing",
       "url": "/docs/account-and-billing"
     },
     {
-      "label": "dusk bot: files and apps",
+      "label": "madani bot: files and apps",
       "url": "/docs/files-and-apps"
     },
     {
-      "label": "dusk bot: group chats",
+      "label": "madani bot: group chats",
       "url": "/docs/group-chats"
     },
     {
-      "label": "dusk bot: memory",
+      "label": "madani bot: memory",
       "url": "/docs/memory"
     },
     {
-      "label": "dusk bot: permissions and sends",
+      "label": "madani bot: permissions and sends",
       "url": "/docs/computer"
     }
   ],
@@ -265,7 +265,7 @@
       ],
       [
         "one bot you can name and brief yourself",
-        "dusk bot"
+        "madani bot"
       ],
       [
         "a large native and pipedream app catalogue",
@@ -273,7 +273,7 @@
       ],
       [
         "separate bots with optional group memory",
-        "dusk bot"
+        "madani bot"
       ]
     ]
   },

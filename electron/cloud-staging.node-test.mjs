@@ -5,28 +5,28 @@ import { CLOUD_ORIGIN, STAGING_CLOUD_ORIGIN, checkoutDestination, cloudOrigin, c
 
 const accessToken = `omc_${"S".repeat(43)}`;
 
-test("DUSK_CLOUD_STAGING=1, and only that, points the app at the fixed staging Admin with its own token file", () => {
+test("MADANI_CLOUD_STAGING=1, and only that, points the app at the fixed staging Admin with its own token file", () => {
   assert.deepEqual(cloudTarget({}), { origin: CLOUD_ORIGIN, staging: false, custom: false, file: "cloud-account.bin", saved: "cloud-accounts.bin", places: "account-places.json", environments: "environments.json", sync: "cloud-sync", look: "cloud-home-look.json" });
-  assert.deepEqual(cloudTarget({ DUSK_CLOUD_STAGING: "1" }), { origin: "https://preview.dusk.bot", staging: true, custom: false, file: "cloud-account-staging.bin", saved: "cloud-accounts-staging.bin", places: "account-places-staging.json",
+  assert.deepEqual(cloudTarget({ MADANI_CLOUD_STAGING: "1" }), { origin: "https://preview.madani.bot", staging: true, custom: false, file: "cloud-account-staging.bin", saved: "cloud-accounts-staging.bin", places: "account-places-staging.json",
     environments: "environments-staging.json", sync: "cloud-sync-staging", look: "cloud-home-look-staging.json" });
-  const production = Object.values(cloudTarget({})), staging = Object.values(cloudTarget({ DUSK_CLOUD_STAGING: "1" }));
+  const production = Object.values(cloudTarget({})), staging = Object.values(cloudTarget({ MADANI_CLOUD_STAGING: "1" }));
   assert.ok(staging.filter(value => typeof value === "string").every(name => !production.includes(name)), "no file or address shared with production");
-  assert.equal(STAGING_CLOUD_ORIGIN, "https://preview.dusk.bot");
-  for (const value of ["0", "true", "yes", " 1", "1 ", "01", "2", "", "https://evil.example.test", "https://preview.dusk.bot"]) {
-    assert.deepEqual(cloudTarget({ DUSK_CLOUD_STAGING: value }), cloudTarget({}), JSON.stringify(value));
+  assert.equal(STAGING_CLOUD_ORIGIN, "https://preview.madani.bot");
+  for (const value of ["0", "true", "yes", " 1", "1 ", "01", "2", "", "https://evil.example.test", "https://preview.madani.bot"]) {
+    assert.deepEqual(cloudTarget({ MADANI_CLOUD_STAGING: value }), cloudTarget({}), JSON.stringify(value));
   }
-  assert.deepEqual(cloudTarget({ DUSK_CLOUD_STAGING_URL: "https://evil.example.test" }), cloudTarget({}), "no staging address is read from the environment");
-  // DUSK_CLOUD_ORIGIN names our own service by choice: its own files, never production's or staging's
-  const custom = cloudTarget({ DUSK_CLOUD_ORIGIN: "https://accounts.example.test", DUSK_CLOUD_STAGING: "1" });
+  assert.deepEqual(cloudTarget({ MADANI_CLOUD_STAGING_URL: "https://evil.example.test" }), cloudTarget({}), "no staging address is read from the environment");
+  // MADANI_CLOUD_ORIGIN names our own service by choice: its own files, never production's or staging's
+  const custom = cloudTarget({ MADANI_CLOUD_ORIGIN: "https://accounts.example.test", MADANI_CLOUD_STAGING: "1" });
   assert.equal(custom.custom, true); assert.equal(custom.origin, "https://accounts.example.test");
   assert.ok(Object.values(custom).filter(value => typeof value === "string" && value !== custom.origin).every(name => !production.includes(name) && !staging.includes(name)));
-  assert.deepEqual(cloudTarget(undefined).origin, process.env.DUSK_CLOUD_STAGING === "1" ? STAGING_CLOUD_ORIGIN : CLOUD_ORIGIN);
+  assert.deepEqual(cloudTarget(undefined).origin, process.env.MADANI_CLOUD_STAGING === "1" ? STAGING_CLOUD_ORIGIN : CLOUD_ORIGIN);
 });
 
 test("the staging address is the one exact https origin; staging checkouts are only Dodo's test page", () => {
   assert.equal(cloudOrigin(STAGING_CLOUD_ORIGIN), STAGING_CLOUD_ORIGIN);
-  for (const value of ["http://preview.dusk.bot", `${STAGING_CLOUD_ORIGIN}/`, `${STAGING_CLOUD_ORIGIN}:8443`, "https://preview.dusk.bot.evil.test", "https://evil.fly.dev"]) {
-    assert.throws(() => cloudOrigin(value), /Invalid dusk cloud address/, value);
+  for (const value of ["http://preview.madani.bot", `${STAGING_CLOUD_ORIGIN}/`, `${STAGING_CLOUD_ORIGIN}:8443`, "https://preview.madani.bot.evil.test", "https://evil.fly.dev"]) {
+    assert.throws(() => cloudOrigin(value), /Invalid madani cloud address/, value);
   }
   const test = "https://test.checkout.dodopayments.com/session/cks_1", live = "https://checkout.dodopayments.com/session/cks_1";
   assert.equal(checkoutDestination(test, { staging: true }), test);
@@ -50,7 +50,7 @@ test("a staging client talks only to the staging Admin, says it is staging, and 
     if (path === "/api/cloud/desktop/checkout") return answer(200, { cloudContractVersion: 1, url: checkoutUrl });
     return answer(404, { error: "not_found" });
   };
-  const client = createCloudAccountClient({ origin: cloudTarget({ DUSK_CLOUD_STAGING: "1" }).origin, fetch, deviceName: "Staging VM", platform: "linux", appVersion: "0.1.113",
+  const client = createCloudAccountClient({ origin: cloudTarget({ MADANI_CLOUD_STAGING: "1" }).origin, fetch, deviceName: "Staging VM", platform: "linux", appVersion: "0.1.113",
     store: { read: async () => saved, write: async value => { saved = value; } }, openBrowser: async url => { browsers.push(url); }, onState: state => states.push(state),
     setTimer: () => 1, clearTimer: () => {} });
   try {

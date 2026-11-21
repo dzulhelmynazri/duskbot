@@ -1,4 +1,4 @@
-// Dusk clouds the edge said were deleted (410 with x-dusk-cloud-power: gone). Main's
+// Madani clouds the edge said were deleted (410 with x-madani-cloud-power: gone). Main's
 // background work (settings and connector sync, Files, the inbox counts, the egress link, focus pings) leaves such an
 // origin alone for the rest of this run: its fetch answers the same 410 without the network, and the lists the syncers
 // walk leave it out, so nothing polls an address that will never answer again.
@@ -7,7 +7,7 @@ import { goneAnswer } from "./cloud-power.mjs";
 const originOf = (value) => { try { return new URL(String(value)).origin; } catch { return null; } };
 
 /** The edge's own answer, made here for an origin already known to be gone. */
-export const goneResponse = () => new Response("This dusk bot was deleted.", { status: 410, headers: { "content-type": "text/plain; charset=utf-8", "x-dusk-cloud-power": "gone" } });
+export const goneResponse = () => new Response("This madani bot was deleted.", { status: 410, headers: { "content-type": "text/plain; charset=utf-8", "x-madani-cloud-power": "gone" } });
 
 export function createCloudGone({ log = () => {} } = {}) {
   const gone = new Set();

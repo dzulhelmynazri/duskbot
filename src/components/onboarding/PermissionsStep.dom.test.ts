@@ -28,7 +28,7 @@ const button = (kind: string) => document.querySelector<HTMLButtonElement>(`[dat
 beforeEach(() => {
   fixture.localMessage = "";
   openSettings.mockClear();
-  (window as unknown as { duskDesktop: unknown }).duskDesktop = { platform: "darwin", permOpenSettings: openSettings, localControl: { retry: vi.fn(async () => ({})) } };
+  (window as unknown as { madaniDesktop: unknown }).madaniDesktop = { platform: "darwin", permOpenSettings: openSettings, localControl: { retry: vi.fn(async () => ({})) } };
 });
 afterEach(async () => { await act(async () => root?.unmount()); root = null; });
 

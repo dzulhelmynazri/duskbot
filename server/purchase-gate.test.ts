@@ -64,9 +64,9 @@ describe("the browser's purchase gate", () => {
   });
 
   it("reads the name the page script returned through either engine's eval result", () => {
-    expect(pointName({ content: [{ type: "text", text: "DUSK_HIT:Place%20order:END" }] })).toBe("Place order");
-    expect(pointName({ content: [{ type: "text", text: JSON.stringify({ result: "DUSK_HIT:Pay%20%2445:END" }) }] })).toBe("Pay $45");
-    expect(pointName({ content: [{ type: "text", text: "DUSK_HIT::END" }] })).toBeNull();
+    expect(pointName({ content: [{ type: "text", text: "MADANI_HIT:Place%20order:END" }] })).toBe("Place order");
+    expect(pointName({ content: [{ type: "text", text: JSON.stringify({ result: "MADANI_HIT:Pay%20%2445:END" }) }] })).toBe("Pay $45");
+    expect(pointName({ content: [{ type: "text", text: "MADANI_HIT::END" }] })).toBeNull();
     expect(pointName({ isError: true, content: [{ type: "text", text: "agent_browser_eval is refused here" }] })).toBeNull();
     expect(pointNameScript(12.5, 40)).toContain("elementFromPoint(12.5, 40)");
   });

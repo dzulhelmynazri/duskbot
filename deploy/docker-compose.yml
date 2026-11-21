@@ -1,24 +1,24 @@
-# One dusk bot tenant: the harness server plus Caddy for TLS + login.
+# One madani bot tenant: the harness server plus Caddy for TLS + login.
 #
 # Caddy runs in the server's network namespace, so it reaches the server on
 # 127.0.0.1 — the server never binds a public interface. Ports are therefore
-# declared on the `dusk` service (the namespace owner).
+# declared on the `madani` service (the namespace owner).
 #
 #   cp .env.example .env   # set DOMAIN
-#   docker compose pull dusk && docker compose up -d    # the image published for each release
+#   docker compose pull madani && docker compose up -d    # the image published for each release
 #   docker compose up -d --build                        # or build it from this checkout
 services:
-  dusk:
+  madani:
     build:
       context: ..
       dockerfile: deploy/docker/Dockerfile
       args:
         ENGINES: ${ENGINES:-}
-    image: ${DUSK_IMAGE:-ghcr.io/duskbotai/duskbot:latest}
+    image: ${MADANI_IMAGE:-ghcr.io/madanibotai/madanibot:latest}
     restart: unless-stopped
     # The bots' browsers (docs/browser-packaging.md, "Process hygiene"): an
     # init collects the browser processes whose parents exit, and Chrome
-    # gets the shared memory dusk bot's desktop containers give it.
+    # gets the shared memory madani bot's desktop containers give it.
     init: true
     shm_size: 512m
     volumes:
@@ -26,22 +26,22 @@ services:
     ports:
       - "80:80"
       - "443:443"
-      # the live screen's direct path (WebRTC): the image's DUSK_SCREEN_DIRECT_PORTS, same numbers both sides so the
+      # the live screen's direct path (WebRTC): the image's MADANI_SCREEN_DIRECT_PORTS, same numbers both sides so the
       # address the server learns from STUN is the one that reaches it. Closed, screens still work over the relay.
       - "30000-30063:30000-30063/udp"
     environment:
-      DUSK_PORT: "8799"
-      DUSK_WEBHOOK_PORT: "8800"
+      MADANI_PORT: "8799"
+      MADANI_WEBHOOK_PORT: "8800"
       # what the app prints as hook URLs — Caddy passes /hooks/* straight through
-      DUSK_WEBHOOK_PUBLIC_URL: https://${DOMAIN}
+      MADANI_WEBHOOK_PUBLIC_URL: https://${DOMAIN}
       # pairing links for remote clients point here (docs/self-hosting.md)
-      DUSK_PUBLIC_URL: https://${DOMAIN}
+      MADANI_PUBLIC_URL: https://${DOMAIN}
       # Who may sign in with an emailed code at /pair (docs/self-hosting.md,
       # "Sign in with your email"). Empty means pairing codes only.
-      DUSK_SIGNIN_EMAILS: ${DUSK_SIGNIN_EMAILS:-}
-      DUSK_SIGNIN_MEMBER_EMAILS: ${DUSK_SIGNIN_MEMBER_EMAILS:-}
+      MADANI_SIGNIN_EMAILS: ${MADANI_SIGNIN_EMAILS:-}
+      MADANI_SIGNIN_MEMBER_EMAILS: ${MADANI_SIGNIN_MEMBER_EMAILS:-}
     healthcheck:
-      test: ["CMD-SHELL", "curl -sf http://127.0.0.1:8799/api/health | grep -q duskbot"]
+      test: ["CMD-SHELL", "curl -sf http://127.0.0.1:8799/api/health | grep -q madanibot"]
       interval: 30s
       timeout: 5s
       retries: 3
@@ -49,9 +49,9 @@ services:
   caddy:
     image: caddy:2
     restart: unless-stopped
-    network_mode: "service:dusk"
+    network_mode: "service:madani"
     depends_on:
-      dusk:
+      madani:
         condition: service_healthy
     environment:
       DOMAIN: ${DOMAIN}

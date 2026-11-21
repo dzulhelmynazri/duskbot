@@ -66,7 +66,7 @@ export async function runBoxSelfCheck(options: SelfCheckOptions): Promise<SelfCh
   const startedAt = Date.now();
   const marker = `${MARKER_PREFIX}${randomBytes(12).toString("hex")}`;
   const root = join(options.root, `check-${randomBytes(4).toString("hex")}`);
-  const home = join(root, "home"), data = join(home, ".duskbot"), sockets = join(root, "s");
+  const home = join(root, "home"), data = join(home, ".madanibot"), sockets = join(root, "s");
   const cwd = join(data, "task-workspaces", "probe", "t1"), botFolder = join(data, "workspaces", "probe");
   const otherWorkspace = join(data, "workspaces", "other"), otherTask = join(data, "task-workspaces", "other", "t2");
   for (const dir of [cwd, botFolder, otherWorkspace, otherTask, join(data, "providers"), join(data, "tools"), sockets]) mkdirSync(dir, { recursive: true, mode: 0o700 });
@@ -80,19 +80,19 @@ export async function runBoxSelfCheck(options: SelfCheckOptions): Promise<SelfCh
   writeFileSync(join(otherTask, "notes.md"), `other turn ${marker}`);
   writeFileSync(join(botFolder, "MEMORY.md"), "own bot");
   // An engine laid out as `npm install -g --prefix` leaves one: its bin entry a relative link into the package.
-  const engineBin = join(npmEnginesPrefix(data), "bin"), engineName = "dusk-probe-engine", engineSays = "dusk-probe-engine ran";
+  const engineBin = join(npmEnginesPrefix(data), "bin"), engineName = "madani-probe-engine", engineSays = "madani-probe-engine ran";
   const enginePackage = join(npmEnginesPrefix(data), "lib", "node_modules", engineName, "bin");
   for (const dir of [engineBin, enginePackage]) mkdirSync(dir, { recursive: true, mode: 0o700 });
   writeFileSync(join(enginePackage, engineName), `#!/bin/sh\necho '${engineSays}'\n`, { mode: 0o755 });
   symlinkSync(join("..", "lib", "node_modules", engineName, "bin", engineName), join(engineBin, engineName));
   // The box's private /tmp is what is checked, so the host file goes to /tmp itself where there is one.
-  const hostTmpFile = join(existsSync("/tmp") ? "/tmp" : tmpdir(), `dusk-box-check-${randomBytes(6).toString("hex")}`);
+  const hostTmpFile = join(existsSync("/tmp") ? "/tmp" : tmpdir(), `madani-box-check-${randomBytes(6).toString("hex")}`);
   writeFileSync(hostTmpFile, "host tmp");
 
   // The key the broker takes over: its own value, so a box that is never brokered (the host's network) is not counted
   // as leaking the canary when the raw key stays.
   const brokerKey = `sk-ant-${randomBytes(12).toString("hex")}`;
-  const canary = spawn("sleep", ["120"], { env: { PATH: process.env.PATH ?? "/usr/bin:/bin", DUSK_BOX_CANARY: marker }, stdio: "ignore" });
+  const canary = spawn("sleep", ["120"], { env: { PATH: process.env.PATH ?? "/usr/bin:/bin", MADANI_BOX_CANARY: marker }, stdio: "ignore" });
   const answer = (req: { url?: string; headers: Record<string, string | string[] | undefined> }, res: { writeHead(code: number, headers: Record<string, string>): unknown; end(body: string): void }) => {
     // A model call must arrive with the real key, never the token (so the broker forwarded and swapped it).
     const model = req.url?.startsWith("/v1/");
@@ -140,7 +140,7 @@ export async function runBoxSelfCheck(options: SelfCheckOptions): Promise<SelfCh
     env: {
       PATH: [engineBin, process.env.PATH].filter(Boolean).join(delimiter), HOME: home, LANG: process.env.LANG, TMPDIR: "/tmp",
       // What must not get in: a control-plane secret, a workspace credential and an unlisted name, each holding the marker.
-      DUSK_CLOUD_BOOTSTRAP_SECRET: marker, COMPOSIO_API_KEY: marker, SOME_OTHER_SECRET: marker,
+      MADANI_CLOUD_BOOTSTRAP_SECRET: marker, COMPOSIO_API_KEY: marker, SOME_OTHER_SECRET: marker,
       // The real-looking key the broker takes over; its upstream is the fixture server, which answers 200 only to the real key.
       ...(credentials ? { ANTHROPIC_API_KEY: brokerKey, ANTHROPIC_BASE_URL: `http://127.0.0.1:${serverPort}/v1` } : {}),
     },

@@ -3,7 +3,7 @@
 //
 // Open risk, by design: whoever controls the linked server can run anything on this Mac as this user while the app is
 // linked and the owner's switches are on. Only the app's own vps link is followed, never a team's or another person's
-// server; the server refuses any session but the owner's; DUSK_MAC_CONTROL=off turns this off on the Mac.
+// server; the server refuses any session but the owner's; MADANI_MAC_CONTROL=off turns this off on the Mac.
 const MAX_RUNNING = 4;
 const RETRY_MIN_MS = 2000;
 const RETRY_MAX_MS = 60_000;

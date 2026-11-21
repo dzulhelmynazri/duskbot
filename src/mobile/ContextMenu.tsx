@@ -235,7 +235,7 @@ export function ContextMenu({ open, anchor, preview, actions, label, onClose, re
   return createPortal(
     <AnimatePresence onExitComplete={reveal}>
       {open && anchor && layout && (
-        <div className="dusk-mobile-overlay fixed inset-0 z-50" key="context">
+        <div className="madani-mobile-overlay fixed inset-0 z-50" key="context">
           <motion.div
             aria-hidden
             className="absolute inset-0 bg-[rgb(23_24_26/0.22)] [-webkit-backdrop-filter:blur(8px)] [backdrop-filter:blur(8px)]"
@@ -322,6 +322,6 @@ export function ContextMenu({ open, anchor, preview, actions, label, onClose, re
         </div>
       )}
     </AnimatePresence>,
-    document.querySelector(".dusk-mobile") ?? document.body,
+    document.querySelector(".madani-mobile") ?? document.body,
   );
 }

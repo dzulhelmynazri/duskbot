@@ -1,5 +1,5 @@
-# dusk bot harness server — hosted/self-hosted tenant image, and the
-# dusk cloud Pro home machine (docs/cloud-pro.md).
+# madani bot harness server — hosted/self-hosted tenant image, and the
+# madani cloud Pro home machine (docs/cloud-pro.md).
 #
 # Build the renderer + the self-contained server bundle, then ship only those
 # artifacts on a slim Node runtime. The runtime stage holds what changes
@@ -13,13 +13,13 @@
 #
 # Built from the repository root (the context), with Dockerfile.dockerignore beside it:
 #
-#   docker build -f deploy/docker/Dockerfile -t duskbot .
-#   docker build -f deploy/docker/Dockerfile --build-arg ENGINES="@anthropic-ai/claude-code @openai/codex" -t duskbot .
+#   docker build -f deploy/docker/Dockerfile -t madanibot .
+#   docker build -f deploy/docker/Dockerfile --build-arg ENGINES="@anthropic-ai/claude-code @openai/codex" -t madanibot .
 #   docker build -f deploy/docker/Dockerfile --target cloud-home -t omb-cloud-home .
-#   docker buildx build -f deploy/docker/Dockerfile --platform linux/arm64 -t duskbot .   # Raspberry Pi 4/5, ARM servers
+#   docker buildx build -f deploy/docker/Dockerfile --platform linux/arm64 -t madanibot .   # Raspberry Pi 4/5, ARM servers
 #
 # HOME is the /data volume, so engine CLI logins (~/.claude, ~/.codex, ~/.grok,
-# ...) and dusk bot's own state (~/.duskbot) persist across container
+# ...) and madani bot's own state (~/.madanibot) persist across container
 # restarts.
 #
 # A plain `docker run` of either image wants `--init --shm-size=512m`, as the
@@ -59,7 +59,7 @@ RUN pnpm build:server && pnpm exec vite build && chmod -R go-w dist dist-server 
 # (pnpm-workspace.yaml supportedArchitectures).
 ARG TARGETARCH
 RUN arch=x64 && if [ "$TARGETARCH" = arm64 ]; then arch=arm64; fi \
-  && DUSK_DUCKDB_ARCH=$arch node scripts/prepare-duckdb.mjs \
+  && MADANI_DUCKDB_ARCH=$arch node scripts/prepare-duckdb.mjs \
   && mv "dist-native/duckdb/linux-$arch" dist-native/duckdb/target && chmod -R go-w dist-native/duckdb
 
 FROM node:24-bookworm-slim AS runtime
@@ -95,9 +95,9 @@ RUN echo "agent-browser ${AGENT_BROWSER_VERSION}, Chrome for Testing ${CHROME_CA
   && npm install -g --cache /tmp/npm-cache agent-browser@${AGENT_BROWSER_VERSION} \
   && if [ "$TARGETARCH" = arm64 ]; then \
        apt-get update && apt-get install -y --no-install-recommends chromium && rm -rf /var/lib/apt/lists/* \
-       && mkdir -p /opt/duskbot-browser && ln -s /usr/lib/chromium/chromium /opt/duskbot-browser/chrome; \
-     else HOME=/opt/duskbot-browser agent-browser install \
-       && ln -s /opt/duskbot-browser/.agent-browser/browsers/chrome-*/chrome /opt/duskbot-browser/chrome; \
+       && mkdir -p /opt/madanibot-browser && ln -s /usr/lib/chromium/chromium /opt/madanibot-browser/chrome; \
+     else HOME=/opt/madanibot-browser agent-browser install \
+       && ln -s /opt/madanibot-browser/.agent-browser/browsers/chrome-*/chrome /opt/madanibot-browser/chrome; \
      fi \
   && native="$(readlink -f "$(command -v agent-browser)")" \
   && case "$native" in */agent-browser/bin/agent-browser-linux-*) ;; *) echo "agent-browser is not a native binary: $native" >&2; exit 1;; esac \
@@ -109,17 +109,17 @@ RUN echo "agent-browser ${AGENT_BROWSER_VERSION}, Chrome for Testing ${CHROME_CA
 # which may be an existing mounted volume. Session state still lives in HOME,
 # which each image sets after its last build step, so no build step writes
 # into what a fresh volume starts with.
-#  DUSK_DUCKDB_DIR: the DuckDB binding tree the server requires (no node_modules here).
-#  DUSK_SCREEN_DIRECT_PORTS: the UDP ports the direct screen path (WebRTC) binds,
+#  MADANI_DUCKDB_DIR: the DuckDB binding tree the server requires (no node_modules here).
+#  MADANI_SCREEN_DIRECT_PORTS: the UDP ports the direct screen path (WebRTC) binds,
 #  one per open screen; each target EXPOSEs them and a host that publishes them
 #  (deploy/docker-compose.yml) lets an app reach the screen without a relay.
-ENV AGENT_BROWSER_EXECUTABLE_PATH=/opt/duskbot-browser/chrome \
-    DUSK_DUCKDB_DIR=/app/duckdb \
-    DUSK_SCREEN_DIRECT_PORTS=30000-30063 \
-    DUSK_DATA_DIR=/data/.duskbot \
-    DUSK_STATIC_DIR=/app/dist \
-    DUSK_PORT=8799 \
-    DUSK_WEBHOOK_PORT=8800 \
+ENV AGENT_BROWSER_EXECUTABLE_PATH=/opt/madanibot-browser/chrome \
+    MADANI_DUCKDB_DIR=/app/duckdb \
+    MADANI_SCREEN_DIRECT_PORTS=30000-30063 \
+    MADANI_DATA_DIR=/data/.madanibot \
+    MADANI_STATIC_DIR=/app/dist \
+    MADANI_PORT=8799 \
+    MADANI_WEBHOOK_PORT=8800 \
     NODE_ENV=production
 WORKDIR /app
 
@@ -137,13 +137,13 @@ ARG TARGETARCH
 RUN apt-get update \
   && apt-get install -y --no-install-recommends python3 poppler-utils unzip bubblewrap socat \
   && rm -rf /var/lib/apt/lists/* \
-  && HOME=/tmp/dusk-build-home npm install -g pnpm@10.33.0 \
+  && HOME=/tmp/madani-build-home npm install -g pnpm@10.33.0 \
   && uv_arch=x86_64 && if [ "$TARGETARCH" = arm64 ]; then uv_arch=aarch64; fi \
   && mkdir -p /tmp/uv-install \
   && curl -fsSL "https://github.com/astral-sh/uv/releases/download/${UV_VERSION}/uv-${uv_arch}-unknown-linux-gnu.tar.gz" | tar -xz -C /tmp/uv-install --strip-components=1 \
   && install -m 0755 /tmp/uv-install/uv /tmp/uv-install/uvx /usr/local/bin/ \
-  && bwrap --version && socat -V | head -1 && HOME=/tmp/dusk-build-home pnpm --version && uv --version | grep -qF "uv ${UV_VERSION}" \
-  && rm -rf /tmp/dusk-build-home /tmp/uv-install /tmp/node-compile-cache
+  && bwrap --version && socat -V | head -1 && HOME=/tmp/madani-build-home pnpm --version && uv --version | grep -qF "uv ${UV_VERSION}" \
+  && rm -rf /tmp/madani-build-home /tmp/uv-install /tmp/node-compile-cache
 # Caddy and Grok are pinned, so they sit beneath the engines, which change
 # more often.
 COPY --from=edge /caddy /usr/local/bin/caddy
@@ -172,8 +172,8 @@ RUN if [ -n "$GROK_VERSION" ]; then \
 ARG CLOUD_HOME_ENGINES="@anthropic-ai/claude-code @openai/codex"
 ARG ENGINES_CACHE_TAG=""
 RUN echo "engines: ${CLOUD_HOME_ENGINES:-none} ${ENGINES_CACHE_TAG}" \
-  && if [ -n "$CLOUD_HOME_ENGINES" ]; then HOME=/tmp/dusk-build-home npm install -g $CLOUD_HOME_ENGINES; fi \
-  && rm -rf /tmp/dusk-build-home /tmp/node-compile-cache
+  && if [ -n "$CLOUD_HOME_ENGINES" ]; then HOME=/tmp/madani-build-home npm install -g $CLOUD_HOME_ENGINES; fi \
+  && rm -rf /tmp/madani-build-home /tmp/node-compile-cache
 COPY apps/cloud-service/deploy/Caddyfile /app/cloud/Caddyfile
 # The root supervisor runs /app's code and hands the server its secrets, so
 # no file there may be one `maus` can change: unlike the server image's, these
@@ -185,24 +185,24 @@ COPY --from=build /src/dist-server ./dist-server
 COPY --from=build /src/dist ./dist
 # The bundled skills (server/skill-library.ts reads ./skills from /app).
 COPY --from=build /src/skills ./skills
-RUN export HOME=/tmp/dusk-build-home \
+RUN export HOME=/tmp/madani-build-home \
  && chmod go-w /app/cloud /app/cloud/Caddyfile \
  && caddy version \
- && DUSK_CLOUD_PUBLIC_HOST=validate.example DUSK_CLOUD_UPSTREAM_HOST=upstream.invalid caddy validate --config /app/cloud/Caddyfile --adapter caddyfile \
+ && MADANI_CLOUD_PUBLIC_HOST=validate.example MADANI_CLOUD_UPSTREAM_HOST=upstream.invalid caddy validate --config /app/cloud/Caddyfile --adapter caddyfile \
  && test -f /app/dist-server/cloud-home-start.js \
  && untrusted="$(find /app /usr/local/bin/caddy \( ! -user root -o ! -type l -perm /022 \) -print)" \
  && if [ -n "$untrusted" ]; then echo "not root's, or writable by others:" >&2; echo "$untrusted" >&2; exit 1; fi \
- && rm -rf /tmp/dusk-build-home
+ && rm -rf /tmp/madani-build-home
 # OpenCode's pinned build, the free backup AI, goes into the volume at the
 # first start, in the background (server/free-backup.ts).
 ENV HOME=/data \
-    DUSK_PREINSTALL_FREE_BACKUP=1
+    MADANI_PREINSTALL_FREE_BACKUP=1
 VOLUME ["/data"]
 EXPOSE 30000-30063/udp
 EXPOSE 8080
 # Fly uses the checks in fly.toml; this one serves a plain `docker run`.
 HEALTHCHECK --interval=15s --timeout=5s --start-period=30s --retries=5 \
-  CMD curl -sf http://127.0.0.1:8080/api/health | grep -q duskbot || exit 1
+  CMD curl -sf http://127.0.0.1:8080/api/health | grep -q madanibot || exit 1
 # Starts as root: hands a fresh volume to `maus`, runs the server and the edge
 # as `maus`, and hands the server its secrets over a pipe, never an
 # environment `maus` could read (server/cloud-home-start.ts). It runs only
@@ -214,7 +214,7 @@ CMD ["node", "/app/dist-server/cloud-home-start.js"]
 FROM runtime AS server
 # Optional engine CLIs baked into the image (space-separated npm packages).
 ARG ENGINES=""
-RUN if [ -n "$ENGINES" ]; then HOME=/tmp/dusk-build-home npm install -g $ENGINES && rm -rf /tmp/dusk-build-home /tmp/node-compile-cache; fi
+RUN if [ -n "$ENGINES" ]; then HOME=/tmp/madani-build-home npm install -g $ENGINES && rm -rf /tmp/madani-build-home /tmp/node-compile-cache; fi
 COPY --from=build --chown=maus:maus /src/dist-native/duckdb/target ./duckdb
 COPY --from=build --chown=maus:maus /src/dist-server ./dist-server
 COPY --from=build --chown=maus:maus /src/dist ./dist
@@ -224,7 +224,7 @@ VOLUME ["/data"]
 EXPOSE 30000-30063/udp
 USER maus
 HEALTHCHECK --interval=30s --timeout=5s --start-period=20s --retries=3 \
-  CMD curl -sf http://127.0.0.1:8799/api/health | grep -q duskbot || exit 1
+  CMD curl -sf http://127.0.0.1:8799/api/health | grep -q madanibot || exit 1
 # The launcher runs dist-server/index.js and starts it again when it asks to
 # (a copied workspace committing, server/restart.ts), so the container, and a
 # Caddy sharing its network, stays up through that restart.

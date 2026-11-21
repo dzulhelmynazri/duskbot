@@ -1,30 +1,30 @@
 # Open a chat from outside the app
 
 Open a chat row's **···** menu in the sidebar and choose **Copy link** (a bot
-conversation, a room, or a channel). It copies a `duskbot://` link that
+conversation, a room, or a channel). It copies a `madanibot://` link that
 opens that chat in the desktop app, so an external dashboard, a browser
 bookmark, or a script can bring the person straight to the right conversation:
 
 ```text
-duskbot://thread/<thread-id>?bot=<bot-id>
+madanibot://thread/<thread-id>?bot=<bot-id>
 ```
 
 A dashboard that only knows a bot (or a room) also has a link, which opens
 its current conversation:
 
 ```text
-duskbot://bot/<bot-id>
+madanibot://bot/<bot-id>
 ```
 
 ## The link
 
-- **`duskbot://thread/<thread-id>?bot=<bot-id>`** — one exact chat. The
+- **`madanibot://thread/<thread-id>?bot=<bot-id>`** — one exact chat. The
   `?bot=` part names who owns it (a bot id or a room id). It is optional when
-  opening (a bare `duskbot://thread/<thread-id>` resolves against the chats
+  opening (a bare `madanibot://thread/<thread-id>` resolves against the chats
   on this computer the same way a pasted in-app reference does), but **Copy
   link** always writes it, and the app checks it strictly: if the thread is not
   that bot's, nothing opens.
-- **`duskbot://bot/<bot-id>`** — the bot's current conversation, exactly
+- **`madanibot://bot/<bot-id>`** — the bot's current conversation, exactly
   as clicking the bot in the sidebar opens it: with threads hidden, its main
   thread, the conversation the person last wrote in. Handy for an external
   dashboard whose Chat button only knows the bot's id. A room's id works here too.
@@ -49,7 +49,7 @@ duskbot://bot/<bot-id>
   instead." — the window moves to that bot, the same way a dead in-app thread
   reference behaves.
 
-Like the `duskbot://cloud` and `duskbot://organization` links, these are
+Like the `madanibot://cloud` and `madanibot://organization` links, these are
 local-shell actions: a page loaded from a remote server never receives them, and
 the browser build has no such links at all. An app connected to another
 computer as its companion (**Settings → Remote access → Connect to another

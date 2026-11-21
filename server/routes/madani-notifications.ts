@@ -1,13 +1,13 @@
-// The internal calls behind Dusk's list_unread_notifications and mark_notifications_read tools. Runs inside index.ts's
+// The internal calls behind Madani's list_unread_notifications and mark_notifications_read tools. Runs inside index.ts's
 // /api/internal/ block after the capability bearer is checked; the bot is the capability's. The only write is "read".
 import type { ServerResponse } from "node:http";
 
 import type { json as sendJson } from "../harness/http.ts";
-import { listUnread, markRead, type NotificationsHost } from "../dusk-notifications.ts";
+import { listUnread, markRead, type NotificationsHost } from "../madani-notifications.ts";
 import { markNotificationLogRead, recentNotificationLog } from "../message-db.ts";
 import { PASS } from "./table.ts";
 
-export interface DuskNotificationsContext {
+export interface MadaniNotificationsContext {
   method: string;
   path: string;
   res: ServerResponse;
@@ -22,7 +22,7 @@ export type LiveNotificationsDeps = Pick<NotificationsHost, "bot" | "team"> & { 
 const LIST = "/api/internal/notifications";
 const READ = "/api/internal/notifications/read";
 
-export function createDuskNotificationRoutes(deps: LiveNotificationsDeps | NotificationsHost) {
+export function createMadaniNotificationRoutes(deps: LiveNotificationsDeps | NotificationsHost) {
   const host: NotificationsHost = "recent" in deps ? deps : {
     bot: deps.bot,
     team: deps.team,
@@ -31,7 +31,7 @@ export function createDuskNotificationRoutes(deps: LiveNotificationsDeps | Notif
     announceRead: (threadId, ids) => deps.broadcast({ kind: "notifications.read", threadId, ids }),
     now: Date.now,
   };
-  return async (ctx: DuskNotificationsContext): Promise<typeof PASS | void> => {
+  return async (ctx: MadaniNotificationsContext): Promise<typeof PASS | void> => {
     if (!((ctx.method === "GET" && ctx.path === LIST) || (ctx.method === "POST" && ctx.path === READ))) return PASS;
     let result;
     if (ctx.path === LIST) result = listUnread(host, ctx.botId);

@@ -1,4 +1,4 @@
-// One contract for every recognizer, the same five methods window.duskDesktop's speech helper always spoke, plus the
+// One contract for every recognizer, the same five methods window.madaniDesktop's speech helper always spoke, plus the
 // input level the waveform draws. `text` is the whole session so far; `partial: false` ends the session's words.
 
 export type VoiceLine = {

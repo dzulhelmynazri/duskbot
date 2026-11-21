@@ -73,24 +73,24 @@ export function buildDocs({ here, site, markdown, layout, macros, strip, text, w
 <p class="lede">${esc(p.description)}</p></div>${p.art ? art(p.art) : ''}</header>
 ${p.html}
 <nav class="doc-next" aria-label="more docs">${step(prev, 'prev')}${step(next, 'next')}</nav>
-<p class="doc-help">{{bot ${section.bot || 'circle blue'}}}<span>stuck? write to <a href="mailto:hello@dusk.bot">hello@dusk.bot</a> and a person answers.</span></p>
+<p class="doc-help">{{bot ${section.bot || 'circle blue'}}}<span>stuck? write to <a href="mailto:hello@madani.bot">hello@madani.bot</a> and a person answers.</span></p>
 </article>
 ${toc}
 </div>`;
     const jsonld = [JSON.parse(macros(JSON.stringify(crumbs))), ...(qs.length ? [{ '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: qs }] : [])];
-    write(p.at, layout({ title: `${p.title} / dusk bot docs`, description: p.description, page: p.name, at: p.at, section: 'docs', og: `docs--${p.name}`, kind: 'p-doc', scripts: ['docs.js'], jsonld, body }));
+    write(p.at, layout({ title: `${p.title} / madani bot docs`, description: p.description, page: p.name, at: p.at, section: 'docs', og: `docs--${p.name}`, kind: 'p-doc', scripts: ['docs.js'], jsonld, body }));
   });
 
   // the docs home: every section, with its pages and what each is about
   // new here: the three pages worth reading first, in order
-  const first = ['getting-started', 'tips', 'dusk-cloud'].map((n) => ordered.find((p) => p.name === n)).filter(Boolean);
+  const first = ['getting-started', 'tips', 'madani-cloud'].map((n) => ordered.find((p) => p.name === n)).filter(Boolean);
   const home = `<header class="phead wrap"><h1>docs</h1><p class="lede">how to get going, and how to get the most out of your bots. short pages, plain words.</p>${search('q')}</header>
 ${strip('birches', 'circle blue, heart pink, hex orange, star green, drop yellow')}
 <section class="wrap docs-first" aria-labelledby="new-here"><h2 id="new-here">new here? read these three.</h2><ol class="after">${first.map((p, i) => `<li><span class="n" aria-hidden="true">${i + 1}</span><h3><a href="${p.at}">${esc(p.title)}</a></h3><p>${esc(p.description)}</p></li>`).join('')}</ol></section>
 <div class="docs-index wrap" data-index="${indexUrl}">
 ${sections.map((s) => `<section>${art(s.art)}<h2>${esc(s.title)}</h2><ul>${ordered.filter((p) => p.section === s.id).map((p) => `<li><a href="${p.at}"><b>${esc(p.title)}</b><span>${esc(p.description)}</span></a></li>`).join('')}</ul></section>`).join('\n')}
 </div>
-<section class="wrap docs-foot"><div class="note-row">{{bot heart pink}}<p>could not find it? write to <a href="mailto:hello@dusk.bot">hello@dusk.bot</a>. a person answers, and the docs get better.</p></div></section>`;
-  write('/docs', layout({ title: 'docs / dusk bot', description: 'How to get going with dusk bot, and how to get the most out of your bots: clear jobs, good first messages, routines, group chats, memory and dusk cloud.', page: 'docs', at: '/docs', og: 'docs', kind: 'p-docs', scripts: ['docs.js'], body: home }));
+<section class="wrap docs-foot"><div class="note-row">{{bot heart pink}}<p>could not find it? write to <a href="mailto:hello@madani.bot">hello@madani.bot</a>. a person answers, and the docs get better.</p></div></section>`;
+  write('/docs', layout({ title: 'docs / madani bot', description: 'How to get going with madani bot, and how to get the most out of your bots: clear jobs, good first messages, routines, group chats, memory and madani cloud.', page: 'docs', at: '/docs', og: 'docs', kind: 'p-docs', scripts: ['docs.js'], body: home }));
   return ordered.length + 1;
 }

@@ -8,7 +8,7 @@ import { gzipSync } from "node:zlib";
 import { Window } from "happy-dom";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-const source = readFileSync(resolve("apps/dashboard/tracker/dusk.js"), "utf8");
+const source = readFileSync(resolve("apps/dashboard/tracker/madani.js"), "utf8");
 type Payload = {
   v: number; e: string; vid: string; sid: string; pv: string; h: string; p: string;
   u?: Record<string, string>; r?: string; w?: number; g?: string; b?: string;
@@ -17,7 +17,7 @@ type Payload = {
 type Api = ((name: unknown, meta?: unknown) => void) & { q?: IArguments[] };
 
 describe("marketing tracker", () => {
-  let win: Window & { dusk?: Api };
+  let win: Window & { madani?: Api };
   let script: HTMLScriptElement;
   let payloads: Payload[];
   let pending: Promise<void>[];
@@ -72,7 +72,7 @@ describe("marketing tracker", () => {
   }
 
   beforeEach(() => {
-    win = new Window({ url: "https://preview.dusk.bot/pricing?utm_source=x&email=a@b.c&ref=launch" });
+    win = new Window({ url: "https://preview.madani.bot/pricing?utm_source=x&email=a@b.c&ref=launch" });
     for (const cookie of win.document.cookie.split(";")) win.document.cookie = `${cookie.split("=")[0]}=; path=/; max-age=0`;
     win.localStorage.clear();
     win.history.replaceState(null, "", "/pricing?utm_source=x&email=a@b.c&ref=launch");
@@ -118,23 +118,23 @@ describe("marketing tracker", () => {
     expect(page).toEqual({
       v: 1, e: "pageview", vid: expect.stringMatching(/^[A-Za-z0-9_-]{22}$/),
       sid: expect.stringMatching(/^[A-Za-z0-9_-]{22}$/), pv: expect.stringMatching(/^[A-Za-z0-9_-]{8}$/),
-      h: "preview.dusk.bot", p: "/pricing", u: { utm_source: "x", ref: "launch" }, r: "search.example", w: 1280,
+      h: "preview.madani.bot", p: "/pricing", u: { utm_source: "x", ref: "launch" }, r: "search.example", w: 1280,
     });
     expect(fetch.mock.calls[0]).toEqual(["https://t.example/v1/t", {
       method: "POST", body: expect.any(String), keepalive: true, credentials: "include", headers: { "content-type": "text/plain" },
     }]);
-    expect(win.document.cookie).toContain(`dusk_vid=${page!.vid}`);
-    expect(win.document.cookie).toContain(`dusk_sid=${page!.sid}`);
-    expect(win.document.cookie).not.toContain("dusk_test");
-    expect(writes).toContain(`dusk_vid=${page!.vid}; path=/; SameSite=Lax; Secure; max-age=31536000; domain=dusk.bot`);
-    expect(writes).toContain(`dusk_sid=${page!.sid}; path=/; SameSite=Lax; Secure; max-age=1800; domain=dusk.bot`);
-    win.happyDOM.setURL("https://dusk.bot/");
-    expect(win.document.cookie).toContain(`dusk_vid=${page!.vid}`);
+    expect(win.document.cookie).toContain(`madani_vid=${page!.vid}`);
+    expect(win.document.cookie).toContain(`madani_sid=${page!.sid}`);
+    expect(win.document.cookie).not.toContain("madani_test");
+    expect(writes).toContain(`madani_vid=${page!.vid}; path=/; SameSite=Lax; Secure; max-age=31536000; domain=madani.bot`);
+    expect(writes).toContain(`madani_sid=${page!.sid}; path=/; SameSite=Lax; Secure; max-age=1800; domain=madani.bot`);
+    win.happyDOM.setURL("https://madani.bot/");
+    expect(win.document.cookie).toContain(`madani_vid=${page!.vid}`);
   });
 
   it("stores nothing where the service answers persist false, and clears ids kept before", async () => {
-    win.document.cookie = "dusk_vid=existing_visitor; path=/";
-    win.document.cookie = "dusk_sid=existing_session; path=/; domain=dusk.bot";
+    win.document.cookie = "madani_vid=existing_visitor; path=/";
+    win.document.cookie = "madani_sid=existing_session; path=/; domain=madani.bot";
     answer = { persist: false };
     const writes = cookieWrites();
     await load();
@@ -167,7 +167,7 @@ describe("marketing tracker", () => {
     win.history.pushState(null, "", "/next");
     await events();
     expect(fetch).toHaveBeenCalledTimes(2);
-    expect(win.document.cookie).toContain("dusk_vid=");
+    expect(win.document.cookie).toContain("madani_vid=");
   });
 
   it("writes no cookie before the service answers", async () => {
@@ -179,13 +179,13 @@ describe("marketing tracker", () => {
   });
 
   it("reuses existing IDs and omits referrer in an existing session", async () => {
-    win.document.cookie = "dusk_vid=existing_visitor; path=/";
-    win.document.cookie = "dusk_sid=existing_session; path=/";
+    win.document.cookie = "madani_vid=existing_visitor; path=/";
+    win.document.cookie = "madani_sid=existing_session; path=/";
     expect((await load())[0]).toMatchObject({ vid: "existing_visitor", sid: "existing_session" });
     expect(payloads[0]).not.toHaveProperty("r");
   });
 
-  it.each(["", "https://preview.dusk.bot/other"])("omits absent or same-host referrer %s", async referrer => {
+  it.each(["", "https://preview.madani.bot/other"])("omits absent or same-host referrer %s", async referrer => {
     property(win.document, "referrer", referrer);
     expect((await load())[0]).not.toHaveProperty("r");
   });
@@ -202,11 +202,11 @@ describe("marketing tracker", () => {
   });
 
   it.each(["param", "flag"])("honors the ignore %s and installs an inert API", async mode => {
-    if (mode === "param") win.history.replaceState(null, "", "/?dusk_ignore=1");
-    else win.localStorage.setItem("dusk_ignore", "1");
+    if (mode === "param") win.history.replaceState(null, "", "/?madani_ignore=1");
+    else win.localStorage.setItem("madani_ignore", "1");
     await load();
-    expect(win.localStorage.getItem("dusk_ignore")).toBe("1");
-    expect(() => win.dusk!("test")).not.toThrow();
+    expect(win.localStorage.getItem("madani_ignore")).toBe("1");
+    expect(() => win.madani!("test")).not.toThrow();
     click('<a href="https://elsewhere.example">elsewhere</a>');
     expect(beacon).not.toHaveBeenCalled();
     expect(fetch).not.toHaveBeenCalled();
@@ -214,16 +214,16 @@ describe("marketing tracker", () => {
   });
 
   it("checks the ignore URL before the persisted flag", async () => {
-    win.localStorage.setItem("dusk_ignore", "1");
-    win.history.replaceState(null, "", "/?dusk_ignore=0");
+    win.localStorage.setItem("madani_ignore", "1");
+    win.history.replaceState(null, "", "/?madani_ignore=0");
     expect(await load()).toHaveLength(1);
-    expect(win.localStorage.getItem("dusk_ignore")).toBeNull();
+    expect(win.localStorage.getItem("madani_ignore")).toBeNull();
   });
 
   it.each([["webdriver", true], ["doNotTrack", "1"], ["globalPrivacyControl", true], ["userAgent", "Googlebot/2.1"], ["userAgent", "HeadlessChrome"], ["userAgent", "curl/8"]])("skips %s=%s", async (key, value) => {
     property(win.navigator, key as string, value);
     await load();
-    win.dusk!("test");
+    win.madani!("test");
     expect(beacon).not.toHaveBeenCalled();
     expect(win.document.cookie).toBe("");
   });
@@ -243,10 +243,10 @@ describe("marketing tracker", () => {
   });
 
   it("replays queued calls and sanitizes direct goal metadata", async () => {
-    win.dusk = function () { (win.dusk!.q = win.dusk!.q || []).push(arguments); };
-    win.dusk("queued_goal", { placement: "hero" });
+    win.madani = function () { (win.madani!.q = win.madani!.q || []).push(arguments); };
+    win.madani("queued_goal", { placement: "hero" });
     await load();
-    win.dusk!("buy_1", { text: "x".repeat(120), count: 3, bad: false, nested: {}, infinity: Infinity, nan: NaN, a: "a", b: "b", c: "c", sixth: "drop" });
+    win.madani!("buy_1", { text: "x".repeat(120), count: 3, bad: false, nested: {}, infinity: Infinity, nan: NaN, a: "a", b: "b", c: "c", sixth: "drop" });
     await events();
     expect(payloads.map(p => p.e)).toEqual(["pageview", "goal", "goal"]);
     expect(payloads[1]).toMatchObject({ g: "queued_goal", m: { placement: "hero" } });
@@ -258,13 +258,13 @@ describe("marketing tracker", () => {
 
   it("drops invalid goal names", async () => {
     await load();
-    for (const name of ["", "UPPER", "has space", "hy-phen", "a".repeat(41), null, 123]) win.dusk!(name);
+    for (const name of ["", "UPPER", "has space", "hy-phen", "a".repeat(41), null, 123]) win.madani!(name);
     expect(await events()).toHaveLength(1);
   });
 
   it("captures an ancestor's explicit goal and data attributes once", async () => {
     await load();
-    click('<a href="/dashboard" data-dusk-goal="hero_click" data-dusk-placement="hero" data-dusk-plan="pro"><span>start</span></a>', "span");
+    click('<a href="/dashboard" data-madani-goal="hero_click" data-madani-placement="hero" data-madani-plan="pro"><span>start</span></a>', "span");
     await events();
     expect(payloads).toHaveLength(2);
     expect(payloads[1]).toMatchObject({ g: "hero_click", m: { placement: "hero", plan: "pro" } });
@@ -272,7 +272,7 @@ describe("marketing tracker", () => {
 
   it("reports a video or audio play once per page view, by its own goal name when it has one", async () => {
     await load();
-    win.document.body.innerHTML = '<section id="demo"><video aria-label="Launch video" data-dusk-value="hero"></video><video data-dusk-goal="launch_video_play"></video></section>';
+    win.document.body.innerHTML = '<section id="demo"><video aria-label="Launch video" data-madani-value="hero"></video><video data-madani-goal="launch_video_play"></video></section>';
     const [plain, named] = [...win.document.querySelectorAll("video")];
     plain!.dispatchEvent(new win.Event("play"));
     plain!.dispatchEvent(new win.Event("play"));
@@ -290,8 +290,8 @@ describe("marketing tracker", () => {
   it.each([
     ['<a href="/docs">Read the setup guide today</a>', "click", { label: "read_the_setup_guide", to: "/docs" }],
     ['<button data-period="Year Plan" aria-label="Choose yearly">ignored</button>', "click", { label: "choose_yearly", value: "year_plan" }],
-    ['<div role="button" data-dusk-label="Pick a platform" data-platform="Mac OS"><span>pick</span></div>', "click", { label: "pick_a_platform", value: "mac_os" }],
-    ['<button data-dusk-goal="hero_click" data-dusk-label="Start now">start</button>', "hero_click", { label: "start_now" }],
+    ['<div role="button" data-madani-label="Pick a platform" data-platform="Mac OS"><span>pick</span></div>', "click", { label: "pick_a_platform", value: "mac_os" }],
+    ['<button data-madani-goal="hero_click" data-madani-label="Start now">start</button>', "hero_click", { label: "start_now" }],
     ['<a href="/dashboard">Start now</a>', "cta_click", { label: "start_now", to: "/dashboard", from: "/pricing" }],
     ['<a href="https://elsewhere.example/">More info</a>', "outbound", { label: "more_info", host: "elsewhere.example" }],
   ])("adds click context for %s", async (html, goal, meta) => {
@@ -305,7 +305,7 @@ describe("marketing tracker", () => {
   it.each([
     '<button>email person@example.com</button>', '<button>order 12345</button>', '<button></button>',
     '<input type="button" value="private">', '<textarea>private</textarea>', '<select><option>private</option></select>',
-    '<div data-dusk-ignore><button>ignore</button></div>', '<div contenteditable="true" role="button">typed words</div>',
+    '<div data-madani-ignore><button>ignore</button></div>', '<div contenteditable="true" role="button">typed words</div>',
     '<button><span contenteditable="true">typed words</span></button>',
   ])("does not capture private or ignored clicks: %s", async html => {
     await load();
@@ -315,19 +315,19 @@ describe("marketing tracker", () => {
 
   it("bounds click labels and prefers an explicit section name and value", async () => {
     await load();
-    click(`<section id="fallback" data-dusk-section="Hero / Intro"><button data-dusk-label="${"A".repeat(60)}" data-dusk-value="Pro Plan" data-period="month">start</button></section>`, "button");
+    click(`<section id="fallback" data-madani-section="Hero / Intro"><button data-madani-label="${"A".repeat(60)}" data-madani-value="Pro Plan" data-period="month">start</button></section>`, "button");
     await events();
     expect(payloads[1]!.m).toEqual({ section: "hero_intro", label: "a".repeat(40), value: "pro_plan" });
   });
 
   it.each([
-    ["/download/mac", "download", "", "mac"], ["/Dusk.DMG", "download", "", "mac"],
-    ["/dusk.exe", "download", "", "windows"], ["/dusk.msi", "download", "", "windows"],
-    ["/dusk.appimage", "download", "", "linux"], ["/dusk.deb", "download", "", "linux"], ["/dusk.rpm", "download", "", "linux"],
-    ["https://apps.apple.com/app/dusk", "download", "", "ios"], ["https://play.google.com/store/apps/dusk", "download", "", "android"],
+    ["/download/mac", "download", "", "mac"], ["/Madani.DMG", "download", "", "mac"],
+    ["/madani.exe", "download", "", "windows"], ["/madani.msi", "download", "", "windows"],
+    ["/madani.appimage", "download", "", "linux"], ["/madani.deb", "download", "", "linux"], ["/madani.rpm", "download", "", "linux"],
+    ["https://apps.apple.com/app/madani", "download", "", "ios"], ["https://play.google.com/store/apps/madani", "download", "", "android"],
     ["/download/ios", "download", "", "ios"], ["/download/android", "download", "", "android"],
     ["/download", "Get Windows", "", "windows"], ["/download", "Get Linux", "", "linux"], ["/download", "Get Mac", "", "mac"],
-    ["/download/mac", "download", 'data-dusk-platform="Windows"', "windows"], ["/download", "download", "", undefined],
+    ["/download/mac", "download", 'data-madani-platform="Windows"', "windows"], ["/download", "download", "", undefined],
   ])("records the download platform for %s (%s)", async (href, label, attr, platform) => {
     await load();
     click(`<section id="downloads"><a href="${href}" ${attr}>${label}</a></section>`);
@@ -379,7 +379,7 @@ describe("marketing tracker", () => {
 
   it.each(["pagehide", "spa"])("tracks form starts and abandons each form only once on %s", async end => {
     await load();
-    win.document.body.innerHTML = '<section id="signup"><form id="Join Waitlist"><input type="text" value="private words"><input type="email" value="person@example.com"></form><form data-dusk-goal="Contact Us"><input type="email"></form><form><input type="email"></form><form id="no-email"><input></form></section>';
+    win.document.body.innerHTML = '<section id="signup"><form id="Join Waitlist"><input type="text" value="private words"><input type="email" value="person@example.com"></form><form data-madani-goal="Contact Us"><input type="email"></form><form><input type="email"></form><form id="no-email"><input></form></section>';
     const fields = win.document.querySelectorAll("input");
     for (const field of fields) field.dispatchEvent(new win.FocusEvent("focusin", { bubbles: true }));
     fields[0]!.dispatchEvent(new win.FocusEvent("focusin", { bubbles: true }));
@@ -435,7 +435,7 @@ describe("marketing tracker", () => {
         observers.push(this);
       }
     });
-    win.document.body.innerHTML = '<section data-dusk-section="Hero / Intro"><section id="hero_intro"></section></section><section class="wrap pricing-table"></section><section class="wrap"></section><section id="brief"></section><section id="pricing-table"></section>';
+    win.document.body.innerHTML = '<section data-madani-section="Hero / Intro"><section id="hero_intro"></section></section><section class="wrap pricing-table"></section><section class="wrap"></section><section id="brief"></section><section id="pricing-table"></section>';
     const nodes = win.document.querySelectorAll("section");
     await load();
     const intersect = (index: number, ratio: number) => observers[0]!.callback([{ target: nodes[index], isIntersecting: ratio > 0, intersectionRatio: ratio }]);
@@ -494,14 +494,14 @@ describe("marketing tracker", () => {
     expect(payloads.at(-1)).toMatchObject({ e: "leave", p: "/next" });
   });
 
-  it.each(["/dashboard", "/dashboard/signup", "/app", "/signup/new", "https://preview.dusk.bot/dashboard/billing"])("tracks CTA %s", async href => {
+  it.each(["/dashboard", "/dashboard/signup", "/app", "/signup/new", "https://preview.madani.bot/dashboard/billing"])("tracks CTA %s", async href => {
     await load();
     click(`<a href="${href}"><span>start</span></a>`, "span");
     await events();
     expect(payloads[1]).toMatchObject({ g: "cta_click", m: { to: new URL(href, win.location.href).pathname, from: "/pricing" } });
   });
 
-  it.each(["/download/mac", "https://cdn.example/Dusk.DMG?token=private", "/dusk.exe", "/dusk.msi", "/dusk.appimage", "/dusk.deb", "/dusk.rpm"])("tracks download %s", async href => {
+  it.each(["/download/mac", "https://cdn.example/Madani.DMG?token=private", "/madani.exe", "/madani.msi", "/madani.appimage", "/madani.deb", "/madani.rpm"])("tracks download %s", async href => {
     await load();
     click(`<a href="${href}">download</a>`);
     await events();
@@ -510,9 +510,9 @@ describe("marketing tracker", () => {
 
   it("tracks external hosts without leaking URLs or misclassifying suffix lookalikes", async () => {
     await load();
-    click('<a href="https://evilpreview.dusk.bot/signup?email=a@b.c">external</a>');
+    click('<a href="https://evilpreview.madani.bot/signup?email=a@b.c">external</a>');
     await events();
-    expect(payloads[1]).toMatchObject({ g: "outbound", m: { host: "evilpreview.dusk.bot" } });
+    expect(payloads[1]).toMatchObject({ g: "outbound", m: { host: "evilpreview.madani.bot" } });
     click('<a href="mailto:a@b.c">email</a>');
     now += 701;
     click('<a href="/docs">docs</a>');
@@ -529,7 +529,7 @@ describe("marketing tracker", () => {
     expect(JSON.stringify(payloads)).not.toContain("person@example.com");
   });
 
-  it("tracks the dusk.bot waitlist form by its wl-form class", async () => {
+  it("tracks the madani.bot waitlist form by its wl-form class", async () => {
     await load();
     submit('<form class="wl-form" data-wl-form novalidate><input type="email" value="person@example.com"></form>');
     await events();
@@ -540,7 +540,7 @@ describe("marketing tracker", () => {
     await load();
     submit('<form id="waitlist"><input type="email" value="invalid"></form>');
     submit('<form><input type="email" value="a@b.c"></form>');
-    submit('<form id="waitlist" data-dusk-goal="custom_join" data-dusk-placement="footer"><input type="email" value="a@b.c"></form>');
+    submit('<form id="waitlist" data-madani-goal="custom_join" data-madani-placement="footer"><input type="email" value="a@b.c"></form>');
     await events();
     expect(payloads).toHaveLength(2);
     expect(payloads[1]).toMatchObject({ g: "custom_join", m: { placement: "footer" } });
@@ -563,7 +563,7 @@ describe("marketing tracker", () => {
     win.history.replaceState(null, "", "/next");
     await events();
     expect(payloads.slice(-2).map(p => p.e)).toEqual(["leave", "pageview"]);
-    win.happyDOM.setURL("https://preview.dusk.bot/back");
+    win.happyDOM.setURL("https://preview.madani.bot/back");
     win.dispatchEvent(new win.PopStateEvent("popstate"));
     await events();
     expect(payloads.at(-1)!.p).toBe("/back");
@@ -603,8 +603,8 @@ describe("marketing tracker", () => {
 
   it("waits through prerender and replays queued goals after the pageview", async () => {
     property(win.document, "visibilityState", "prerender");
-    win.dusk = function () { (win.dusk!.q = win.dusk!.q || []).push(arguments); };
-    win.dusk("queued");
+    win.madani = function () { (win.madani!.q = win.madani!.q || []).push(arguments); };
+    win.madani("queued");
     expect(await load()).toHaveLength(0);
     now += 1000;
     visibility("visible");
@@ -621,7 +621,7 @@ describe("marketing tracker", () => {
     if (mode === "missing") property(win.navigator, "sendBeacon", undefined);
     if (mode === "throws") beacon.mockImplementation(() => { throw new Error("unavailable"); });
     await load();
-    win.dusk!("later");
+    win.madani!("later");
     expect(fetch).toHaveBeenCalledTimes(2);
     expect(fetch.mock.calls[1]).toEqual(["https://t.example/v1/t", {
       method: "POST", body: expect.any(String), keepalive: true, headers: { "content-type": "text/plain" },
@@ -634,7 +634,7 @@ describe("marketing tracker", () => {
     beacon.mockImplementation(() => { throw new Error("blocked"); });
     fetch.mockRejectedValue(new Error("offline"));
     await expect(load()).resolves.toEqual([]);
-    expect(() => win.dusk!("goal", { get value() { throw new Error("getter"); } })).not.toThrow();
+    expect(() => win.madani!("goal", { get value() { throw new Error("getter"); } })).not.toThrow();
     expect(() => win.history.pushState(null, "", "https://other.example/")).not.toThrow();
     expect(() => visibility("hidden")).not.toThrow();
     await Promise.resolve();
@@ -647,7 +647,7 @@ describe("marketing tracker", () => {
     expect(timers).toHaveLength(1);
     timers[0]!();
     let sent = await events();
-    expect(sent.filter(p => p.e === "ping")).toEqual([expect.objectContaining({ v: 1, e: "ping", p: "/pricing", h: "preview.dusk.bot" })]);
+    expect(sent.filter(p => p.e === "ping")).toEqual([expect.objectContaining({ v: 1, e: "ping", p: "/pricing", h: "preview.madani.bot" })]);
     visibility("hidden");
     timers[0]!();
     sent = await events();

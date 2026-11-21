@@ -13,10 +13,10 @@ import { restartPolicy } from "./restart.ts";
 export function serverCommand(here: string, env: NodeJS.ProcessEnv, options: { exists?: (path: string) => boolean; box?: BoxMemory } = {}) {
   const bootstrap = join(here, "desktop-entry.mjs");
   const cached = (options.exists ?? existsSync)(bootstrap);
-  const dataDir = dataDirFor(env.DUSK_DATA_DIR, homedir());
+  const dataDir = dataDirFor(env.MADANI_DATA_DIR, homedir());
   return {
     args: [...heapSizeArgs((options.box ?? boxMemory()).cgroupLimit, env.NODE_OPTIONS), cached ? bootstrap : join(here, "index.js")],
-    env: cached ? { ...env, DUSK_SERVER_COMPILE_CACHE: join(dataDir, "cache", "node-compile") } : env,
+    env: cached ? { ...env, MADANI_SERVER_COMPILE_CACHE: join(dataDir, "cache", "node-compile") } : env,
   };
 }
 
@@ -33,7 +33,7 @@ export function superviseServer(start: () => ChildProcess, options: { signals?: 
       child.once("error", () => finish(1));
       child.once("exit", (code, signal) => {
         if (policy.again(code, stopping)) {
-          console.log("dusk bot is starting again to finish installing a copy from the desktop app…");
+          console.log("madani bot is starting again to finish installing a copy from the desktop app…");
           run();
           return;
         }

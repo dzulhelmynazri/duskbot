@@ -19,7 +19,7 @@ const lapsed = (expiresAt: number | undefined) => Boolean(expiresAt && expiresAt
  * clock alone, so a phone or computer clock set wrong never ends it early. */
 async function grantLapsed(payload: MobilePairingPayload, platform: MobilePlatform): Promise<boolean> {
   if (payload.issuedAt === undefined || !payload.grantId || !payload.expiresAt) return lapsed(payload.expiresAt);
-  const key = `dusk.mobile.grantSeen.${payload.grantId}`, now = Date.now();
+  const key = `madani.mobile.grantSeen.${payload.grantId}`, now = Date.now();
   const seen = Number(await platform.prefs.get(key));
   if (!Number.isSafeInteger(seen) || seen <= 0 || seen > now) { await platform.prefs.set(key, String(now)); return false; }
   return now - seen >= payload.expiresAt - payload.issuedAt;
@@ -53,13 +53,13 @@ export class PairError extends Error {
 
 /** the desktop's App Store qr, read by a phone that already has the app */
 export function isStoreLink(input: string): boolean {
-  return /^https:\/\/(apps\.apple\.com|play\.google\.com)\//i.test(input.trim()) || /^https:\/\/dusk\.bot\/download\/?$/i.test(input.trim());
+  return /^https:\/\/(apps\.apple\.com|play\.google\.com)\//i.test(input.trim()) || /^https:\/\/madani\.bot\/download\/?$/i.test(input.trim());
 }
 
 /** What a scanned qr is, whichever kind the desktop, the site or an older build drew: the https universal links and their
- * duskbot:// forms (a pairing, a dusk cloud log in), the old store qr, or a typed code. Null for anything else. */
+ * madanibot:// forms (a pairing, a madani cloud log in), the old store qr, or a typed code. Null for anything else. */
 export type Scanned = { kind: "store" } | { kind: "signin"; email: string; code?: string; service?: SignInService; cloud?: string } | { kind: "pair"; payload: TypedPairing } | TypedCode
-  /** a desktop's dusk cloud code (8 letters): it logs the phone in to the account */
+  /** a desktop's madani cloud code (8 letters): it logs the phone in to the account */
   | { kind: "account"; code: string };
 export function readScanned(input: string): Scanned | null {
   if (isStoreLink(input)) return { kind: "store" };
@@ -75,7 +75,7 @@ export function readScanned(input: string): Scanned | null {
 export function parseTypedPairing(input: string): MobilePairingPayload | TypedCode | null {
   // the desktop's qr is an https link (a camera opens the app with it); the app's own scanner reads it the same way
   const value = appLinkFromUniversal(input) ?? input.trim();
-  if (value.startsWith("duskbot:")) return parseMobilePairingLink(value);
+  if (value.startsWith("madanibot:")) return parseMobilePairingLink(value);
   const code = value.replace(/[-\s]/g, "").toUpperCase();
   if (/^[A-Z0-9]{12}$/.test(code)) return { kind: "code", code };
   const match = /^(\S+)\s+([A-Za-z0-9]{12})$/.exec(value);
@@ -89,7 +89,7 @@ export function parseTypedPairing(input: string): MobilePairingPayload | TypedCo
 
 const pendingAttempts = new WeakMap<MobilePlatform, Map<string, Promise<string>>>();
 
-const INSTALL_KEY = "dusk.mobile.install";
+const INSTALL_KEY = "madani.mobile.install";
 
 /** this app install's own id, made on first use and kept in its preferences */
 export async function installId(platform: MobilePlatform): Promise<string> {
@@ -103,7 +103,7 @@ export async function installId(platform: MobilePlatform): Promise<string> {
 async function attemptId(payload: TypedPairing, platform: MobilePlatform, origin: string): Promise<string> {
   const digest = await subtle().digest("SHA-256", new TextEncoder().encode(payload.credential || `${origin}\0${payload.code}`));
   const hash = [...new Uint8Array(digest)].map((byte) => byte.toString(16).padStart(2, "0")).join("").slice(0, 12);
-  const key = payload.via ? `dusk.mobile.attempt.${payload.grantId}` : `dusk.mobile.pairAttempt.${hash}`;
+  const key = payload.via ? `madani.mobile.attempt.${payload.grantId}` : `madani.mobile.pairAttempt.${hash}`;
   let attempts = pendingAttempts.get(platform);
   if (!attempts) { attempts = new Map(); pendingAttempts.set(platform, attempts); }
   const existing = attempts.get(key);
@@ -153,7 +153,7 @@ async function redeemLegacyPairing(payload: MobilePairingPayload, platform: Mobi
     origin = new URL(payload.origin ?? "");
     if (!(["https:", ...(payload.transport === "companion" ? ["http:"] : [])].includes(origin.protocol)) || origin.username || origin.password || origin.pathname !== "/" || origin.search || origin.hash) throw new PairError("invalid");
   } catch { throw new PairError("invalid"); }
-  if (payload.credential ? !/^(?:dusk|omb)_pair_[A-Za-z0-9_-]{43}$/.test(payload.credential) : !(payload.transport === "companion" ? /^\d{6}$/ : /^[A-Za-z0-9]{12}$/).test(payload.code ?? "")) throw new PairError("invalid");
+  if (payload.credential ? !/^(?:madani|omb)_pair_[A-Za-z0-9_-]{43}$/.test(payload.credential) : !(payload.transport === "companion" ? /^\d{6}$/ : /^[A-Za-z0-9]{12}$/).test(payload.code ?? "")) throw new PairError("invalid");
   if (lapsed(payload.expiresAt)) throw new PairError("expired");
   try {
     const pairRequestId = await attemptId(payload, platform, origin.origin);

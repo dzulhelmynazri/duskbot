@@ -17,7 +17,7 @@ export function setNotificationPlace(name: string | null) {
 }
 
 /** The desktop app on a Mac never posts system notifications: the dock, the island and the unread dots carry them. */
-export function systemNotificationsAllowed(platform: string | undefined = typeof window === "undefined" ? undefined : window.duskDesktop?.platform): boolean {
+export function systemNotificationsAllowed(platform: string | undefined = typeof window === "undefined" ? undefined : window.madaniDesktop?.platform): boolean {
   return platform !== "darwin";
 }
 
@@ -42,7 +42,7 @@ export interface NotificationBotIdentity {
 }
 
 export function buildNotificationOptions(bot: NotificationBotIdentity): NotificationOptions {
-  return { tag: `duskbot:${bot.id}`, icon: bot.avatarUrl ?? undefined };
+  return { tag: `madanibot:${bot.id}`, icon: bot.avatarUrl ?? undefined };
 }
 
 export function showNotification(
@@ -63,7 +63,7 @@ export function showNotification(
   const options: NotificationOptions = {
     body: frame.body,
     ...buildNotificationOptions({ id: frame.botId, avatarUrl }),
-    ...(spend ? { tag: "duskbot:spend", icon: undefined } : {}),
+    ...(spend ? { tag: "madanibot:spend", icon: undefined } : {}),
     silent: true,
   };
   const shownByPage = () => {
@@ -73,7 +73,7 @@ export function showNotification(
       onOpen({ botId: frame.botId, threadId: frame.threadId });
     };
   };
-  const desktop = window.duskDesktop?.desktopNotifications;
+  const desktop = window.madaniDesktop?.desktopNotifications;
   if (!desktop) return shownByPage();
   void desktop.show({
     title, body: frame.body, tag: options.tag, silent: options.silent === true, picture: options.icon, botId: frame.botId, threadId: frame.threadId,

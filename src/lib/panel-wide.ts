@@ -10,7 +10,7 @@ export const PANEL_MIN = 280;
 /** The chat keeps at least this much beside a widened panel. */
 const CHAT_KEEPS = 420;
 const WIDE_MAX = 880;
-const REST_KEY = "dusk-bot-panel-width";
+const REST_KEY = "madani-bot-panel-width";
 
 function storedRest(): number {
   try {

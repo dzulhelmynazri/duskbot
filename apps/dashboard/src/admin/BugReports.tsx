@@ -76,7 +76,7 @@ function Report({ report, onChange, selected, onSelect }: { report: BugReportRow
       <div className="mt-2 flex flex-wrap items-center gap-1.5">
         <span className={CHIP}>v{report.appVersion} · {report.platform}</span>
         <span className={CHIP} title={report.installId}>install {report.installId.slice(0, 10)}</span>
-        {report.contact ? <a href={`mailto:${report.contact}?subject=${encodeURIComponent(`your dusk bot report ${report.id}`)}`} className="hover-chip inline-flex h-6 items-center rounded-full px-2.5 text-12 text-ink-2 hover:text-ink">reply to {report.contact}</a>
+        {report.contact ? <a href={`mailto:${report.contact}?subject=${encodeURIComponent(`your madani bot report ${report.id}`)}`} className="hover-chip inline-flex h-6 items-center rounded-full px-2.5 text-12 text-ink-2 hover:text-ink">reply to {report.contact}</a>
           : <span className={cx(CHIP, "text-ink-3")}>no address</span>}
       </div>
       <div className="mt-3 flex flex-wrap items-center gap-1.5">

@@ -12,7 +12,7 @@
     "ai executive assistant claude",
     "ai chief of staff prompt"
   ],
-  "answer": "**get the loose ends together before they become your evening.** a lead bot in dusk can ask specialists for calendar prep, inbox requests and a weekly review. put them in a small group and choose leader under who answers. the lead brings you decisions with their context. you keep the priorities and promises; the bots do the preparation.",
+  "answer": "**get the loose ends together before they become your evening.** a lead bot in madani can ask specialists for calendar prep, inbox requests and a weekly review. put them in a small group and choose leader under who answers. the lead brings you decisions with their context. you keep the priorities and promises; the bots do the preparation.",
   "updated": "2026-11-12",
   "review": {
     "status": "approved",
@@ -66,7 +66,7 @@
     },
     {
       "h": "set authority and operating hours",
-      "md": "**each bot needs only its own sources.** keep the inbox and calendar readers read only. later app edits do not automatically wait for approval.[^4]\n\nlocal routines need an awake computer with dusk open. a run less than 12 hours late runs once on return. older runs skip. choose dusk cloud if the morning brief must arrive with your computer off.[^3]\n\nkeep priorities, sensitive conversations and commitments with a person. if all you need is meeting prep and reply drafts, start with the [executive assistant setup](/ai-executive-assistant). add a lead when several preparation jobs actually need coordination."
+      "md": "**each bot needs only its own sources.** keep the inbox and calendar readers read only. later app edits do not automatically wait for approval.[^4]\n\nlocal routines need an awake computer with madani open. a run less than 12 hours late runs once on return. older runs skip. choose madani cloud if the morning brief must arrive with your computer off.[^3]\n\nkeep priorities, sensitive conversations and commitments with a person. if all you need is meeting prep and reply drafts, start with the [executive assistant setup](/ai-executive-assistant). add a lead when several preparation jobs actually need coordination."
     }
   ],
   "faq": [
@@ -88,24 +88,24 @@
     },
     {
       "q": "can i use this for my job?",
-      "a": "**yes, with a work license.** personal use is free. dusk cloud pro includes a work license for one person. see [account and billing](/docs/account-and-billing)."
+      "a": "**yes, with a work license.** personal use is free. madani cloud pro includes a work license for one person. see [account and billing](/docs/account-and-billing)."
     }
   ],
   "sources": [
     {
-      "label": "dusk bot docs: leader groups and separate permissions",
+      "label": "madani bot docs: leader groups and separate permissions",
       "url": "/docs/group-chats"
     },
     {
-      "label": "dusk bot docs: bot jobs and attached context",
+      "label": "madani bot docs: bot jobs and attached context",
       "url": "/docs/bots"
     },
     {
-      "label": "dusk bot docs: routines and missed runs",
+      "label": "madani bot docs: routines and missed runs",
       "url": "/docs/routines"
     },
     {
-      "label": "dusk bot docs: app access and sends",
+      "label": "madani bot docs: app access and sends",
       "url": "/docs/files-and-apps"
     },
     {

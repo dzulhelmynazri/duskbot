@@ -375,6 +375,6 @@ it("keeps the agent, the host fence, the app and the server in step", () => {
   expect(agent).toContain(`export const EGRESS_BRIDGE = "${BOT_DESKTOP_BRIDGE}";`);
   const port = /export const EGRESS_PORT = Number\(process\.env\.LINK_EGRESS_PORT\) \|\| (\d+);/.exec(agent)?.[1];
   expect(port).toBe("3129");
-  expect(readFileSync(new URL("../deploy/bot-desktop/host-fence.sh", import.meta.url), "utf8")).toContain(`EGRESS_PORT="\${DUSK_EGRESS_PORT:-${port}}"`);
+  expect(readFileSync(new URL("../deploy/bot-desktop/host-fence.sh", import.meta.url), "utf8")).toContain(`EGRESS_PORT="\${MADANI_EGRESS_PORT:-${port}}"`);
   expect([...MAC_PORTS]).toEqual([...EGRESS_PORTS]);
 });

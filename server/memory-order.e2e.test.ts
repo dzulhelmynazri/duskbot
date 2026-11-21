@@ -3,18 +3,18 @@ import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { DatabaseSync } from "node:sqlite";
 import { expect, it } from "vitest";
-import { launchVerificationServer, runControlDusk } from "../scripts/control-dusk.ts";
+import { launchVerificationServer, runControlMadani } from "../scripts/control-madani.ts";
 import { request } from "../scripts/mcp-server.ts";
 import { readHandoffs } from "./testing/handoff-rows.ts";
 
 const GB = 1024 ** 3, MB = 1024 ** 2;
 
 async function fixture(test: (f: any) => Promise<void>) {
-  const session = await launchVerificationServer({ ...process.env, DUSK_TEST_MEMORY_GATE: "1" }, undefined, undefined, undefined, { scripted: true });
+  const session = await launchVerificationServer({ ...process.env, MADANI_TEST_MEMORY_GATE: "1" }, undefined, undefined, undefined, { scripted: true });
   const { dataDir } = session.info;
   const free = (bytes: number) => writeFileSync(join(dataDir, "host-memory.json"), JSON.stringify({ totalBytes: 2 * GB, availableBytes: bytes, swapFreeBytes: 0, oomKills: 0, fullStall10: 0 }));
   free(900 * MB);
-  const cli = (...args: string[]) => runControlDusk(args, { env: { DUSK_URL: session.info.url } }) as Promise<any>;
+  const cli = (...args: string[]) => runControlMadani(args, { env: { MADANI_URL: session.info.url } }) as Promise<any>;
   const api = (path: string, body?: unknown, method = "POST") => request(path, body === undefined ? {} : { method, body: JSON.stringify(body) }, session.info.url) as Promise<any>;
   const planPath = join(dataDir, "room-plan.json");
   /** The bots whose turns have ended, in the order they did. With room for one at a time that is the order they ran in. */

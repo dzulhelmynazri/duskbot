@@ -5,7 +5,7 @@ const enrolling = new WeakMap<MobilePlatform, Set<string>>();
 
 export async function enrollWorkspace(platform: MobilePlatform, connectionId: string, accountId: string,
   enrollGrant: () => Promise<{ enrollToken: string; dashboardUrl: string } | null>): Promise<void> {
-  const key = `dusk.account.enrolled.${connectionId}`;
+  const key = `madani.account.enrolled.${connectionId}`;
   const running = enrolling.get(platform) ?? new Set<string>();
   enrolling.set(platform, running);
   if (running.has(key)) return;

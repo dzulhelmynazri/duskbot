@@ -29,7 +29,7 @@ export function connectedInApp(servers: readonly McpServerSeen[], mailboxes: rea
   return [...found.values()];
 }
 
-/** `connect`: apps connected through Composio Connect where there is no key or broker, a desktop by default or a dusk
+/** `connect`: apps connected through Composio Connect where there is no key or broker, a desktop by default or a madani
  *  cloud (cloud-composio-connect.ts), null when it is not signed in. `inApp`: connectedInApp's list, reported beside
  *  Composio's whether or not Composio is set up, so the account's page shows every app the bots can use */
 export async function dashboardApps(cfg: AppConfig, source: AppsSource = composio,

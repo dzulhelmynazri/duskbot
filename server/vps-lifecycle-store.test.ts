@@ -12,7 +12,7 @@ const target = { ownerId: "computer_shared", sshAlias: "fixture-vps", containerI
 const record = { target, lastActivityAt: 1_000_000, epoch: 1, completed: [], failures: 0 };
 const state: VpsLifecycleState = { version: 1, entries: [record, { ...record, target: { ...target, botId: "bot", screen: independentScreenTarget("bot", 2) }, failedStage: "browser", failures: 2, retryAt: 2_000_000 }] };
 function fixture() {
-  const directory = mkdtempSync(join(tmpdir(), "dusk-lifecycle-state-")); directories.push(directory);
+  const directory = mkdtempSync(join(tmpdir(), "madani-lifecycle-state-")); directories.push(directory);
   const file = join(directory, "lifecycle.json");
   return { directory, file, store: createVpsLifecycleStore(file, workspace) };
 }

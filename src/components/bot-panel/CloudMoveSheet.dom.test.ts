@@ -41,7 +41,7 @@ function desktop({ account = { status: "connected", clouds: [HOME] } as CloudAcc
       moveOfferAccept: vi.fn(async () => ({})),
     },
   };
-  (window as unknown as { duskDesktop: unknown }).duskDesktop = bridges;
+  (window as unknown as { madaniDesktop: unknown }).madaniDesktop = bridges;
   return bridges;
 }
 
@@ -64,7 +64,7 @@ afterEach(() => {
   flushSync(() => root.unmount());
   host.remove();
   document.body.innerHTML = "";
-  delete (window as unknown as { duskDesktop?: unknown }).duskDesktop;
+  delete (window as unknown as { madaniDesktop?: unknown }).madaniDesktop;
   vi.unstubAllGlobals();
 });
 

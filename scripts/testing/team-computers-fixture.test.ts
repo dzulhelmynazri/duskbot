@@ -2,7 +2,7 @@ import { randomUUID } from "node:crypto";
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { expect, it } from "vitest";
-import { launchVerificationServer, type VerificationServer } from "../control-dusk.ts";
+import { launchVerificationServer, type VerificationServer } from "../control-madani.ts";
 import { fixtureApi } from "./preview-fixture.ts";
 import { createTeamVpsFixture } from "./team-vps-fixture.ts";
 import { teamComputerOwner } from "../../server/team-computers.ts";

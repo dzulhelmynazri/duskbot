@@ -179,9 +179,9 @@ function AccountsTable({ rows, sort, onSort, fairUse, label, empty }: { rows: Op
   );
 }
 
-const notReported = (data: OpsAccountsAnswer) => [!data.reported.relay && (data.range === "month" ? "relay" : "relay (kept for this month only)"), !data.reported.cloud && "dusk cloud", !data.reported.mail && "emails"].filter(Boolean);
+const notReported = (data: OpsAccountsAnswer) => [!data.reported.relay && (data.range === "month" ? "relay" : "relay (kept for this month only)"), !data.reported.cloud && "madani cloud", !data.reported.mail && "emails"].filter(Boolean);
 
-/** who uses the most this month: relay traffic on the fair use curve, dusk cloud time and cost, emails sent to them */
+/** who uses the most this month: relay traffic on the fair use curve, madani cloud time and cost, emails sent to them */
 export function TopAccounts() {
   const { data, error } = useAdmin<OpsAccountsAnswer>("/ops/accounts", 60_000);
   const me = useAdmin<{ live?: string | null }>("/me");
@@ -201,7 +201,7 @@ export function TopAccounts() {
       {data && <>
         <div className="px-1.5 pb-2 pt-1"><Chips sort={sort} onSort={setSort} flags={flags} onFlags={setFlags} counts={flagCounts(data.rows)} /></div>
         <AccountsTable rows={rows.slice(0, TOP)} sort={sort} onSort={setSort} fairUse={data.fairUse} label="top accounts this month"
-          empty={flags.size ? "no account has those flags this month." : "nobody has used the relay, a dusk cloud or an email this month."} />
+          empty={flags.size ? "no account has those flags this month." : "nobody has used the relay, a madani cloud or an email this month."} />
         <div className="flex flex-wrap items-center justify-between gap-3 px-2.5 pb-1.5 pt-2">
           <span className="text-12 text-ink-3">{notYet.length ? `${notYet.join(", ")}: not reported yet.` : rows.length > TOP ? `the top ${TOP} of ${n(rows.length)}.` : ""}</span>
           <Link to="/admin/ops/accounts" className="text-link text-13">see all accounts</Link>
@@ -238,7 +238,7 @@ function NumberFilter({ label, unit, value, onChange }: { label: string; unit: s
   );
 }
 
-/** every account that used the relay, a dusk cloud or an email in the range: filter, search, sort, export */
+/** every account that used the relay, a madani cloud or an email in the range: filter, search, sort, export */
 export function AccountsUsagePage() {
   const [range, setRange] = useState<OpsAccountsRange>("month");
   const { data, error, loading, reload } = useAdmin<OpsAccountsAnswer>(`/ops/accounts?all=1&range=${range}`, 60_000);
@@ -264,10 +264,10 @@ export function AccountsUsagePage() {
   return (
     <>
       <AdminHeader title="accounts usage"
-        sub={data ? <>{data.from} to {data.to}{data.data !== "own" ? ` · ${data.data}` : ""} · {n(rows.length)} of {n(data.total)} {data.total === 1 ? "account" : "accounts"}</> : "every account's relay, dusk cloud and email use"}
+        sub={data ? <>{data.from} to {data.to}{data.data !== "own" ? ` · ${data.data}` : ""} · {n(rows.length)} of {n(data.total)} {data.total === 1 ? "account" : "accounts"}</> : "every account's relay, madani cloud and email use"}
         action={<span className="flex flex-wrap items-center gap-2">
           {me.data?.live && <DataSwitch live={me.data.live} />}
-          <Button size="sm" disabled={!rows.length} onClick={() => download(`dusk-accounts-${data?.from ?? range}-${data?.to ?? ""}.csv`, accountsCsv(rows))}><Download size={15} strokeWidth={1.75} aria-hidden />export csv</Button>
+          <Button size="sm" disabled={!rows.length} onClick={() => download(`madani-accounts-${data?.from ?? range}-${data?.to ?? ""}.csv`, accountsCsv(rows))}><Download size={15} strokeWidth={1.75} aria-hidden />export csv</Button>
         </span>} />
       <div className="mb-4 flex flex-col gap-3">
         <div className="flex flex-wrap items-center gap-3">
@@ -295,7 +295,7 @@ export function AccountsUsagePage() {
         <section aria-label="accounts" className="rounded-[24px] bg-card p-2">
           <div className="rounded-[18px] bg-pop p-1.5">
             <AccountsTable rows={rows.slice(offset, offset + PAGE)} sort={sort} onSort={reset(setSort)} fairUse={data.fairUse} label={`accounts, ${rangeLabel}`}
-              empty={data.rows.length ? "no account matches these filters." : `nobody used the relay, a dusk cloud or an email ${rangeLabel === "this month" ? "this month" : `in the ${rangeLabel}`}.`} />
+              empty={data.rows.length ? "no account matches these filters." : `nobody used the relay, a madani cloud or an email ${rangeLabel === "this month" ? "this month" : `in the ${rangeLabel}`}.`} />
           </div>
           {notYet.length > 0 && <p className="px-2.5 pb-1 pt-2 text-12 text-ink-3">{notYet.join(", ")}: not reported yet.</p>}
         </section>

@@ -8,7 +8,7 @@ import {
   type VpsComputerInventoryInstance,
 } from "./LocalComputerSection";
 
-/** Settings' list of dusk bot-managed VPS computers, across every server in play. */
+/** Settings' list of madani bot-managed VPS computers, across every server in play. */
 export function VpsComputersCard({
   instances,
   configured,

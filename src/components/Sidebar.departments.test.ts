@@ -104,7 +104,7 @@ beforeEach(() => {
     sections: ["Work"],
   };
   vi.stubGlobal("window", Object.assign(new EventTarget(), {
-    innerWidth: 1280, innerHeight: 800, duskDesktop: undefined, setTimeout, clearTimeout, addEventListener: vi.fn(), removeEventListener: vi.fn(),
+    innerWidth: 1280, innerHeight: 800, madaniDesktop: undefined, setTimeout, clearTimeout, addEventListener: vi.fn(), removeEventListener: vi.fn(),
     matchMedia: (query: string) => ({ matches: fixture.phone && query === PHONE_LAYOUT, addEventListener() {}, removeEventListener() {} }),
   }));
   vi.stubGlobal("document", { body: {}, querySelector: () => null });
@@ -120,7 +120,7 @@ beforeEach(() => {
     removeItem: (key: string) => { fixture.storage.delete(key); },
   });
   // dragging is the person's own order; by recent activity the lists order themselves
-  fixture.storage.set("duskbot.sidebarBotOrder", "custom");
+  fixture.storage.set("madanibot.sidebarBotOrder", "custom");
 });
 afterEach(() => vi.unstubAllGlobals());
 

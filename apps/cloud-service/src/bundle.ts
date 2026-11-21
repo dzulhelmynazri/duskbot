@@ -6,7 +6,7 @@ import { CLOUD_HOME } from "../../../electron/legacy-names.mjs";
 import { createCipheriv, createDecipheriv, createHash, randomBytes, scryptSync } from "node:crypto";
 import { MARKER_FILE, tarEntries } from "./backups.ts";
 
-export const BUNDLE_FORMAT = "dusk-home-bundle";
+export const BUNDLE_FORMAT = "madani-home-bundle";
 export const BUNDLE_VERSION = 1;
 export type Layer = "marker" | "identity" | "chats" | "memory" | "files" | "routines" | "config" | "skills" | "credentials" | "engines" | "browser" | "machine" | "disposable" | "other";
 export interface BundleFile { path: string; bytes: number; sha256: string; layer: Layer }
@@ -90,7 +90,7 @@ export function checkLines(manifest: Pick<BundleManifest, "files">, options: { m
   return { text: lines.length ? `${lines.join("\n")}\n` : "", checked, skipped };
 }
 
-const SEALED = Buffer.from("DUSKHB1\n");
+const SEALED = Buffer.from("MADANIHB1\n");
 const SCRYPT = { N: 1 << 15, r: 8, p: 1, maxmem: 64 * 1024 * 1024 } as const;
 /** a bundle for outside this service: the manifest and the volume, AES-256-GCM under a passphrase (scrypt) */
 export function sealBundle(manifest: BundleManifest, tar: Buffer, passphrase: string): Buffer {

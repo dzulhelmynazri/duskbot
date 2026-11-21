@@ -47,8 +47,8 @@ const mount = async (element: ReturnType<typeof createElement>) => {
 beforeEach(() => {
   fixture.dispatch.mockClear();
   // the Mac's own desktop bridge is there and local; it is never asked about the workspace's AIs
-  vi.stubGlobal("window", Object.assign(window, { duskDesktop: { platform: "darwin", remoteClient: { active: false } } }));
-  fixture.bots = [{ id: "dusk", name: "dusk bot", modelSelection: { instanceId: "githubCopilot", model: "auto" } } as Bot];
+  vi.stubGlobal("window", Object.assign(window, { madaniDesktop: { platform: "darwin", remoteClient: { active: false } } }));
+  fixture.bots = [{ id: "madani", name: "madani bot", modelSelection: { instanceId: "githubCopilot", model: "auto" } } as Bot];
 });
 afterEach(async () => { await act(async () => root?.unmount()); root = null; });
 
@@ -62,7 +62,7 @@ describe("a signed-out AI reads signed out everywhere, from the workspace's own 
 
   it("the card's Sign in opens Connect an AI on that AI's card with nothing running, never a terminal step or Settings", async () => {
     fixture.instances = [copilot(false)];
-    await mount(createElement(FailedReplyCard, { rows: trailingRows([ask, refused]), botId: "dusk", threadId: "main", onRetry: vi.fn() }));
+    await mount(createElement(FailedReplyCard, { rows: trailingRows([ask, refused]), botId: "madani", threadId: "main", onRetry: vi.fn() }));
     const card = document.querySelector("[data-chat-error]")!;
     expect(card.textContent).not.toMatch(/terminal|copilot login/i);
     const buttons = [...card.querySelectorAll<HTMLButtonElement>("button:not([aria-label])")];

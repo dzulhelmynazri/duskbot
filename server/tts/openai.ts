@@ -1,9 +1,9 @@
-// OpenAI speech with the key under API keys; DUSK_OPENAI_TTS_API overrides the base URL in tests.
+// OpenAI speech with the key under API keys; MADANI_OPENAI_TTS_API overrides the base URL in tests.
 import type { Audio, Voice } from "./elevenlabs.ts";
 import { readAudio, voiceRefusal } from "./http-audio.ts";
 
 export const OPENAI_TTS_MODEL = "gpt-4o-mini-tts";
-const api = () => (process.env.DUSK_OPENAI_TTS_API || "https://api.openai.com/v1").replace(/\/+$/, "");
+const api = () => (process.env.MADANI_OPENAI_TTS_API || "https://api.openai.com/v1").replace(/\/+$/, "");
 const VOICES = ["marin", "cedar", "alloy", "ash", "ballad", "coral", "echo", "fable", "nova", "onyx", "sage", "shimmer", "verse"];
 
 export function listVoices(): Voice[] {

@@ -34,9 +34,9 @@ describe("scripts/log-doctor.mjs", () => {
     const nginx = parseNginxError('2026/11/14 05:49:55 [error] 994496#994496: *376478 connect() failed (111: Connection refused) while connecting to upstream, client: 1.2.3.4, server: link.apps.siddz.com, request: "GET /v1/tunnels/wd7bya4ia4/to-app?x=1 HTTP/2.0", upstream: "http://127.0.0.1:3101/"');
     expect(nginx.text).toBe("nginx error: connect() failed (111: Connection refused) while connecting to upstream, server: link.apps.siddz.com GET /v1/tunnels/wd7bya4ia4/to-app");
     expect(nginx.at).toBe(Date.parse("2026-11-14T05:49:55Z"));
-    const access = parseNginxAccess('172.71.202.8 - - [13/Nov/2026:05:08:37 +0530] "GET /v1/health?x=1 HTTP/2.0" 502 166 "-" "dusk-uptime/2"');
+    const access = parseNginxAccess('172.71.202.8 - - [13/Nov/2026:05:08:37 +0530] "GET /v1/health?x=1 HTTP/2.0" 502 166 "-" "madani-uptime/2"');
     expect(access).toEqual({ at: Date.parse("2026-11-12T23:38:37Z"), text: "http 502 GET /v1/health (uptime check)", hint: "error" });
-    expect(parseNginxAccess('1.2.3.4 - - [13/Nov/2026:23:17:00 +0530] "GET / HTTP/2.0" 502 1 "-" "dusk-loadtest/1 (qa)"')).toBeNull();
+    expect(parseNginxAccess('1.2.3.4 - - [13/Nov/2026:23:17:00 +0530] "GET / HTTP/2.0" 502 1 "-" "madani-loadtest/1 (qa)"')).toBeNull();
     expect(parseNginxAccess('1.2.3.4 - - [13/Nov/2026:23:17:00 +0530] "GET / HTTP/2.0" 200 1 "-" "x"')).toBeNull();
     expect(parseJournal(JSON.stringify({ MESSAGE: "docker gate: refused", _SYSTEMD_UNIT: "omb-docker-gate.service", __REALTIME_TIMESTAMP: "1763000000000000" })))
       .toEqual({ at: 1763000000000, text: "docker gate: refused", unit: "omb-docker-gate" });
@@ -94,17 +94,17 @@ describe("scripts/log-doctor.mjs", () => {
     const asked = [];
     const oracle = await readOracle(since, async (host, command) => {
       asked.push([host, command]);
-      return `${JSON.stringify({ MESSAGE: "link: tunnel retrying (x)", _SYSTEMD_UNIT: "duskbot-link.service", __REALTIME_TIMESTAMP: String(Date.parse("2026-11-13T00:00:00Z") * 1000) })}\n`;
+      return `${JSON.stringify({ MESSAGE: "link: tunnel retrying (x)", _SYSTEMD_UNIT: "madanibot-link.service", __REALTIME_TIMESTAMP: String(Date.parse("2026-11-13T00:00:00Z") * 1000) })}\n`;
     });
-    expect(oracle).toMatchObject([{ source: "oracle:duskbot-link", text: "link: tunnel retrying (x)" }]);
-    expect(asked[0][1]).toMatch(/^journalctl -u duskbot -u duskbot-link -u omb-docker-gate -u dusk-link-node --since @\d+ /);
+    expect(oracle).toMatchObject([{ source: "oracle:madanibot-link", text: "link: tunnel retrying (x)" }]);
+    expect(asked[0][1]).toMatch(/^journalctl -u madanibot -u madanibot-link -u omb-docker-gate -u madani-link-node --since @\d+ /);
 
     const contabo = await readContabo(since, async () => [
-      "@@ dusk-account", "2026-11-13T00:00:00.000Z ERR persistence: another account service holds the writer lease; waiting", "2026-11-13T00:00:00.000Z ERR     at x (y:1:2)",
-      "@@ nginx-error", "2026/11/13 00:00:00 [error] 1#1: *2 upstream timed out, client: 1.2.3.4, server: dusk.bot",
+      "@@ madani-account", "2026-11-13T00:00:00.000Z ERR persistence: another account service holds the writer lease; waiting", "2026-11-13T00:00:00.000Z ERR     at x (y:1:2)",
+      "@@ nginx-error", "2026/11/13 00:00:00 [error] 1#1: *2 upstream timed out, client: 1.2.3.4, server: madani.bot",
       "@@ nginx-access", '1.2.3.4 - - [13/Nov/2026:05:30:00 +0530] "GET /v1/me HTTP/2.0" 502 1 "-" "Mozilla"', "",
     ].join("\n"));
-    expect(contabo.map((line) => line.source)).toEqual(["contabo:dusk-account", "contabo:dusk-account", "contabo:nginx-error", "contabo:nginx-access"]);
+    expect(contabo.map((line) => line.source)).toEqual(["contabo:madani-account", "contabo:madani-account", "contabo:nginx-error", "contabo:nginx-access"]);
     expect(group(contabo)).toHaveLength(3);
   });
 });

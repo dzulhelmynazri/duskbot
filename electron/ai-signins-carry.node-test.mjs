@@ -12,7 +12,7 @@ test("the kinds and engines are the ones the Admin and the Cloud take", () => {
 });
 
 test("reads each CLI login kept in a file, and nothing that isn't one", async () => {
-  const home = mkdtempSync(join(tmpdir(), "dusk-carry-"));
+  const home = mkdtempSync(join(tmpdir(), "madani-carry-"));
   try {
     assert.deepEqual(await localAiSignIns({ env: {}, home }), []);
     const put = (path, text) => { mkdirSync(join(home, ...path.slice(0, -1)), { recursive: true }); writeFileSync(join(home, ...path), text); };

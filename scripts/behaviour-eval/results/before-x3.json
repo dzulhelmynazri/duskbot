@@ -186,7 +186,7 @@
       "tools": [],
       "state": "idle",
       "ms": 4806,
-      "output": "I’m renaming your Documents project folder from dusk-bto to dusk-bot.\n---\nI can’t rename the folder because Works on is Off in my settings. Turn it on, and I can rename `dusk-bto` to `dusk-bot` in Documents."
+      "output": "I’m renaming your Documents project folder from madani-bto to madani-bot.\n---\nI can’t rename the folder because Works on is Off in my settings. Turn it on, and I can rename `madani-bto` to `madani-bot` in Documents."
     },
     {
       "model": "gpt-6.1-terra",
@@ -436,7 +436,7 @@
       "tools": [],
       "state": "idle",
       "ms": 4852,
-      "output": "I’m renaming your Documents project folder from dusk-bto to dusk-bot.\n---\nI can’t rename the folder because Works on is Off in my settings. Turn it on, and I can rename `dusk-bto` to `dusk-bot` in your Documents."
+      "output": "I’m renaming your Documents project folder from madani-bto to madani-bot.\n---\nI can’t rename the folder because Works on is Off in my settings. Turn it on, and I can rename `madani-bto` to `madani-bot` in your Documents."
     },
     {
       "model": "gpt-6.1-terra",
@@ -687,7 +687,7 @@
       "tools": [],
       "state": "idle",
       "ms": 4356,
-      "output": "I’m renaming your Documents project folder from dusk-bto to dusk-bot.\n---\nI can’t rename the folder because Works on is Off in my settings, so I can’t access your Documents. Nothing has been changed. Turn Works on on, and I can rename `dusk-bto` to `dusk-bot`."
+      "output": "I’m renaming your Documents project folder from madani-bto to madani-bot.\n---\nI can’t rename the folder because Works on is Off in my settings, so I can’t access your Documents. Nothing has been changed. Turn Works on on, and I can rename `madani-bto` to `madani-bot`."
     },
     {
       "model": "gpt-6.1-terra",
@@ -1128,7 +1128,7 @@
       "tools": [],
       "state": "idle",
       "ms": 3839,
-      "output": "Works on is off, so I can’t rename folders on your computer. You can enable Works on for me, or rename the “dusk‑bto” folder to “dusk‑bot” yourself."
+      "output": "Works on is off, so I can’t rename folders on your computer. You can enable Works on for me, or rename the “madani‑bto” folder to “madani‑bot” yourself."
     },
     {
       "model": "gpt-oss-120b-medium",
@@ -1871,7 +1871,7 @@
       ],
       "state": "idle",
       "ms": 17331,
-      "output": "On it, renaming your project folder in Documents now.\n---\nDone, I renamed `dusk-bto` to `dusk-bot` in your Documents folder."
+      "output": "On it, renaming your project folder in Documents now.\n---\nDone, I renamed `madani-bto` to `madani-bot` in your Documents folder."
     },
     {
       "model": "gemini-3.1-flash-lite",

@@ -8,12 +8,12 @@ import { createDesktopComputer, DESKTOP_COMPUTER_GRANT, thisComputerNotReady } f
 
 const ROOT = fileURLToPath(new URL("..", import.meta.url));
 const READY = { mode: "embedded", status: "ready", socketPath: "/fixture/cua.sock", mcpCommand: "/fixture/cua-driver", mcpArgs: ["mcp"], mcpEnv: {} };
-const saved = { userData: process.env.DUSK_USER_DATA, parent: process.env.DUSK_DESKTOP_PARENT, home: process.env.HOME };
+const saved = { userData: process.env.MADANI_USER_DATA, parent: process.env.MADANI_DESKTOP_PARENT, home: process.env.HOME };
 const folders: string[] = [];
 
 afterEach(() => {
   vi.useRealTimers();
-  for (const [key, value] of [["DUSK_USER_DATA", saved.userData], ["DUSK_DESKTOP_PARENT", saved.parent], ["HOME", saved.home]] as const) {
+  for (const [key, value] of [["MADANI_USER_DATA", saved.userData], ["MADANI_DESKTOP_PARENT", saved.parent], ["HOME", saved.home]] as const) {
     if (value === undefined) delete process.env[key];
     else process.env[key] = value;
   }
@@ -63,13 +63,13 @@ describe("this computer, only for the desktop app's own server", () => {
   });
 
   it("finds nothing on a server the app did not launch, though the app's record, its folder and the desktop flag are all there", () => {
-    const home = mkdtempSync(join(tmpdir(), "dusk-desktop-computer-"));
+    const home = mkdtempSync(join(tmpdir(), "madani-desktop-computer-"));
     folders.push(home);
-    for (const folder of [join(home, "user-data"), join(home, "Library", "Application Support", "Dusk Bot")]) {
+    for (const folder of [join(home, "user-data"), join(home, "Library", "Application Support", "Madani Bot")]) {
       mkdirSync(folder, { recursive: true, mode: 0o700 });
       writeFileSync(join(folder, "cua-connection.json"), JSON.stringify(READY), { mode: 0o600 });
     }
-    Object.assign(process.env, { DUSK_USER_DATA: join(home, "user-data"), DUSK_DESKTOP_PARENT: "1", HOME: home });
+    Object.assign(process.env, { MADANI_USER_DATA: join(home, "user-data"), MADANI_DESKTOP_PARENT: "1", HOME: home });
     for (const platform of ["darwin", "win32", "linux"] as const) {
       const desktop = createDesktopComputer({ platform });
       expect(desktop.connection(), platform).toBeNull();
@@ -77,7 +77,7 @@ describe("this computer, only for the desktop app's own server", () => {
       expect(desktop.unavailableReason(), platform).toBeNull();
     }
     expect(thisComputerNotReady(createDesktopComputer())).toBe(
-      "Only the dusk bot app on this computer can let a bot use it. Open the app here, or let the bot work in its own browser or on a cloud desktop instead.",
+      "Only the madani bot app on this computer can let a bot use it. Open the app here, or let the bot work in its own browser or on a cloud desktop instead.",
     );
   });
 
@@ -85,17 +85,17 @@ describe("this computer, only for the desktop app's own server", () => {
     const desktop = createDesktopComputer({ platform: "darwin" });
     expect(desktop.receive({ type: DESKTOP_COMPUTER_GRANT, connection: READY })).toBe(true);
     expect(desktop.connection()).toEqual({ command: "/fixture/cua-driver", args: ["mcp"], env: {}, platform: "darwin", scope: "local-computer" });
-    const reason = "embedded host failed: Screen Recording required; grant access in System Settings and restart dusk bot";
+    const reason = "embedded host failed: Screen Recording required; grant access in System Settings and restart madani bot";
     expect(desktop.receive({ type: DESKTOP_COMPUTER_GRANT, connection: { mode: "unavailable", reason } })).toBe(true);
     expect(desktop.connection()).toBeNull();
     expect(desktop.unavailableReason()).toBe(reason);
     expect(thisComputerNotReady(desktop, "darwin")).toBe(
-      "dusk bot can't use this computer yet: Screen Recording required. Turn on dusk bot in System Settings > Privacy & Security > Screen Recording; then quit and reopen dusk bot.",
+      "madani bot can't use this computer yet: Screen Recording required. Turn on madani bot in System Settings > Privacy & Security > Screen Recording; then quit and reopen madani bot.",
     );
     expect(desktop.receive({ type: DESKTOP_COMPUTER_GRANT, connection: null })).toBe(true);
     expect(desktop.connection()).toBeNull();
     expect(desktop.granted()).toBe(true);
-    expect(thisComputerNotReady(desktop)).toBe("dusk bot can't use this computer yet: make sure dusk bot has the permissions it asks for, then restart it");
+    expect(thisComputerNotReady(desktop)).toBe("madani bot can't use this computer yet: make sure madani bot has the permissions it asks for, then restart it");
   });
 
   it.each([
@@ -105,7 +105,7 @@ describe("this computer, only for the desktop app's own server", () => {
     const desktop = createDesktopComputer({ platform: "darwin" });
     desktop.receive({ type: DESKTOP_COMPUTER_GRANT, connection: { mode: "unavailable", reason } });
     expect(desktop.unavailableReason()).toBe(reason);
-    expect(thisComputerNotReady(desktop, "darwin")).toBe("dusk bot can't use this computer yet: the computer helper did not answer. Press Retry in Settings > Computer; if it still fails, quit and reopen dusk bot.");
+    expect(thisComputerNotReady(desktop, "darwin")).toBe("madani bot can't use this computer yet: the computer helper did not answer. Press Retry in Settings > Computer; if it still fails, quit and reopen madani bot.");
   });
 
   it("names CuaDriver, every missing grant, and no restart when the helper app waits for macOS", () => {
@@ -113,7 +113,7 @@ describe("this computer, only for the desktop app's own server", () => {
     const reason = "Screen Recording and Accessibility required for CuaDriver; turn on CuaDriver in System Settings > Privacy & Security";
     desktop.receive({ type: DESKTOP_COMPUTER_GRANT, connection: { mode: "unavailable", reason } });
     expect(thisComputerNotReady(desktop, "darwin")).toBe(
-      "dusk bot can't use this computer yet: Screen Recording and Accessibility required. Turn on CuaDriver in System Settings > Privacy & Security > Screen Recording and Privacy & Security > Accessibility; dusk bot notices by itself, no restart needed.",
+      "madani bot can't use this computer yet: Screen Recording and Accessibility required. Turn on CuaDriver in System Settings > Privacy & Security > Screen Recording and Privacy & Security > Accessibility; madani bot notices by itself, no restart needed.",
     );
   });
 
@@ -128,7 +128,7 @@ describe("this computer, only for the desktop app's own server", () => {
 
   it("ignores every other parent message and refuses a malformed grant", () => {
     const desktop = createDesktopComputer({ platform: "darwin" });
-    for (const message of [null, "x", [], { type: "duskbot:desktop-mutation-token", token: "t" }, { connection: READY }]) {
+    for (const message of [null, "x", [], { type: "madanibot:desktop-mutation-token", token: "t" }, { connection: READY }]) {
       expect(desktop.receive(message)).toBe(false);
     }
     expect(() => desktop.receive({ type: DESKTOP_COMPUTER_GRANT, connection: "/path/to/cua-connection.json" })).toThrow();

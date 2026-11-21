@@ -15,7 +15,7 @@ afterEach(() => { for (const dir of dirs.splice(0)) rmSync(dir, { recursive: tru
 const NOWHERE: DiscoverDeps = { fetchText: async () => null, mx: async () => [], srv: async () => [] };
 
 function service(mailbox: (imap: { host: string; port: number }, username: string, password: string) => { messages: number; newest?: { from: string; subject: string } } | EmailError, sending: (host: string) => EmailError | void = () => {}, more: { refusal?: string; dataDir?: string } = {}) {
-  const dataDir = more.dataDir ?? mkdtempSync(join(tmpdir(), "dusk-mail-service-")); if (!more.dataDir) dirs.push(dataDir);
+  const dataDir = more.dataDir ?? mkdtempSync(join(tmpdir(), "madani-mail-service-")); if (!more.dataDir) dirs.push(dataDir);
   const tried: string[] = [];
   const sent: string[] = [];
   const email = createEmailService({ dataDir, publicOnly: false, ...(more.refusal ? { refusal: more.refusal } : {}), discover: NOWHERE, guard: openGuard, test: {
@@ -73,7 +73,7 @@ describe("connecting a mailbox", () => {
 
   it("a typed port says how it speaks TLS: the well-known ports as they are, any other tried in TLS first, then upgraded", async () => {
     const seen: Array<Record<string, unknown>> = [];
-    const dataDir = mkdtempSync(join(tmpdir(), "dusk-mail-service-")); dirs.push(dataDir);
+    const dataDir = mkdtempSync(join(tmpdir(), "madani-mail-service-")); dirs.push(dataDir);
     const email = createEmailService({ dataDir, publicOnly: false, discover: NOWHERE, guard: openGuard, test: {
       mailbox: (async (account: { imap: Record<string, unknown> }) => { seen.push(account.imap); return { messages: 1 }; }) as never,
       sending: (async (_account: unknown, server: Record<string, unknown>) => { seen.push(server); }) as never,
@@ -100,7 +100,7 @@ describe("connecting a mailbox", () => {
   });
 
   it("on a Cloud home reaches only the public internet, whatever host is typed, and never tries the password elsewhere", async () => {
-    const dataDir = mkdtempSync(join(tmpdir(), "dusk-mail-service-")); dirs.push(dataDir);
+    const dataDir = mkdtempSync(join(tmpdir(), "madani-mail-service-")); dirs.push(dataDir);
     const cloud = createEmailService({ dataDir, publicOnly: true, discover: NOWHERE });
     for (const imapHost of ["127.0.0.1", "169.254.169.254", "10.0.0.5", "localhost"]) {
       expect(await cloud.connect({ address: "me@shop.example", password: PASSWORD, imapHost }), imapHost).toEqual({ ok: false, needsServer: true, error: "My Cloud can only reach mail servers on the public internet." });

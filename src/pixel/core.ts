@@ -1,4 +1,4 @@
-// dusk pixel core: one colour pixel mascots, body and eyes only. still at rest, full body motion while busy. no dom here:
+// madani pixel core: one colour pixel mascots, body and eyes only. still at rest, full body motion while busy. no dom here:
 // a bot paints palette indices (0 empty, 1 body, 2 eye) and the host turns them into pixels
 import { PIXEL_BODIES, type BodyPart, type PartOptions, type PixelBodyDef, type PixelBodyId } from "../../shared/pixel-bodies.ts";
 

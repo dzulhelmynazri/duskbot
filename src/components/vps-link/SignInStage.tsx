@@ -87,7 +87,7 @@ function EngineCard({ engine, bridge, onSignedIn }: { engine: VpsEngine; bridge:
     return (
       <li data-vps-engine={engine.kind} className="flex w-[236px] max-w-full shrink flex-col items-center gap-2 self-stretch">
         <button type="button" disabled={busy} onClick={() => void start()}
-          className={cn(CARD, "dusk-press cursor-pointer outline-none enabled:hover:bg-ink/[0.035] enabled:active:bg-ink/[0.05] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus disabled:cursor-default")}>
+          className={cn(CARD, "madani-press cursor-pointer outline-none enabled:hover:bg-ink/[0.035] enabled:active:bg-ink/[0.05] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus disabled:cursor-default")}>
           {face}
           <span className={cn("mt-1 inline-flex h-7 items-center gap-1.5 rounded-full px-3 text-[13px] leading-[18px]", busy ? "text-ink/56" : "bg-ink text-app")}>
             {busy && <LoaderCircle size={13} className="animate-spin motion-reduce:animate-none" aria-hidden="true" />}

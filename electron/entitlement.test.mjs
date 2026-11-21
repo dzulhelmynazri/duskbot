@@ -27,7 +27,7 @@ describe("the app's entitlement check", () => {
   });
 
   it("trusts development keys only outside a packaged app", () => {
-    const env = { DUSK_ENTITLEMENT_DEV_KEYS: "dev-9:h4GwuuVu6HGLupu68zCsKbN2CWf7lt0cCNxBjWIZ-HI" };
+    const env = { MADANI_ENTITLEMENT_DEV_KEYS: "dev-9:h4GwuuVu6HGLupu68zCsKbN2CWf7lt0cCNxBjWIZ-HI" };
     expect(entitlementKeys(env, true)).toHaveLength(PINNED_ENTITLEMENT_KEYS.length);
     expect(entitlementKeys(env, false).map((k) => k.kid)).toContain("dev-9");
   });

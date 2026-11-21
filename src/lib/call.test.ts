@@ -4,7 +4,7 @@ import { currentCall, deferCallCleanup, endCall, startCall } from "./call";
 
 describe("call ownership", () => {
   beforeEach(() => {
-    vi.stubGlobal("window", { duskDesktop: { speechStop: vi.fn(async () => {}) } });
+    vi.stubGlobal("window", { madaniDesktop: { speechStop: vi.fn(async () => {}) } });
     endCall();
   });
 

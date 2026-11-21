@@ -8,17 +8,17 @@ import { closeVpsBrowser } from "../server/vps-browser-close.ts";
 import { boxChromeExecArgs, boxChromeRelay } from "../server/vps-local.ts";
 
 const run = promisify(execFile);
-const image = process.env.DUSK_VERIFY_DESKTOP_IMAGE;
-assert(image, "Set DUSK_VERIFY_DESKTOP_IMAGE to an explicitly selected fixture image");
+const image = process.env.MADANI_VERIFY_DESKTOP_IMAGE;
+assert(image, "Set MADANI_VERIFY_DESKTOP_IMAGE to an explicitly selected fixture image");
 const imageId = (await run("docker", ["image", "inspect", image, "--format", "{{.Id}}"])).stdout.trim();
-const evidence = await mkdtemp(join(tmpdir(), "dusk-browser-close-"));
-const name = `dusk-browser-close-${process.pid}`;
-process.env.DUSK_VPS_DOCKER = "local";
+const evidence = await mkdtemp(join(tmpdir(), "madani-browser-close-"));
+const name = `madani-browser-close-${process.pid}`;
+process.env.MADANI_VPS_DOCKER = "local";
 let container, relay;
 const receipt = { imageId, evidence, results: [], ok: false };
 const pause = ms => new Promise(resolve => setTimeout(resolve, ms));
 try {
-  container = (await run("docker", ["run", "--rm", "-d", "--name", name, "--label", "bot.dusk.verification=browser-close", "--network", "none", "--user", "1000:1000", "--cap-drop", "ALL", "--security-opt", "no-new-privileges", "--read-only", "--memory", "2g", "--cpus", "2", "--pids-limit", "512", "--shm-size", "512m", "--tmpfs", "/home/cua:rw,nosuid,nodev,size=256m,uid=1000,gid=1000,mode=0700", "--tmpfs", "/tmp:rw,nosuid,nodev,size=512m", "--tmpfs", "/run:rw,nosuid,nodev,size=64m,uid=1000,gid=1000,mode=0755", "-e", "DUSK_START_URL=about:blank", "--entrypoint", "/usr/local/bin/omb-init", imageId], { timeout: 15_000 })).stdout.trim();
+  container = (await run("docker", ["run", "--rm", "-d", "--name", name, "--label", "bot.madani.verification=browser-close", "--network", "none", "--user", "1000:1000", "--cap-drop", "ALL", "--security-opt", "no-new-privileges", "--read-only", "--memory", "2g", "--cpus", "2", "--pids-limit", "512", "--shm-size", "512m", "--tmpfs", "/home/cua:rw,nosuid,nodev,size=256m,uid=1000,gid=1000,mode=0700", "--tmpfs", "/tmp:rw,nosuid,nodev,size=512m", "--tmpfs", "/run:rw,nosuid,nodev,size=64m,uid=1000,gid=1000,mode=0755", "-e", "MADANI_START_URL=about:blank", "--entrypoint", "/usr/local/bin/omb-init", imageId], { timeout: 15_000 })).stdout.trim();
   const target = { ownerId: "primary-fixture", sshAlias: "this-server", containerId: container };
   relay = await boxChromeRelay(() => spawn("docker", boxChromeExecArgs(container), { stdio: ["pipe", "pipe", "ignore"] }));
   let version;

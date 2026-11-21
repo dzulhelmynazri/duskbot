@@ -11,9 +11,9 @@ const sha = (text: string) => createHash("sha256").update(text).digest("hex");
 const scratch: string[] = [];
 const open: CloudSync[] = [];
 function setup(options: { freeBytes?: number; now?: () => number } = {}) {
-  const home = mkdtempSync(join(tmpdir(), "dusk-cloud-sync-"));
+  const home = mkdtempSync(join(tmpdir(), "madani-cloud-sync-"));
   scratch.push(home);
-  const dataDir = join(home, ".duskbot");
+  const dataDir = join(home, ".madanibot");
   mkdirSync(dataDir);
   const sync = createCloudSync({ dataDir, now: options.now, statfs: () => ({ totalBytes: 10 * GB, freeBytes: options.freeBytes ?? 9 * GB }) });
   open.push(sync);

@@ -17,7 +17,7 @@ import { createTunnelProxy, relayFetch, sha256hex } from "./vps-link-protocol.mj
 let pem = null;
 function certificate() {
   if (pem !== null) return pem;
-  const dir = mkdtempSync(join(tmpdir(), "dusk-h2-"));
+  const dir = mkdtempSync(join(tmpdir(), "madani-h2-"));
   try {
     execFileSync("openssl", ["req", "-x509", "-newkey", "ec", "-pkeyopt", "ec_paramgen_curve:prime256v1", "-nodes", "-days", "1", "-subj", "/CN=127.0.0.1", "-addext", "subjectAltName=IP:127.0.0.1", "-keyout", join(dir, "key.pem"), "-out", join(dir, "cert.pem")], { stdio: "ignore" });
     pem = { key: readFileSync(join(dir, "key.pem"), "utf8"), cert: readFileSync(join(dir, "cert.pem"), "utf8") };

@@ -27,16 +27,16 @@ let stderr = "";
 
 const completeReplies = [
   [
-    "Scout should verify the draft.\n<dusk-goal>{\"status\":\"continue\",",
-    "\"next\":\"Scout\",\"instruction\":\"Verify the draft and report evidence\",\"detail\":\"Draft prepared\"}</dusk-goal>",
+    "Scout should verify the draft.\n<madani-goal>{\"status\":\"continue\",",
+    "\"next\":\"Scout\",\"instruction\":\"Verify the draft and report evidence\",\"detail\":\"Draft prepared\"}</madani-goal>",
   ],
   "The draft is accurate and the cited evidence checks out.",
-  "The verified draft is ready to ship.\n<dusk-goal>{\"status\":\"completed\",\"detail\":\"Draft produced and independently verified.\"}</dusk-goal>",
+  "The verified draft is ready to ship.\n<madani-goal>{\"status\":\"completed\",\"detail\":\"Draft produced and independently verified.\"}</madani-goal>",
 ];
 
 const loopReplies = Array.from({ length: 13 }, (_, index) =>
   index % 2 === 0
-    ? `More work is needed.\n<dusk-goal>{"status":"continue","next":"Looper","instruction":"Try approach ${index / 2 + 1}","detail":"Still working"}</dusk-goal>`
+    ? `More work is needed.\n<madani-goal>{"status":"continue","next":"Looper","instruction":"Try approach ${index / 2 + 1}","detail":"Still working"}</madani-goal>`
     : `Approach ${Math.ceil(index / 2)} did not finish the task.`,
 );
 
@@ -50,7 +50,7 @@ const api = async (method: string, path: string, body?: unknown): Promise<{ stat
 };
 
 beforeAll(async () => {
-  home = mkdtempSync(join(tmpdir(), "dusk-goal-run-"));
+  home = mkdtempSync(join(tmpdir(), "madani-goal-run-"));
   stopScopedWorkerFinishGate = join(home, "stop-scoped-worker-finish");
   busyWorkerFinishGate = join(home, "busy-worker-finish");
   busyGoalFinishGate = join(home, "busy-goal-finish");
@@ -58,7 +58,7 @@ beforeAll(async () => {
   queueFinishGate = join(home, "queue-finish");
   stopScopedLeadFinishGate = join(home, "stop-scoped-lead-finish");
   writeFileSync(stopScopedLeadFinishGate, "allow initial goal delegation");
-  const data = join(home, ".duskbot");
+  const data = join(home, ".madanibot");
   const staticDir = join(home, "static");
   mkdirSync(data, { recursive: true });
   mkdirSync(join(staticDir, "assets"), { recursive: true });
@@ -111,7 +111,7 @@ beforeAll(async () => {
           FAKE_CLAUDE_SLOW_FINISH_GATE: busyGoalFinishGate,
           FAKE_CLAUDE_REPLIES: JSON.stringify([
             "The unrelated direct task is complete.",
-            "The queued team goal is complete.\n<dusk-goal>{\"status\":\"completed\",\"detail\":\"Waited for the lead, then completed normally.\"}</dusk-goal>",
+            "The queued team goal is complete.\n<madani-goal>{\"status\":\"completed\",\"detail\":\"Waited for the lead, then completed normally.\"}</madani-goal>",
           ]),
           FAKE_CLAUDE_REPLY_STATE: join(home, "busy-goal-replies.txt"),
         },
@@ -123,8 +123,8 @@ beforeAll(async () => {
         environment: {
           FAKE_CLAUDE_MODE: "happy",
           FAKE_CLAUDE_REPLIES: JSON.stringify([
-            "I am delegating the research.\n<dusk-goal>{\"status\":\"continue\",\"next\":\"Busy specialist\",\"instruction\":\"Research the answer and report evidence\",\"detail\":\"Waiting for specialist research.\"}</dusk-goal>",
-            "The specialist's evidence resolves the goal.\n<dusk-goal>{\"status\":\"completed\",\"detail\":\"Specialist research incorporated after their direct task finished.\"}</dusk-goal>",
+            "I am delegating the research.\n<madani-goal>{\"status\":\"continue\",\"next\":\"Busy specialist\",\"instruction\":\"Research the answer and report evidence\",\"detail\":\"Waiting for specialist research.\"}</madani-goal>",
+            "The specialist's evidence resolves the goal.\n<madani-goal>{\"status\":\"completed\",\"detail\":\"Specialist research incorporated after their direct task finished.\"}</madani-goal>",
           ]),
           FAKE_CLAUDE_REPLY_STATE: join(home, "busy-worker-lead-replies.txt"),
         },
@@ -151,9 +151,9 @@ beforeAll(async () => {
           FAKE_CLAUDE_MODE: "slow",
           FAKE_CLAUDE_SLOW_FINISH_GATE: stopScopedLeadFinishGate,
           FAKE_CLAUDE_REPLIES: JSON.stringify([
-            "I am delegating this scheduled goal.\n<dusk-goal>{\"status\":\"continue\",\"next\":\"Delayed worker\",\"instruction\":\"Finish the scheduled analysis\",\"detail\":\"Waiting for the delayed worker.\"}</dusk-goal>",
+            "I am delegating this scheduled goal.\n<madani-goal>{\"status\":\"continue\",\"next\":\"Delayed worker\",\"instruction\":\"Finish the scheduled analysis\",\"detail\":\"Waiting for the delayed worker.\"}</madani-goal>",
             "This is unrelated direct work and should be stopped.",
-            "The scheduled analysis is now complete.\n<dusk-goal>{\"status\":\"completed\",\"detail\":\"Scheduled goal survived the coordinator's direct Stop.\"}</dusk-goal>",
+            "The scheduled analysis is now complete.\n<madani-goal>{\"status\":\"completed\",\"detail\":\"Scheduled goal survived the coordinator's direct Stop.\"}</madani-goal>",
           ]),
           FAKE_CLAUDE_REPLY_STATE: join(home, "stop-scoped-lead-replies.txt"),
         },
@@ -188,7 +188,7 @@ beforeAll(async () => {
           FAKE_CLAUDE_MODE: "slow",
           FAKE_CLAUDE_SLOW_FINISH_GATE: routineGoalFinishGate,
           FAKE_CLAUDE_REPLIES: JSON.stringify([
-            "The scheduled review is complete.\n<dusk-goal>{\"status\":\"completed\",\"detail\":\"Scheduled team review completed.\"}</dusk-goal>",
+            "The scheduled review is complete.\n<madani-goal>{\"status\":\"completed\",\"detail\":\"Scheduled team review completed.\"}</madani-goal>",
           ]),
           FAKE_CLAUDE_REPLY_STATE: join(home, "routine-goal-replies.txt"),
         },
@@ -205,9 +205,9 @@ beforeAll(async () => {
       ...(process.env.SystemRoot ? { SystemRoot: process.env.SystemRoot } : {}),
       HOME: home,
       USERPROFILE: home,
-      DUSK_PORT: String(port),
-      DUSK_WEBHOOK_PORT: String(port + 1),
-      DUSK_STATIC_DIR: staticDir,
+      MADANI_PORT: String(port),
+      MADANI_WEBHOOK_PORT: String(port + 1),
+      MADANI_STATIC_DIR: staticDir,
     },
     stdio: ["ignore", "pipe", "pipe"],
   });
@@ -274,7 +274,7 @@ describe("goal-driven channel runs", () => {
     expect(current.working).toBe(false);
     expect(current.messages.filter((message: { kind: string; role?: string }) => message.kind === "text" && message.role === "bot")
       .map((message: { from?: { name?: string } }) => message.from?.name)).toEqual(["Lead", "Scout", "Lead"]);
-    expect(JSON.stringify(current.messages)).not.toContain("<dusk-goal>");
+    expect(JSON.stringify(current.messages)).not.toContain("<madani-goal>");
   });
 
   it("waits for a busy coordinator without spending a goal turn, then completes on the same card", async () => {

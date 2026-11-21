@@ -14,10 +14,10 @@ import { Art, type ArtName } from "./ui/Art";
 import { MausAvatar } from "./Avatar";
 import { mdPrimaryCls } from "./ui/GrokDialog";
 
-const DOWNLOAD_PAGE = "https://dusk.bot/download";
+const DOWNLOAD_PAGE = "https://madani.bot/download";
 
 function ownBridge() {
-  return window.duskDesktop?.remoteClient?.active === true ? undefined : window.duskDesktop?.appUpdate;
+  return window.madaniDesktop?.remoteClient?.active === true ? undefined : window.madaniDesktop?.appUpdate;
 }
 
 function restartInto(bridge: AppUpdateBridge, setRestarting: (on: boolean) => void) {
@@ -57,7 +57,7 @@ export function spotFor(update: AppUpdateState, asked: boolean, restarting: bool
 /**
  * The sidebar's one spot above the account row: Give feedback, until this computer's app has an update. A mac that installs
  * or a Windows install or Linux AppImage that installs its own (electron/app-update.mjs) downloads it on a press and restarts into it once
- * ready; one that can't says what to do (move to Applications, or download from dusk.bot), and a .deb downloads its installer.
+ * ready; one that can't says what to do (move to Applications, or download from madani.bot), and a .deb downloads its installer.
  */
 export function useSidebarSpot(bridge: AppUpdateBridge | undefined = ownBridge()) {
   const [update, setUpdate] = useState<AppUpdateState>({ ready: null });
@@ -110,7 +110,7 @@ function spotWords(spot: Exclude<SpotState, { kind: "feedback" }>): { title: str
   return { title: t("appUpdate.available", { version: spot.version }), end: null };
 }
 
-/** Something worth a press that takes Give feedback's place while it applies (the dusk cloud nudge, lib/cloud-nudge.ts).
+/** Something worth a press that takes Give feedback's place while it applies (the madani cloud nudge, lib/cloud-nudge.ts).
  * Its own close ends it, and Give feedback comes back. An update always goes first. */
 export interface SpotCta {
   /** names the offer on the card, `data-spot-cta` */
@@ -119,13 +119,13 @@ export interface SpotCta {
   hint?: string;
   art: ArtName;
   closeLabel: string;
-  /** drawn as the website sidebar's dusk cloud card instead of the one-line card; `title` only for the invested pitch */
+  /** drawn as the website sidebar's madani cloud card instead of the one-line card; `title` only for the invested pitch */
   card?: { title?: string; body: string; action: string; invested: boolean };
   onStart: () => void;
   onClose: () => void;
 }
 
-/** The website sidebar's dusk cloud card in the spot: a mascot beside one line (or the person's own numbers), the action
+/** The website sidebar's madani cloud card in the spot: a mascot beside one line (or the person's own numbers), the action
  * under them, and a close that brings Give feedback back. */
 export function SpotCloudCard({ cta, card }: { cta: SpotCta; card: NonNullable<SpotCta["card"]> }) {
   return (

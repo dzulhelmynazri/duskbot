@@ -184,7 +184,7 @@ describe("a saved Live key", () => {
     const usable = (live: LiveConfig | undefined, env: NodeJS.ProcessEnv) => usableLiveKey(liveConfigWithEnv(live, env));
 
     it("is the desktop's copy from its store, usable where it was saved for and nowhere else", () => {
-      const env = { DUSK_OPENAI_LIVE_KEY: "from-the-store" };
+      const env = { MADANI_OPENAI_LIVE_KEY: "from-the-store" };
       expect(usable({ ...onA, key: "" }, env)).toBe("from-the-store");
       expect(usable({ ...onA, key: "", azureEndpoint: B }, env)).toBeUndefined();
       expect(usable({ provider: "openai", key: "", keyFor: "nowhere" }, env)).toBeUndefined();
@@ -192,41 +192,41 @@ describe("a saved Live key", () => {
     });
 
     it("pairs a key and an Azure endpoint set together there, as an operator does", () => {
-      const env = { DUSK_OPENAI_LIVE_KEY: "operators", DUSK_LIVE_PROVIDER: "azure", DUSK_AZURE_OPENAI_LIVE_ENDPOINT: A };
+      const env = { MADANI_OPENAI_LIVE_KEY: "operators", MADANI_LIVE_PROVIDER: "azure", MADANI_AZURE_OPENAI_LIVE_ENDPOINT: A };
       expect(usable(undefined, env)).toBe("operators");
       expect(liveConfigWithEnv(undefined, env).keyFor).toBe("azure:a.openai.azure.com");
     });
 
     it("cannot be paired by settings saved later: a save mirrors them into the environment", () => {
-      // Repoint the endpoint (the key is forgotten), wait for a restart (the desktop's copy returns as DUSK_OPENAI_LIVE_KEY),
+      // Repoint the endpoint (the key is forgotten), wait for a restart (the desktop's copy returns as MADANI_OPENAI_LIVE_KEY),
       // then save the same service and endpoint again, which puts both in the environment beside that copy.
       const evil = "https://evil.azure-api.net";
       const afterMove: LiveConfig = { provider: "azure", azureEndpoint: evil, key: "", keyFor: "nowhere" };
-      const mirrored = { DUSK_OPENAI_LIVE_KEY: "from-the-store", DUSK_LIVE_PROVIDER: "azure", DUSK_AZURE_OPENAI_LIVE_ENDPOINT: evil };
-      expect(liveSavePatch(liveConfigWithEnv(afterMove, { DUSK_OPENAI_LIVE_KEY: "from-the-store" }), { provider: "azure" })).toEqual({ provider: "azure" });
+      const mirrored = { MADANI_OPENAI_LIVE_KEY: "from-the-store", MADANI_LIVE_PROVIDER: "azure", MADANI_AZURE_OPENAI_LIVE_ENDPOINT: evil };
+      expect(liveSavePatch(liveConfigWithEnv(afterMove, { MADANI_OPENAI_LIVE_KEY: "from-the-store" }), { provider: "azure" })).toEqual({ provider: "azure" });
       expect(usable(afterMove, mirrored)).toBeUndefined();
     });
 
     it("re-pairs an operator's different key with the endpoint set beside it", () => {
-      expect(usable(onA, { DUSK_OPENAI_LIVE_KEY: "operators", DUSK_LIVE_PROVIDER: "azure", DUSK_AZURE_OPENAI_LIVE_ENDPOINT: B })).toBe("operators");
+      expect(usable(onA, { MADANI_OPENAI_LIVE_KEY: "operators", MADANI_LIVE_PROVIDER: "azure", MADANI_AZURE_OPENAI_LIVE_ENDPOINT: B })).toBe("operators");
     });
 
     it("does not pair a key there with an endpoint or service only the file names", () => {
-      expect(usable({ provider: "azure", azureEndpoint: A }, { DUSK_OPENAI_LIVE_KEY: "operators" })).toBeUndefined();
-      expect(usable({ azureEndpoint: A }, { DUSK_OPENAI_LIVE_KEY: "operators", DUSK_LIVE_PROVIDER: "azure" })).toBeUndefined();
-      expect(usable({ provider: "azure" }, { DUSK_OPENAI_LIVE_KEY: "operators", DUSK_AZURE_OPENAI_LIVE_ENDPOINT: A })).toBeUndefined();
-      expect(usable(onA, { DUSK_LIVE_PROVIDER: "azure", DUSK_AZURE_OPENAI_LIVE_ENDPOINT: B })).toBeUndefined();
+      expect(usable({ provider: "azure", azureEndpoint: A }, { MADANI_OPENAI_LIVE_KEY: "operators" })).toBeUndefined();
+      expect(usable({ azureEndpoint: A }, { MADANI_OPENAI_LIVE_KEY: "operators", MADANI_LIVE_PROVIDER: "azure" })).toBeUndefined();
+      expect(usable({ provider: "azure" }, { MADANI_OPENAI_LIVE_KEY: "operators", MADANI_AZURE_OPENAI_LIVE_ENDPOINT: A })).toBeUndefined();
+      expect(usable(onA, { MADANI_LIVE_PROVIDER: "azure", MADANI_AZURE_OPENAI_LIVE_ENDPOINT: B })).toBeUndefined();
     });
 
     it("takes no binding from the file when it is a different key from the one saved there", () => {
-      expect(usable(onA, { DUSK_OPENAI_LIVE_KEY: "another" })).toBeUndefined();
-      expect(usable({ ...onA, provider: "openai", keyFor: "openai" }, { DUSK_OPENAI_LIVE_KEY: "another" })).toBe("another");
-      expect(usable(onA, { DUSK_OPENAI_LIVE_KEY: "k" })).toBe("k");
+      expect(usable(onA, { MADANI_OPENAI_LIVE_KEY: "another" })).toBeUndefined();
+      expect(usable({ ...onA, provider: "openai", keyFor: "openai" }, { MADANI_OPENAI_LIVE_KEY: "another" })).toBe("another");
+      expect(usable(onA, { MADANI_OPENAI_LIVE_KEY: "k" })).toBe("k");
     });
 
     it("keeps OpenAI working as it did with only a key set", () => {
-      expect(usable(undefined, { DUSK_OPENAI_LIVE_KEY: "sk-env" })).toBe("sk-env");
-      expect(usable({ voice: "cedar" }, { DUSK_OPENAI_LIVE_KEY: "sk-env", DUSK_LIVE_PROVIDER: "openai" })).toBe("sk-env");
+      expect(usable(undefined, { MADANI_OPENAI_LIVE_KEY: "sk-env" })).toBe("sk-env");
+      expect(usable({ voice: "cedar" }, { MADANI_OPENAI_LIVE_KEY: "sk-env", MADANI_LIVE_PROVIDER: "openai" })).toBe("sk-env");
     });
   });
 });

@@ -19,7 +19,7 @@ anything that looks like a password or a key is blanked out before a note is sav
 
 ## see and change the notes
 
-open a bot's settings and choose **memory**. tap a note to forget it, type a new one in, or edit them directly; every change can be undone. the notes are markdown files in `.duskbot/workspaces/<bot>/`, so any text editor can open them too.
+open a bot's settings and choose **memory**. tap a note to forget it, type a new one in, or edit them directly; every change can be undone. the notes are markdown files in `.madanibot/workspaces/<bot>/`, so any text editor can open them too.
 
 old notes move to an archive by themselves when the list gets long. a note can carry an end date ("until 2026-09-28") for things that stop being true.
 

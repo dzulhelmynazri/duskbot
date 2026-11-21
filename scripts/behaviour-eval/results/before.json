@@ -177,7 +177,7 @@
       "tools": [],
       "state": "idle",
       "ms": 4898,
-      "output": "I’m renaming your Documents project folder from dusk-bto to dusk-bot.\n---\nI can’t rename the folder because Works on is Off in this bot’s settings. Turn it on, and I can rename `dusk-bto` to `dusk-bot` in your Documents."
+      "output": "I’m renaming your Documents project folder from madani-bto to madani-bot.\n---\nI can’t rename the folder because Works on is Off in this bot’s settings. Turn it on, and I can rename `madani-bto` to `madani-bot` in your Documents."
     },
     {
       "model": "gpt-6.1-terra",
@@ -636,7 +636,7 @@
       ],
       "state": "completed",
       "ms": 4423,
-      "output": "On it, renaming your project folder in Documents.\n---\nI've asked Ledger to rename your project folder from dusk-bto to dusk-bot in your Documents. It should be updated shortly."
+      "output": "On it, renaming your project folder in Documents.\n---\nI've asked Ledger to rename your project folder from madani-bto to madani-bot in your Documents. It should be updated shortly."
     },
     {
       "model": "gemini-3.1-flash-lite",

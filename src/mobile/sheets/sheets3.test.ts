@@ -59,7 +59,7 @@ describe("settings header", () => {
     expect(readableWorkspace("Studio Mac")).toBe("Studio Mac");
   });
 
-  it("prefers the account email, then the dusk cloud, then the computer it is connected to, then a plain phrase", () => {
+  it("prefers the account email, then the madani cloud, then the computer it is connected to, then a plain phrase", () => {
     expect(settingsIdentity({ name: "Sam", identity: { kind: "account", email: "sam@example.com", session: false } })).toEqual({ title: "Sam", subtitle: "sam@example.com" });
     expect(settingsIdentity({ identity: { kind: "account", email: "sam@example.com", session: true } }).title).toBe("sam");
     expect(settingsIdentity({ identity: { kind: "cloud", name: "my cloud" } }).subtitle).toBe("my cloud");

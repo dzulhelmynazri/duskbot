@@ -76,7 +76,7 @@ export function __resetImageCacheForTests(): void {
   rendered = null;
 }
 
-const RENDERED_KEY = "dusk.rendered-sizes";
+const RENDERED_KEY = "madani.rendered-sizes";
 const RENDERED_MAX = 200;
 let rendered: Map<string, MediaSize> | null = null;
 

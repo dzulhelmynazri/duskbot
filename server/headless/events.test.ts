@@ -1,4 +1,4 @@
-import "../testing/scrub-ambient-dusk-env.ts";
+import "../testing/scrub-ambient-madani-env.ts";
 
 import { createServer, type IncomingMessage, type Server, type ServerResponse } from "node:http";
 import type { AddressInfo } from "node:net";
@@ -77,7 +77,7 @@ describe("events against a server", () => {
     asked.length = 0;
     answer = (_req, res) => { res.writeHead(401, { "content-type": "application/json" }); res.end(JSON.stringify({ error: "unauthorized: this session has expired or was revoked" })); };
     const { io, out } = capture();
-    const code = await runHeadless(["events", "--json"], { io, env: { DUSK_URL: origin, DUSK_TOKEN: "dusk_sess_expired" } });
+    const code = await runHeadless(["events", "--json"], { io, env: { MADANI_URL: origin, MADANI_TOKEN: "madani_sess_expired" } });
     expect(code).toBe(5);
     expect(JSON.parse(out.join("\n"))).toMatchObject({ ok: false, exitCode: 5, error: "this server needs a credential and did not accept the one given" });
     expect(asked).toHaveLength(1);
@@ -102,7 +102,7 @@ describe("events against a server", () => {
     };
     const { io, out } = capture();
     try {
-      const code = await runHeadless(["events", "--job", "t1", "--until-settled"], { io, env: { DUSK_URL: origin } });
+      const code = await runHeadless(["events", "--job", "t1", "--until-settled"], { io, env: { MADANI_URL: origin } });
       expect(code).toBe(0);
       expect(JSON.parse(out.at(-1)!)).toMatchObject({ kind: "job", threadId: "t1", state: "completed" });
       expect(reads).toBeGreaterThanOrEqual(3);
@@ -121,7 +121,7 @@ describe("events against a server", () => {
     };
     const { io, out, err } = capture();
     const controller = new AbortController();
-    const ran = runHeadless(["events", "--thread", "t1"], { io, env: { DUSK_URL: origin }, signal: controller.signal });
+    const ran = runHeadless(["events", "--thread", "t1"], { io, env: { MADANI_URL: origin }, signal: controller.signal });
     await expect.poll(() => out.length, { timeout: 10_000 }).toBe(4);
     controller.abort();
     expect(await ran).toBe(130);

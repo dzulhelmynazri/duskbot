@@ -23,7 +23,7 @@ vi.mock("node:net", () => ({ default: { createConnection: vi.fn(() => { throw ne
 let cua;
 const connection = { socketPath: "\\\\.\\pipe\\fixture-owned-cua" };
 beforeEach(async () => {
-  fixture.home = mkdtempSync(join(tmpdir(), "dusk-cua-win-"));
+  fixture.home = mkdtempSync(join(tmpdir(), "madani-cua-win-"));
   fixture.hosts = [];
   fixture.packaged = false;
   fixture.handlers.clear();
@@ -32,7 +32,7 @@ beforeEach(async () => {
     get(target, key) { return key === "platform" ? "win32" : key === "resourcesPath" ? fixture.home : Reflect.get(target, key); },
   }));
   vi.stubEnv("CUA_DRIVER_PATH", join(fixture.home, "cua-driver.exe"));
-  vi.stubEnv("DUSK_CUA_EMBEDDED", "");
+  vi.stubEnv("MADANI_CUA_EMBEDDED", "");
   vi.resetModules();
   cua = await import("./cua.mjs");
 });

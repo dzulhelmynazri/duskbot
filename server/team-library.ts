@@ -29,7 +29,7 @@ export interface TeamCatalogEntry {
 }
 
 export interface TeamCatalog {
-  format: "dusk.catalog";
+  format: "madani.catalog";
   version: 1;
   repositoryUrl: typeof TEAM_LIBRARY_REPOSITORY;
   teams: TeamCatalogEntry[];
@@ -69,7 +69,7 @@ function stringList(value: unknown, field: string, maxItems: number): string[] {
 /** Validate the remotely maintained index before any of it reaches the renderer. */
 export function parseTeamCatalog(value: unknown): TeamCatalog {
   value = withCurrentFormat(value);
-  if (!isRecord(value) || value.format !== "dusk.catalog" || value.version !== 1) {
+  if (!isRecord(value) || value.format !== "madani.catalog" || value.version !== 1) {
     throw new Error("The team library catalog is not supported");
   }
   if (!Array.isArray(value.teams) || value.teams.length > 100) {
@@ -114,7 +114,7 @@ export function parseTeamCatalog(value: unknown): TeamCatalog {
     };
   });
   return {
-    format: "dusk.catalog",
+    format: "madani.catalog",
     version: 1,
     repositoryUrl: TEAM_LIBRARY_REPOSITORY,
     teams,

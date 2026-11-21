@@ -26,7 +26,7 @@ async function fixture() {
   let offline = false;
   let transform: ((method: string, body: Record<string, unknown>) => Record<string, unknown>) | undefined;
   const api = createSlackApi({
-    env: { DUSK_SLACK_API_URL: fake.url }, minGapMs: 0, sleep: async () => {},
+    env: { MADANI_SLACK_API_URL: fake.url }, minGapMs: 0, sleep: async () => {},
     fetch: async (url, init) => {
       if (offline) throw new Error("transport failed with secret-canary");
       const response = await fetch(url, init);

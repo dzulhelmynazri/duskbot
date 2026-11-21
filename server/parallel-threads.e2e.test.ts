@@ -16,13 +16,13 @@ import { removeTempDir, waitForExit } from "./testing/cleanup.ts";
 import { freePortBlock } from "./testing/ports.ts";
 
 const SERVER_DIR = dirname(fileURLToPath(import.meta.url));
-const HOST = "dusk-t-0123456789ab.fly.dev";
+const HOST = "madani-t-0123456789ab.fly.dev";
 type Role = "desktop" | "home" | "team";
 const TEAM = { id: "team-7f3a", name: "Acme" };
 
 class Fixture {
-  home = mkdtempSync(join(tmpdir(), "dusk-parallel-"));
-  dataDir = join(this.home, ".duskbot");
+  home = mkdtempSync(join(tmpdir(), "madani-parallel-"));
+  dataDir = join(this.home, ".madanibot");
   gates = join(this.home, "gates");
   base = "";
   log = "";
@@ -106,13 +106,13 @@ await import(${JSON.stringify(pathToFileURL(join(SERVER_DIR, "testing", "fake-ac
     this.base = `http://127.0.0.1:${port}`;
     const prelude = `data:text/javascript,${encodeURIComponent('const real = globalThis.fetch; globalThis.fetch = async (url, init) => String(url).startsWith("http://127.0.0.1:") ? real(url, init) : new Response("offline fixture", { status: 503 });')}`;
     const roleEnv = this.role === "desktop" ? {} : {
-      DUSK_CLOUD_ROLE: this.role, DUSK_CLOUD_MACHINE_ID: "3f9c2a4e-8b1d-4c6e-9a7f-2d5e8c1b0a93", DUSK_CLOUD_ADMIN_URL: "https://cloud.example.test",
-      DUSK_CLOUD_BOOTSTRAP_SECRET: this.secret, DUSK_PUBLIC_URL: `https://${HOST}`,
-      ...(this.role === "team" ? { DUSK_CLOUD_TEAM_ID: TEAM.id, DUSK_CLOUD_TEAM_NAME: TEAM.name } : {}),
+      MADANI_CLOUD_ROLE: this.role, MADANI_CLOUD_MACHINE_ID: "3f9c2a4e-8b1d-4c6e-9a7f-2d5e8c1b0a93", MADANI_CLOUD_ADMIN_URL: "https://cloud.example.test",
+      MADANI_CLOUD_BOOTSTRAP_SECRET: this.secret, MADANI_PUBLIC_URL: `https://${HOST}`,
+      ...(this.role === "team" ? { MADANI_CLOUD_TEAM_ID: TEAM.id, MADANI_CLOUD_TEAM_NAME: TEAM.name } : {}),
     };
     this.child = spawn(process.execPath, ["--import", prelude, join(SERVER_DIR, "index.ts")], {
       cwd: join(SERVER_DIR, ".."),
-      env: { PATH: process.env.PATH, HOME: this.home, USERPROFILE: this.home, DUSK_DATA_DIR: this.dataDir, DUSK_PORT: String(port), DUSK_WEBHOOK_PORT: String(port + 1), ...roleEnv, ...this.extraEnv },
+      env: { PATH: process.env.PATH, HOME: this.home, USERPROFILE: this.home, MADANI_DATA_DIR: this.dataDir, MADANI_PORT: String(port), MADANI_WEBHOOK_PORT: String(port + 1), ...roleEnv, ...this.extraEnv },
       stdio: ["ignore", "pipe", "pipe"],
     });
     this.child.stdout?.on("data", (chunk) => { this.log += chunk; });
@@ -124,11 +124,11 @@ await import(${JSON.stringify(pathToFileURL(join(SERVER_DIR, "testing", "fake-ac
     if (this.cloud()) this.token = await this.pair();
   }
   async pair() {
-    const body = JSON.stringify({ label: "dusk bot app (Cloud)", ttlSeconds: 300, ...(this.role === "team" ? { team: TEAM, member: { email: "owner@acme.test", role: "admin" } } : {}) });
+    const body = JSON.stringify({ label: "madani bot app (Cloud)", ttlSeconds: 300, ...(this.role === "team" ? { team: TEAM, member: { email: "owner@acme.test", role: "admin" } } : {}) });
     const timestamp = String(Math.floor(Date.now() / 1000)), nonce = randomBytes(16).toString("base64url");
     const response = await fetch(`${this.base}/api/cloud/pairing`, { method: "POST", headers: {
       host: HOST, "x-forwarded-for": "203.0.113.9", "x-forwarded-proto": "https", "content-type": "application/json",
-      "x-dusk-cloud-timestamp": timestamp, "x-dusk-cloud-nonce": nonce, "x-dusk-cloud-signature": `v1=${cloudPairingSignature(this.secret, timestamp, nonce, body)}`,
+      "x-madani-cloud-timestamp": timestamp, "x-madani-cloud-nonce": nonce, "x-madani-cloud-signature": `v1=${cloudPairingSignature(this.secret, timestamp, nonce, body)}`,
     }, body });
     const granted = await response.json() as { code: string };
     return (await this.api("POST", "/api/auth/pair", { code: granted.code })).body.token as string;
@@ -250,7 +250,7 @@ function inertBrowser(dir: string) {
   ].join("\n"), { mode: 0o755 });
   return browser;
 }
-const browse = (f: Fixture, threadId: string) => internal(f, "/api/internal/browser/mcp", f.servers(threadId).browser.env.DUSK_MCP_TOKEN_BROWSER, {
+const browse = (f: Fixture, threadId: string) => internal(f, "/api/internal/browser/mcp", f.servers(threadId).browser.env.MADANI_MCP_TOKEN_BROWSER, {
   method: "tools/call", params: { name: "agent_browser_snapshot", arguments: {} },
 });
 
@@ -260,7 +260,7 @@ describe.skipIf(process.platform === "win32").each(["desktop", "home"] as const)
   afterEach(async () => { await f?.stop(); });
   const running = async (env: Record<string, string>) => {
     f = new Fixture(role);
-    f.extraEnv = { DUSK_AGENT_BROWSER_PATH: inertBrowser(f.home), DUSK_COMPUTER_CALL_WAIT_MS: "500", ...env };
+    f.extraEnv = { MADANI_AGENT_BROWSER_PATH: inertBrowser(f.home), MADANI_COMPUTER_CALL_WAIT_MS: "500", ...env };
     await f.start();
     const { botId, threads } = await botWithThreads(f, CLAUDE, 2);
     await send(f, botId, threads[0]!, "First job");
@@ -285,7 +285,7 @@ describe.skipIf(process.platform === "win32").each(["desktop", "home"] as const)
   }, 90_000);
 
   it("hand the browser over once its holder has stopped using it, and the holder does not act on a page it did not open", async () => {
-    const { botId, threads } = await running({ DUSK_BROWSER_IDLE_HANDOVER_MS: "200", DUSK_COMPUTER_CALL_WAIT_MS: "5000" });
+    const { botId, threads } = await running({ MADANI_BROWSER_IDLE_HANDOVER_MS: "200", MADANI_COMPUTER_CALL_WAIT_MS: "5000" });
     expect((await browse(f, threads[0]!)).body.result.isError).toBeFalsy();
     expect((await browse(f, threads[1]!)).body.result.isError, "taken from a holder that went quiet, with both turns still running").toBeFalsy();
     expect((await busyThreads(f, botId)).sort()).toEqual([...threads].sort());
@@ -310,7 +310,7 @@ describe.each(["desktop", "team"] as const)("two threads of a bot on the team's 
     vps = await createTeamVpsFixture({ screens: true });
     f = new Fixture(role);
     f.extraConfig = { vps: { sshAlias: "fixture-vps" } };
-    f.extraEnv = { DUSK_COMPUTER_CALL_WAIT_MS: "500", DUSK_EXTRA_PATH: vps.localVm.binDir, CONTAINER_HOST: vps.localVm.host, CONTAINER_SSHKEY: vps.localVm.sshKey };
+    f.extraEnv = { MADANI_COMPUTER_CALL_WAIT_MS: "500", MADANI_EXTRA_PATH: vps.localVm.binDir, CONTAINER_HOST: vps.localVm.host, CONTAINER_SSHKEY: vps.localVm.sshKey };
     await f.start();
     const requestId = randomUUID();
     const made = await f.api("POST", "/api/team-computers", { requestId, name: "Ops desktop", acknowledgeCost: true });
@@ -329,7 +329,7 @@ describe.each(["desktop", "team"] as const)("two threads of a bot on the team's 
     // a computer call first asks the turn's control gate whether the screen is its to use
     const screen = (threadId: string) => {
       const env = f.servers(threadId).computer.env;
-      return createControlClient({ url: env.DUSK_CONTROL_URL, token: env.DUSK_CONTROL_TOKEN }).state(true);
+      return createControlClient({ url: env.MADANI_CONTROL_URL, token: env.MADANI_CONTROL_TOKEN }).state(true);
     };
     let first = await screen(threads[0]!);
     for (let attempt = 0; attempt < 40 && first.held; attempt++) first = await screen(threads[0]!);
@@ -352,8 +352,8 @@ describe("a Starter Cloud", () => {
   /** What the bot's own turn calls as start_thread, on the turn's own capability. */
   const startThread = async (fromThread: string, title: string, toBotId?: string) => {
     const agents = f.servers(fromThread).agents;
-    const env = agents.env.DUSK_GATE_UPSTREAM ? JSON.parse(agents.env.DUSK_GATE_UPSTREAM).env : agents.env;
-    return internal(f, "/api/internal/threads", env.DUSK_COMMS_TOKEN, { title, message: `Work on ${title}`, ...(toBotId ? { toBotId } : {}) });
+    const env = agents.env.MADANI_GATE_UPSTREAM ? JSON.parse(agents.env.MADANI_GATE_UPSTREAM).env : agents.env;
+    return internal(f, "/api/internal/threads", env.MADANI_COMMS_TOKEN, { title, message: `Work on ${title}`, ...(toBotId ? { toBotId } : {}) });
   };
   /** Where a hand-off runs: the teammate's own chat, one chat per bot. */
   const handedThread = (sent: { body: any }) => sent.body.receipts[0].threadId as string;
@@ -361,7 +361,7 @@ describe("a Starter Cloud", () => {
   const tellPlan = async (tier: string) => {
     const body = JSON.stringify({ v: 1, tier }), timestamp = String(Math.floor(Date.now() / 1000)), nonce = randomBytes(16).toString("base64url");
     const response = await fetch(`${f.base}/api/cloud/plan`, { method: "POST", body, headers: { host: HOST, "x-forwarded-for": "203.0.113.9", "x-forwarded-proto": "https", "content-type": "application/json",
-      "x-dusk-cloud-timestamp": timestamp, "x-dusk-cloud-nonce": nonce, "x-dusk-cloud-signature": `v1=${cloudRequestSignature(f.secret, timestamp, nonce, "POST", "/api/cloud/plan", body)}` } });
+      "x-madani-cloud-timestamp": timestamp, "x-madani-cloud-nonce": nonce, "x-madani-cloud-signature": `v1=${cloudRequestSignature(f.secret, timestamp, nonce, "POST", "/api/cloud/plan", body)}` } });
     expect(response.status).toBe(200);
   };
   const starter = async () => {

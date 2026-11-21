@@ -4,7 +4,7 @@
 // display) and show, focus and friends do nothing. No dock icon, tray, global shortcut, login item, protocol handler or
 // OS notification is made; native dialogs answer their default button; system-browser links are only recorded.
 // A watchdog records ("visible") and hides any window that ever reports isVisible(); the smoke fails on that record.
-// Events: DUSK_SMOKE_EVENTS, one JSON line each.
+// Events: MADANI_SMOKE_EVENTS, one JSON line each.
 const electron = require("electron");
 if (electron.app && process.type === "browser") {
   const { appendFileSync, mkdtempSync, writeFileSync } = require("node:fs");
@@ -13,17 +13,17 @@ if (electron.app && process.type === "browser") {
   const { join } = require("node:path");
   const { pathToFileURL } = require("node:url");
   const { app, BrowserWindow, BaseWindow, dialog, shell, globalShortcut } = electron;
-  const eventsFile = process.env.DUSK_SMOKE_EVENTS;
+  const eventsFile = process.env.MADANI_SMOKE_EVENTS;
   const note = (kind, detail = {}) => { if (eventsFile) try { appendFileSync(eventsFile, `${JSON.stringify({ at: Date.now(), kind, ...detail })}\n`); } catch {} };
   try { app.dock?.hide(); } catch {}
   app.setActivationPolicy?.("prohibited");
-  // the walkthrough shoots every screen in one look, whatever this Mac's appearance (DUSK_SMOKE_THEME=light|dark)
-  const theme = /^(light|dark)$/.test(process.env.DUSK_SMOKE_THEME ?? "") ? process.env.DUSK_SMOKE_THEME : null;
+  // the walkthrough shoots every screen in one look, whatever this Mac's appearance (MADANI_SMOKE_THEME=light|dark)
+  const theme = /^(light|dark)$/.test(process.env.MADANI_SMOKE_THEME ?? "") ? process.env.MADANI_SMOKE_THEME : null;
   if (theme) { try { electron.nativeTheme.themeSource = theme; } catch {} app.whenReady().then(() => { try { electron.nativeTheme.themeSource = theme; } catch {} }); }
 
-  // Electron names some folders after the app, not HOME or --user-data-dir (logs are ~/Library/Logs/duskbot, the
+  // Electron names some folders after the app, not HOME or --user-data-dir (logs are ~/Library/Logs/madanibot, the
   // owner's own): every one of them goes into the smoke's profile instead
-  const isolated = process.env.DUSK_SMOKE_PROFILE;
+  const isolated = process.env.MADANI_SMOKE_PROFILE;
   if (isolated) {
     const { mkdirSync } = require("node:fs");
     const into = (name) => { const dir = join(isolated, "app-paths", name); mkdirSync(dir, { recursive: true }); return dir; };
@@ -36,7 +36,7 @@ if (electron.app && process.type === "browser") {
   // main's ESM imports of "electron" resolve to this copy: windows and views are made hidden and offscreen-rendered
   const replaced = ["default", "BrowserWindow", "WebContentsView", "Tray", "Notification"];
   const names = Object.keys(electron).filter((name) => !replaced.includes(name) && /^[A-Za-z_$][\w$]*$/.test(name));
-  const shimFile = join(mkdtempSync(join(tmpdir(), "dusk-smoke-electron-")), "electron-smoke.mjs");
+  const shimFile = join(mkdtempSync(join(tmpdir(), "madani-smoke-electron-")), "electron-smoke.mjs");
   writeFileSync(shimFile, `import { createRequire } from "node:module";
 const electron = createRequire(import.meta.url)("electron");
 ${names.map((name) => `export const ${name} = electron.${name};`).join("\n")}
@@ -94,9 +94,9 @@ export default { ...electron, BrowserWindow, WebContentsView, Tray, Notification
     }
   };
   setInterval(watch, 100).unref();
-  // a duskbot:// link the browser hands to the app (no protocol handler is registered here): each new line of
-  // DUSK_SMOKE_LINKS reaches main's own open-url handler, as macOS would deliver it
-  const linkFile = process.env.DUSK_SMOKE_LINKS;
+  // a madanibot:// link the browser hands to the app (no protocol handler is registered here): each new line of
+  // MADANI_SMOKE_LINKS reaches main's own open-url handler, as macOS would deliver it
+  const linkFile = process.env.MADANI_SMOKE_LINKS;
   if (linkFile) {
     const { existsSync, readFileSync } = require("node:fs");
     let seen = 0;

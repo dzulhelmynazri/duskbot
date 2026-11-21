@@ -20,7 +20,7 @@ it("reloads once, then leaves a repeat within a minute alone", () => {
 it("lets a repeat failure reach the screen instead of swallowing it", () => {
   const listeners = new Map<string, (event: Event) => void>();
   const target = { addEventListener: (type: string, listener: (event: Event) => void) => void listeners.set(type, listener) } as unknown as Window;
-  const map = new Map<string, string>([["dusk.staleChunkReloadAt", String(Date.now())]]);
+  const map = new Map<string, string>([["madani.staleChunkReloadAt", String(Date.now())]]);
   const original = globalThis.sessionStorage;
   Object.defineProperty(globalThis, "sessionStorage", { value: { getItem: (k: string) => map.get(k) ?? null, setItem: (k: string, v: string) => void map.set(k, v) }, configurable: true });
   try {

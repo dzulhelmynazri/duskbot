@@ -1,5 +1,5 @@
 import { expect, it } from "vitest";
-import { launchVerificationServer } from "../scripts/control-dusk.ts";
+import { launchVerificationServer } from "../scripts/control-madani.ts";
 import { serverVersion } from "./environment.ts";
 
 it("offers no upstream binary or install command through the real private-fork server", async () => {

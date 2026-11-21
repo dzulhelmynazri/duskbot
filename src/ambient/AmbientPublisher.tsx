@@ -51,7 +51,7 @@ export function runAmbientAct(act: AmbientAct, state: AppState, dispatch: Dispat
 
 export function AmbientPublisher() {
   const { state, dispatch } = useStore();
-  const bridge = typeof window === "undefined" ? undefined : window.duskDesktop?.ambient;
+  const bridge = typeof window === "undefined" ? undefined : window.madaniDesktop?.ambient;
   const [wanted, setWanted] = useState(false);
   const away = useAmbientAwayValue();
   const awayNow = useRef(away);

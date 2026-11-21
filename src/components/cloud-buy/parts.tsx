@@ -76,7 +76,7 @@ export function Badge({ children }: { children: ReactNode }) {
   </span>;
 }
 
-/** On the staging Admin (DUSK_CLOUD_STAGING=1) the sheet and Settings say so, so nobody takes it for the real one. */
+/** On the staging Admin (MADANI_CLOUD_STAGING=1) the sheet and Settings say so, so nobody takes it for the real one. */
 export function StagingMark({ className }: { className?: string }) {
   return <span data-cloud-staging title={t("cloudBuy.stagingHint")}
     className={cn("inline-flex items-center rounded-full bg-ink/[0.06] px-2 py-0.5 text-[11px] font-medium leading-4 text-ink-secondary", className)}>

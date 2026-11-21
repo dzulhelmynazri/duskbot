@@ -41,7 +41,7 @@ export function scoreCase(c: Case, trace: Trace): CaseScore {
   const delivered = !e.deliver || calls.some((s) => s.call.name === "attach_file");
   const tool = !forbidden && (usedExpected || e.ask === true) && delivered && !trace.error;
   const steps = calls.length <= e.budget;
-  const askedScore = e.ask === undefined ? null : e.ask ? asked : !(asked && calls.filter((s) => s.turn === 1).every((s) => familyOf(s.call) === "dusk"));
+  const askedScore = e.ask === undefined ? null : e.ask ? asked : !(asked && calls.filter((s) => s.turn === 1).every((s) => familyOf(s.call) === "madani"));
   const focus = e.files ? null : !families.has("files");
   const draft = e.draft ? !!first && first.turn > 1 && lastText(trace, first.turn - 1).length > 60 : null;
 

@@ -40,7 +40,7 @@ export function openEnvelope(bytes) {
 
 async function sealKey(env, label) {
   const material = await crypto.subtle.importKey("raw", encoder.encode(env.HOOK_SEAL_KEY), "HKDF", false, ["deriveKey"]);
-  return crypto.subtle.deriveKey({ name: "HKDF", hash: "SHA-256", salt: new Uint8Array(0), info: encoder.encode(`dusk-edge-hook-v1:${label}`) },
+  return crypto.subtle.deriveKey({ name: "HKDF", hash: "SHA-256", salt: new Uint8Array(0), info: encoder.encode(`madani-edge-hook-v1:${label}`) },
     material, { name: "AES-GCM", length: 256 }, false, ["encrypt", "decrypt"]);
 }
 

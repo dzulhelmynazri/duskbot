@@ -39,7 +39,7 @@ vi.mock("./CallView", () => ({ CallButton: (props: Record<string, unknown>) => {
 import { Composer, SEND_HOLD_MAX_MS } from "./Composer";
 
 // these cover live calls, which ship behind a switch that is off
-vi.stubEnv("VITE_DUSK_LIVE_CALL", "1");
+vi.stubEnv("VITE_MADANI_LIVE_CALL", "1");
 
 const bot: Bot = {
   id: "atlas", threadId: "atlas-thread", name: "Atlas", title: "", description: "",
@@ -98,18 +98,18 @@ afterEach(() => {
 
 describe("the Simple composer in a bot chat", () => {
   it("with Live calls off, still offers a call with the built-in voice, and no Live choice", () => {
-    vi.stubEnv("VITE_DUSK_LIVE_CALL", "");
+    vi.stubEnv("VITE_MADANI_LIVE_CALL", "");
     try {
       render({ bot });
       expect(fixture.call).toMatchObject({ placement: "composer", live: false });
     } finally {
-      vi.stubEnv("VITE_DUSK_LIVE_CALL", "1");
+      vi.stubEnv("VITE_MADANI_LIVE_CALL", "1");
     }
   });
 
   it("with calls off, makes the mic its one round button in the bot's tone, and offers no call", () => {
-    vi.stubEnv("VITE_DUSK_LIVE_CALL", "");
-    vi.stubEnv("VITE_DUSK_VOICE_CALL", "0");
+    vi.stubEnv("VITE_MADANI_LIVE_CALL", "");
+    vi.stubEnv("VITE_MADANI_VOICE_CALL", "0");
     try {
       render({ bot });
       expect(fixture.call).toBeNull();
@@ -119,8 +119,8 @@ describe("the Simple composer in a bot chat", () => {
       expect(mic.className.split(" ")).toEqual(expect.arrayContaining(["size-7", "rounded-full", "composer-press"]));
       expect(container.querySelector("[data-composer-actions]")!.lastElementChild).toBe(mic);
     } finally {
-      vi.stubEnv("VITE_DUSK_LIVE_CALL", "1");
-      vi.stubEnv("VITE_DUSK_VOICE_CALL", "");
+      vi.stubEnv("VITE_MADANI_LIVE_CALL", "1");
+      vi.stubEnv("VITE_MADANI_VOICE_CALL", "");
     }
   });
 

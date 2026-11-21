@@ -8,11 +8,11 @@ import { expect, it } from "vitest";
 import { CHROME_PATH, openHeadlessChrome, type HeadlessPage } from "./headless-chrome.ts";
 import { mountPreview, type MountedPreview } from "./preview-fixture.ts";
 
-const enabled = process.env.DUSK_UI_E2E === "1" || existsSync(CHROME_PATH);
-if (!enabled) console.info("skipping submenu aim UI e2e: no Chrome at DUSK_CDP_CHROME");
+const enabled = process.env.MADANI_UI_E2E === "1" || existsSync(CHROME_PATH);
+if (!enabled) console.info("skipping submenu aim UI e2e: no Chrome at MADANI_CDP_CHROME");
 
 (enabled ? it : it.skip)("keeps the Support submenu open on a diagonal path and closes it on a straight one", async () => {
-  const profile = mkdtempSync(join(tmpdir(), "dusk-submenu-chrome-"));
+  const profile = mkdtempSync(join(tmpdir(), "madani-submenu-chrome-"));
   let ui: MountedPreview | undefined;
   let page: HeadlessPage | undefined;
   try {

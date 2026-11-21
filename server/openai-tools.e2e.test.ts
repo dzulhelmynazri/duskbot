@@ -2,7 +2,7 @@ import { createServer } from "node:http";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { expect, it } from "vitest";
-import { launchVerificationServer, runControlDusk } from "../scripts/control-dusk.ts";
+import { launchVerificationServer, runControlMadani } from "../scripts/control-madani.ts";
 import { roomTurnVoiceNote } from "./group-voice.ts";
 
 // The fixture can only write one fixed file in the launcher's disposable home: provider arguments cannot select a path.
@@ -108,7 +108,7 @@ it.each(["openaiCompat", "groq", "meta"] as const)("%s runs structured MCP calls
   });
   const evidence: unknown[] = [{ fixture: fixture.info }];
   const control = async (args: string[]) => {
-    const result = await runControlDusk([...args, "--url", fixture.info.url]) as any;
+    const result = await runControlMadani([...args, "--url", fixture.info.url]) as any;
     evidence.push({ command: args, result });
     return result;
   };

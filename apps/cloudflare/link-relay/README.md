@@ -1,11 +1,11 @@
-# dusk bot link relay (Cloudflare Workers + Durable Objects)
+# madani bot link relay (Cloudflare Workers + Durable Objects)
 
 Carries the bytes between a person's own server and their app when neither direct path works, so the link service
-on our own box (`apps/link-service`, link.dusk.bot) is no longer the data path. Pairing, setup status and install
+on our own box (`apps/link-service`, link.madani.bot) is no longer the data path. Pairing, setup status and install
 stay on the link service.
 
 ```
- app (electron main)                       relay.dusk.bot (this worker)                 server (agent.mjs tunnel)
+ app (electron main)                       relay.madani.bot (this worker)                 server (agent.mjs tunnel)
  orderedConnect: ssh, 443, then cloud      one Durable Object per tunnel                createCloudRelay
    wss /v1/t/<id>/app  ---------------->   "app:<sid>"  <-- binary, untouched -->  "vps:<sid>"  <---- wss /v1/t/<id>/vps?s=<sid>
                                            "ctl" {"t":"open","s":<sid>}  ------------------------>  wss /v1/t/<id>/vps (standing)
@@ -19,16 +19,16 @@ stay on the link service.
   request cap of the Free zone never applies.
 - **Order.** ssh on 22, then the server's own https on 443, then this relay, then the link service relay underneath
   (`electron/vps-link.mjs` `directFor`). Turning "Fast direct connection" off leaves this relay on: it is a relay.
-  An agent without the `cloud-relay` cap, or an app with no dusk account (no link grant), stays on the link service.
-- **Auth.** The bearer is `HMAC-SHA256(tunnel key, "dusk-relay-v1|<id>")` (`relayTokenOf` in both clients); the
+  An agent without the `cloud-relay` cap, or an app with no madani account (no link grant), stays on the link service.
+- **Auth.** The bearer is `HMAC-SHA256(tunnel key, "madani-relay-v1|<id>")` (`relayTokenOf` in both clients); the
   relay keeps only its sha256. The app registers a tunnel with `POST /v1/t/<id>/register {grant, verifier}`; the
-  link grant (Ed25519, the account service's pinned key, `src/grant.js`) binds the tunnel to that dusk account, and
+  link grant (Ed25519, the account service's pinned key, `src/grant.js`) binds the tunnel to that madani account, and
   another account cannot take it over (409). A wrong token and an unknown tunnel both answer 404.
 - **Hibernation and heartbeats.** All sockets are hibernatable. Each client sends the text `ping` every 25 s; the
   runtime answers `pong` without waking the object, and a client drops a socket silent for 75 s. An idle server
   (app closed) costs no duration. Both ends reconnect by themselves (agent: 1 s to 2 min backoff; app: the direct
   link's backoff), which covers deploys dropping sockets. On the cloud path the app's sealed ping is every 20 s.
-- **Fair use, per dusk account** (`src/fair-use.js`), the link service's curve: 3 MiB/s up to 20 GB a month, then
+- **Fair use, per madani account** (`src/fair-use.js`), the link service's curve: 3 MiB/s up to 20 GB a month, then
   slower along a smooth curve to 2 Mbit/s at 80 GB, and past that 256 kbit/s for chat (never cut off). A burst of 45 s
   of the current rate stays when slowed, and a message up to 16 KB the spent bucket cannot take goes from a small
   allowance of its own (64 KB/s), so chat still feels instant. An account's rate is
@@ -70,9 +70,9 @@ Without `OPS_TOKEN` these answer 404.
 pnpm relay:test                      # unit tests (fair use, forwarding, grants, the two clients agree)
 pnpm relay:e2e                       # wrangler dev + the real agent hub and app proxy, a 110 MB transfer, a restart
 cd apps/cloudflare/link-relay
-set -a && . ~/.config/duskbot/dusk.env && set +a
-npx wrangler deploy --env=""         # preview: relay-preview.dusk.bot and workers.dev
-npx wrangler deploy --env production # relay.dusk.bot (the address clients dial by default)
+set -a && . ~/.config/madanibot/madani.env && set +a
+npx wrangler deploy --env=""         # preview: relay-preview.madani.bot and workers.dev
+npx wrangler deploy --env production # relay.madani.bot (the address clients dial by default)
 ```
 
 Load test (`scripts/load.mjs`): needs a grant key the relay trusts (`GRANT_KEYS` var or secret, `kid:x`) and its
@@ -97,14 +97,14 @@ trip) would bring "connected" down to the time actually in use.
 
 ## Going live (the flip)
 
-Clients already prefer `https://relay.dusk.bot`. Until it exists it is answered by the `*.dusk.bot` edge route with
+Clients already prefer `https://relay.madani.bot`. Until it exists it is answered by the `*.madani.bot` edge route with
 404, so agents and apps fall back to the link service at once and try again later (agent: backoff to 2 minutes;
 app: that transport goes to the back of the line for 30 minutes on the network).
 
-1. `npx wrangler deploy --env production` (custom domain `relay.dusk.bot` plus a route that beats the wildcard).
+1. `npx wrangler deploy --env production` (custom domain `relay.madani.bot` plus a route that beats the wildcard).
 2. Optional: `npx wrangler secret put OPS_TOKEN --env production` for the ops counters.
 3. Ship the agent (2.1.0, served as `/agent.mjs` by the link service) and an app build with the cloud transport.
 
 Undo: `npx wrangler delete --env production` (or remove the custom domain); every client falls back to the link
-service relay on its own. `DUSK_RELAY_URL=off` (agent unit or app environment) keeps one install off it;
-`DUSK_RELAY_URL=https://relay-preview.dusk.bot` points one at the preview.
+service relay on its own. `MADANI_RELAY_URL=off` (agent unit or app environment) keeps one install off it;
+`MADANI_RELAY_URL=https://relay-preview.madani.bot` points one at the preview.

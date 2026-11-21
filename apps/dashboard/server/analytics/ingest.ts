@@ -46,7 +46,7 @@ function cors(req: IncomingMessage, res: ServerResponse, allowed: Set<string> | 
 }
 function done(res: ServerResponse, status = 204) { if (!res.writableEnded) { res.writeHead(status, { "cache-control": "no-store" }); res.end(); } }
 
-/** the tracker's answer to a recorded event: whether it may keep dusk_vid and dusk_sid; anything else means it may not */
+/** the tracker's answer to a recorded event: whether it may keep madani_vid and madani_sid; anything else means it may not */
 export interface TrackAnswer { persist: boolean }
 function answer(res: ServerResponse, value: TrackAnswer) {
   if (res.writableEnded) return;

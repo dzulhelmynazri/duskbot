@@ -183,7 +183,7 @@ beforeEach(() => {
   fixture.statusGate = null;
   fixture.surface = "cloud";
   state = { ...initialState, instances: [engine], config: { box: { configured: true } } as AppState["config"], computerControl: {} } as AppState;
-  vi.stubGlobal("duskDesktop", {
+  vi.stubGlobal("madaniDesktop", {
     desktopViewer: { open: vi.fn(async () => true), close: vi.fn(async () => true), onState: () => () => {}, currentState: async () => ({ open: false, contextId: null }) },
   });
   vi.spyOn(window, "open").mockImplementation(() => null);
@@ -239,7 +239,7 @@ describe("taking control of a Local VM", () => {
     await press("Take control");
     await shownLive();
     expect(liveDesktop()!.dataset.target).toBe(`local/bot-${"a".repeat(64)}`);
-    expect(window.duskDesktop!.desktopViewer!.open, "nothing may open in another window").not.toHaveBeenCalled();
+    expect(window.madaniDesktop!.desktopViewer!.open, "nothing may open in another window").not.toHaveBeenCalled();
     expect(window.open).not.toHaveBeenCalled();
     expect(fixture.controls).toEqual([{ action: "take", controlLeaseId: expect.stringMatching(/^[0-9a-f]{36}$/) }]);
     expect(document.body.textContent).toContain("You're in control");
@@ -381,7 +381,7 @@ describe("taking control of other computers", () => {
     expect(liveDesktop()?.dataset.viewOnly).toBe("false");
     expect(fixture.connections).toBe(1);
     expect(fixture.controls[0]?.action).toBe("take");
-    expect(window.duskDesktop!.desktopViewer!.open).not.toHaveBeenCalled();
+    expect(window.madaniDesktop!.desktopViewer!.open).not.toHaveBeenCalled();
     expect(window.open).not.toHaveBeenCalled();
   });
 
@@ -451,7 +451,7 @@ describe("taking control of other computers", () => {
     await press("Take control");
     await shownLive();
     expect(liveDesktop()!.dataset.target).toBe("vps/scout");
-    expect(window.duskDesktop!.desktopViewer!.open).not.toHaveBeenCalled();
+    expect(window.madaniDesktop!.desktopViewer!.open).not.toHaveBeenCalled();
     await press("Hand control back");
     expect(fixture.beacons.some((beacon) => beacon.url.startsWith("/api/bots/scout/computer/viewer-close"))).toBe(false);
     expect(liveDesktop()?.dataset.viewOnly).toBe("true");

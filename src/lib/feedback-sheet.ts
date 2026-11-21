@@ -40,22 +40,22 @@ async function base64(blob: Blob): Promise<string> {
   return btoa(text);
 }
 
-/** The desktop app's signed-in dusk account, sent along on this computer's own page; a session's server knows its own. */
+/** The desktop app's signed-in madani account, sent along on this computer's own page; a session's server knows its own. */
 async function signedInEmail(): Promise<string | undefined> {
-  const bridge = window.duskDesktop?.remoteClient?.active === true ? undefined : window.duskDesktop?.cloudAccount;
+  const bridge = window.madaniDesktop?.remoteClient?.active === true ? undefined : window.madaniDesktop?.cloudAccount;
   const state = await bridge?.state().catch(() => null);
   return state?.account?.email || undefined;
 }
 
-/** The dusk bot team's own report endpoint (apps/dashboard bug-reports), which the server's route forwards to. */
+/** The madani bot team's own report endpoint (apps/dashboard bug-reports), which the server's route forwards to. */
 async function reportEndpoint(): Promise<string> {
-  const configured = import.meta.env.VITE_DUSK_ACCOUNT_ORIGIN;
+  const configured = import.meta.env.VITE_MADANI_ACCOUNT_ORIGIN;
   if (configured) return `${configured.replace(/\/+$/, "")}/api/bug-reports`;
-  const state = await window.duskDesktop?.cloudAccount?.state().catch(() => null);
-  return `${state?.staging ? "https://preview.dusk.bot" : "https://dusk.bot"}/api/bug-reports`;
+  const state = await window.madaniDesktop?.cloudAccount?.state().catch(() => null);
+  return `${state?.staging ? "https://preview.madani.bot" : "https://madani.bot"}/api/bug-reports`;
 }
 
-const INSTALL_KEY = "dusk-feedback-install";
+const INSTALL_KEY = "madani-feedback-install";
 /** the endpoint counts its hourly limit per install: one id for this app, kept */
 function installId(): string {
   try {
@@ -70,7 +70,7 @@ function installId(): string {
 }
 
 function platformLine(): string {
-  const desktop = window.duskDesktop?.platform;
+  const desktop = window.madaniDesktop?.platform;
   return `${desktop ?? (navigator.platform || "web")}, app direct`.slice(0, 40);
 }
 

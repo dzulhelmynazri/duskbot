@@ -10,7 +10,7 @@
 // The first bot the app made follows the default (the `follower`, kept with the results) until the person writes to it
 // or chooses a model for it or one of its conversations. It moves only after a test result, only to an AI that answered,
 // and only away from one that didn't answer or up to a better one: a status read alone never moves it. A saved default
-// (Settings, `duskbot setup`, the New Bot defaults) is never tested here and never moves.
+// (Settings, `madanibot setup`, the New Bot defaults) is never tested here and never moves.
 import { createHash } from "node:crypto";
 import { mkdirSync, readFileSync } from "node:fs";
 import { dirname } from "node:path";
@@ -55,12 +55,12 @@ const SLOW_RETRY_MS = 60 * 60_000;
 const MISSES_TO_FAIL = 2;
 const RESULT_TTL_MS = 24 * 60 * 60_000;
 
-/** On unless DUSK_AI_CHECKS=0. Under vitest or a sealed test fixture (env-path.ts) only with DUSK_AI_CHECKS=1, as
+/** On unless MADANI_AI_CHECKS=0. Under vitest or a sealed test fixture (env-path.ts) only with MADANI_AI_CHECKS=1, as
  * local-inject's probe: a fake engine's turn log then holds only the turns a test sends. */
 export function backgroundAiChecks(env: NodeJS.ProcessEnv = process.env): boolean {
-  const flag = env.DUSK_AI_CHECKS?.trim();
+  const flag = env.MADANI_AI_CHECKS?.trim();
   if (flag === "0") return false;
-  return (env.VITEST !== "true" && env.DUSK_TEST_SEALED_PATH !== "1") || flag === "1";
+  return (env.VITEST !== "true" && env.MADANI_TEST_SEALED_PATH !== "1") || flag === "1";
 }
 
 /** What makes an engine sign in: its driver, settings and environment (keys among them), never its name or icon. Kept as a

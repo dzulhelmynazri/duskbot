@@ -47,9 +47,9 @@ test("carries the profile and picture first, then the record, over the window's 
     if (route === "/api/instances") return Response.json({ instances: [{ instanceId: "claude", driverKind: "claudeAgent", snapshot: { state: "available", authenticated: true } }] });
     return new Response(new Uint8Array([1, 2, 3]), { status: 200, headers: { "content-type": "image/png", "content-length": "3" } });
   };
-  assert.equal(await carryWelcomeToCloud({ origin: "https://c1.dusk.test", fetch, localRequest }), true);
-  assert.deepEqual(calls.map(([method, url]) => `${method} ${url.replace("https://c1.dusk.test", "")}`), ["GET /api/config", "POST /api/attachments", "PUT /api/config", "PUT /api/config"]);
+  assert.equal(await carryWelcomeToCloud({ origin: "https://c1.madani.test", fetch, localRequest }), true);
+  assert.deepEqual(calls.map(([method, url]) => `${method} ${url.replace("https://c1.madani.test", "")}`), ["GET /api/config", "POST /api/attachments", "PUT /api/config", "PUT /api/config"]);
   assert.deepEqual(JSON.parse(calls[2][2]), { profile: { name: "Ada", avatarUrl: "/api/attachments/abc-1.png" } });
   assert.ok(JSON.parse(calls[3][2]).onboarding.hintsSeen.includes("computer-ai:claude"));
-  assert.equal(await carryWelcomeToCloud({ origin: "https://c1.dusk.test", fetch: async () => new Response("", { status: 401 }), localRequest }), false);
+  assert.equal(await carryWelcomeToCloud({ origin: "https://c1.madani.test", fetch: async () => new Response("", { status: 401 }), localRequest }), false);
 });

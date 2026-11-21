@@ -6,8 +6,8 @@ import { requestTooLargeMessage } from "../../shared/request-too-large";
 
 describe("plainErrorLine", () => {
   it.each([
-    ["Failed to fetch", "Couldn't reach dusk bot. Check that it's running, then try again."],
-    ["NetworkError when attempting to fetch resource.", "Couldn't reach dusk bot. Check that it's running, then try again."],
+    ["Failed to fetch", "Couldn't reach madani bot. Check that it's running, then try again."],
+    ["NetworkError when attempting to fetch resource.", "Couldn't reach madani bot. Check that it's running, then try again."],
     ["The operation was aborted due to timeout", "That took too long. Try again."],
     ["502 Bad Gateway", "Something went wrong on the other end. Try again."],
     ["500 Internal Server Error", "Something went wrong on the other end. Try again."],
@@ -72,7 +72,7 @@ describe("a provider refusing a message as too large", () => {
 });
 
 it("never shows an engine's internal error or a wall of text, only the plain line", () => {
-  const echoed = "Internal error: 'You are Campaign Manager, a personal bot in dusk bot.\\n\\nAbout you: kept in \"/Users/someone/.duskbot/workspaces/x/MEMORY.md\"'";
+  const echoed = "Internal error: 'You are Campaign Manager, a personal bot in madani bot.\\n\\nAbout you: kept in \"/Users/someone/.madanibot/workspaces/x/MEMORY.md\"'";
   expect(isTechnicalError(echoed)).toBe(true);
   expect(plainErrorLine(echoed)).not.toContain("Campaign Manager");
   expect(isTechnicalError("The model said something long. ".repeat(12))).toBe(true);

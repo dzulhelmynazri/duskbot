@@ -16,7 +16,7 @@
   "updated": "2026-11-12",
   "review": {
     "status": "approved",
-    "by": "lead agent, against dusk bot docs",
+    "by": "lead agent, against madani bot docs",
     "at": "2026-11-12"
   },
   "tags": [
@@ -95,7 +95,7 @@
     },
     {
       "h": "what it costs a founder",
-      "md": "**free to try, and honest about work use.** the app is free for personal use on your own computer. using it for your company needs a work license; pro includes one for one person.\n\nyour ai is billed by your provider, on your plan.\n\nwant the 7:30 brief while your laptop is shut? that needs a computer that stays on: [dusk cloud](/pricing) at $20 (plus) or $50 (pro) a month, or [your own server](/docs/your-own-server)."
+      "md": "**free to try, and honest about work use.** the app is free for personal use on your own computer. using it for your company needs a work license; pro includes one for one person.\n\nyour ai is billed by your provider, on your plan.\n\nwant the 7:30 brief while your laptop is shut? that needs a computer that stays on: [madani cloud](/pricing) at $20 (plus) or $50 (pro) a month, or [your own server](/docs/your-own-server)."
     },
     {
       "h": "what not to hand over yet",
@@ -109,7 +109,7 @@
     },
     {
       "q": "can i run it from my phone?",
-      "a": "yes. pair your phone once by scanning a code, then text any bot from anywhere. if your bots live on your laptop, the laptop has to be on; on dusk cloud they answer with it shut."
+      "a": "yes. pair your phone once by scanning a code, then text any bot from anywhere. if your bots live on your laptop, the laptop has to be on; on madani cloud they answer with it shut."
     },
     {
       "q": "is this an ai chief of staff?",
@@ -118,19 +118,19 @@
   ],
   "sources": [
     {
-      "label": "dusk bot docs: tips for using bots",
+      "label": "madani bot docs: tips for using bots",
       "url": "/docs/tips"
     },
     {
-      "label": "dusk bot docs: group chats",
+      "label": "madani bot docs: group chats",
       "url": "/docs/group-chats"
     },
     {
-      "label": "dusk bot docs: account and billing",
+      "label": "madani bot docs: account and billing",
       "url": "/docs/account-and-billing"
     },
     {
-      "label": "dusk bot docs: a bot's computer",
+      "label": "madani bot docs: a bot's computer",
       "url": "/docs/computer"
     }
   ],

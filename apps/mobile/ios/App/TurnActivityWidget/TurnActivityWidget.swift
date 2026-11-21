@@ -8,7 +8,7 @@ struct TurnActivityWidgets: WidgetBundle {
     var body: some Widget { TurnActivityWidget() }
 }
 
-/// The dusk palette (the app's Dusk look) and each bot colour as the app paints it.
+/// The madani palette (the app's Madani look) and each bot colour as the app paints it.
 private enum Palette {
     static let ground = Color(hex: 0x0C0B0E)
     static let raised = Color(hex: 0x2B2630)
@@ -59,7 +59,7 @@ struct MascotView: View {
     }
 }
 
-private extension DuskTurnAttributes.ContentState {
+private extension MadaniTurnAttributes.ContentState {
     var needsYou: Bool { phase == "needs-you" }
 
     /// the compact island's word
@@ -106,9 +106,9 @@ private extension DuskTurnAttributes.ContentState {
     var stepLine: String? { steps > 0 ? (steps == 1 ? "1 step" : "\(steps) steps") : nil }
 }
 
-private func chatURL(_ attributes: DuskTurnAttributes) -> URL? {
+private func chatURL(_ attributes: MadaniTurnAttributes) -> URL? {
     var parts = URLComponents()
-    parts.scheme = "duskbot"
+    parts.scheme = "madanibot"
     parts.host = "open"
     parts.queryItems = [URLQueryItem(name: "bot", value: attributes.botId)]
         + (attributes.groupId.map { [URLQueryItem(name: "group", value: $0)] } ?? [])
@@ -118,8 +118,8 @@ private func chatURL(_ attributes: DuskTurnAttributes) -> URL? {
 
 /// Approve runs the intent (Face ID, then the app opens and approves); Answer opens the question.
 struct AskButton: View {
-    let attributes: DuskTurnAttributes
-    let ask: DuskTurnAttributes.Ask
+    let attributes: MadaniTurnAttributes
+    let ask: MadaniTurnAttributes.Ask
 
     var body: some View {
         if ask.kind == "approve" {
@@ -143,7 +143,7 @@ struct AskButton: View {
 
 /// Ends this thread's activity now. The glyph stays small; the tap area reaches 44pt without growing the layout.
 struct CloseButton: View {
-    let attributes: DuskTurnAttributes
+    let attributes: MadaniTurnAttributes
 
     var body: some View {
         Button(intent: CloseTurnActivityIntent(threadId: attributes.threadId)) {
@@ -162,7 +162,7 @@ struct CloseButton: View {
 }
 
 struct Elapsed: View {
-    let state: DuskTurnAttributes.ContentState
+    let state: MadaniTurnAttributes.ContentState
 
     var body: some View {
         Group {
@@ -182,8 +182,8 @@ struct Elapsed: View {
 }
 
 struct TurnLockScreen: View {
-    let attributes: DuskTurnAttributes
-    let state: DuskTurnAttributes.ContentState
+    let attributes: MadaniTurnAttributes
+    let state: MadaniTurnAttributes.ContentState
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
@@ -213,7 +213,7 @@ struct TurnLockScreen: View {
 
 struct TurnActivityWidget: Widget {
     var body: some WidgetConfiguration {
-        ActivityConfiguration(for: DuskTurnAttributes.self) { context in
+        ActivityConfiguration(for: MadaniTurnAttributes.self) { context in
             TurnLockScreen(attributes: context.attributes, state: context.state)
                 .activityBackgroundTint(Palette.ground)
                 .activitySystemActionForegroundColor(Palette.ink)
