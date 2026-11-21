@@ -408,7 +408,7 @@ for (const [name, title] of legal) {
   const own = (md) => md.replace(/Copyright (\d{4}) [^.\n]+\./g, 'Copyright $1 madani bot.');
   let html = markdown(own(fs.readFileSync(path.join(repo, 'docs', 'legal', `${name}.md`), 'utf8')));
   // the license page opens with what it means in plain words and ends with the repository's LICENSE in full
-  if (name === 'license') html = licenseSummary + html + licenseText(own(fs.readFileSync(path.join(repo, 'LICENSE'), 'utf8')));
+  if (name === 'license') html = licenseSummary + html + (fs.existsSync(path.join(repo, 'LICENSE')) ? licenseText(own(fs.readFileSync(path.join(repo, 'LICENSE'), 'utf8'))) : '');
   const toc = [...html.matchAll(/<h2 id="([^"]+)">([\s\S]*?)<\/h2>/g)].map((m) => `<li><a href="#${m[1]}">${m[2]}</a></li>`).join('');
   const others = legal.map(([n, , s]) => `<a href="/${n}"${n === name ? ' aria-current="page"' : ''}>${s}</a>`).join('');
   write(`/${name}`, layout({ title: `${title.toLowerCase()} / madani bot`, description: LEGAL_ABOUT[name], page: name, section: 'legal', og: 'legal', kind: 'p-legal',

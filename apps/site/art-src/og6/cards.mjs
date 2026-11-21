@@ -73,7 +73,7 @@ const crew = (list, f) => list.map(([s, c, p, z, x, o = {}]) => bot(s, c, p, z, 
     body: crew([['pip', 'blue', 'wink', 116, 270], ['mochi', 'pink', 'heart', 116, 435], ['loaf', 'tangerine', 'happy', 132, 600], ['starry', 'sun', 'happy', 116, 765], ['goo', 'mint', 'wink', 116, 930]], f) }); }
 // 2 pricing: the whole crew gathered round the sign
 { const G = 540, hl = [hill(600, 560, 44)], f = footOn(G, hl);
-  S.pricing = page({ G, hills: hl, seed: 'pricing', title: 'a whole ai team, free on your laptop', line: 'they run on your computer. no meter ticking.', size: 96,
+  S.pricing = page({ G, hills: hl, seed: 'pricing', title: 'a whole ai team, on your laptop', line: 'they run on your computer. no meter ticking.', size: 96,
     body: `<div class="pole" style="left:594px;top:318px;height:${f(600) - 318}px"></div><div class="sign" style="left:480px;top:290px;width:240px;height:92px;font-size:42px">free. really.</div>` +
       crew([['egg', 'mint', 'happy', 96, 190], ['cheep', 'sun', 'wink', 100, 320], ['loaf', 'tangerine', 'happy', 130, 450], ['hearty', 'pink', 'heart', 130, 750], ['pip', 'blue', 'big', 110, 880], ['tofu', 'violet', 'happy', 96, 1010]], f) }); }
 // 3 download: the crew popping up from the bottom edge
@@ -144,7 +144,7 @@ const crew = (list, f) => list.map(([s, c, p, z, x, o = {}]) => bot(s, c, p, z, 
 // which pages each card is for, and what it shows
 const META = {
   home: { core: ['home', 'waitlist'], alt: 'meet madani bot, with the purple cat bot standing in the title between the words, and five pixel bots on a hill under a blue pixel sky' },
-  pricing: { core: ['pricing'], alt: 'a whole ai team, free on your laptop: six pixel bots on a hill around a sign saying "free. really."' },
+  pricing: { core: ['pricing'], alt: 'a whole ai team, on your laptop: six pixel bots on a hill around a sign saying "$10. really."' },
   download: { core: ['download'], alt: 'your new coworkers are ready: five pixel bots popping up from the bottom of a blue pixel sky' },
   docs: { core: ['docs'], alt: 'everything your bots can do: a blue pixel bot reading over a big open notebook, a yellow bot sitting on a stack of books, a magnifying glass' },
   about: { core: ['about'], alt: "who's behind the bots: four pixel bots sitting on a cloud, chatting \"who made this?\" \"we did most of it.\"" },
